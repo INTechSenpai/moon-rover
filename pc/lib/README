@@ -1,0 +1,21 @@
+Installation de la lib rxtxSerial
+=================================
+
+Se placer dans le dossier intech-2014/software/pc/lib
+-----------------------------------------------------
+
+(là je vous laisser trouver la commande comme des grands; un indice, ça commence par "cd")
+
+
+Copier les fichiers dans les lib de votre machine virtuelle
+-----------------------------------------------------------
+
+sudo cp librxtxSerial.so /usr/lib/jvm/java-7-openjdk-i386/jre/lib/i386/
+sudo cp RXTXcomm.jar /usr/lib/jvm/java-7-openjdk-i386/jre/lib/ext/
+
+
+Exulter de joie si ça marche
+----------------------------
+
+Voilà! En cas de problème (ordi 64bits, ...), demander à PF
+
