@@ -1,4 +1,9 @@
 
+/**
+ *  Classe abstraite du robot, dont héritent RobotVrai et RobotChrono
+ * @author PF
+ */
+
 abstract class Robot {
 	
 	abstract void stopper();
