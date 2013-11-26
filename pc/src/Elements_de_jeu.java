@@ -1,20 +1,19 @@
 public class Elements_de_jeu {
 	public Elements_de_jeu() {}
 	protected Vector position ;
-	private static int nbStoredFires ;
-	private static Feu[] Fires ;
+	protected static int nbStoredFires = 0;
 	
-	
-	public int get_nbStoredFires()
+	static public void create_fires(Feu[] vect)
+	{
+		for(int i=0; i <= 15 ; i++)
+		{
+			vect[i]= new Feu() ;
+			(vect[i]).define_id(i);
+		}
+	}
+	static public int get_nbStoredFires()
 	{
 		return nbStoredFires;
 	}
-	
-	public void set_nbStoredFires(int a)
-	{
-		nbStoredFires = a ;
-	}
-	
-	
 	
 }
