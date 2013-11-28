@@ -1,6 +1,6 @@
 package robot;
 
-import SmartMath.Vec2;
+import smartMath.Vec2;
 
 /**
  *  Service de déplacements bas niveau. Méthodes non bloquantes.
