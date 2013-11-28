@@ -1,4 +1,4 @@
-
+package robot;
 /**
  *  Classe abstraite du robot, dont héritent RobotVrai et RobotChrono
  * @author PF
