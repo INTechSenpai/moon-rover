@@ -63,9 +63,8 @@ public class SerialManager
 		for (int baudrate : this.baudrate)
 		{
 			System.out.println("liste des pings pour le baudrate " + baudrate);
-			int k = 0;
 
-			while (k < this.connectedSerial.size())
+			for(int k = 0; k < this.connectedSerial.size(); k++)
 			{
 				if (!deja_attribues.contains(k))
 				{
@@ -79,6 +78,8 @@ public class SerialManager
 						e1.printStackTrace();
 					}
 					id = Integer.parseInt(serialTest.ping());
+					if(!isKnownPing(id))
+						continue;
 
 					//On stock le port de la serie dans le tabeau qui stock les pings
 					pings[id] = this.connectedSerial.get(k);
@@ -90,7 +91,6 @@ public class SerialManager
 
 					System.out.println(id + " sur: " + connectedSerial.get(k));
 
-					k++;
 				}
 			}
 		}
@@ -144,5 +144,15 @@ public class SerialManager
 				}
 			}
 		}
+	}
+	
+	private boolean isKnownPing(int id)
+	{
+		for(SpecificationCard spec : cards)
+		{
+			if(id == spec.id)
+				return true;
+		}
+		return false;
 	}
 }
