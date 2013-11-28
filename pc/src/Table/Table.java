@@ -1,3 +1,5 @@
+package Table;
+
 import SmartMath.Vec2;
 
 public class Table {
@@ -6,7 +8,7 @@ public class Table {
 	
 	public Table()
 	{
-		arrayFire[0] = new Feu(0, 0, Orientation.GROUND, Colour.RED, new Vec2(100,100));
+		arrayFire[0] = new Feu(0, 0, Orientation.GROUND, Couleur.RED, new Vec2(100,100));
 		
 	}
 	

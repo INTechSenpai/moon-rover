@@ -1,3 +1,5 @@
+package Table;
+
 import SmartMath.Vec2;
 
 abstract class Elements_de_jeu {
