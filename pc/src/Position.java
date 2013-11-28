@@ -1,4 +1,9 @@
 
+/**
+ * Classe position, utilisée pour représenter une position en 2D sur le terrain
+ * @author pf
+ *
+ */
 public class Position {
 
 	private float x;

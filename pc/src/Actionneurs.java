@@ -1,6 +1,6 @@
 
 /**
- * Classe des actionneurs. Utilisée par les scripts pour bouger les actionneurs.
+ * Classe des actionneurs. Utilisée par robot pour bouger les actionneurs.
  * @author pf
  */
 public class Actionneurs {
