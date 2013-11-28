@@ -19,8 +19,6 @@ public interface AbstractFactory
 	public boolean canMake(String ClassName);
 	public boolean canMake(int ClassID);
 	
-	
-		
 	// Map of supported types
 	//private Hashtable<Integer, String> knownTypes; // Cannot enforce this mechanism in an interface.
 }
