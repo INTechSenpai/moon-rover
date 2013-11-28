@@ -1,6 +1,6 @@
 package robot;
 
-import SmartMath.Vec2;
+import smartMath.Vec2;
 
 
 public class RobotVrai extends Robot {

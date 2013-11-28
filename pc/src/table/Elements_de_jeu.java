@@ -1,6 +1,6 @@
-package Table;
+package table;
 
-import SmartMath.Vec2;
+import smartMath.Vec2;
 
 abstract class Elements_de_jeu {
 

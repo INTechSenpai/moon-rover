@@ -1,4 +1,4 @@
-import SmartMath.Vec2;
+import smartMath.Vec2;
 
 
 /**

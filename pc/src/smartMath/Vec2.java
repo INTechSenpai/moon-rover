@@ -10,7 +10,7 @@
 /*
  *	TODO : 	Implement Matrix product, String conversion and parsing
  */
-package SmartMath;
+package smartMath;
 public class Vec2
 {
 

@@ -1,7 +1,7 @@
-package Table;
+package table;
 
-import SmartMath.Orientation;
-import SmartMath.Vec2;
+import robot.Orientation;
+import smartMath.Vec2;
 
 public class Table {
 
