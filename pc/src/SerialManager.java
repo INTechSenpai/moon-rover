@@ -148,9 +148,10 @@ public class SerialManager
 	
 	private boolean isKnownPing(int id)
 	{
-		for(SpecificationCard spec : cards)
+		Enumeration e = cards.elements();
+		while(e.hasMoreElements())
 		{
-			if(id == spec.id)
+			if(id == e.nextElement().id)
 				return true;
 		}
 		return false;
