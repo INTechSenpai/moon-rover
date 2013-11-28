@@ -1,4 +1,4 @@
-package SmartMath;
+package robot;
 
 public enum Orientation {
 	GROUND, 
