@@ -1,5 +1,6 @@
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
+import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
@@ -23,20 +24,37 @@ public class Serial implements SerialPortEventListener
 	OutputStream output;
 	/** Milliseconds to block while waiting for port open */
 	private static final int TIME_OUT = 2000;
-	/** Default bits per second for COM port. */
-
-	public void initialize(String port_name, int baudrate) throws NoSuchPortException
+	
+	/**
+	 * Appelé par le SerialManager
+	 * @param port_name
+	 * @param baudrate
+	 * @throws NoSuchPortException
+	 */
+	public void initialize(String port_name, int baudrate)
 	{
 		CommPortIdentifier portId = null;
-		portId = CommPortIdentifier.getPortIdentifier(port_name);
-
 		try
 		{
-			// open serial port, and use class name for the appName.
-			serialPort = (SerialPort) portId.open(this.getClass().getName(),
-					TIME_OUT);
+			portId = CommPortIdentifier.getPortIdentifier(port_name);
+		}
+		catch (NoSuchPortException e2)
+		{
+			e2.printStackTrace();
+		}
 
-			// set port parameters
+		// open serial port, and use class name for the appName.
+		try {
+				serialPort = (SerialPort) portId.open(this.getClass().getName(),
+						TIME_OUT);
+		} 
+		catch (PortInUseException e1)
+		{
+			e1.printStackTrace();
+		}
+		try
+		{
+		// set port parameters
 			serialPort.setSerialPortParams(baudrate,
 					SerialPort.DATABITS_8,
 					SerialPort.STOPBITS_1,
@@ -53,6 +71,12 @@ public class Serial implements SerialPortEventListener
 		}
 	}
 	
+	/**
+	 * Méthode pour parler à l'avr
+	 * @param message
+	 * @param nb_lignes_reponse
+	 * @return le message
+	 */
 	public synchronized String communiquer(String message, int nb_lignes_reponse)
 	{
 
@@ -117,6 +141,10 @@ public class Serial implements SerialPortEventListener
 	{
 	}
 	
+	/**
+	 * Ping de la carte. Elle balance un \r avant afin de vider le buffer de l'avr d'eventuels caracteres.
+	 * @return l'id de la carte
+	 */
 	public synchronized String ping()
 	{
 		try
