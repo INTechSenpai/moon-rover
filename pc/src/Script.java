@@ -1,3 +1,5 @@
+import SmartMath.Vec2;
+
 
 /**
  * Classe abstraite dont hériteront les différents scripts
@@ -47,7 +49,7 @@ abstract class Script {
 	 * @param id de la version
 	 * @return la position du point d'entrée
 	 */
-	abstract Position point_entree(int id);
+	abstract Vec2 point_entree(int id);
 	
 	/**
 	 * Renvoie le score que peut fournir un script
