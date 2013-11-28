@@ -121,19 +121,19 @@ public class Serial implements SerialPortEventListener
 	{
 		try
 		{
-			//On vide le buffer de la série coté PC
+			//On vide le buffer de la serie cote PC
 			output.flush();
 			
-			//On vide le buffer de la série coté avr
+			//On vide le buffer de la serie cote avr
 			output.write("\r".getBytes());
 			input.readLine();
 			
 			//ping
 			output.write("?\r".getBytes());
-			//évacuation de l'acquittement
+			//evacuation de l'acquittement
 			input.readLine();
 			
-			//récupération de l'id de la carte
+			//recuperation de l'id de la carte
 			return input.readLine();
 			
 		}
