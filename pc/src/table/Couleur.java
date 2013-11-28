@@ -1,4 +1,4 @@
-package Table;
+package table;
 
 public enum Couleur {
 	RED, 

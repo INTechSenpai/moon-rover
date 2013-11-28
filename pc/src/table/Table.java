@@ -1,4 +1,4 @@
-package Table;
+package table;
 
 import SmartMath.Orientation;
 import SmartMath.Vec2;
