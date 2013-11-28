@@ -1,3 +1,5 @@
+package robot;
+
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -19,9 +21,9 @@ public class Serial implements SerialPortEventListener
 	* converting the bytes into characters 
 	* making the displayed results codepage independent
 	*/
-	BufferedReader input;
+	private BufferedReader input;
 	/** The output stream to the port */
-	OutputStream output;
+	private OutputStream output;
 	/** Milliseconds to block while waiting for port open */
 	private static final int TIME_OUT = 2000;
 	
@@ -29,9 +31,10 @@ public class Serial implements SerialPortEventListener
 	 * Appelé par le SerialManager
 	 * @param port_name
 	 * @param baudrate
+	 * @return 
 	 * @throws NoSuchPortException
 	 */
-	public void initialize(String port_name, int baudrate)
+	void initialize(String port_name, int baudrate)
 	{
 		CommPortIdentifier portId = null;
 		try
@@ -143,9 +146,10 @@ public class Serial implements SerialPortEventListener
 	
 	/**
 	 * Ping de la carte. Elle balance un \r avant afin de vider le buffer de l'avr d'eventuels caracteres.
+	 * Utilisé que par createSerial de SerialManager
 	 * @return l'id de la carte
 	 */
-	public synchronized String ping()
+	synchronized String ping()
 	{
 		try
 		{

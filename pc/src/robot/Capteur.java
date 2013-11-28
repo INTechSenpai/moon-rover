@@ -1,3 +1,5 @@
+package robot;
+
 /**
  * Classe des capteurs, qui communique avec la carte capteur
  * @author PF

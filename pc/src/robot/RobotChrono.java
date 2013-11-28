@@ -1,4 +1,4 @@
-
+package robot;
 public class RobotChrono extends Robot {
 
 	// La plupart de ces méthodes resteront vides
