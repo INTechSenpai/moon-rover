@@ -10,29 +10,36 @@
 /*
  *	TODO : 	Implement Matrix product, String conversion and parsing
  */
+package SmartMath;
 public class Vec2
 {
 
 	public float x;
 	public float y;
 
-	public Vector()
+	public Vec2()
 	{
 		x = 0;
 		y = 0;
 	}
 
-	public SquaredLength()
+	public Vec2(float requestedX, float requestedY)
+	{
+		x = requestedX;
+		y = requestedY;
+	}
+	
+	public float SquaredLength()
 	{
 		return x*x + y*y;
 	}
 
-	public SquaredLength()
+	public float Length()
 	{
-		return Math.sqrt(SquaredLength());
+		return (float) Math.sqrt(SquaredLength());
 	}
 
-	public dot(Vec2 other)
+	public float dot(Vec2 other)
 	{
 		return x*other.x + y*other.y;
 	}
