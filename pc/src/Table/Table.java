@@ -1,5 +1,6 @@
 package Table;
 
+import SmartMath.Orientation;
 import SmartMath.Vec2;
 
 public class Table {

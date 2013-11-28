@@ -1,25 +1,25 @@
 package Table;
 
+import SmartMath.Orientation;
 import SmartMath.Vec2;
 
-
 public class Feu extends Elements_de_jeu {
-	public Feu(int id, int height, Orientation orientation, Couleur colour, Vec2 position)
+
+	private int id ;
+	private int height=0 ; //0=sol, chaque unité supplémentaire représente un feu en-dessous	
+	private Orientation orientation = Orientation.UNDETERMINED ;
+	private Couleur colour = Couleur.UNDETERMINED ;
+	private boolean onFireplace = false ;	// what is ?
+	private boolean taken  = false ;	// IDEM
+	
+	public Feu(int id, int height, Orientation orientation, Couleur couleur, Vec2 position)
 	{
 		this.id = id;
 		this.height = height;
 		this.orientation = orientation;
-		this.colour = colour;
+		this.colour = couleur;
 		this.position = position;
 	}
-	
-	int id ;
-	int height=0 ; //0=sol, chaque unité supplémentaire représente un feu en-dessous	
-	Orientation orientation = Orientation.UNDETERMINED ;
-	Colour colour = Colour.UNDETERMINED ;
-	boolean onFireplace = false ;	// what is ?
-	boolean taken  = false ;	// IDEM
-	
 
 	public void pickFire()
 	{
