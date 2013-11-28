@@ -1,3 +1,5 @@
+import SmartMath.Vec2;
+
 abstract class Elements_de_jeu {
 
 	public Elements_de_jeu()
@@ -5,7 +7,7 @@ abstract class Elements_de_jeu {
 		
 	}
 	
-	protected Position position;
+	protected Vec2 position;
 	
 
 }
