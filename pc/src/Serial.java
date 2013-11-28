@@ -152,8 +152,8 @@ public class Serial implements SerialPortEventListener
 			//On vide le buffer de la serie cote PC
 			output.flush();
 			
-			//On vide le buffer de la serie cote avr
-			output.write("\r".getBytes());
+			//On vide le buffer de la serie cote avr avec un texte random
+			output.write("çazç\r".getBytes());
 			input.readLine();
 			
 			//ping
