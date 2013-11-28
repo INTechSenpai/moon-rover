@@ -32,10 +32,10 @@ public class Container {
 			System.out.println("Erreur lors de l'instanciation de Log");
 		instances_des_services.add(instance_log);
 
-		Serie instance_serie = Serie.initialiser();
+		/*Serie instance_serie = Serie.initialiser();
 		if(instance_serie == null)
 			System.out.println("Erreur lors de l'instanciation de Serie");
-		instances_des_services.add(instance_serie);
+		instances_des_services.add(instance_serie);*/
 }
 
 	/*	Instanciation du container (singleton)
