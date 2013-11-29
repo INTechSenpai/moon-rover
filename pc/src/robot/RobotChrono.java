@@ -1,4 +1,7 @@
 package robot;
+
+import smartMath.Vec2;
+
 public class RobotChrono extends Robot {
 
 	// La plupart de ces méthodes resteront vides
@@ -7,7 +10,10 @@ public class RobotChrono extends Robot {
 	{
 		
 	}
-	public void avancer()
+	
+	@Override
+	public void avancer(int distance, int nbTentatives, boolean retenterSiBlocage,
+			boolean sansLeverException)
 	{
 		
 	}
@@ -23,7 +29,9 @@ public class RobotChrono extends Robot {
 	{
 		
 	}
-	public void va_au_point()
+	
+	@Override
+	public void va_au_point(Vec2 point)
 	{
 		
 	}

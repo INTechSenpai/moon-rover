@@ -1,7 +1,7 @@
 package robot;
 
 import smartMath.Vec2;
-
+import java.lang.Math;
 
 public class RobotVrai extends Robot {
 
@@ -37,10 +37,48 @@ public class RobotVrai extends Robot {
 	{
 		
 	}
-	public void avancer()
+	private void avancerBasNiveau(int distance)
 	{
-		
+		Vec2 consigne = new Vec2(0,0);
+		consigne.x = (float) (this.position.x + distance*Math.cos(this.orientation_consigne));
+		consigne.y = (float) (this.position.y + distance*Math.sin(this.orientation_consigne));
+		this.va_au_point(consigne);
 	}
+	
+	@Override
+	public void avancer(int distance, int nbTentatives, boolean retenterSiBlocage,
+			boolean sansLeverException)
+	{
+		boolean memoire_marche_arriere = this.marche_arriere;
+		boolean memoire_effectuer_symetrie = this.effectuer_symetrie;
+		this.marche_arriere = (distance < 0);
+		this.effectuer_symetrie = false;
+
+		Vec2 consigne = new Vec2(0,0);
+		consigne.x = (float) (this.position.x + distance*Math.cos(this.orientation_consigne));
+		consigne.y = (float) (this.position.y + distance*Math.sin(this.orientation_consigne));
+		
+		this.va_au_point(consigne);
+		
+		this.marche_arriere = memoire_marche_arriere;
+		this.effectuer_symetrie = memoire_effectuer_symetrie;
+	}
+	
+	public void avancer(int distance, int nbTentatives, boolean retenterSiBlocage)
+	{
+		this.avancer(distance, nbTentatives, retenterSiBlocage, false);
+	}
+	
+	public void avancer(int distance, int nbTentatives)
+	{
+		this.avancer(distance, nbTentatives, true, false);
+	}
+
+	public void avancer(int distance)
+	{
+		this.avancer(distance, 2, true, false);
+	}
+	
 	public void correction_angle()
 	{
 		
@@ -53,7 +91,9 @@ public class RobotVrai extends Robot {
 	{
 		
 	}
-	public void va_au_point()
+	
+	@Override
+	public void va_au_point(Vec2 point)
 	{
 		
 	}
