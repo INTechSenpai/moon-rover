@@ -9,11 +9,11 @@ abstract class Script {
 	/**
 	 * Exécute vraiment un script
 	 */
-	public void agit()
+	public void agit(int id_version)
 	{
 		try
 		{
-			execute();
+			execute(id_version);
 		}
 		catch (Exception e)
 		{
@@ -30,7 +30,7 @@ abstract class Script {
 	 * Calcule le temps d'exécution de ce script (grâce à robotChrono)
 	 * @return le temps d'exécution
 	 */
-	public int calcule()
+	public int calcule(int id_version)
 	{
 		return 0;
 	}
@@ -64,7 +64,7 @@ abstract class Script {
 	/**
 	 * Exécute le script
 	 */
-	abstract protected void execute();
+	abstract protected void execute(int id_version);
 
 	/**
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs.
