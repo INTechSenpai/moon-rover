@@ -1,3 +1,7 @@
+package robot;
+
+import smartMath.Vec2;
+
 /**
  *  Service de déplacements bas niveau. Méthodes non bloquantes.
  *  Pour les déplacements intelligents, voir RobotVrai
@@ -165,9 +169,9 @@ public class Deplacements {
 	 * 
 	 * @return
 	 */
-	public Position get_infos_x_y_orientation()
+	public Vec2 get_infos_x_y_orientation()
 	{
-		return new Position(0,0);
+		return new Vec2(0,0);
 	}
 
 	/**

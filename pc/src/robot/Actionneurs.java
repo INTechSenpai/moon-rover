@@ -1,3 +1,5 @@
+package robot;
+
 
 /**
  * Classe des actionneurs. Utilisée par robot pour bouger les actionneurs.

@@ -1,10 +1,14 @@
+package robot;
+
+import smartMath.Vec2;
+
 
 public class RobotVrai extends Robot {
 
-	private Position position = new Position(0,0);
+	private Vec2 position = new Vec2(0,0);
 	private float orientation = 0;
 
-	private Position consigne = new Position(0,0);
+	private Vec2 consigne = new Vec2(0,0);
 	private float orientation_consigne = 0;
 	
 	private boolean blocage = false;
@@ -75,11 +79,11 @@ public class RobotVrai extends Robot {
 	 * GETTERS & SETTERS
 	 */
 	
-	public Position getPosition() {
-		return position;
+	public Vec2 getPosition() {
+		return this.position;
 	}
 
-	public void setPosition(Position position) {
+	public void setPosition(Vec2 position) {
 		this.position = position;
 		//deplacements.set_x(position.getX());
 		//deplacements.set_y(position.getY());
@@ -93,11 +97,11 @@ public class RobotVrai extends Robot {
 		this.orientation = orientation;
 	}
 
-	public Position getConsigne() {
+	public Vec2 getConsigne() {
 		return consigne;
 	}
 
-	public void setConsigne(Position consigne) {
+	public void setConsigne(Vec2 consigne) {
 		this.consigne = consigne;
 	}
 
