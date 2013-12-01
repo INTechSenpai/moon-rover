@@ -9,14 +9,18 @@ public class Callback {
 
 	private boolean done = false;
 	private boolean unique;
+	private Executable methode;
 	
-	public Callback(/*fonction, arguments, unique*/) {}
+	public Callback(Executable methode, boolean unique)
+	{
+		
+	}
 	
 	public void appeler()
 	{
 		if(!unique || !done)
 		{
-			//appelle de la fonction
+			methode.execute();
 			done = true;
 		}
 	}
