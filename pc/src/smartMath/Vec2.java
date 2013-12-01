@@ -43,6 +43,11 @@ public class Vec2
 	{
 		return x*other.x + y*other.y;
 	}
+	
+	public Vec2 clone()
+	{
+		return new Vec2(this.x, this.y);
+	}
 
 }
 
