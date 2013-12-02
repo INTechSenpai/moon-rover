@@ -1,4 +1,4 @@
-package utils;
+package hook;
 
 /**
  * Classe de callback. Contient la fonction et ses arguments à appeler.

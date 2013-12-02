@@ -1,4 +1,4 @@
-package utils;
+package hook;
 
 /**
  * Interface utilisée pour passer des méthodes à Callback.
