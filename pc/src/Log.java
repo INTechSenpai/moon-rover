@@ -1,5 +1,6 @@
 
-public class Log extends Service {
+public class Log extends Service 
+{
 	
 	private static Log INSTANCE = null;
 
