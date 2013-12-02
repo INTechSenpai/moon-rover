@@ -70,7 +70,7 @@ public class SerialManager
 		int id = -1;
 		//Liste des series deja attribues
 		ArrayList<Integer> deja_attribues = new ArrayList<Integer>();
-		String pings[] = new String[4];
+		String pings[] = new String[5];
 		for (int baudrate : this.baudrate)
 		{
 			System.out.println("liste des pings pour le baudrate " + baudrate);
@@ -110,17 +110,13 @@ public class SerialManager
 			{
 				this.serieAsservissement.initialize(pings[serial.id], serial.baudrate);
 			}
-			else if(serial.id == 1 && pings[serial.id] != null)
-			{
-				this.serieAsservissement.initialize(pings[serial.id], serial.baudrate);
-			}
-			else if(serial.id == 2 && pings[serial.id] != null)
-			{
-				this.serieAsservissement.initialize(pings[serial.id], serial.baudrate);
-			}
 			else if(serial.id == 3 && pings[serial.id] != null)
 			{
-				this.serieAsservissement.initialize(pings[serial.id], serial.baudrate);
+				this.serieCapteursActionneurs.initialize(pings[serial.id], serial.baudrate);
+			}
+			else if(serial.id == 4 && pings[serial.id] != null)
+			{
+				this.serieLaser.initialize(pings[serial.id], serial.baudrate);
 			}
 		}
 	}
