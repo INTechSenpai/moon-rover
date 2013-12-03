@@ -1,3 +1,7 @@
+package robot;
+
+import smartMath.Vec2;
+
 /**
  *  Service de déplacements bas niveau. Méthodes non bloquantes.
  *  Pour les déplacements intelligents, voir RobotVrai
@@ -13,7 +17,11 @@ public class Deplacements {
 	private int derivee_erreur_rotation = 0;
 	private int derivee_erreur_translation = 0;
 	
-	/**
+	private long debut_timer_blocage;
+	
+    private boolean enCoursDeBlocage = false;
+
+    /**
 	 * Constructeur
 	 */
 	public Deplacements()
@@ -22,7 +30,7 @@ public class Deplacements {
 	}
 
 	/**
-	 * TODO
+	 * Renvoie vrai si le robot bloque (c'est-à-dire que les moteurs forcent mais que le robot ne bouge pas). Blocage automatique au bout de 500ms
 	 * @param PWMmoteurGauche
 	 * @param PWMmoteurDroit
 	 * @param derivee_erreur_rotation
@@ -31,11 +39,36 @@ public class Deplacements {
 	 */
 	public boolean gestion_blocage(int PWMmoteurGauche, int PWMmoteurDroit, int derivee_erreur_rotation, int derivee_erreur_translation)
 	{
-		return false;
+		boolean blocage = false;
+		boolean moteur_force = Math.abs(PWMmoteurGauche) > 40 || Math.abs(PWMmoteurDroit) > 40;
+		boolean bouge_pas = derivee_erreur_rotation == 0 && derivee_erreur_translation == 0;
+
+		if(bouge_pas && moteur_force)
+		{
+			if(enCoursDeBlocage)
+			{
+				if(System.currentTimeMillis() - debut_timer_blocage > 500)
+				{
+					// log warning: le robot a dû s'arrêter suite à un patinage.
+					stopper();
+					blocage = true;
+				}
+			}
+			else
+			{
+				debut_timer_blocage = System.currentTimeMillis();
+				enCoursDeBlocage  = true;
+			}
+		}
+		else
+			enCoursDeBlocage = false;
+
+		return blocage;
+		
 	}
 
 	/** 
-	 * TODO
+	 * Utilisé uniquement par le thread de mise à jour. Regarde si le robot bouge effectivement.
 	 * @param erreur_rotation
 	 * @param erreur_translation
 	 * @param derivee_erreur_rotation
@@ -44,7 +77,11 @@ public class Deplacements {
 	 */
 	public boolean update_enMouvement(int erreur_rotation, int erreur_translation, int derivee_erreur_rotation, int derivee_erreur_translation)
 	{
-		return false;
+		boolean rotation_stoppe = Math.abs(erreur_rotation) < 105;
+		boolean translation_stoppe = Math.abs(erreur_translation) < 100;
+		boolean bouge_pas = Math.abs(derivee_erreur_rotation) < 100 && Math.abs(derivee_erreur_translation) < 100;
+
+		return !(rotation_stoppe && translation_stoppe && bouge_pas);
 	}
 	
 	/** 
@@ -165,9 +202,9 @@ public class Deplacements {
 	 * 
 	 * @return
 	 */
-	public Position get_infos_x_y_orientation()
+	public Vec2 get_infos_x_y_orientation()
 	{
-		return new Position(0,0);
+		return new Vec2(0,0);
 	}
 
 	/**

@@ -10,7 +10,7 @@
 /*
  *	TODO : 	Implement Matrix product, String conversion and parsing
  */
-package SmartMath;
+package smartMath;
 public class Vec2
 {
 
@@ -48,6 +48,7 @@ public class Vec2
 		return x*other.x + y*other.y;
 	}
 	
+<<<<<<< HEAD:software/pc/src/SmartMath/Vec2.java
 	// build a new Vec2 by summing the calling Vec2 and the one in args
 	public Vec2 Plus(Vec2 other)
 	{
@@ -61,5 +62,12 @@ public class Vec2
 		return new Vec2(x - other.x, y - other.y);
 	}
 	
+=======
+	public Vec2 clone()
+	{
+		return new Vec2(this.x, this.y);
+	}
+
+>>>>>>> 213f1b59b2080b1f91e33781ab2a4c9d9d820955:software/pc/src/smartMath/Vec2.java
 }
 
