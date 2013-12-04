@@ -2,7 +2,7 @@
  * 				Vec2 class
  * ============================================================================
  * 
- * Bi-dimantionnal vector 2 class. Simple-precision members.
+ * Bi-dimentionnal vector 2 class. Simple-precision members.
  * Author : Dede
  * Refactoring : Martial
  */
@@ -16,7 +16,7 @@ public class Vec2
 
 	public float x;
 	public float y;
-
+	
 	public Vec2()
 	{
 		x = 0;
