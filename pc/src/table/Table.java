@@ -6,7 +6,9 @@ import smartMath.Vec2;
 public class Table {
 
 	Fire arrayFire[] = new Fire[16];
-	
+	Tree arrayTree[] = new Tree[4];
+	Fireplace arrayFireplace[]= new Fireplace[3];
+	Torch arrayTorch[] = new Torch[10] ;
 	public Table()
 	{
 		arrayFire[0] = new Fire(new Vec2(1500,1200), 0, 0, Orientation.XPLUS, Colour.YELLOW);
@@ -25,10 +27,24 @@ public class Table {
 		arrayFire[13] = new Fire(new Vec2(-600,400), 13, 0, Orientation.XPLUS, Colour.RED);
 		arrayFire[14] = new Fire(new Vec2(-1100,900), 14, 0, Orientation.YPLUS, Colour.RED);
 		arrayFire[15] = new Fire(new Vec2(-1500,1200), 15, 0, Orientation.XPLUS, Colour.YELLOW);
-
-
-
-
+		//on passe à l'initialisation des arbres
+		arrayTree[0] = new Tree(new Vec2(1500,700), 0, new Vec2(1396,640),new Vec2(1500,580),new Vec2(1604,640),
+								new Vec2(1604,760),new Vec2(1500,820),new Vec2(1396,760));
+		arrayTree[1] = new Tree(new Vec2(800,0), 1, new Vec2(740,104),new Vec2(680,0),new Vec2(740,-104),
+								new Vec2(860,-104),new Vec2(920,0),new Vec2(860,104));
+		arrayTree[2] = new Tree(new Vec2(-800,0), 2, new Vec2(-860,104),new Vec2(-920,0),new Vec2(-860,-104),
+								new Vec2(-740,-104),new Vec2(-680,0),new Vec2(-740,104));
+		arrayTree[3] = new Tree(new Vec2(-1500,700), 3, new Vec2(-1396,760),new Vec2(-1500,820),new Vec2(-1604,760),
+								new Vec2(1604,640),new Vec2(1380,0),new Vec2(1396,640));
+		//initialisation des foyers
+		arrayFireplace[0] = new Fireplace(new Vec2(1500,0), 250) ;
+		arrayFireplace[1] = new Fireplace(new Vec2(0,1050), 150) ;
+		arrayFireplace[2] = new Fireplace(new Vec2(-1500,0), 250) ;
+		//initialisation des torches
+		arrayTorch[0] = new Torch(new Vec2(600,900), 0, true, 160) ;// A verif
+		arrayTorch[1] = new Torch(new Vec2(-600,900), 1, true, 160) ;//A verif  
+		arrayTorch[2] = new Torch(new Vec2(1500,1258), 2, false, 11) ;
+		arrayTorch[3] = new Torch(new Vec2(1500,1152), 3, false, 11) ;
 	}
 	
 }
