@@ -1,6 +1,6 @@
 package table;
 
-public enum Couleur {
+public enum Colour {
 	RED, 
 	YELLOW, 
 	UNDETERMINED
