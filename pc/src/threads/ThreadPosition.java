@@ -1,7 +1,7 @@
 package threads;
 
 public class ThreadPosition extends AbstractThread{
-	TreadPosition()
+	ThreadPosition()
 	{
 	}
 	public void run()
