@@ -1,16 +1,21 @@
 package utils;
+import factories.FactoryProduct;
 
-public class Log
+public class Log implements FactoryProduct
 {
 	
-	private static Log INSTANCE = null;
-
 	private String 	couleurDebug 	= "\u001B[32m",
 					couleurWarning 	= "\u001B[33m",
 					couleurCritical = "\u001B[31m";
 
-	private Log()
+	public FactoryProduct Clone()
 	{
+		return new Log();
+	}
+
+	public String TypeName()
+	{
+		return "Log";
 	}
 	
 	public void debug(String message)
@@ -33,10 +38,4 @@ public class Log
 		System.out.println(couleur+message+"\u001B[0m");
 	}
 	
-	public static Log initialiser()
-	{
-		if (INSTANCE == null)
-		 	INSTANCE = new Log();
-		return INSTANCE;
-	}
 }
