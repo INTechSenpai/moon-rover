@@ -18,19 +18,19 @@ public class Log implements FactoryProduct
 		return "Log";
 	}
 	
-	public void debug(String message)
+	public void debug(String message, Object objet)
 	{
-		ecrire(message, couleurDebug);
+		ecrire(objet.getClass().getName()+": "+message, couleurDebug);
 	}
 
-	public void warning(String message)
+	public void warning(String message, Object objet)
 	{
-		ecrire(message, couleurWarning);
+		ecrire(objet.getClass().getName()+": "+message, couleurWarning);
 	}
 
-	public void critical(String message)
+	public void critical(String message, Object objet)
 	{
-		ecrire(message, couleurCritical);
+		ecrire(objet.getClass().getName()+": "+message, couleurCritical);
 	}
 
 	private void ecrire(String message, String couleur)
