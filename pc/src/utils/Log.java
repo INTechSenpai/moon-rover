@@ -1,6 +1,6 @@
 package utils;
 
-public class Log extends Service 
+public class Log
 {
 	
 	private static Log INSTANCE = null;
