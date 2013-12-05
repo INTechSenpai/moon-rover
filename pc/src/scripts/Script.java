@@ -1,4 +1,4 @@
-package robot;
+package scripts;
 import smartMath.Vec2;
 
 
