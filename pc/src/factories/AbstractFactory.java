@@ -178,6 +178,7 @@ public abstract class AbstractFactory
 		// influencing this factory's behavior.
 
 		// TODO : check that Model implements FactoryProduct
+		// TODO : check if model type already exists
 		productsModels.put(model.TypeName(), model.Clone()); 
 	}
 
