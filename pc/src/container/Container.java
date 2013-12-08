@@ -17,7 +17,7 @@ public class Container {
 		else if(nom == "Log")
 			services.put(nom, (Service)new Log(getService("Read_Ini")));
 		else if(nom == "Read_Ini")
-			services.put(nom, (Service)new Read_Ini("ABWABWA"));
+			services.put(nom, (Service)new Read_Ini("software/pc/config/"));
 		else if(nom == "Table")
 			services.put(nom, (Service)new Table(	getService("Log"),
 													getService("Read_Ini")));
