@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-public class Serial implements SerialPortEventListener
+import container.Service;
+
+public class Serial implements SerialPortEventListener, Service
 {
 	SerialPort serialPort;
 	

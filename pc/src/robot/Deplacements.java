@@ -1,6 +1,8 @@
 package robot;
 
 import smartMath.Vec2;
+import utils.*;
+import container.Service;
 
 /**
  *  Service de déplacements bas niveau. Méthodes non bloquantes.
@@ -8,7 +10,12 @@ import smartMath.Vec2;
  * @author PF
  */
 
-public class Deplacements {
+public class Deplacements implements Service {
+
+	// Dépendances
+	private Read_Ini config;
+	private Log log;
+	private Serial serie;
 
 	private int PWMmoteurGauche = 0;
 	private int PWMmoteurDroit = 0;
@@ -24,9 +31,11 @@ public class Deplacements {
     /**
 	 * Constructeur
 	 */
-	public Deplacements()
+	public Deplacements(Service config, Service log, Service serie)
 	{
-		
+		this.config = (Read_Ini)config;
+		this.log = (Log)log;
+		this.serie = (Serial)serie;
 	}
 
 	/**

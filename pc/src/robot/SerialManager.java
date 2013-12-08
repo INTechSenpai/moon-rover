@@ -56,6 +56,8 @@ public class SerialManager
 			if (!this.baudrate.contains(baud))
 				this.baudrate.add(baud);
 		}
+		checkSerial();
+		createSerial();
 	}
 
 	/**
