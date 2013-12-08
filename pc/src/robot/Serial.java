@@ -12,11 +12,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
+import utils.Log;
 import container.Service;
 
 public class Serial implements SerialPortEventListener, Service
 {
 	SerialPort serialPort;
+	Log log;
+	
+	Serial (Service log)
+	{
+		super();
+		this.log = (Log) log;
+		
+	}
 	
 	/**
 	* A BufferedReader which will be fed by a InputStreamReader 
@@ -95,6 +104,7 @@ public class Serial implements SerialPortEventListener, Service
 		}
 		catch (IOException e)
 		{
+			log.critical("Ne peut pas parler à une des série", this);
 			e.printStackTrace();
 		}
 

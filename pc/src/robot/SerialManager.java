@@ -19,9 +19,9 @@ public class SerialManager
 	private Log log;
 	
 	//Series a instancier
-	public Serial serieAsservissement = new Serial();
-	public Serial serieCapteursActionneurs = new Serial();
-	public Serial serieLaser = new Serial();
+	public Serial serieAsservissement;
+	public Serial serieCapteursActionneurs;
+	public Serial serieLaser;
 	
 	//Pour chaque carte, on connait a l'avance son nom, son ping et son baudrate
 	private SpecificationCard asservissement = new SpecificationCard("deplacements", 0, 9600);
@@ -43,7 +43,7 @@ public class SerialManager
 	 */
 	public SerialManager(Service log)
 	{
-		this.log = (Log)log;
+		this.log = (Log) log;
 		
 		cards.put("asservissement", asservissement);
 		cards.put("capteurs_actionneurs", capteurs_actionneurs);
@@ -56,6 +56,11 @@ public class SerialManager
 			if (!this.baudrate.contains(baud))
 				this.baudrate.add(baud);
 		}
+		
+		serieAsservissement = new Serial(log);
+		serieCapteursActionneurs = new Serial(log);
+		serieLaser = new Serial(log);
+		
 		checkSerial();
 		createSerial();
 	}
@@ -90,7 +95,7 @@ public class SerialManager
 				if (!deja_attribues.contains(k))
 				{
 					//Creation d'une serie de test
-					Serial serialTest = new Serial();
+					Serial serialTest = new Serial(log);
 					
 					serialTest.initialize(this.connectedSerial.get(k), baudrate);
 
