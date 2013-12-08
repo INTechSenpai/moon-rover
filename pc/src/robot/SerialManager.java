@@ -1,4 +1,7 @@
 package robot;
+import container.Service;
+import utils.Log;
+
 
 import gnu.io.CommPortIdentifier;
 import java.util.ArrayList;
@@ -6,12 +9,15 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 /**
- * Instancie toutes les séries, si on lui demande gentillement!
+ * Instancie toutes les sï¿½ries, si on lui demande gentillement!
  * @author pierre
  *
  */
 public class SerialManager 
 {
+	// DÃ©pendances
+	private Log log;
+	
 	//Series a instancier
 	public Serial serieAsservissement = new Serial();
 	public Serial serieCapteursActionneurs = new Serial();
@@ -35,8 +41,10 @@ public class SerialManager
 	/**
 	 * Recuperation de toutes les cartes dans cards et des baudrates dans baudrate
 	 */
-	public SerialManager()
+	public SerialManager(Service log)
 	{
+		this.log = (Log)log;
+		
 		cards.put("asservissement", asservissement);
 		cards.put("capteurs_actionneurs", capteurs_actionneurs);
 		cards.put("laser", laser);
@@ -121,7 +129,7 @@ public class SerialManager
 		}
 	}
 	/**
-	 * Permet de savoir si une carte a déjà ete pingée, utilisé que par SerialManager
+	 * Permet de savoir si une carte a dï¿½jï¿½ ete pingï¿½e, utilisï¿½ que par SerialManager
 	 * @param id
 	 * @return
 	 */

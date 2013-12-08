@@ -3,7 +3,6 @@ import container.Service;
 
 public class Log implements Service
 {
-	
 	// Dépendances
 	private Read_Ini config;
 
@@ -13,8 +12,7 @@ public class Log implements Service
 	
 	public Log(Service config)
 	{
-		if(config instanceof Read_Ini)
-			this.config = (Read_Ini) config;
+		this.config = (Read_Ini) config;
 	}
 	
 	public String TypeName()

@@ -19,10 +19,8 @@ public class Table implements Service {
 	
 	public Table(Service log, Service config)
 	{
-		if(log instanceof Log)
-			this.log = (Log) log;
-		if(config instanceof Read_Ini)
-			this.config = (Read_Ini) config;
+		this.log = (Log) log;
+		this.config = (Read_Ini) config;
 		
 		arrayFire[0] = new Fire(new Vec2(1485,1200), 0, 0, Orientation.XPLUS, Colour.YELLOW);
 		arrayFire[1] = new Fire(new Vec2(1100,900), 1, 0, Orientation.YPLUS, Colour.YELLOW);
