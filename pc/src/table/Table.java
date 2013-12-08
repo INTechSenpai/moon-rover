@@ -2,8 +2,10 @@ package table;
 
 import robot.Orientation;
 import smartMath.Vec2;
+import container.Service;
+import utils.*;
 
-public class Table {
+public class Table implements Service {
 
 	Fire arrayFire[] = new Fire[16];
 	Tree arrayTree[] = new Tree[4];
@@ -11,8 +13,17 @@ public class Table {
 	Torch arrayTorch[] = new Torch[10] ;
 	Fruit_Tub arrayTub[] = new Fruit_Tub[2];
 	Fresco fresco;
-	public Table()
+	
+	private Log log;
+	private Read_Ini config;
+	
+	public Table(Service log, Service config)
 	{
+		if(log instanceof Log)
+			this.log = (Log) log;
+		if(config instanceof Read_Ini)
+			this.config = (Read_Ini) config;
+		
 		arrayFire[0] = new Fire(new Vec2(1485,1200), 0, 0, Orientation.XPLUS, Colour.YELLOW);
 		arrayFire[1] = new Fire(new Vec2(1100,900), 1, 0, Orientation.YPLUS, Colour.YELLOW);
 		arrayFire[2] = new Fire(new Vec2(600,1400), 2, 0, Orientation.XPLUS, Colour.YELLOW);

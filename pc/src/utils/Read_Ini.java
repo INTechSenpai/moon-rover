@@ -1,5 +1,6 @@
 package utils;
 
+import container.Service;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,7 +8,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 
-public class Read_Ini {
+public class Read_Ini implements Service {
 	private String name_local_file = "local.ini";
 	private String name_config_file = "config.ini";
 	private String path;

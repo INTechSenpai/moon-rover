@@ -1,18 +1,22 @@
 package utils;
-import factories.FactoryProduct;
+import container.Service;
 
-public class Log implements FactoryProduct
+public class Log implements Service
 {
 	
+	// Dépendances
+	private Read_Ini config;
+
 	private String 	couleurDebug 	= "\u001B[32m",
 					couleurWarning 	= "\u001B[33m",
 					couleurCritical = "\u001B[31m";
-
-	public FactoryProduct Clone()
+	
+	public Log(Service config)
 	{
-		return new Log();
+		if(config instanceof Read_Ini)
+			this.config = (Read_Ini) config;
 	}
-
+	
 	public String TypeName()
 	{
 		return "Log";
