@@ -102,7 +102,7 @@ public class Serial implements SerialPortEventListener, Service
 		{
 			output.write(message.getBytes());
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
 			log.critical("Ne peut pas parler à une des série", this);
 			e.printStackTrace();
