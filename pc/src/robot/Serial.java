@@ -157,14 +157,15 @@ public class Serial implements SerialPortEventListener, Service
 	{
 
 		String inputLines[] = new String[nb_lignes_reponse];
-		char acquittement = ' ';
 
 		try
 		{
 			for (String m : messages)
 			{
+				m += "\r";
 				output.write(m.getBytes());
 				int nb_tests = 0;
+				char acquittement = ' ';
 
 				while (acquittement != '_')
 				{
