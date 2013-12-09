@@ -66,8 +66,25 @@ public class Table implements Service {
 		arrayTub[0] = new Fruit_Tub(new Vec2(400,1700)) ;
 		arrayTub[1] = new Fruit_Tub(new Vec2(-1100,1700)) ;
 		//initialisation de la fresque 
-		this.fresco = new Fresco(new Vec2(-300, 2000)); //la position est elle du coin en bas
+		this.fresco = new Fresco(new Vec2(-300, 2000)); //la position est celle du coin en bas
 	}
+
 	
+	// TODO Guy
+	// Feux
+		// récupérer feu (id) : void
+		// feu le plus proche (void) : feu
+		// poser feu (id) : void
+	
+	// Arbre
+		// récupérer arbre (id) : void
+		// combien gauche (id) : int
+		// combien droit (id) : int
+		// points d'entrée (void) : int[] ([id, id] ou [id] si un seul)
+			// syntaxe tableau: int entryPoints[] = new int[2]; (ou 1!)
+	
+	// Torche
+		// torche la plus proche (Vec2) : torche (distance euclidienne)
+
 }
 
