@@ -85,6 +85,27 @@ public class Table implements Service {
 	
 	// Torche
 		// torche la plus proche (Vec2) : torche (distance euclidienne)
+	
+	// Feux
+	
+	public void getFire (int id)
+	{
+		arrayFire[id].pickFire();
+	}
+
+	public Fire nearestFire ()
+	{
+		int min = 0;
+		for (int i = 0; i < 10, i++)
+		{
+			if (arrayFire[i] < arrayTree[min])
+			{
+				min = i;
+			}
+		}
+		return arrayTable[min];
+	}
+
 
 }
 
