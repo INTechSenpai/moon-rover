@@ -1,12 +1,13 @@
 package robot.serial;
 import container.Service;
 import utils.Log;
-
-
 import gnu.io.CommPortIdentifier;
+
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+
+import exception.SerialManagerException;
 
 /**
  * Instancie toutes les s�ries, si on lui demande gentillement!
@@ -166,7 +167,7 @@ public class SerialManager
 	 * @return
 	 * 				L'instance de la série
 	 */
-	public Serial getSerial(String name)
+	public Serial getSerial(String name)	throws SerialManagerException
 	{
 		if (this.series.containsKey(name))
 		{
@@ -175,7 +176,7 @@ public class SerialManager
 		else
 		{
 			log.critical("Aucune série du nom : " + name + " n'existe", this);
-			return null;
+			throw new SerialManagerException("serie non trouvée");
 		}
 	}
 }
