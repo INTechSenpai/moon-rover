@@ -5,6 +5,7 @@ import hook.HookGenerator;
 import java.util.Hashtable;
 import java.util.Map;
 
+import pathfinding.Pathfinding;
 import exception.SerialManagerException;
 import utils.*;
 import scripts.ScriptManager;
@@ -89,8 +90,7 @@ public class Container {
 														getService("ScriptManager"),
 														getService("Table"),
 														getService("Read_Ini"),
-														getService("Log")));
-			 
+														getService("Log")));			 
 		else if(nom.substring(0,6) == "thread")
 		{
 			if(threadmanager == null)
@@ -98,6 +98,10 @@ public class Container {
 													getService("Log"));
 			services.put(nom, (Service)threadmanager.getThread(nom));
 		}
+		else if(nom == "Pathfinding")
+			services.put(nom, (Service)new Pathfinding(	getService("Table"),
+														getService("Read_Ini"),
+														getService("Log")));
 		else
 			return null;
 		return services.get(nom);
