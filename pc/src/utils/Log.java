@@ -27,11 +27,6 @@ public class Log implements Service
 		this.config = (Read_Ini) config;
 	}
 	
-	public String TypeName()
-	{
-		return "Log";
-	}
-	
 	public void debug(String message, Object objet)
 	{
 		ecrire(objet.getClass().getName()+": "+message, couleurDebug);
