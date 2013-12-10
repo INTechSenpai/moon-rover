@@ -15,15 +15,25 @@ public class ThreadManager {
 	
 	private Hashtable<String, AbstractThread> threads;
 	
-	public ThreadManager(Service config, Service log) {
+	public ThreadManager(Service config, Service log)
+	{
 		this.config = (Read_Ini) config;
 		this.log = (Log) log;
-
+		
+		threads.put("threadTimer", new ThreadTimer(config, log));
+		threads.put("threadPosition", new ThreadPosition(config, log));
+		
 	}
 
 	public AbstractThread getThread(String nom)
 	{
-		return threads.get(nom);
+		AbstractThread thread = threads.get(nom);
+		if(thread == null)
+		{
+			log.warning("Le thread suivant n'existe pas: "+nom, this);
+			// TODO lancer exception			
+		}
+		return thread;
 	}
 	
 }

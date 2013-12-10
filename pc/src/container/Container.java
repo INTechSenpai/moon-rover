@@ -85,7 +85,8 @@ public class Container {
 															getService("Read_Ini"),
 															getService("Log")));
 		else if(nom == "Strategie")
-			services.put(nom, (Service)new Strategie(	getService("ScriptManager"),
+			services.put(nom, (Service)new Strategie(	getService("threadTimer"),
+														getService("ScriptManager"),
 														getService("Table"),
 														getService("Read_Ini"),
 														getService("Log")));

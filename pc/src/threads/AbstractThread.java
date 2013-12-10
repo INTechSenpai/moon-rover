@@ -10,6 +10,7 @@ public class AbstractThread extends Thread implements Service {
 	protected Log log;
 
 	boolean stop_thread = false;
+	
 	AbstractThread(Service config, Service log)
 	{
 		this.config = (Read_Ini) config;
