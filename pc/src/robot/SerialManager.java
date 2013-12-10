@@ -17,25 +17,28 @@ public class SerialManager
 {
 	// Dépendances
 	private Log log;
-	
+
 	//Series a instancier
 	public Serial serieAsservissement;
 	public Serial serieCapteursActionneurs;
 	public Serial serieLaser;
 	
-	//Pour chaque carte, on connait a l'avance son nom, son ping et son baudrate
-	private SpecificationCard asservissement = new SpecificationCard("deplacements", 0, 9600);
-	private SpecificationCard capteurs_actionneurs = new SpecificationCard("capteurs_actionneurs", 3, 9600);
-	private SpecificationCard laser = new SpecificationCard("laser", 4, 38400);
+	//On stock les series dans une liste
+	private Hashtable<String, Serial> series = new Hashtable<String, Serial>();
 	
+	//Pour chaque carte, on connait a l'avance son nom, son ping et son baudrate
+	private SpecificationCard carteAsservissement = new SpecificationCard("serieAsservissement", 0, 9600);
+	private SpecificationCard carteCapteursActionneurs = new SpecificationCard("serieCapteursActionneurs", 3, 9600);
+	private SpecificationCard carteLaser = new SpecificationCard("serieLaser", 4, 38400);
+
 	//On stock les cartes dans une liste
 	private Hashtable<String, SpecificationCard> cards = new Hashtable<String, SpecificationCard>();
-	
+
 	//Liste pour stocker les series qui sont connectees au pc 
 	private ArrayList<String> connectedSerial = new ArrayList<String>();
-	
+
 	//Liste pour stocker les baudrates des differentes serie
-	
+
 	private ArrayList<Integer> baudrate = new ArrayList<Integer>();
 
 	/**
@@ -44,10 +47,10 @@ public class SerialManager
 	public SerialManager(Service log)
 	{
 		this.log = (Log) log;
-		
-		cards.put("asservissement", asservissement);
-		cards.put("capteurs_actionneurs", capteurs_actionneurs);
-		cards.put("laser", laser);
+
+		cards.put(this.carteAsservissement.name, this.carteAsservissement);
+		cards.put(this.carteCapteursActionneurs.name, this.carteCapteursActionneurs);
+		cards.put(this.carteLaser.name, this.carteLaser);
 
 		Enumeration<SpecificationCard> e = cards.elements();
 		while (e.hasMoreElements())
@@ -57,9 +60,14 @@ public class SerialManager
 				this.baudrate.add(baud);
 		}
 
-		serieAsservissement = new Serial(log, this.asservissement.name);
-		serieCapteursActionneurs = new Serial(log, this.capteurs_actionneurs.name);
-		serieLaser = new Serial(log, this.laser.name);
+		this.serieAsservissement = new Serial(log, this.carteAsservissement.name);
+		this.serieCapteursActionneurs = new Serial(log, this.carteCapteursActionneurs.name);
+		this.serieLaser = new Serial(log, this.carteLaser.name);
+		
+		this.series.put(this.carteAsservissement.name, this.serieAsservissement);
+		this.series.put(this.carteCapteursActionneurs.name, this.serieCapteursActionneurs);
+		this.series.put(this.carteLaser.name, this.serieLaser);
+
 		
 		checkSerial();
 		createSerial();
@@ -96,7 +104,7 @@ public class SerialManager
 				{
 					//Creation d'une serie de test
 					Serial serialTest = new Serial(log, "carte de test");
-					
+
 					serialTest.initialize(this.connectedSerial.get(k), baudrate);
 
 					id = Integer.parseInt(serialTest.ping());
@@ -149,5 +157,19 @@ public class SerialManager
 				return true;
 		}
 		return false;
+	}
+
+	public Serial getSerial(String name)
+	{
+		Serial serial = new Serial(log, "");
+		if (this.series.containsKey(name))
+		{
+			serial = this.series.get(name);
+		}
+		else
+		{
+			log.critical("Aucune série du nom : " + name + " n'existe", this);
+		}
+		return serial;
 	}
 }
