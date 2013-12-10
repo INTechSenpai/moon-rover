@@ -1,6 +1,10 @@
 package hook;
 
+import container.Service;
+import robot.Serial;
 import smartMath.Vec2;
+import utils.Log;
+import utils.Read_Ini;
 
 /**
  * Classe qui permet de gérer plus facilement les hooks. Service.
@@ -8,7 +12,7 @@ import smartMath.Vec2;
  *
  */
 
-public class HookGenerator {
+public class HookGenerator implements Service {
 
 	/**
 	 * Retourne un hook de position suivant les paramètres donnés
@@ -17,6 +21,15 @@ public class HookGenerator {
 	 * @param effectuer_symetrie (facultatif, par défaut false)
 	 * @return
 	 */
+	
+	private Read_Ini config;
+	private Log log;
+
+	public HookGenerator(Service config, Service log)
+	{
+		this.config = (Read_Ini)config;
+		this.log = (Log)log;
+	}
 	
 	public Hook hook_position(Vec2 position, int tolerance, boolean effectuer_symetrie)
 	{
