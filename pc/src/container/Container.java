@@ -5,6 +5,9 @@ import java.util.Map;
 import utils.*;
 import table.Table;
 import robot.*;
+import hook.*;
+import scripts.*;
+import threads.*;
 
 public class Container {
 
@@ -21,23 +24,11 @@ public class Container {
 		else if(nom == "Table")
 			services.put(nom, (Service)new Table(	getService("Log"),
 													getService("Read_Ini")));
-		else if(nom == "SerieAsservissement")
+		else if(nom.substring(0,5) == "serie")
 		{
 			if(serialmanager == null)
 				serialmanager = new SerialManager(getService("Log"));
-			services.put(nom, (Service)serialmanager.serieAsservissement);
-		}
-		else if(nom == "SerieCapteursActionneurs")
-		{
-			if(serialmanager == null)
-				serialmanager = new SerialManager(getService("Log"));
-			services.put(nom, (Service)serialmanager.serieCapteursActionneurs);
-		}
-		else if(nom == "SerieLaser")
-		{
-			if(serialmanager == null)
-				serialmanager = new SerialManager(getService("Log"));
-			services.put(nom, (Service)serialmanager.serieLaser);
+			services.put(nom, (Service)serialmanager.getSerial(nom));
 		}
 		else if(nom == "Deplacements")
 			services.put(nom, (Service)new Deplacements(getService("Log"),
@@ -50,6 +41,9 @@ public class Container {
 			services.put(nom, (Service)new Actionneurs(	getService("Read_Ini"),
 														getService("Log"),
 														getService("SerieCapteursActionneurs")));
+		else if(nom == "HookGenerator")
+			services.put(nom, (Service)new HookGenerator(	getService("Read_Ini"),
+															getService("Log")));		
 		else
 			return null;
 		return services.get(nom);
