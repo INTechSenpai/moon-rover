@@ -9,6 +9,7 @@ import exception.SerialManagerException;
 import utils.*;
 import scripts.ScriptManager;
 import table.Table;
+import threads.ThreadManager;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import robot.Strategie;
@@ -21,6 +22,7 @@ public class Container {
 
 	private Map<String,Service> services = new Hashtable<String,Service>();
 	private SerialManager serialmanager = null;
+	private ThreadManager threadmanager = null;
 	
 	public Service getService(String nom)
 	{
@@ -88,6 +90,13 @@ public class Container {
 														getService("Read_Ini"),
 														getService("Log")));
 			 
+		else if(nom.substring(0,6) == "thread")
+		{
+			if(threadmanager == null)
+				threadmanager = new ThreadManager(	getService("Read_Ini"),
+													getService("Log"));
+			services.put(nom, (Service)threadmanager.getThread(nom));
+		}
 		else
 			return null;
 		return services.get(nom);
