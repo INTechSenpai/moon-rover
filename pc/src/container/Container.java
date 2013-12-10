@@ -90,7 +90,7 @@ public class Container {
 		else if(nom == "Strategie")
 			services.put(nom, (Service)new Strategie(	getService("threadTimer"),
 														getService("ScriptManager"),
-														getService("Pathfinding")
+														getService("Pathfinding"),
 														getService("Table"),
 														getService("Read_Ini"),
 														getService("Log")));			 
