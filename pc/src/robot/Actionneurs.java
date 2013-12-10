@@ -9,6 +9,8 @@ import container.Service;
  * @author pf
  */
 
+// TODO Attention! Si possible, vérifier que l'ordre a bien été exécuté. En cas d'erreur, renvoyer une exception
+
 public class Actionneurs implements Service {
 
 	// Dépendances
