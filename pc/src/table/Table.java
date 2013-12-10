@@ -68,6 +68,12 @@ public class Table implements Service {
 		//initialisation de la fresque 
 		this.fresco = new Fresco(new Vec2(-300, 2000)); //la position est celle du coin en bas
 	}
+	
+	// TODO
+	public void creer_obstacle(Vec2 position)
+	{
+		int rayon_robot_adverse = Integer.parseInt(config.config.getProperty("rayon_robot_adverse"));
+	}
 
 	
 	// TODO Guy

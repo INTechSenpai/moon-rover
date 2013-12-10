@@ -22,6 +22,7 @@ public class ThreadManager {
 		
 		threads.put("threadTimer", new ThreadTimer(config, log));
 		threads.put("threadPosition", new ThreadPosition(config, log, robotVrai, threads.get("threadTimer")));
+		threads.put("threadCapteurs", new ThreadCapteurs(config, log, robotVrai, threads.get("threadTimer"), table, capteur));
 		
 	}
 

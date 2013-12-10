@@ -22,7 +22,7 @@ import utils.Read_Ini;
 public abstract class Robot implements Service {
 	
 	public abstract void stopper();
-	public abstract void correction_angle(double angle);
+	public abstract void correction_angle(float angle);
 	public abstract void tourner();
 	public abstract void suit_chemin();
 	public abstract void set_vitesse_translation();

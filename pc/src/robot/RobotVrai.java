@@ -13,10 +13,10 @@ import container.Service;
 public class RobotVrai extends Robot {
 
 	private Vec2 position = new Vec2(0,0);
-	private double orientation = 0;
+	private float orientation = 0;
 
 	private Vec2 consigne = new Vec2(0,0);
-	private double orientation_consigne = 0;
+	private float orientation_consigne = 0;
 	
 	private boolean blocage = false;
 	private boolean enMouvement = true;
@@ -57,7 +57,7 @@ public class RobotVrai extends Robot {
 	 * Modifie la consigne en angle, de façon non bloquante
 	 * @param angle
 	 */
-	public void correction_angle(double angle)
+	public void correction_angle(float angle)
 	{
 		orientation_consigne = angle;
 		deplacements.tourner((int)angle);

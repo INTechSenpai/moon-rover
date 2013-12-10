@@ -29,7 +29,7 @@ public class RobotChrono extends Robot {
 	{
 		
 	}
-	public void correction_angle(double angle)
+	public void correction_angle(float angle)
 	{
 		
 	}

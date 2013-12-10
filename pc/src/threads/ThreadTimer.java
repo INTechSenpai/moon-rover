@@ -4,6 +4,8 @@ import container.Service;
 
 public class ThreadTimer extends AbstractThread {
 
+	public boolean match_demarre;
+	
 	ThreadTimer(Service config, Service log)
 	{
 		super(config, log);
