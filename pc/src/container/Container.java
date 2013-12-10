@@ -40,8 +40,7 @@ public class Container {
 			services.put(nom, (Service)serialmanager.serieLaser);
 		}
 		else if(nom == "Deplacements")
-			services.put(nom, (Service)new Deplacements(getService("Read_Ini"),
-														getService("Log"),
+			services.put(nom, (Service)new Deplacements(getService("Log"),
 														getService("SerieAsservissement")));
 		else if(nom == "Capteur")
 			services.put(nom, (Service)new Capteur(	getService("Read_Ini"),
