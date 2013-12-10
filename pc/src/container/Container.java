@@ -61,6 +61,14 @@ public class Container {
 															getService("Table"),
 															getService("Read_Ini"),
 															getService("Log")));		
+		else if(nom == "ScriptManager")
+			services.put(nom, (Service)new ScriptManager(	getService("RobotVrai"),
+															getService("RobotChrono"),
+															getService("HookGenerator"),
+															getService("Table"),
+															getService("Read_Ini"),
+															getService("Log")));
+
 		else
 			return null;
 		return services.get(nom);
