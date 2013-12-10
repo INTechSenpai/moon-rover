@@ -40,11 +40,11 @@ public class Serial implements SerialPortEventListener, Service
 	private static final int TIME_OUT = 2000;
 
 	/**
-	 * Appelé par le SerialManager
+	 * Appelé par le SerialManager, il donne à la série tout ce qu'il faut pour fonctionner
 	 * @param port_name
+	 * 					Le port où est connecté la carte
 	 * @param baudrate
-	 * @return 
-	 * @throws NoSuchPortException
+	 * 					Le baudrate que la carte utilise
 	 */
 	void initialize(String port_name, int baudrate)
 	{
@@ -98,8 +98,11 @@ public class Serial implements SerialPortEventListener, Service
 	/**
 	 * Méthode pour parler à l'avr
 	 * @param message
+	 * 					Message à envoyer
 	 * @param nb_lignes_reponse
-	 * @return le message
+	 * 					Nombre de lignes que l'avr va répondre (sans compter les acquittements)
+	 * @return
+	 * 					Un tableau contenant le message
 	 */
 	public synchronized String[] communiquer(String message, int nb_lignes_reponse)
 	{
@@ -148,10 +151,13 @@ public class Serial implements SerialPortEventListener, Service
 	}
 	
 	/**
-	 * 
+	 * Méthode pour parler à l'avr
 	 * @param messages
+	 * 					Messages à envoyer
 	 * @param nb_lignes_reponse
+	 * 					Nombre de lignes que l'avr va répondre (sans compter les acquittements)
 	 * @return
+	 * 					Un tableau contenant le message
 	 */
 	public synchronized String[] communiquer(String[] messages, int nb_lignes_reponse)
 	{
@@ -204,8 +210,7 @@ public class Serial implements SerialPortEventListener, Service
 	}
 
 	/**
-	 * This should be called when you stop using the port.
-	 * This will prevent port locking on platforms like Linux.
+	 * Doit être appelé quand on arrête de se servir de la série
 	 */
 	public synchronized void close()
 	{
@@ -216,14 +221,14 @@ public class Serial implements SerialPortEventListener, Service
 	}
 
 	/**
-	 * Handle an event on the serial port. Read the data and print it.
+	 * Handle an event on the serial port.
 	 */
 	public synchronized void serialEvent(SerialPortEvent oEvent)
 	{
 	}
 
 	/**
-	 * Ping de la carte. Elle balance un \r avant afin de vider le buffer de l'avr d'eventuels caracteres.
+	 * Ping de la carte.
 	 * Utilisé que par createSerial de SerialManager
 	 * @return l'id de la carte
 	 */

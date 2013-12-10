@@ -144,7 +144,7 @@ public class SerialManager
 		}
 	}
 	/**
-	 * Permet de savoir si une carte a d�j� ete ping�e, utilis� que par SerialManager
+	 * Permet de savoir si une carte a déjà été pingée, utilisé que par SerialManager
 	 * @param id
 	 * @return
 	 */
@@ -158,18 +158,24 @@ public class SerialManager
 		}
 		return false;
 	}
-
+	
+	/**
+	 * Permet d'obtenir une série
+	 * @param name
+	 * 				Nom de la série
+	 * @return
+	 * 				L'instance de la série
+	 */
 	public Serial getSerial(String name)
 	{
-		Serial serial = new Serial(log, "");
 		if (this.series.containsKey(name))
 		{
-			serial = this.series.get(name);
+			return this.series.get(name);
 		}
 		else
 		{
 			log.critical("Aucune série du nom : " + name + " n'existe", this);
+			return null;
 		}
-		return serial;
 	}
 }
