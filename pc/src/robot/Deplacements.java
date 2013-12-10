@@ -58,7 +58,7 @@ public class Deplacements implements Service {
 			{
 				if(System.currentTimeMillis() - debut_timer_blocage > 500)
 				{
-					// log warning: le robot a dû s'arrêter suite à un patinage.
+					log.warning("le robot a dû s'arrêter suite à un patinage.", this);
 					stopper();
 					blocage = true;
 				}
@@ -94,32 +94,31 @@ public class Deplacements implements Service {
 	}
 	
 	/** 
-	 * TODO
 	 * Fait avancer le robot. Méthode non bloquante
 	 * @param distance
 	 */
 	public void avancer(int distance)
 	{
-		
+		String chaines[] = {"d", Integer.toString(distance)};
+		serie.communiquer(chaines, 0);
 	}
 
 	/** 
-	 * TODO
 	 * Fait tourner le robot. Méthode non bloquante
 	 * @param angle
 	 */
 	public void tourner(int angle)
 	{
-		
+		String chaines[] = {"t", Integer.toString(angle)};
+		serie.communiquer(chaines, 0);		
 	}
 	
 	/**
-	 * TODO
 	 * Arrête le robot
 	 */
 	public void stopper()
 	{
-		
+		serie.communiquer("stop", 0);
 	}
 	
 	/**
@@ -128,7 +127,8 @@ public class Deplacements implements Service {
 	 */
 	public void set_x(int x)
 	{
-		
+		String chaines[] = {"cx", Integer.toString(x)};
+		serie.communiquer(chaines, 0);
 	}
 
 	/**
@@ -137,6 +137,8 @@ public class Deplacements implements Service {
 	 */
 	public void set_y(int y)
 	{
+		String chaines[] = {"cy", Integer.toString(y)};
+		serie.communiquer(chaines, 0);
 		
 	}
 	
@@ -146,7 +148,8 @@ public class Deplacements implements Service {
 	 */
 	public void set_orientation(int orientation)
 	{
-		
+		String chaines[] = {"co", Integer.toString(orientation)};
+		serie.communiquer(chaines, 0);
 	}
 	
 	/**
@@ -154,7 +157,7 @@ public class Deplacements implements Service {
 	 */
 	public void activer_asservissement_translation()
 	{
-		
+		serie.communiquer("ct1", 0);
 	}
 
 	/**
@@ -162,7 +165,7 @@ public class Deplacements implements Service {
 	 */
 	public void desactiver_asservissement_rotation()
 	{
-		
+		serie.communiquer("cr1", 0);
 	}
 
 	/**
@@ -170,7 +173,7 @@ public class Deplacements implements Service {
 	 */
 	public void desactiver_asservissement_translation()
 	{
-		
+		serie.communiquer("ct0", 0);
 	}
 
 	/**
@@ -178,10 +181,11 @@ public class Deplacements implements Service {
 	 */
 	public void activer_asservissement_rotation()
 	{
-		
+		serie.communiquer("cr0", 0);
 	}
 
 	/**
+	 * TODO
 	 * Modifie la vitesse en translation
 	 * @param pwm_max
 	 */
@@ -191,6 +195,7 @@ public class Deplacements implements Service {
 	}
 
 	/**
+	 * TODO
 	 * Modifie la vitesse en rotation
 	 * @param pwm_max
 	 */
@@ -200,6 +205,7 @@ public class Deplacements implements Service {
 	}
 
 	/**
+	 * TODO
 	 * Met à jour PWMmoteurGauche, PWMmoteurDroit, erreur_rotation, erreur_translation, derivee_erreur_rotation, derivee_erreur_translation
 	 */
 	public void maj_infos_stoppage_enMouvement()
@@ -208,7 +214,7 @@ public class Deplacements implements Service {
 	}
 
 	/**
-	 * 
+	 * TODO
 	 * @return
 	 */
 	public Vec2 get_infos_x_y_orientation()
@@ -217,11 +223,11 @@ public class Deplacements implements Service {
 	}
 
 	/**
+	 * TODO
 	 * Arrêt de la série
 	 */
 	public void arret_final()
 	{
-		
 	}
 	
 }
