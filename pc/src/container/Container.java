@@ -19,6 +19,29 @@ import robot.cartes.Capteur;
 import robot.cartes.Deplacements;
 import robot.serial.SerialManager;
 
+/**
+ * Les différents services appelables sont:
+ * Log
+ * Read_Ini
+ * Table
+ * serie* (serieAsservissement, ...)
+ * Deplacements
+ * Capteur
+ * Actionneurs
+ * HookGenerator
+ * RobotVrai
+ * RobotChrono
+ * ScriptManager
+ * Strategie
+ * thread* (threadTimer, ...)
+ * ScriptManager
+ * Pathfinding
+ * HookGenerator
+ * 
+ * @author pf
+ *
+ */
+
 public class Container {
 
 	private Map<String,Service> services = new Hashtable<String,Service>();
