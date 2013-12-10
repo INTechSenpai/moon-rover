@@ -27,4 +27,34 @@ public abstract class Robot {
 		
 	}
 	
+	public int conventions_vitesse_translation(String vitesse)
+	{
+        if(vitesse == "entre_scripts")
+        	return 150;
+        else if(vitesse == "recal_faible")
+            return 90;
+        else if(vitesse == "recal_forte")
+            return 120;
+        else
+        {
+        	log.warning("Erreur vitesse translation: "+vitesse, this);
+        	return 150;
+        }
+	}
+
+	public int conventions_vitesse_rotation(String vitesse)
+	{
+        if(vitesse == "entre_scripts")
+        	return 160;
+        else if(vitesse == "recal_faible")
+            return 120;
+        else if(vitesse == "recal_forte")
+            return 130;
+        else
+        {
+        	log.warning("Erreur vitesse rotation: "+vitesse, this);
+        	return 160;
+        }
+	}
+	
 }
