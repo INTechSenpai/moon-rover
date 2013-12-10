@@ -1,4 +1,4 @@
-package robot;
+package robot.serial;
 import container.Service;
 import utils.Log;
 

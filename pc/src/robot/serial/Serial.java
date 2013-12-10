@@ -1,4 +1,4 @@
-package robot;
+package robot.serial;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;

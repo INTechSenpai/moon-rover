@@ -2,12 +2,14 @@ package container;
 
 import java.util.Hashtable;
 import java.util.Map;
+
 import utils.*;
 import table.Table;
-import robot.*;
+import robot.cartes.Actionneurs;
+import robot.cartes.Capteur;
+import robot.cartes.Deplacements;
+import robot.serial.SerialManager;
 import hook.*;
-import scripts.*;
-import threads.*;
 
 public class Container {
 
