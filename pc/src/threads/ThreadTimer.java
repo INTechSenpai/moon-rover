@@ -10,7 +10,13 @@ public class ThreadTimer extends AbstractThread {
 	}
 	public void run()
 	{
-		
+		System.currentTimeMillis();
 	}
 
+	// TODO
+	public boolean get_fin_match()
+	{
+		return false;
+	}
+	
 }

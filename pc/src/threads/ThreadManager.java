@@ -15,13 +15,13 @@ public class ThreadManager {
 	
 	private Hashtable<String, AbstractThread> threads;
 	
-	public ThreadManager(Service config, Service log)
+	public ThreadManager(Service config, Service log, Service robotVrai, Service capteur, Service table)
 	{
 		this.config = (Read_Ini) config;
 		this.log = (Log) log;
 		
 		threads.put("threadTimer", new ThreadTimer(config, log));
-		threads.put("threadPosition", new ThreadPosition(config, log));
+		threads.put("threadPosition", new ThreadPosition(config, log, robotVrai, threads.get("threadTimer")));
 		
 	}
 

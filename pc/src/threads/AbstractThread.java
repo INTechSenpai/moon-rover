@@ -4,12 +4,12 @@ import utils.Log;
 import utils.Read_Ini;
 import container.Service;
 
-public class AbstractThread extends Thread implements Service {
+public abstract class AbstractThread extends Thread implements Service {
 
 	protected Read_Ini config;
 	protected Log log;
 
-	boolean stop_thread = false;
+	protected static boolean stop_threads = false;
 	
 	AbstractThread(Service config, Service log)
 	{
