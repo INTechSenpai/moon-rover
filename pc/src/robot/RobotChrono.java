@@ -1,10 +1,16 @@
 package robot;
 
+import container.Service;
 import smartMath.Vec2;
 
 public class RobotChrono extends Robot {
 
 	// La plupart de ces méthodes resteront vides
+	
+	public RobotChrono(Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
+	{
+		super(capteur, actionneurs, deplacements, hookgenerator, table, config, log);
+	}
 	
 	public void stopper()
 	{

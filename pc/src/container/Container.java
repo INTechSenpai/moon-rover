@@ -2,6 +2,7 @@ package container;
 
 import java.util.Hashtable;
 import java.util.Map;
+
 import utils.*;
 import table.Table;
 import robot.*;
@@ -32,17 +33,33 @@ public class Container {
 		}
 		else if(nom == "Deplacements")
 			services.put(nom, (Service)new Deplacements(getService("Log"),
-														getService("SerieAsservissement")));
+														getService("serieAsservissement")));
 		else if(nom == "Capteur")
 			services.put(nom, (Service)new Capteur(	getService("Read_Ini"),
 													getService("Log"),
-													getService("SerieCapteursActionneurs")));
+													getService("serieCapteursActionneurs")));
 		else if(nom == "Actionneurs")
 			services.put(nom, (Service)new Actionneurs(	getService("Read_Ini"),
 														getService("Log"),
-														getService("SerieCapteursActionneurs")));
+														getService("serieCapteursActionneurs")));
 		else if(nom == "HookGenerator")
 			services.put(nom, (Service)new HookGenerator(	getService("Read_Ini"),
+															getService("Log")));		
+		else if(nom == "RobotVrai")
+			services.put(nom, (Service)new RobotVrai(	getService("Capteur"),
+															getService("Actionneurs"),
+															getService("Deplacements"),
+															getService("HookGenerator"),
+															getService("Table"),
+															getService("Read_Ini"),
+															getService("Log")));		
+		else if(nom == "RobotChrono")
+			services.put(nom, (Service)new RobotChrono(	getService("Capteur"),
+															getService("Actionneurs"),
+															getService("Deplacements"),
+															getService("HookGenerator"),
+															getService("Table"),
+															getService("Read_Ini"),
 															getService("Log")));		
 		else
 			return null;
