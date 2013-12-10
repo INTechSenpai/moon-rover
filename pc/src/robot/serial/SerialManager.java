@@ -23,6 +23,8 @@ public class SerialManager
 	public Serial serieAsservissement;
 	public Serial serieCapteursActionneurs;
 	public Serial serieLaser;
+
+	public boolean series_pretes = false;
 	
 	//On stock les series dans une liste
 	private Hashtable<String, Serial> series = new Hashtable<String, Serial>();
@@ -69,9 +71,10 @@ public class SerialManager
 		this.series.put(this.carteCapteursActionneurs.name, this.serieCapteursActionneurs);
 		this.series.put(this.carteLaser.name, this.serieLaser);
 
-		
 		checkSerial();
 		createSerial();
+		
+		series_pretes = true;
 	}
 
 	/**
