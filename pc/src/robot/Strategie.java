@@ -8,6 +8,12 @@ import utils.Log;
 import utils.Read_Ini;
 import container.Service;
 
+/**
+ * Classe qui prend les décisions et exécute les scripts
+ * @author pf
+ *
+ */
+
 public class Strategie implements Service {
 
 	private ThreadTimer threadTimer;

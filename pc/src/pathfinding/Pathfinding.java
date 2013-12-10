@@ -6,7 +6,7 @@ import utils.Read_Ini;
 import container.Service;
 
 /**
- * Service de log, affiche à l'écran des informations avec différents niveaux de couleurs
+ * Service de recherche de chemin
  * @author pf
  *
  */
