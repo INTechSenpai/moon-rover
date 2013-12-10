@@ -58,7 +58,7 @@ public class Container {
 		else if(nom == "Table")
 			services.put(nom, (Service)new Table(	getService("Log"),
 													getService("Read_Ini")));
-		else if(nom.substring(0,5) == "serie")
+		else if(nom.length() > 4 && nom.substring(0,5).equals("serie"))
 		{
 			if(serialmanager == null)
 				serialmanager = new SerialManager(getService("Log"));
@@ -73,15 +73,15 @@ public class Container {
 		}
 		else if(nom == "Deplacements")
 			services.put(nom, (Service)new Deplacements(getService("Log"),
-														getService("SerieAsservissement")));
+														getService("serieAsservissement")));
 		else if(nom == "Capteur")
 			services.put(nom, (Service)new Capteur(	getService("Read_Ini"),
 													getService("Log"),
-													getService("SerieCapteursActionneurs")));
+													getService("serieCapteursActionneurs")));
 		else if(nom == "Actionneurs")
 			services.put(nom, (Service)new Actionneurs(	getService("Read_Ini"),
 														getService("Log"),
-														getService("SerieCapteursActionneurs")));
+														getService("serieCapteursActionneurs")));
 		else if(nom == "HookGenerator")
 			services.put(nom, (Service)new HookGenerator(	getService("Read_Ini"),
 															getService("Log")));		
@@ -117,7 +117,7 @@ public class Container {
 														getService("Table"),
 														getService("Read_Ini"),
 														getService("Log")));			 
-		else if(nom.substring(0,6) == "thread")
+		else if(nom.length() > 5 && nom.substring(0,6).equals("thread"))
 		{
 			if(threadmanager == null)
 				threadmanager = new ThreadManager(	getService("Read_Ini"),
@@ -129,7 +129,10 @@ public class Container {
 														getService("Read_Ini"),
 														getService("Log")));
 		else
+		{
+			System.out.println("Erreur de getService pour le service: "+nom);
 			return null;
+		}
 		return services.get(nom);
 	}
 
