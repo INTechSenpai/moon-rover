@@ -56,10 +56,10 @@ public class SerialManager
 			if (!this.baudrate.contains(baud))
 				this.baudrate.add(baud);
 		}
-		
-		serieAsservissement = new Serial(log);
-		serieCapteursActionneurs = new Serial(log);
-		serieLaser = new Serial(log);
+
+		serieAsservissement = new Serial(log, this.asservissement.name);
+		serieCapteursActionneurs = new Serial(log, this.capteurs_actionneurs.name);
+		serieLaser = new Serial(log, this.laser.name);
 		
 		checkSerial();
 		createSerial();
@@ -95,7 +95,7 @@ public class SerialManager
 				if (!deja_attribues.contains(k))
 				{
 					//Creation d'une serie de test
-					Serial serialTest = new Serial(log);
+					Serial serialTest = new Serial(log, "carte de test");
 					
 					serialTest.initialize(this.connectedSerial.get(k), baudrate);
 

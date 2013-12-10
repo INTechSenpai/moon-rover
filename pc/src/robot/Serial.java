@@ -9,7 +9,6 @@ import gnu.io.SerialPortEventListener;
 import gnu.io.UnsupportedCommOperationException;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
@@ -20,11 +19,13 @@ public class Serial implements SerialPortEventListener, Service
 {
 	SerialPort serialPort;
 	Log log;
+	String name;
 
-	Serial (Service log)
+	Serial (Service log, String name)
 	{
 		super();
 		this.log = (Log) log;
+		this.name = name;
 	}
 
 	/**
@@ -100,11 +101,11 @@ public class Serial implements SerialPortEventListener, Service
 	 * @param nb_lignes_reponse
 	 * @return le message
 	 */
-	public synchronized String communiquer(String message, int nb_lignes_reponse)
+	public synchronized String[] communiquer(String message, int nb_lignes_reponse)
 	{
 
 		message+="\r";
-		String inputLine = "";
+		String inputLine[] = new String[nb_lignes_reponse];
 		char acquittement = ' ';
 
 		try
@@ -122,27 +123,26 @@ public class Serial implements SerialPortEventListener, Service
 				}
 				else if (nb_tests > 10)
 				{
-					log.critical("La série ne répond pas", this);
+					log.critical("La série" + this.name + " ne répond pas après " + nb_tests + " tentatives", this);
 					break;
 				}
 			}
 		}
 		catch (Exception e)
 		{
-			log.critical("Ne peut pas parler à une des série", this);
-			e.toString();
+			log.critical("Ne peut pas parler à la carte " + this.name, this);
 		}
 
 		try
 		{
 			for (int i = 0 ; i < nb_lignes_reponse; i++)
 			{
-				inputLine += input.readLine();
+				inputLine[i] = input.readLine();
 			}
 		}
 		catch (Exception e)
 		{
-			e.toString();
+			log.critical("Ne peut pas parler à la carte " + this.name, this);
 		}
 		return inputLine;
 	}
@@ -178,7 +178,7 @@ public class Serial implements SerialPortEventListener, Service
 					}
 					else if (nb_tests > 10)
 					{
-						log.critical("La série ne répond pas", this);
+						log.critical("La série" + this.name + " ne répond pas après " + nb_tests + " tentatives", this);
 						break;
 					}
 				}
@@ -186,8 +186,7 @@ public class Serial implements SerialPortEventListener, Service
 		}
 		catch (Exception e)
 		{
-			log.critical("Ne peut pas parler à une des série", this);
-			e.toString();
+			log.critical("Ne peut pas parler à la carte " + this.name, this);
 		}
 
 		try
@@ -199,7 +198,7 @@ public class Serial implements SerialPortEventListener, Service
 		}
 		catch (Exception e)
 		{
-			e.toString();
+			log.critical("Ne peut pas parler à la carte " + this.name, this);
 		}
 		return inputLines;
 	}
@@ -230,6 +229,7 @@ public class Serial implements SerialPortEventListener, Service
 	 */
 	synchronized String ping()
 	{
+		String ping = null;
 		try
 		{
 			//On vide le buffer de la serie cote PC
@@ -245,13 +245,14 @@ public class Serial implements SerialPortEventListener, Service
 			input.readLine();
 
 			//recuperation de l'id de la carte
-			return input.readLine();
+			ping = input.readLine();
 
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
-			return e.toString();
+			log.critical("Ne ping pas la carte " + this.name + ", après l'avoir trouvée dans /dev/ttyUSB *", this);
 		}
+		return ping;
 	}
 
 }
