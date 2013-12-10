@@ -13,10 +13,10 @@ import container.Service;
 public class RobotVrai extends Robot {
 
 	private Vec2 position = new Vec2(0,0);
-	private float orientation = 0;
+	private double orientation = 0;
 
 	private Vec2 consigne = new Vec2(0,0);
-	private float orientation_consigne = 0;
+	private double orientation_consigne = 0;
 	
 	private boolean blocage = false;
 	private boolean enMouvement = true;
@@ -34,15 +34,35 @@ public class RobotVrai extends Robot {
 	public RobotVrai(Service pathfinding, Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
  	{
 		super(pathfinding, capteur, actionneurs, deplacements, hookgenerator, table, config, log);
- 	}	
+ 	}
+	
 	/*
 	 * MÉTHODES PUBLIQUES
 	 */
 	
+	public void stopper(boolean avec_blocage)
+	{
+		log.debug("Arrêt du robot", this);
+		if(avec_blocage)
+			blocage = true;
+		deplacements.stopper();			
+	}
+	
 	public void stopper()
 	{
-		
+		stopper(true);
 	}
+
+	/**
+	 * Modifie la consigne en angle, de façon non bloquante
+	 * @param angle
+	 */
+	public void correction_angle(double angle)
+	{
+		orientation_consigne = angle;
+		deplacements.tourner((int)angle);
+	}
+	
 	private void avancerBasNiveau(int distance)
 	{
 		Vec2 consigne = new Vec2(0,0);
@@ -84,11 +104,7 @@ public class RobotVrai extends Robot {
 	{
 		this.avancer(distance, 2, true, false);
 	}
-	
-	public void correction_angle()
-	{
-		
-	}
+
 	public void tourner()
 	{
 		
@@ -114,11 +130,12 @@ public class RobotVrai extends Robot {
 	
 	/**
 	 * UTILISÉ UNIQUEMENT PAR LE THREAD DE MISE À JOUR
-	 */
-	
+	 */	
 	public void update_x_y_orientation()
 	{
-		
+		int[] infos = deplacements.get_infos_x_y_orientation();
+		position = new Vec2(infos[0], infos[1]);
+		orientation = infos[2]/1000; // car get_infos renvoie des milliradians		
 	}
 	
 	/* 
@@ -130,12 +147,11 @@ public class RobotVrai extends Robot {
 	}
 
 	public void setPosition(Vec2 position) {
-		this.position = position;
-		//deplacements.set_x(position.getX());
-		//deplacements.set_y(position.getY());
+		deplacements.set_x((int)position.x);
+		deplacements.set_y((int)position.y);
 	}
 
-	public float getOrientation() {
+	public double getOrientation() {
 		return orientation;
 	}
 
