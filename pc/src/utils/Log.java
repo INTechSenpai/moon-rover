@@ -1,6 +1,12 @@
 package utils;
 import container.Service;
 
+/**
+ * Service de log, affiche à l'écran des informations avec différents niveaux de couleurs
+ * @author pf
+ *
+ */
+
 public class Log implements Service
 {
 	// Dépendances

@@ -42,7 +42,7 @@ public class Capteur implements Service {
 	
     public boolean demarrage_match()
     {
-    	return false; // TODO
+        return serie.communiquer("j", 1)[0] == "0";
     }
     
 }

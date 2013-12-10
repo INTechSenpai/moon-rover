@@ -3,6 +3,12 @@ package robot;
 import container.Service;
 import smartMath.Vec2;
 
+/**
+ * Robot particulier qui fait pas bouger le robot réel, mais détermine la durée des actions
+ * @author pf
+ *
+ */
+
 public class RobotChrono extends Robot {
 
 	// La plupart de ces méthodes resteront vides

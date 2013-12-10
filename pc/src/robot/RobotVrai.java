@@ -6,6 +6,12 @@ import java.lang.Math;
 
 import container.Service;
 
+/**
+ * Classe qui fournit des déplacements haut niveau
+ * @author pf
+ *
+ */
+
 public class RobotVrai extends Robot {
 
 	private Vec2 position = new Vec2(0,0);
