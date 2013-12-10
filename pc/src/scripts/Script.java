@@ -1,19 +1,45 @@
 package scripts;
 import smartMath.Vec2;
 
+import hook.HookGenerator;
+import robot.Robot;
+import robot.RobotChrono;
+import robot.RobotVrai;
+import table.Table;
+import utils.Log;
+import utils.Read_Ini;
+import container.Service;
 
 /**
  * Classe abstraite dont hériteront les différents scripts
  * @author pf
  */
 
-abstract class Script {
+abstract class Script implements Service {
 
+	Robot robot;
+	RobotVrai robotvrai;
+	RobotChrono robotchrono;
+	HookGenerator hookgenerator;
+	Table table;
+	Read_Ini config;
+	Log log;
+	
+	public Script(Service robotvrai, Service robotchrono, Service hookgenerator, Service table, Service config, Service log) {
+		this.robotvrai = (RobotVrai) robotvrai;
+		this.robotchrono = (RobotChrono) robotchrono;
+		this.hookgenerator = (HookGenerator) hookgenerator;
+		this.table = (Table) table;
+		this.config = (Read_Ini) config;
+		this.log = (Log) log;
+	}
+	
 	/**
 	 * Exécute vraiment un script
 	 */
 	public void agit(int id_version)
 	{
+		robot = robotvrai;
 		try
 		{
 			execute(id_version);
@@ -35,6 +61,7 @@ abstract class Script {
 	 */
 	public int calcule(int id_version)
 	{
+		robot = robotchrono;
 		return 0;
 	}
 	

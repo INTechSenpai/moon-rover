@@ -2,6 +2,13 @@ package robot;
 
 import smartMath.Vec2;
 import java.lang.Math;
+import container.Service;
+
+/**
+ * Classe qui fournit des déplacements haut niveau
+ * @author pf
+ *
+ */
 
 public class RobotVrai extends Robot {
 
@@ -24,11 +31,10 @@ public class RobotVrai extends Robot {
 	
 	// Constructeur
 	
-	public RobotVrai()
-	{
-		
-	}
-	
+	public RobotVrai(Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
+ 	{
+		super(capteur, actionneurs, deplacements, hookgenerator, table, config, log);
+ 	}	
 	/*
 	 * MÉTHODES PUBLIQUES
 	 */

@@ -1,15 +1,21 @@
 package container;
 
+import hook.HookGenerator;
+
 import java.util.Hashtable;
 import java.util.Map;
 
+import exception.SerialManagerException;
 import utils.*;
+import scripts.ScriptManager;
 import table.Table;
+import robot.RobotChrono;
+import robot.RobotVrai;
+import robot.Strategie;
 import robot.cartes.Actionneurs;
 import robot.cartes.Capteur;
 import robot.cartes.Deplacements;
 import robot.serial.SerialManager;
-import hook.*;
 
 public class Container {
 
@@ -30,7 +36,14 @@ public class Container {
 		{
 			if(serialmanager == null)
 				serialmanager = new SerialManager(getService("Log"));
-			services.put(nom, (Service)serialmanager.getSerial(nom));
+			try
+			{
+				services.put(nom, (Service)serialmanager.getSerial(nom));
+			}
+			catch(SerialManagerException e)
+			{
+				System.out.println(e);
+			}
 		}
 		else if(nom == "Deplacements")
 			services.put(nom, (Service)new Deplacements(getService("Log"),
@@ -46,6 +59,35 @@ public class Container {
 		else if(nom == "HookGenerator")
 			services.put(nom, (Service)new HookGenerator(	getService("Read_Ini"),
 															getService("Log")));		
+		else if(nom == "RobotVrai")
+			services.put(nom, (Service)new RobotVrai(	getService("Capteur"),
+															getService("Actionneurs"),
+															getService("Deplacements"),
+															getService("HookGenerator"),
+															getService("Table"),
+															getService("Read_Ini"),
+															getService("Log")));		
+		else if(nom == "RobotChrono")
+			services.put(nom, (Service)new RobotChrono(	getService("Capteur"),
+															getService("Actionneurs"),
+															getService("Deplacements"),
+															getService("HookGenerator"),
+															getService("Table"),
+															getService("Read_Ini"),
+															getService("Log")));		
+		else if(nom == "ScriptManager")
+			services.put(nom, (Service)new ScriptManager(	getService("RobotVrai"),
+															getService("RobotChrono"),
+															getService("HookGenerator"),
+															getService("Table"),
+															getService("Read_Ini"),
+															getService("Log")));
+		else if(nom == "Strategie")
+			services.put(nom, (Service)new Strategie(	getService("ScriptManager"),
+														getService("Table"),
+														getService("Read_Ini"),
+														getService("Log")));
+			 
 		else
 			return null;
 		return services.get(nom);
