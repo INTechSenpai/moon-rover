@@ -31,9 +31,9 @@ public class RobotVrai extends Robot {
 	
 	// Constructeur
 	
-	public RobotVrai(Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
+	public RobotVrai(Service pathfinding, Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
  	{
-		super(capteur, actionneurs, deplacements, hookgenerator, table, config, log);
+		super(pathfinding, capteur, actionneurs, deplacements, hookgenerator, table, config, log);
  	}	
 	/*
 	 * MÉTHODES PUBLIQUES

@@ -11,9 +11,9 @@ import container.Service;
 
 public class RobotChrono extends Robot {
 
-	public RobotChrono(Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
+	public RobotChrono(Service pathfinding, Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
 	{
-		super(capteur, actionneurs, deplacements, hookgenerator, table, config, log);
+		super(pathfinding, capteur, actionneurs, deplacements, hookgenerator, table, config, log);
 	}
 	
 	// La plupart de ces méthodes resteront vides

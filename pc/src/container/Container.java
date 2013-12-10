@@ -63,21 +63,23 @@ public class Container {
 			services.put(nom, (Service)new HookGenerator(	getService("Read_Ini"),
 															getService("Log")));		
 		else if(nom == "RobotVrai")
-			services.put(nom, (Service)new RobotVrai(	getService("Capteur"),
-															getService("Actionneurs"),
-															getService("Deplacements"),
-															getService("HookGenerator"),
-															getService("Table"),
-															getService("Read_Ini"),
-															getService("Log")));		
+			services.put(nom, (Service)new RobotVrai(	getService("Pathfinding"),
+														getService("Capteur"),
+														getService("Actionneurs"),
+														getService("Deplacements"),
+														getService("HookGenerator"),
+														getService("Table"),
+														getService("Read_Ini"),
+														getService("Log")));		
 		else if(nom == "RobotChrono")
-			services.put(nom, (Service)new RobotChrono(	getService("Capteur"),
-															getService("Actionneurs"),
-															getService("Deplacements"),
-															getService("HookGenerator"),
-															getService("Table"),
-															getService("Read_Ini"),
-															getService("Log")));		
+			services.put(nom, (Service)new RobotChrono(	getService("Pathfinding"),
+														getService("Capteur"),
+														getService("Actionneurs"),
+														getService("Deplacements"),
+														getService("HookGenerator"),
+														getService("Table"),
+														getService("Read_Ini"),
+														getService("Log")));		
 		else if(nom == "ScriptManager")
 			services.put(nom, (Service)new ScriptManager(	getService("RobotVrai"),
 															getService("RobotChrono"),
@@ -88,6 +90,7 @@ public class Container {
 		else if(nom == "Strategie")
 			services.put(nom, (Service)new Strategie(	getService("threadTimer"),
 														getService("ScriptManager"),
+														getService("Pathfinding")
 														getService("Table"),
 														getService("Read_Ini"),
 														getService("Log")));			 
