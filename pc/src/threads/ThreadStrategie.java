@@ -1,6 +1,6 @@
 package threads;
 
-import robot.Strategie;
+import strategie.Strategie;
 import container.Service;
 
 /**

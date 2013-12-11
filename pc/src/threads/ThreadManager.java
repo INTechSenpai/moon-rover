@@ -4,8 +4,8 @@ import java.util.Hashtable;
 
 import container.Container;
 import robot.RobotVrai;
-import robot.Strategie;
 import robot.cartes.Capteur;
+import strategie.Strategie;
 import table.Table;
 import utils.Log;
 import utils.Read_Ini;

@@ -1,4 +1,4 @@
-package robot;
+package strategie;
 
 import pathfinding.Pathfinding;
 import scripts.ScriptManager;
