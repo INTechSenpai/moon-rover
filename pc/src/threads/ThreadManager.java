@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
+import exception.ThreadException;
 
 public class ThreadManager {
 	
@@ -31,13 +32,13 @@ public class ThreadManager {
 		
 	}
 
-	public AbstractThread getThread(String nom)
+	public AbstractThread getThread(String nom) throws ThreadException
 	{
 		AbstractThread thread = threads.get(nom);
 		if(thread == null)
 		{
 			log.warning("Le thread suivant n'existe pas: "+nom, this);
-			// TODO lancer exception			
+			throw new ThreadException();
 		}
 		return thread;
 	}

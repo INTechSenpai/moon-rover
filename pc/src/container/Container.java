@@ -8,6 +8,7 @@ import java.util.Map;
 import pathfinding.Pathfinding;
 import exception.ContainerException;
 import exception.SerialManagerException;
+import exception.ThreadException;
 import utils.*;
 import scripts.ScriptManager;
 import table.Table;
@@ -49,7 +50,7 @@ public class Container {
 	private SerialManager serialmanager = null;
 	private ThreadManager threadmanager = null;
 	
-	public Service getService(String nom) throws ContainerException
+	public Service getService(String nom) throws ContainerException, ThreadException
 	{
 		if(services.containsKey(nom));
 		else if(nom == "Read_Ini")
@@ -128,13 +129,11 @@ public class Container {
 													getService("Capteur"),
 													getService("Table"));
 			}
-			try
-			{
+			try {
 				services.put(nom, (Service)threadmanager.getThread(nom));
 			}
-			catch(Exception e)
-			{
-				System.out.println("Exception pour "+nom+": "+e.toString());
+			catch(ThreadException e) {
+				throw e;
 			}
 		}
 		else if(nom == "Pathfinding")
