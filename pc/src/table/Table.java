@@ -1,6 +1,9 @@
 package table;
 
+import java.util.ArrayList;
+
 import robot.Orientation;
+import scripts.Script;
 import smartMath.Vec2;
 import container.Service;
 import factories.FactoryProduct;
@@ -12,7 +15,9 @@ public class Table implements Service, FactoryProduct {
 	private Tree arrayTree[] = new Tree[4];
 	private Fireplace arrayFireplace[]= new Fireplace[3];
 	private Torch arrayTorch[] = new Torch[10] ;
-		
+
+	private ArrayList<Obstacle> arrayObstacles = new ArrayList<Obstacle>();
+	
 	private Log log;
 	private Read_Ini config;
 	
@@ -63,12 +68,31 @@ public class Table implements Service, FactoryProduct {
 		arrayTorch[9] = new Torch(new Vec2(-1489,1142), 9, false, 11) ;
 	}
 	
-	// TODO
 	public void creer_obstacle(Vec2 position)
 	{
 		int rayon_robot_adverse = Integer.parseInt(config.config.getProperty("rayon_robot_adverse"));
+		long duree = Integer.parseInt(config.config.getProperty("duree_peremption_obstacles"));
+		Obstacle obstacle = new ObstacleProximite(position, rayon_robot_adverse, System.currentTimeMillis()+duree);
+		arrayObstacles.add(obstacle);
 	}
 
+	// TODO
+	/**
+	 * Appel fait lors de l'anticipation, supprime les obstacles périmés à une date future
+	 * @param date
+	 */
+	public void supprimer_obstacles_perimes(long date)
+	{
+		
+	}
+	
+	/**
+	 * Appel fait par le thread timer, supprime les obstacles périmés
+	 */
+	public void supprimer_obstacles_perimes()
+	{
+		supprimer_obstacles_perimes(System.currentTimeMillis());
+	}
 	
 	// TODO Guy
 	// Feux
@@ -113,7 +137,7 @@ public class Table implements Service, FactoryProduct {
 	 */
 	public FactoryProduct Clone() {
 		Table cloned_table = new Table(log, config);
-		cloned_table.initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch);
+		cloned_table.initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch, arrayObstacles);
 		return cloned_table;
 	}
 
@@ -121,12 +145,13 @@ public class Table implements Service, FactoryProduct {
 	/**
 	 * Méthode d'initialisation d'une table, utilisé par clone()
 	 */
-	public void initialise(Fire arrayFire[], Tree arrayTree[], Fireplace arrayFireplace[], Torch arrayTorch[])
+	public void initialise(Fire arrayFire[], Tree arrayTree[], Fireplace arrayFireplace[], Torch arrayTorch[], ArrayList<Obstacle> arrayObstacles)
 	{
 		this.arrayFire = arrayFire;
 		this.arrayTree = arrayTree;
 		this.arrayFireplace = arrayFireplace;
 		this.arrayTorch = arrayTorch;
+		this.arrayObstacles = arrayObstacles;
 	}
 
 	@Override
