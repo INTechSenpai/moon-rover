@@ -1,22 +1,20 @@
 package strategie;
 
-import java.util.ArrayList;
-
 import scripts.Script;
 
 public class CoupleNoteScripts {
 
 	public float note;
-	public ArrayList<Script> scripts;
+	public Script script;
 
-	public CoupleNoteScripts(float note, ArrayList<Script> scripts) {
+	public CoupleNoteScripts(float note, Script script) {
 		this.note = note;
-		this.scripts = scripts;
+		this.script = script;
 	}
 
 	public CoupleNoteScripts() {
 		note = 0;
-		scripts = new ArrayList<Script>();
+		script = null;
 	}
 		
 }

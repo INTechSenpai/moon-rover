@@ -19,6 +19,7 @@ import factories.FactoryProduct;
 
 public class Strategie implements Service {
 
+	// Dépendances
 	private MemoryManager memorymanager;
 	private ThreadTimer threadTimer;
 	private ScriptManager scriptmanager;
@@ -26,6 +27,16 @@ public class Strategie implements Service {
 	private Table table;
 	private Read_Ini config;
 	private Log log;
+	
+	public Script scriptEnCours;
+	
+	// TODO initialisations des variables = première action
+	// Prochain script à exécuter si on est interrompu par l'ennemi
+	public Script prochainScriptEnnemi;
+	
+	// Prochain script à exécuter si l'actuel se passe bien
+	public Script prochainScript;
+
 	
 	public Strategie(Service memorymanager, Service threadTimer, Service scriptmanager, Service pathfinding, Service table, Service config, Service log)
 	{
@@ -36,6 +47,15 @@ public class Strategie implements Service {
 		this.table = (Table) table;
 		this.config = (Read_Ini) config;
 		this.log = (Log) log;
+		
+	}
+	
+	/**
+	 * Méthode appelée à la fin du lanceur et qui exécute la meilleure stratégie (calculée dans threadStrategie)
+	 */
+	public void boucle_strategie()
+	{
+		scriptEnCours = prochainScript;
 	}
 	
 	public float calculeNote(Table cloned_table, RobotChrono cloned_robotchrono)
@@ -51,7 +71,7 @@ public class Strategie implements Service {
 	 * @param profondeur
 	 * @return le couple (note, scripts), scripts étant la suite de scripts à effectuer
 	 */
-	public CoupleNoteScripts evaluation(Service table, Service robotchrono, Service pathfinding, int profondeur)
+	public CoupleNoteScripts evaluation(long date, Table table, RobotChrono robotchrono, Pathfinding pathfinding, int profondeur)
 	{
 		memorymanager.setModele((FactoryProduct)table);
 		memorymanager.setModele((FactoryProduct)robotchrono);
@@ -60,6 +80,7 @@ public class Strategie implements Service {
 			return new CoupleNoteScripts();
 		else
 		{
+			table.supprimer_obstacles_perimes(date);
 			CoupleNoteScripts meilleur = new CoupleNoteScripts(-1, null);
 			for(String nom_script : scriptmanager.scripts)
 				for(int id : scriptmanager.getId(nom_script))
@@ -67,16 +88,15 @@ public class Strategie implements Service {
 					Table cloned_table = (Table) memorymanager.getClone("Table");
 					RobotChrono cloned_robotchrono = (RobotChrono) memorymanager.getClone("RobotChrono");
 					Script script = scriptmanager.getScript(nom_script, cloned_table, cloned_robotchrono, pathfinding);
-					script.calcule(id);
+					long duree_script = script.calcule(id);
 					float noteScript = calculeNote(cloned_table, cloned_robotchrono);
-					CoupleNoteScripts out = evaluation(cloned_table, cloned_robotchrono, pathfinding, profondeur-1);
+					CoupleNoteScripts out = evaluation(date + duree_script, cloned_table, cloned_robotchrono, pathfinding, profondeur-1);
 					out.note += noteScript;
 
 					if(out.note > meilleur.note)
 					{
 						meilleur.note = out.note;
-						meilleur.scripts = out.scripts;
-						meilleur.scripts.add(script);
+						meilleur.script = script;
 					}
 				}
 			return meilleur;

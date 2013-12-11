@@ -42,16 +42,20 @@ public class MemoryManager implements Service {
 	{
 		if(nom == "Table")
 		{
+			log.debug("Instanciation des tables", this);
 			productsObjects.put("Table", new Table[nbmax]);
 			for(int i = 0; i < nbmax; i++)
 				productsObjects.get("Table")[i] = new Table(null, null);
 		}
 		else if(nom == "RobotChrono")
 		{
+			log.debug("Instanciation des robotchrono", this);
 			productsObjects.put("RobotChrono", new RobotChrono[nbmax]);
 			for(int i = 0; i < nbmax; i++)
-				productsObjects.get("RobotChrono")[i] = new RobotChrono(null, null, null, null, null, null, null, null);
+				productsObjects.get("RobotChrono")[i] = new RobotChrono(null, null);
 		}
+		else
+			log.warning("Erreur lors de l'enregistrement de "+nom, this);
 	}
 	
 	public void setModele(FactoryProduct instance)
