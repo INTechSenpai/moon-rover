@@ -1,32 +1,38 @@
 package strategie;
 
+import utils.Log;
+import container.Service;
+import exception.FactoryException;
 import factories.AbstractFactory;
 import factories.FactoryProduct;
 
 public class FactoryStrategie extends AbstractFactory {
 
-	@Override
+	private Log log;
+	
+	public FactoryStrategie(Service log)
+	{
+		this.log = (Log) log;
+	}
+	
 	public boolean LearnToClone(FactoryProduct model) {
-		// TODO Auto-generated method stub
-		return false;
+		RegisterNewProduct(model);
+		return true;
 	}
 
-	@Override
 	public boolean CanMake(Object toCheck) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
 	public boolean CanMakeFromString(String className) {
-		// TODO Auto-generated method stub
-		return false;
+		return IsRegistered(className);
 	}
 
-	@Override
 	public Object MakeFromString(String className) {
-		// TODO Auto-generated method stub
-		return null;
+		Object potentialClone = Clone(className);
+		if (potentialClone == null) 	
+			log.warning("Erreur MakeFromString pour "+className, this);
+		return potentialClone; 
 	}
 
 }
