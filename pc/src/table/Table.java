@@ -1,6 +1,7 @@
 package table;
 
 import robot.Orientation;
+import robot.Robot;
 import smartMath.Vec2;
 import container.Service;
 import utils.*;
@@ -13,6 +14,7 @@ public class Table implements Service {
 	Torch arrayTorch[] = new Torch[10] ;
 	Fruit_Tub arrayTub[] = new Fruit_Tub[2];
 	Fresco fresco;
+	Robot arrayRobot[] = new Robot[4];
 	
 	private Log log;
 	private Read_Ini config;
@@ -99,7 +101,7 @@ public class Table implements Service {
 		arrayFire[id].pickFire();
 	}
 
-	public Fire nearestFire ()
+/*	public Fire nearestFire ()
 	{
 		int min = 0;
 		for (int i = 0; i < 10, i++)
@@ -111,7 +113,7 @@ public class Table implements Service {
 		}
 		return arrayTable[min];
 	}
-
+*/
 
 }
 
