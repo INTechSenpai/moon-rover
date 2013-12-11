@@ -44,7 +44,7 @@ public class Log implements Service
 
 	private void ecrire(String message, String couleur)
 	{
-		String heure = calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+":"+calendar.get(Calendar.MILLISECOND);
+		String heure = calendar.get(Calendar.HOUR)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+","+calendar.get(Calendar.MILLISECOND);
 		System.out.println(couleur+heure+" "+message+"\u001B[0m");
 	}
 	
