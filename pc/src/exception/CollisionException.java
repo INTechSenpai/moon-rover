@@ -1,18 +1,18 @@
 package exception;
 
-public class ExceptionCollision extends Exception {
+public class CollisionException extends Exception {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -3791360446545658528L;
 
-	public ExceptionCollision()
+	public CollisionException()
 	{
 		
 	}
 	
-	public ExceptionCollision(String m)
+	public CollisionException(String m)
 	{
 		
 	}
