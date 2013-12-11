@@ -1,5 +1,7 @@
 package scripts;
 
+import java.util.ArrayList;
+
 import pathfinding.Pathfinding;
 import hook.HookGenerator;
 import robot.Robot;
@@ -28,7 +30,7 @@ public class ScriptManager implements Service {
 	private Read_Ini config;
 	private Log log;
 	
-	public Script[] scripts;
+	public String[] scripts;
 	
 	public ScriptManager(Service pathfinding, Service threadtimer, Service robotvrai, Service robotchrono, Service hookgenerator, Service table, Service config, Service log) {
 		this.pathfinding = (Pathfinding) pathfinding;
@@ -43,7 +45,21 @@ public class ScriptManager implements Service {
 	}
 	
 	// TODO
-	public Script[] scriptsRestants()
+	public ArrayList<Script> scriptsRestants()
+	{
+		return null;
+	}
+
+	// TODO
+	public Script getScript(String nom, Service table, Service robot, Service pathfinding)
+	{
+		return null;
+//		if(nom == "ScriptPosition")
+//			return new Script
+	}
+	
+	// TODO
+	public int[] getId(String nom_script)
 	{
 		return null;
 	}

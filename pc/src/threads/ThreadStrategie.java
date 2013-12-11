@@ -18,9 +18,11 @@ public class ThreadStrategie extends AbstractThread {
 		super(config, log);
 		this.strategie = (Strategie) strategie;
 	}
+
 	
 	public void run()
 	{
+		
 	}
 	
 }

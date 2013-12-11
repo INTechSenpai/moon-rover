@@ -93,6 +93,21 @@ public class Table implements Service, FactoryProduct {
 		arrayFire[id].pickFire();
 	}
 
+
+/*	public Fire nearestFire ()
+	{
+		int min = 0;
+		for (int i = 0; i < 10, i++)
+		{
+			if (arrayFire[i] < arrayTree[min])
+			{
+				min = i;
+			}
+		}
+		return arrayTable[min];
+	}
+*/
+
 	/**
 	 * Utilisé par la factory
 	 */
@@ -118,20 +133,6 @@ public class Table implements Service, FactoryProduct {
 	public String TypeName() {
 		return "Table";
 	}
-
-/*	public Fire nearestFire ()
-	{
-		int min = 0;
-		for (int i = 0; i < 10, i++)
-		{
-			if (arrayFire[i] < arrayTree[min])
-			{
-				min = i;
-			}
-		}
-		return arrayTable[min];
-	}
-*/
-
+	
 }
 
