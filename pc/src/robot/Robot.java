@@ -27,6 +27,8 @@ public abstract class Robot implements Service {
 	public abstract void suit_chemin();
 	public abstract void set_vitesse_translation(String vitesse);
 	public abstract void set_vitesse_rotation(String vitesse);
+	public abstract void setPosition(Vec2 position);
+	public abstract void setOrientation(float orientation);
 	
 	protected Pathfinding pathfinding;
 	protected Capteur capteur;
@@ -40,8 +42,8 @@ public abstract class Robot implements Service {
 	/* Ces attributs sont nécessaires à robotvrai et à robotchrono, donc ils sont ici.
 	 * Cela regroupe tous les attributs ayant une conséquence dans la stratégie
 	 */
-	protected Vec2 position;
-	protected float orientation;
+	protected Vec2 position = new Vec2(0, 0);
+	protected float orientation = 0;
 	
 	public Robot(Service pathfinding, Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
 	{

@@ -4,9 +4,10 @@ import robot.Orientation;
 import robot.Robot;
 import smartMath.Vec2;
 import container.Service;
+import factories.FactoryProduct;
 import utils.*;
 
-public class Table implements Service {
+public class Table implements Service, FactoryProduct {
 
 	private Fire arrayFire[] = new Fire[16];
 	private Tree arrayTree[] = new Tree[4];
@@ -98,6 +99,33 @@ public class Table implements Service {
 	public void getFire (int id)
 	{
 		arrayFire[id].pickFire();
+	}
+
+	/**
+	 * Utilisé par la factory
+	 */
+	public FactoryProduct Clone() {
+		Table cloned_table = new Table(log, config);
+		cloned_table.initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch, arrayTub);
+		return cloned_table;
+	}
+
+	// TODO changera probablement à l'avenir
+	/**
+	 * Méthode d'initialisation d'une table, utilisé par clone()
+	 */
+	public void initialise(Fire arrayFire[], Tree arrayTree[], Fireplace arrayFireplace[], Torch arrayTorch[], Fruit_Tub arrayTub[])
+	{
+		this.arrayFire = arrayFire;
+		this.arrayTree = arrayTree;
+		this.arrayFireplace = arrayFireplace;
+		this.arrayTorch = arrayTorch;
+		this.arrayTub = arrayTub;
+	}
+
+	@Override
+	public String TypeName() {
+		return "Table";
 	}
 
 /*	public Fire nearestFire ()

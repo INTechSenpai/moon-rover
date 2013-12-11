@@ -2,6 +2,7 @@ package robot;
 
 import smartMath.Vec2;
 import container.Service;
+import factories.FactoryProduct;
 
 /**
  * Robot particulier qui fait pas bouger le robot réel, mais détermine la durée des actions
@@ -9,7 +10,7 @@ import container.Service;
  *
  */
 
-public class RobotChrono extends Robot {
+public class RobotChrono extends Robot implements FactoryProduct {
 
 	private float vitesse_mmps;
 	private float vitesse_rps;
@@ -20,11 +21,18 @@ public class RobotChrono extends Robot {
 		super(pathfinding, capteur, actionneurs, deplacements, hookgenerator, table, config, log);
 	}
 	
+	public void setPosition(Vec2 position) {
+		this.position = position;
+	}
+	
+	public void setOrientation(float orientation) {
+		this.orientation = orientation;
+	}
+		
 	// La plupart de ces méthodes resteront vides
 	
 	public void stopper()
 	{
-		
 	}
 	
 	@Override
@@ -72,6 +80,19 @@ public class RobotChrono extends Robot {
 	public float get_compteur()
 	{
 		return duree;
+	}
+
+	@Override
+	public FactoryProduct Clone() {
+		RobotChrono cloned_robotchrono = new RobotChrono(pathfinding, capteur, actionneurs, deplacements, hookgenerator, table, config, log);
+		cloned_robotchrono.setPosition(position);
+		cloned_robotchrono.setOrientation(orientation);
+		return cloned_robotchrono;
+	}
+
+	@Override
+	public String TypeName() {
+		return "RobotChrono";
 	}
 	
 }
