@@ -69,13 +69,38 @@ abstract class Script implements Service {
 	 * Calcule le temps d'exécution de ce script (grâce à robotChrono)
 	 * @return le temps d'exécution
 	 */
-	public int calcule(int id_version)
+	public float calcule(int id_version)
 	{
 		robot = robotchrono;
-		return 0;
+		robotchrono.reset_compteur();
+		try {
+			execute(id_version);
+		}
+		catch(Exception e)
+		{
+			log.warning("Exception scripts: "+e.toString(), this);
+		}
+		return robotchrono.get_compteur();
 	}
 	
-
+	/**
+	 * Retourne la table du script. A appeler après avoir utilisé calcule
+	 * @return la table
+	 */
+	public Table getTable()
+	{
+		return table;
+	}
+	
+	/**
+	 * Retourne le robotchrono du script. A appeler après avoir utilisé calcule
+	 * @return robotchrono
+	 */
+	public Robot getRobotChrono()
+	{
+		return robotchrono;
+	}
+	
 	/**
 	 * Renvoie le tableau des versions d'un script
 	 * @return le tableau des versions possibles
