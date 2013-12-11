@@ -13,7 +13,7 @@ import container.Service;
 public class RobotVrai extends Robot {
 
 	private Vec2 consigne = new Vec2(0,0);
-	private float orientation_consigne = 0;
+	private float orientation_consigne = (float)-Math.PI/2;
 	
 	private boolean blocage = false;
 	private boolean enMouvement = true;
@@ -31,7 +31,6 @@ public class RobotVrai extends Robot {
 	public RobotVrai(Service pathfinding, Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
  	{
 		super(pathfinding, capteur, actionneurs, deplacements, hookgenerator, table, config, log);
-		
  	}
 	
 	/*
