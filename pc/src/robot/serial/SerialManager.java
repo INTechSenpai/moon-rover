@@ -69,7 +69,6 @@ public class SerialManager
 		this.series.put(this.carteCapteursActionneurs.name, this.serieCapteursActionneurs);
 		this.series.put(this.carteLaser.name, this.serieLaser);
 
-		
 		checkSerial();
 		createSerial();
 	}
@@ -131,12 +130,7 @@ public class SerialManager
 		while (e.hasMoreElements())
 		{
 			SpecificationCard serial = e.nextElement();
-			if (!this.isKnownPing(serial.id))
-			{
-				log.critical("La carte " + serial.name + " n'est pas détectée", this);
-				throw new SerialManagerException("");
-			}
-			else if(serial.id == 0 && pings[serial.id] != null)
+			if(serial.id == 0 && pings[serial.id] != null)
 			{
 				this.serieAsservissement.initialize(pings[serial.id], serial.baudrate);
 			}
@@ -147,6 +141,12 @@ public class SerialManager
 			else if(serial.id == 4 && pings[serial.id] != null)
 			{
 				this.serieLaser.initialize(pings[serial.id], serial.baudrate);
+			}
+			
+			if (pings[serial.id] == null)
+			{
+				log.critical("La carte " + serial.name + " n'est pas détectée", this);
+				throw new SerialManagerException();
 			}
 		}
 	}
