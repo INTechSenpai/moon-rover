@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import pathfinding.Pathfinding;
+import exception.ContainerException;
 import exception.SerialManagerException;
 import utils.*;
 import scripts.ScriptManager;
@@ -48,7 +49,7 @@ public class Container {
 	private SerialManager serialmanager = null;
 	private ThreadManager threadmanager = null;
 	
-	public Service getService(String nom)
+	public Service getService(String nom) throws ContainerException
 	{
 		if(services.containsKey(nom));
 		else if(nom == "Read_Ini")
@@ -143,7 +144,7 @@ public class Container {
 		else
 		{
 			System.out.println("Erreur de getService pour le service: "+nom);
-			return null;
+			throw new ContainerException();
 		}
 		return services.get(nom);
 	}
