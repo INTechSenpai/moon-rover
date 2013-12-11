@@ -147,6 +147,7 @@ public class RobotVrai extends Robot {
 	}
 
 	public void setPosition(Vec2 position) {
+		this.position = position;
 		deplacements.set_x((int)position.x);
 		deplacements.set_y((int)position.y);
 	}
