@@ -125,10 +125,7 @@ public class Container {
 			if(threadmanager == null)
 			{
 				threadmanager = new ThreadManager(	getService("Read_Ini"),
-													getService("Log"),
-													getService("RobotVrai"),
-													getService("Capteur"),
-													getService("Table"));
+													getService("Log"));
 			}
 				services.put(nom, (Service)threadmanager.getThread(nom));
 		}

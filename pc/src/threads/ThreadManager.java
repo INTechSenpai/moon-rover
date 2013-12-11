@@ -3,10 +3,6 @@ package threads;
 import java.util.Hashtable;
 
 import container.Container;
-import robot.RobotVrai;
-import robot.cartes.Capteur;
-import strategie.Strategie;
-import table.Table;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
@@ -25,21 +21,14 @@ public class ThreadManager {
 	
 	private Read_Ini config;
 	private Log log;
-	private RobotVrai robotvrai;
-	private Capteur capteur;
-	private Table table;
-	private Strategie strategie;
 	private Container container;
 	
 	private Hashtable<String, AbstractThread> threads;
 	
-	public ThreadManager(Service config, Service log, Service robotvrai, Service capteur, Service table)
+	public ThreadManager(Service config, Service log)
 	{
 		this.config = (Read_Ini) config;
 		this.log = (Log) log;
-		this.robotvrai = (RobotVrai) robotvrai;
-		this.capteur = (Capteur) capteur;
-		this.table = (Table) table;
 		
 		container = new Container();
 		
@@ -55,14 +44,11 @@ public class ThreadManager {
 			if(nom == "threadTimer")
 				threads.put("threadTimer", new ThreadTimer(config, log));
 			else if(nom == "threadPosition")
-				threads.put("threadPosition", new ThreadPosition(config, log, robotvrai, threads.get("threadTimer")));
+				threads.put("threadPosition", new ThreadPosition(config, log, container.getService("RobotVrai"), threads.get("threadTimer")));
 			else if(nom == "threadCapteurs")
-				threads.put("threadCapteurs", new ThreadCapteurs(config, log, robotvrai, threads.get("threadTimer"), table, capteur));
+				threads.put("threadCapteurs", new ThreadCapteurs(config, log, container.getService("RobotVrai"), threads.get("threadTimer"), container.getService("Table"), container.getService("Capteur")));
 			else if(nom == "threadStrategie")
-			{
-				strategie = (Strategie) container.getService("Strategie");
-				threads.put("threadStrategie", new ThreadStrategie(config, log, strategie));
-			}
+				threads.put("threadStrategie", new ThreadStrategie(config, log, container.getService("Strategie"), container.getService("Table"), container.getService("RobotChrono"), container.getService("Pathfinding")));
 			else
 			{
 				log.warning("Le thread suivant n'existe pas: "+nom, this);
