@@ -1,7 +1,6 @@
 package table;
 
 import robot.Orientation;
-import robot.Robot;
 import smartMath.Vec2;
 import container.Service;
 import factories.FactoryProduct;
