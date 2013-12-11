@@ -119,7 +119,7 @@ public class SerialManager
 
 					deja_attribues.add(k);
 
-					System.out.println(id + " sur: " + connectedSerial.get(k));
+					log.debug(id + " sur: " + connectedSerial.get(k),this);
 
 				}
 			}
