@@ -12,9 +12,6 @@ import container.Service;
 
 public class RobotVrai extends Robot {
 
-	private Vec2 position = new Vec2(0,0);
-	private float orientation = 0;
-
 	private Vec2 consigne = new Vec2(0,0);
 	private float orientation_consigne = 0;
 	

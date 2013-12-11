@@ -37,6 +37,12 @@ public abstract class Robot implements Service {
 	protected Read_Ini config;
 	protected Log log;
 
+	/* Ces attributs sont nécessaires à robotvrai et à robotchrono, donc ils sont ici.
+	 * Cela regroupe tous les attributs ayant une conséquence dans la stratégie
+	 */
+	protected Vec2 position;
+	protected float orientation;
+	
 	public Robot(Service pathfinding, Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
 	{
 		this.pathfinding = (Pathfinding) pathfinding;
