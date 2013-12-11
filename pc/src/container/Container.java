@@ -115,7 +115,9 @@ public class Container {
 														getService("Read_Ini"),
 														getService("Log")));		
 		else if(nom == "ScriptManager")
-			services.put(nom, (Service)new ScriptManager(	getService("RobotVrai"),
+			services.put(nom, (Service)new ScriptManager(	getService("Pathfinding"),
+															getService("threadTimer"),
+															getService("RobotVrai"),
 															getService("RobotChrono"),
 															getService("HookGenerator"),
 															getService("Table"),

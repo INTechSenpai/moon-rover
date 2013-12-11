@@ -1,10 +1,12 @@
 package scripts;
 
+import pathfinding.Pathfinding;
 import hook.HookGenerator;
 import robot.Robot;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import table.Table;
+import threads.ThreadTimer;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
@@ -16,18 +18,22 @@ import container.Service;
  
 public class ScriptManager implements Service {
 	
-	Robot robot;
-	RobotVrai robotvrai;
-	RobotChrono robotchrono;
-	HookGenerator hookgenerator;
-	Table table;
-	Read_Ini config;
-	Log log;
+	private Pathfinding pathfinding;
+	private ThreadTimer threadtimer;
+	private Robot robot;
+	private RobotVrai robotvrai;
+	private RobotChrono robotchrono;
+	private HookGenerator hookgenerator;
+	private Table table;
+	private Read_Ini config;
+	private Log log;
 	
 	// TODO mettre les vrais scripts...
 	Script scriptTest;
 	
-	public ScriptManager(Service robotvrai, Service robotchrono, Service hookgenerator, Service table, Service config, Service log) {
+	public ScriptManager(Service pathfinding, Service threadtimer, Service robotvrai, Service robotchrono, Service hookgenerator, Service table, Service config, Service log) {
+		this.pathfinding = (Pathfinding) pathfinding;
+		this.threadtimer = (ThreadTimer) threadtimer;
 		this.robotvrai = (RobotVrai) robotvrai;
 		this.robotchrono = (RobotChrono) robotchrono;
 		this.hookgenerator = (HookGenerator) hookgenerator;

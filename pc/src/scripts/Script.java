@@ -1,39 +1,49 @@
 package scripts;
+import pathfinding.Pathfinding;
 import smartMath.Vec2;
-
 import hook.HookGenerator;
 import robot.Robot;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import table.Table;
+import threads.ThreadTimer;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
 
 /**
- * Classe abstraite dont hériteront les différents scripts
+ * Classe abstraite dont hériteront les différents scripts. S'occupe le robotvrai et robotchrono de manière à ce que ce soit transparent pour les différents scripts
  * @author pf
  */
 
 abstract class Script implements Service {
 
-	Robot robot;
-	RobotVrai robotvrai;
-	RobotChrono robotchrono;
-	HookGenerator hookgenerator;
-	Table table;
-	Read_Ini config;
-	Log log;
+	// Ces services resteront toujours les mêmes, ont les factorise avec un static
+	protected static ThreadTimer threadtimer;
+	protected static HookGenerator hookgenerator;
+	protected static Read_Ini config;
+	protected static Log log;
+
+	// Pathfinding, robot et table peuvent changer d'un script à l'autre, donc pas de static
+	protected Pathfinding pathfinding;
+	protected Robot robot;
+	protected Table table;
+
+	// Les scripts n'auront pas directement accès à robotvrai et à robotchrono
+	private RobotVrai robotvrai;
+	private RobotChrono robotchrono;
 	
-	public Script(Service robotvrai, Service robotchrono, Service hookgenerator, Service table, Service config, Service log) {
+	public Script(Service pathfinding, Service threadtimer, Service robotvrai, Service robotchrono, Service hookgenerator, Service table, Service config, Service log) {
+		this.pathfinding = (Pathfinding) pathfinding;
+		Script.threadtimer = (ThreadTimer) threadtimer;
 		this.robotvrai = (RobotVrai) robotvrai;
 		this.robotchrono = (RobotChrono) robotchrono;
-		this.hookgenerator = (HookGenerator) hookgenerator;
+		Script.hookgenerator = (HookGenerator) hookgenerator;
 		this.table = (Table) table;
-		this.config = (Read_Ini) config;
-		this.log = (Log) log;
+		Script.config = (Read_Ini) config;
+		Script.log = (Log) log;
 	}
-	
+		
 	/**
 	 * Exécute vraiment un script
 	 */
