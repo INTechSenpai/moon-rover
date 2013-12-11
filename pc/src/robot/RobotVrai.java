@@ -31,6 +31,7 @@ public class RobotVrai extends Robot {
 	public RobotVrai(Service pathfinding, Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
  	{
 		super(pathfinding, capteur, actionneurs, deplacements, hookgenerator, table, config, log);
+		
  	}
 	
 	/*
@@ -151,6 +152,8 @@ public class RobotVrai extends Robot {
 
 	public void setOrientation(float orientation) {
 		this.orientation = orientation;
+		// TODO vérifier s'il n'y a pas un facteur 1000 qui se cache (passage radian en milliradian)
+		deplacements.set_orientation((int)orientation);
 	}
 
 	public Vec2 getConsigne() {
