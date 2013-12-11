@@ -23,7 +23,7 @@ public class HookPosition extends Hook {
 	
 	public void evaluate(Vec2 positionRobot)
 	{
-		if(position.dot(positionRobot) <= tolerance*tolerance)
+		if(position.SquaredDistance(positionRobot) <= tolerance*tolerance)
 		{
 			declencher();
 		}

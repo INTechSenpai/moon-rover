@@ -13,7 +13,8 @@ public class Callback {
 	
 	public Callback(Executable methode, boolean unique)
 	{
-		
+		this.methode = methode;
+		this.unique = unique;
 	}
 	
 	public void appeler()
