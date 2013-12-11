@@ -105,26 +105,26 @@ abstract class Script implements Service {
 	 * Renvoie le tableau des versions d'un script
 	 * @return le tableau des versions possibles
 	 */
-	abstract int[] version();
+	public abstract int[] version();
 
 	/**
 	 * Retourne la position d'entrée associée à la version id
 	 * @param id de la version
 	 * @return la position du point d'entrée
 	 */
-	abstract Vec2 point_entree(int id);
+	public abstract Vec2 point_entree(int id);
 	
 	/**
 	 * Renvoie le score que peut fournir un script
 	 * @return le score
 	 */
-	abstract int score();
+	public abstract int score();
 	
 	/**
  	 * Donne le poids du script, utilisé pour calculer sa note
 	 * @return le poids
 	 */
-	abstract int poids();
+	public abstract int poids();
 
 	/**
 	 * Exécute le script
