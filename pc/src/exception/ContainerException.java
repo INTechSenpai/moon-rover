@@ -15,12 +15,12 @@ public class ContainerException extends Exception {
 
 	public ContainerException()
 	{
-		
+		super();
 	}
 	
 	public ContainerException(String m)
 	{
-		
+		super(m);
 	}
 
 }

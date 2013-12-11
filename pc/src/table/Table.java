@@ -1,7 +1,6 @@
 package table;
 
 import robot.Orientation;
-import robot.Robot;
 import smartMath.Vec2;
 import container.Service;
 import factories.FactoryProduct;
@@ -13,8 +12,6 @@ public class Table implements Service, FactoryProduct {
 	private Tree arrayTree[] = new Tree[4];
 	private Fireplace arrayFireplace[]= new Fireplace[3];
 	private Torch arrayTorch[] = new Torch[10] ;
-	private Fruit_Tub arrayTub[] = new Fruit_Tub[2];
-	private Fresco fresco;
 		
 	private Log log;
 	private Read_Ini config;
@@ -64,11 +61,6 @@ public class Table implements Service, FactoryProduct {
 		arrayTorch[7] = new Torch(new Vec2(-258,11), 7, false, 11) ;
 		arrayTorch[8] = new Torch(new Vec2(-1489,1258), 8, false, 11) ;
 		arrayTorch[9] = new Torch(new Vec2(-1489,1142), 9, false, 11) ;
-		//initialisation des bacs
-		arrayTub[0] = new Fruit_Tub(new Vec2(400,1700)) ;
-		arrayTub[1] = new Fruit_Tub(new Vec2(-1100,1700)) ;
-		//initialisation de la fresque 
-		this.fresco = new Fresco(new Vec2(-300, 2000)); //la position est celle du coin en bas
 	}
 	
 	// TODO
@@ -106,7 +98,7 @@ public class Table implements Service, FactoryProduct {
 	 */
 	public FactoryProduct Clone() {
 		Table cloned_table = new Table(log, config);
-		cloned_table.initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch, arrayTub);
+		cloned_table.initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch);
 		return cloned_table;
 	}
 
@@ -114,13 +106,12 @@ public class Table implements Service, FactoryProduct {
 	/**
 	 * Méthode d'initialisation d'une table, utilisé par clone()
 	 */
-	public void initialise(Fire arrayFire[], Tree arrayTree[], Fireplace arrayFireplace[], Torch arrayTorch[], Fruit_Tub arrayTub[])
+	public void initialise(Fire arrayFire[], Tree arrayTree[], Fireplace arrayFireplace[], Torch arrayTorch[])
 	{
 		this.arrayFire = arrayFire;
 		this.arrayTree = arrayTree;
 		this.arrayFireplace = arrayFireplace;
 		this.arrayTorch = arrayTorch;
-		this.arrayTub = arrayTub;
 	}
 
 	@Override
