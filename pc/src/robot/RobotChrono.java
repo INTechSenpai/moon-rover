@@ -13,6 +13,7 @@ public class RobotChrono extends Robot {
 
 	private float vitesse_mmps;
 	private float vitesse_rps;
+	private float duree = 0;
 	
 	public RobotChrono(Service pathfinding, Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
 	{
@@ -60,6 +61,17 @@ public class RobotChrono extends Robot {
         int pwm_max = conventions_vitesse_rotation(vitesse);
         vitesse_rps = ((float)Math.PI)/((float)277.85 * (float)Math.pow(pwm_max,(-1.222)));
         vitesse_mmps = ((float)2500)/((float)613.52 * (float)(Math.pow((double)pwm_max,(double)(-1.034))));
+	}
+
+	// Méthodes propres à RobotChrono
+	
+	public void reset_compteur()
+	{
+		duree = 0;
+	}
+	public float get_compteur()
+	{
+		return duree;
 	}
 	
 }

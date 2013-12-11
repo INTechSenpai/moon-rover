@@ -66,7 +66,7 @@ public abstract class Robot implements Service {
 		
 	}
 	
-	public int conventions_vitesse_translation(String vitesse)
+	protected int conventions_vitesse_translation(String vitesse)
 	{
         if(vitesse == "entre_scripts")
         	return 150;
@@ -81,7 +81,7 @@ public abstract class Robot implements Service {
         }
 	}
 
-	public int conventions_vitesse_rotation(String vitesse)
+	protected int conventions_vitesse_rotation(String vitesse)
 	{
         if(vitesse == "entre_scripts")
         	return 160;
@@ -96,4 +96,12 @@ public abstract class Robot implements Service {
         }
 	}
 	
+	public Vec2 getPosition() {
+		return position;
+	}
+
+	public double getOrientation() {
+		return orientation;
+	}
+
 }
