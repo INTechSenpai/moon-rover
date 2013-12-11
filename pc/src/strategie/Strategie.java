@@ -38,7 +38,7 @@ public class Strategie implements Service {
 		this.log = (Log) log;
 	}
 	
-	public float calculeNote()
+	public float calculeNote(Table cloned_table, RobotChrono cloned_robotchrono)
 	{
 		return 0;
 	}
@@ -68,7 +68,7 @@ public class Strategie implements Service {
 					RobotChrono cloned_robotchrono = (RobotChrono) memorymanager.getClone("RobotChrono");
 					Script script = scriptmanager.getScript(nom_script, cloned_table, cloned_robotchrono, pathfinding);
 					script.calcule(id);
-					float noteScript = calculeNote();
+					float noteScript = calculeNote(cloned_table, cloned_robotchrono);
 					CoupleNoteScripts out = evaluation(cloned_table, cloned_robotchrono, pathfinding, profondeur-1);
 					out.note += noteScript;
 
