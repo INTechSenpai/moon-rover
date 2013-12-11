@@ -6,6 +6,12 @@ import smartMath.Vec2;
 import table.Table;
 import container.Service;
 
+/**
+ * Thread qui ajoute en continu les obstacles détectés par les capteurs
+ * @author pf
+ *
+ */
+
 public class ThreadCapteurs extends AbstractThread {
 
 	private RobotVrai robotvrai;

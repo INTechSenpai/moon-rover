@@ -3,10 +3,17 @@ package threads;
 import robot.RobotVrai;
 import container.Service;
 
+/**
+ * Thread qui demande en continu au robot de mettre à jour ses coordonnées
+ * @author pf
+ *
+ */
 public class ThreadPosition extends AbstractThread {
 
 	private RobotVrai robotvrai;
 	private ThreadTimer threadTimer;
+	
+	public boolean robot_pret = false;
 	
 	ThreadPosition(Service config, Service log, Service robotvrai, Service threadTimer)
 	{
@@ -18,8 +25,6 @@ public class ThreadPosition extends AbstractThread {
 	public void run()
 	{
 		log.debug("Lancement du thread de mise à jour", this);
-		
-		boolean robot_pret = false;
 		
 		do
 		{

@@ -14,6 +14,12 @@ import exception.ConfigException;
 import exception.ContainerException;
 import exception.ThreadException;
 
+/**
+ * Service qui instancie les threads
+ * @author pf
+ *
+ */
+
 public class ThreadManager {
 	
 	private Read_Ini config;

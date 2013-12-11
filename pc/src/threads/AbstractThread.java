@@ -4,6 +4,12 @@ import utils.Log;
 import utils.Read_Ini;
 import container.Service;
 
+/**
+ * Classe abstraite des threads
+ * @author pf
+ *
+ */
+
 public abstract class AbstractThread extends Thread implements Service {
 
 	protected Read_Ini config;
