@@ -11,18 +11,23 @@ public class ThreadManager {
 	private Read_Ini config;
 	private Log log;
 	
-	// TODO mettre les vrais scripts...
-	
 	private Hashtable<String, AbstractThread> threads;
 	
 	public ThreadManager(Service config, Service log, Service robotVrai, Service capteur, Service table)
 	{
 		this.config = (Read_Ini) config;
 		this.log = (Log) log;
-		
+
+		threads = new Hashtable<String, AbstractThread>();
+
 		threads.put("threadTimer", new ThreadTimer(config, log));
 		threads.put("threadPosition", new ThreadPosition(config, log, robotVrai, threads.get("threadTimer")));
 		threads.put("threadCapteurs", new ThreadCapteurs(config, log, robotVrai, threads.get("threadTimer"), table, capteur));
+		
+		this.log.debug("Lancement des threads", this);
+		threads.get("threadTimer").start();
+		threads.get("threadPosition").start();
+		threads.get("threadCapteurs").start();
 		
 	}
 

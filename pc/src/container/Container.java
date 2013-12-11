@@ -120,12 +120,21 @@ public class Container {
 		else if(nom.length() > 5 && nom.substring(0,6).equals("thread"))
 		{
 			if(threadmanager == null)
+			{
 				threadmanager = new ThreadManager(	getService("Read_Ini"),
 													getService("Log"),
 													getService("RobotVrai"),
 													getService("Capteur"),
 													getService("Table"));
-			services.put(nom, (Service)threadmanager.getThread(nom));
+			}
+			try
+			{
+				services.put(nom, (Service)threadmanager.getThread(nom));
+			}
+			catch(Exception e)
+			{
+				System.out.println("Exception pour "+nom+": "+e.toString());
+			}
 		}
 		else if(nom == "Pathfinding")
 			services.put(nom, (Service)new Pathfinding(	getService("Table"),
