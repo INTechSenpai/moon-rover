@@ -27,7 +27,7 @@ import robot.serial.SerialManager;
  * Log
  * Read_Ini
  * Table
- * serie* (serieAsservissement, ...)
+ * serie* (serieAsservissement, carteCapteursActionneurs, carteLaser)
  * Deplacements
  * Capteur
  * Actionneurs
@@ -36,10 +36,11 @@ import robot.serial.SerialManager;
  * RobotChrono
  * ScriptManager
  * Strategie
- * thread* (threadTimer, ...)
+ * thread* (threadTimer, threadPosition, threadStrategie, ThreadCapteurs)
  * ScriptManager
  * Pathfinding
  * HookGenerator
+ * Strategie
  * 
  * @author pf
  *
