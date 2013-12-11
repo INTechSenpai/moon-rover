@@ -52,18 +52,12 @@ public class Container {
 	private SerialManager serialmanager = null;
 	private ThreadManager threadmanager = null;
 	
-	public Service getService(String nom) throws ContainerException, ThreadException, ConfigException
+	public Service getService(String nom) throws ContainerException, ThreadException, ConfigException, SerialManagerException
 	{
 		if(services.containsKey(nom));
 		else if(nom == "Read_Ini")
 		{
-			try {
 			services.put(nom, (Service)new Read_Ini("../pc/config/"));
-			}
-			catch(ConfigException e)
-			{
-				throw e;
-			}
 		}
 		else if(nom == "Log")
 			services.put(nom, (Service)new Log(getService("Read_Ini")));
@@ -72,17 +66,9 @@ public class Container {
 													getService("Read_Ini")));
 		else if(nom.length() > 4 && nom.substring(0,5).equals("serie"))
 		{
-			try
-			{
 				if(serialmanager == null)
 					serialmanager = new SerialManager(getService("Log"));
 				services.put(nom, (Service)serialmanager.getSerial(nom));
-			}
-			catch(SerialManagerException e)
-			{
-				System.out.println(e);
-				throw new ContainerException();
-			}
 		}
 		else if(nom == "Deplacements")
 			services.put(nom, (Service)new Deplacements(getService("Log"),
@@ -142,12 +128,7 @@ public class Container {
 													getService("Capteur"),
 													getService("Table"));
 			}
-			try {
 				services.put(nom, (Service)threadmanager.getThread(nom));
-			}
-			catch(ThreadException e) {
-				throw e;
-			}
 		}
 		else if(nom == "Pathfinding")
 			services.put(nom, (Service)new Pathfinding(	getService("Table"),

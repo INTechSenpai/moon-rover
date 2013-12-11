@@ -12,6 +12,7 @@ import utils.Read_Ini;
 import container.Service;
 import exception.ConfigException;
 import exception.ContainerException;
+import exception.SerialManagerException;
 import exception.ThreadException;
 
 /**
@@ -45,7 +46,7 @@ public class ThreadManager {
 		threads = new Hashtable<String, AbstractThread>();
 	}
 
-	public AbstractThread getThread(String nom) throws ThreadException, ContainerException, ConfigException
+	public AbstractThread getThread(String nom) throws ThreadException, ContainerException, ConfigException, SerialManagerException
 	{
 		AbstractThread thread = threads.get(nom);
 		// si le thread n'est pas déjà lancé, on le crée
