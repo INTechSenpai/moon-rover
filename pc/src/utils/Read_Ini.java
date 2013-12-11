@@ -1,11 +1,14 @@
 package utils;
 
 import container.Service;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Properties;
+
+import exception.ConfigException;
 
 
 public class Read_Ini implements Service {
@@ -18,7 +21,7 @@ public class Read_Ini implements Service {
     Enumeration<?> e = local.propertyNames();
 
 	
-	public Read_Ini(String path)
+	public Read_Ini(String path) throws ConfigException
 	{
 		this.path = path;
 		try
@@ -28,6 +31,7 @@ public class Read_Ini implements Service {
 		catch  (IOException e)
 		{
 			e.printStackTrace();
+			throw new ConfigException("Erreur ouverture de config.ini");
 		}
 		
 		try
@@ -44,7 +48,9 @@ public class Read_Ini implements Service {
 			catch (IOException e2)
 			{
 				e2.printStackTrace();
+				throw new ConfigException("Erreur création de local.ini");
 			}	
+			throw new ConfigException("Erreur ouverture de local.ini");
 		}	
 	}
 }

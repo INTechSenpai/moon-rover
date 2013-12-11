@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import pathfinding.Pathfinding;
+import exception.ConfigException;
 import exception.ContainerException;
 import exception.SerialManagerException;
 import exception.ThreadException;
@@ -50,11 +51,19 @@ public class Container {
 	private SerialManager serialmanager = null;
 	private ThreadManager threadmanager = null;
 	
-	public Service getService(String nom) throws ContainerException, ThreadException
+	public Service getService(String nom) throws ContainerException, ThreadException, ConfigException
 	{
 		if(services.containsKey(nom));
 		else if(nom == "Read_Ini")
+		{
+			try {
 			services.put(nom, (Service)new Read_Ini("../pc/config/"));
+			}
+			catch(ConfigException e)
+			{
+				throw e;
+			}
+		}
 		else if(nom == "Log")
 			services.put(nom, (Service)new Log(getService("Read_Ini")));
 		else if(nom == "Table")
