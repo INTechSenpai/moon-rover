@@ -4,7 +4,7 @@ import pathfinding.Pathfinding;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import scripts.Script;
-import strategie.CoupleNoteScripts;
+import strategie.CoupleNoteScript;
 import strategie.Strategie;
 import table.Table;
 import container.Service;
@@ -44,7 +44,7 @@ public class ThreadStrategie extends AbstractThread {
 			// Evaluation d'une stratégie de secours si ce script bug (en premier car plus urgent)
 			Table tableBlocage = table;
 			tableBlocage.creer_obstacle(robotvrai.getPosition()/*+distance*/);
-			CoupleNoteScripts meilleurErreur = strategie.evaluation(System.currentTimeMillis(), table, robotchrono, pathfinding, 2);
+			CoupleNoteScript meilleurErreur = strategie.evaluation(System.currentTimeMillis(), table, robotchrono, pathfinding, 2);
 
 			strategie.prochainScriptEnnemi = meilleurErreur.script;
 			
@@ -55,7 +55,7 @@ public class ThreadStrategie extends AbstractThread {
 				futureTable = strategie.scriptEnCours.futureTable(table);
 				futurRobotChrono = strategie.scriptEnCours.futurRobotChrono(robotchrono);
 			}
-			CoupleNoteScripts meilleurProchain = strategie.evaluation(System.currentTimeMillis(), futureTable, futurRobotChrono, pathfinding, 2);
+			CoupleNoteScript meilleurProchain = strategie.evaluation(System.currentTimeMillis(), futureTable, futurRobotChrono, pathfinding, 2);
 
 			strategie.prochainScript = meilleurProchain.script;
 		}

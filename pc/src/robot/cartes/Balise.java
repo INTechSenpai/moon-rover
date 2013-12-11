@@ -1,5 +1,11 @@
 package robot.cartes;
 
+/**
+ * Classe des balises, utilisée par la classe Laser
+ * @author pf
+ *
+ */
+
 public class Balise {
 
 	public int id;

@@ -71,17 +71,17 @@ public class Strategie implements Service {
 	 * @param profondeur
 	 * @return le couple (note, scripts), scripts étant la suite de scripts à effectuer
 	 */
-	public CoupleNoteScripts evaluation(long date, Table table, RobotChrono robotchrono, Pathfinding pathfinding, int profondeur)
+	public CoupleNoteScript evaluation(long date, Table table, RobotChrono robotchrono, Pathfinding pathfinding, int profondeur)
 	{
 		memorymanager.setModele((FactoryProduct)table);
 		memorymanager.setModele((FactoryProduct)robotchrono);
 		
 		if(profondeur == 0)
-			return new CoupleNoteScripts();
+			return new CoupleNoteScript();
 		else
 		{
 			table.supprimer_obstacles_perimes(date);
-			CoupleNoteScripts meilleur = new CoupleNoteScripts(-1, null);
+			CoupleNoteScript meilleur = new CoupleNoteScript(-1, null);
 			for(String nom_script : scriptmanager.scripts)
 				for(int id : scriptmanager.getId(nom_script))
 				{
@@ -90,7 +90,7 @@ public class Strategie implements Service {
 					Script script = scriptmanager.getScript(nom_script, cloned_table, cloned_robotchrono, pathfinding);
 					long duree_script = script.calcule(id);
 					float noteScript = calculeNote(cloned_table, cloned_robotchrono);
-					CoupleNoteScripts out = evaluation(date + duree_script, cloned_table, cloned_robotchrono, pathfinding, profondeur-1);
+					CoupleNoteScript out = evaluation(date + duree_script, cloned_table, cloned_robotchrono, pathfinding, profondeur-1);
 					out.note += noteScript;
 
 					if(out.note > meilleur.note)

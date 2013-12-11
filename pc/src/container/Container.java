@@ -38,7 +38,7 @@ import robot.serial.SerialManager;
  * RobotChrono
  * ScriptManager
  * Strategie
- * thread* (threadTimer, threadPosition, threadStrategie, threadCapteurs)
+ * thread* (threadTimer, threadPosition, threadStrategie, threadCapteurs, threadLaser)
  * ScriptManager
  * Pathfinding
  * HookGenerator
