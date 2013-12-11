@@ -9,12 +9,12 @@ public class MouvementImpossibleException extends Exception {
 
 	public MouvementImpossibleException()
 	{
-		
+		super();
 	}
 	
 	public MouvementImpossibleException(String m)
 	{
-		
+		super(m);
 	}
 	
 }

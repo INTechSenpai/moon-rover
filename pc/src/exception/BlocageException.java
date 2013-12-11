@@ -9,12 +9,12 @@ public class BlocageException extends Exception {
 
 	public BlocageException()
 	{
-		
+		super();
 	}
 	
 	public BlocageException(String m)
 	{
-		
+		super(m);
 	}
 
 }

@@ -9,12 +9,12 @@ public class CollisionException extends Exception {
 
 	public CollisionException()
 	{
-		
+		super();
 	}
 	
 	public CollisionException(String m)
 	{
-		
+		super(m);
 	}
 	
 }

@@ -9,11 +9,11 @@ public class ThreadException extends Exception {
 	
 	public ThreadException()
 	{
-		
+		super();
 	}
 	
 	public ThreadException(String m)
 	{
-		
+		super(m);
 	}
 }
