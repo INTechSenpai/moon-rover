@@ -25,8 +25,8 @@ public abstract class Robot implements Service {
 	public abstract void correction_angle(float angle);
 	public abstract void tourner();
 	public abstract void suit_chemin();
-	public abstract void set_vitesse_translation();
-	public abstract void set_vitesse_rotation();
+	public abstract void set_vitesse_translation(String vitesse);
+	public abstract void set_vitesse_rotation(String vitesse);
 	
 	protected Pathfinding pathfinding;
 	protected Capteur capteur;

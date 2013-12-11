@@ -116,13 +116,17 @@ public class RobotVrai extends Robot {
 	{
 		
 	}
-	public void set_vitesse_translation()
+	public void set_vitesse_translation(String vitesse)
 	{
-		
+		int pwm_max = conventions_vitesse_translation(vitesse);
+		deplacements.set_vitesse_translation(pwm_max);
+		log.debug("Modification de la vitesse de translation: "+vitesse, this);
 	}
-	public void set_vitesse_rotation()
+	public void set_vitesse_rotation(String vitesse)
 	{
-		
+		int pwm_max = conventions_vitesse_rotation(vitesse);
+		deplacements.set_vitesse_rotation(pwm_max);
+		log.debug("Modification de la vitesse de rotation: "+vitesse, this);
 	}
 	
 	/**
