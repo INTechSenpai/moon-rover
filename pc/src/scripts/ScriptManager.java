@@ -28,8 +28,7 @@ public class ScriptManager implements Service {
 	private Read_Ini config;
 	private Log log;
 	
-	// TODO mettre les vrais scripts...
-	Script scriptTest;
+	public Script[] scripts;
 	
 	public ScriptManager(Service pathfinding, Service threadtimer, Service robotvrai, Service robotchrono, Service hookgenerator, Service table, Service config, Service log) {
 		this.pathfinding = (Pathfinding) pathfinding;
@@ -43,4 +42,10 @@ public class ScriptManager implements Service {
 
 	}
 	
- }
+	// TODO
+	public Script[] scriptsRestants()
+	{
+		return null;
+	}
+	
+}
