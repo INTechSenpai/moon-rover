@@ -1,7 +1,15 @@
 package robot;
 
+import robot.cartes.Actionneurs;
+import robot.cartes.Capteur;
+import robot.cartes.Deplacements;
 import smartMath.Vec2;
+import table.Table;
+import hook.HookGenerator;
+
 import java.lang.Math;
+
+import pathfinding.Pathfinding;
 import container.Service;
 
 /**
@@ -11,6 +19,13 @@ import container.Service;
  */
 
 public class RobotVrai extends Robot {
+
+	protected Pathfinding pathfinding;
+	protected Capteur capteur;
+	protected Actionneurs actionneurs;
+	protected Deplacements deplacements;
+	protected HookGenerator hookgenerator;
+	protected Table table;
 
 	private Vec2 consigne = new Vec2(0,0);
 	private float orientation_consigne = (float)-Math.PI/2;
@@ -30,7 +45,13 @@ public class RobotVrai extends Robot {
 	
 	public RobotVrai(Service pathfinding, Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
  	{
-		super(pathfinding, capteur, actionneurs, deplacements, hookgenerator, table, config, log);
+		super(config, log);
+		this.pathfinding = (Pathfinding) pathfinding;
+		this.capteur = (Capteur) capteur;
+		this.actionneurs = (Actionneurs) actionneurs;
+		this.deplacements = (Deplacements) deplacements;
+		this.hookgenerator = (HookGenerator) hookgenerator;
+		this.table = (Table) table;
  	}
 	
 	/*

@@ -14,11 +14,13 @@ public class RobotChrono extends Robot implements FactoryProduct {
 
 	private float vitesse_mmps;
 	private float vitesse_rps;
-	private float duree = 0;
 	
-	public RobotChrono(Service pathfinding, Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
+	// Durée en millisecondes
+	private long duree = 0;
+	
+	public RobotChrono(Service config, Service log)
 	{
-		super(pathfinding, capteur, actionneurs, deplacements, hookgenerator, table, config, log);
+		super(config, log);
 	}
 	
 	public void setPosition(Vec2 position) {
@@ -28,9 +30,17 @@ public class RobotChrono extends Robot implements FactoryProduct {
 	public void setOrientation(float orientation) {
 		this.orientation = orientation;
 	}
-		
-	// La plupart de ces méthodes resteront vides
 	
+	public void setVitesse_rps(float vitesse_rps) {
+		this.vitesse_rps = vitesse_rps;
+	}
+
+	public void setVitesse_mmps(float vitesse_mmps) {
+		this.vitesse_mmps = vitesse_mmps;
+	}
+
+	// La plupart de ces méthodes resteront vides
+
 	public void stopper()
 	{
 	}
@@ -77,16 +87,18 @@ public class RobotChrono extends Robot implements FactoryProduct {
 	{
 		duree = 0;
 	}
-	public float get_compteur()
+	public long get_compteur()
 	{
 		return duree;
 	}
 
 	@Override
 	public FactoryProduct Clone() {
-		RobotChrono cloned_robotchrono = new RobotChrono(pathfinding, capteur, actionneurs, deplacements, hookgenerator, table, config, log);
+		RobotChrono cloned_robotchrono = new RobotChrono(config, log);
 		cloned_robotchrono.setPosition(position);
 		cloned_robotchrono.setOrientation(orientation);
+		cloned_robotchrono.setVitesse_rps(vitesse_rps);
+		cloned_robotchrono.setVitesse_mmps(vitesse_mmps);
 		return cloned_robotchrono;
 	}
 

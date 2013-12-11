@@ -1,16 +1,7 @@
 package robot;
 
-import java.util.Hashtable;
-import java.util.Map;
-
-import pathfinding.Pathfinding;
-import robot.cartes.Actionneurs;
-import robot.cartes.Capteur;
-import robot.cartes.Deplacements;
 import smartMath.Vec2;
 import container.Service;
-import hook.HookGenerator;
-import table.Table;
 import utils.Log;
 import utils.Read_Ini;
 
@@ -30,12 +21,6 @@ public abstract class Robot implements Service {
 	public abstract void setPosition(Vec2 position);
 	public abstract void setOrientation(float orientation);
 	
-	protected Pathfinding pathfinding;
-	protected Capteur capteur;
-	protected Actionneurs actionneurs;
-	protected Deplacements deplacements;
-	protected HookGenerator hookgenerator;
-	protected Table table;
 	protected Read_Ini config;
 	protected Log log;
 
@@ -45,14 +30,8 @@ public abstract class Robot implements Service {
 	protected Vec2 position = new Vec2(0, 0);
 	protected float orientation = 0;
 	
-	public Robot(Service pathfinding, Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
+	public Robot(Service config, Service log)
 	{
-		this.pathfinding = (Pathfinding) pathfinding;
-		this.capteur = (Capteur) capteur;
-		this.actionneurs = (Actionneurs) actionneurs;
-		this.deplacements = (Deplacements) deplacements;
-		this.hookgenerator = (HookGenerator) hookgenerator;
-		this.table = (Table) table;
 		this.config = (Read_Ini) config;
 		this.log = (Log) log;
 	}
