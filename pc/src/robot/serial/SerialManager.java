@@ -45,7 +45,7 @@ public class SerialManager
 	/**
 	 * Recuperation de toutes les cartes dans cards et des baudrates dans baudrate
 	 */
-	public SerialManager(Service log)
+	public SerialManager(Service log) throws SerialManagerException
 	{
 		this.log = (Log) log;
 
@@ -89,7 +89,7 @@ public class SerialManager
 	/**
 	 * Création des series (il faut au prealable faire un checkSerial())
 	 */
-	public void createSerial()
+	public void createSerial() throws SerialManagerException
 	{
 		int id = -1;
 		//Liste des series deja attribues
@@ -125,12 +125,18 @@ public class SerialManager
 				}
 			}
 		}
+		
 		//Association de chaque serie a son port
 		Enumeration<SpecificationCard> e = cards.elements();
 		while (e.hasMoreElements())
 		{
 			SpecificationCard serial = e.nextElement();
-			if(serial.id == 0 && pings[serial.id] != null)
+			if (!this.isKnownPing(serial.id))
+			{
+				log.critical("La carte " + serial.name + " n'est pas détectée", this);
+				throw new SerialManagerException("");
+			}
+			else if(serial.id == 0 && pings[serial.id] != null)
 			{
 				this.serieAsservissement.initialize(pings[serial.id], serial.baudrate);
 			}

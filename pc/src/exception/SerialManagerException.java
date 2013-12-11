@@ -9,11 +9,11 @@ public class SerialManagerException extends Exception
 
 	public SerialManagerException()
 	{
-		
+		super();
 	}
 	
 	public SerialManagerException(String m)
 	{
-		
+		super(m);
 	}
 }
