@@ -16,7 +16,7 @@ import container.Service;
  * @author pf
  */
 
-abstract class Script implements Service {
+public abstract class Script implements Service {
 
 	// Ces services resteront toujours les mêmes, ont les factorise avec un static
 	protected static ThreadTimer threadtimer;
