@@ -10,8 +10,8 @@ import java.util.ArrayList;
 
 abstract public class Hook {
 
-	private ArrayList<Callback> callbacks;
-
+	private ArrayList<Callback> callbacks = new ArrayList<Callback>();
+	
 	public void ajouter_callback(Callback callback)
 	{
 		callbacks.add(callback);
