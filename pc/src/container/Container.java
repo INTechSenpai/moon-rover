@@ -12,6 +12,7 @@ import exception.SerialManagerException;
 import exception.ThreadException;
 import utils.*;
 import scripts.ScriptManager;
+import strategie.FactoryStrategie;
 import strategie.Strategie;
 import table.Table;
 import threads.ThreadManager;
@@ -112,7 +113,8 @@ public class Container {
 															getService("Read_Ini"),
 															getService("Log")));
 		else if(nom == "Strategie")
-			services.put(nom, (Service)new Strategie(	getService("threadTimer"),
+			services.put(nom, (Service)new Strategie(	getService("FactoryStrategie"),
+														getService("threadTimer"),
 														getService("ScriptManager"),
 														getService("Pathfinding"),
 														getService("Table"),
@@ -134,6 +136,8 @@ public class Container {
 			services.put(nom, (Service)new Pathfinding(	getService("Table"),
 														getService("Read_Ini"),
 														getService("Log")));
+		else if(nom == "FactoryStrategie")
+			services.put(nom, (Service)new FactoryStrategie(	getService("Log")));
 		else
 		{
 			System.out.println("Erreur de getService pour le service: "+nom);

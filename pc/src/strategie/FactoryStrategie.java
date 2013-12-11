@@ -5,7 +5,7 @@ import container.Service;
 import factories.AbstractFactory;
 import factories.FactoryProduct;
 
-public class FactoryStrategie extends AbstractFactory {
+public class FactoryStrategie extends AbstractFactory implements Service {
 
 	private Log log;
 	
