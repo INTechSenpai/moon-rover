@@ -38,6 +38,19 @@ public class Strategie implements Service {
 		this.log = (Log) log;
 	}
 	
+	public float calculeNote()
+	{
+		return 0;
+	}
+
+	/**
+	 * A partir d'un état initial (table, robotchrono), calcule la meilleure combinaison de scripts modulo une certaine profondeur maximale
+	 * @param table
+	 * @param robotchrono
+	 * @param pathfinding
+	 * @param profondeur
+	 * @return le couple (note, scripts), scripts étant la suite de scripts à effectuer
+	 */
 	public CoupleNoteScripts evaluation(Service table, Service robotchrono, Service pathfinding, int profondeur)
 	{
 		memorymanager.setModele((FactoryProduct)table);
@@ -47,6 +60,7 @@ public class Strategie implements Service {
 			return new CoupleNoteScripts();
 		else
 		{
+			CoupleNoteScripts meilleur = new CoupleNoteScripts(-1, null);
 			for(String nom_script : scriptmanager.scripts)
 				for(int id : scriptmanager.getId(nom_script))
 				{
@@ -54,9 +68,18 @@ public class Strategie implements Service {
 					RobotChrono cloned_robotchrono = (RobotChrono) memorymanager.getClone("RobotChrono");
 					Script script = scriptmanager.getScript(nom_script, cloned_table, cloned_robotchrono, pathfinding);
 					script.calcule(id);
+					float noteScript = calculeNote();
 					CoupleNoteScripts out = evaluation(cloned_table, cloned_robotchrono, pathfinding, profondeur-1);
+					out.note += noteScript;
+
+					if(out.note > meilleur.note)
+					{
+						meilleur.note = out.note;
+						meilleur.scripts = out.scripts;
+						meilleur.scripts.add(script);
+					}
 				}
+			return meilleur;
 		}
-		return null;
 	}
 }
