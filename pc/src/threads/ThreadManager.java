@@ -49,6 +49,8 @@ public class ThreadManager {
 				threads.put("threadCapteurs", new ThreadCapteurs(config, log, container.getService("RobotVrai"), threads.get("threadTimer"), container.getService("Table"), container.getService("Capteur")));
 			else if(nom == "threadStrategie")
 				threads.put("threadStrategie", new ThreadStrategie(config, log, container.getService("Strategie"), container.getService("Table"), container.getService("RobotVrai"), container.getService("RobotChrono"), container.getService("Pathfinding")));
+			else if(nom == "threadLaser")
+				threads.put("threadLaser", new ThreadLaser(config, log, container.getService("Laser"), container.getService("Table"), threads.get("threadTimer")));
 			else
 			{
 				log.warning("Le thread suivant n'existe pas: "+nom, this);

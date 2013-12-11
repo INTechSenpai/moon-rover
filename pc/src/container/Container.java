@@ -21,6 +21,7 @@ import robot.RobotVrai;
 import robot.cartes.Actionneurs;
 import robot.cartes.Capteur;
 import robot.cartes.Deplacements;
+import robot.cartes.Laser;
 import robot.serial.SerialManager;
 
 /**
@@ -28,7 +29,7 @@ import robot.serial.SerialManager;
  * Log
  * Read_Ini
  * Table
- * serie* (serieAsservissement, carteCapteursActionneurs, carteLaser)
+ * serie* (serieAsservissement, serieCapteursActionneurs, serieLaser)
  * Deplacements
  * Capteur
  * Actionneurs
@@ -37,11 +38,12 @@ import robot.serial.SerialManager;
  * RobotChrono
  * ScriptManager
  * Strategie
- * thread* (threadTimer, threadPosition, threadStrategie, ThreadCapteurs)
+ * thread* (threadTimer, threadPosition, threadStrategie, threadCapteurs)
  * ScriptManager
  * Pathfinding
  * HookGenerator
  * Strategie
+ * Laser
  * 
  * @author pf
  *
@@ -130,6 +132,11 @@ public class Container {
 		else if(nom == "MemoryManager")
 			services.put(nom, (Service)new MemoryManager(	getService("Read_Ini"),
 															getService("Log")));
+		else if(nom == "Laser")
+			services.put(nom, (Service)new Laser(	getService("Read_Ini"),
+															getService("Log"),
+															getService("serieLaser"),
+															getService("RobotVrai")));
 		else
 		{
 			System.out.println("Erreur de getService pour le service: "+nom);
