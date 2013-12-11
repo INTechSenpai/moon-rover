@@ -24,7 +24,8 @@ public class ThreadStrategie extends AbstractThread {
 	private RobotChrono robotchrono;
 	private Pathfinding pathfinding;
 
-	private Script scriptEnCours;
+	private Table futureTable;
+	private RobotChrono futurRobotChrono;
 	
 	ThreadStrategie(Service config, Service log, Service strategie, Service table, Service robotvrai, Service robotchrono, Service pathfinding)
 	{
@@ -35,7 +36,6 @@ public class ThreadStrategie extends AbstractThread {
 		this.robotchrono = (RobotChrono) robotchrono;
 		this.pathfinding = (Pathfinding) pathfinding;
 	}
-
 	
 	public void run()
 	{
@@ -44,11 +44,20 @@ public class ThreadStrategie extends AbstractThread {
 			// Evaluation d'une stratégie de secours si ce script bug (en premier car plus urgent)
 			Table tableBlocage = table;
 			tableBlocage.creer_obstacle(robotvrai.getPosition()/*+distance*/);
-			CoupleNoteScripts meilleurErreur = strategie.evaluation(table, robotchrono, pathfinding, 2);
+			CoupleNoteScripts meilleurErreur = strategie.evaluation(System.currentTimeMillis(), table, robotchrono, pathfinding, 2);
+
+			strategie.prochainScriptEnnemi = meilleurErreur.script;
 			
 			// Evaluation du prochain coup en supposant que celui-ci se passe sans problème
-			Table futureTable = scriptEnCours.futureTable(table);
-			CoupleNoteScripts meilleurProchain = strategie.evaluation(futureTable, robotchrono, pathfinding, 2);
+
+			synchronized(strategie.scriptEnCours)
+			{
+				futureTable = strategie.scriptEnCours.futureTable(table);
+				futurRobotChrono = strategie.scriptEnCours.futurRobotChrono(robotchrono);
+			}
+			CoupleNoteScripts meilleurProchain = strategie.evaluation(System.currentTimeMillis(), futureTable, futurRobotChrono, pathfinding, 2);
+
+			strategie.prochainScript = meilleurProchain.script;
 		}
 	}
 	

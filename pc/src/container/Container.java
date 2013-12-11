@@ -95,13 +95,7 @@ public class Container {
 														getService("Read_Ini"),
 														getService("Log")));		
 		else if(nom == "RobotChrono")
-			services.put(nom, (Service)new RobotChrono(	getService("Pathfinding"),
-														getService("Capteur"),
-														getService("Actionneurs"),
-														getService("Deplacements"),
-														getService("HookGenerator"),
-														getService("Table"),
-														getService("Read_Ini"),
+			services.put(nom, (Service)new RobotChrono(	getService("Read_Ini"),
 														getService("Log")));		
 		else if(nom == "ScriptManager")
 			services.put(nom, (Service)new ScriptManager(	getService("Pathfinding"),

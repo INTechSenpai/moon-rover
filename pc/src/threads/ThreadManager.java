@@ -42,7 +42,7 @@ public class ThreadManager {
 		if(thread == null)
 		{
 			if(nom == "threadTimer")
-				threads.put("threadTimer", new ThreadTimer(config, log));
+				threads.put("threadTimer", new ThreadTimer(config, log, container.getService("Table"), container.getService("Capteur"), container.getService("Deplacements")));
 			else if(nom == "threadPosition")
 				threads.put("threadPosition", new ThreadPosition(config, log, container.getService("RobotVrai"), threads.get("threadTimer")));
 			else if(nom == "threadCapteurs")

@@ -69,7 +69,7 @@ public abstract class Script implements Service {
 	 * Calcule le temps d'exécution de ce script (grâce à robotChrono)
 	 * @return le temps d'exécution
 	 */
-	public float calcule(int id_version)
+	public long calcule(int id_version)
 	{
 		robot = robotchrono;
 		robotchrono.reset_compteur();
@@ -143,4 +143,11 @@ public abstract class Script implements Service {
 	 */
 	abstract public Table futureTable(Table table);
 		
+	/**
+	 * Méthode qui modifie le robot donnée comme il serait modifié si le script s'achevait correctement
+	 * @param robotchrono
+	 * @return robotchrono modifié
+	 */
+	abstract public RobotChrono futurRobotChrono(RobotChrono robotchrono);
+	
 }
