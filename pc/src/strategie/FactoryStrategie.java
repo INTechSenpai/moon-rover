@@ -2,7 +2,6 @@ package strategie;
 
 import utils.Log;
 import container.Service;
-import exception.FactoryException;
 import factories.AbstractFactory;
 import factories.FactoryProduct;
 
