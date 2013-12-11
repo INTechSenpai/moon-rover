@@ -72,15 +72,16 @@ public class Container {
 													getService("Read_Ini")));
 		else if(nom.length() > 4 && nom.substring(0,5).equals("serie"))
 		{
-			if(serialmanager == null)
-				serialmanager = new SerialManager(getService("Log"));
 			try
 			{
+				if(serialmanager == null)
+					serialmanager = new SerialManager(getService("Log"));
 				services.put(nom, (Service)serialmanager.getSerial(nom));
 			}
 			catch(SerialManagerException e)
 			{
 				System.out.println(e);
+				throw new ContainerException();
 			}
 		}
 		else if(nom == "Deplacements")
