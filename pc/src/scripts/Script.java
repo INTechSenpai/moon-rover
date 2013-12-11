@@ -141,6 +141,6 @@ public abstract class Script implements Service {
 	 * @param table
 	 * @return table modifiée
 	 */
-	abstract protected Table futureTable(Table table);
+	abstract public Table futureTable(Table table);
 		
 }

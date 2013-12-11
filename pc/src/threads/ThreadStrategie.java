@@ -2,6 +2,8 @@ package threads;
 
 import pathfinding.Pathfinding;
 import robot.RobotChrono;
+import robot.RobotVrai;
+import scripts.Script;
 import strategie.CoupleNoteScripts;
 import strategie.Strategie;
 import table.Table;
@@ -15,15 +17,21 @@ import container.Service;
 
 public class ThreadStrategie extends AbstractThread {
 
+	// Dépendances
 	private Strategie strategie;
 	private Table table;
+	private RobotVrai robotvrai;
 	private RobotChrono robotchrono;
 	private Pathfinding pathfinding;
-	ThreadStrategie(Service config, Service log, Service strategie, Service table, Service robotchrono, Service pathfinding)
+
+	private Script scriptEnCours;
+	
+	ThreadStrategie(Service config, Service log, Service strategie, Service table, Service robotvrai, Service robotchrono, Service pathfinding)
 	{
 		super(config, log);
 		this.strategie = (Strategie) strategie;
 		this.table = (Table) table;
+		this.robotvrai = (RobotVrai) robotvrai;
 		this.robotchrono = (RobotChrono) robotchrono;
 		this.pathfinding = (Pathfinding) pathfinding;
 	}
@@ -33,7 +41,14 @@ public class ThreadStrategie extends AbstractThread {
 	{
 		while(!stop_threads)
 		{
-			CoupleNoteScripts meilleur = strategie.evaluation(table, robotchrono, pathfinding, 2);
+			// Evaluation d'une stratégie de secours si ce script bug (en premier car plus urgent)
+			Table tableBlocage = table;
+			tableBlocage.creer_obstacle(robotvrai.getPosition()/*+distance*/);
+			CoupleNoteScripts meilleurErreur = strategie.evaluation(table, robotchrono, pathfinding, 2);
+			
+			// Evaluation du prochain coup en supposant que celui-ci se passe sans problème
+			Table futureTable = scriptEnCours.futureTable(table);
+			CoupleNoteScripts meilleurProchain = strategie.evaluation(futureTable, robotchrono, pathfinding, 2);
 		}
 	}
 	
