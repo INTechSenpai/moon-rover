@@ -8,10 +8,10 @@ import container.Service;
 
 public class ThreadCapteurs extends AbstractThread {
 
-	RobotVrai robotvrai;
-	Capteur capteur;
-	Table table;
-	ThreadTimer threadTimer;
+	private RobotVrai robotvrai;
+	private Capteur capteur;
+	private Table table;
+	private ThreadTimer threadTimer;
 	
 	ThreadCapteurs(Service config, Service log, Service robotvrai, Service threadTimer, Service table, Service capteur)
 	{

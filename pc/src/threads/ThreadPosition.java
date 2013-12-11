@@ -5,8 +5,8 @@ import container.Service;
 
 public class ThreadPosition extends AbstractThread {
 
-	RobotVrai robotvrai;
-	ThreadTimer threadTimer;
+	private RobotVrai robotvrai;
+	private ThreadTimer threadTimer;
 	
 	ThreadPosition(Service config, Service log, Service robotvrai, Service threadTimer)
 	{
