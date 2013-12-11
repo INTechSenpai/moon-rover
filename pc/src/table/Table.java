@@ -8,13 +8,20 @@ import utils.*;
 
 public class Table implements Service {
 
-	Fire arrayFire[] = new Fire[16];
-	Tree arrayTree[] = new Tree[4];
-	Fireplace arrayFireplace[]= new Fireplace[3];
-	Torch arrayTorch[] = new Torch[10] ;
-	Fruit_Tub arrayTub[] = new Fruit_Tub[2];
-	Fresco fresco;
-	Robot arrayRobot[] = new Robot[4];
+	private Fire arrayFire[] = new Fire[16];
+	private Tree arrayTree[] = new Tree[4];
+	private Fireplace arrayFireplace[]= new Fireplace[3];
+	private Torch arrayTorch[] = new Torch[10] ;
+	private Fruit_Tub arrayTub[] = new Fruit_Tub[2];
+	private Fresco fresco;
+	
+	/* Conventions:
+	 * indice 0: notre robot
+	 * indice 1: null
+	 * indice 2: robot ennemi 1
+	 * indice 3: robot ennemi 2
+	 */
+	public Robot arrayRobot[] = new Robot[4];
 	
 	private Log log;
 	private Read_Ini config;
