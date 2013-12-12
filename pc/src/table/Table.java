@@ -2,16 +2,17 @@ package table;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 import robot.Orientation;
-import scripts.Script;
 import smartMath.Vec2;
 import strategie.MemoryManagerProduct;
 import container.Service;
-import factories.FactoryProduct;
 import utils.*;
 
 public class Table implements Service, MemoryManagerProduct {
+
+	private Random rand = new Random();
 
 	private Fire arrayFire[] = new Fire[16];
 	private Tree arrayTree[] = new Tree[4];
@@ -25,7 +26,8 @@ public class Table implements Service, MemoryManagerProduct {
 	private int hashFirePlace;
 	private int hashTorch;
 	private int hashObstacles;
-		
+
+	// Dépendances
 	private Log log;
 	private Read_Ini config;
 	
@@ -75,11 +77,11 @@ public class Table implements Service, MemoryManagerProduct {
 		arrayTorch[9] = new Torch(new Vec2(-1489,1142), 9, false, 11) ;
 
 		// TODO placer dans arrayObstacles les obstacles fixes (foyers, bac, torches, ...)
-		hashFire = Rand.getInt();
-		hashTree = Rand.getInt();
-		hashFirePlace = Rand.getInt();
-		hashTorch = Rand.getInt();
-		hashObstacles = Rand.getInt();
+		hashFire = rand.nextInt();
+		hashTree = rand.nextInt();
+		hashFirePlace = rand.nextInt();
+		hashTorch = rand.nextInt();
+		hashObstacles = rand.nextInt();
 
 	}
 	
@@ -98,6 +100,7 @@ public class Table implements Service, MemoryManagerProduct {
 		
 		Obstacle obstacle = new ObstacleProximite(position, rayon_robot_adverse, System.currentTimeMillis()+duree);
 		listObstacles.add(obstacle);
+		hashObstacles = rand.nextInt();
 	}
 
 	/**
