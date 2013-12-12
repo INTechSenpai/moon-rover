@@ -157,9 +157,9 @@ public class RobotVrai extends Robot {
 	 */	
 	public void update_x_y_orientation()
 	{
-		int[] infos = deplacements.get_infos_x_y_orientation();
-		position = new Vec2(infos[0], infos[1]);
-		orientation = infos[2]/1000; // car get_infos renvoie des milliradians		
+		double[] infos = deplacements.get_infos_x_y_orientation();
+		position = new Vec2((float) infos[0], (float) infos[1]);
+		orientation = (float) infos[2]/1000; // car get_infos renvoie des milliradians		
 	}
 	
 	/* 
