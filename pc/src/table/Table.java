@@ -48,14 +48,10 @@ public class Table implements Service, MemoryManagerProduct {
 		arrayFire[14] = new Fire(new Vec2(-1100,900), 14, 0, Orientation.YPLUS, Colour.RED);
 		arrayFire[15] = new Fire(new Vec2(-1485,1200), 15, 0, Orientation.XPLUS, Colour.YELLOW);
 		//on passe à l'initialisation des arbres
-		arrayTree[0] = new Tree(new Vec2(1500,700), 0, new Vec2(1396,640),new Vec2(1500,580),new Vec2(1604,640),
-								new Vec2(1604,760),new Vec2(1500,820),new Vec2(1396,760));
-		arrayTree[1] = new Tree(new Vec2(800,0), 1, new Vec2(740,104),new Vec2(680,0),new Vec2(740,-104),
-								new Vec2(860,-104),new Vec2(920,0),new Vec2(860,104));
-		arrayTree[2] = new Tree(new Vec2(-800,0), 2, new Vec2(-860,104),new Vec2(-920,0),new Vec2(-860,-104),
-								new Vec2(-740,-104),new Vec2(-680,0),new Vec2(-740,104));
-		arrayTree[3] = new Tree(new Vec2(-1500,700), 3, new Vec2(-1396,760),new Vec2(-1500,820),new Vec2(-1604,760),
-								new Vec2(1604,640),new Vec2(1380,0),new Vec2(1396,640));
+		arrayTree[0] = new Tree(new Vec2(1500,700), 0);
+		arrayTree[1] = new Tree(new Vec2(800,0), 1);
+		arrayTree[2] = new Tree(new Vec2(-800,0), 2);
+		arrayTree[3] = new Tree(new Vec2(-1500,700), 3);
 		//initialisation des foyers
 		arrayFireplace[0] = new Fireplace(new Vec2(1500,0), 250) ;
 		arrayFireplace[1] = new Fireplace(new Vec2(0,950), 150) ;
@@ -153,9 +149,6 @@ public class Table implements Service, MemoryManagerProduct {
 	}
 */
 
-	/**
-	 * Utilisé par la factory
-	 */
 	public MemoryManagerProduct clone(MemoryManagerProduct cloned_table) {
 		((Table)cloned_table).initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch, listObstacles);
 		return cloned_table;
@@ -173,20 +166,28 @@ public class Table implements Service, MemoryManagerProduct {
 	 */
 	public void initialise(Fire arrayFire[], Tree arrayTree[], Fireplace arrayFireplace[], Torch arrayTorch[], ArrayList<Obstacle> listObstacles)
 	{
-		for(int i = 0; i < 16; i++)		
-			this.arrayFire[i] = arrayFire[i].clone();
+		log.debug("Début recopie", this);
+		if(!this.arrayFire.equals(arrayFire))
+			for(int i = 0; i < 16; i++)		
+				this.arrayFire[i] = arrayFire[i].clone();
+		else
+			log.debug("Optimisation", this);
 
-		for(int i = 0; i < 4; i++)		
-			this.arrayTree[i] = arrayTree[i].clone();
+		if(!this.arrayTree.equals(arrayTree))
+			for(int i = 0; i < 4; i++)		
+				this.arrayTree[i] = arrayTree[i].clone();
 
-		for(int i = 0; i < 3; i++)		
-			this.arrayFireplace[i] = arrayFireplace[i].clone();
+		if(!this.arrayFireplace.equals(arrayFireplace))
+			for(int i = 0; i < 3; i++)		
+				this.arrayFireplace[i] = arrayFireplace[i].clone();
 
-		for(int i = 0; i < 10; i++)		
-			this.arrayTorch[i] = arrayTorch[i].clone();
+		if(!this.arrayTorch.equals(arrayTorch))
+			for(int i = 0; i < 10; i++)		
+				this.arrayTorch[i] = arrayTorch[i].clone();
 
-		for(Obstacle item: listObstacles)
-			this.listObstacles.add(item.clone());
+		if(!this.listObstacles.equals(listObstacles))
+			for(Obstacle item: listObstacles)
+				this.listObstacles.add(item.clone());
 	}
 
 	public String getNom() {
