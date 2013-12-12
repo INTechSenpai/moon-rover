@@ -1,8 +1,8 @@
 package robot;
 
 import smartMath.Vec2;
+import strategie.MemoryManagerProduct;
 import container.Service;
-import factories.FactoryProduct;
 
 /**
  * Robot particulier qui fait pas bouger le robot réel, mais détermine la durée des actions
@@ -10,7 +10,7 @@ import factories.FactoryProduct;
  *
  */
 
-public class RobotChrono extends Robot implements FactoryProduct {
+public class RobotChrono extends Robot implements MemoryManagerProduct {
 
 	private float vitesse_mmps;
 	private float vitesse_rps;
@@ -93,17 +93,22 @@ public class RobotChrono extends Robot implements FactoryProduct {
 	}
 
 	@Override
-	public FactoryProduct Clone() {
-		RobotChrono cloned_robotchrono = new RobotChrono(config, log);
-		cloned_robotchrono.setPosition(position);
-		cloned_robotchrono.setOrientation(orientation);
-		cloned_robotchrono.setVitesse_rps(vitesse_rps);
-		cloned_robotchrono.setVitesse_mmps(vitesse_mmps);
+	public MemoryManagerProduct clone(MemoryManagerProduct cloned_robotchrono) {
+		((RobotChrono)cloned_robotchrono).setPosition(position);
+		((RobotChrono)cloned_robotchrono).setOrientation(orientation);
+		((RobotChrono)cloned_robotchrono).setVitesse_rps(vitesse_rps);
+		((RobotChrono)cloned_robotchrono).setVitesse_mmps(vitesse_mmps);
 		return cloned_robotchrono;
 	}
 
+	public MemoryManagerProduct clone()
+	{
+		RobotChrono cloned_robotchrono = new RobotChrono(config, log);
+		return clone(cloned_robotchrono);
+	}
+
 	@Override
-	public String TypeName() {
+	public String getNom() {
 		return "RobotChrono";
 	}
 	

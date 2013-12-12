@@ -7,7 +7,6 @@ import table.Table;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
-import factories.FactoryProduct;
 
 /**
  * Classe qui gère les objets utilisés dans l'arbre des possibles de la stratégie
@@ -20,21 +19,31 @@ public class MemoryManager implements Service {
 	private Log log;
 	private Read_Ini config;
 	
-	private final int nbmax;
+	private int nbmax;
 
-	protected Hashtable<String, FactoryProduct> productsModels = new Hashtable<String, FactoryProduct>();
-	protected Hashtable<String, Integer> productsIndices = new Hashtable<String, Integer>();
-	protected Hashtable<String, FactoryProduct[]> productsObjects = new Hashtable<String, FactoryProduct[]>();
+	private Hashtable<String, MemoryManagerProduct> productsModels = new Hashtable<String, MemoryManagerProduct>();
+	private Hashtable<String, Integer> productsIndices = new Hashtable<String, Integer>();
+	private Hashtable<String, MemoryManagerProduct[]> productsObjects = new Hashtable<String, MemoryManagerProduct[]>();
 	
+	private int indiceRobotChrono = 0;
+	private int indiceTable = 0;
 
 	public MemoryManager(Service config, Service log)
 	{
 		this.log = (Log) log;
+		this.log.debug("Constructeur memorymanager", this);
 		this.config = (Read_Ini) config;
-		nbmax = Integer.parseInt(this.config.config.getProperty("nb_max_noeuds"));
-		
-//		register("Table");
-//		register("RobotChrono");
+		try {
+			nbmax = Integer.parseInt(this.config.get("nb_max_noeuds"));
+		}
+		catch(Exception e)
+		{
+			nbmax = 1;
+			this.log.critical(e, this);
+		}
+			
+		register("Table");
+		register("RobotChrono");
 	}
 
 	public void register(String nom)
@@ -42,36 +51,48 @@ public class MemoryManager implements Service {
 		if(nom == "Table")
 		{
 			log.debug("Instanciation des tables", this);
-			productsObjects.put("Table", new Table[nbmax]);
-			productsIndices.put("Table", 0);
-			productsModels.put("Table", null);
-			for(int i = 0; i < nbmax; i++)
-				productsObjects.get("Table")[i] = new Table(null, null);
+			productsObjects.put(nom, new Table[nbmax]);
+			productsIndices.put(nom, 0);
 		}
 		else if(nom == "RobotChrono")
 		{
 			log.debug("Instanciation des robotchrono", this);
-			productsObjects.put("RobotChrono", new RobotChrono[nbmax]);
-			productsIndices.put("RobotChrono", 0);
-			productsModels.put("RobotChrono", null);
-			for(int i = 0; i < nbmax; i++)
-				productsObjects.get("RobotChrono")[i] = new RobotChrono(null, null);
+			productsObjects.put(nom, new RobotChrono[nbmax]);
+			productsIndices.put(nom, 0);
 		}
 		else
 			log.warning("Erreur lors de l'enregistrement de "+nom, this);
 
 	}
 	
-	public void setModele(FactoryProduct instance)
+	public void setModele(MemoryManagerProduct instance)
 	{
-		productsModels.put(instance.TypeName(), instance.Clone());
+		productsModels.put(instance.getNom(), instance.clone());
 	}
 	
-	public FactoryProduct getClone(String nom)
+	public MemoryManagerProduct getClone(String nom)
 	{
-		FactoryProduct out = productsObjects.get(nom)[productsIndices.get(nom)];
-		out = productsModels.get(nom).Clone();
-		productsIndices.put(nom, (productsIndices.get(nom)+1) % nbmax);
+		MemoryManagerProduct out;
+		if(nom == "Table")
+		{
+			out = productsObjects.get(nom)[indiceTable];
+			productsModels.get(nom).clone(out);
+			indiceTable++;
+			indiceTable %= nbmax;
+		}
+		else if(nom == "RobotChrono")
+		{
+			out = productsObjects.get(nom)[indiceRobotChrono];
+			productsModels.get(nom).clone(out);
+			indiceRobotChrono++;
+			indiceRobotChrono %= nbmax;
+		}
+		else
+		{
+			out = productsObjects.get(nom)[productsIndices.get(nom)];
+			productsModels.get(nom).clone(out);
+			productsIndices.put(nom, (productsIndices.get(nom)+1) % nbmax);			
+		}
 		return out;
 	}
 			

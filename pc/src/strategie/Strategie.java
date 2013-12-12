@@ -9,7 +9,6 @@ import threads.ThreadTimer;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
-import factories.FactoryProduct;
 
 /**
  * Classe qui prend les décisions et exécute les scripts
@@ -73,8 +72,8 @@ public class Strategie implements Service {
 	 */
 	public CoupleNoteScript evaluation(long date, Table table, RobotChrono robotchrono, Pathfinding pathfinding, int profondeur)
 	{
-		memorymanager.setModele((FactoryProduct)table);
-		memorymanager.setModele((FactoryProduct)robotchrono);
+		memorymanager.setModele((MemoryManagerProduct)table);
+		memorymanager.setModele((MemoryManagerProduct)robotchrono);
 		
 		if(profondeur == 0)
 			return new CoupleNoteScript();

@@ -5,11 +5,12 @@ import java.util.ArrayList;
 import robot.Orientation;
 import scripts.Script;
 import smartMath.Vec2;
+import strategie.MemoryManagerProduct;
 import container.Service;
 import factories.FactoryProduct;
 import utils.*;
 
-public class Table implements Service, FactoryProduct {
+public class Table implements Service, MemoryManagerProduct {
 
 	private Fire arrayFire[] = new Fire[16];
 	private Tree arrayTree[] = new Tree[4];
@@ -141,10 +142,15 @@ public class Table implements Service, FactoryProduct {
 	/**
 	 * Utilisé par la factory
 	 */
-	public FactoryProduct Clone() {
-		Table cloned_table = new Table(log, config);
-		cloned_table.initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch, listObstacles);
+	public MemoryManagerProduct clone(MemoryManagerProduct cloned_table) {
+		((Table)cloned_table).initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch, listObstacles);
 		return cloned_table;
+	}
+	
+	public MemoryManagerProduct clone()
+	{
+		Table cloned_table = new Table(log, config);
+		return clone(cloned_table);
 	}
 
 	// TODO changera probablement à l'avenir
@@ -169,10 +175,9 @@ public class Table implements Service, FactoryProduct {
 			this.listObstacles.add(item.clone());
 	}
 
-	@Override
-	public String TypeName() {
+	public String getNom() {
 		return "Table";
 	}
-	
+
 }
 
