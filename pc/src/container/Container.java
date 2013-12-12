@@ -137,9 +137,9 @@ public class Container {
 															getService("Log")));
 		else if(nom == "Laser")
 			services.put(nom, (Service)new Laser(	getService("Read_Ini"),
-															getService("Log"),
-															getService("serieLaser"),
-															getService("RobotVrai")));
+													getService("Log"),
+													getService("serieLaser"),
+													getService("RobotVrai")));
 		else
 		{
 			System.out.println("Erreur de getService pour le service: "+nom);
