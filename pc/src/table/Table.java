@@ -14,7 +14,7 @@ public class Table implements Service, FactoryProduct {
 	private Fire arrayFire[] = new Fire[16];
 	private Tree arrayTree[] = new Tree[4];
 	private Fireplace arrayFireplace[]= new Fireplace[3];
-	private Torch arrayTorch[] = new Torch[10] ;
+	private Torch arrayTorch[] = new Torch[10];
 
 	private ArrayList<Obstacle> arrayObstacles = new ArrayList<Obstacle>();
 	
@@ -25,7 +25,10 @@ public class Table implements Service, FactoryProduct {
 	{
 		this.log = (Log) log;
 		this.config = (Read_Ini) config;
-		
+	}
+	
+	public void initialise()
+	{
 		arrayFire[0] = new Fire(new Vec2(1485,1200), 0, 0, Orientation.XPLUS, Colour.YELLOW);
 		arrayFire[1] = new Fire(new Vec2(1100,900), 1, 0, Orientation.YPLUS, Colour.YELLOW);
 		arrayFire[2] = new Fire(new Vec2(600,1400), 2, 0, Orientation.XPLUS, Colour.YELLOW);
@@ -68,6 +71,7 @@ public class Table implements Service, FactoryProduct {
 		arrayTorch[9] = new Torch(new Vec2(-1489,1142), 9, false, 11) ;
 
 		// TODO placer dans arrayObstacles les obstacles fixes (foyers, bac, torches, ...)
+
 	}
 	
 	public void creer_obstacle(Vec2 position)

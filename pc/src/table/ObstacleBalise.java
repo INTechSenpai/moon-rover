@@ -15,4 +15,9 @@ public class ObstacleBalise extends Obstacle {
 		super(position,rad);
 		this.speed = spe;
 	}
+	
+	public ObstacleBalise clone()
+	{
+		return new ObstacleBalise(position, radius, speed);
+	}
 }

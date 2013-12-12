@@ -65,8 +65,11 @@ public class Container {
 		else if(nom == "Log")
 			services.put(nom, (Service)new Log(getService("Read_Ini")));
 		else if(nom == "Table")
+		{
 			services.put(nom, (Service)new Table(	getService("Log"),
 													getService("Read_Ini")));
+			((Table) services.get(nom)).initialise();
+		}
 		else if(nom.length() > 4 && nom.substring(0,5).equals("serie"))
 		{
 				if(serialmanager == null)

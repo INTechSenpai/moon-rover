@@ -17,5 +17,9 @@ public class ObstacleProximite extends Obstacle {
 		this.death_date = death_date;
 	}
 	
+	public ObstacleProximite clone()
+	{
+		return new ObstacleProximite(position, radius, death_date);
+	}
 	
 }

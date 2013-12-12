@@ -18,4 +18,9 @@ public class Obstacle {
 		
 	}
 	
+	public Obstacle clone()
+	{
+		return new Obstacle(position, radius);
+	}
+	
 }
