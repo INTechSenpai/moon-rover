@@ -31,7 +31,6 @@ public class MemoryManager implements Service {
 	public MemoryManager(Service config, Service log)
 	{
 		this.log = (Log) log;
-		this.log.debug("Constructeur memorymanager", this);
 		this.config = (Read_Ini) config;
 		try {
 			nbmax = Integer.parseInt(this.config.get("nb_max_noeuds"));
