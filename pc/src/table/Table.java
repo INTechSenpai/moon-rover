@@ -147,25 +147,25 @@ public class Table implements Service, MemoryManagerProduct {
 	
 	// Feux
 	
-	public void getFire (int id)
+	public void pickFire (int id)
 	{
 		arrayFire[id].pickFire();
 	}
 
 
-/*	public Fire nearestFire ()
+	public Fire nearestFire (Vec2 position)
 	{
 		int min = 0;
-		for (int i = 0; i < 10, i++)
+		for (int i = 0; i < 10; i++)
 		{
-			if (arrayFire[i] < arrayTree[min])
+			if (arrayFire[i].getPosition().SquaredDistance(position) < arrayFire[min].getPosition().SquaredDistance(position))
 			{
 				min = i;
 			}
 		}
-		return arrayTable[min];
+		return arrayFire[min];
 	}
-*/
+
 
 	public MemoryManagerProduct clone(MemoryManagerProduct cloned_table) {
 		((Table)cloned_table).initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch, listObstacles, hashFire, hashTree, hashFirePlace, hashTorch, hashObstacles);

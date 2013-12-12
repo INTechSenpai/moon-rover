@@ -9,7 +9,10 @@ abstract class Game_Element {
 		this.position = position;
 	}
 	
-
+	public Vec2 getPosition()
+	{
+		return position;
+	}
 	
 
 }
