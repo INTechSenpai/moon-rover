@@ -66,6 +66,8 @@ public class Table implements Service, FactoryProduct {
 		arrayTorch[7] = new Torch(new Vec2(-258,11), 7, false, 11) ;
 		arrayTorch[8] = new Torch(new Vec2(-1489,1258), 8, false, 11) ;
 		arrayTorch[9] = new Torch(new Vec2(-1489,1142), 9, false, 11) ;
+
+		// TODO placer dans arrayObstacles les obstacles fixes (foyers, bac, torches, ...)
 	}
 	
 	public void creer_obstacle(Vec2 position)

@@ -2,6 +2,11 @@ package table;
 
 import smartMath.Vec2;
 
+/**
+ * Obstacles détectés par capteurs de proximité (ultrasons et infrarouges)
+ * @author pf
+ *
+ */
 public class ObstacleProximite extends Obstacle {
 
 	public long death_date;
