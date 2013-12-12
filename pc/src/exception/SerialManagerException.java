@@ -10,7 +10,6 @@ public class SerialManagerException extends Exception
 	public SerialManagerException()
 	{
 		super();
-		System.out.println("test");
 	}
 	
 	public SerialManagerException(String m)
