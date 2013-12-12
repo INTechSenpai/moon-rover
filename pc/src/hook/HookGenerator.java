@@ -24,10 +24,10 @@ public class HookGenerator implements Service {
 	private Read_Ini config;
 	private Log log;
 
-	public HookGenerator(Service config, Service log)
+	public HookGenerator(Read_Ini config, Log log)
 	{
-		this.config = (Read_Ini)config;
-		this.log = (Log)log;
+		this.config = config;
+		this.log = log;
 	}
 	
 	public Hook hook_position(Vec2 position, int tolerance, boolean effectuer_symetrie)

@@ -21,10 +21,10 @@ public class Serial implements SerialPortEventListener, Service
 	Log log;
 	String name;
 
-	Serial (Service log, String name)
+	Serial (Log log, String name)
 	{
 		super();
-		this.log = (Log) log;
+		this.log = log;
 		this.name = name;
 	}
 

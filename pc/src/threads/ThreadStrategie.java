@@ -7,6 +7,8 @@ import scripts.Script;
 import strategie.CoupleNoteScript;
 import strategie.Strategie;
 import table.Table;
+import utils.Log;
+import utils.Read_Ini;
 import container.Service;
 
 /**
@@ -27,14 +29,14 @@ public class ThreadStrategie extends AbstractThread {
 	private Table futureTable;
 	private RobotChrono futurRobotChrono;
 	
-	ThreadStrategie(Service config, Service log, Service strategie, Service table, Service robotvrai, Service robotchrono, Service pathfinding)
+	ThreadStrategie(Read_Ini config, Log log, Strategie strategie, Table table, RobotVrai robotvrai, RobotChrono robotchrono, Pathfinding pathfinding)
 	{
 		super(config, log);
-		this.strategie = (Strategie) strategie;
-		this.table = (Table) table;
-		this.robotvrai = (RobotVrai) robotvrai;
-		this.robotchrono = (RobotChrono) robotchrono;
-		this.pathfinding = (Pathfinding) pathfinding;
+		this.strategie = strategie;
+		this.table = table;
+		this.robotvrai = robotvrai;
+		this.robotchrono = robotchrono;
+		this.pathfinding = pathfinding;
 	}
 	
 	public void run()

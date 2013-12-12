@@ -1,6 +1,8 @@
 package threads;
 
 import robot.RobotVrai;
+import utils.Log;
+import utils.Read_Ini;
 import container.Service;
 
 /**
@@ -15,11 +17,11 @@ public class ThreadPosition extends AbstractThread {
 	
 	public boolean robot_pret = false;
 	
-	ThreadPosition(Service config, Service log, Service robotvrai, Service threadTimer)
+	ThreadPosition(Read_Ini config, Log log, RobotVrai robotvrai, ThreadTimer threadTimer)
 	{
 		super(config, log);
-		this.robotvrai = (RobotVrai) robotvrai;
-		this.threadTimer = (ThreadTimer) threadTimer;
+		this.robotvrai = robotvrai;
+		this.threadTimer = threadTimer;
 	}
 	
 	public void run()

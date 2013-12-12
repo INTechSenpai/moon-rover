@@ -17,11 +17,11 @@ public class Actionneurs implements Service {
 	private Log log;
 	private Serial serie;
 
-	public Actionneurs(Service config, Service log, Service serie)
+	public Actionneurs(Read_Ini config, Log log, Serial serie)
 	{
-		this.config = (Read_Ini)config;
-		this.log = (Log)log;
-		this.serie = (Serial)serie;
+		this.config = config;
+		this.log = log;
+		this.serie = serie;
 	}
 	// un exemple de méthode
 	public void bouger_bras(int angle)

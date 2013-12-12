@@ -2,7 +2,15 @@ package threads;
 
 import java.util.Hashtable;
 
+import pathfinding.Pathfinding;
+import robot.cartes.Capteur;
+import robot.cartes.Deplacements;
+import robot.cartes.Laser;
 import container.Container;
+import table.Table;
+import robot.RobotChrono;
+import robot.RobotVrai;
+import strategie.Strategie;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
@@ -25,10 +33,10 @@ public class ThreadManager {
 	
 	private Hashtable<String, AbstractThread> threads;
 	
-	public ThreadManager(Service config, Service log)
+	public ThreadManager(Read_Ini config, Log log)
 	{
-		this.config = (Read_Ini) config;
-		this.log = (Log) log;
+		this.config = config;
+		this.log = log;
 		
 		container = new Container();
 		
@@ -42,15 +50,15 @@ public class ThreadManager {
 		if(thread == null)
 		{
 			if(nom == "threadTimer")
-				threads.put("threadTimer", new ThreadTimer(config, log, container.getService("Table"), container.getService("Capteur"), container.getService("Deplacements")));
+				threads.put("threadTimer", new ThreadTimer(config, log, (Table)container.getService("Table"), (Capteur)container.getService("Capteur"), (Deplacements)container.getService("Deplacements")));
 			else if(nom == "threadPosition")
-				threads.put("threadPosition", new ThreadPosition(config, log, container.getService("RobotVrai"), threads.get("threadTimer")));
+				threads.put("threadPosition", new ThreadPosition(config, log, (RobotVrai)container.getService("RobotVrai"), (ThreadTimer)threads.get("threadTimer")));
 			else if(nom == "threadCapteurs")
-				threads.put("threadCapteurs", new ThreadCapteurs(config, log, container.getService("RobotVrai"), threads.get("threadTimer"), container.getService("Table"), container.getService("Capteur")));
+				threads.put("threadCapteurs", new ThreadCapteurs(config, log, (RobotVrai)container.getService("RobotVrai"), (ThreadTimer)threads.get("threadTimer"), (Table)container.getService("Table"), (Capteur)container.getService("Capteur")));
 			else if(nom == "threadStrategie")
-				threads.put("threadStrategie", new ThreadStrategie(config, log, container.getService("Strategie"), container.getService("Table"), container.getService("RobotVrai"), container.getService("RobotChrono"), container.getService("Pathfinding")));
+				threads.put("threadStrategie", new ThreadStrategie(config, log, (Strategie)container.getService("Strategie"), (Table)container.getService("Table"), (RobotVrai)container.getService("RobotVrai"), (RobotChrono)container.getService("RobotChrono"), (Pathfinding)container.getService("Pathfinding")));
 			else if(nom == "threadLaser")
-				threads.put("threadLaser", new ThreadLaser(config, log, container.getService("Laser"), container.getService("Table"), threads.get("threadTimer")));
+				threads.put("threadLaser", new ThreadLaser(config, log, (Laser)container.getService("Laser"), (Table)container.getService("Table"), (ThreadTimer)threads.get("threadTimer")));
 			else
 			{
 				log.warning("Le thread suivant n'existe pas: "+nom, this);

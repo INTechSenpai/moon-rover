@@ -18,11 +18,11 @@ public class Pathfinding implements Service
 	private Read_Ini config;
 	private Log log;
 	
-	public Pathfinding(Service table, Service config, Service log)
+	public Pathfinding(Table table, Read_Ini config, Log log)
 	{
-		this.table = (Table) table;
-		this.config = (Read_Ini) config;
-		this.log = (Log) log;
+		this.table = table;
+		this.config = config;
+		this.log = log;
 	}
 	
 	

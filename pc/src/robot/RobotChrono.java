@@ -2,6 +2,8 @@ package robot;
 
 import smartMath.Vec2;
 import strategie.MemoryManagerProduct;
+import utils.Log;
+import utils.Read_Ini;
 import container.Service;
 
 /**
@@ -18,7 +20,7 @@ public class RobotChrono extends Robot implements MemoryManagerProduct {
 	// Durée en millisecondes
 	private long duree = 0;
 	
-	public RobotChrono(Service config, Service log)
+	public RobotChrono(Read_Ini config, Log log)
 	{
 		super(config, log);
 	}

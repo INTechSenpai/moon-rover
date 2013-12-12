@@ -27,10 +27,10 @@ public class Deplacements implements Service {
     /**
 	 * Constructeur
 	 */
-	public Deplacements(Service log, Service serie)
+	public Deplacements(Log log, Serial serie)
 	{
-		this.log = (Log)log;
-		this.serie = (Serial)serie;
+		this.log = log;
+		this.serie = serie;
 		
 		infos_stoppage_enMouvement = new Hashtable<String, Integer>();
 		infos_stoppage_enMouvement.put("PWMmoteurGauche", 0);

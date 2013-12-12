@@ -32,10 +32,10 @@ public class Table implements Service, MemoryManagerProduct {
 	private Log log;
 	private Read_Ini config;
 	
-	public Table(Service log, Service config)
+	public Table(Log log, Read_Ini config)
 	{
-		this.log = (Log) log;
-		this.config = (Read_Ini) config;
+		this.log = log;
+		this.config = config;
 	}
 	
 	public void initialise()

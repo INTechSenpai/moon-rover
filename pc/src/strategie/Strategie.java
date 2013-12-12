@@ -37,16 +37,15 @@ public class Strategie implements Service {
 	public Script prochainScript;
 
 	
-	public Strategie(Service memorymanager, Service threadTimer, Service scriptmanager, Service pathfinding, Service table, Service config, Service log)
+	public Strategie(MemoryManager memorymanager, ThreadTimer threadTimer, ScriptManager scriptmanager, Pathfinding pathfinding, Table table, Read_Ini config, Log log)
 	{
-		this.memorymanager = (MemoryManager) memorymanager;
-		this.threadTimer = (ThreadTimer) threadTimer;
-		this.scriptmanager = (ScriptManager) scriptmanager;
-		this.pathfinding = (Pathfinding) pathfinding;
-		this.table = (Table) table;
-		this.config = (Read_Ini) config;
-		this.log = (Log) log;
-		
+		this.memorymanager = memorymanager;
+		this.threadTimer = threadTimer;
+		this.scriptmanager = scriptmanager;
+		this.pathfinding = pathfinding;
+		this.table = table;
+		this.config = config;
+		this.log = log;
 	}
 	
 	/**

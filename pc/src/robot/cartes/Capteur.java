@@ -24,11 +24,11 @@ public class Capteur implements Service {
     private final int nb_capteurs_ultrason_avant = 1;
     private final int nb_capteurs_ultrason_arriere = 1;
     
-	public Capteur(Service config, Service log, Service serie)
+	public Capteur(Read_Ini config, Log log, Serial serie)
 	{
-		this.config = (Read_Ini)config;
-		this.log = (Log)log;
-		this.serie = (Serial)serie;
+		this.config = config;
+		this.log = log;
+		this.serie = serie;
 	}
     
 	/**

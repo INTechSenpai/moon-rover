@@ -149,5 +149,11 @@ public abstract class Script implements Service {
 	 * @return robotchrono modifié
 	 */
 	abstract public RobotChrono futurRobotChrono(RobotChrono robotchrono);
-	
+
+	/**
+	 * Renvoie la durée en ms du script si celui-ci s'effectue normalement
+	 * @return durée du script
+	 */
+	abstract public float getDuree();
+
 }

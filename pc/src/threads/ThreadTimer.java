@@ -3,6 +3,8 @@ package threads;
 import robot.cartes.Capteur;
 import robot.cartes.Deplacements;
 import table.Table;
+import utils.Log;
+import utils.Read_Ini;
 import container.Service;
 
 /**
@@ -23,12 +25,12 @@ public class ThreadTimer extends AbstractThread {
 	public long date_debut;
 	public long duree_match;
 	
-	ThreadTimer(Service config, Service log, Service table, Service capteur, Service deplacements)
+	ThreadTimer(Read_Ini config, Log log, Table table, Capteur capteur, Deplacements deplacements)
 	{
 		super(config, log);
-		this.table = (Table) table;
-		this.capteur = (Capteur) capteur;
-		this.deplacements = (Deplacements) deplacements;
+		this.table = table;
+		this.capteur = capteur;
+		this.deplacements = deplacements;
 		
 		// facteur 1000 car temps_match est en secondes et duree_match en ms
 		duree_match = 1000*Long.parseLong(this.config.config.getProperty("temps_match"));

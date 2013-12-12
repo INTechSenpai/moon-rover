@@ -30,10 +30,10 @@ public abstract class Robot implements Service {
 	protected Vec2 position = new Vec2(0, 0);
 	protected float orientation = 0;
 	
-	public Robot(Service config, Service log)
+	public Robot(Read_Ini config, Log log)
 	{
-		this.config = (Read_Ini) config;
-		this.log = (Log) log;
+		this.config = config;
+		this.log = log;
 	}
 
 	public void avancer(int distance, int nbTentatives,

@@ -4,6 +4,8 @@ import robot.RobotVrai;
 import robot.cartes.Capteur;
 import smartMath.Vec2;
 import table.Table;
+import utils.Log;
+import utils.Read_Ini;
 import container.Service;
 
 /**
@@ -19,13 +21,13 @@ public class ThreadCapteurs extends AbstractThread {
 	private Table table;
 	private ThreadTimer threadTimer;
 	
-	ThreadCapteurs(Service config, Service log, Service robotvrai, Service threadTimer, Service table, Service capteur)
+	ThreadCapteurs(Read_Ini config, Log log, RobotVrai robotvrai, ThreadTimer threadTimer, Table table, Capteur capteur)
 	{
 		super(config, log);
-		this.robotvrai = (RobotVrai) robotvrai;
-		this.threadTimer = (ThreadTimer) threadTimer;
-		this.table = (Table) table;
-		this.capteur = (Capteur) capteur;
+		this.robotvrai = robotvrai;
+		this.threadTimer = threadTimer;
+		this.table = table;
+		this.capteur = capteur;
 	}
 	
 	public void run()

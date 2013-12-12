@@ -32,15 +32,15 @@ public class ScriptManager implements Service {
 	
 	public String[] scripts;
 	
-	public ScriptManager(Service pathfinding, Service threadtimer, Service robotvrai, Service robotchrono, Service hookgenerator, Service table, Service config, Service log) {
-		this.pathfinding = (Pathfinding) pathfinding;
-		this.threadtimer = (ThreadTimer) threadtimer;
-		this.robotvrai = (RobotVrai) robotvrai;
-		this.robotchrono = (RobotChrono) robotchrono;
-		this.hookgenerator = (HookGenerator) hookgenerator;
-		this.table = (Table) table;
-		this.config = (Read_Ini) config;
-		this.log = (Log) log;
+	public ScriptManager(Pathfinding pathfinding, ThreadTimer threadtimer, RobotVrai robotvrai, RobotChrono robotchrono, HookGenerator hookgenerator, Table table, Read_Ini config, Log log) {
+		this.pathfinding = pathfinding;
+		this.threadtimer = threadtimer;
+		this.robotvrai = robotvrai;
+		this.robotchrono = robotchrono;
+		this.hookgenerator = hookgenerator;
+		this.table = table;
+		this.config = config;
+		this.log = log;
 
 	}
 	
@@ -51,7 +51,7 @@ public class ScriptManager implements Service {
 	}
 
 	// TODO
-	public Script getScript(String nom, Service table, Service robot, Service pathfinding)
+	public Script getScript(String nom, Table table, Robot robot, Pathfinding pathfinding)
 	{
 		return null;
 //		if(nom == "ScriptPosition")

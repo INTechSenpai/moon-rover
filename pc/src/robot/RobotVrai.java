@@ -5,6 +5,8 @@ import robot.cartes.Capteur;
 import robot.cartes.Deplacements;
 import smartMath.Vec2;
 import table.Table;
+import utils.Log;
+import utils.Read_Ini;
 import hook.HookGenerator;
 
 import java.lang.Math;
@@ -43,15 +45,15 @@ public class RobotVrai extends Robot {
 	
 	// Constructeur
 	
-	public RobotVrai(Service pathfinding, Service capteur, Service actionneurs, Service deplacements, Service hookgenerator, Service table, Service config, Service log)
+	public RobotVrai(Pathfinding pathfinding, Capteur capteur, Actionneurs actionneurs, Deplacements deplacements, HookGenerator hookgenerator, Table table, Read_Ini config, Log log)
  	{
 		super(config, log);
-		this.pathfinding = (Pathfinding) pathfinding;
-		this.capteur = (Capteur) capteur;
-		this.actionneurs = (Actionneurs) actionneurs;
-		this.deplacements = (Deplacements) deplacements;
-		this.hookgenerator = (HookGenerator) hookgenerator;
-		this.table = (Table) table;
+		this.pathfinding = pathfinding;
+		this.capteur = capteur;
+		this.actionneurs = actionneurs;
+		this.deplacements = deplacements;
+		this.hookgenerator =  hookgenerator;
+		this.table = table;
  	}
 	
 	/*

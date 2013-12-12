@@ -23,9 +23,9 @@ public class Log implements Service
 	// Ne pas afficher les messages de bug permet d'économiser du temps CPU
 	private boolean affiche_debug = true;
 	
-	public Log(Service config)
+	public Log(Read_Ini config)
 	{
-		this.config = (Read_Ini) config;
+		this.config = config;
 		
 		try {
 		affiche_debug = Boolean.parseBoolean(this.config.get("affiche_debug"));

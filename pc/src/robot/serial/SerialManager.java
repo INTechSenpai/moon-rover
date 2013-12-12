@@ -45,9 +45,9 @@ public class SerialManager
 	/**
 	 * Recuperation de toutes les cartes dans cards et des baudrates dans baudrate
 	 */
-	public SerialManager(Service log) throws SerialManagerException
+	public SerialManager(Log log) throws SerialManagerException
 	{
-		this.log = (Log) log;
+		this.log = log;
 
 		cards.put(this.carteAsservissement.name, this.carteAsservissement);
 		cards.put(this.carteCapteursActionneurs.name, this.carteCapteursActionneurs);

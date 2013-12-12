@@ -2,15 +2,18 @@ package strategie;
 
 import java.util.Hashtable;
 
+import robot.RobotChrono;
+import table.Table;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
 
 /**
  * Classe qui gère les objets utilisés dans l'arbre des possibles de la stratégie
+ * Benchmark (eeepc): pour 1000 tables, il y a 35ms d'instanciation et 70ms d'affectation
  * @author pf
- *
  */
+
 
 public class MemoryManager implements Service {
 
@@ -26,26 +29,25 @@ public class MemoryManager implements Service {
 	private int indiceRobotChrono = 0;
 	private int indiceTable = 0;
 
-	public MemoryManager(Service config, Service log, Service table, Service robotchrono)
+	public MemoryManager(Read_Ini config, Log log, Table table, RobotChrono robotchrono)
 	{
-		this.log = (Log) log;
-		this.config = (Read_Ini) config;
+		this.log = log;
+		this.config = config;
 		try {
 			nbmax = Integer.parseInt(this.config.get("nb_max_noeuds"));
 		}
 		catch(Exception e)
 		{
-			nbmax = 1;
+			nbmax = 1000;
 			this.log.critical(e, this);
 		}
-			
+
 		register("Table", (MemoryManagerProduct)table);
 		register("RobotChrono", (MemoryManagerProduct)robotchrono);
 	}
 
 	public void register(String nom, MemoryManagerProduct instance)
 	{
-		log.debug("Instanciation de "+instance.getNom(), this);
 		productsObjects.put(nom, new MemoryManagerProduct[nbmax]);
 		productsIndices.put(nom, 0);
 		productsModels.put(nom, instance);
