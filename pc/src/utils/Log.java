@@ -19,10 +19,21 @@ public class Log implements Service
 	private String 	couleurDebug 	= "\u001B[32m",
 					couleurWarning 	= "\u001B[33m",
 					couleurCritical = "\u001B[31m";
+
+	// Ne pas afficher les messages de bug permet d'économiser du temps CPU
+	private boolean affiche_debug = true;
 	
 	public Log(Service config)
 	{
 		this.config = (Read_Ini) config;
+		
+		try {
+		affiche_debug = Boolean.parseBoolean(this.config.get("affiche_debug"));
+		}
+		catch(Exception e)
+		{
+			warning(e, this);
+		}
 	}
 	
 	public void debug(Object message, Object objet)
@@ -32,7 +43,8 @@ public class Log implements Service
 	
 	public void debug(String message, Object objet)
 	{
-		ecrire(objet.getClass().getName()+": "+message, couleurDebug);
+		if(affiche_debug)
+			ecrire(objet.getClass().getName()+": "+message, couleurDebug);
 	}
 
 	public void warning(Object message, Object objet)
