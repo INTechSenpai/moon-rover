@@ -1,6 +1,7 @@
 package table;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import robot.Orientation;
 import scripts.Script;
@@ -77,20 +78,33 @@ public class Table implements Service, MemoryManagerProduct {
 	
 	public void creer_obstacle(Vec2 position)
 	{
-		int rayon_robot_adverse = Integer.parseInt(config.config.getProperty("rayon_robot_adverse"));
-		long duree = Integer.parseInt(config.config.getProperty("duree_peremption_obstacles"));
+		int rayon_robot_adverse = 0;
+		long duree = 0;
+		try {
+			rayon_robot_adverse = Integer.parseInt(config.config.getProperty("rayon_robot_adverse"));
+			duree = Integer.parseInt(config.config.getProperty("duree_peremption_obstacles"));
+		}
+		catch(Exception e)
+		{
+			this.log.critical(e, this);
+		}
+		
 		Obstacle obstacle = new ObstacleProximite(position, rayon_robot_adverse, System.currentTimeMillis()+duree);
 		listObstacles.add(obstacle);
 	}
 
-	// TODO
 	/**
 	 * Appel fait lors de l'anticipation, supprime les obstacles périmés à une date future
 	 * @param date
 	 */
 	public void supprimer_obstacles_perimes(long date)
 	{
-		
+		Iterator<Obstacle> iterator = listObstacles.iterator();
+		while ( iterator.hasNext() ) {
+		    Obstacle obstacle = iterator.next();
+		    if (obstacle instanceof ObstacleProximite && ((ObstacleProximite) obstacle).death_date <= date)
+		        iterator.remove();
+		}	
 	}
 	
 	/**
