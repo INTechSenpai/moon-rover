@@ -177,6 +177,38 @@ public class Table implements Service, MemoryManagerProduct {
 	{
 		arrayTree[id].getTaken();
 	}
+	
+	public int nbrLeft (int id)
+	{
+		return arrayTree[id].nbrLeft();
+	}
+	
+	public int nbrRight (int id)
+	{
+		return arrayTree[id].nbrRight();
+	}
+	
+	public int[] entryPoint(boolean rightSide)
+	{
+		int c;
+		if (rightSide) {
+			c = 2;
+		} else {
+			c = 0;
+		}
+		if (arrayTree[c].isTaken()) {
+			int[] tab = {c+1};
+			return tab;
+		} else {
+			if (arrayTree[c+1].isTaken()) {
+				int[] tab = {c};
+				return tab;
+			} else {
+				int[] tab = {c,c+1};
+				return tab;
+			}
+		}
+	}
 
 	public MemoryManagerProduct clone(MemoryManagerProduct cloned_table) {
 		((Table)cloned_table).initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch, listObstacles, hashFire, hashTree, hashFirePlace, hashTorch, hashObstacles);
