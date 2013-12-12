@@ -27,9 +27,19 @@ public class Log implements Service
 		this.config = (Read_Ini) config;
 	}
 	
+	public void debug(Object message, Object objet)
+	{
+		debug(message.toString(), objet);
+	}
+	
 	public void debug(String message, Object objet)
 	{
 		ecrire(objet.getClass().getName()+": "+message, couleurDebug);
+	}
+
+	public void warning(Object message, Object objet)
+	{
+		warning(message.toString(), objet);
 	}
 
 	public void warning(String message, Object objet)
@@ -37,6 +47,11 @@ public class Log implements Service
 		ecrire(objet.getClass().getName()+": "+message, couleurWarning);
 	}
 
+	public void critical(Object message, Object objet)
+	{
+		critical(message.toString(), objet);
+	}
+	
 	public void critical(String message, Object objet)
 	{
 		ecrire(objet.getClass().getName()+": "+message, couleurCritical);
