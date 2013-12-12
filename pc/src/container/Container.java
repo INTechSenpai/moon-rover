@@ -22,6 +22,7 @@ import robot.RobotVrai;
 import robot.cartes.Actionneurs;
 import robot.cartes.Capteur;
 import robot.cartes.Deplacements;
+import robot.cartes.FiltrageLaser;
 import robot.cartes.Laser;
 import robot.serial.SerialManager;
 import robot.serial.Serial;
@@ -144,6 +145,10 @@ public class Container {
 													(Log)getService("Log"),
 													(Serial)getService("serieLaser"),
 													(RobotVrai)getService("RobotVrai")));
+		else if(nom == "FiltrageLaser")
+			services.put(nom, (Service)new FiltrageLaser(	(Read_Ini)getService("Read_Ini"),
+															(Log)getService("Log")));
+
 		else
 		{
 			System.out.println("Erreur de getService pour le service: "+nom);

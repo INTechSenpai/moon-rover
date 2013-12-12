@@ -164,9 +164,9 @@ public class Deplacements implements Service {
 	}
 
 	/**
-	 * Désactive l'asservissement en rotation du robot
+	 * Active l'asservissement en rotation du robot
 	 */
-	public void desactiver_asservissement_rotation()
+	public void activer_asservissement_rotation()
 	{
 		serie.communiquer("cr1", 0);
 	}
@@ -180,9 +180,9 @@ public class Deplacements implements Service {
 	}
 
 	/**
-	 * Active l'asservissement en rotation du robot
+	 * Désactive l'asservissement en rotation du robot
 	 */
-	public void activer_asservissement_rotation()
+	public void desactiver_asservissement_rotation()
 	{
 		serie.communiquer("cr0", 0);
 	}
