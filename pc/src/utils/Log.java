@@ -19,8 +19,6 @@ public class Log implements Service
 	private String 	couleurDebug 	= "\u001B[32m",
 					couleurWarning 	= "\u001B[33m",
 					couleurCritical = "\u001B[31m";
-
-	java.util.GregorianCalendar calendar = new GregorianCalendar();
 	
 	public Log(Service config)
 	{
@@ -59,6 +57,7 @@ public class Log implements Service
 
 	private void ecrire(String message, String couleur)
 	{
+		java.util.GregorianCalendar calendar = new GregorianCalendar();
 		String heure = calendar.get(Calendar.HOUR)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+","+calendar.get(Calendar.MILLISECOND);
 		System.out.println(couleur+heure+" "+message+"\u001B[0m");
 	}
