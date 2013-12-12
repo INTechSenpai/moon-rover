@@ -12,7 +12,8 @@ import utils.*;
 
 public class Table implements Service, MemoryManagerProduct {
 
-	private Random rand = new Random();
+	// On met cette variable en static afin que, dans deux instances dupliquées, elle ne redonne pas les mêmes nombres
+	private static Random rand = new Random();
 
 	private Fire arrayFire[] = new Fire[16];
 	private Tree arrayTree[] = new Tree[4];
@@ -113,7 +114,10 @@ public class Table implements Service, MemoryManagerProduct {
 		while ( iterator.hasNext() ) {
 		    Obstacle obstacle = iterator.next();
 		    if (obstacle instanceof ObstacleProximite && ((ObstacleProximite) obstacle).death_date <= date)
+		    {
 		        iterator.remove();
+		        rand.nextInt();
+		    }
 		}	
 	}
 	
