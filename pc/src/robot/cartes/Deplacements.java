@@ -269,15 +269,15 @@ public class Deplacements implements Service {
 	 * Renvoie x, y et orientation du robot
 	 * @return un tableau de 3 cases: [x, y, orientation]
 	 */
-	public int[] get_infos_x_y_orientation()
+	public float[] get_infos_x_y_orientation()
 	{
 		String[] infos_string = serie.communiquer("?xyo", 3);
-		int[] infos_int = new int[3];
-
+		float[] infos_float = new float[3];
+		
 		for(int i = 0; i < 3; i++)
-			infos_int[i] = Integer.parseInt(infos_string[i]);
+			infos_float[i] = Float.parseFloat(infos_string[i]);
 
-		return infos_int;
+		return infos_float;
 	}
 
 	/**
