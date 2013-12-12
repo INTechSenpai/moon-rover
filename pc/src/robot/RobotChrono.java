@@ -1,5 +1,6 @@
 package robot;
 
+import hook.Hook;
 import smartMath.Vec2;
 import strategie.MemoryManagerProduct;
 import utils.Log;
@@ -65,6 +66,7 @@ public class RobotChrono extends Robot implements MemoryManagerProduct {
 	{
 		
 	}
+
 	
 	@Override
 	public void va_au_point(Vec2 point)
@@ -112,6 +114,46 @@ public class RobotChrono extends Robot implements MemoryManagerProduct {
 	@Override
 	public String getNom() {
 		return "RobotChrono";
+	}
+
+	// TODO
+	public void tourner(float angle)
+	{
+	}
+	
+	public void tourner(float angle, Hook[] hooks, int nombre_tentatives, boolean sans_lever_exception)
+	{
+		tourner(angle);
+	}
+	
+	public void tourner(float angle, int nombre_tentatives, boolean sans_lever_exception)
+	{
+		tourner(angle);
+	}
+	
+	public void tourner(float angle, Hook[] hooks, boolean sans_lever_exception)
+	{
+		tourner(angle);
+	}
+	
+	public void tourner(float angle, Hook[] hooks, int nombre_tentatives)
+	{
+		tourner(angle);
+	}
+	
+	public void tourner(float angle, boolean sans_lever_exception)
+	{
+		tourner(angle);
+	}
+	
+	public void tourner(float angle, int nombre_tentatives)
+	{
+		tourner(angle);
+	}
+	
+	public void tourner(float angle, Hook[] hooks)
+	{
+		tourner(angle);
 	}
 	
 }

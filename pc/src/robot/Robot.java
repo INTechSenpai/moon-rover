@@ -1,5 +1,6 @@
 package robot;
 
+import hook.Hook;
 import smartMath.Vec2;
 import container.Service;
 import utils.Log;
@@ -14,7 +15,14 @@ public abstract class Robot implements Service {
 	
 	public abstract void stopper();
 	public abstract void correction_angle(float angle);
-	public abstract void tourner();
+	public abstract void tourner(float angle, Hook[] hooks, int nombre_tentatives, boolean sans_lever_exception);
+	public abstract void tourner(float angle, int nombre_tentatives, boolean sans_lever_exception);
+	public abstract void tourner(float angle, Hook[] hooks, boolean sans_lever_exception);
+	public abstract void tourner(float angle, Hook[] hooks, int nombre_tentatives);
+	public abstract void tourner(float angle, boolean sans_lever_exception);
+	public abstract void tourner(float angle, int nombre_tentatives);
+	public abstract void tourner(float angle, Hook[] hooks);
+	public abstract void tourner(float angle);
 	public abstract void suit_chemin();
 	public abstract void set_vitesse_translation(String vitesse);
 	public abstract void set_vitesse_rotation(String vitesse);

@@ -7,9 +7,11 @@ import smartMath.Vec2;
 import table.Table;
 import utils.Log;
 import utils.Read_Ini;
+import hook.Hook;
 import hook.HookGenerator;
 
 import java.lang.Math;
+import java.util.ArrayList;
 
 import pathfinding.Pathfinding;
 import container.Service;
@@ -60,6 +62,22 @@ public class RobotVrai extends Robot {
 	 * MÉTHODES PUBLIQUES
 	 */
 	
+	// TODO
+	public void initialiser_actionneurs()
+	{
+		
+	}
+
+	// TODO
+	public void recaler()
+	{
+		
+	}
+	
+	/**
+	 * Arrête le robot
+	 * @param avec_blocage
+	 */
 	public void stopper(boolean avec_blocage)
 	{
 		log.debug("Arrêt du robot", this);
@@ -68,6 +86,9 @@ public class RobotVrai extends Robot {
 		deplacements.stopper();			
 	}
 	
+	/**
+	 * Arrête le robot
+	 */
 	public void stopper()
 	{
 		stopper(true);
@@ -83,15 +104,7 @@ public class RobotVrai extends Robot {
 		deplacements.tourner((int)angle);
 	}
 	
-	private void avancerBasNiveau(int distance)
-	{
-		Vec2 consigne = new Vec2(0,0);
-		consigne.x = (float) (this.position.x + distance*Math.cos(this.orientation_consigne));
-		consigne.y = (float) (this.position.y + distance*Math.sin(this.orientation_consigne));
-		this.va_au_point(consigne);
-	}
-	
-	@Override
+	// TODO
 	public void avancer(int distance, int nbTentatives, boolean retenterSiBlocage,
 			boolean sansLeverException)
 	{
@@ -109,7 +122,7 @@ public class RobotVrai extends Robot {
 		this.marche_arriere = memoire_marche_arriere;
 		this.effectuer_symetrie = memoire_effectuer_symetrie;
 	}
-	
+
 	public void avancer(int distance, int nbTentatives, boolean retenterSiBlocage)
 	{
 		this.avancer(distance, nbTentatives, retenterSiBlocage, false);
@@ -125,26 +138,106 @@ public class RobotVrai extends Robot {
 		this.avancer(distance, 2, true, false);
 	}
 
-	public void tourner()
-	{
-		
-	}
-	public void suit_chemin()
+	// TODO
+	/**
+	 * Fait tourner le robot (méthode bloquante)
+	 */
+	public void tourner(float angle, Hook[] hooks, int nombre_tentatives, boolean sans_lever_exception)
 	{
 		
 	}
 	
-	@Override
+	public void tourner(float angle, int nombre_tentatives, boolean sans_lever_exception)
+	{
+		tourner(angle, null, nombre_tentatives, sans_lever_exception);
+	}
+
+	public void tourner(float angle, Hook[] hooks, boolean sans_lever_exception)
+	{
+		tourner(angle, null, 2, sans_lever_exception);
+	}
+
+	public void tourner(float angle, Hook[] hooks, int nombre_tentatives)
+	{
+		tourner(angle, hooks, nombre_tentatives, false);				
+	}
+
+	public void tourner(float angle, boolean sans_lever_exception)
+	{
+		tourner(angle, null, 2, sans_lever_exception);
+	}
+
+	public void tourner(float angle, int nombre_tentatives)
+	{
+		tourner(angle, null, nombre_tentatives, false);		
+	}
+
+	public void tourner(float angle, Hook[] hooks)
+	{
+		tourner(angle, hooks, 2, false);
+	}
+
+	public void tourner(float angle)
+	{
+		tourner(angle, null, 2, false);
+	}
+
+	// TODO
+	/**
+	 * Fait suivre au robot un chemin (fourni par la recherche de chemin)
+	 */
+	public void suit_chemin(ArrayList<Vec2> chemin, Hook[] hooks, boolean marche_arriere_auto, boolean symetrie_effectuee)
+	{
+		
+	}
+
+	public void suit_chemin(ArrayList<Vec2> chemin, boolean marche_arriere_auto, boolean symetrie_effectuee)
+	{
+		suit_chemin(chemin, null, marche_arriere_auto, symetrie_effectuee);
+	}
+
+	public void suit_chemin(ArrayList<Vec2> chemin, Hook[] hooks)
+	{
+		suit_chemin(chemin, hooks, true, false);
+	}
+
+	public void suit_chemin(ArrayList<Vec2> chemin, Hook[] hooks, boolean marche_arriere_auto)
+	{
+		suit_chemin(chemin, hooks, marche_arriere_auto, false);
+	}
+
+	public void suit_chemin(ArrayList<Vec2> chemin, boolean marche_arriere_auto)
+	{
+		suit_chemin(chemin, null, marche_arriere_auto, false);
+	}
+
+	public void suit_chemin(ArrayList<Vec2> chemin)
+	{
+		suit_chemin(chemin, null, true, false);		
+	}
+
+	// TODO
+	/**
+	 * Le robot va au point demandé
+	 */
 	public void va_au_point(Vec2 point)
 	{
 		
 	}
+	
+	/**
+	 * Modifie la vitesse de translation
+	 */
 	public void set_vitesse_translation(String vitesse)
 	{
 		int pwm_max = conventions_vitesse_translation(vitesse);
 		deplacements.set_vitesse_translation(pwm_max);
 		log.debug("Modification de la vitesse de translation: "+vitesse, this);
 	}
+
+	/**
+	 * Modifie la vitesse de rotation
+	 */
 	public void set_vitesse_rotation(String vitesse)
 	{
 		int pwm_max = conventions_vitesse_rotation(vitesse);
@@ -161,6 +254,10 @@ public class RobotVrai extends Robot {
 		position = new Vec2(infos[0], infos[1]);
 		orientation = infos[2]/1000; // car get_infos renvoie des milliradians		
 	}
+
+	/*
+	 * ACTIONNEURS
+	 */
 	
 	/* 
 	 * GETTERS & SETTERS
@@ -221,5 +318,94 @@ public class RobotVrai extends Robot {
 	/*
 	 * MÉTHODES PRIVÉES
 	 */
+
+	private void avancerBasNiveau(int distance)
+	{
+		Vec2 consigne = new Vec2(0,0);
+		consigne.x = (float) (this.position.x + distance*Math.cos(this.orientation_consigne));
+		consigne.y = (float) (this.position.y + distance*Math.sin(this.orientation_consigne));
+		this.va_au_point(consigne);
+	}
+
+	// TODO
+	private void tournerBasNiveau(float angle, Hook[] hooks, boolean sans_lever_exception)
+	{
+		
+	}
+	
+	private void tournerBasNiveau(float angle)
+	{
+		tournerBasNiveau(angle, null, false);
+	}
+	
+	private void tournerBasNiveau(float angle, boolean sans_lever_exception)
+	{
+		tournerBasNiveau(angle, null, sans_lever_exception);
+	}
+
+	private void tournerBasNiveau(float angle, Hook[] hooks)
+	{
+		tournerBasNiveau(angle, hooks, false);
+	}
+
+	// TODO
+	private void va_au_pointBasNiveau(Vec2 position, Hook[] hooks, boolean trajectoire_courbe, boolean sans_lever_exception)
+	{
+		
+	}
+	
+	private void va_au_pointBasNiveau(Vec2 position, boolean trajectoire_courbe, boolean sans_lever_exception)
+	{
+		va_au_pointBasNiveau(position, null, trajectoire_courbe, sans_lever_exception);
+	}
+	
+	private void va_au_pointBasNiveau(Vec2 position, boolean trajectoire_courbe)
+	{
+		va_au_pointBasNiveau(position, null, trajectoire_courbe, false);		
+	}
+
+	private void va_au_pointBasNiveau(Vec2 position, Hook[] hooks, boolean trajectoire_courbe)
+	{
+		va_au_pointBasNiveau(position, hooks, trajectoire_courbe, false);		
+	}
+
+	private void va_au_pointBasNiveau(Vec2 position, Hook[] hooks)
+	{
+		va_au_pointBasNiveau(position, hooks, false, false);		
+	}
+
+	private void va_au_pointBasNiveau(Vec2 position)
+	{
+		va_au_pointBasNiveau(position, null, false, false);		
+	}
+
+	// TODO
+	private void mise_a_jour_consignes()
+	{
+		
+	}
+
+	// TODO
+	private void detecter_collision()
+	{
+		
+	}
+	
+	// TODO
+	private void acquittement(boolean detection_collision, boolean sans_lever_exception)
+	{
+		
+	}
+	
+	private void acquittement()
+	{
+		acquittement(true, false);
+	}
+
+	@Override
+	public void suit_chemin() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
