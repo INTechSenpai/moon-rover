@@ -10,7 +10,7 @@ import threads.ThreadTimer;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
-
+import java.util.ArrayList;
 /**
  * Classe abstraite dont hériteront les différents scripts. S'occupe le robotvrai et robotchrono de manière à ce que ce soit transparent pour les différents scripts
  * @author pf
@@ -105,7 +105,7 @@ public abstract class Script implements Service {
 	 * Renvoie le tableau des versions d'un script
 	 * @return le tableau des versions possibles
 	 */
-	public abstract int[] version();
+	public abstract ArrayList<Integer> version();
 
 	/**
 	 * Retourne la position d'entrée associée à la version id
@@ -118,7 +118,7 @@ public abstract class Script implements Service {
 	 * Renvoie le score que peut fournir un script
 	 * @return le score
 	 */
-	public abstract int score();
+	public abstract int score(int id_version);
 	
 	/**
  	 * Donne le poids du script, utilisé pour calculer sa note
@@ -141,7 +141,7 @@ public abstract class Script implements Service {
 	 * @param table
 	 * @return table modifiée
 	 */
-	abstract public Table futureTable(Table table);
+	abstract public Table futureTable(Table table, int id_version);
 		
 	/**
 	 * Méthode qui modifie le robot donnée comme il serait modifié si le script s'achevait correctement

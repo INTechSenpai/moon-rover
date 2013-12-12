@@ -159,7 +159,7 @@ public class Table implements Service, MemoryManagerProduct {
 	
 	public void pickTree (int id)
 	{
-		arrayTree[id].getTaken();
+		arrayTree[id].setTaken();
 	}
 	
 	public int nbrLeft (int id)
