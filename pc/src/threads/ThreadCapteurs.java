@@ -50,7 +50,7 @@ public class ThreadCapteurs extends AbstractThread {
 			}
 		
 		log.debug("Activation des capteurs", this);
-		while(!threadTimer.get_fin_match())
+		while(!threadTimer.fin_match)
 		{
 			if(stop_threads)
 			{

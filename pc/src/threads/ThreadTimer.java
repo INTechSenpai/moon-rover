@@ -96,11 +96,5 @@ public class ThreadTimer extends AbstractThread {
 		log.debug("Fin du thread timer", this);
 		
 	}
-
-	// TODO
-	public boolean get_fin_match()
-	{
-		return false;
-	}
 	
 }

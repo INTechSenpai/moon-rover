@@ -39,7 +39,7 @@ public class ThreadPosition extends AbstractThread {
 			{
 				log.warning(e.toString(), this);
 			}
-		} while(threadTimer.get_fin_match());
+		} while(threadTimer.fin_match);
 
 		log.debug("Arrêt du thread de position", this);
 	
