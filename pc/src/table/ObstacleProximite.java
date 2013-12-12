@@ -19,7 +19,7 @@ public class ObstacleProximite extends Obstacle {
 	
 	public ObstacleProximite clone()
 	{
-		return new ObstacleProximite(position, radius, death_date);
+		return new ObstacleProximite(position.clone(), radius, death_date);
 	}
 	
 }

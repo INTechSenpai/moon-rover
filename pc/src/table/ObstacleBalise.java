@@ -18,6 +18,6 @@ public class ObstacleBalise extends Obstacle {
 	
 	public ObstacleBalise clone()
 	{
-		return new ObstacleBalise(position, radius, speed);
+		return new ObstacleBalise(position.clone(), radius, speed);
 	}
 }

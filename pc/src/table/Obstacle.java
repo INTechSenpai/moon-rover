@@ -20,7 +20,7 @@ public class Obstacle {
 	
 	public Obstacle clone()
 	{
-		return new Obstacle(position, radius);
+		return new Obstacle(position.clone(), radius);
 	}
 	
 }
