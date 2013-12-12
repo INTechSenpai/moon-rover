@@ -165,6 +165,18 @@ public class Table implements Service, MemoryManagerProduct {
 		}
 		return arrayFire[min];
 	}
+	
+	public void putFire (int id)
+	{
+		arrayFire[id].ejectFire();
+	}
+	
+	// Arbres
+	
+	public void pickTree (int id)
+	{
+		
+	}
 
 
 	public MemoryManagerProduct clone(MemoryManagerProduct cloned_table) {
