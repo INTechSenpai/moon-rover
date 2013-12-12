@@ -129,22 +129,6 @@ public class Table implements Service, MemoryManagerProduct {
 		supprimer_obstacles_perimes(System.currentTimeMillis());
 	}
 	
-	// TODO Guy
-	// Feux
-		// récupérer feu (id) : void
-		// feu le plus proche (void) : feu
-		// poser feu (id) : void
-	
-	// Arbre
-		// récupérer arbre (id) : void
-		// combien gauche (id) : int
-		// combien droit (id) : int
-		// points d'entrée (void) : int[] ([id, id] ou [id] si un seul)
-			// syntaxe tableau: int entryPoints[] = new int[2]; (ou 1!)
-	
-	// Torche
-		// torche la plus proche (Vec2) : torche (distance euclidienne)
-	
 	// Feux
 	
 	public void pickFire (int id)
@@ -156,7 +140,7 @@ public class Table implements Service, MemoryManagerProduct {
 	public Fire nearestFire (Vec2 position)
 	{
 		int min = 0;
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 16; i++)
 		{
 			if (arrayFire[i].getPosition().SquaredDistance(position) < arrayFire[min].getPosition().SquaredDistance(position))
 			{
@@ -209,7 +193,22 @@ public class Table implements Service, MemoryManagerProduct {
 			}
 		}
 	}
-
+	
+	//Torches
+	
+	public Torch nearestTorch (Vec2 position)
+	{
+		int min = 0;
+		for (int i = 0; i < 10; i++)
+		{
+			if (arrayTorch[i].getPosition().SquaredDistance(position) < arrayFire[min].getPosition().SquaredDistance(position))
+			{
+				min = i;
+			}
+		}
+		return arrayTorch[min];
+	}
+	
 	public MemoryManagerProduct clone(MemoryManagerProduct cloned_table) {
 		((Table)cloned_table).initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch, listObstacles, hashFire, hashTree, hashFirePlace, hashTorch, hashObstacles);
 		return cloned_table;
