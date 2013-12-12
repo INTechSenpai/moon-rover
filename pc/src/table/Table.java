@@ -16,7 +16,7 @@ public class Table implements Service, FactoryProduct {
 	private Fireplace arrayFireplace[]= new Fireplace[3];
 	private Torch arrayTorch[] = new Torch[10];
 
-	private ArrayList<Obstacle> arrayObstacles = new ArrayList<Obstacle>();
+	private ArrayList<Obstacle> listObstacles = new ArrayList<Obstacle>();
 	
 	private Log log;
 	private Read_Ini config;
@@ -79,7 +79,7 @@ public class Table implements Service, FactoryProduct {
 		int rayon_robot_adverse = Integer.parseInt(config.config.getProperty("rayon_robot_adverse"));
 		long duree = Integer.parseInt(config.config.getProperty("duree_peremption_obstacles"));
 		Obstacle obstacle = new ObstacleProximite(position, rayon_robot_adverse, System.currentTimeMillis()+duree);
-		arrayObstacles.add(obstacle);
+		listObstacles.add(obstacle);
 	}
 
 	// TODO
@@ -143,7 +143,7 @@ public class Table implements Service, FactoryProduct {
 	 */
 	public FactoryProduct Clone() {
 		Table cloned_table = new Table(log, config);
-		cloned_table.initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch, arrayObstacles);
+		cloned_table.initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch, listObstacles);
 		return cloned_table;
 	}
 
@@ -151,13 +151,22 @@ public class Table implements Service, FactoryProduct {
 	/**
 	 * Méthode d'initialisation d'une table, utilisé par clone()
 	 */
-	public void initialise(Fire arrayFire[], Tree arrayTree[], Fireplace arrayFireplace[], Torch arrayTorch[], ArrayList<Obstacle> arrayObstacles)
+	public void initialise(Fire arrayFire[], Tree arrayTree[], Fireplace arrayFireplace[], Torch arrayTorch[], ArrayList<Obstacle> listObstacles)
 	{
-		this.arrayFire = arrayFire;
-		this.arrayTree = arrayTree;
-		this.arrayFireplace = arrayFireplace;
-		this.arrayTorch = arrayTorch;
-		this.arrayObstacles = arrayObstacles;
+		for(int i = 0; i < 16; i++)		
+			this.arrayFire[i] = arrayFire[i].clone();
+
+		for(int i = 0; i < 4; i++)		
+			this.arrayTree[i] = arrayTree[i].clone();
+
+		for(int i = 0; i < 3; i++)		
+			this.arrayFireplace[i] = arrayFireplace[i].clone();
+
+		for(int i = 0; i < 10; i++)		
+			this.arrayTorch[i] = arrayTorch[i].clone();
+
+		for(Obstacle item: listObstacles)
+			this.listObstacles.add(item.clone());
 	}
 
 	@Override
