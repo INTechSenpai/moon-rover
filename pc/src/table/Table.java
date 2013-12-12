@@ -175,9 +175,8 @@ public class Table implements Service, MemoryManagerProduct {
 	
 	public void pickTree (int id)
 	{
-		
+		arrayTree[id].getTaken();
 	}
-
 
 	public MemoryManagerProduct clone(MemoryManagerProduct cloned_table) {
 		((Table)cloned_table).initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch, listObstacles, hashFire, hashTree, hashFirePlace, hashTorch, hashObstacles);
