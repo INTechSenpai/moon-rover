@@ -209,6 +209,48 @@ public class Table implements Service, MemoryManagerProduct {
 		return arrayTorch[min];
 	}
 	
+	// getters setters
+	
+	public Fire[] getAFire()
+	{
+		return arrayFire;
+	}
+	
+	public Torch[] getATorch()
+	{
+		return arrayTorch;
+	}
+	
+	public Tree[] getATree()
+	{
+		return arrayTree;
+	}
+	
+	public Fireplace[] getAFireplace()
+	{
+		return arrayFireplace;
+	}
+	
+	public void setAFire(Fire[] aFire)
+	{
+		arrayFire = aFire;
+	}
+	
+	public void setATorch(Torch[] aTorch)
+	{
+		arrayTorch = aTorch;
+	}
+	
+	public void setATree(Tree[] aTree)
+	{
+		arrayTree = aTree;
+	}
+	
+	public void setAFireplace(Fireplace[] aFireplace)
+	{
+		arrayFireplace = aFireplace;
+	}
+	
 	public MemoryManagerProduct clone(MemoryManagerProduct cloned_table) {
 		((Table)cloned_table).initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch, listObstacles, hashFire, hashTree, hashFirePlace, hashTorch, hashObstacles);
 		return cloned_table;
