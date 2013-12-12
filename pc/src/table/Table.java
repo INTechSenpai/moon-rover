@@ -19,7 +19,13 @@ public class Table implements Service, MemoryManagerProduct {
 	private Torch arrayTorch[] = new Torch[10];
 
 	private ArrayList<Obstacle> listObstacles = new ArrayList<Obstacle>();
-	
+
+	private int hashFire;
+	private int hashTree;
+	private int hashFirePlace;
+	private int hashTorch;
+	private int hashObstacles;
+		
 	private Log log;
 	private Read_Ini config;
 	
@@ -69,6 +75,11 @@ public class Table implements Service, MemoryManagerProduct {
 		arrayTorch[9] = new Torch(new Vec2(-1489,1142), 9, false, 11) ;
 
 		// TODO placer dans arrayObstacles les obstacles fixes (foyers, bac, torches, ...)
+		hashFire = Rand.getInt();
+		hashTree = Rand.getInt();
+		hashFirePlace = Rand.getInt();
+		hashTorch = Rand.getInt();
+		hashObstacles = Rand.getInt();
 
 	}
 	
@@ -150,7 +161,7 @@ public class Table implements Service, MemoryManagerProduct {
 */
 
 	public MemoryManagerProduct clone(MemoryManagerProduct cloned_table) {
-		((Table)cloned_table).initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch, listObstacles);
+		((Table)cloned_table).initialise(arrayFire, arrayTree, arrayFireplace, arrayTorch, listObstacles, hashFire, hashTree, hashFirePlace, hashTorch, hashObstacles);
 		return cloned_table;
 	}
 	
@@ -164,30 +175,42 @@ public class Table implements Service, MemoryManagerProduct {
 	/**
 	 * Méthode d'initialisation d'une table, utilisé par clone()
 	 */
-	public void initialise(Fire arrayFire[], Tree arrayTree[], Fireplace arrayFireplace[], Torch arrayTorch[], ArrayList<Obstacle> listObstacles)
+	public void initialise(Fire arrayFire[], Tree arrayTree[], Fireplace arrayFireplace[], Torch arrayTorch[], ArrayList<Obstacle> listObstacles, int hashFire, int hashTree, int hashFirePlace, int hashTorch, int hashObstacles)
 	{
-		log.debug("Début recopie", this);
-		if(!this.arrayFire.equals(arrayFire))
+		if(this.hashFire != hashFire)
+		{
 			for(int i = 0; i < 16; i++)		
 				this.arrayFire[i] = arrayFire[i].clone();
-		else
-			log.debug("Optimisation", this);
+			this.hashFire = hashFire;
+		}
 
-		if(!this.arrayTree.equals(arrayTree))
+		if(this.hashTree != hashTree)
+		{
 			for(int i = 0; i < 4; i++)		
 				this.arrayTree[i] = arrayTree[i].clone();
+			this.hashTree = hashTree;
+		}
 
-		if(!this.arrayFireplace.equals(arrayFireplace))
+		if(this.hashFirePlace != hashFirePlace)
+		{
 			for(int i = 0; i < 3; i++)		
 				this.arrayFireplace[i] = arrayFireplace[i].clone();
+			this.hashFirePlace = hashFirePlace;
+		}
 
-		if(!this.arrayTorch.equals(arrayTorch))
+		if(this.hashTorch != hashTorch)
+		{
 			for(int i = 0; i < 10; i++)		
 				this.arrayTorch[i] = arrayTorch[i].clone();
+			this.hashTorch = hashTorch;
+		}
 
-		if(!this.listObstacles.equals(listObstacles))
+		if(this.hashObstacles != hashObstacles)
+		{
 			for(Obstacle item: listObstacles)
 				this.listObstacles.add(item.clone());
+			this.hashObstacles = hashObstacles;
+		}
 	}
 
 	public String getNom() {
