@@ -134,7 +134,9 @@ public class Container {
 														getService("Log")));
 		else if(nom == "MemoryManager")
 			services.put(nom, (Service)new MemoryManager(	getService("Read_Ini"),
-															getService("Log")));
+															getService("Log"),
+															getService("Table"),
+															getService("RobotChrono")));
 		else if(nom == "Laser")
 			services.put(nom, (Service)new Laser(	getService("Read_Ini"),
 													getService("Log"),

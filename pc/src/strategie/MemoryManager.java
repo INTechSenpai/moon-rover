@@ -2,8 +2,6 @@ package strategie;
 
 import java.util.Hashtable;
 
-import robot.RobotChrono;
-import table.Table;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
@@ -28,7 +26,7 @@ public class MemoryManager implements Service {
 	private int indiceRobotChrono = 0;
 	private int indiceTable = 0;
 
-	public MemoryManager(Service config, Service log)
+	public MemoryManager(Service config, Service log, Service table, Service robotchrono)
 	{
 		this.log = (Log) log;
 		this.config = (Read_Ini) config;
@@ -41,37 +39,37 @@ public class MemoryManager implements Service {
 			this.log.critical(e, this);
 		}
 			
-		register("Table");
-		register("RobotChrono");
+		register("Table", (MemoryManagerProduct)table);
+		register("RobotChrono", (MemoryManagerProduct)robotchrono);
 	}
 
-	public void register(String nom)
+	public void register(String nom, MemoryManagerProduct instance)
 	{
-		if(nom == "Table")
-		{
-			log.debug("Instanciation des tables", this);
-			productsObjects.put(nom, new Table[nbmax]);
-			productsIndices.put(nom, 0);
-		}
-		else if(nom == "RobotChrono")
-		{
-			log.debug("Instanciation des robotchrono", this);
-			productsObjects.put(nom, new RobotChrono[nbmax]);
-			productsIndices.put(nom, 0);
-		}
-		else
-			log.warning("Erreur lors de l'enregistrement de "+nom, this);
+		log.debug("Instanciation de "+instance.getNom(), this);
+		productsObjects.put(nom, new MemoryManagerProduct[nbmax]);
+		productsIndices.put(nom, 0);
+		productsModels.put(nom, instance);
+		MemoryManagerProduct[] arrayProducts = productsObjects.get(nom);
 
+		// Création des objets pour ce MemoryManagerProduct
+		for(int i = 0; i < nbmax; i++)
+			arrayProducts[i] = instance.clone();
 	}
 	
 	public void setModele(MemoryManagerProduct instance)
 	{
-		productsModels.put(instance.getNom(), instance.clone());
+		// On actualise le modèle sans allocation de mémoire
+		MemoryManagerProduct model = productsModels.get(instance.getNom());
+		instance.clone(model);
 	}
 	
 	public MemoryManagerProduct getClone(String nom)
 	{
 		MemoryManagerProduct out;
+
+		// Table et Robotchrono sont traités particulièrement car les indices
+		// sous forme de int sont plus rapides à traiter que les productsIndices
+		
 		if(nom == "Table")
 		{
 			out = productsObjects.get(nom)[indiceTable];
