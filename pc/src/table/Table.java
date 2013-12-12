@@ -13,7 +13,7 @@ import utils.*;
 public class Table implements Service, MemoryManagerProduct {
 
 	// On met cette variable en static afin que, dans deux instances dupliquées, elle ne redonne pas les mêmes nombres
-	private static Random rand = new Random();
+	private static int indice = 1;
 
 	private Fire arrayFire[] = new Fire[16];
 	private Tree arrayTree[] = new Tree[4];
@@ -78,12 +78,11 @@ public class Table implements Service, MemoryManagerProduct {
 		arrayTorch[9] = new Torch(new Vec2(-1489,1142), 9, false, 11) ;
 
 		// TODO placer dans arrayObstacles les obstacles fixes (foyers, bac, torches, ...)
-		hashFire = rand.nextInt();
-		hashTree = rand.nextInt();
-		hashFirePlace = rand.nextInt();
-		hashTorch = rand.nextInt();
-		hashObstacles = rand.nextInt();
-
+		hashFire = 0;
+		hashTree = 0;
+		hashFirePlace = 0;
+		hashTorch = 0;
+		hashObstacles = 0;
 	}
 	
 	public void creer_obstacle(Vec2 position)
@@ -101,7 +100,7 @@ public class Table implements Service, MemoryManagerProduct {
 		
 		Obstacle obstacle = new ObstacleProximite(position, rayon_robot_adverse, System.currentTimeMillis()+duree);
 		listObstacles.add(obstacle);
-		hashObstacles = rand.nextInt();
+		hashObstacles = indice++;
 	}
 
 	/**
@@ -111,12 +110,13 @@ public class Table implements Service, MemoryManagerProduct {
 	public void supprimer_obstacles_perimes(long date)
 	{
 		Iterator<Obstacle> iterator = listObstacles.iterator();
-		while ( iterator.hasNext() ) {
+		while ( iterator.hasNext() )
+		{
 		    Obstacle obstacle = iterator.next();
 		    if (obstacle instanceof ObstacleProximite && ((ObstacleProximite) obstacle).death_date <= date)
 		    {
 		        iterator.remove();
-		        rand.nextInt();
+				hashObstacles = indice++;
 		    }
 		}	
 	}
@@ -134,6 +134,7 @@ public class Table implements Service, MemoryManagerProduct {
 	public void pickFire (int id)
 	{
 		arrayFire[id].pickFire();
+		hashFire = indice++;
 	}
 
 
@@ -141,18 +142,15 @@ public class Table implements Service, MemoryManagerProduct {
 	{
 		int min = 0;
 		for (int i = 0; i < 16; i++)
-		{
 			if (arrayFire[i].getPosition().SquaredDistance(position) < arrayFire[min].getPosition().SquaredDistance(position))
-			{
 				min = i;
-			}
-		}
 		return arrayFire[min];
 	}
 	
 	public void putFire (int id)
 	{
 		arrayFire[id].ejectFire();
+		hashFire = indice++;
 	}
 	
 	// Arbres
@@ -160,6 +158,7 @@ public class Table implements Service, MemoryManagerProduct {
 	public void pickTree (int id)
 	{
 		arrayTree[id].getTaken();
+		hashTree = indice++;
 	}
 	
 	public int nbrLeft (int id)
@@ -200,12 +199,8 @@ public class Table implements Service, MemoryManagerProduct {
 	{
 		int min = 0;
 		for (int i = 0; i < 10; i++)
-		{
 			if (arrayTorch[i].getPosition().SquaredDistance(position) < arrayFire[min].getPosition().SquaredDistance(position))
-			{
 				min = i;
-			}
-		}
 		return arrayTorch[min];
 	}
 	
@@ -231,6 +226,8 @@ public class Table implements Service, MemoryManagerProduct {
 		return arrayFireplace;
 	}
 	
+
+	// Je doute qu'on les utilise! (PF)
 	public void setAFire(Fire[] aFire)
 	{
 		arrayFire = aFire;
