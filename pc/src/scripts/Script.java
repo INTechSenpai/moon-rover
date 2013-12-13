@@ -36,15 +36,15 @@ public abstract class Script implements Service {
 	private RobotVrai robotvrai;
 	private RobotChrono robotchrono;
 	
-	public Script(Service pathfinding, Service threadtimer, Service robotvrai, Service robotchrono, Service hookgenerator, Service table, Service config, Service log) {
-		this.pathfinding = (Pathfinding) pathfinding;
-		Script.threadtimer = (ThreadTimer) threadtimer;
-		this.robotvrai = (RobotVrai) robotvrai;
-		this.robotchrono = (RobotChrono) robotchrono;
-		Script.hookgenerator = (HookGenerator) hookgenerator;
-		this.table = (Table) table;
-		Script.config = (Read_Ini) config;
-		Script.log = (Log) log;
+	public Script(Pathfinding pathfinding, ThreadTimer threadtimer, RobotVrai robotvrai, RobotChrono robotchrono, HookGenerator hookgenerator, Table table, Read_Ini config, Log log) {
+		this.pathfinding = pathfinding;
+		Script.threadtimer = threadtimer;
+		this.robotvrai = robotvrai;
+		this.robotchrono = robotchrono;
+		Script.hookgenerator = hookgenerator;
+		this.table = table;
+		Script.config = config;
+		Script.log = log;
 	}
 		
 	/**
@@ -102,6 +102,16 @@ public abstract class Script implements Service {
 	public Robot getRobotChrono()
 	{
 		return robotchrono;
+	}
+	
+	public void setRobotChrono(RobotChrono robotchrono)
+	{
+		this.robotchrono = robotchrono;
+	}
+
+	public void setTable(Table table)
+	{
+		this.table = table;
 	}
 	
 	/**

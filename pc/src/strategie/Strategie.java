@@ -57,6 +57,8 @@ public class Strategie implements Service {
 	public void boucle_strategie()
 	{
 		scriptEnCours = prochainScript;
+		versionScriptEnCours = versionProchainScriptEnnemi;
+		
 	}
 	
 	public float calculeNote(Table cloned_table, RobotChrono cloned_robotchrono)
@@ -88,17 +90,24 @@ public class Strategie implements Service {
 				{
 					Table cloned_table = (Table) memorymanager.getClone("Table");
 					RobotChrono cloned_robotchrono = (RobotChrono) memorymanager.getClone("RobotChrono");
-					Script script = scriptmanager.getScript(nom_script, cloned_table, cloned_robotchrono, pathfinding);
-					long duree_script = script.calcule(id);
-					float noteScript = calculeNote(cloned_table, cloned_robotchrono);
-					NoteScriptVersion out = evaluation(date + duree_script, cloned_table, cloned_robotchrono, pathfinding, profondeur-1);
-					out.note += noteScript;
-
-					if(out.note > meilleur.note)
+					try
 					{
-						meilleur.note = out.note;
-						meilleur.script = script;
-						meilleur.version = id;
+						Script script = scriptmanager.getScript(nom_script, cloned_table, cloned_robotchrono, pathfinding);
+						long duree_script = script.calcule(id);
+						float noteScript = calculeNote(cloned_table, cloned_robotchrono);
+						NoteScriptVersion out = evaluation(date + duree_script, cloned_table, cloned_robotchrono, pathfinding, profondeur-1);
+						out.note += noteScript;
+	
+						if(out.note > meilleur.note)
+						{
+							meilleur.note = out.note;
+							meilleur.script = script;
+							meilleur.version = id;
+						}
+					}
+					catch(Exception e)
+					{
+						log.critical(e, this);
 					}
 				}
 			return meilleur;
