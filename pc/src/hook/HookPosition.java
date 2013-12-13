@@ -1,5 +1,6 @@
 package hook;
 
+import robot.Robot;
 import smartMath.Vec2;
 import utils.Log;
 import utils.Read_Ini;
@@ -24,8 +25,9 @@ class HookPosition extends Hook {
 			position.x *= -1;
 	}
 	
-	public void evaluate(Vec2 positionRobot)
+	public void evaluate(Robot robot)
 	{
+		Vec2 positionRobot = robot.getPosition();
 		if(position.SquaredDistance(positionRobot) <= tolerance*tolerance)
 		{
 			declencher();
