@@ -14,7 +14,6 @@ import scripts.ScriptManager;
 import strategie.MemoryManager;
 import strategie.Strategie;
 import table.Table;
-import threads.AbstractThread;
 import threads.ThreadTimer;
 import threads.ThreadManager;
 import robot.RobotChrono;
@@ -107,7 +106,7 @@ public class Container {
 														(Log)getService("Log")));		
 		else if(nom == "RobotChrono")
 			services.put(nom, (Service)new RobotChrono(	(Read_Ini)getService("Read_Ini"),
-														(Log)getService("Log")));		
+														(Log)getService("Log")));
 		else if(nom == "ScriptManager")
 			services.put(nom, (Service)new ScriptManager(	(Pathfinding)getService("Pathfinding"),
 															(ThreadTimer)getService("threadTimer"),
@@ -155,7 +154,6 @@ public class Container {
 		else if(nom == "CheckUp")
 			services.put(nom, (Service)new CheckUp(	(Log)getService("Log"),
 													(RobotVrai)getService("RobotVrai")));
-
 		else
 		{
 			System.out.println("Erreur de getService pour le service: "+nom);

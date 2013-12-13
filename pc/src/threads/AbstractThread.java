@@ -27,7 +27,7 @@ public abstract class AbstractThread extends Thread implements Service {
 	public static void sleep(long duree)
 	{
 		try {
-		Thread.sleep(duree);
+			Thread.sleep(duree);
 		}
 		catch(Exception e)
 		{

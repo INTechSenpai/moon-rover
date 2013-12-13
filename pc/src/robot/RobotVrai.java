@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import pathfinding.Pathfinding;
-import container.Service;
 import exception.BlocageException;
 import exception.CollisionException;
 import exception.MouvementImpossibleException;

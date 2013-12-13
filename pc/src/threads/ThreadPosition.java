@@ -3,7 +3,6 @@ package threads;
 import robot.RobotVrai;
 import utils.Log;
 import utils.Read_Ini;
-import container.Service;
 
 /**
  * Thread qui demande en continu au robot de mettre à jour ses coordonnées

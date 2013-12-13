@@ -15,7 +15,7 @@ import container.Service;
  *
  */
 
-public class RobotChrono extends Robot implements MemoryManagerProduct {
+public class RobotChrono extends Robot implements Service, MemoryManagerProduct {
 
 	private float vitesse_mmps;
 	private float vitesse_rps;

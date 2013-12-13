@@ -3,7 +3,6 @@ package hook;
 import java.util.ArrayList;
 
 import robot.Robot;
-import robot.cartes.Capteur;
 import utils.Log;
 import utils.Read_Ini;
 

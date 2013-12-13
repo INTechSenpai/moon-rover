@@ -106,10 +106,9 @@ public abstract class Robot implements Service {
 		return orientation;
 	}
 
-	// TODO gérer plus de paramètres optionnels
 	public void va_au_point(Vec2 point, Hook[] hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
-
+		va_au_point(point, hooks, false, 2, retenterSiBlocage, sansLeverException, false);
 	}
 
 	public void va_au_point(Vec2 point) throws MouvementImpossibleException

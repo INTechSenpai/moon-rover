@@ -3,13 +3,11 @@ package threads;
 import pathfinding.Pathfinding;
 import robot.RobotChrono;
 import robot.RobotVrai;
-import scripts.Script;
 import strategie.NoteScriptVersion;
 import strategie.Strategie;
 import table.Table;
 import utils.Log;
 import utils.Read_Ini;
-import container.Service;
 
 /**
  * Thread qui calculera en continu la stratégie à adopter

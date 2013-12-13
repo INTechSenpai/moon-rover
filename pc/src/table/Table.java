@@ -2,7 +2,6 @@ package table;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Random;
 
 import robot.Orientation;
 import smartMath.Vec2;

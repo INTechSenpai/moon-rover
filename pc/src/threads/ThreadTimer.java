@@ -5,7 +5,6 @@ import robot.cartes.Deplacements;
 import table.Table;
 import utils.Log;
 import utils.Read_Ini;
-import container.Service;
 
 /**
  * Thread qui s'occupe de la gestion du temps: début du match, péremption des obstacles
