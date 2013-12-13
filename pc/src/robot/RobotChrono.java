@@ -35,14 +35,6 @@ public class RobotChrono extends Robot implements Service, MemoryManagerProduct 
 	public void setOrientation(float orientation) {
 		this.orientation = orientation;
 	}
-	
-	private void setVitesse_rps(float vitesse_rps) {
-		this.vitesse_rps = vitesse_rps;
-	}
-
-	private void setVitesse_mmps(float vitesse_mmps) {
-		this.vitesse_mmps = vitesse_mmps;
-	}
 
 	// La plupart de ces méthodes resteront vides
 
@@ -85,11 +77,12 @@ public class RobotChrono extends Robot implements Service, MemoryManagerProduct 
 	}
 
 	@Override
-	public MemoryManagerProduct clone(MemoryManagerProduct cloned_robotchrono) {
-		((RobotChrono)cloned_robotchrono).setPosition(position);
-		((RobotChrono)cloned_robotchrono).setOrientation(orientation);
-		((RobotChrono)cloned_robotchrono).setVitesse_rps(vitesse_rps);
-		((RobotChrono)cloned_robotchrono).setVitesse_mmps(vitesse_mmps);
+	public MemoryManagerProduct clone(MemoryManagerProduct cloned_robotchrono)
+	{
+		((RobotChrono)cloned_robotchrono).position = position.clone();
+		((RobotChrono)cloned_robotchrono).orientation = orientation;
+		((RobotChrono)cloned_robotchrono).vitesse_rps = vitesse_rps;
+		((RobotChrono)cloned_robotchrono).vitesse_mmps = vitesse_mmps;
 		return cloned_robotchrono;
 	}
 
