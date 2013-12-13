@@ -156,4 +156,10 @@ public class RobotChrono extends Robot implements MemoryManagerProduct {
 		tourner(angle);
 	}
 	
+	public void tirerBalles(boolean rightSide)
+	{
+		
+	}
+
+	
 }

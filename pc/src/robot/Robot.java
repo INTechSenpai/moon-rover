@@ -28,6 +28,8 @@ public abstract class Robot implements Service {
 	public abstract void set_vitesse_rotation(String vitesse);
 	public abstract void setPosition(Vec2 position);
 	public abstract void setOrientation(float orientation);
+
+	public abstract void tirerBalles(boolean rightSide);
 	
 	protected Read_Ini config;
 	protected Log log;

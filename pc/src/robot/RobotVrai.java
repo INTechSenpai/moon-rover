@@ -258,6 +258,12 @@ public class RobotVrai extends Robot {
 	/*
 	 * ACTIONNEURS
 	 */
+
+	public void tirerBalles(boolean rightSide)
+	{
+		// TODO
+	}
+	
 	
 	/* 
 	 * GETTERS & SETTERS

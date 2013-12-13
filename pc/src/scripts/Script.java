@@ -139,6 +139,7 @@ public abstract class Script implements Service {
 	/**
 	 * Méthode qui modifie la table donnée comme elle serait modifiée si le script s'achevait correctement
 	 * @param table
+	 * @param id_version
 	 * @return table modifiée
 	 */
 	abstract public Table futureTable(Table table, int id_version);
@@ -146,9 +147,10 @@ public abstract class Script implements Service {
 	/**
 	 * Méthode qui modifie le robot donnée comme il serait modifié si le script s'achevait correctement
 	 * @param robotchrono
+	 * @param id_version
 	 * @return robotchrono modifié
 	 */
-	abstract public RobotChrono futurRobotChrono(RobotChrono robotchrono);
+	abstract public RobotChrono futurRobotChrono(RobotChrono robotchrono, int id_version);
 
 	/**
 	 * Renvoie la durée en ms du script si celui-ci s'effectue normalement

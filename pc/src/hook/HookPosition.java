@@ -1,6 +1,8 @@
 package hook;
 
 import smartMath.Vec2;
+import utils.Log;
+import utils.Read_Ini;
 
 /**
  * Classe des hook de position, qui hérite de la classe hook
@@ -13,8 +15,9 @@ public class HookPosition extends Hook {
 	private Vec2 position;
 	private int tolerance;
 	
-	public HookPosition(Vec2 position, int tolerance, boolean effectuer_symetrie)
+	public HookPosition(Read_Ini config, Log log, Vec2 position, int tolerance, boolean effectuer_symetrie)
 	{
+		super(config, log);
 		this.position = position;
 		this.tolerance = tolerance;
 		if(effectuer_symetrie)

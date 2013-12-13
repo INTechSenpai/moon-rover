@@ -47,6 +47,8 @@ import robot.serial.Serial;
  * HookGenerator
  * Strategie
  * Laser
+ * FiltrageLaser
+ * CheckUp
  * 
  * @author pf
  *
@@ -92,7 +94,8 @@ public class Container {
 														(Serial)getService("serieCapteursActionneurs")));
 		else if(nom == "HookGenerator")
 			services.put(nom, (Service)new HookGenerator(	(Read_Ini)getService("Read_Ini"),
-															(Log)getService("Log")));		
+															(Log)getService("Log"),
+															(Capteur)getService("Capteur")));		
 		else if(nom == "RobotVrai")
 			services.put(nom, (Service)new RobotVrai(	(Pathfinding)getService("Pathfinding"),
 														(Capteur)getService("Capteur"),
@@ -148,6 +151,10 @@ public class Container {
 		else if(nom == "FiltrageLaser")
 			services.put(nom, (Service)new FiltrageLaser(	(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log")));
+
+		else if(nom == "CheckUp")
+			services.put(nom, (Service)new CheckUp(	(Log)getService("Log"),
+													(RobotVrai)getService("RobotVrai")));
 
 		else
 		{

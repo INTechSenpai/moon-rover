@@ -21,6 +21,15 @@ public class ThreadCapteurs extends AbstractThread {
 	private Table table;
 	private ThreadTimer threadTimer;
 	
+	// Valeurs par défaut s'il y a un problème de config
+	private double tempo = 0;
+	private int horizon_capteurs = 700;
+	private int rayon_robot_adverse = 230;
+	private int largeur_robot = 300;
+	private int table_x = 3000;
+	private int table_y = 2000;
+	private int capteurs_frequence = 5;
+	
 	ThreadCapteurs(Read_Ini config, Log log, RobotVrai robotvrai, ThreadTimer threadTimer, Table table, Capteur capteur)
 	{
 		super(config, log);
@@ -34,13 +43,20 @@ public class ThreadCapteurs extends AbstractThread {
 	{
 		int date_dernier_ajout = 0;
 		boolean marche_arriere = false;
-		double tempo = Double.parseDouble(config.config.getProperty("capteurs_temporisation_obstacles"));
-		int horizon_capteurs = Integer.parseInt(config.config.getProperty("horizon_capteurs"));
-		int rayon_robot_adverse = Integer.parseInt(config.config.getProperty("rayon_robot_adverse"));
-		int largeur_robot = Integer.parseInt(config.config.getProperty("largeur_robot"));
-		int table_x = Integer.parseInt(config.config.getProperty("table_x"));
-		int table_y = Integer.parseInt(config.config.getProperty("table_y"));
-		int capteurs_frequence = Integer.parseInt(config.config.getProperty("capteurs_frequence"));
+		try
+		{
+			tempo = Double.parseDouble(config.config.getProperty("capteurs_temporisation_obstacles"));
+			horizon_capteurs = Integer.parseInt(config.config.getProperty("horizon_capteurs"));
+			rayon_robot_adverse = Integer.parseInt(config.config.getProperty("rayon_robot_adverse"));
+			largeur_robot = Integer.parseInt(config.config.getProperty("largeur_robot"));
+			table_x = Integer.parseInt(config.config.getProperty("table_x"));
+			table_y = Integer.parseInt(config.config.getProperty("table_y"));
+			capteurs_frequence = Integer.parseInt(config.config.getProperty("capteurs_frequence"));
+		}
+		catch(Exception e)
+		{
+			log.critical(e, this);
+		}
 		
 		log.debug("Lancement du thread de capteurs", this);
 	
