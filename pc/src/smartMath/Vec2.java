@@ -72,5 +72,10 @@ public class Vec2
 		return (x-other.x)*(x-other.x) + (y-other.y)*(y-other.y);
 	}
 
+	public String toString()
+	{
+		return "("+x+","+y+")";
+	}
+	
 }
 

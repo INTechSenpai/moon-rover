@@ -28,4 +28,24 @@ public class Actionneurs implements Service {
 	{
 		// ABWABWA
 	}
+	
+	public void baisser_bac()
+	{
+		serie.communiquer("bb", 0);
+	}
+
+	public void lever_bac()
+	{
+		serie.communiquer("bh", 0);
+	}
+
+	public void ranger_rateau(boolean right)
+	{
+		if(right)
+			serie.communiquer("rrd", 0);
+		else
+			serie.communiquer("rrg", 0);
+	}
+
+	
 }
