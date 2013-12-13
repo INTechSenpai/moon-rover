@@ -8,17 +8,19 @@ import scripts.Script;
  *
  */
 
-public class CoupleNoteScript {
+public class NoteScriptVersion {
 
 	public float note;
 	public Script script;
+	public int version;
 
-	public CoupleNoteScript(float note, Script script) {
+	public NoteScriptVersion(float note, Script script, int version) {
 		this.note = note;
 		this.script = script;
+		this.version = version;
 	}
 
-	public CoupleNoteScript() {
+	public NoteScriptVersion() {
 		note = 0;
 		script = null;
 	}
