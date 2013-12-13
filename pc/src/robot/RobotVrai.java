@@ -499,6 +499,7 @@ public class RobotVrai extends Robot {
 			// L'attribut orientation_consigne doit être mis à jour à chaque deplacements.tourner() pour le fonctionnement de avancerBasNiveau()
 			orientation_consigne = angle;
 			deplacements.tourner(angle);
+			sleep(sleep_fin_boucle_acquittement);
 			deplacements.avancer(distance);
 		}
 	}
