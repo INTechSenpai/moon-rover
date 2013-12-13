@@ -1,13 +1,14 @@
 package utils;
 
 import robot.RobotVrai;
+import container.Service;
 
 /**
  * Service qui permettra de faire un checkup du robot avant le match
  * @author pf
  *
  */
-public class CheckUp {
+public class CheckUp implements Service {
 
 	private Log log;
 	private RobotVrai robotvrai;
