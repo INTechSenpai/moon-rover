@@ -54,8 +54,8 @@ public class ThreadStrategie extends AbstractThread {
 
 			synchronized(strategie.scriptEnCours)
 			{
-				futureTable = strategie.scriptEnCours.futureTable(table, strategie.versionScriptEnCours);
-				futurRobotChrono = strategie.scriptEnCours.futurRobotChrono(robotchrono, strategie.versionScriptEnCours);
+//				futureTable = strategie.scriptEnCours.futureTable(table, strategie.versionScriptEnCours);
+//				futurRobotChrono = strategie.scriptEnCours.futurRobotChrono(robotchrono, strategie.versionScriptEnCours);
 			}
 
 			NoteScriptVersion meilleurProchain = strategie.evaluation(System.currentTimeMillis(), futureTable, futurRobotChrono, pathfinding, 2);
