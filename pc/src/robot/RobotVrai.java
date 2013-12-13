@@ -597,6 +597,30 @@ public class RobotVrai extends Robot {
 	{
 		return marche_arriere_est_plus_rapide(consigne, -1000);
 	}
+
+	@Override
+	public void baisser_rateaux() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void baisser_rateaux_bas() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void remonter_rateau(boolean right) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void remonter_rateaux() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 }

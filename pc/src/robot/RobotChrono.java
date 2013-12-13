@@ -142,4 +142,20 @@ public class RobotChrono extends Robot implements MemoryManagerProduct {
 	public void initialiser_actionneurs()
 	{
 	}
+
+	@Override
+	public void baisser_rateaux() {
+	}
+
+	@Override
+	public void baisser_rateaux_bas() {
+	}
+
+	@Override
+	public void remonter_rateau(boolean right) {
+	}
+
+	@Override
+	public void remonter_rateaux() {
+	}
 }
