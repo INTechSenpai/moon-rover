@@ -6,7 +6,7 @@ import smartMath.Vec2;
  * @author pf
  *
  */
-public class ObstacleBalise extends Obstacle {
+public class ObstacleBalise extends ObstacleCirculaire {
 
 	private Vec2 speed;
 	

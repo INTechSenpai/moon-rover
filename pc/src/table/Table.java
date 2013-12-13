@@ -68,21 +68,23 @@ public class Table implements Service, MemoryManagerProduct {
 		arrayTorch[1] = new Torch(new Vec2(-600,900), 1, feu3, feu4, feu5); 
 
 		// Ajout des torches mobiles
-		listObstacles.add(new Obstacle(new Vec2(600,900), 80));
-		listObstacles.add(new Obstacle(new Vec2(-600,900), 80));
+		listObstacles.add(new ObstacleCirculaire(new Vec2(600,900), 80));
+		listObstacles.add(new ObstacleCirculaire(new Vec2(-600,900), 80));
 		
 		// Ajout des foyers
-		listObstacles.add(new Obstacle(new Vec2(1500,0), 250));
-		listObstacles.add(new Obstacle(new Vec2(0,950), 150));
-		listObstacles.add(new Obstacle(new Vec2(-1500,0), 250));
+		listObstacles.add(new ObstacleCirculaire(new Vec2(1500,0), 250));
+		listObstacles.add(new ObstacleCirculaire(new Vec2(0,950), 150));
+		listObstacles.add(new ObstacleCirculaire(new Vec2(-1500,0), 250));
 
 		// TODO bacs obstacles
-	
+		listObstacles.add(new ObstacleRectangulaire(new Vec2(400,1700), 700, 300));
+		listObstacles.add(new ObstacleRectangulaire(new Vec2(-1100,1700), 700, 300));
+
 		// Ajout des arbres
-		listObstacles.add(new Obstacle(new Vec2(1500,700), 150));
-		listObstacles.add(new Obstacle(new Vec2(800,0), 150));
-		listObstacles.add(new Obstacle(new Vec2(-800,0), 150));
-		listObstacles.add(new Obstacle(new Vec2(-1500,700), 150));
+		listObstacles.add(new ObstacleCirculaire(new Vec2(1500,700), 150));
+		listObstacles.add(new ObstacleCirculaire(new Vec2(800,0), 150));
+		listObstacles.add(new ObstacleCirculaire(new Vec2(-800,0), 150));
+		listObstacles.add(new ObstacleCirculaire(new Vec2(-1500,700), 150));
 
 		hashFire = 0;
 		hashTree = 0;

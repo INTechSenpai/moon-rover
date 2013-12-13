@@ -6,21 +6,15 @@ import smartMath.Vec2;
  * @author pf
  *
  */
-public class Obstacle {
+public abstract class Obstacle {
 
 	protected Vec2 position;
-	protected float radius;
 	
-	public Obstacle (Vec2 position, float rad)
+	public Obstacle (Vec2 position)
 	{
 		this.position = position;
-		this.radius = rad;
-		
 	}
 	
-	public Obstacle clone()
-	{
-		return new Obstacle(position.clone(), radius);
-	}
+	public abstract Obstacle clone();
 	
 }
