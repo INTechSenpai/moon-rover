@@ -61,7 +61,7 @@ public class Strategie implements Service {
 		
 	}
 	
-	public float calculeNote(Table cloned_table, RobotChrono cloned_robotchrono)
+	public float calculeNote(Script script, int id)
 	{
 		return 0;
 	}
@@ -85,6 +85,7 @@ public class Strategie implements Service {
 		{
 			table.supprimer_obstacles_perimes(date);
 			NoteScriptVersion meilleur = new NoteScriptVersion(-1, null, -1);
+			memorymanager.setModele(table);
 			for(String nom_script : scriptmanager.scripts)
 				for(int id : scriptmanager.getId(nom_script))
 				{
@@ -94,7 +95,7 @@ public class Strategie implements Service {
 					{
 						Script script = scriptmanager.getScript(nom_script, cloned_table, cloned_robotchrono, pathfinding);
 						long duree_script = script.calcule(id);
-						float noteScript = calculeNote(cloned_table, cloned_robotchrono);
+						float noteScript = calculeNote(script, id);
 						NoteScriptVersion out = evaluation(date + duree_script, cloned_table, cloned_robotchrono, pathfinding, profondeur-1);
 						out.note += noteScript;
 	
