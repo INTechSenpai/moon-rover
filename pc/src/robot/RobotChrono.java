@@ -1,5 +1,7 @@
 package robot;
 
+import java.util.ArrayList;
+
 import hook.Hook;
 import smartMath.Vec2;
 import strategie.MemoryManagerProduct;
@@ -58,21 +60,7 @@ public class RobotChrono extends Robot implements MemoryManagerProduct {
 	{
 		
 	}
-	public void tourner()
-	{
-		
-	}
-	public void suit_chemin()
-	{
-		
-	}
 
-	
-	@Override
-	public void va_au_point(Vec2 point)
-	{
-		
-	}
 	public void set_vitesse_translation(String vitesse)
 	{
         int pwm_max = conventions_vitesse_translation(vitesse);
@@ -161,5 +149,50 @@ public class RobotChrono extends Robot implements MemoryManagerProduct {
 		
 	}
 
-	
+	public void suit_chemin(ArrayList<Vec2> chemin, Hook[] hooks, boolean marche_arriere_auto, boolean symetrie_effectuee)
+	{
+		
+	}
+
+	public void suit_chemin(ArrayList<Vec2> chemin, boolean marche_arriere_auto, boolean symetrie_effectuee)
+	{
+		suit_chemin(chemin, null, marche_arriere_auto, symetrie_effectuee);
+	}
+
+	public void suit_chemin(ArrayList<Vec2> chemin, Hook[] hooks)
+	{
+		suit_chemin(chemin, hooks, true, false);
+	}
+
+	public void suit_chemin(ArrayList<Vec2> chemin, Hook[] hooks, boolean marche_arriere_auto)
+	{
+		suit_chemin(chemin, hooks, marche_arriere_auto, false);
+	}
+
+	public void suit_chemin(ArrayList<Vec2> chemin, boolean marche_arriere_auto)
+	{
+		suit_chemin(chemin, null, marche_arriere_auto, false);
+	}
+
+	public void suit_chemin(ArrayList<Vec2> chemin)
+	{
+		suit_chemin(chemin, null, true, false);		
+	}
+
+	// TODO
+	public void va_au_point(Vec2 point, Hook[] hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception)
+	{
+		
+	}
+
+
+	// TODO
+	public void avancer(int distance, int nbTentatives,
+			boolean retenterSiBlocage) {
+		
+	}
+
+	public void avancer(int distance, int nbTentatives) {
+			
+	}
 }
