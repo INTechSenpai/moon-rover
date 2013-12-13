@@ -118,7 +118,7 @@ public abstract class Script implements Service {
 	 * Renvoie le score que peut fournir un script
 	 * @return le score
 	 */
-	public abstract int score();
+	public abstract int score(int id_version);
 	
 	/**
  	 * Donne le poids du script, utilisé pour calculer sa note
