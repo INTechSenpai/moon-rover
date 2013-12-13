@@ -1,5 +1,7 @@
 package exception;
 
+import robot.RobotVrai;
+
 public class BlocageException extends Exception {
 
 	/**
@@ -17,4 +19,10 @@ public class BlocageException extends Exception {
 		super(m);
 	}
 
+	public BlocageException(RobotVrai robotvrai)
+	{
+		super();
+		robotvrai.annuleConsigneOrientation();
+	}
+	
 }

@@ -228,7 +228,7 @@ public class RobotVrai extends Robot {
 			finally
 			{
 				if(!sans_lever_exception)
-					throw new MouvementImpossibleException();
+					throw new MouvementImpossibleException(this);
 			}
 		}
 		catch(CollisionException e) // détection d'un robot adverse
@@ -241,7 +241,7 @@ public class RobotVrai extends Robot {
 				va_au_point(point, hooks, trajectoire_courbe, nombre_tentatives-1, true, false, false);
 			}
 			else
-				throw new MouvementImpossibleException();
+				throw new MouvementImpossibleException(this);
 		}
 	
 	}
@@ -537,7 +537,7 @@ public class RobotVrai extends Robot {
 		if(blocage || deplacements.gestion_blocage(infos))
 		{
 			blocage = true;
-			throw new BlocageException();
+			throw new BlocageException(this);
 		}
 		
 		// ennemi détecté devant le robot?
@@ -622,5 +622,9 @@ public class RobotVrai extends Robot {
 		
 	}
 	
+	public void annuleConsigneOrientation()
+	{
+		orientation_consigne = orientation;
+	}
 	
 }

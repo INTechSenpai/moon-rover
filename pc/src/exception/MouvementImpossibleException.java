@@ -1,5 +1,7 @@
 package exception;
 
+import robot.RobotVrai;
+
 public class MouvementImpossibleException extends Exception {
 
 	/**
@@ -15,6 +17,12 @@ public class MouvementImpossibleException extends Exception {
 	public MouvementImpossibleException(String m)
 	{
 		super(m);
+	}
+	
+	public MouvementImpossibleException(RobotVrai robotvrai)
+	{
+		super();
+		robotvrai.annuleConsigneOrientation();
 	}
 	
 }
