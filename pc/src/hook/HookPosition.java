@@ -10,7 +10,7 @@ import utils.Read_Ini;
  *
  */
 
-public class HookPosition extends Hook {
+class HookPosition extends Hook {
 
 	private Vec2 position;
 	private int tolerance;
