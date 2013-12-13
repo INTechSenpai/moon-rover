@@ -145,13 +145,13 @@ public class Table implements Service, MemoryManagerProduct {
 	}
 
 
-	public Fire nearestFire (Vec2 position)
+	public int nearestFire (Vec2 position)
 	{
 		int min = 0;
 		for (int i = 0; i < 16; i++)
 			if (arrayFire[i].getPosition().SquaredDistance(position) < arrayFire[min].getPosition().SquaredDistance(position))
 				min = i;
-		return arrayFire[min];
+		return min;
 	}
 	
 	public void putFire (int id)
@@ -213,13 +213,12 @@ public class Table implements Service, MemoryManagerProduct {
 	
 	//Torches
 	
-	public Torch nearestTorch (Vec2 position)
+	public int nearestTorch (Vec2 position)
 	{
-		int min = 0;
-		for (int i = 0; i < 10; i++)
-			if (arrayTorch[i].getPosition().SquaredDistance(position) < arrayFire[min].getPosition().SquaredDistance(position))
-				min = i;
-		return arrayTorch[min];
+		if(arrayTorch[0].getPosition().SquaredDistance(position) < arrayTorch[1].getPosition().SquaredDistance(position))
+			return 0;
+		else
+			return 1;
 	}
 			
 	public MemoryManagerProduct clone(MemoryManagerProduct cloned_table) {
