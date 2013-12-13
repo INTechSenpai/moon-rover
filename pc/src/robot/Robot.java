@@ -192,6 +192,11 @@ public abstract class Robot implements Service {
 		this.avancer(distance, null, nbTentatives, true, false);
 	}
 
+	public void avancer(int distance, Hook[] hooks) throws MouvementImpossibleException
+	{
+		this.avancer(distance, hooks, 2, true, false);
+	}
+
 	public void avancer(int distance) throws MouvementImpossibleException
 	{
 		this.avancer(distance, null, 2, true, false);
