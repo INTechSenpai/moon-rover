@@ -94,7 +94,8 @@ public class Container {
 														(Serial)getService("serieCapteursActionneurs")));
 		else if(nom == "HookGenerator")
 			services.put(nom, (Service)new HookGenerator(	(Read_Ini)getService("Read_Ini"),
-															(Log)getService("Log")));		
+															(Log)getService("Log"),
+															(Capteur)getService("Capteur")));		
 		else if(nom == "RobotVrai")
 			services.put(nom, (Service)new RobotVrai(	(Pathfinding)getService("Pathfinding"),
 														(Capteur)getService("Capteur"),

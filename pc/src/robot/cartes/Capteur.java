@@ -78,5 +78,11 @@ public class Capteur implements Service {
     {
     	 return serie.communiquer("j", 1)[0] == "0";
     }
+ 
+    // TODO
+    public boolean isThereFire()
+    {
+    	return false;
+    }
     
 }
