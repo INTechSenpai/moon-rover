@@ -10,7 +10,10 @@ import threads.ThreadTimer;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
+
 import java.util.ArrayList;
+
+import exception.MouvementImpossibleException;
 /**
  * Classe abstraite dont hériteront les différents scripts. S'occupe le robotvrai et robotchrono de manière à ce que ce soit transparent pour les différents scripts
  * @author pf
@@ -129,7 +132,7 @@ public abstract class Script implements Service {
 	/**
 	 * Exécute le script
 	 */
-	abstract protected void execute(int id_version);
+	abstract protected void execute(int id_version) throws MouvementImpossibleException;
 
 	/**
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs.

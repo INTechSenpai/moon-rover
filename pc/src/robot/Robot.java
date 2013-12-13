@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import hook.Hook;
 import smartMath.Vec2;
 import container.Service;
+import exception.MouvementImpossibleException;
 import utils.Log;
 import utils.Read_Ini;
 
@@ -20,29 +21,32 @@ public abstract class Robot implements Service {
 	 */
 	
 	public abstract void stopper();
-	public abstract void correction_angle(float angle);
-
+	public abstract void correction_angle(float angle); // peut-être à placer en private
 	public abstract void tourner(float angle, Hook[] hooks, int nombre_tentatives, boolean sans_lever_exception);
-	
-	public abstract void avancer(int distance, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException);
-	
+	public abstract void avancer(int distance, Hook[] hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
+				throws MouvementImpossibleException;
 	public abstract void suit_chemin(ArrayList<Vec2> chemin, Hook[] hooks, boolean marche_arriere_auto, boolean symetrie_effectuee);
-	
 	public abstract void set_vitesse_translation(String vitesse);
 	public abstract void set_vitesse_rotation(String vitesse);
+	public abstract void va_au_point(Vec2 point, Hook[] hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception)
+				throws MouvementImpossibleException;
+
+	/*
+	 * Méthodes d'initialisation
+	 */
 	
-	// Utilisé uniquement à l'initialisation
 	public abstract void setPosition(Vec2 position);
 	public abstract void setOrientation(float orientation);
-
-	public abstract void va_au_point(Vec2 point, Hook[] hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception);
-
+	public abstract void recaler();
+	public abstract void initialiser_actionneurs();
+	
 	/*
 	 * ACTIONNEURS
 	 */
 	
 	public abstract void tirerBalles(boolean rightSide);
 	
+	// Dépendances
 	protected Read_Ini config;
 	protected Log log;
 
@@ -51,6 +55,8 @@ public abstract class Robot implements Service {
 	 */
 	protected Vec2 position = new Vec2(0, 0);
 	protected float orientation = 0;
+	
+	protected int nombre_lances = 8;
 	
 	public Robot(Read_Ini config, Log log)
 	{
@@ -96,7 +102,13 @@ public abstract class Robot implements Service {
 		return orientation;
 	}
 
-	public void va_au_point(Vec2 point)
+	// TODO gérer plus de paramètres optionnels
+	public void va_au_point(Vec2 point, Hook[] hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
+	{
+
+	}
+
+	public void va_au_point(Vec2 point) throws MouvementImpossibleException
 	{
 		va_au_point(point, null, false, 2, true, false, false);
 	}
@@ -126,54 +138,59 @@ public abstract class Robot implements Service {
 		suit_chemin(chemin, null, true, false);		
 	}
 
-	public void tourner(float angle, int nombre_tentatives, boolean sans_lever_exception)
+	public void tourner(float angle, int nombre_tentatives, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
 		tourner(angle, null, nombre_tentatives, sans_lever_exception);
 	}
 
-	public void tourner(float angle, Hook[] hooks, boolean sans_lever_exception)
+	public void tourner(float angle, Hook[] hooks, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
 		tourner(angle, null, 2, sans_lever_exception);
 	}
 
-	public void tourner(float angle, Hook[] hooks, int nombre_tentatives)
+	public void tourner(float angle, Hook[] hooks, int nombre_tentatives) throws MouvementImpossibleException
 	{
 		tourner(angle, hooks, nombre_tentatives, false);				
 	}
 
-	public void tourner(float angle, boolean sans_lever_exception)
+	public void tourner(float angle, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
 		tourner(angle, null, 2, sans_lever_exception);
 	}
 
-	public void tourner(float angle, int nombre_tentatives)
+	public void tourner(float angle, int nombre_tentatives) throws MouvementImpossibleException
 	{
 		tourner(angle, null, nombre_tentatives, false);		
 	}
 
-	public void tourner(float angle, Hook[] hooks)
+	public void tourner(float angle, Hook[] hooks) throws MouvementImpossibleException
 	{
 		tourner(angle, hooks, 2, false);
 	}
 
-	public void tourner(float angle)
+	public void tourner(float angle) throws MouvementImpossibleException
 	{
 		tourner(angle, null, 2, false);
 	}
 
-	public void avancer(int distance, int nbTentatives, boolean retenterSiBlocage)
+	public void avancer(int distance, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
-		this.avancer(distance, nbTentatives, retenterSiBlocage, false);
-	}
-	
-	public void avancer(int distance, int nbTentatives)
-	{
-		this.avancer(distance, nbTentatives, true, false);
+		this.avancer(distance, null, nbTentatives, retenterSiBlocage, sansLeverException);
 	}
 
-	public void avancer(int distance)
+	public void avancer(int distance, int nbTentatives, boolean retenterSiBlocage) throws MouvementImpossibleException
 	{
-		this.avancer(distance, 2, true, false);
+		this.avancer(distance, null, nbTentatives, retenterSiBlocage, false);
+	}
+	
+	public void avancer(int distance, int nbTentatives) throws MouvementImpossibleException
+	{
+		this.avancer(distance, null, nbTentatives, true, false);
+	}
+
+	public void avancer(int distance) throws MouvementImpossibleException
+	{
+		this.avancer(distance, null, 2, true, false);
 	}
 
 }

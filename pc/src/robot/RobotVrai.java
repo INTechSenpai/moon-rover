@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import pathfinding.Pathfinding;
 import container.Service;
+import exception.MouvementImpossibleException;
 
 /**
  * Classe qui fournit des déplacements haut niveau
@@ -105,19 +106,37 @@ public class RobotVrai extends Robot {
 	}
 	
 	// TODO
-	public void avancer(int distance, int nbTentatives, boolean retenterSiBlocage,
-			boolean sansLeverException)
+	public void avancer(int distance, Hook[] hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
-		boolean memoire_marche_arriere = this.marche_arriere;
-		boolean memoire_effectuer_symetrie = this.effectuer_symetrie;
-		this.marche_arriere = (distance < 0);
-		this.effectuer_symetrie = false;
+		log.debug("Avancer de "+Integer.toString(distance), this);
+
+		boolean memoire_marche_arriere = marche_arriere;
+		boolean memoire_effectuer_symetrie = effectuer_symetrie;
+
+		marche_arriere = (distance < 0);
+		effectuer_symetrie = false;
 
 		Vec2 consigne = new Vec2(0,0);
-		consigne.x = (float) (this.position.x + distance*Math.cos(this.orientation_consigne));
-		consigne.y = (float) (this.position.y + distance*Math.sin(this.orientation_consigne));
+		consigne.x = (float) (position.x + distance*Math.cos(orientation_consigne));
+		consigne.y = (float) (position.y + distance*Math.sin(orientation_consigne));
 		
-		this.va_au_point(consigne);
+		try {
+			va_au_point(consigne, hooks, nbTentatives, retenterSiBlocage, sansLeverException);
+		}
+		catch(MouvementImpossibleException e)
+		{
+			throw e;
+		}
+		catch(Exception e)
+		{
+			log.warning("Avancer a catché: "+e, this);
+		}
+		finally
+		{
+			marche_arriere = memoire_marche_arriere;
+			effectuer_symetrie = memoire_effectuer_symetrie;
+		}
+		
 		
 		this.marche_arriere = memoire_marche_arriere;
 		this.effectuer_symetrie = memoire_effectuer_symetrie;
@@ -147,7 +166,7 @@ public class RobotVrai extends Robot {
 	/**
 	 * Le robot va au point demandé
 	 */
-	public void va_au_point(Vec2 point, Hook[] hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception)
+	public void va_au_point(Vec2 point, Hook[] hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
 		
 	}
@@ -257,7 +276,7 @@ public class RobotVrai extends Robot {
 		Vec2 consigne = new Vec2(0,0);
 		consigne.x = (float) (this.position.x + distance*Math.cos(this.orientation_consigne));
 		consigne.y = (float) (this.position.y + distance*Math.sin(this.orientation_consigne));
-		this.va_au_point(consigne);
+		this.va_au_pointBasNiveau(consigne);
 	}
 
 	// TODO

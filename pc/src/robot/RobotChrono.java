@@ -36,11 +36,11 @@ public class RobotChrono extends Robot implements MemoryManagerProduct {
 		this.orientation = orientation;
 	}
 	
-	public void setVitesse_rps(float vitesse_rps) {
+	private void setVitesse_rps(float vitesse_rps) {
 		this.vitesse_rps = vitesse_rps;
 	}
 
-	public void setVitesse_mmps(float vitesse_mmps) {
+	private void setVitesse_mmps(float vitesse_mmps) {
 		this.vitesse_mmps = vitesse_mmps;
 	}
 
@@ -50,15 +50,15 @@ public class RobotChrono extends Robot implements MemoryManagerProduct {
 	{
 	}
 	
-	@Override
-	public void avancer(int distance, int nbTentatives, boolean retenterSiBlocage,
+	// TODO
+	public void avancer(int distance, Hook[] hooks, int nbTentatives, boolean retenterSiBlocage,
 			boolean sansLeverException)
 	{
 		
 	}
+	
 	public void correction_angle(float angle)
 	{
-		
 	}
 
 	public void set_vitesse_translation(String vitesse)
@@ -105,78 +105,21 @@ public class RobotChrono extends Robot implements MemoryManagerProduct {
 	}
 
 	// TODO
-	public void tourner(float angle)
-	{
-	}
-	
 	public void tourner(float angle, Hook[] hooks, int nombre_tentatives, boolean sans_lever_exception)
 	{
-		tourner(angle);
+
 	}
-	
-	public void tourner(float angle, int nombre_tentatives, boolean sans_lever_exception)
-	{
-		tourner(angle);
-	}
-	
-	public void tourner(float angle, Hook[] hooks, boolean sans_lever_exception)
-	{
-		tourner(angle);
-	}
-	
-	public void tourner(float angle, Hook[] hooks, int nombre_tentatives)
-	{
-		tourner(angle);
-	}
-	
-	public void tourner(float angle, boolean sans_lever_exception)
-	{
-		tourner(angle);
-	}
-	
-	public void tourner(float angle, int nombre_tentatives)
-	{
-		tourner(angle);
-	}
-	
-	public void tourner(float angle, Hook[] hooks)
-	{
-		tourner(angle);
-	}
-	
+
+	// TODO durée
 	public void tirerBalles(boolean rightSide)
 	{
 		
 	}
 
+	// TODO
 	public void suit_chemin(ArrayList<Vec2> chemin, Hook[] hooks, boolean marche_arriere_auto, boolean symetrie_effectuee)
 	{
 		
-	}
-
-	public void suit_chemin(ArrayList<Vec2> chemin, boolean marche_arriere_auto, boolean symetrie_effectuee)
-	{
-		suit_chemin(chemin, null, marche_arriere_auto, symetrie_effectuee);
-	}
-
-	public void suit_chemin(ArrayList<Vec2> chemin, Hook[] hooks)
-	{
-		suit_chemin(chemin, hooks, true, false);
-	}
-
-	public void suit_chemin(ArrayList<Vec2> chemin, Hook[] hooks, boolean marche_arriere_auto)
-	{
-		suit_chemin(chemin, hooks, marche_arriere_auto, false);
-	}
-
-	public void suit_chemin(ArrayList<Vec2> chemin, boolean marche_arriere_auto)
-	{
-		suit_chemin(chemin, null, marche_arriere_auto, false);
-	}
-
-	public void suit_chemin(ArrayList<Vec2> chemin)
-	{
-		suit_chemin(chemin, null, true, false);		
 	}
 
 	// TODO
@@ -185,14 +128,18 @@ public class RobotChrono extends Robot implements MemoryManagerProduct {
 		
 	}
 
-
 	// TODO
 	public void avancer(int distance, int nbTentatives,
 			boolean retenterSiBlocage) {
 		
 	}
 
-	public void avancer(int distance, int nbTentatives) {
-			
+	public void recaler()
+	{
+	}
+
+	@Override
+	public void initialiser_actionneurs()
+	{
 	}
 }
