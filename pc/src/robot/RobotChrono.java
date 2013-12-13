@@ -158,4 +158,12 @@ public class RobotChrono extends Robot implements MemoryManagerProduct {
 	@Override
 	public void remonter_rateaux() {
 	}
+	
+	// TODO à compléter au fur et à mesure
+	public void initialiserRobotChrono(RobotVrai robotvrai)
+	{
+		position = robotvrai.position;
+		orientation = robotvrai.orientation;
+		nombre_lances = robotvrai.nombre_lances;
+	}
 }

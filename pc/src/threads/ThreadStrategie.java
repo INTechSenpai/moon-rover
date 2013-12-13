@@ -43,6 +43,7 @@ public class ThreadStrategie extends AbstractThread {
 	{
 		while(!stop_threads)
 		{
+			robotchrono.initialiserRobotChrono(robotvrai);
 			// Evaluation d'une stratégie de secours si ce script bug (en premier car plus urgent)
 			Table tableBlocage = table;
 			tableBlocage.creer_obstacle(robotvrai.getPosition()/*+distance*/);
