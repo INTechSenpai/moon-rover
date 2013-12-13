@@ -76,21 +76,18 @@ public class Strategie implements Service {
 	 */
 	public NoteScriptVersion evaluation(long date, Table table, RobotChrono robotchrono, Pathfinding pathfinding, int profondeur)
 	{
-		memorymanager.setModele((MemoryManagerProduct)table);
-		memorymanager.setModele((MemoryManagerProduct)robotchrono);
-		
 		if(profondeur == 0)
 			return new NoteScriptVersion();
 		else
 		{
 			table.supprimer_obstacles_perimes(date);
 			NoteScriptVersion meilleur = new NoteScriptVersion(-1, null, -1);
-			memorymanager.setModele(table);
+			
 			for(String nom_script : scriptmanager.scripts)
 				for(int id : scriptmanager.getId(nom_script))
 				{
-					Table cloned_table = (Table) memorymanager.getClone("Table");
-					RobotChrono cloned_robotchrono = (RobotChrono) memorymanager.getClone("RobotChrono");
+					Table cloned_table = (Table) memorymanager.getClone("Table", table, profondeur);
+					RobotChrono cloned_robotchrono = (RobotChrono) memorymanager.getClone("RobotChrono", robotchrono, profondeur);
 					try
 					{
 						Script script = scriptmanager.getScript(nom_script, cloned_table, cloned_robotchrono, pathfinding);
