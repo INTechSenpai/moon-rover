@@ -179,6 +179,16 @@ public class Table implements Service, MemoryManagerProduct {
 		return arrayTree[id].nbrRight();
 	}
 	
+	public int nbrTotal(int tree_id)
+	{
+		return arrayTree[tree_id].nbrTotal();
+	}
+	
+	public boolean isTreeTaken(int tree_id)
+	{
+		return arrayTree[tree_id].isTaken();
+	}
+	
 	public int[] entryPoint(boolean rightSide)
 	{
 		int c;
