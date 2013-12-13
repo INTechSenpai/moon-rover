@@ -92,6 +92,10 @@ public class Table implements Service, MemoryManagerProduct {
 		hashObstacles = 0;
 	}
 	
+	/*
+	 * Gestions des obstacles
+	 */
+	
 	public void creer_obstacle(Vec2 position)
 	{
 		int rayon_robot_adverse = 0;
@@ -134,6 +138,25 @@ public class Table implements Service, MemoryManagerProduct {
 	public void supprimer_obstacles_perimes()
 	{
 		supprimer_obstacles_perimes(System.currentTimeMillis());
+	}
+
+	/**
+	 * Renvoie si un obstacle est à une distance inférieur à "distance" du point "centre_detection"
+	 * @param centre_detection
+	 * @param distance
+	 * @return
+	 */
+	public boolean obstaclePresent(Vec2 centre_detection, int distance)
+	{
+		Iterator<Obstacle> iterator = listObstacles.iterator();
+		while ( iterator.hasNext() )
+		{
+		    Obstacle obstacle = iterator.next();
+		    if (obstacle.position.SquaredDistance(centre_detection) < distance*distance)
+		    	return true;
+		}	
+		
+		return false;
 	}
 	
 	// Feux

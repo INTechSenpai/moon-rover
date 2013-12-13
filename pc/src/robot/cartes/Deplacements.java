@@ -39,7 +39,6 @@ public class Deplacements implements Service {
 		infos_stoppage_enMouvement.put("erreur_translation", 0);
 		infos_stoppage_enMouvement.put("derivee_erreur_rotation", 0);
 		infos_stoppage_enMouvement.put("derivee_erreur_translation", 0);
-
 	}
 
 	/**
@@ -50,8 +49,13 @@ public class Deplacements implements Service {
 	 * @param derivee_erreur_translation
 	 * @return
 	 */
-	public boolean gestion_blocage(int PWMmoteurGauche, int PWMmoteurDroit, int derivee_erreur_rotation, int derivee_erreur_translation)
+	public boolean gestion_blocage(Hashtable<String, Integer> infos)
 	{
+		int PWMmoteurGauche = infos.get("PWMmoteurGauche");
+		int PWMmoteurDroit = infos.get("PWMmoteurDroit");
+		int derivee_erreur_rotation = infos.get("derivee_erreur_rotation");
+		int derivee_erreur_translation = infos.get("derivee_erreur_translation");
+		
 		boolean blocage = false;
 		boolean moteur_force = Math.abs(PWMmoteurGauche) > 40 || Math.abs(PWMmoteurDroit) > 40;
 		boolean bouge_pas = derivee_erreur_rotation == 0 && derivee_erreur_translation == 0;
@@ -88,8 +92,13 @@ public class Deplacements implements Service {
 	 * @param derivee_erreur_translation
 	 * @return
 	 */
-	public boolean update_enMouvement(int erreur_rotation, int erreur_translation, int derivee_erreur_rotation, int derivee_erreur_translation)
+	public boolean update_enMouvement(Hashtable<String, Integer> infos)
 	{
+		int erreur_rotation = infos.get("erreur_rotation");
+		int erreur_translation = infos.get("erreur_translation");
+		int derivee_erreur_rotation = infos.get("derivee_erreur_rotation");
+		int derivee_erreur_translation = infos.get("derivee_erreur_translation");
+		
 		boolean rotation_stoppe = Math.abs(erreur_rotation) < 105;
 		boolean translation_stoppe = Math.abs(erreur_translation) < 100;
 		boolean bouge_pas = Math.abs(derivee_erreur_rotation) < 100 && Math.abs(derivee_erreur_translation) < 100;
