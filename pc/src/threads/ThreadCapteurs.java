@@ -45,13 +45,13 @@ class ThreadCapteurs extends AbstractThread {
 		boolean marche_arriere = false;
 		try
 		{
-			tempo = Double.parseDouble(config.config.getProperty("capteurs_temporisation_obstacles"));
-			horizon_capteurs = Integer.parseInt(config.config.getProperty("horizon_capteurs"));
-			rayon_robot_adverse = Integer.parseInt(config.config.getProperty("rayon_robot_adverse"));
-			largeur_robot = Integer.parseInt(config.config.getProperty("largeur_robot"));
-			table_x = Integer.parseInt(config.config.getProperty("table_x"));
-			table_y = Integer.parseInt(config.config.getProperty("table_y"));
-			capteurs_frequence = Integer.parseInt(config.config.getProperty("capteurs_frequence"));
+			tempo = Double.parseDouble(config.get("capteurs_temporisation_obstacles"));
+			horizon_capteurs = Integer.parseInt(config.get("horizon_capteurs"));
+			rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
+			largeur_robot = Integer.parseInt(config.get("largeur_robot"));
+			table_x = Integer.parseInt(config.get("table_x"));
+			table_y = Integer.parseInt(config.get("table_y"));
+			capteurs_frequence = Integer.parseInt(config.get("capteurs_frequence"));
 		}
 		catch(Exception e)
 		{

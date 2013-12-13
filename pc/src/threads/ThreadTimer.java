@@ -23,7 +23,7 @@ public class ThreadTimer extends AbstractThread {
 	public boolean match_demarre = false;
 	public boolean fin_match = false;
 	public long date_debut;
-	public long duree_match;
+	public long duree_match = 90000;
 	
 	ThreadTimer(Read_Ini config, Log log, Table table, Capteur capteur, Deplacements deplacements)
 	{
@@ -33,7 +33,13 @@ public class ThreadTimer extends AbstractThread {
 		this.deplacements = deplacements;
 		
 		// facteur 1000 car temps_match est en secondes et duree_match en ms
-		duree_match = 1000*Long.parseLong(this.config.config.getProperty("temps_match"));
+		try {
+			duree_match = 1000*Long.parseLong(this.config.get("temps_match"));
+		}
+		catch(Exception e)
+		{
+			log.warning(e, this);
+		}
 
 	}
 	public void run()

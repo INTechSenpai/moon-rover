@@ -97,8 +97,8 @@ public class Table implements Service, MemoryManagerProduct {
 		int rayon_robot_adverse = 0;
 		long duree = 0;
 		try {
-			rayon_robot_adverse = Integer.parseInt(config.config.getProperty("rayon_robot_adverse"));
-			duree = Integer.parseInt(config.config.getProperty("duree_peremption_obstacles"));
+			rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
+			duree = Integer.parseInt(config.get("duree_peremption_obstacles"));
 		}
 		catch(Exception e)
 		{

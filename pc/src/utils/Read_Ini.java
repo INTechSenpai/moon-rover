@@ -15,7 +15,7 @@ public class Read_Ini implements Service {
 	private String name_local_file = "local.ini";
 	private String name_config_file = "config.ini";
 	private String path;
-	public Properties config = new Properties();
+	private Properties config = new Properties();
 	private Properties local = new Properties();
 	
     Enumeration<?> e = local.propertyNames();
