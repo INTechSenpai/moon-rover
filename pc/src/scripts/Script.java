@@ -136,13 +136,4 @@ public abstract class Script implements Service {
 	 */
 	abstract protected void termine();
 
-	/**
-	 * Méthode qui modifie la table donnée comme elle serait modifiée si le script s'achevait correctement
-	 * @param table
-	 * @param id_version
-	 * @return table modifiée
-	 */
-
-	abstract public float getDuree();
-
 }
