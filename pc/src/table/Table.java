@@ -252,7 +252,8 @@ public class Table implements Service, MemoryManagerProduct {
 			return 1;
 	}
 			
-	public MemoryManagerProduct clone(MemoryManagerProduct cloned_table) {
+	public MemoryManagerProduct clone(MemoryManagerProduct cloned_table)
+	{
 		((Table)cloned_table).initialise(arrayFire, arrayTree, arrayTorch, listObstacles, hashFire, hashTree, hashTorch, hashObstacles);
 		return cloned_table;
 	}
@@ -263,7 +264,6 @@ public class Table implements Service, MemoryManagerProduct {
 		return clone(cloned_table);
 	}
 
-	// TODO changera probablement à l'avenir
 	/**
 	 * Méthode d'initialisation d'une table, utilisé par clone()
 	 */
@@ -272,21 +272,21 @@ public class Table implements Service, MemoryManagerProduct {
 		if(this.hashFire != hashFire)
 		{
 			for(int i = 0; i < 10; i++)		
-				this.arrayFire[i] = arrayFire[i].clone();
+				 arrayFire[i].clone(this.arrayFire[i]);
 			this.hashFire = hashFire;
 		}
 
 		if(this.hashTree != hashTree)
 		{
-			for(int i = 0; i < 4; i++)		
-				this.arrayTree[i] = arrayTree[i].clone();
+			for(int i = 0; i < 4; i++)
+				 arrayTree[i].clone(this.arrayTree[i]);
 			this.hashTree = hashTree;
 		}
 
 		if(this.hashTorch != hashTorch)
 		{
 			for(int i = 0; i < 2; i++)		
-				this.arrayTorch[i] = arrayTorch[i].clone();
+				arrayTorch[i].clone(this.arrayTorch[i]);
 			this.hashTorch = hashTorch;
 		}
 
