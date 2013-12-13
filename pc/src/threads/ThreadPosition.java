@@ -10,7 +10,7 @@ import container.Service;
  * @author pf
  *
  */
-public class ThreadPosition extends AbstractThread {
+class ThreadPosition extends AbstractThread {
 
 	private RobotVrai robotvrai;
 	private ThreadTimer threadTimer;

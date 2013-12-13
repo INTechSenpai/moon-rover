@@ -14,7 +14,7 @@ import container.Service;
  *
  */
 
-public class ThreadCapteurs extends AbstractThread {
+class ThreadCapteurs extends AbstractThread {
 
 	private RobotVrai robotvrai;
 	private Capteur capteur;
