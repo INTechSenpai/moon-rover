@@ -41,6 +41,7 @@ class ThreadPosition extends AbstractThread {
 			{
 				log.warning(e.toString(), this);
 			}
+			sleep(100);
 		} while(threadTimer.fin_match);
 
 		log.debug("Arrêt du thread de position", this);

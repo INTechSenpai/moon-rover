@@ -89,13 +89,7 @@ public class ThreadTimer extends AbstractThread {
 
 		deplacements.stopper();
 		
-		try {
-			Thread.sleep(500);
-		}
-		catch(Exception e)
-		{
-			log.warning(e.toString(), this);
-		}
+		sleep(500);
 		
 		deplacements.desactiver_asservissement_rotation();
 		deplacements.desactiver_asservissement_translation();

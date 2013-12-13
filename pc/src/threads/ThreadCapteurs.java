@@ -95,14 +95,7 @@ class ThreadCapteurs extends AbstractThread {
 						date_dernier_ajout = (int)System.currentTimeMillis();
 				
 			}
-			try
-			{
-			Thread.sleep((long)1/capteurs_frequence);
-			}
-			catch(Exception e)
-			{
-				log.critical("Erreur sleep: "+e.toString(), this);
-			}
+			sleep((long)1/capteurs_frequence);
 			
 		}
         log.debug("Fin du thread de capteurs", this);
