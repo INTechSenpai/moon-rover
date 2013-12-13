@@ -101,9 +101,9 @@ public class Deplacements implements Service {
 	 * Fait avancer le robot. Méthode non bloquante
 	 * @param distance
 	 */
-	public void avancer(int distance)
+	public void avancer(float distance)
 	{
-		String chaines[] = {"d", Integer.toString(distance)};
+		String chaines[] = {"d", Float.toString(distance)};
 		serie.communiquer(chaines, 0);
 	}
 
@@ -111,9 +111,9 @@ public class Deplacements implements Service {
 	 * Fait tourner le robot. Méthode non bloquante
 	 * @param angle
 	 */
-	public void tourner(int angle)
+	public void tourner(float angle)
 	{
-		String chaines[] = {"t", Integer.toString(angle)};
+		String chaines[] = {"t", Float.toString(angle)};
 		serie.communiquer(chaines, 0);		
 	}
 	
