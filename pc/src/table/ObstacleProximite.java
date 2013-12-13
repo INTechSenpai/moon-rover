@@ -7,7 +7,7 @@ import smartMath.Vec2;
  * @author pf
  *
  */
-public class ObstacleProximite extends ObstacleCirculaire {
+class ObstacleProximite extends ObstacleCirculaire {
 
 	public long death_date;
 	

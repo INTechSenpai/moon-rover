@@ -2,7 +2,7 @@ package table;
 
 import smartMath.Vec2;
 
-public class ObstacleCirculaire extends Obstacle
+class ObstacleCirculaire extends Obstacle
 {
 
 	protected float radius;

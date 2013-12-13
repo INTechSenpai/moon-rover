@@ -2,7 +2,7 @@ package table;
 
 import smartMath.Vec2;
 
-public class ObstacleRectangulaire extends Obstacle {
+class ObstacleRectangulaire extends Obstacle {
 
 	protected int longueur;
 	protected int largeur;

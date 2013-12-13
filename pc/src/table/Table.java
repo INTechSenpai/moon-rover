@@ -211,40 +211,7 @@ public class Table implements Service, MemoryManagerProduct {
 				min = i;
 		return arrayTorch[min];
 	}
-	
-	// getters setters
-	
-	public Fire[] getAFire()
-	{
-		return arrayFire;
-	}
-	
-	public Torch[] getATorch()
-	{
-		return arrayTorch;
-	}
-	
-	public Tree[] getATree()
-	{
-		return arrayTree;
-	}
-	
-	// Je doute qu'on les utilise! (PF)
-	public void setAFire(Fire[] aFire)
-	{
-		arrayFire = aFire;
-	}
-	
-	public void setATorch(Torch[] aTorch)
-	{
-		arrayTorch = aTorch;
-	}
-	
-	public void setATree(Tree[] aTree)
-	{
-		arrayTree = aTree;
-	}
-		
+			
 	public MemoryManagerProduct clone(MemoryManagerProduct cloned_table) {
 		((Table)cloned_table).initialise(arrayFire, arrayTree, arrayTorch, listObstacles, hashFire, hashTree, hashTorch, hashObstacles);
 		return cloned_table;

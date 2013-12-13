@@ -6,7 +6,7 @@ import smartMath.Vec2;
  * @author pf
  *
  */
-public abstract class Obstacle {
+abstract class Obstacle {
 
 	protected Vec2 position;
 	
