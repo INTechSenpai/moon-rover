@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.FileWriter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -16,6 +17,8 @@ public class Log implements Service
 	// Dépendances
 	private Read_Ini config;
 
+	FileWriter writer = null;
+
 	private String 	couleurDebug 	= "\u001B[32m",
 					couleurWarning 	= "\u001B[33m",
 					couleurCritical = "\u001B[31m";
@@ -23,17 +26,33 @@ public class Log implements Service
 	// Ne pas afficher les messages de bug permet d'économiser du temps CPU
 	private boolean affiche_debug = true;
 	
+	// Sauvegarder les logs dans un fichier
+	private boolean sauvegarde_fichier = false;
+	
 	public Log(Read_Ini config)
 	{
 		this.config = config;
 		
 		try {
-		affiche_debug = Boolean.parseBoolean(this.config.get("affiche_debug"));
+			affiche_debug = Boolean.parseBoolean(this.config.get("affiche_debug"));
+			sauvegarde_fichier = Boolean.parseBoolean(this.config.get("sauvegarde_fichier"));
 		}
 		catch(Exception e)
 		{
 			warning(e, this);
 		}
+
+		if(sauvegarde_fichier)
+			try {
+				java.util.GregorianCalendar calendar = new GregorianCalendar();
+				String heure = calendar.get(Calendar.HOUR)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND);
+				writer = new FileWriter("logs/LOG-"+heure+".txt", true); 
+			}
+			catch(Exception e)
+			{
+				critical(e, this);
+			}
+	
 	}
 	
 	public void debug(Object message, Object objet)
@@ -71,7 +90,35 @@ public class Log implements Service
 	{
 		java.util.GregorianCalendar calendar = new GregorianCalendar();
 		String heure = calendar.get(Calendar.HOUR)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+","+calendar.get(Calendar.MILLISECOND);
-		System.out.println(couleur+heure+" "+message+"\u001B[0m");
+		if(couleur != couleurDebug || affiche_debug)
+			System.out.println(couleur+heure+" "+message+"\u001B[0m");
+		if(sauvegarde_fichier)
+			ecrireFichier(couleur+heure+" "+message+"\u001B[0m");
 	}
 	
+	private void ecrireFichier(String message)
+	{
+		message += "\n";
+		try{
+		     writer.write(message,0,message.length());
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+	}
+
+	public void finalize()
+	{
+		if(sauvegarde_fichier)
+			try {
+			if(writer != null)
+				writer.close();
+			}
+			catch(Exception e)
+			{
+				System.out.println(e);
+			}
+	}
+
 }
