@@ -12,20 +12,17 @@ import container.Service;
 
 public abstract class AbstractThread extends Thread implements Service {
 
-	protected static Read_Ini config;
-	protected static Log log;
+	protected Read_Ini config;
+	protected Log log;
 
 	protected static boolean stop_threads = false;
 	
-	public AbstractThread(Service config, Service log)
+	AbstractThread(Service config, Service log)
 	{
-		AbstractThread.config = (Read_Ini) config;
-		AbstractThread.log = (Log) log;
+		this.config = (Read_Ini) config;
+		this.log = (Log) log;
 	}
 
-	protected AbstractThread()
-	{		
-	}
 
 	public static void sleep(long duree)
 	{

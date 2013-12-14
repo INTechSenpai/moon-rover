@@ -40,8 +40,9 @@ public class Strategie implements Service {
 	public int versionProchainScript;
 
 	
-	public Strategie(ThreadTimer threadTimer, ScriptManager scriptmanager, Pathfinding pathfinding, Table table, Read_Ini config, Log log)
+	public Strategie(MemoryManager memorymanager, ThreadTimer threadTimer, ScriptManager scriptmanager, Pathfinding pathfinding, Table table, Read_Ini config, Log log)
 	{
+		this.memorymanager = memorymanager;
 		this.threadTimer = threadTimer;
 		this.scriptmanager = scriptmanager;
 		this.pathfinding = pathfinding;
@@ -73,26 +74,29 @@ public class Strategie implements Service {
 	 * @param profondeur
 	 * @return le couple (note, scripts), scripts étant la suite de scripts à effectuer
 	 */
-	public NoteScriptVersion evaluation(long date, MemoryManager memorymanager, Pathfinding pathfinding, int profondeur)
+	public NoteScriptVersion evaluation(long date, Table table, RobotChrono robotchrono, Pathfinding pathfinding, int profondeur)
 	{
+		memorymanager.setModele((MemoryManagerProduct)table);
+		memorymanager.setModele((MemoryManagerProduct)robotchrono);
+		
 		if(profondeur == 0)
 			return new NoteScriptVersion();
 		else
 		{
 			table.supprimer_obstacles_perimes(date);
 			NoteScriptVersion meilleur = new NoteScriptVersion(-1, null, -1);
-			
-/*			for(String nom_script : scriptmanager.getNomsScripts())
+			memorymanager.setModele(table);
+			for(String nom_script : scriptmanager.scripts)
 				for(int id : scriptmanager.getId(nom_script))
 				{
-					Table cloned_table = memorymanager.getCloneTable(profondeur);
-					RobotChrono cloned_robotchrono = memorymanager.getCloneRobotChrono(profondeur);
+					Table cloned_table = (Table) memorymanager.getClone("Table");
+					RobotChrono cloned_robotchrono = (RobotChrono) memorymanager.getClone("RobotChrono");
 					try
 					{
 						Script script = scriptmanager.getScript(nom_script, cloned_table, cloned_robotchrono, pathfinding);
 						long duree_script = script.calcule(id);
 						float noteScript = calculeNote(script, id);
-						NoteScriptVersion out = evaluation(date + duree_script, memorymanager, pathfinding, profondeur-1);
+						NoteScriptVersion out = evaluation(date + duree_script, cloned_table, cloned_robotchrono, pathfinding, profondeur-1);
 						out.note += noteScript;
 	
 						if(out.note > meilleur.note)
@@ -106,7 +110,7 @@ public class Strategie implements Service {
 					{
 						log.critical(e, this);
 					}
-				}*/
+				}
 			return meilleur;
 		}
 	}

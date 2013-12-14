@@ -13,36 +13,39 @@ import container.Service;
 public class Actionneurs implements Service {
 
 	// Dépendances
+	private Read_Ini config;
 	private Log log;
 	private Serial serie;
 
 	public Actionneurs(Read_Ini config, Log log, Serial serie)
 	{
+		this.config = config;
 		this.log = log;
 		this.serie = serie;
+	}
+	// un exemple de méthode
+	public void bouger_bras(int angle)
+	{
+		// ABWABWA
 	}
 	
 	public void baisser_bac()
 	{
-		log.debug("Bac levé", this);
 		serie.communiquer("bb", 0);
 	}
 
 	public void lever_bac()
 	{
-		log.debug("Bac baissé", this);
 		serie.communiquer("bh", 0);
 	}
 
 	public void ranger_rateau_gauche()
 	{
-		log.debug("Rateau gauche rangé", this);
 		serie.communiquer("rrg", 0);
 	}
 	
 	public void ranger_rateau_droit()
 	{
-		log.debug("Rateau droit rangé", this);
 		serie.communiquer("rrd", 0);
 	}
 	

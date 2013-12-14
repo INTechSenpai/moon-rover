@@ -26,12 +26,23 @@ public abstract class Script implements Service {
 	protected static HookGenerator hookgenerator;
 	protected static Read_Ini config;
 	protected static Log log;
-	protected static Pathfinding pathfinding;
+
+	// Pathfinding, robot et table peuvent changer d'un script à l'autre, donc pas de static
+	protected Pathfinding pathfinding;
+	protected Robot robot;
+	protected Table table;
+
+	// Les scripts n'auront pas directement accès à robotvrai et à robotchrono
+	private RobotVrai robotvrai;
+	private RobotChrono robotchrono;
 	
-	public Script(Pathfinding pathfinding, ThreadTimer threadtimer, HookGenerator hookgenerator, Read_Ini config, Log log) {
-		Script.pathfinding = pathfinding;
+	public Script(Pathfinding pathfinding, ThreadTimer threadtimer, RobotVrai robotvrai, RobotChrono robotchrono, HookGenerator hookgenerator, Table table, Read_Ini config, Log log) {
+		this.pathfinding = pathfinding;
 		Script.threadtimer = threadtimer;
+		this.robotvrai = robotvrai;
+		this.robotchrono = robotchrono;
 		Script.hookgenerator = hookgenerator;
+		this.table = table;
 		Script.config = config;
 		Script.log = log;
 	}
@@ -39,11 +50,12 @@ public abstract class Script implements Service {
 	/**
 	 * Exécute vraiment un script
 	 */
-	public void agit(int id_version, RobotVrai robotvrai, Table table)
+	public void agit(int id_version)
 	{
+		robot = robotvrai;
 		try
 		{
-			execute(id_version, robotvrai, table);
+			execute(id_version);
 		}
 		catch (Exception e)
 		{
@@ -51,7 +63,7 @@ public abstract class Script implements Service {
 		}
 		finally
 		{
-			termine(robotvrai, table);
+			termine();
 		}
 		
 	}
@@ -60,11 +72,12 @@ public abstract class Script implements Service {
 	 * Calcule le temps d'exécution de ce script (grâce à robotChrono)
 	 * @return le temps d'exécution
 	 */
-	public long calcule(int id_version, RobotChrono robotchrono, Table table)
+	public long calcule(int id_version)
 	{
+		robot = robotchrono;
 		robotchrono.reset_compteur();
 		try {
-			execute(id_version, robotchrono, table);
+			execute(id_version);
 		}
 		catch(Exception e)
 		{
@@ -72,40 +85,68 @@ public abstract class Script implements Service {
 		}
 		return robotchrono.get_compteur();
 	}
-		
+	
+	/**
+	 * Retourne la table du script. A appeler après avoir utilisé calcule
+	 * @return la table
+	 */
+	public Table getTable()
+	{
+		return table;
+	}
+	
+	/**
+	 * Retourne le robotchrono du script. A appeler après avoir utilisé calcule
+	 * @return robotchrono
+	 */
+	public Robot getRobotChrono()
+	{
+		return robotchrono;
+	}
+	
+	public void setRobotChrono(RobotChrono robotchrono)
+	{
+		this.robotchrono = robotchrono;
+	}
+
+	public void setTable(Table table)
+	{
+		this.table = table;
+	}
+	
 	/**
 	 * Renvoie le tableau des versions d'un script
 	 * @return le tableau des versions possibles
 	 */
-	public abstract ArrayList<Integer> version(final Robot robot, final Table table);
+	public abstract ArrayList<Integer> version();
 
 	/**
 	 * Retourne la position d'entrée associée à la version id
 	 * @param id de la version
 	 * @return la position du point d'entrée
 	 */
-	public abstract Vec2 point_entree(int id, final Robot robot, final Table table);
+	public abstract Vec2 point_entree(int id);
 	
 	/**
 	 * Renvoie le score que peut fournir un script
 	 * @return le score
 	 */
-	public abstract int score(int id_version, final Robot robot, final Table table);
+	public abstract int score(int id_version);
 	
 	/**
  	 * Donne le poids du script, utilisé pour calculer sa note
 	 * @return le poids
 	 */
-	public abstract int poids(final Robot robot, final Table table);
+	public abstract int poids();
 
 	/**
 	 * Exécute le script
 	 */
-	abstract protected void execute(int id_version, Robot robot, Table table) throws MouvementImpossibleException;
+	abstract protected void execute(int id_version) throws MouvementImpossibleException;
 
 	/**
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs.
 	 */
-	abstract protected void termine(Robot robot, Table table);
-	
+	abstract protected void termine();
+
 }
