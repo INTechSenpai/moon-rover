@@ -97,8 +97,9 @@ public class Table implements Service {
 	 * Gestions des obstacles
 	 */
 	
-	public void creer_obstacle(Vec2 position)
+	public void creer_obstacle(final Vec2 position)
 	{
+		Vec2 position_sauv = position.clone();
 		int rayon_robot_adverse = 0;
 		long duree = 0;
 		try {
@@ -110,7 +111,7 @@ public class Table implements Service {
 			this.log.critical(e, this);
 		}
 		
-		Obstacle obstacle = new ObstacleProximite(position, rayon_robot_adverse, System.currentTimeMillis()+duree);
+		Obstacle obstacle = new ObstacleProximite(position_sauv, rayon_robot_adverse, System.currentTimeMillis()+duree);
 		listObstacles.add(obstacle);
 		hashObstacles = indice++;
 	}
@@ -147,7 +148,7 @@ public class Table implements Service {
 	 * @param distance
 	 * @return
 	 */
-	public boolean obstaclePresent(Vec2 centre_detection, int distance)
+	public boolean obstaclePresent(final Vec2 centre_detection, int distance)
 	{
 		Iterator<Obstacle> iterator = listObstacles.iterator();
 		while ( iterator.hasNext() )
@@ -179,7 +180,7 @@ public class Table implements Service {
 	public int nearestFire (Vec2 position)
 	{
 		int min = 0;
-		for (int i = 0; i < 16; i++)
+		for (int i = 0; i < 10; i++)
 			if (arrayFire[i].getPosition().SquaredDistance(position) < arrayFire[min].getPosition().SquaredDistance(position))
 				min = i;
 		return min;

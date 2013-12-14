@@ -12,8 +12,8 @@ import container.Service;
 
 public abstract class AbstractThread extends Thread implements Service {
 
-	protected Read_Ini config;
-	protected Log log;
+	protected static Read_Ini config;
+	protected static Log log;
 
 	protected static boolean stop_threads = false;
 	

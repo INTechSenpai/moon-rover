@@ -26,12 +26,10 @@ public abstract class Script implements Service {
 	protected static HookGenerator hookgenerator;
 	protected static Read_Ini config;
 	protected static Log log;
-
-	// Pathfinding, robot et table peuvent changer d'un script à l'autre, donc pas de static
-	protected Pathfinding pathfinding;
+	protected static Pathfinding pathfinding;
 	
 	public Script(Pathfinding pathfinding, ThreadTimer threadtimer, HookGenerator hookgenerator, Read_Ini config, Log log) {
-		this.pathfinding = pathfinding;
+		Script.pathfinding = pathfinding;
 		Script.threadtimer = threadtimer;
 		Script.hookgenerator = hookgenerator;
 		Script.config = config;
