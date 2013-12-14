@@ -45,7 +45,7 @@ public class RobotVrai extends Robot {
 	
 	public boolean pret = false;
 	
-	private int sleep_milieu_boucle_acquittement; // = self.config["sleep_acquit_serie"]
+	private int sleep_milieu_boucle_acquittement;
 	private int sleep_fin_boucle_acquittement = 0;
 	private int largeur_robot;
 	private int distance_detection;
@@ -55,7 +55,8 @@ public class RobotVrai extends Robot {
 	private int disque_tolerance_consigne;
 	private int distance_degagement_robot;
 	private String couleur;
-	private boolean marche_arriere_auto;
+	private float angle_degagement_robot;
+	private boolean correction_trajectoire;
 	
 	// Constructeur
 	
@@ -75,6 +76,9 @@ public class RobotVrai extends Robot {
 			distance_detection = Integer.parseInt(config.get("distance_detection"));
 			disque_tolerance_consigne = Integer.parseInt(config.get("disque_tolerance_maj"));
 			distance_degagement_robot = Integer.parseInt(config.get("distance_degagement_robot"));
+			sleep_milieu_boucle_acquittement = Integer.parseInt(config.get("sleep_milieu_boucle_acquittement"));
+			angle_degagement_robot = Float.parseFloat(config.get("angle_degagement_robot"));
+			correction_trajectoire = Boolean.parseBoolean(config.get("correction_trajectoire"));
 			couleur = config.get("couleur");
 		}
 		catch(Exception e)
@@ -162,13 +166,46 @@ public class RobotVrai extends Robot {
 		
 	}
 	
-	// TODO
 	/**
 	 * Fait tourner le robot (méthode bloquante)
+	 * @throws MouvementImpossibleException 
 	 */
-	public void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception)
+	public void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
-		
+		if(effectuer_symetrie)
+		{
+			if(couleur == "rouge")
+				angle = (float)Math.PI - angle;
+			log.debug("Tourne à "+Float.toString(angle)+" (symétrie effectuée)", this);
+		}
+		else
+			log.debug("Tourne à "+Float.toString(angle)+" (sans symétrie)", this);
+
+		try{
+			tournerBasNiveau(angle, hooks, sans_lever_exception);
+		}
+		catch(BlocageException e)
+		{
+			try
+			{
+				if(nombre_tentatives > 0)
+				{
+					log.warning("Blocage en rotation ! On tourne dans l'autre sens... reste "+Integer.toString(nombre_tentatives)+" tentative(s)", this);
+					if(angle < 0)
+						tourner(orientation + angle_degagement_robot, null, nombre_tentatives-1, sans_lever_exception);
+				}
+			}
+			finally
+			{
+				if(!sans_lever_exception)
+					throw new MouvementImpossibleException();
+			}
+		}
+		catch(CollisionException e)
+		{
+			stopper();
+			throw new MouvementImpossibleException();
+		}
 	}
 	
 
@@ -269,7 +306,8 @@ public class RobotVrai extends Robot {
 	public void update_x_y_orientation()
 	{
 		float[] infos = deplacements.get_infos_x_y_orientation();
-		position = new Vec2(infos[0], infos[1]);
+		position.x = infos[0];
+		position.y = infos[1];
 		orientation = infos[2]/1000; // car get_infos renvoie des milliradians		
 	}
 
@@ -282,6 +320,29 @@ public class RobotVrai extends Robot {
 		// TODO
 	}
 	
+	@Override
+	public void baisser_rateaux() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void baisser_rateaux_bas() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void remonter_rateau(boolean right) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void remonter_rateaux() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	/* 
 	 * GETTERS & SETTERS
@@ -342,13 +403,13 @@ public class RobotVrai extends Robot {
 	 * MÉTHODES PRIVÉES
 	 */
 
-	private void avancerBasNiveau(int distance) throws CollisionException, BlocageException
+/*	private void avancerBasNiveau(int distance) throws CollisionException, BlocageException
 	{
 		Vec2 consigne = new Vec2(0,0);
 		consigne.x = (float) (this.position.x + distance*Math.cos(this.orientation_consigne));
 		consigne.y = (float) (this.position.y + distance*Math.sin(this.orientation_consigne));
 		this.va_au_pointBasNiveau(consigne);
-	}
+	}*/
 
 	private void tournerBasNiveau(float angle, ArrayList<Hook> hooks, boolean sans_lever_exception) throws BlocageException, CollisionException
 	{
@@ -356,8 +417,9 @@ public class RobotVrai extends Robot {
 		orientation_consigne = angle;
 		while(!acquittement(true, sans_lever_exception))
 		{
-			for(Hook hook : hooks)
-				hook.evaluate(this);
+			if(hooks != null)
+				for(Hook hook : hooks)
+					hook.evaluate(this);
 			sleep(sleep_milieu_boucle_acquittement);
 		}
 	}
@@ -365,16 +427,6 @@ public class RobotVrai extends Robot {
 	private void tournerBasNiveau(float angle) throws BlocageException, CollisionException
 	{
 		tournerBasNiveau(angle, null, false);
-	}
-	
-	private void tournerBasNiveau(float angle, boolean sans_lever_exception) throws BlocageException, CollisionException
-	{
-		tournerBasNiveau(angle, null, sans_lever_exception);
-	}
-
-	private void tournerBasNiveau(float angle, ArrayList<Hook> hooks) throws BlocageException, CollisionException
-	{
-		tournerBasNiveau(angle, hooks, false);
 	}
 
 	/**
@@ -430,38 +482,16 @@ public class RobotVrai extends Robot {
 		
 		while(!acquittement(true, sans_lever_exception))
 		{
-			for(Hook hook : hooks)
-				hook.evaluate(this);
+			if(hooks != null)
+				for(Hook hook : hooks)
+					hook.evaluate(this);
+			if(correction_trajectoire)
+				mise_a_jour_consignes();
 			sleep(sleep_milieu_boucle_acquittement);
 		}
 		
 	}
 	
-	private void va_au_pointBasNiveau(Vec2 position, boolean trajectoire_courbe, boolean sans_lever_exception) throws CollisionException, BlocageException
-	{
-		va_au_pointBasNiveau(position, null, trajectoire_courbe, sans_lever_exception);
-	}
-	
-	private void va_au_pointBasNiveau(Vec2 position, boolean trajectoire_courbe) throws CollisionException, BlocageException
-	{
-		va_au_pointBasNiveau(position, null, trajectoire_courbe, false);		
-	}
-
-	private void va_au_pointBasNiveau(Vec2 position, ArrayList<Hook> hooks, boolean trajectoire_courbe) throws CollisionException, BlocageException
-	{
-		va_au_pointBasNiveau(position, hooks, trajectoire_courbe, false);		
-	}
-
-	private void va_au_pointBasNiveau(Vec2 position, ArrayList<Hook> hooks) throws CollisionException, BlocageException
-	{
-		va_au_pointBasNiveau(position, hooks, false, false);		
-	}
-
-	private void va_au_pointBasNiveau(Vec2 position) throws CollisionException, BlocageException
-	{
-		va_au_pointBasNiveau(position, null, false, false);		
-	}
-
 	private void mise_a_jour_consignes()
 	{
 		Vec2 delta = consigne.clone();
@@ -596,30 +626,6 @@ public class RobotVrai extends Robot {
 		return marche_arriere_est_plus_rapide(consigne, -1000);
 	}
 
-	@Override
-	public void baisser_rateaux() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void baisser_rateaux_bas() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void remonter_rateau(boolean right) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void remonter_rateaux() {
-		// TODO Auto-generated method stub
-		
-	}
-	
 	public void annuleConsigneOrientation()
 	{
 		orientation_consigne = orientation;

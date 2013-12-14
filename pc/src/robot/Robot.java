@@ -22,7 +22,8 @@ public abstract class Robot implements Service {
 	
 	public abstract void stopper();
 	public abstract void correction_angle(float angle); // peut-être à placer en private
-	public abstract void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception);
+	public abstract void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception)
+			 	throws MouvementImpossibleException;
 	public abstract void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
 				throws MouvementImpossibleException;
 	public abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean marche_arriere_auto, boolean symetrie_effectuee)
