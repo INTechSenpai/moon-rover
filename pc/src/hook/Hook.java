@@ -37,7 +37,7 @@ abstract public class Hook {
 			callback.appeler();
 	}
 
-	protected abstract void evaluate(final Robot robot);
+	public abstract void evaluate(final Robot robot);
 
 }
 
