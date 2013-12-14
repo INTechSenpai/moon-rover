@@ -48,21 +48,25 @@ public class Actionneurs implements Service {
 	
 	public void rateau_droit_bas()
 	{
+		log.debug("Rateau droit baissé", this);
 		serie.communiquer("rbd", 0);
 	}
 	
 	public void rateau_gauche_bas()
 	{
+		log.debug("Rateau gauche baissé", this);
 		serie.communiquer("rbg", 0);
 	}
 	
 	public void rateau_droit_haut()
 	{
+		log.debug("Rateau droit monté", this);
 		serie.communiquer("rhd", 0);
 	}
 	
 	public void rateau_gauche_haut()
 	{
+		log.debug("Rateau gauche monté", this);
 		serie.communiquer("rhg", 0);
 	}
 
