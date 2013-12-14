@@ -23,6 +23,7 @@ public class NoteScriptVersion {
 	public NoteScriptVersion() {
 		note = 0;
 		script = null;
+		version = 0;
 	}
 		
 }
