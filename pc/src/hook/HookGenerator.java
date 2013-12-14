@@ -42,6 +42,10 @@ public class HookGenerator implements Service {
 		}
 		
 	}
+
+	/*
+	 * Hook de position
+	 */
 	
 	public Hook hook_position(Vec2 position, int tolerance, boolean effectuer_symetrie)
 	{
@@ -59,6 +63,33 @@ public class HookGenerator implements Service {
 	{
 		return hook_position(position, tolerance_position, effectuer_symetrie);
 	}
+
+	
+	/*
+	 * Hook d'abscisse
+	 */
+	
+	public Hook hook_abscisse(float abscisse, int tolerance, boolean effectuer_symetrie)
+	{
+		return new HookAbscisse(config, log, abscisse, tolerance, effectuer_symetrie);
+	}
+	public Hook hook_abscisse(float abscisse, int tolerance)
+	{
+		return hook_abscisse(abscisse, tolerance, false);
+	}
+	public Hook hook_abscisse(float abscisse)
+	{
+		return hook_abscisse(abscisse, tolerance_position, false);
+	}
+	public Hook hook_abscisse(float abscisse, boolean effectuer_symetrie)
+	{
+		return hook_abscisse(abscisse, tolerance_position, effectuer_symetrie);
+	}
+
+	
+	/*
+	 * Hook de feu
+	 */
 
 	public Hook hook_feu()
 	{

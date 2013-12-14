@@ -31,13 +31,13 @@ abstract public class Hook {
 		callbacks.add(callback);
 	}
 	
-	public void declencher()
+	protected void declencher()
 	{
 		for(Callback callback : callbacks)
 			callback.appeler();
 	}
 
-	public abstract void evaluate(Robot robot);
+	protected abstract void evaluate(final Robot robot);
 
 }
 

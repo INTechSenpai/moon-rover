@@ -11,27 +11,25 @@ import utils.Read_Ini;
  *
  */
 
-class HookPosition extends Hook {
+class HookAbscisse extends Hook {
 
-	private Vec2 position;
-	private int tolerance;
+	private float abscisse;
+	private float tolerance;
 	
-	public HookPosition(Read_Ini config, Log log, Vec2 position, int tolerance, boolean effectuer_symetrie)
+	public HookAbscisse(Read_Ini config, Log log, float abscisse, float tolerance, boolean effectuer_symetrie)
 	{
 		super(config, log);
-		this.position = position;
+		this.abscisse = abscisse;
 		this.tolerance = tolerance;
 		if(effectuer_symetrie)
-			position.x *= -1;
+			abscisse *= -1;
 	}
 	
 	public void evaluate(final Robot robot)
 	{
 		Vec2 positionRobot = robot.getPosition();
-		if(position.SquaredDistance(positionRobot) <= tolerance*tolerance)
-		{
+		if(Math.abs(positionRobot.x-abscisse) < tolerance);
 			declencher();
-		}
 	}
 	
 }
