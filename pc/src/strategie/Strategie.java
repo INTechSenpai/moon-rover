@@ -82,7 +82,7 @@ public class Strategie implements Service {
 			table.supprimer_obstacles_perimes(date);
 			NoteScriptVersion meilleur = new NoteScriptVersion(-1, null, -1);
 			
-			for(String nom_script : scriptmanager.scripts)
+/*			for(String nom_script : scriptmanager.getNomsScripts())
 				for(int id : scriptmanager.getId(nom_script))
 				{
 					Table cloned_table = memorymanager.getCloneTable(profondeur);
@@ -106,7 +106,7 @@ public class Strategie implements Service {
 					{
 						log.critical(e, this);
 					}
-				}
+				}*/
 			return meilleur;
 		}
 	}
