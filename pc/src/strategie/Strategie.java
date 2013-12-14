@@ -7,6 +7,7 @@ import robot.RobotChrono;
 import scripts.Script;
 import scripts.ScriptManager;
 import table.Table;
+import threads.ThreadAnalyseEnnemi;
 import threads.ThreadTimer;
 import utils.Log;
 import utils.Read_Ini;
@@ -23,6 +24,7 @@ public class Strategie implements Service {
 
 	// Dépendances
 	private MemoryManager memorymanager;
+	private ThreadAnalyseEnnemi threadanalyseennemi;
 	private ThreadTimer threadTimer;
 	private ScriptManager scriptmanager;
 	private Pathfinding pathfinding;
@@ -43,9 +45,10 @@ public class Strategie implements Service {
 	public int versionProchainScript;
 
 	
-	public Strategie(MemoryManager memorymanager, ThreadTimer threadTimer, ScriptManager scriptmanager, Pathfinding pathfinding, Table table, Read_Ini config, Log log)
+	public Strategie(MemoryManager memorymanager, ThreadAnalyseEnnemi threadanalyseennemi, ThreadTimer threadTimer, ScriptManager scriptmanager, Pathfinding pathfinding, Table table, Read_Ini config, Log log)
 	{
 		this.memorymanager = memorymanager;
+		this.threadanalyseennemi = threadanalyseennemi;
 		this.threadTimer = threadTimer;
 		this.scriptmanager = scriptmanager;
 		this.pathfinding = pathfinding;
@@ -62,6 +65,13 @@ public class Strategie implements Service {
 		scriptEnCours = prochainScript;
 		versionScriptEnCours = versionProchainScriptEnnemi;
 		
+	}
+	
+	public void analyse_ennemi()
+	{
+		int[] duree_freeze = threadanalyseennemi.duree_freeze();
+		
+		// modificiation de la table en conséquence
 	}
 	
 	public float calculeNote(int score, int duree, int id)

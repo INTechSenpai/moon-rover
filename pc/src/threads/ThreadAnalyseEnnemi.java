@@ -52,10 +52,16 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 				}
 			
 			}
+			
 			sleep(500); // le sleep peut être long, le robot adverse ne bouge de toute façon pas très vite...
 		}
 	}
 
+
+	/**
+	 * Donne à la stratégie les durées de freeze de chaque robot
+	 * @return
+	 */
 	public int[] duree_freeze()
 	{
 		int[] duree_freeze = new int[2];

@@ -14,6 +14,7 @@ import scripts.ScriptManager;
 import strategie.MemoryManager;
 import strategie.Strategie;
 import table.Table;
+import threads.ThreadAnalyseEnnemi;
 import threads.ThreadTimer;
 import threads.ThreadManager;
 import robot.RobotVrai;
@@ -111,6 +112,7 @@ public class Container {
 															(Log)getService("Log")));
 		else if(nom == "Strategie")
 			services.put(nom, (Service)new Strategie(	(MemoryManager)getService("MemoryManager"),
+														(ThreadAnalyseEnnemi)getService("threadAnalyseEnnemi"),
 														(ThreadTimer)getService("threadTimer"),
 														(ScriptManager)getService("ScriptManager"),
 														(Pathfinding)getService("Pathfinding"),

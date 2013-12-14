@@ -24,9 +24,8 @@ public class ThreadStrategie extends AbstractThread {
 	private RobotChrono robotchrono;
 	private MemoryManager memorymanager;
 	private Pathfinding pathfinding;
-	private ThreadAnalyseEnnemi threadanalyseennemi;
 
-	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, RobotChrono robotchrono, Pathfinding pathfinding, MemoryManager memorymanager, ThreadAnalyseEnnemi threadanalyseennemi)
+	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, RobotChrono robotchrono, Pathfinding pathfinding, MemoryManager memorymanager)
 	{
 		this.strategie = strategie;
 		this.table = table;
@@ -34,7 +33,6 @@ public class ThreadStrategie extends AbstractThread {
 		this.robotchrono = robotchrono;
 		this.pathfinding = pathfinding;
 		this.memorymanager = memorymanager;
-		this.threadanalyseennemi = threadanalyseennemi;
 	}
 	
 	public void run()
@@ -42,6 +40,7 @@ public class ThreadStrategie extends AbstractThread {
 		int profondeur_max = 2;
 		while(!stop_threads)
 		{
+			strategie.analyse_ennemi();
 			robotchrono.majRobotChrono(robotvrai);
 			// Evaluation d'une stratégie de secours si ce script bug (en premier car plus urgent)
 			Table tableBlocage = table;
