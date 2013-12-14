@@ -129,7 +129,6 @@ public class RobotVrai extends Robot {
 		deplacements.tourner((int)angle);
 	}
 	
-	// TODO
 	public void avancer(int distance, Hook[] hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
 		log.debug("Avancer de "+Integer.toString(distance), this);
@@ -173,7 +172,6 @@ public class RobotVrai extends Robot {
 	}
 	
 
-	// TODO
 	/**
 	 * Fait suivre au robot un chemin (fourni par la recherche de chemin)
 	 * @throws MouvementImpossibleException 
