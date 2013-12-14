@@ -7,8 +7,6 @@ import strategie.MemoryManager;
 import strategie.NoteScriptVersion;
 import strategie.Strategie;
 import table.Table;
-import utils.Log;
-import utils.Read_Ini;
 
 /**
  * Thread qui calculera en continu la stratégie à adopter
@@ -26,9 +24,8 @@ public class ThreadStrategie extends AbstractThread {
 	private MemoryManager memorymanager;
 	private Pathfinding pathfinding;
 
-	ThreadStrategie(Read_Ini config, Log log, Strategie strategie, Table table, RobotVrai robotvrai, RobotChrono robotchrono, Pathfinding pathfinding, MemoryManager memorymanager)
+	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, RobotChrono robotchrono, Pathfinding pathfinding, MemoryManager memorymanager)
 	{
-		super(config, log);
 		this.strategie = strategie;
 		this.table = table;
 		this.robotvrai = robotvrai;

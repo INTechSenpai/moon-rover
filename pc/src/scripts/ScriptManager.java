@@ -19,13 +19,11 @@ import exception.ScriptException;
  
 public class ScriptManager implements Service {
 	
-	private Read_Ini config;
 	private Log log;
 
 	private Map<String,Script> instancesScripts = new Hashtable<String,Script>();
 
 	public ScriptManager(Pathfinding pathfinding, ThreadTimer threadtimer, HookGenerator hookgenerator, Read_Ini config, Log log) {
-		this.config = config;
 		this.log = log;
 		
 		instancesScripts.put("ScriptTree", new ScriptTree(pathfinding, threadtimer, hookgenerator, config, log));
@@ -42,7 +40,10 @@ public class ScriptManager implements Service {
 	{
 		Script script = instancesScripts.get(nom);
 		if(script == null)
+		{
+			log.warning("Script inconnu: "+nom, this);
 			throw new ScriptException();
+		}
 		return script;
 	}
 	

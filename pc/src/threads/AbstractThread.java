@@ -17,12 +17,15 @@ public abstract class AbstractThread extends Thread implements Service {
 
 	protected static boolean stop_threads = false;
 	
-	AbstractThread(Service config, Service log)
+	public AbstractThread(Service config, Service log)
 	{
-		this.config = (Read_Ini) config;
-		this.log = (Log) log;
+		AbstractThread.config = (Read_Ini) config;
+		AbstractThread.log = (Log) log;
 	}
 
+	protected AbstractThread()
+	{		
+	}
 
 	public static void sleep(long duree)
 	{

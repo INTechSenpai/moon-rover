@@ -1,5 +1,4 @@
 package robot.serial;
-import container.Service;
 import utils.Log;
 import gnu.io.CommPortIdentifier;
 

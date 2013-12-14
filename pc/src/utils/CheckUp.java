@@ -22,7 +22,16 @@ public class CheckUp implements Service {
 	// TODO check-up du robot
 	public void lancer()
 	{
-		
+		// Par exemple
+		log.debug("Lancement d'un check-up", this);
+		try
+		{
+		robotvrai.avancer(100);
+		}
+		catch(Exception e)
+		{
+			log.warning(e, this);
+		}
 	}
 	
 }
