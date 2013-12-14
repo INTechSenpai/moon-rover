@@ -1,7 +1,5 @@
 package strategie;
 
-import java.util.Hashtable;
-
 import robot.RobotChrono;
 import table.Table;
 import utils.Log;
@@ -14,7 +12,6 @@ import container.Service;
  * @author pf
  */
 
-
 public class MemoryManager implements Service {
 
 	private Log log;
@@ -22,76 +19,54 @@ public class MemoryManager implements Service {
 	
 	private int nbmax;
 
-	private Hashtable<String, MemoryManagerProduct> productsModels = new Hashtable<String, MemoryManagerProduct>();
-	private Hashtable<String, Integer> productsIndices = new Hashtable<String, Integer>();
-	private Hashtable<String, MemoryManagerProduct[]> productsObjects = new Hashtable<String, MemoryManagerProduct[]>();
-	
-	private int indiceRobotChrono = 0;
-	private int indiceTable = 0;
+	private Table[] productsTable;
+	private RobotChrono[] productsRobotChrono;
 
 	public MemoryManager(Read_Ini config, Log log, Table table, RobotChrono robotchrono)
 	{
 		this.log = log;
 		this.config = config;
 		try {
-			nbmax = Integer.parseInt(this.config.get("nb_max_noeuds"));
+			nbmax = Integer.parseInt(this.config.get("profondeur_max_arbre"));
 		}
 		catch(Exception e)
 		{
-			nbmax = 1000;
+			nbmax = 10;
 			this.log.critical(e, this);
 		}
 
-		register("Table", (MemoryManagerProduct)table);
-		register("RobotChrono", (MemoryManagerProduct)robotchrono);
-	}
+		productsTable = new Table[nbmax];
+		productsRobotChrono = new RobotChrono[nbmax];
 
-	public void register(String nom, MemoryManagerProduct instance)
-	{
-		productsObjects.put(nom, new MemoryManagerProduct[nbmax]);
-		productsIndices.put(nom, 0);
-		productsModels.put(nom, instance);
-		MemoryManagerProduct[] arrayProducts = productsObjects.get(nom);
-
-		// Création des objets pour ce MemoryManagerProduct
 		for(int i = 0; i < nbmax; i++)
-			arrayProducts[i] = instance.clone();
+		{
+			productsTable[i] = table.clone();
+			productsRobotChrono[i] = robotchrono.clone();
+		}
+}
+	
+	
+	public void setModelTable(Table instance, int profondeur_max)
+	{
+		productsTable[profondeur_max] = instance;
 	}
 	
-	public void setModele(MemoryManagerProduct instance)
+	public void setModelRobotChrono(RobotChrono instance, int profondeur_max)
 	{
-		// On actualise le modèle sans allocation de mémoire
-		MemoryManagerProduct model = productsModels.get(instance.getNom());
-		instance.clone(model);
+		productsRobotChrono[profondeur_max] = instance;
 	}
 	
-	public MemoryManagerProduct getClone(String nom)
+	public Table getCloneTable(int profondeur)
 	{
-		MemoryManagerProduct out;
+		Table out = productsTable[profondeur-1];
+		productsTable[profondeur].clone(out);
+		return out;
+	}
 
-		// Table et Robotchrono sont traités particulièrement car les indices
-		// sous forme de int sont plus rapides à traiter que les productsIndices
-		
-		if(nom == "Table")
-		{
-			out = productsObjects.get(nom)[indiceTable];
-			productsModels.get(nom).clone(out);
-			indiceTable++;
-			indiceTable %= nbmax;
-		}
-		else if(nom == "RobotChrono")
-		{
-			out = productsObjects.get(nom)[indiceRobotChrono];
-			productsModels.get(nom).clone(out);
-			indiceRobotChrono++;
-			indiceRobotChrono %= nbmax;
-		}
-		else
-		{
-			out = productsObjects.get(nom)[productsIndices.get(nom)];
-			productsModels.get(nom).clone(out);
-			productsIndices.put(nom, (productsIndices.get(nom)+1) % nbmax);			
-		}
+	public RobotChrono getCloneRobotChrono(int profondeur)
+	{
+		RobotChrono out = productsRobotChrono[profondeur-1];
+		productsRobotChrono[profondeur].clone(out);
 		return out;
 	}
 			

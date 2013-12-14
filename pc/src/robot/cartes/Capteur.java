@@ -15,7 +15,6 @@ import container.Service;
 public class Capteur implements Service {
 
 	// Dépendances
-	private Read_Ini config;
 	private Log log;
 	private Serial serie;
 
@@ -26,7 +25,6 @@ public class Capteur implements Service {
     
 	public Capteur(Read_Ini config, Log log, Serial serie)
 	{
-		this.config = config;
 		this.log = log;
 		this.serie = serie;
 	}

@@ -22,14 +22,14 @@ public abstract class Robot implements Service {
 	
 	public abstract void stopper();
 	public abstract void correction_angle(float angle); // peut-être à placer en private
-	public abstract void tourner(float angle, Hook[] hooks, int nombre_tentatives, boolean sans_lever_exception);
-	public abstract void avancer(int distance, Hook[] hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
+	public abstract void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception);
+	public abstract void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
 				throws MouvementImpossibleException;
-	public abstract void suit_chemin(ArrayList<Vec2> chemin, Hook[] hooks, boolean marche_arriere_auto, boolean symetrie_effectuee)
+	public abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean marche_arriere_auto, boolean symetrie_effectuee)
 				throws MouvementImpossibleException;
 	public abstract void set_vitesse_translation(String vitesse);
 	public abstract void set_vitesse_rotation(String vitesse);
-	public abstract void va_au_point(Vec2 point, Hook[] hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception)
+	public abstract void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception)
 				throws MouvementImpossibleException;
 
 	/*
@@ -106,7 +106,7 @@ public abstract class Robot implements Service {
 		return orientation;
 	}
 
-	public void va_au_point(Vec2 point, Hook[] hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
+	public void va_au_point(Vec2 point, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
 		va_au_point(point, hooks, false, 2, retenterSiBlocage, sansLeverException, false);
 	}
@@ -121,12 +121,12 @@ public abstract class Robot implements Service {
 		suit_chemin(chemin, null, marche_arriere_auto, symetrie_effectuee);
 	}
 
-	public void suit_chemin(ArrayList<Vec2> chemin, Hook[] hooks) throws MouvementImpossibleException
+	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws MouvementImpossibleException
 	{
 		suit_chemin(chemin, hooks, true, false);
 	}
 
-	public void suit_chemin(ArrayList<Vec2> chemin, Hook[] hooks, boolean marche_arriere_auto) throws MouvementImpossibleException
+	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean marche_arriere_auto) throws MouvementImpossibleException
 	{
 		suit_chemin(chemin, hooks, marche_arriere_auto, false);
 	}
@@ -146,12 +146,12 @@ public abstract class Robot implements Service {
 		tourner(angle, null, nombre_tentatives, sans_lever_exception);
 	}
 
-	public void tourner(float angle, Hook[] hooks, boolean sans_lever_exception) throws MouvementImpossibleException
+	public void tourner(float angle, ArrayList<Hook> hooks, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
 		tourner(angle, null, 2, sans_lever_exception);
 	}
 
-	public void tourner(float angle, Hook[] hooks, int nombre_tentatives) throws MouvementImpossibleException
+	public void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives) throws MouvementImpossibleException
 	{
 		tourner(angle, hooks, nombre_tentatives, false);				
 	}
@@ -166,7 +166,7 @@ public abstract class Robot implements Service {
 		tourner(angle, null, nombre_tentatives, false);		
 	}
 
-	public void tourner(float angle, Hook[] hooks) throws MouvementImpossibleException
+	public void tourner(float angle, ArrayList<Hook> hooks) throws MouvementImpossibleException
 	{
 		tourner(angle, hooks, 2, false);
 	}
@@ -191,7 +191,7 @@ public abstract class Robot implements Service {
 		this.avancer(distance, null, nbTentatives, true, false);
 	}
 
-	public void avancer(int distance, Hook[] hooks) throws MouvementImpossibleException
+	public void avancer(int distance, ArrayList<Hook> hooks) throws MouvementImpossibleException
 	{
 		this.avancer(distance, hooks, 2, true, false);
 	}
