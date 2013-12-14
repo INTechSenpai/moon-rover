@@ -45,19 +45,27 @@ public class MemoryManager implements Service {
 		}
 }
 
-	public MemoryManagerProduct getClone(String nom, MemoryManagerProduct modele, int profondeur)
+	public void setModel(String nom, MemoryManagerProduct instance, int profondeur_max)
+	{
+		if(nom == "Table")
+			productsTable[profondeur_max] = instance;
+		else if(nom == "RobotChrono")
+			productsRobotChrono[profondeur_max] = instance;		
+	}
+	
+	public MemoryManagerProduct getClone(String nom, int profondeur)
 	{
 		MemoryManagerProduct out = null;
 
 		if(nom == "Table")
 		{
 			out = productsTable[profondeur-1];
-			modele.clone(out);
+			productsTable[profondeur].clone(out);
 		}
 		else if(nom == "RobotChrono")
 		{
 			out = productsRobotChrono[profondeur-1];
-			modele.clone(out);
+			productsRobotChrono[profondeur].clone(out);
 		}
 
 		return out;

@@ -22,8 +22,7 @@ public class Table implements Service, MemoryManagerProduct {
 	private static ArrayList<Obstacle> listObstaclesFixes = new ArrayList<Obstacle>();
 
 	private int hashFire;
-	private int hashTreeGauche;
-	private int hashTreeDroit;
+	private int hashTree;
 	private int hashTorch;
 	private int hashObstacles;
 
@@ -90,8 +89,7 @@ public class Table implements Service, MemoryManagerProduct {
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-1500,700), 150));
 
 		hashFire = 0;
-		hashTreeGauche = 0;
-		hashTreeDroit = 0;
+		hashTree = 0;
 		hashTorch = 0;
 		hashObstacles = 0;
 	}
@@ -199,10 +197,7 @@ public class Table implements Service, MemoryManagerProduct {
 	public void pickTree (int id)
 	{
 		arrayTree[id].setTaken();
-		if(id <= 1)
-			hashTreeDroit = indice++;
-		else
-			hashTreeGauche = indice++;
+		hashTree = indice++;
 	}
 	
 	public int nbrLeftTree(int id)
@@ -267,18 +262,11 @@ public class Table implements Service, MemoryManagerProduct {
 			ct.hashFire = hashFire;
 		}
 
-		if(ct.hashTreeGauche != hashTreeGauche)
+		if(ct.hashTree != hashTree)
 		{
-			arrayTree[2].clone(ct.arrayTree[2]);
-			arrayTree[3].clone(ct.arrayTree[3]);
-			ct.hashTreeGauche = hashTreeGauche;
-		}
-
-		if(ct.hashTreeDroit != hashTreeDroit)
-		{
-			arrayTree[0].clone(ct.arrayTree[0]);
-			arrayTree[1].clone(ct.arrayTree[1]);
-			ct.hashTreeDroit = hashTreeDroit;
+			for(int i = 0; i < 4; i++)		
+				arrayTree[i].clone(ct.arrayTree[i]);
+			ct.hashTree = hashTree;
 		}
 
 		if(ct.hashTorch != hashTorch)

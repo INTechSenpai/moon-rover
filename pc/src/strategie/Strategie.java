@@ -40,9 +40,8 @@ public class Strategie implements Service {
 	public int versionProchainScript;
 
 	
-	public Strategie(MemoryManager memorymanager, ThreadTimer threadTimer, ScriptManager scriptmanager, Pathfinding pathfinding, Table table, Read_Ini config, Log log)
+	public Strategie(ThreadTimer threadTimer, ScriptManager scriptmanager, Pathfinding pathfinding, Table table, Read_Ini config, Log log)
 	{
-		this.memorymanager = memorymanager;
 		this.threadTimer = threadTimer;
 		this.scriptmanager = scriptmanager;
 		this.pathfinding = pathfinding;
@@ -74,7 +73,7 @@ public class Strategie implements Service {
 	 * @param profondeur
 	 * @return le couple (note, scripts), scripts étant la suite de scripts à effectuer
 	 */
-	public NoteScriptVersion evaluation(long date, Table table, RobotChrono robotchrono, Pathfinding pathfinding, int profondeur)
+	public NoteScriptVersion evaluation(long date, MemoryManager memorymanager, Pathfinding pathfinding, int profondeur)
 	{
 		if(profondeur == 0)
 			return new NoteScriptVersion();
@@ -86,14 +85,14 @@ public class Strategie implements Service {
 			for(String nom_script : scriptmanager.scripts)
 				for(int id : scriptmanager.getId(nom_script))
 				{
-					Table cloned_table = (Table) memorymanager.getClone("Table", table, profondeur);
-					RobotChrono cloned_robotchrono = (RobotChrono) memorymanager.getClone("RobotChrono", robotchrono, profondeur);
+					Table cloned_table = (Table) memorymanager.getClone("Table", profondeur);
+					RobotChrono cloned_robotchrono = (RobotChrono) memorymanager.getClone("RobotChrono", profondeur);
 					try
 					{
 						Script script = scriptmanager.getScript(nom_script, cloned_table, cloned_robotchrono, pathfinding);
 						long duree_script = script.calcule(id);
 						float noteScript = calculeNote(script, id);
-						NoteScriptVersion out = evaluation(date + duree_script, cloned_table, cloned_robotchrono, pathfinding, profondeur-1);
+						NoteScriptVersion out = evaluation(date + duree_script, memorymanager, pathfinding, profondeur-1);
 						out.note += noteScript;
 	
 						if(out.note > meilleur.note)

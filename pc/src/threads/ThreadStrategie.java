@@ -3,6 +3,7 @@ package threads;
 import pathfinding.Pathfinding;
 import robot.RobotChrono;
 import robot.RobotVrai;
+import strategie.MemoryManager;
 import strategie.NoteScriptVersion;
 import strategie.Strategie;
 import table.Table;
@@ -22,12 +23,10 @@ public class ThreadStrategie extends AbstractThread {
 	private Table table;
 	private RobotVrai robotvrai;
 	private RobotChrono robotchrono;
+	private MemoryManager memorymanager;
 	private Pathfinding pathfinding;
 
-	private Table futureTable;
-	private RobotChrono futurRobotChrono;
-	
-	ThreadStrategie(Read_Ini config, Log log, Strategie strategie, Table table, RobotVrai robotvrai, RobotChrono robotchrono, Pathfinding pathfinding)
+	ThreadStrategie(Read_Ini config, Log log, Strategie strategie, Table table, RobotVrai robotvrai, RobotChrono robotchrono, Pathfinding pathfinding, MemoryManager memorymanager)
 	{
 		super(config, log);
 		this.strategie = strategie;
@@ -35,6 +34,7 @@ public class ThreadStrategie extends AbstractThread {
 		this.robotvrai = robotvrai;
 		this.robotchrono = robotchrono;
 		this.pathfinding = pathfinding;
+		this.memorymanager = memorymanager;
 	}
 	
 	public void run()
@@ -45,7 +45,9 @@ public class ThreadStrategie extends AbstractThread {
 			// Evaluation d'une stratégie de secours si ce script bug (en premier car plus urgent)
 			Table tableBlocage = table;
 			tableBlocage.creer_obstacle(robotvrai.getPosition()/*+distance*/);
-			NoteScriptVersion meilleurErreur = strategie.evaluation(System.currentTimeMillis(), table, robotchrono, pathfinding, 2);
+			memorymanager.setModel("Table", table, 2);
+			memorymanager.setModel("RobotChrono", robotchrono, 2);
+			NoteScriptVersion meilleurErreur = strategie.evaluation(System.currentTimeMillis(), memorymanager, pathfinding, 2);
 
 			strategie.prochainScriptEnnemi = meilleurErreur.script;
 			
@@ -57,7 +59,7 @@ public class ThreadStrategie extends AbstractThread {
 //				futurRobotChrono = strategie.scriptEnCours.futurRobotChrono(robotchrono, strategie.versionScriptEnCours);
 			}
 
-			NoteScriptVersion meilleurProchain = strategie.evaluation(System.currentTimeMillis(), futureTable, futurRobotChrono, pathfinding, 2);
+			NoteScriptVersion meilleurProchain = strategie.evaluation(System.currentTimeMillis(), memorymanager, pathfinding, 2);
 			
 			strategie.prochainScript = meilleurProchain.script;
 		}
