@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import pathfinding.Pathfinding;
 import robot.cartes.Capteur;
 import robot.cartes.Deplacements;
+import robot.cartes.FiltrageLaser;
 import robot.cartes.Laser;
 import container.Container;
 import table.Table;
@@ -56,7 +57,7 @@ public class ThreadManager {
 			else if(nom == "threadStrategie")
 				threads.put("threadStrategie", new ThreadStrategie((Strategie)container.getService("Strategie"), (Table)container.getService("Table"), (RobotVrai)container.getService("RobotVrai"), (RobotChrono)container.getService("RobotChrono"), (Pathfinding)container.getService("Pathfinding"), (MemoryManager)container.getService("MemoryManager")));
 			else if(nom == "threadLaser")
-				threads.put("threadLaser", new ThreadLaser((Laser)container.getService("Laser"), (Table)container.getService("Table"), (ThreadTimer)threads.get("threadTimer")));
+				threads.put("threadLaser", new ThreadLaser((Laser)container.getService("Laser"), (Table)container.getService("Table"), (ThreadTimer)threads.get("threadTimer"), (FiltrageLaser)container.getService("FiltrageLaser")));
 			else
 			{
 				log.warning("Le thread suivant n'existe pas: "+nom, this);

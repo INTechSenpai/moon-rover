@@ -19,7 +19,8 @@ public class Table implements Service {
 
 	private ArrayList<Obstacle> listObstacles = new ArrayList<Obstacle>();
 	private static ArrayList<Obstacle> listObstaclesFixes = new ArrayList<Obstacle>();
-
+	private ObstacleCirculaire[] robots_adverses = new ObstacleCirculaire[2];
+	
 	private int hashFire;
 	private int hashTree;
 	private int hashTorch;
@@ -168,6 +169,11 @@ public class Table implements Service {
 
 		return false;
 	}
+
+    public void deplacer_robot_adverse(int i, Vec2 position)
+    {
+    	robots_adverses[i].position = position.clone();
+    }
 	
 	// Feux
 	
