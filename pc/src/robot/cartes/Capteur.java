@@ -82,5 +82,11 @@ public class Capteur implements Service {
     {
     	return false;
     }
-    
+
+    // TODO
+    public boolean isFireRed()
+    {
+    	return false;
+    }
+
 }

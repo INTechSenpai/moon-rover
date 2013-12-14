@@ -47,6 +47,7 @@ public abstract class Robot implements Service {
 	 */
 	
 	public abstract void tirerBalles(boolean rightSide);
+	public abstract void takefire();
 	public abstract void baisser_rateaux();
 	public abstract void baisser_rateaux_bas();
 	public abstract void remonter_rateau(boolean right);

@@ -320,6 +320,14 @@ public class RobotVrai extends Robot {
 		// TODO
 	}
 	
+	
+	@Override
+	public void takefire() {
+		boolean retourner = capteur.isFireRed() ^ couleur == "rouge";
+		// TODO
+		
+	}
+	
 	@Override
 	public void baisser_rateaux() {
 		// TODO Auto-generated method stub

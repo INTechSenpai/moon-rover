@@ -145,6 +145,10 @@ public class RobotChrono extends Robot {
 	public void remonter_rateaux() {
 	}
 	
+	@Override
+	public void takefire() {
+	}
+	
 	// TODO à compléter au fur et à mesure
 	public void majRobotChrono(RobotVrai robotvrai)
 	{
