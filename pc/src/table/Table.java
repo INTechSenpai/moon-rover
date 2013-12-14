@@ -22,7 +22,8 @@ public class Table implements Service, MemoryManagerProduct {
 	private static ArrayList<Obstacle> listObstaclesFixes = new ArrayList<Obstacle>();
 
 	private int hashFire;
-	private int hashTree;
+	private int hashTreeGauche;
+	private int hashTreeDroit;
 	private int hashTorch;
 	private int hashObstacles;
 
@@ -34,6 +35,8 @@ public class Table implements Service, MemoryManagerProduct {
 	{
 		this.log = log;
 		this.config = config;
+		
+		initialise();
 	}
 	
 	public void initialise()
@@ -51,21 +54,21 @@ public class Table implements Service, MemoryManagerProduct {
 		arrayFire[9] = new Fire(new Vec2(-1485,1200), 15, 0, Orientation.XPLUS, Colour.YELLOW);
 
 		// Initialisation des arbres
-		arrayTree[0] = new Tree(0);
-		arrayTree[1] = new Tree(1);
-		arrayTree[2] = new Tree(2);
-		arrayTree[3] = new Tree(3);
+		arrayTree[0] = new Tree();
+		arrayTree[1] = new Tree();
+		arrayTree[2] = new Tree();
+		arrayTree[3] = new Tree();
 
 		// Initialisation des torches
 		Fire feu0 = new Fire(new Vec2(600,900), 3, 1, Orientation.GROUND, Colour.YELLOW);
 		Fire feu1 = new Fire(new Vec2(600,900), 4, 2, Orientation.GROUND, Colour.RED);
 		Fire feu2 = new Fire(new Vec2(600,900), 5, 3, Orientation.GROUND, Colour.YELLOW);
-		arrayTorch[0] = new Torch(new Vec2(600,900), 0, feu0, feu1, feu2);
+		arrayTorch[0] = new Torch(new Vec2(600,900), feu0, feu1, feu2);
 
 		Fire feu3 = new Fire(new Vec2(-600,900), 10, 1, Orientation.GROUND, Colour.RED);
 		Fire feu4 = new Fire(new Vec2(-600,900), 11, 2, Orientation.GROUND, Colour.YELLOW);
 		Fire feu5 = new Fire(new Vec2(-600,900), 12, 3, Orientation.GROUND, Colour.RED);
-		arrayTorch[1] = new Torch(new Vec2(-600,900), 1, feu3, feu4, feu5); 
+		arrayTorch[1] = new Torch(new Vec2(-600,900), feu3, feu4, feu5); 
 		
 		// Ajout des torches mobiles
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(600,900), 80));
@@ -76,7 +79,7 @@ public class Table implements Service, MemoryManagerProduct {
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(0,950), 150));
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-1500,0), 250));
 
-		// TODO bacs obstacles
+		// Ajout bacs
 		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(400,1700), 700, 300));
 		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-1100,1700), 700, 300));
 
@@ -87,7 +90,8 @@ public class Table implements Service, MemoryManagerProduct {
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-1500,700), 150));
 
 		hashFire = 0;
-		hashTree = 0;
+		hashTreeGauche = 0;
+		hashTreeDroit = 0;
 		hashTorch = 0;
 		hashObstacles = 0;
 	}
@@ -175,7 +179,6 @@ public class Table implements Service, MemoryManagerProduct {
 		hashFire = indice++;
 	}
 
-
 	public int nearestFire (Vec2 position)
 	{
 		int min = 0;
@@ -195,22 +198,24 @@ public class Table implements Service, MemoryManagerProduct {
 	
 	public void pickTree (int id)
 	{
-
 		arrayTree[id].setTaken();
-		hashTree = indice++;
+		if(id <= 1)
+			hashTreeDroit = indice++;
+		else
+			hashTreeGauche = indice++;
 	}
 	
-	public int nbrLeft (int id)
+	public int nbrLeftTree(int id)
 	{
 		return arrayTree[id].nbrLeft();
 	}
 	
-	public int nbrRight (int id)
+	public int nbrRightTree(int id)
 	{
 		return arrayTree[id].nbrRight();
 	}
 	
-	public int nbrTotal(int tree_id)
+	public int nbrTotalTree(int tree_id)
 	{
 		return arrayTree[tree_id].nbrTotal();
 	}
@@ -252,54 +257,51 @@ public class Table implements Service, MemoryManagerProduct {
 			return 1;
 	}
 			
-	public MemoryManagerProduct clone(MemoryManagerProduct cloned_table)
+	public void clone(MemoryManagerProduct cloned_table)
 	{
-		((Table)cloned_table).initialise(arrayFire, arrayTree, arrayTorch, listObstacles, hashFire, hashTree, hashTorch, hashObstacles);
-		return cloned_table;
+		Table ct = (Table) cloned_table;
+		if(ct.hashFire != hashFire)
+		{
+			for(int i = 0; i < 10; i++)
+				arrayFire[i].clone(ct.arrayFire[i]);
+			ct.hashFire = hashFire;
+		}
+
+		if(ct.hashTreeGauche != hashTreeGauche)
+		{
+			arrayTree[2].clone(ct.arrayTree[2]);
+			arrayTree[3].clone(ct.arrayTree[3]);
+			ct.hashTreeGauche = hashTreeGauche;
+		}
+
+		if(ct.hashTreeDroit != hashTreeDroit)
+		{
+			arrayTree[0].clone(ct.arrayTree[0]);
+			arrayTree[1].clone(ct.arrayTree[1]);
+			ct.hashTreeDroit = hashTreeDroit;
+		}
+
+		if(ct.hashTorch != hashTorch)
+		{
+			for(int i = 0; i < 2; i++)		
+				arrayTorch[i].clone(ct.arrayTorch[i]);
+			ct.hashTorch = hashTorch;
+		}
+
+		if(ct.hashObstacles != hashObstacles)
+		{
+			ct.listObstacles.clear();
+			for(Obstacle item: listObstacles)
+				ct.listObstacles.add(item.clone());
+			ct.hashObstacles = hashObstacles;
+		}
 	}
 	
 	public MemoryManagerProduct clone()
 	{
 		Table cloned_table = new Table(log, config);
-		return clone(cloned_table);
-	}
-
-	/**
-	 * Méthode d'initialisation d'une table, utilisé par clone()
-	 */
-	public void initialise(Fire arrayFire[], Tree arrayTree[], Torch arrayTorch[], ArrayList<Obstacle> listObstacles, int hashFire, int hashTree, int hashTorch, int hashObstacles)
-	{
-		if(this.hashFire != hashFire)
-		{
-			for(int i = 0; i < 10; i++)		
-				 arrayFire[i].clone(this.arrayFire[i]);
-			this.hashFire = hashFire;
-		}
-
-		if(this.hashTree != hashTree)
-		{
-			for(int i = 0; i < 4; i++)
-				 arrayTree[i].clone(this.arrayTree[i]);
-			this.hashTree = hashTree;
-		}
-
-		if(this.hashTorch != hashTorch)
-		{
-			for(int i = 0; i < 2; i++)		
-				arrayTorch[i].clone(this.arrayTorch[i]);
-			this.hashTorch = hashTorch;
-		}
-
-		if(this.hashObstacles != hashObstacles)
-		{
-			for(Obstacle item: listObstacles)
-				this.listObstacles.add(item.clone());
-			this.hashObstacles = hashObstacles;
-		}
-	}
-
-	public String getNom() {
-		return "Table";
+		clone(cloned_table);
+		return cloned_table;
 	}
 
 }

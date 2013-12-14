@@ -60,12 +60,6 @@ public class MemoryManager implements Service {
 			modele.clone(out);
 		}
 
-/*		else
-		{
-			out = productsObjects.get(nom)[productsIndices.get(nom)];
-			modele.clone(out);
-			productsIndices.put(nom, (productsIndices.get(nom)+1) % nbmax);
-		}*/
 		return out;
 	}
 			

@@ -77,24 +77,19 @@ public class RobotChrono extends Robot implements Service, MemoryManagerProduct 
 	}
 
 	@Override
-	public MemoryManagerProduct clone(MemoryManagerProduct cloned_robotchrono)
+	public void clone(MemoryManagerProduct cloned_robotchrono)
 	{
 		((RobotChrono)cloned_robotchrono).position = position.clone();
 		((RobotChrono)cloned_robotchrono).orientation = orientation;
 		((RobotChrono)cloned_robotchrono).vitesse_rps = vitesse_rps;
 		((RobotChrono)cloned_robotchrono).vitesse_mmps = vitesse_mmps;
-		return cloned_robotchrono;
 	}
 
 	public MemoryManagerProduct clone()
 	{
 		RobotChrono cloned_robotchrono = new RobotChrono(config, log);
-		return clone(cloned_robotchrono);
-	}
-
-	@Override
-	public String getNom() {
-		return "RobotChrono";
+		clone(cloned_robotchrono);
+		return cloned_robotchrono;
 	}
 
 	// TODO
