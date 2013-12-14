@@ -88,6 +88,17 @@ public class Table implements Service {
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-800,0), 150));
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-1500,700), 150));
 
+		int rayon_robot_adverse = 230;
+		try {
+			rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
+		}
+		catch(Exception e)
+		{
+			log.warning(e, this);
+		}
+		robots_adverses[0] = new ObstacleCirculaire(new Vec2(0,0), rayon_robot_adverse);
+		robots_adverses[1] = new ObstacleCirculaire(new Vec2(0,0), rayon_robot_adverse);
+		
 		hashFire = 0;
 		hashTree = 0;
 		hashTorch = 0;
@@ -175,6 +186,14 @@ public class Table implements Service {
     	robots_adverses[i].position = position.clone();
     }
 	
+    public Vec2[] get_positions_ennemis()
+    {
+    	Vec2[] positions =  new Vec2[2];
+    	positions[0] = robots_adverses[0].position.clone();
+    	positions[1] = robots_adverses[1].position.clone();
+    	return positions;
+    }
+    
 	// Feux
 	
 	public void pickFire (int id)

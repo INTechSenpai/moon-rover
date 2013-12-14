@@ -55,9 +55,11 @@ public class ThreadManager {
 			else if(nom == "threadCapteurs")
 				threads.put("threadCapteurs", new ThreadCapteurs((RobotVrai)container.getService("RobotVrai"), (ThreadTimer)threads.get("threadTimer"), (Table)container.getService("Table"), (Capteur)container.getService("Capteur")));
 			else if(nom == "threadStrategie")
-				threads.put("threadStrategie", new ThreadStrategie((Strategie)container.getService("Strategie"), (Table)container.getService("Table"), (RobotVrai)container.getService("RobotVrai"), (RobotChrono)container.getService("RobotChrono"), (Pathfinding)container.getService("Pathfinding"), (MemoryManager)container.getService("MemoryManager")));
+				threads.put("threadStrategie", new ThreadStrategie((Strategie)container.getService("Strategie"), (Table)container.getService("Table"), (RobotVrai)container.getService("RobotVrai"), (RobotChrono)container.getService("RobotChrono"), (Pathfinding)container.getService("Pathfinding"), (MemoryManager)container.getService("MemoryManager"), (ThreadAnalyseEnnemi)threads.get("threadAnalyseEnnemi")));
 			else if(nom == "threadLaser")
 				threads.put("threadLaser", new ThreadLaser((Laser)container.getService("Laser"), (Table)container.getService("Table"), (ThreadTimer)threads.get("threadTimer"), (FiltrageLaser)container.getService("FiltrageLaser")));
+			else if(nom == "threadAnalyseEnnemi")
+				threads.put("threadAnalyseEnnemi", new ThreadAnalyseEnnemi((Table)container.getService("Table"), (ThreadTimer)threads.get("threadTimer")));
 			else
 			{
 				log.warning("Le thread suivant n'existe pas: "+nom, this);

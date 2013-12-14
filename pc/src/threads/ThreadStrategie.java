@@ -24,8 +24,9 @@ public class ThreadStrategie extends AbstractThread {
 	private RobotChrono robotchrono;
 	private MemoryManager memorymanager;
 	private Pathfinding pathfinding;
+	private ThreadAnalyseEnnemi threadanalyseennemi;
 
-	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, RobotChrono robotchrono, Pathfinding pathfinding, MemoryManager memorymanager)
+	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, RobotChrono robotchrono, Pathfinding pathfinding, MemoryManager memorymanager, ThreadAnalyseEnnemi threadanalyseennemi)
 	{
 		this.strategie = strategie;
 		this.table = table;
@@ -33,6 +34,7 @@ public class ThreadStrategie extends AbstractThread {
 		this.robotchrono = robotchrono;
 		this.pathfinding = pathfinding;
 		this.memorymanager = memorymanager;
+		this.threadanalyseennemi = threadanalyseennemi;
 	}
 	
 	public void run()
