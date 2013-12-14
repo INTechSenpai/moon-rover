@@ -19,8 +19,8 @@ public class MemoryManager implements Service {
 	
 	private int nbmax;
 
-	private MemoryManagerProduct[] productsTable;
-	private MemoryManagerProduct[] productsRobotChrono;
+	private Table[] productsTable;
+	private RobotChrono[] productsRobotChrono;
 
 	public MemoryManager(Read_Ini config, Log log, Table table, RobotChrono robotchrono)
 	{
@@ -35,8 +35,8 @@ public class MemoryManager implements Service {
 			this.log.critical(e, this);
 		}
 
-		productsTable = new MemoryManagerProduct[nbmax];
-		productsRobotChrono = new MemoryManagerProduct[nbmax];
+		productsTable = new Table[nbmax];
+		productsRobotChrono = new RobotChrono[nbmax];
 
 		for(int i = 0; i < nbmax; i++)
 		{
@@ -44,30 +44,29 @@ public class MemoryManager implements Service {
 			productsRobotChrono[i] = robotchrono.clone();
 		}
 }
-
-	public void setModel(String nom, MemoryManagerProduct instance, int profondeur_max)
+	
+	
+	public void setModelTable(Table instance, int profondeur_max)
 	{
-		if(nom == "Table")
-			productsTable[profondeur_max] = instance;
-		else if(nom == "RobotChrono")
-			productsRobotChrono[profondeur_max] = instance;		
+		productsTable[profondeur_max] = instance;
 	}
 	
-	public MemoryManagerProduct getClone(String nom, int profondeur)
+	public void setModelRobotChrono(RobotChrono instance, int profondeur_max)
 	{
-		MemoryManagerProduct out = null;
+		productsRobotChrono[profondeur_max] = instance;
+	}
+	
+	public Table getCloneTable(int profondeur)
+	{
+		Table out = productsTable[profondeur-1];
+		productsTable[profondeur].clone(out);
+		return out;
+	}
 
-		if(nom == "Table")
-		{
-			out = productsTable[profondeur-1];
-			productsTable[profondeur].clone(out);
-		}
-		else if(nom == "RobotChrono")
-		{
-			out = productsRobotChrono[profondeur-1];
-			productsRobotChrono[profondeur].clone(out);
-		}
-
+	public RobotChrono getCloneRobotChrono(int profondeur)
+	{
+		RobotChrono out = productsRobotChrono[profondeur-1];
+		productsRobotChrono[profondeur].clone(out);
 		return out;
 	}
 			

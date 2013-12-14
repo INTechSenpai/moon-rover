@@ -5,11 +5,10 @@ import java.util.Iterator;
 
 import robot.Orientation;
 import smartMath.Vec2;
-import strategie.MemoryManagerProduct;
 import container.Service;
 import utils.*;
 
-public class Table implements Service, MemoryManagerProduct {
+public class Table implements Service {
 
 	// On met cette variable en static afin que, dans deux instances dupliquées, elle ne redonne pas les mêmes nombres
 	private static int indice = 1;
@@ -252,9 +251,8 @@ public class Table implements Service, MemoryManagerProduct {
 			return 1;
 	}
 			
-	public void clone(MemoryManagerProduct cloned_table)
+	public void clone(Table ct)
 	{
-		Table ct = (Table) cloned_table;
 		if(ct.hashFire != hashFire)
 		{
 			for(int i = 0; i < 10; i++)
@@ -285,7 +283,7 @@ public class Table implements Service, MemoryManagerProduct {
 		}
 	}
 	
-	public MemoryManagerProduct clone()
+	public Table clone()
 	{
 		Table cloned_table = new Table(log, config);
 		clone(cloned_table);

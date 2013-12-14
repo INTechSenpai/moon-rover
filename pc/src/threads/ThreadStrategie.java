@@ -45,8 +45,8 @@ public class ThreadStrategie extends AbstractThread {
 			// Evaluation d'une stratégie de secours si ce script bug (en premier car plus urgent)
 			Table tableBlocage = table;
 			tableBlocage.creer_obstacle(robotvrai.getPosition()/*+distance*/);
-			memorymanager.setModel("Table", table, 2);
-			memorymanager.setModel("RobotChrono", robotchrono, 2);
+			memorymanager.setModelTable(table, 2);
+			memorymanager.setModelRobotChrono(robotchrono, 2);
 			NoteScriptVersion meilleurErreur = strategie.evaluation(System.currentTimeMillis(), memorymanager, pathfinding, 2);
 
 			strategie.prochainScriptEnnemi = meilleurErreur.script;

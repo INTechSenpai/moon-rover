@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import hook.Hook;
 import smartMath.Vec2;
-import strategie.MemoryManagerProduct;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
@@ -15,7 +14,7 @@ import container.Service;
  *
  */
 
-public class RobotChrono extends Robot implements Service, MemoryManagerProduct {
+public class RobotChrono extends Robot implements Service {
 
 	private float vitesse_mmps;
 	private float vitesse_rps;
@@ -76,17 +75,15 @@ public class RobotChrono extends Robot implements Service, MemoryManagerProduct 
 		return duree;
 	}
 
-	@Override
-	public void clone(MemoryManagerProduct cloned_robotchrono)
+	public void clone(RobotChrono rc)
 	{
-		RobotChrono rc = ((RobotChrono)cloned_robotchrono);
 		rc.position = position.clone();
 		rc.orientation = orientation;
 		rc.vitesse_rps = vitesse_rps;
 		rc.vitesse_mmps = vitesse_mmps;
 	}
 
-	public MemoryManagerProduct clone()
+	public RobotChrono clone()
 	{
 		RobotChrono cloned_robotchrono = new RobotChrono(config, log);
 		clone(cloned_robotchrono);

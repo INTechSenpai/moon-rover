@@ -85,8 +85,8 @@ public class Strategie implements Service {
 			for(String nom_script : scriptmanager.scripts)
 				for(int id : scriptmanager.getId(nom_script))
 				{
-					Table cloned_table = (Table) memorymanager.getClone("Table", profondeur);
-					RobotChrono cloned_robotchrono = (RobotChrono) memorymanager.getClone("RobotChrono", profondeur);
+					Table cloned_table = memorymanager.getCloneTable(profondeur);
+					RobotChrono cloned_robotchrono = memorymanager.getCloneRobotChrono(profondeur);
 					try
 					{
 						Script script = scriptmanager.getScript(nom_script, cloned_table, cloned_robotchrono, pathfinding);
