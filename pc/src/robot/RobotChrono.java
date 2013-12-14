@@ -146,7 +146,7 @@ public class RobotChrono extends Robot implements Service {
 	}
 	
 	// TODO à compléter au fur et à mesure
-	public void initialiserRobotChrono(RobotVrai robotvrai)
+	public void majRobotChrono(RobotVrai robotvrai)
 	{
 		position = robotvrai.position;
 		orientation = robotvrai.orientation;

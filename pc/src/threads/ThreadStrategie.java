@@ -39,15 +39,16 @@ public class ThreadStrategie extends AbstractThread {
 	
 	public void run()
 	{
+		int profondeur_max = 2;
 		while(!stop_threads)
 		{
-			robotchrono.initialiserRobotChrono(robotvrai);
+			robotchrono.majRobotChrono(robotvrai);
 			// Evaluation d'une stratégie de secours si ce script bug (en premier car plus urgent)
 			Table tableBlocage = table;
 			tableBlocage.creer_obstacle(robotvrai.getPosition()/*+distance*/);
-			memorymanager.setModelTable(table, 2);
-			memorymanager.setModelRobotChrono(robotchrono, 2);
-			NoteScriptVersion meilleurErreur = strategie.evaluation(System.currentTimeMillis(), memorymanager, pathfinding, 2);
+			memorymanager.setModelTable(tableBlocage, profondeur_max);
+			memorymanager.setModelRobotChrono(robotchrono, profondeur_max);
+			NoteScriptVersion meilleurErreur = strategie.evaluation(System.currentTimeMillis(), memorymanager, pathfinding, profondeur_max);
 
 			strategie.prochainScriptEnnemi = meilleurErreur.script;
 			
@@ -59,7 +60,7 @@ public class ThreadStrategie extends AbstractThread {
 //				futurRobotChrono = strategie.scriptEnCours.futurRobotChrono(robotchrono, strategie.versionScriptEnCours);
 			}
 
-			NoteScriptVersion meilleurProchain = strategie.evaluation(System.currentTimeMillis(), memorymanager, pathfinding, 2);
+			NoteScriptVersion meilleurProchain = strategie.evaluation(System.currentTimeMillis(), memorymanager, pathfinding, profondeur_max);
 			
 			strategie.prochainScript = meilleurProchain.script;
 		}
