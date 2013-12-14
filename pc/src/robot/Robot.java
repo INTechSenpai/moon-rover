@@ -106,6 +106,10 @@ public abstract class Robot implements Service {
 	public double getOrientation() {
 		return orientation;
 	}
+	
+	public int getNbrLances() {
+		return nombre_lances;
+	}
 
 	public void va_au_point(Vec2 point, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
