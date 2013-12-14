@@ -72,6 +72,11 @@ public class Vec2
 		return (x-other.x)*(x-other.x) + (y-other.y)*(y-other.y);
 	}
 
+	public float distance(Vec2 other)
+	{
+		return (float) Math.sqrt(SquaredDistance(other));
+	}
+	
 	public String toString()
 	{
 		return "("+x+","+y+")";
