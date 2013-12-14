@@ -129,7 +129,7 @@ public class RobotVrai extends Robot {
 		deplacements.tourner((int)angle);
 	}
 	
-	public void avancer(int distance, Hook[] hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
+	public void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
 		log.debug("Avancer de "+Integer.toString(distance), this);
 
@@ -166,7 +166,7 @@ public class RobotVrai extends Robot {
 	/**
 	 * Fait tourner le robot (méthode bloquante)
 	 */
-	public void tourner(float angle, Hook[] hooks, int nombre_tentatives, boolean sans_lever_exception)
+	public void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception)
 	{
 		
 	}
@@ -176,7 +176,7 @@ public class RobotVrai extends Robot {
 	 * Fait suivre au robot un chemin (fourni par la recherche de chemin)
 	 * @throws MouvementImpossibleException 
 	 */
-	public void suit_chemin(ArrayList<Vec2> chemin, Hook[] hooks, boolean marche_arriere_auto, boolean symetrie_effectuee) throws MouvementImpossibleException
+	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean marche_arriere_auto, boolean symetrie_effectuee) throws MouvementImpossibleException
 	{
 		for(Vec2 position: chemin)
 		{
@@ -190,7 +190,7 @@ public class RobotVrai extends Robot {
 	/**
 	 * Le robot va au point demandé
 	 */
-	public void va_au_point(Vec2 point, Hook[] hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception) throws MouvementImpossibleException
+	public void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
 		// appliquer la symétrie ne doit pas modifier ce point !
 		point = point.clone();
@@ -350,7 +350,7 @@ public class RobotVrai extends Robot {
 		this.va_au_pointBasNiveau(consigne);
 	}
 
-	private void tournerBasNiveau(float angle, Hook[] hooks, boolean sans_lever_exception) throws BlocageException, CollisionException
+	private void tournerBasNiveau(float angle, ArrayList<Hook> hooks, boolean sans_lever_exception) throws BlocageException, CollisionException
 	{
 		blocage = false;
 		orientation_consigne = angle;
@@ -372,7 +372,7 @@ public class RobotVrai extends Robot {
 		tournerBasNiveau(angle, null, sans_lever_exception);
 	}
 
-	private void tournerBasNiveau(float angle, Hook[] hooks) throws BlocageException, CollisionException
+	private void tournerBasNiveau(float angle, ArrayList<Hook> hooks) throws BlocageException, CollisionException
 	{
 		tournerBasNiveau(angle, hooks, false);
 	}
@@ -387,7 +387,7 @@ public class RobotVrai extends Robot {
 	 * @param sans_lever_exception
 	 * @throws BlocageException 
 	 */
-	private void va_au_pointBasNiveau(Vec2 position, Hook[] hooks, boolean trajectoire_courbe, boolean sans_lever_exception) throws CollisionException, BlocageException
+	private void va_au_pointBasNiveau(Vec2 position, ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean sans_lever_exception) throws CollisionException, BlocageException
 	{
         // comme à toute consigne initiale de mouvement, le robot est débloqué
 		blocage = false;
@@ -447,12 +447,12 @@ public class RobotVrai extends Robot {
 		va_au_pointBasNiveau(position, null, trajectoire_courbe, false);		
 	}
 
-	private void va_au_pointBasNiveau(Vec2 position, Hook[] hooks, boolean trajectoire_courbe) throws CollisionException, BlocageException
+	private void va_au_pointBasNiveau(Vec2 position, ArrayList<Hook> hooks, boolean trajectoire_courbe) throws CollisionException, BlocageException
 	{
 		va_au_pointBasNiveau(position, hooks, trajectoire_courbe, false);		
 	}
 
-	private void va_au_pointBasNiveau(Vec2 position, Hook[] hooks) throws CollisionException, BlocageException
+	private void va_au_pointBasNiveau(Vec2 position, ArrayList<Hook> hooks) throws CollisionException, BlocageException
 	{
 		va_au_pointBasNiveau(position, hooks, false, false);		
 	}
