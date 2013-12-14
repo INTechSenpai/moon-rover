@@ -34,18 +34,36 @@ public class Actionneurs implements Service {
 		serie.communiquer("bh", 0);
 	}
 
-	public void ranger_rateau(boolean right)
+	public void ranger_rateau_gauche()
 	{
-		if(right)
-		{
-			log.debug("Rateau droit rangé", this);
-			serie.communiquer("rrd", 0);
-		}
-		else
-		{
-			log.debug("Rateau gauche rangé", this);
-			serie.communiquer("rrg", 0);
-		}
+		log.debug("Rateau gauche rangé", this);
+		serie.communiquer("rrg", 0);
+	}
+	
+	public void ranger_rateau_droit()
+	{
+		log.debug("Rateau droit rangé", this);
+		serie.communiquer("rrd", 0);
+	}
+	
+	public void rateau_droit_bas()
+	{
+		serie.communiquer("rbd", 0);
+	}
+	
+	public void rateau_gauche_bas()
+	{
+		serie.communiquer("rbg", 0);
+	}
+	
+	public void rateau_droit_haut()
+	{
+		serie.communiquer("rhd", 0);
+	}
+	
+	public void rateau_gauche_haut()
+	{
+		serie.communiquer("rhg", 0);
 	}
 
 	
