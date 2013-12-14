@@ -92,12 +92,6 @@ public class RobotVrai extends Robot {
 	 */
 	
 	// TODO
-	public void initialiser_actionneurs()
-	{
-		
-	}
-
-	// TODO
 	public void recaler()
 	{
 		
@@ -314,6 +308,12 @@ public class RobotVrai extends Robot {
 	/*
 	 * ACTIONNEURS
 	 */
+
+	// TODO
+	public void initialiser_actionneurs()
+	{
+		
+	}
 
 	public void tirerBalles(boolean rightSide)
 	{

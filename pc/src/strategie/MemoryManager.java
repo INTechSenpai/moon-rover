@@ -22,7 +22,7 @@ public class MemoryManager implements Service {
 	private Table[] productsTable;
 	private RobotChrono[] productsRobotChrono;
 
-	public MemoryManager(Read_Ini config, Log log, Table table, RobotChrono robotchrono)
+	public MemoryManager(Read_Ini config, Log log, Table table)
 	{
 		this.log = log;
 		this.config = config;
@@ -38,6 +38,7 @@ public class MemoryManager implements Service {
 		productsTable = new Table[nbmax];
 		productsRobotChrono = new RobotChrono[nbmax];
 
+		RobotChrono robotchrono = new RobotChrono(config, log);
 		for(int i = 0; i < nbmax; i++)
 		{
 			productsTable[i] = table.clone();

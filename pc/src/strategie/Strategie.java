@@ -1,5 +1,7 @@
 package strategie;
 
+import java.util.ArrayList;
+
 import pathfinding.Pathfinding;
 import robot.RobotChrono;
 import scripts.Script;
@@ -9,6 +11,7 @@ import threads.ThreadTimer;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
+import exception.ScriptException;
 
 /**
  * Classe qui prend les décisions et exécute les scripts
@@ -61,7 +64,7 @@ public class Strategie implements Service {
 		
 	}
 	
-	public float calculeNote(Script script, int id)
+	public float calculeNote(int score, int duree, int id)
 	{
 		return 0;
 	}
@@ -73,8 +76,9 @@ public class Strategie implements Service {
 	 * @param pathfinding
 	 * @param profondeur
 	 * @return le couple (note, scripts), scripts étant la suite de scripts à effectuer
+	 * @throws ScriptException 
 	 */
-	public NoteScriptVersion evaluation(long date, MemoryManager memorymanager, Pathfinding pathfinding, int profondeur)
+	public NoteScriptVersion evaluation(long date, Pathfinding pathfinding, int profondeur) throws ScriptException
 	{
 		if(profondeur == 0)
 			return new NoteScriptVersion();
@@ -83,19 +87,24 @@ public class Strategie implements Service {
 			table.supprimer_obstacles_perimes(date);
 			NoteScriptVersion meilleur = new NoteScriptVersion(-1, null, -1);
 			
-/*			for(String nom_script : scriptmanager.getNomsScripts())
-				for(int id : scriptmanager.getId(nom_script))
+			for(String nom_script : scriptmanager.getNomsScripts())
+			{
+				Script script = scriptmanager.getScript(nom_script);
+				Table table_version = memorymanager.getCloneTable(profondeur);
+				RobotChrono robotchrono_version = memorymanager.getCloneRobotChrono(profondeur);
+				ArrayList<Integer> versions = script.version(robotchrono_version, table_version);
+				for(int id : versions)
 				{
-					Table cloned_table = memorymanager.getCloneTable(profondeur);
-					RobotChrono cloned_robotchrono = memorymanager.getCloneRobotChrono(profondeur);
 					try
 					{
-						Script script = scriptmanager.getScript(nom_script, cloned_table, cloned_robotchrono, pathfinding);
-						long duree_script = script.calcule(id);
-						float noteScript = calculeNote(script, id);
-						NoteScriptVersion out = evaluation(date + duree_script, memorymanager, pathfinding, profondeur-1);
+						Table cloned_table = memorymanager.getCloneTable(profondeur);
+						RobotChrono cloned_robotchrono = memorymanager.getCloneRobotChrono(profondeur);
+						int score = script.score(id, cloned_robotchrono, cloned_table);
+						int duree_script = (int)script.calcule(id, cloned_robotchrono, cloned_table);
+						float noteScript = calculeNote(score, duree_script, id);
+						NoteScriptVersion out = evaluation(date + duree_script, pathfinding, profondeur-1);
 						out.note += noteScript;
-	
+
 						if(out.note > meilleur.note)
 						{
 							meilleur.note = out.note;
@@ -107,7 +116,8 @@ public class Strategie implements Service {
 					{
 						log.critical(e, this);
 					}
-				}*/
+				}
+			}
 			return meilleur;
 		}
 	}

@@ -16,7 +16,6 @@ import strategie.Strategie;
 import table.Table;
 import threads.ThreadTimer;
 import threads.ThreadManager;
-import robot.RobotChrono;
 import robot.RobotVrai;
 import robot.cartes.Actionneurs;
 import robot.cartes.Capteur;
@@ -134,8 +133,7 @@ public class Container {
 		else if(nom == "MemoryManager")
 			services.put(nom, (Service)new MemoryManager(	(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log"),
-															(Table)getService("Table"),
-															(RobotChrono)getService("RobotChrono")));
+															(Table)getService("Table")));
 		else if(nom == "Laser")
 			services.put(nom, (Service)new Laser(	(Read_Ini)getService("Read_Ini"),
 													(Log)getService("Log"),
