@@ -1,6 +1,6 @@
 package threads;
 
-import robot.cartes.Capteur;
+import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
 import table.Table;
 
@@ -14,7 +14,7 @@ public class ThreadTimer extends AbstractThread {
 
 	// Dépendance
 	private Table table;
-	private Capteur capteur;
+	private Capteurs capteur;
 	private Deplacements deplacements;
 	
 	public boolean match_demarre = false;
@@ -22,7 +22,7 @@ public class ThreadTimer extends AbstractThread {
 	public long date_debut;
 	public long duree_match = 90000;
 	
-	ThreadTimer(Table table, Capteur capteur, Deplacements deplacements)
+	ThreadTimer(Table table, Capteurs capteur, Deplacements deplacements)
 	{
 		this.table = table;
 		this.capteur = capteur;

@@ -3,7 +3,7 @@ package threads;
 import java.util.Hashtable;
 
 import pathfinding.Pathfinding;
-import robot.cartes.Capteur;
+import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
 import robot.cartes.FiltrageLaser;
 import robot.cartes.Laser;
@@ -49,11 +49,11 @@ public class ThreadManager {
 		if(thread == null)
 		{
 			if(nom == "threadTimer")
-				threads.put("threadTimer", new ThreadTimer((Table)container.getService("Table"), (Capteur)container.getService("Capteur"), (Deplacements)container.getService("Deplacements")));
+				threads.put("threadTimer", new ThreadTimer((Table)container.getService("Table"), (Capteurs)container.getService("Capteur"), (Deplacements)container.getService("Deplacements")));
 			else if(nom == "threadPosition")
 				threads.put("threadPosition", new ThreadPosition((RobotVrai)container.getService("RobotVrai"), (ThreadTimer)threads.get("threadTimer")));
 			else if(nom == "threadCapteurs")
-				threads.put("threadCapteurs", new ThreadCapteurs((RobotVrai)container.getService("RobotVrai"), (ThreadTimer)threads.get("threadTimer"), (Table)container.getService("Table"), (Capteur)container.getService("Capteur")));
+				threads.put("threadCapteurs", new ThreadCapteurs((RobotVrai)container.getService("RobotVrai"), (ThreadTimer)threads.get("threadTimer"), (Table)container.getService("Table"), (Capteurs)container.getService("Capteur")));
 			else if(nom == "threadStrategie")
 				threads.put("threadStrategie", new ThreadStrategie((Strategie)container.getService("Strategie"), (Table)container.getService("Table"), (RobotVrai)container.getService("RobotVrai"), (RobotChrono)container.getService("RobotChrono"), (Pathfinding)container.getService("Pathfinding"), (MemoryManager)container.getService("MemoryManager")));
 			else if(nom == "threadLaser")

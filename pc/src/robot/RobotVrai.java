@@ -1,7 +1,7 @@
 package robot;
 
 import robot.cartes.Actionneurs;
-import robot.cartes.Capteur;
+import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
 import smartMath.Vec2;
 import table.Table;
@@ -28,7 +28,7 @@ import exception.MouvementImpossibleException;
 public class RobotVrai extends Robot {
 
 	protected Pathfinding pathfinding;
-	protected Capteur capteur;
+	protected Capteurs capteur;
 	protected Actionneurs actionneurs;
 	protected Deplacements deplacements;
 	protected HookGenerator hookgenerator;
@@ -60,7 +60,7 @@ public class RobotVrai extends Robot {
 	
 	// Constructeur
 	
-	public RobotVrai(Pathfinding pathfinding, Capteur capteur, Actionneurs actionneurs, Deplacements deplacements, HookGenerator hookgenerator, Table table, Read_Ini config, Log log)
+	public RobotVrai(Pathfinding pathfinding, Capteurs capteur, Actionneurs actionneurs, Deplacements deplacements, HookGenerator hookgenerator, Table table, Read_Ini config, Log log)
  	{
 		super(config, log);
 		this.pathfinding = pathfinding;

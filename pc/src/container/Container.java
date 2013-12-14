@@ -19,7 +19,7 @@ import threads.ThreadTimer;
 import threads.ThreadManager;
 import robot.RobotVrai;
 import robot.cartes.Actionneurs;
-import robot.cartes.Capteur;
+import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
 import robot.cartes.FiltrageLaser;
 import robot.cartes.Laser;
@@ -84,7 +84,7 @@ public class Container {
 			services.put(nom, (Service)new Deplacements((Log)getService("Log"),
 														(Serial)getService("serieAsservissement")));
 		else if(nom == "Capteur")
-			services.put(nom, (Service)new Capteur(	(Read_Ini)getService("Read_Ini"),
+			services.put(nom, (Service)new Capteurs(	(Read_Ini)getService("Read_Ini"),
 													(Log)getService("Log"),
 													(Serial)getService("serieCapteursActionneurs")));
 		else if(nom == "Actionneurs")
@@ -94,10 +94,10 @@ public class Container {
 		else if(nom == "HookGenerator")
 			services.put(nom, (Service)new HookGenerator(	(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log"),
-															(Capteur)getService("Capteur")));		
+															(Capteurs)getService("Capteur")));		
 		else if(nom == "RobotVrai")
 			services.put(nom, (Service)new RobotVrai(	(Pathfinding)getService("Pathfinding"),
-														(Capteur)getService("Capteur"),
+														(Capteurs)getService("Capteur"),
 														(Actionneurs)getService("Actionneurs"),
 														(Deplacements)getService("Deplacements"),
 														(HookGenerator)getService("HookGenerator"),

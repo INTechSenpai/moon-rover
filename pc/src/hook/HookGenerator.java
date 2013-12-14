@@ -1,7 +1,7 @@
 package hook;
 
 import container.Service;
-import robot.cartes.Capteur;
+import robot.cartes.Capteurs;
 import smartMath.Vec2;
 import utils.Log;
 import utils.Read_Ini;
@@ -24,11 +24,11 @@ public class HookGenerator implements Service {
 	
 	private Read_Ini config;
 	private Log log;
-	private Capteur capteur;
+	private Capteurs capteur;
 
 	private int tolerance_position = 20;
 	
-	public HookGenerator(Read_Ini config, Log log, Capteur capteur)
+	public HookGenerator(Read_Ini config, Log log, Capteurs capteur)
 	{
 		this.config = config;
 		this.log = log;
