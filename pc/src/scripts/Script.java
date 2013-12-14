@@ -79,26 +79,26 @@ public abstract class Script implements Service {
 	 * Renvoie le tableau des versions d'un script
 	 * @return le tableau des versions possibles
 	 */
-	public abstract ArrayList<Integer> version(Robot robot, Table table);
+	public abstract ArrayList<Integer> version(final Robot robot, final Table table);
 
 	/**
 	 * Retourne la position d'entrée associée à la version id
 	 * @param id de la version
 	 * @return la position du point d'entrée
 	 */
-	public abstract Vec2 point_entree(int id, Robot robot, Table table);
+	public abstract Vec2 point_entree(int id, final Robot robot, final Table table);
 	
 	/**
 	 * Renvoie le score que peut fournir un script
 	 * @return le score
 	 */
-	public abstract int score(int id_version, Robot robot, Table table);
+	public abstract int score(int id_version, final Robot robot, final Table table);
 	
 	/**
  	 * Donne le poids du script, utilisé pour calculer sa note
 	 * @return le poids
 	 */
-	public abstract int poids(Robot robot, Table table);
+	public abstract int poids(final Robot robot, final Table table);
 
 	/**
 	 * Exécute le script
