@@ -104,16 +104,10 @@ public class Container {
 														(Table)getService("Table"),
 														(Read_Ini)getService("Read_Ini"),
 														(Log)getService("Log")));		
-		else if(nom == "RobotChrono")
-			services.put(nom, (Service)new RobotChrono(	(Read_Ini)getService("Read_Ini"),
-														(Log)getService("Log")));
 		else if(nom == "ScriptManager")
 			services.put(nom, (Service)new ScriptManager(	(Pathfinding)getService("Pathfinding"),
 															(ThreadTimer)getService("threadTimer"),
-															(RobotVrai)getService("RobotVrai"),
-															(RobotChrono)getService("RobotChrono"),
 															(HookGenerator)getService("HookGenerator"),
-															(Table)getService("Table"),
 															(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log")));
 		else if(nom == "Strategie")
