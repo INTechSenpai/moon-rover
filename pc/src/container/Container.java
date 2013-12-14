@@ -110,15 +110,11 @@ public class Container {
 		else if(nom == "ScriptManager")
 			services.put(nom, (Service)new ScriptManager(	(Pathfinding)getService("Pathfinding"),
 															(ThreadTimer)getService("threadTimer"),
-															(RobotVrai)getService("RobotVrai"),
-															(RobotChrono)getService("RobotChrono"),
 															(HookGenerator)getService("HookGenerator"),
-															(Table)getService("Table"),
 															(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log")));
 		else if(nom == "Strategie")
-			services.put(nom, (Service)new Strategie(	(MemoryManager)getService("MemoryManager"),
-														(ThreadTimer)getService("threadTimer"),
+			services.put(nom, (Service)new Strategie(	(ThreadTimer)getService("threadTimer"),
 														(ScriptManager)getService("ScriptManager"),
 														(Pathfinding)getService("Pathfinding"),
 														(Table)getService("Table"),
