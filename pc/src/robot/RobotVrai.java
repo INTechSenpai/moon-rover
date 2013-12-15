@@ -315,7 +315,7 @@ public class RobotVrai extends Robot {
 		
 	}
 
-	public void tirerBalles(boolean rightSide)
+	public void tirerBalles()
 	{
 		// TODO
 	}

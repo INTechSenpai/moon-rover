@@ -103,7 +103,7 @@ public class RobotChrono extends Robot {
 	}
 
 	// TODO durée
-	public void tirerBalles(boolean rightSide)
+	public void tirerBalles()
 	{
 		
 	}

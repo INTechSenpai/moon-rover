@@ -46,7 +46,7 @@ public abstract class Robot implements Service {
 	 * ACTIONNEURS
 	 */
 	
-	public abstract void tirerBalles(boolean rightSide);
+	public abstract void tirerBalles();
 	public abstract void takefire();
 	public abstract void baisser_rateaux();
 	public abstract void baisser_rateaux_bas();
@@ -78,6 +78,8 @@ public abstract class Robot implements Service {
             return 90;
         else if(vitesse == "recal_forte")
             return 120;
+        else if(vitesse == "vitesse_mammouth")
+        	return 50; // TODO
         else
         {
         	log.warning("Erreur vitesse translation: "+vitesse, this);
