@@ -3,6 +3,12 @@ package hook.methodes;
 import robot.Robot;
 import hook.Executable;
 
+/**
+ * Classe implémentant la méthode de leverrateau, utilisée lors du ramassage des fruits
+ * @author pf
+ *
+ */
+
 public class LeverRateau implements Executable  {
 
 	private boolean coteDroit;

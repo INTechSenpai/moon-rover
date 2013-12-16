@@ -41,7 +41,6 @@ import robot.serial.Serial;
  * ScriptManager
  * Strategie
  * thread* (threadTimer, threadPosition, threadStrategie, threadCapteurs, threadLaser)
- * ScriptManager
  * Pathfinding
  * HookGenerator
  * Strategie

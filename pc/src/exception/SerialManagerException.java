@@ -1,5 +1,10 @@
 package exception;
 
+/**
+ * Exception levée par le serialmanager
+ * @author pf
+ *
+ */
 public class SerialManagerException extends Exception
 {
 	/**

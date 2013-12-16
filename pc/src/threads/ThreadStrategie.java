@@ -35,6 +35,7 @@ public class ThreadStrategie extends AbstractThread {
 		this.memorymanager = memorymanager;
 	}
 	
+	@Override
 	public void run()
 	{
 		int profondeur_max = 2;

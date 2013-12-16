@@ -2,6 +2,11 @@ package exception;
 
 import robot.RobotVrai;
 
+/**
+ * Exception levée en cas de blocage ou de "collision" (ennemi proche)
+ * @author pf
+ *
+ */
 public class MouvementImpossibleException extends Exception {
 
 	/**
