@@ -255,7 +255,6 @@ public class Serial implements SerialPortEventListener, Service
 		}
 		catch (Exception e)
 		{
-			log.critical("Ne ping pas la carte " + this.name + ", après l'avoir trouvée dans " + serialPort.getName(), this);
 		}
 		return ping;
 	}

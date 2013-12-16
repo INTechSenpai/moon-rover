@@ -105,9 +105,13 @@ public class SerialManager
 					Serial serialTest = new Serial(log, "carte de test");
 
 					serialTest.initialize(this.connectedSerial.get(k), baudrate);
-
-					id = Integer.parseInt(serialTest.ping());
-					if(!isKnownPing(id))
+					
+					if (serialTest.ping() != null)
+						id = Integer.parseInt(serialTest.ping());
+					else 
+						continue;
+					
+					if(isKnownPing(id))
 						continue;
 
 					//On stock le port de la serie (connectedSerial) dans le tabeau à la case [id]
