@@ -20,6 +20,7 @@ class ThreadPosition extends AbstractThread {
 		this.threadTimer = threadTimer;
 	}
 	
+	@Override
 	public void run()
 	{
 		log.debug("Lancement du thread de mise à jour", this);

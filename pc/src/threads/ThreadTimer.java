@@ -38,6 +38,8 @@ public class ThreadTimer extends AbstractThread {
 		}
 
 	}
+
+	@Override
 	public void run()
 	{
 		// Attente du démarrage du match

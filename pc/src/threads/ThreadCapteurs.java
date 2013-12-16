@@ -36,6 +36,7 @@ class ThreadCapteurs extends AbstractThread {
 		this.capteur = capteur;
 	}
 	
+	@Override
 	public void run()
 	{
 		int date_dernier_ajout = 0;
