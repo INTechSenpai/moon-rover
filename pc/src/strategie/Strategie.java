@@ -73,22 +73,23 @@ public class Strategie implements Service {
 		
 		// modificiation de la table en conséquence
 	}
+
+	public int getTTL()
+	{
+		return 0;
+	}
 	
 	public float calculeNote(int score, int duree, int id)
 	{
 		return 0;
 	}
 
-	/**
-	 * A partir d'un état initial (table, robotchrono), calcule la meilleure combinaison de scripts modulo une certaine profondeur maximale
-	 * @param table
-	 * @param robotchrono
-	 * @param pathfinding
-	 * @param profondeur
-	 * @return le couple (note, scripts), scripts étant la suite de scripts à effectuer
-	 * @throws ScriptException 
-	 */
-	public NoteScriptVersion evaluation(long date, Pathfinding pathfinding, int profondeur) throws ScriptException
+	public NoteScriptVersion evaluation(int profondeur) throws ScriptException
+	{
+		return _evaluation(System.currentTimeMillis(), 0, profondeur);
+	}
+	
+	private NoteScriptVersion _evaluation(long date, int duree_totale, int profondeur) throws ScriptException
 	{
 		if(profondeur == 0)
 			return new NoteScriptVersion();
@@ -96,6 +97,7 @@ public class Strategie implements Service {
 		{
 			table.supprimer_obstacles_perimes(date);
 			NoteScriptVersion meilleur = new NoteScriptVersion(-1, null, -1);
+			int duree_connaissances = getTTL();
 			
 			for(String nom_script : scriptmanager.getNomsScripts())
 			{
@@ -103,6 +105,7 @@ public class Strategie implements Service {
 				Table table_version = memorymanager.getCloneTable(profondeur);
 				RobotChrono robotchrono_version = memorymanager.getCloneRobotChrono(profondeur);
 				ArrayList<Integer> versions = script.version(robotchrono_version, table_version);
+
 				for(int id : versions)
 				{
 					try
@@ -110,9 +113,9 @@ public class Strategie implements Service {
 						Table cloned_table = memorymanager.getCloneTable(profondeur);
 						RobotChrono cloned_robotchrono = memorymanager.getCloneRobotChrono(profondeur);
 						int score = script.score(id, cloned_robotchrono, cloned_table);
-						int duree_script = (int)script.calcule(id, cloned_robotchrono, cloned_table);
+						int duree_script = (int)script.calcule(id, cloned_robotchrono, cloned_table, duree_totale > duree_connaissances);
 						float noteScript = calculeNote(score, duree_script, id);
-						NoteScriptVersion out = evaluation(date + duree_script, pathfinding, profondeur-1);
+						NoteScriptVersion out = _evaluation(date + duree_script, duree_script, profondeur-1);
 						out.note += noteScript;
 
 						if(out.note > meilleur.note)

@@ -60,8 +60,9 @@ public abstract class Script implements Service {
 	 * Calcule le temps d'exécution de ce script (grâce à robotChrono)
 	 * @return le temps d'exécution
 	 */
-	public long calcule(int id_version, RobotChrono robotchrono, Table table)
+	public long calcule(int id_version, RobotChrono robotchrono, Table table, boolean use_cache)
 	{
+		pathfinding.use_cache(use_cache);
 		robotchrono.reset_compteur();
 		try {
 			execute(id_version, robotchrono, table);

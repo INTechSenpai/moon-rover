@@ -49,7 +49,7 @@ public class ThreadStrategie extends AbstractThread {
 			memorymanager.setModelRobotChrono(robotchrono, profondeur_max);
 			NoteScriptVersion meilleurErreur = new NoteScriptVersion();
 			try {
-				meilleurErreur = strategie.evaluation(System.currentTimeMillis(), pathfinding, profondeur_max);
+				meilleurErreur = strategie.evaluation(profondeur_max);
 			} catch (ScriptException e) {
 				log.critical(e, this);
 			}
@@ -66,7 +66,7 @@ public class ThreadStrategie extends AbstractThread {
 
 			NoteScriptVersion meilleurProchain = new NoteScriptVersion();
 			try {
-				meilleurProchain = strategie.evaluation(System.currentTimeMillis(), pathfinding, profondeur_max);
+				meilleurProchain = strategie.evaluation(profondeur_max);
 			} catch (ScriptException e) {
 				log.critical(e, this);
 			}
