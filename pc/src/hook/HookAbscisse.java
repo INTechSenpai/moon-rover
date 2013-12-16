@@ -7,6 +7,7 @@ import utils.Read_Ini;
 
 /**
  * Classe des hook de position, qui hérite de la classe hook
+ * Utilisée pour lancer les balles
  * @author pf
  *
  */
