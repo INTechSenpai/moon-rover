@@ -19,9 +19,9 @@ public class Capteurs implements Service {
 	private Serial serie;
 
 	private final int nb_capteurs_infrarouge_avant = 1;
-    private final int nb_capteurs_infrarouge_arriere = 0;
+//    private final int nb_capteurs_infrarouge_arriere = 0;
     private final int nb_capteurs_ultrason_avant = 1;
-    private final int nb_capteurs_ultrason_arriere = 0;
+//    private final int nb_capteurs_ultrason_arriere = 0;
     
 	public Capteurs(Read_Ini config, Log log, Serial serie)
 	{
