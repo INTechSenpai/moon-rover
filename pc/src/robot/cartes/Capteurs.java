@@ -63,7 +63,10 @@ public class Capteurs implements Service {
 	    	}
 	    	
 	    	Arrays.sort(distances); // le dernier élément d'un tableau trié par ordre croissant est le plus grand
-	    	return distances[distances.length-1];
+	    	int distance = distances[distances.length-1];
+	    	if(distance < 0)
+	    		return 3000;
+	    	return distance;
 		}
 		catch(Exception e)
 		{

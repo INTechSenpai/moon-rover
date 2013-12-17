@@ -170,14 +170,6 @@ public class Table implements Service {
 		    	return true;
 		}	
 
-		iterator = listObstaclesFixes.iterator();
-		while ( iterator.hasNext() )
-		{
-		    Obstacle obstacle = iterator.next();
-		    if (obstacle.position.SquaredDistance(centre_detection) < distance*distance)
-		    	return true;
-		}	
-
 		return false;
 	}
 
