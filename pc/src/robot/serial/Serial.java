@@ -15,6 +15,12 @@ import java.io.OutputStream;
 import utils.Log;
 import container.Service;
 
+// Quand j'envoie un ordre d'asservissement du java au simulateur (via l'interface), je reçois l'erreur suivante:
+// java.io.IOException: Underlying input stream returned zero bytes
+// Je te laisse debugger, mais j'ai trouvé des infos ici:
+// http://stackoverflow.com/questions/1391402/issues-receving-in-rxtx
+// BOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOU
+
 public class Serial implements SerialPortEventListener, Service
 {
 	SerialPort serialPort;
@@ -106,48 +112,8 @@ public class Serial implements SerialPortEventListener, Service
 	 */
 	public synchronized String[] communiquer(String message, int nb_lignes_reponse)
 	{
-
-		message+="\r";
-		String inputLine[] = new String[nb_lignes_reponse];
-		char acquittement = ' ';
-
-		try
-		{
-			output.write(message.getBytes());
-			int nb_tests = 0;
-			while (acquittement != '_')
-			{
-				nb_tests++;
-				acquittement = input.readLine().charAt(0);
-				
-				if (acquittement != '_')
-				{
-					output.write(message.getBytes());
-				}
-				else if (nb_tests > 10)
-				{
-					log.critical("La série" + this.name + " ne répond pas après " + nb_tests + " tentatives", this);
-					break;
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			log.critical("Ne peut pas parler à la carte " + this.name, this);
-		}
-
-		try
-		{
-			for (int i = 0 ; i < nb_lignes_reponse; i++)
-			{
-				inputLine[i] = input.readLine();
-			}
-		}
-		catch (Exception e)
-		{
-			log.critical("Ne peut pas parler à la carte " + this.name, this);
-		}
-		return inputLine;
+		String[] messages = {message};
+		return communiquer(messages, nb_lignes_reponse);
 	}
 	
 	/**
