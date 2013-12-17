@@ -124,7 +124,10 @@ public class Table implements Service {
 		}
 		
 		Obstacle obstacle = new ObstacleProximite(position_sauv, rayon_robot_adverse, System.currentTimeMillis()+duree);
-		listObstacles.add(obstacle);
+		synchronized(listObstacles)
+		{
+			listObstacles.add(obstacle);
+		}
 		hashObstacles = indice++;
 	}
 
@@ -135,15 +138,18 @@ public class Table implements Service {
 	public void supprimer_obstacles_perimes(long date)
 	{
 		Iterator<Obstacle> iterator = listObstacles.iterator();
-		while ( iterator.hasNext() )
+		synchronized(listObstacles)
 		{
-		    Obstacle obstacle = iterator.next();
-		    if (obstacle instanceof ObstacleProximite && ((ObstacleProximite) obstacle).death_date <= date)
-		    {
-		        iterator.remove();
-				hashObstacles = indice++;
-		    }
-		}	
+			while ( iterator.hasNext() )
+			{
+			    Obstacle obstacle = iterator.next();
+			    if (obstacle instanceof ObstacleProximite && ((ObstacleProximite) obstacle).death_date <= date)
+			    {
+			        iterator.remove();
+					hashObstacles = indice++;
+			    }
+			}	
+		}
 	}
 	
 	/**
@@ -240,19 +246,24 @@ public class Table implements Service {
 	public int[] entryPoint(boolean rightSide)
 	{
 		int c;
-		if (rightSide) {
+		if (rightSide)
 			c = 2;
-		} else {
+		else
 			c = 0;
-		}
-		if (arrayTree[c].isTaken()) {
+		if (arrayTree[c].isTaken())
+		{
 			int[] tab = {c+1};
 			return tab;
-		} else {
-			if (arrayTree[c+1].isTaken()) {
+		}
+		else
+		{
+			if (arrayTree[c+1].isTaken())
+			{
 				int[] tab = {c};
 				return tab;
-			} else {
+			}
+			else
+			{
 				int[] tab = {c,c+1};
 				return tab;
 			}

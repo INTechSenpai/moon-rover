@@ -56,20 +56,23 @@ public class ThreadStrategie extends AbstractThread {
 			
 			// Evaluation du prochain coup en supposant que celui-ci se passe sans problème
 
-			synchronized(strategie.scriptEnCours)
+			if(strategie.scriptEnCours == null)
 			{
-//				futureTable = strategie.scriptEnCours.futureTable(table, strategie.versionScriptEnCours);
-//				futurRobotChrono = strategie.scriptEnCours.futurRobotChrono(robotchrono, strategie.versionScriptEnCours);
-			}
-
-			NoteScriptVersion meilleurProchain = new NoteScriptVersion();
-			try {
-				meilleurProchain = strategie.evaluation(profondeur_max);
-			} catch (ScriptException e) {
-				log.critical(e, this);
+				synchronized(strategie.scriptEnCours)
+				{
+//					futureTable = strategie.scriptEnCours.futureTable(table, strategie.versionScriptEnCours);
+//					futurRobotChrono = strategie.scriptEnCours.futurRobotChrono(robotchrono, strategie.versionScriptEnCours);
+				}
+	
+				NoteScriptVersion meilleurProchain = new NoteScriptVersion();
+				try {
+					meilleurProchain = strategie.evaluation(profondeur_max);
+				} catch (ScriptException e) {
+					log.critical(e, this);
+				}
+				strategie.prochainScript = meilleurProchain.script;
 			}
 			
-			strategie.prochainScript = meilleurProchain.script;
 		}
 	}
 	

@@ -9,7 +9,6 @@ import robot.cartes.FiltrageLaser;
 import robot.cartes.Laser;
 import container.Container;
 import table.Table;
-import robot.RobotChrono;
 import robot.RobotVrai;
 import strategie.MemoryManager;
 import strategie.Strategie;

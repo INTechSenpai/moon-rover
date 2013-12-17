@@ -304,8 +304,11 @@ public class RobotVrai extends Robot {
 	public void update_x_y_orientation()
 	{
 		float[] infos = deplacements.get_infos_x_y_orientation();
-		position.x = infos[0];
-		position.y = infos[1];
+		synchronized(position)
+		{
+			position.x = infos[0];
+			position.y = infos[1];
+		}
 		orientation = infos[2]/1000; // car get_infos renvoie des milliradians		
 	}
 
@@ -361,7 +364,10 @@ public class RobotVrai extends Robot {
 	 */
 	
 	public void setPosition(Vec2 position) {
-		this.position = position;
+		synchronized(this.position)
+		{
+			this.position = position;
+		}
 		deplacements.set_x((int)position.x);
 		deplacements.set_y((int)position.y);
 	}
@@ -376,7 +382,10 @@ public class RobotVrai extends Robot {
 	}
 
 	public void setConsigne(Vec2 consigne) {
-		this.consigne = consigne;
+		synchronized(this.consigne)
+		{
+			this.consigne = consigne;
+		}
 	}
 
 	public boolean isBlocage() {

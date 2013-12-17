@@ -66,6 +66,7 @@ public class Strategie implements Service {
 	{
 		scriptEnCours = prochainScript;
 		versionScriptEnCours = versionProchainScriptEnnemi;
+		prochainScript = null;
 		
 	}
 
