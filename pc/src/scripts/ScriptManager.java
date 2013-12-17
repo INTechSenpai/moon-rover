@@ -28,7 +28,7 @@ public class ScriptManager implements Service {
 		this.log = log;
 		
 		instancesScripts.put("ScriptTree", new ScriptTree(pathfinding, hookgenerator, config, log, robotvrai));
-		instancesScripts.put("ScriptLances", new ScriptTree(pathfinding, hookgenerator, config, log, robotvrai));
+		instancesScripts.put("ScriptLances", new ScriptLances(pathfinding, hookgenerator, config, log, robotvrai));
 		
 	}
 	
