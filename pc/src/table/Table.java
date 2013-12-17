@@ -242,34 +242,7 @@ public class Table implements Service {
 	{
 		return arrayTree[tree_id].isTaken();
 	}
-	
-	public int[] entryPoint(boolean rightSide)
-	{
-		int c;
-		if (rightSide)
-			c = 2;
-		else
-			c = 0;
-		if (arrayTree[c].isTaken())
-		{
-			int[] tab = {c+1};
-			return tab;
-		}
-		else
-		{
-			if (arrayTree[c+1].isTaken())
-			{
-				int[] tab = {c};
-				return tab;
-			}
-			else
-			{
-				int[] tab = {c,c+1};
-				return tab;
-			}
-		}
-	}
-	
+		
 	//Torches
 	
 	public int nearestTorch (Vec2 position)

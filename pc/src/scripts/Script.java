@@ -28,13 +28,13 @@ public abstract class Script implements Service {
 	protected static HookGenerator hookgenerator;
 	protected static Read_Ini config;
 	protected static Log log;
-	private Pathfinding pathfinding;
+	private static Pathfinding pathfinding;
 	
 	protected static ArrayList<Hook> hookfeu;
 	
 	public Script(Pathfinding pathfinding, HookGenerator hookgenerator, Read_Ini config, Log log, RobotVrai robotvrai)
 	{
-		this.pathfinding = pathfinding;
+		Script.pathfinding = pathfinding;
 		Script.hookgenerator = hookgenerator;
 		Script.config = config;
 		Script.log = log;

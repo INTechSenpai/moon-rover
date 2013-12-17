@@ -3,6 +3,7 @@ package threads;
 import exception.ScriptException;
 import robot.RobotChrono;
 import robot.RobotVrai;
+import smartMath.Vec2;
 import strategie.MemoryManager;
 import strategie.NoteScriptVersion;
 import strategie.Strategie;
@@ -42,12 +43,14 @@ public class ThreadStrategie extends AbstractThread {
 			robotchrono.majRobotChrono(robotvrai);
 			// Evaluation d'une stratégie de secours si ce script bug (en premier car plus urgent)
 			Table tableBlocage = table;
-			tableBlocage.creer_obstacle(robotvrai.getPosition()/*+distance*/);
+			Vec2 centre_detection = new Vec2((float)(400 * Math.cos(robotvrai.getOrientation())), (float)(400 * Math.sin(robotvrai.getOrientation())));
+			centre_detection.Plus(robotvrai.getPosition());
+			tableBlocage.creer_obstacle(centre_detection);
 			memorymanager.setModelTable(tableBlocage, profondeur_max);
 			memorymanager.setModelRobotChrono(robotchrono, profondeur_max);
 			NoteScriptVersion meilleurErreur = new NoteScriptVersion();
 			try {
-				meilleurErreur = strategie.evaluation(profondeur_max);
+				meilleurErreur = strategie.evaluation(profondeur_max, 0);
 			} catch (ScriptException e) {
 				log.critical(e, this);
 			}
@@ -66,7 +69,7 @@ public class ThreadStrategie extends AbstractThread {
 	
 				NoteScriptVersion meilleurProchain = new NoteScriptVersion();
 				try {
-					meilleurProchain = strategie.evaluation(profondeur_max);
+					meilleurProchain = strategie.evaluation(profondeur_max, 0);
 				} catch (ScriptException e) {
 					log.critical(e, this);
 				}

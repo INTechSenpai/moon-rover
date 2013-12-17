@@ -94,12 +94,12 @@ public class Strategie implements Service {
 		return 0;
 	}
 
-	public NoteScriptVersion evaluation(int profondeur) throws ScriptException
+	public NoteScriptVersion evaluation(int profondeur, int id_robot) throws ScriptException
 	{
-		return _evaluation(System.currentTimeMillis(), 0, profondeur);
+		return _evaluation(System.currentTimeMillis(), 0, profondeur, id_robot);
 	}
 	
-	private NoteScriptVersion _evaluation(long date, int duree_totale, int profondeur) throws ScriptException
+	private NoteScriptVersion _evaluation(long date, int duree_totale, int profondeur, int id_robot) throws ScriptException
 	{
 		if(profondeur == 0)
 			return new NoteScriptVersion();
@@ -107,7 +107,7 @@ public class Strategie implements Service {
 		NoteScriptVersion meilleur = new NoteScriptVersion(-1, null, -1);
 		int duree_connaissances = TTL;
 		
-		for(String nom_script : scriptmanager.getNomsScripts())
+		for(String nom_script : scriptmanager.getNomsScripts(id_robot))
 		{
 			Script script = scriptmanager.getScript(nom_script);
 			Table table_version = memorymanager.getCloneTable(profondeur);
@@ -123,7 +123,7 @@ public class Strategie implements Service {
 					int score = script.score(id, cloned_robotchrono, cloned_table);
 					int duree_script = (int)script.calcule(id, cloned_robotchrono, cloned_table, duree_totale > duree_connaissances);
 					float noteScript = calculeNote(score, duree_script, id);
-					NoteScriptVersion out = _evaluation(date + duree_script, duree_script, profondeur-1);
+					NoteScriptVersion out = _evaluation(date + duree_script, duree_script, profondeur-1, id_robot);
 					out.note += noteScript;
 
 					if(out.note > meilleur.note)
