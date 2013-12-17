@@ -30,7 +30,9 @@ public class Pathfinding implements Service
 	
 	public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee)
 	{
-		return null;
+		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
+		chemin.add(arrivee);
+		return chemin;
 	}
 	
 	public int distance(Vec2 depart, Vec2 arrivee)
