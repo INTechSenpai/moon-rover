@@ -92,7 +92,7 @@ public class SerialManager
 		int id = -1;
 		//Liste des series deja attribues
 		ArrayList<Integer> deja_attribues = new ArrayList<Integer>();
-		String pings[] = new String[5];
+		String pings[] = new String[20];
 		for (int baudrate : this.baudrate)
 		{
 			System.out.println("liste des pings pour le baudrate " + baudrate);
@@ -110,10 +110,10 @@ public class SerialManager
 						id = Integer.parseInt(serialTest.ping());
 					else 
 						continue;
-					
-					if(isKnownPing(id))
-						continue;
 
+					if(!isKnownPing(id))
+						continue;
+					
 					//On stock le port de la serie (connectedSerial) dans le tabeau à la case [id]
 					pings[id] = this.connectedSerial.get(k);
 
@@ -140,12 +140,12 @@ public class SerialManager
 			else if(serial.id == 3 && pings[serial.id] != null)
 			{
 				this.serieCapteursActionneurs.initialize(pings[serial.id], serial.baudrate);
-			}
+			}	
 			else if(serial.id == 4 && pings[serial.id] != null)
 			{
 				this.serieLaser.initialize(pings[serial.id], serial.baudrate);
 			}
-			
+
 			if (pings[serial.id] == null)
 			{
 				log.critical("La carte " + serial.name + " n'est pas détectée", this);
