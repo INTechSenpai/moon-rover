@@ -35,6 +35,8 @@ public class Strategie implements Service {
 	public Script scriptEnCours;
 	public int versionScriptEnCours;
 	
+	public int TTL;
+	
 	// TODO initialisations des variables = première action
 	// Prochain script à exécuter si on est interrompu par l'ennemi
 	public Script prochainScriptEnnemi;
@@ -66,7 +68,12 @@ public class Strategie implements Service {
 		versionScriptEnCours = versionProchainScriptEnnemi;
 		
 	}
-	
+
+	/**
+	 * Méthode qui, à partir de la durée de freeze et de l'emplacement des ennemis, tire des conclusions.
+	 * Exemples: l'ennemi vide cet arbre, il a posé sa fresque ici, ...
+	 * Modifie aussi la variable TTL!
+	 */
 	public void analyse_ennemi()
 	{
 		int[] duree_freeze = threadanalyseennemi.duree_freeze();
@@ -74,12 +81,14 @@ public class Strategie implements Service {
 		// modificiation de la table en conséquence
 	}
 
-	public int getTTL()
-	{
-		return 0;
-	}
-	
-	public float calculeNote(int score, int duree, int id)
+	/**
+	 * La note d'un script est fonction de son score, de sa durée, de la distance de l'ennemi
+	 * @param score
+	 * @param duree
+	 * @param id
+	 * @return
+	 */
+	private float calculeNote(int score, int duree, int id)
 	{
 		return 0;
 	}
@@ -93,45 +102,42 @@ public class Strategie implements Service {
 	{
 		if(profondeur == 0)
 			return new NoteScriptVersion();
-		else
+		table.supprimer_obstacles_perimes(date);
+		NoteScriptVersion meilleur = new NoteScriptVersion(-1, null, -1);
+		int duree_connaissances = TTL;
+		
+		for(String nom_script : scriptmanager.getNomsScripts())
 		{
-			table.supprimer_obstacles_perimes(date);
-			NoteScriptVersion meilleur = new NoteScriptVersion(-1, null, -1);
-			int duree_connaissances = getTTL();
-			
-			for(String nom_script : scriptmanager.getNomsScripts())
+			Script script = scriptmanager.getScript(nom_script);
+			Table table_version = memorymanager.getCloneTable(profondeur);
+			RobotChrono robotchrono_version = memorymanager.getCloneRobotChrono(profondeur);
+			ArrayList<Integer> versions = script.version(robotchrono_version, table_version);
+
+			for(int id : versions)
 			{
-				Script script = scriptmanager.getScript(nom_script);
-				Table table_version = memorymanager.getCloneTable(profondeur);
-				RobotChrono robotchrono_version = memorymanager.getCloneRobotChrono(profondeur);
-				ArrayList<Integer> versions = script.version(robotchrono_version, table_version);
-
-				for(int id : versions)
+				try
 				{
-					try
-					{
-						Table cloned_table = memorymanager.getCloneTable(profondeur);
-						RobotChrono cloned_robotchrono = memorymanager.getCloneRobotChrono(profondeur);
-						int score = script.score(id, cloned_robotchrono, cloned_table);
-						int duree_script = (int)script.calcule(id, cloned_robotchrono, cloned_table, duree_totale > duree_connaissances);
-						float noteScript = calculeNote(score, duree_script, id);
-						NoteScriptVersion out = _evaluation(date + duree_script, duree_script, profondeur-1);
-						out.note += noteScript;
+					Table cloned_table = memorymanager.getCloneTable(profondeur);
+					RobotChrono cloned_robotchrono = memorymanager.getCloneRobotChrono(profondeur);
+					int score = script.score(id, cloned_robotchrono, cloned_table);
+					int duree_script = (int)script.calcule(id, cloned_robotchrono, cloned_table, duree_totale > duree_connaissances);
+					float noteScript = calculeNote(score, duree_script, id);
+					NoteScriptVersion out = _evaluation(date + duree_script, duree_script, profondeur-1);
+					out.note += noteScript;
 
-						if(out.note > meilleur.note)
-						{
-							meilleur.note = out.note;
-							meilleur.script = script;
-							meilleur.version = id;
-						}
-					}
-					catch(Exception e)
+					if(out.note > meilleur.note)
 					{
-						log.critical(e, this);
+						meilleur.note = out.note;
+						meilleur.script = script;
+						meilleur.version = id;
 					}
 				}
+				catch(Exception e)
+				{
+					log.critical(e, this);
+				}
 			}
-			return meilleur;
 		}
+		return meilleur;
 	}
 }

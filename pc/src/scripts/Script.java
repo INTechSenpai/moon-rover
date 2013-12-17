@@ -62,7 +62,7 @@ public abstract class Script implements Service {
 	 */
 	public long calcule(int id_version, RobotChrono robotchrono, Table table, boolean use_cache)
 	{
-		pathfinding.use_cache(use_cache);
+		pathfinding.setUseCache(use_cache);
 		robotchrono.reset_compteur();
 		try {
 			execute(id_version, robotchrono, table);

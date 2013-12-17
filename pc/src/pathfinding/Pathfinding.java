@@ -25,9 +25,14 @@ public class Pathfinding implements Service
 		this.log = log;
 	}
 	
-	public void use_cache(boolean use_cache)
+	public void setUseCache(boolean use_cache)
 	{
 		
+	}
+
+	public boolean getUseCache()
+	{
+		return true;
 	}
 	
 }
