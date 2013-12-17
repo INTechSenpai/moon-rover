@@ -40,18 +40,17 @@ public class RobotVrai extends Robot {
 	private boolean blocage = false;
 	private boolean enMouvement = true;
 	
-	private boolean marche_arriere = false;
+//	private boolean marche_arriere = false;
 	private boolean effectuer_symetrie = true;
 	
 	public boolean pret = false;
 	
 	private int sleep_milieu_boucle_acquittement;
-	private int sleep_fin_boucle_acquittement = 0;
 	private int largeur_robot;
 	private int distance_detection;
 	
 	private float maj_ancien_angle;
-	private boolean maj_marche_arriere;
+//	private boolean maj_marche_arriere;
 	private int disque_tolerance_consigne;
 	private int distance_degagement_robot;
 	private String couleur;
@@ -127,14 +126,17 @@ public class RobotVrai extends Robot {
 		deplacements.tourner((int)angle);
 	}
 	
+	/**
+	 * Avance d'une certaine distance (méthode bloquante), gestion des hooks
+	 */
 	public void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
 		log.debug("Avancer de "+Integer.toString(distance), this);
 
-		boolean memoire_marche_arriere = marche_arriere;
+//		boolean memoire_marche_arriere = marche_arriere;
 		boolean memoire_effectuer_symetrie = effectuer_symetrie;
 
-		marche_arriere = (distance < 0);
+//		marche_arriere = (distance < 0);
 		effectuer_symetrie = false;
 
 		Vec2 consigne = new Vec2(0,0);
@@ -154,7 +156,7 @@ public class RobotVrai extends Robot {
 		}
 		finally
 		{
-			marche_arriere = memoire_marche_arriere;
+//			marche_arriere = memoire_marche_arriere;
 			effectuer_symetrie = memoire_effectuer_symetrie;
 		}
 		
@@ -211,8 +213,8 @@ public class RobotVrai extends Robot {
 	{
 		for(Vec2 position: chemin)
 		{
-			if(marche_arriere_auto)
-				marche_arriere = marche_arriere_est_plus_rapide(position);
+//			if(marche_arriere_auto)
+//				marche_arriere = marche_arriere_est_plus_rapide(position);
 			va_au_point(position, hooks, false, 2, true, symetrie_effectuee, false);
 		}
 	}
@@ -226,6 +228,8 @@ public class RobotVrai extends Robot {
 		// appliquer la symétrie ne doit pas modifier ce point !
 		point = point.clone();
 		
+		// symetrie_effectuee est important. En effet, sans cela, et puisque va_au_point s'appelle elle-même, la symétrie serait une bascule!
+		// Ce qui n'est pas le comportement souhaité.
 		if(effectuer_symetrie && !symetrie_effectuee)
 		{
 			if(couleur == "rouge")
@@ -247,10 +251,10 @@ public class RobotVrai extends Robot {
 				if(retenter_si_blocage)
 				{
 					log.warning("Blocage en déplacement ! On recule... reste "+Integer.toString(nombre_tentatives)+" tentatives", this);
-					if(marche_arriere)
-						avancer(distance_degagement_robot, nombre_tentatives-1);
-					else
-						avancer(-distance_degagement_robot, nombre_tentatives-1);
+//					if(marche_arriere)
+//						avancer(distance_degagement_robot, nombre_tentatives-1);
+//					else
+					avancer(-distance_degagement_robot, nombre_tentatives-1);
 				}
 			}
 			finally
@@ -265,7 +269,7 @@ public class RobotVrai extends Robot {
 			if(nombre_tentatives > 0)
 			{
 				log.warning("attente avant nouvelle tentative... reste "+Integer.toString(nombre_tentatives)+" tentative(s)", this);
-				sleep(1);
+				sleep(1000);
 				va_au_point(point, hooks, trajectoire_courbe, nombre_tentatives-1, true, false, false);
 			}
 			else
@@ -391,6 +395,7 @@ public class RobotVrai extends Robot {
 		this.enMouvement = enMouvement;
 	}
 
+/*
 	public boolean isMarche_arriere() {
 		return marche_arriere;
 	}
@@ -398,7 +403,7 @@ public class RobotVrai extends Robot {
 	public void setMarche_arriere(boolean marche_arriere) {
 		this.marche_arriere = marche_arriere;
 	}
-
+*/
 	public boolean isEffectuer_symetrie() {
 		return effectuer_symetrie;
 	}
@@ -462,15 +467,15 @@ public class RobotVrai extends Robot {
         //gestion de la marche arrière du déplacement (peut aller à l'encontre de marche_arriere)
 		float angle = (float) Math.atan2(delta.y, delta.x);
 
-		maj_marche_arriere = marche_arriere;
+//		maj_marche_arriere = marche_arriere;
 		maj_ancien_angle = angle;
 		
-		if(marche_arriere)
+/*		if(marche_arriere)
 		{
 			distance *= -1;
 			angle += Math.PI;
 		}
-		
+*/		
 		if(!trajectoire_courbe)
 		{
             // sans virage : la première rotation est blocante
@@ -518,23 +523,22 @@ public class RobotVrai extends Robot {
 		maj_ancien_angle = angle;
 
 		// inversement de la marche si la destination n'est plus devant
-		if(Math.abs(delta_angle) > Math.PI/2)
-			maj_marche_arriere = !maj_marche_arriere;
+//		if(Math.abs(delta_angle) > Math.PI/2)
+//			maj_marche_arriere = !maj_marche_arriere;
 
 		// mise à jour des consignes en translation et rotation en dehors d'un disque de tolérance
 		if(distance > disque_tolerance_consigne)
 		{
 			// déplacement selon la marche
-			if(maj_marche_arriere)
+/*			if(maj_marche_arriere)
 			{
 				distance *= -1;
 				angle += Math.PI;
 			}
-
+*/
 			// L'attribut orientation_consigne doit être mis à jour à chaque deplacements.tourner() pour le fonctionnement de avancerBasNiveau()
 			orientation_consigne = angle;
 			deplacements.tourner(angle);
-			sleep(sleep_fin_boucle_acquittement);
 			deplacements.avancer(distance);
 		}
 	}
@@ -542,8 +546,8 @@ public class RobotVrai extends Robot {
 	private void detecter_collision() throws CollisionException
 	{
 		int signe = 1;
-		if(marche_arriere)
-			signe = -1;
+//		if(marche_arriere)
+//			signe = -1;
 		int rayon_detection = largeur_robot + distance_detection/2;
 		Vec2 centre_detection = new Vec2((float)(signe * rayon_detection * Math.cos(orientation)), (float)(signe * rayon_detection * Math.sin(orientation)));
 		centre_detection.Plus(position);
@@ -606,6 +610,7 @@ public class RobotVrai extends Robot {
 	 * @param position
 	 * @return
 	 */
+/*
 	private boolean marche_arriere_est_plus_rapide(Vec2 consigne, float orientation_finale_voulue)
 	{
 		// appliquer la symétrie ne doit pas modifier ce point !
@@ -633,7 +638,8 @@ public class RobotVrai extends Robot {
 	{
 		return marche_arriere_est_plus_rapide(consigne, -1000);
 	}
-
+*/
+	
 	public void annuleConsigneOrientation()
 	{
 		orientation_consigne = orientation;
