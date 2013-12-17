@@ -20,7 +20,7 @@ public class RobotChrono extends Robot {
 	private float vitesse_rpms;
 	
 	// Durée en millisecondes
-	private long duree = 0;
+	private int duree = 0;
 	
 	public RobotChrono(Read_Ini config, Log log)
 	{
@@ -67,11 +67,11 @@ public class RobotChrono extends Robot {
 
 	// Méthodes propres à RobotChrono
 	
-	public void reset_compteur()
+	public void initialiser_compteur(int distance_initiale)
 	{
-		duree = 0;
+		duree = (int) (((float)distance_initiale)/vitesse_mmpms);
 	}
-	public long get_compteur()
+	public int get_compteur()
 	{
 		return duree;
 	}
@@ -102,10 +102,9 @@ public class RobotChrono extends Robot {
 		duree += delta/vitesse_rpms;
 	}
 
-	// TODO durée
 	public void tirerBalles()
 	{
-		
+		// durée "nulle" car appelé par un hook
 	}
 
 	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean marche_arriere_auto, boolean symetrie_effectuee) throws MouvementImpossibleException

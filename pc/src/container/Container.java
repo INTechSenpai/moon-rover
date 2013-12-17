@@ -105,7 +105,6 @@ public class Container {
 														(Log)getService("Log")));		
 		else if(nom == "ScriptManager")
 			services.put(nom, (Service)new ScriptManager(	(Pathfinding)getService("Pathfinding"),
-															(ThreadTimer)getService("threadTimer"),
 															(HookGenerator)getService("HookGenerator"),
 															(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log")));

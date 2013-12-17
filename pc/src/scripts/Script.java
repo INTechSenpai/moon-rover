@@ -1,15 +1,18 @@
 package scripts;
 import pathfinding.Pathfinding;
 import smartMath.Vec2;
+import hook.Callback;
+import hook.Executable;
+import hook.Hook;
 import hook.HookGenerator;
 import robot.Robot;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import table.Table;
-import threads.ThreadTimer;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
+import hook.methodes.TakeFire;
 
 import java.util.ArrayList;
 
@@ -22,18 +25,19 @@ import exception.MouvementImpossibleException;
 public abstract class Script implements Service {
 
 	// Ces services resteront toujours les mêmes, ont les factorise avec un static
-	protected static ThreadTimer threadtimer;
 	protected static HookGenerator hookgenerator;
 	protected static Read_Ini config;
 	protected static Log log;
-	protected static Pathfinding pathfinding;
+	private Pathfinding pathfinding;
 	
-	public Script(Pathfinding pathfinding, ThreadTimer threadtimer, HookGenerator hookgenerator, Read_Ini config, Log log) {
-		Script.pathfinding = pathfinding;
-		Script.threadtimer = threadtimer;
+	protected ArrayList<Hook> hookfeu;
+	
+	public Script(Pathfinding pathfinding, HookGenerator hookgenerator, Read_Ini config, Log log) {
+		this.pathfinding = pathfinding;
 		Script.hookgenerator = hookgenerator;
 		Script.config = config;
 		Script.log = log;
+		
 	}
 		
 	/**
@@ -41,8 +45,22 @@ public abstract class Script implements Service {
 	 */
 	public void agit(int id_version, RobotVrai robotvrai, Table table)
 	{
+		Vec2 point_entree = point_entree(id_version, robotvrai, table);
+
+		robotvrai.set_vitesse_translation("entre_scripts");
+		robotvrai.set_vitesse_rotation("entre_scripts");
+
+		ArrayList<Vec2> chemin = pathfinding.chemin(robotvrai.getPosition(), point_entree);
+
+		ArrayList<Hook> hookfeu = new ArrayList<Hook>();
+		Executable takefire = new TakeFire(robotvrai);
+		Hook hook = hookgenerator.hook_feu();
+		hook.ajouter_callback(new Callback(takefire, true));		
+		hookfeu.add(hook);
+
 		try
 		{
+			robotvrai.suit_chemin(chemin, hookfeu);
 			execute(id_version, robotvrai, table);
 		}
 		catch (Exception e)
@@ -62,8 +80,14 @@ public abstract class Script implements Service {
 	 */
 	public long calcule(int id_version, RobotChrono robotchrono, Table table, boolean use_cache)
 	{
+		Vec2 point_entree = point_entree(id_version, robotchrono, table);
+		robotchrono.set_vitesse_translation("entre_scripts");
+		robotchrono.set_vitesse_rotation("entre_scripts");
+		
 		pathfinding.setUseCache(use_cache);
-		robotchrono.reset_compteur();
+		robotchrono.initialiser_compteur(pathfinding.distance(robotchrono.getPosition(), point_entree));
+		robotchrono.setPosition(point_entree);
+
 		try {
 			execute(id_version, robotchrono, table);
 		}
@@ -85,7 +109,7 @@ public abstract class Script implements Service {
 	 * @param id de la version
 	 * @return la position du point d'entrée
 	 */
-	public abstract Vec2 point_entree(int id, final Robot robot, final Table table);
+	protected abstract Vec2 point_entree(int id, final Robot robot, final Table table);
 	
 	/**
 	 * Renvoie le score que peut fournir un script

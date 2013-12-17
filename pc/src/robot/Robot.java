@@ -104,7 +104,7 @@ public abstract class Robot implements Service {
 	}
 	
 	public Vec2 getPosition() {
-		return position;
+		return position.clone();
 	}
 
 	public double getOrientation() {
