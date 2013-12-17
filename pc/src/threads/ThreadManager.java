@@ -55,7 +55,7 @@ public class ThreadManager {
 			else if(nom == "threadCapteurs")
 				threads.put("threadCapteurs", new ThreadCapteurs((RobotVrai)container.getService("RobotVrai"), (ThreadTimer)threads.get("threadTimer"), (Table)container.getService("Table"), (Capteurs)container.getService("Capteur")));
 			else if(nom == "threadStrategie")
-				threads.put("threadStrategie", new ThreadStrategie((Strategie)container.getService("Strategie"), (Table)container.getService("Table"), (RobotVrai)container.getService("RobotVrai"), (RobotChrono)container.getService("RobotChrono"), (Pathfinding)container.getService("Pathfinding"), (MemoryManager)container.getService("MemoryManager")));
+				threads.put("threadStrategie", new ThreadStrategie((Strategie)container.getService("Strategie"), (Table)container.getService("Table"), (RobotVrai)container.getService("RobotVrai"), (MemoryManager)container.getService("MemoryManager")));
 			else if(nom == "threadLaser")
 				threads.put("threadLaser", new ThreadLaser((Laser)container.getService("Laser"), (Table)container.getService("Table"), (ThreadTimer)threads.get("threadTimer"), (FiltrageLaser)container.getService("FiltrageLaser")));
 			else if(nom == "threadAnalyseEnnemi")

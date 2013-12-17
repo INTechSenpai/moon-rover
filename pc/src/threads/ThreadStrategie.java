@@ -1,7 +1,6 @@
 package threads;
 
 import exception.ScriptException;
-import pathfinding.Pathfinding;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import strategie.MemoryManager;
@@ -23,15 +22,13 @@ public class ThreadStrategie extends AbstractThread {
 	private RobotVrai robotvrai;
 	private RobotChrono robotchrono;
 	private MemoryManager memorymanager;
-	private Pathfinding pathfinding;
 
-	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, RobotChrono robotchrono, Pathfinding pathfinding, MemoryManager memorymanager)
+	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager)
 	{
 		this.strategie = strategie;
 		this.table = table;
 		this.robotvrai = robotvrai;
-		this.robotchrono = robotchrono;
-		this.pathfinding = pathfinding;
+		this.robotchrono = new RobotChrono(config, log);
 		this.memorymanager = memorymanager;
 	}
 	
