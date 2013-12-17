@@ -32,6 +32,8 @@ public class ScriptManager implements Service {
 		
 		instancesScripts.put("ScriptTree", new ScriptTree(pathfinding, hookgenerator, config, log, robotvrai));
 		instancesScripts.put("ScriptLances", new ScriptLances(pathfinding, hookgenerator, config, log, robotvrai));
+		instancesScripts.put("ScriptDeposerFeu", new ScriptDeposerFeu(pathfinding, hookgenerator, config, log, robotvrai));
+		instancesScripts.put("ScriptTorche", new ScriptTorche(pathfinding, hookgenerator, config, log, robotvrai));
 		
 		scripts_robot1 = new ArrayList<String>();
 		scripts_robot1.add("ScriptTree");
