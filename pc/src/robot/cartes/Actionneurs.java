@@ -24,13 +24,13 @@ public class Actionneurs implements Service {
 	
 	public void baisser_bac()
 	{
-		log.debug("Bac levé", this);
+		log.debug("Bac baissé", this);
 		serie.communiquer("bb", 0);
 	}
 
 	public void lever_bac()
 	{
-		log.debug("Bac baissé", this);
+		log.debug("Bac levé", this);
 		serie.communiquer("bh", 0);
 	}
 
@@ -72,13 +72,13 @@ public class Actionneurs implements Service {
 
 	public void rateau_gauche_super_bas()
 	{
-		log.debug("Rateau gauche baissé", this);
+		log.debug("Rateau gauche vraiment baissé", this);
 		serie.communiquer("rbbg", 0);
 	}
 
 	public void rateau_droit_super_bas()
 	{
-		log.debug("Rateau gauche baissé", this);
+		log.debug("Rateau gauche vraiment baissé", this);
 		serie.communiquer("rbbd", 0);
 	}
 
