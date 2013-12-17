@@ -1,5 +1,6 @@
 package threads;
 
+import pathfinding.Pathfinding;
 import robot.RobotVrai;
 import robot.cartes.Capteurs;
 import smartMath.Vec2;
@@ -16,6 +17,7 @@ class ThreadCapteurs extends AbstractThread {
 	private RobotVrai robotvrai;
 	private Capteurs capteur;
 	private Table table;
+	private Pathfinding pathfinding;
 	private ThreadTimer threadTimer;
 	
 	// Valeurs par défaut s'il y a un problème de config
@@ -27,10 +29,11 @@ class ThreadCapteurs extends AbstractThread {
 	private int table_y = 2000;
 	private int capteurs_frequence = 5;
 	
-	ThreadCapteurs(RobotVrai robotvrai, ThreadTimer threadTimer, Table table, Capteurs capteur)
+	ThreadCapteurs(RobotVrai robotvrai, Pathfinding pathfinding, ThreadTimer threadTimer, Table table, Capteurs capteur)
 	{
 		super(config, log);
 		this.robotvrai = robotvrai;
+		this.pathfinding = pathfinding;
 		this.threadTimer = threadTimer;
 		this.table = table;
 		this.capteur = capteur;
@@ -92,6 +95,7 @@ class ThreadCapteurs extends AbstractThread {
 						table.creer_obstacle(position);
 						date_dernier_ajout = (int)System.currentTimeMillis();
 				
+				pathfinding.update();
 			}
 			sleep((long)1/capteurs_frequence);
 			

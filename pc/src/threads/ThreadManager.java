@@ -53,7 +53,7 @@ public class ThreadManager {
 			else if(nom == "threadPosition")
 				threads.put("threadPosition", new ThreadPosition((RobotVrai)container.getService("RobotVrai"), (ThreadTimer)threads.get("threadTimer")));
 			else if(nom == "threadCapteurs")
-				threads.put("threadCapteurs", new ThreadCapteurs((RobotVrai)container.getService("RobotVrai"), (ThreadTimer)threads.get("threadTimer"), (Table)container.getService("Table"), (Capteurs)container.getService("Capteur")));
+				threads.put("threadCapteurs", new ThreadCapteurs((RobotVrai)container.getService("RobotVrai"), (Pathfinding)container.getService("Pathfinding"), (ThreadTimer)threads.get("threadTimer"), (Table)container.getService("Table"), (Capteurs)container.getService("Capteur")));
 			else if(nom == "threadStrategie")
 				threads.put("threadStrategie", new ThreadStrategie((Strategie)container.getService("Strategie"), (Table)container.getService("Table"), (RobotVrai)container.getService("RobotVrai"), (MemoryManager)container.getService("MemoryManager")));
 			else if(nom == "threadLaser")
