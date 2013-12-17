@@ -107,7 +107,8 @@ public class Container {
 			services.put(nom, (Service)new ScriptManager(	(Pathfinding)getService("Pathfinding"),
 															(HookGenerator)getService("HookGenerator"),
 															(Read_Ini)getService("Read_Ini"),
-															(Log)getService("Log")));
+															(Log)getService("Log"),
+															(RobotVrai)getService("RobotVrai")));
 		else if(nom == "Strategie")
 			services.put(nom, (Service)new Strategie(	(MemoryManager)getService("MemoryManager"),
 														(ThreadAnalyseEnnemi)getService("threadAnalyseEnnemi"),

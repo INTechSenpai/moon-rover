@@ -24,20 +24,27 @@ import exception.MouvementImpossibleException;
 
 public abstract class Script implements Service {
 
-	// Ces services resteront toujours les mêmes, ont les factorise avec un static
+	// Ces services resteront toujours les mêmes, on les factorise avec un static
 	protected static HookGenerator hookgenerator;
 	protected static Read_Ini config;
 	protected static Log log;
 	private Pathfinding pathfinding;
 	
-	protected ArrayList<Hook> hookfeu;
+	protected static ArrayList<Hook> hookfeu;
 	
-	public Script(Pathfinding pathfinding, HookGenerator hookgenerator, Read_Ini config, Log log) {
+	public Script(Pathfinding pathfinding, HookGenerator hookgenerator, Read_Ini config, Log log, RobotVrai robotvrai)
+	{
 		this.pathfinding = pathfinding;
 		Script.hookgenerator = hookgenerator;
 		Script.config = config;
 		Script.log = log;
-		
+
+		ArrayList<Hook> hookfeu = new ArrayList<Hook>();
+		Executable takefire = new TakeFire(robotvrai);
+		Hook hook = hookgenerator.hook_feu();
+		hook.ajouter_callback(new Callback(takefire, true));		
+		hookfeu.add(hook);
+
 	}
 		
 	/**
@@ -51,12 +58,6 @@ public abstract class Script implements Service {
 		robotvrai.set_vitesse_rotation("entre_scripts");
 
 		ArrayList<Vec2> chemin = pathfinding.chemin(robotvrai.getPosition(), point_entree);
-
-		ArrayList<Hook> hookfeu = new ArrayList<Hook>();
-		Executable takefire = new TakeFire(robotvrai);
-		Hook hook = hookgenerator.hook_feu();
-		hook.ajouter_callback(new Callback(takefire, true));		
-		hookfeu.add(hook);
 
 		try
 		{

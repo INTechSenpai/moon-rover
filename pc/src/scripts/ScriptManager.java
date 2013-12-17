@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import pathfinding.Pathfinding;
+import robot.RobotVrai;
 import hook.HookGenerator;
 import utils.Log;
 import utils.Read_Ini;
@@ -22,11 +23,12 @@ public class ScriptManager implements Service {
 
 	private Map<String,Script> instancesScripts = new Hashtable<String,Script>();
 
-	public ScriptManager(Pathfinding pathfinding, HookGenerator hookgenerator, Read_Ini config, Log log) {
+	public ScriptManager(Pathfinding pathfinding, HookGenerator hookgenerator, Read_Ini config, Log log, RobotVrai robotvrai)
+	{
 		this.log = log;
 		
-		instancesScripts.put("ScriptTree", new ScriptTree(pathfinding, hookgenerator, config, log));
-		instancesScripts.put("ScriptLances", new ScriptTree(pathfinding, hookgenerator, config, log));
+		instancesScripts.put("ScriptTree", new ScriptTree(pathfinding, hookgenerator, config, log, robotvrai));
+		instancesScripts.put("ScriptLances", new ScriptTree(pathfinding, hookgenerator, config, log, robotvrai));
 		
 	}
 	
