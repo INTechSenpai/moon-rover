@@ -40,7 +40,7 @@ class ThreadCapteurs extends AbstractThread {
 	public void run()
 	{
 		int date_dernier_ajout = 0;
-		boolean marche_arriere = false;
+//		boolean marche_arriere = false;
 		try
 		{
 			tempo = Double.parseDouble(config.get("capteurs_temporisation_obstacles"));
@@ -74,15 +74,15 @@ class ThreadCapteurs extends AbstractThread {
 				return;
 			}
 			
-			marche_arriere = !marche_arriere;
+//			marche_arriere = !marche_arriere;
 
-			int distance = capteur.mesurer(marche_arriere);
+			int distance = capteur.mesurer(false);
 			if(distance >= 0 && distance < horizon_capteurs)
 			{
 				int distance_inter_robots = distance + rayon_robot_adverse + largeur_robot/2;
 				double theta = robotvrai.getOrientation();
-				if(marche_arriere)
-					theta += Math.PI;
+//				if(marche_arriere)
+//					theta += Math.PI;
 				Vec2 position = robotvrai.getPosition().Plus(new Vec2((float)distance_inter_robots * (float)Math.cos(theta), (float)distance_inter_robots * (float)Math.sin(theta)));
 
 				// on vérifie qu'un obstacle n'a pas été ajouté récemment
