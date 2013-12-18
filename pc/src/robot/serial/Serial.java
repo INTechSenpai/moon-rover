@@ -15,12 +15,6 @@ import java.io.OutputStream;
 import utils.Log;
 import container.Service;
 
-// Quand j'envoie un ordre d'asservissement du java au simulateur (via l'interface), je reçois l'erreur suivante:
-// java.io.IOException: Underlying input stream returned zero bytes
-// Je te laisse debugger, mais j'ai trouvé des infos ici:
-// http://stackoverflow.com/questions/1391402/issues-receving-in-rxtx
-// BOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOUWOU
-
 public class Serial implements SerialPortEventListener, Service
 {
 	SerialPort serialPort;
@@ -143,7 +137,6 @@ public class Serial implements SerialPortEventListener, Service
 				{
 					nb_tests++;
 					acquittement = input.readLine().charAt(0);
-
 					if (acquittement != '_')
 					{
 						output.write(m.getBytes());
