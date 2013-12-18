@@ -64,6 +64,7 @@ public class Deplacements implements Service {
 		{
 			if(enCoursDeBlocage)
 			{
+                // la durée de tolérance au patinage est fixée ici 
 				if(System.currentTimeMillis() - debut_timer_blocage > 500)
 				{
 					log.warning("le robot a dû s'arrêter suite à un patinage.", this);
@@ -255,7 +256,7 @@ public class Deplacements implements Service {
 	 */
 	public Hashtable<String, Integer> maj_infos_stoppage_enMouvement()
 	{
-		String[] infos_string = serie.communiquer("?info", 4);
+		String[] infos_string = serie.communiquer("?infos", 4);
 		int[] infos_int = new int[4];
 
 		for(int i = 0; i < 4; i++)
