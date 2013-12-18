@@ -37,13 +37,11 @@ import robot.serial.Serial;
  * Actionneurs
  * HookGenerator
  * RobotVrai
- * RobotChrono
  * ScriptManager
  * Strategie
  * thread* (threadTimer, threadPosition, threadStrategie, threadCapteurs, threadLaser)
  * Pathfinding
- * HookGenerator
- * Strategie
+ * MemoryManager
  * Laser
  * FiltrageLaser
  * CheckUp
@@ -95,8 +93,7 @@ public class Container {
 															(Log)getService("Log"),
 															(Capteurs)getService("Capteur")));		
 		else if(nom == "RobotVrai")
-			services.put(nom, (Service)new RobotVrai(	(Pathfinding)getService("Pathfinding"),
-														(Capteurs)getService("Capteur"),
+			services.put(nom, (Service)new RobotVrai(	(Capteurs)getService("Capteur"),
 														(Actionneurs)getService("Actionneurs"),
 														(Deplacements)getService("Deplacements"),
 														(HookGenerator)getService("HookGenerator"),
@@ -114,8 +111,8 @@ public class Container {
 														(ThreadAnalyseEnnemi)getService("threadAnalyseEnnemi"),
 														(ThreadTimer)getService("threadTimer"),
 														(ScriptManager)getService("ScriptManager"),
-														(Pathfinding)getService("Pathfinding"),
 														(Table)getService("Table"),
+														(RobotVrai)getService("RobotVrai"),
 														(Read_Ini)getService("Read_Ini"),
 														(Log)getService("Log")));			 
 		else if(nom.length() > 5 && nom.substring(0,6).equals("thread"))

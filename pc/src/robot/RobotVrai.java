@@ -14,7 +14,6 @@ import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import pathfinding.Pathfinding;
 import exception.BlocageException;
 import exception.CollisionException;
 import exception.MouvementImpossibleException;
@@ -27,7 +26,6 @@ import exception.MouvementImpossibleException;
 
 public class RobotVrai extends Robot {
 
-	protected Pathfinding pathfinding;
 	protected Capteurs capteur;
 	protected Actionneurs actionneurs;
 	protected Deplacements deplacements;
@@ -59,10 +57,9 @@ public class RobotVrai extends Robot {
 	
 	// Constructeur
 	
-	public RobotVrai(Pathfinding pathfinding, Capteurs capteur, Actionneurs actionneurs, Deplacements deplacements, HookGenerator hookgenerator, Table table, Read_Ini config, Log log)
+	public RobotVrai(Capteurs capteur, Actionneurs actionneurs, Deplacements deplacements, HookGenerator hookgenerator, Table table, Read_Ini config, Log log)
  	{
 		super(config, log);
-		this.pathfinding = pathfinding;
 		this.capteur = capteur;
 		this.actionneurs = actionneurs;
 		this.deplacements = deplacements;

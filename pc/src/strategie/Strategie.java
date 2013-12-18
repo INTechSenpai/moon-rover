@@ -2,8 +2,8 @@ package strategie;
 
 import java.util.ArrayList;
 
-import pathfinding.Pathfinding;
 import robot.RobotChrono;
+import robot.RobotVrai;
 import scripts.Script;
 import scripts.ScriptManager;
 import table.Table;
@@ -25,10 +25,10 @@ public class Strategie implements Service {
 	// Dépendances
 	private MemoryManager memorymanager;
 	private ThreadAnalyseEnnemi threadanalyseennemi;
-	private ThreadTimer threadTimer;
+	private ThreadTimer threadtimer;
 	private ScriptManager scriptmanager;
-	private Pathfinding pathfinding;
 	private Table table;
+	private RobotVrai robotvrai;
 	private Read_Ini config;
 	private Log log;
 	
@@ -40,21 +40,21 @@ public class Strategie implements Service {
 	// TODO initialisations des variables = première action
 	// Prochain script à exécuter si on est interrompu par l'ennemi
 	public Script prochainScriptEnnemi;
-	public int versionProchainScriptEnnemi;
+	public Integer versionProchainScriptEnnemi;
 	
 	// Prochain script à exécuter si l'actuel se passe bien
 	public Script prochainScript;
 	public int versionProchainScript;
 
 	
-	public Strategie(MemoryManager memorymanager, ThreadAnalyseEnnemi threadanalyseennemi, ThreadTimer threadTimer, ScriptManager scriptmanager, Pathfinding pathfinding, Table table, Read_Ini config, Log log)
+	public Strategie(MemoryManager memorymanager, ThreadAnalyseEnnemi threadanalyseennemi, ThreadTimer threadtimer, ScriptManager scriptmanager, Table table, RobotVrai robotvrai, Read_Ini config, Log log)
 	{
 		this.memorymanager = memorymanager;
 		this.threadanalyseennemi = threadanalyseennemi;
-		this.threadTimer = threadTimer;
+		this.threadtimer = threadtimer;
 		this.scriptmanager = scriptmanager;
-		this.pathfinding = pathfinding;
 		this.table = table;
+		this.robotvrai = robotvrai;
 		this.config = config;
 		this.log = log;
 	}
@@ -64,9 +64,36 @@ public class Strategie implements Service {
 	 */
 	public void boucle_strategie()
 	{
-		scriptEnCours = prochainScript;
-		versionScriptEnCours = versionProchainScriptEnnemi;
-		prochainScript = null;
+		while(!threadtimer.fin_match)
+		{
+			while(prochainScript == null)
+			{
+				synchronized(versionProchainScriptEnnemi)
+				{
+					synchronized(prochainScript)
+					{
+						scriptEnCours = prochainScript;
+						versionScriptEnCours = versionProchainScriptEnnemi;
+						prochainScript = null;
+					}
+				}
+				if(scriptEnCours == null)
+				{
+					log.warning("Aucun ordre n'est à disposition.", this);
+					try {
+						Thread.sleep(500);
+					}
+					catch(Exception e)
+					{
+						System.out.println(e);
+					}
+				}
+			}
+	
+			log.debug("Stratégie fait: "+scriptEnCours.toString()+", version "+Integer.toString(versionScriptEnCours), this);
+			scriptEnCours.agit(versionScriptEnCours, robotvrai, table);
+		}
+		log.debug("Arrêt de la stratégie", this);
 		
 	}
 
@@ -80,6 +107,12 @@ public class Strategie implements Service {
 		int[] duree_freeze = threadanalyseennemi.duree_freeze();
 		
 		// modificiation de la table en conséquence
+		/*
+		 * Où l'ennemi dépose-t-il ses feux?
+		 * Où l'ennemi dépose-t-il sa fresque?
+		 * Quel arbre récupère-t-il?
+		 * Quelle torche vide-t-il?
+		 */
 	}
 
 	/**
