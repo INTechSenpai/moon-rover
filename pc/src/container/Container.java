@@ -39,7 +39,7 @@ import robot.serial.Serial;
  * RobotVrai
  * ScriptManager
  * Strategie
- * thread* (threadTimer, threadPosition, threadStrategie, threadCapteurs, threadLaser)
+ * thread* (threadTimer, threadStrategie, threadCapteurs, threadLaser)
  * Pathfinding
  * MemoryManager
  * Laser
@@ -55,16 +55,28 @@ public class Container {
 	private Map<String,Service> services = new Hashtable<String,Service>();
 	private SerialManager serialmanager = null;
 	private ThreadManager threadmanager = null;
+	private Log log = null;
+	private Read_Ini config = null;
 	
+	public Container()
+	{
+		try {
+			services.put("Read_Ini", (Service)new Read_Ini("../pc/config/"));
+			config = (Read_Ini)services.get("Read_Ini");
+			services.put("Log", (Service)new Log(config));
+			log = (Log)services.get("Log");
+			threadmanager = new ThreadManager(config, log);
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+	}
+
 	public Service getService(String nom) throws ContainerException, ThreadException, ConfigException, SerialManagerException
 	{
+		log.debug("getService de "+nom, this);
 		if(services.containsKey(nom));
-		else if(nom == "Read_Ini")
-		{
-			services.put(nom, (Service)new Read_Ini("../pc/config/"));
-		}
-		else if(nom == "Log")
-			services.put(nom, (Service)new Log(	(Read_Ini)getService("Read_Ini")));
 		else if(nom == "Table")
 		{
 			services.put(nom, (Service)new Table(	(Log)getService("Log"),
@@ -73,14 +85,26 @@ public class Container {
 		}
 		else if(nom.length() > 4 && nom.substring(0,5).equals("serie"))
 		{
+			synchronized(serialmanager)
+			{
 				if(serialmanager == null)
+				{
 					serialmanager = new SerialManager((Log)getService("Log"));
-				services.put(nom, (Service)serialmanager.getSerial(nom));
+	
+					// On met ici un sleep car la construction se fait par threads. Il faut donc attendre que ceux-ci se terminent.
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			services.put(nom, (Service)serialmanager.getSerial(nom));
 		}
 		else if(nom == "Deplacements")
 			services.put(nom, (Service)new Deplacements((Log)getService("Log"),
 														(Serial)getService("serieAsservissement")));
-		else if(nom == "Capteur")
+		else if(nom == "Capteur" || nom == "Capteurs")
 			services.put(nom, (Service)new Capteurs(	(Read_Ini)getService("Read_Ini"),
 													(Log)getService("Log"),
 													(Serial)getService("serieCapteursActionneurs")));
@@ -114,16 +138,34 @@ public class Container {
 														(Table)getService("Table"),
 														(RobotVrai)getService("RobotVrai"),
 														(Read_Ini)getService("Read_Ini"),
-														(Log)getService("Log")));			 
-		else if(nom.length() > 5 && nom.substring(0,6).equals("thread"))
-		{
-			if(threadmanager == null)
-			{
-				threadmanager = new ThreadManager(	(Read_Ini)getService("Read_Ini"),
-													(Log)getService("Log"));
-			}
-				services.put(nom, (Service)threadmanager.getThread(nom));
-		}
+														(Log)getService("Log")));
+		else if(nom == "threadTimer")
+			services.put(nom, (Service)threadmanager.getThreadTimer(	(Table)getService("Table"),
+																		(Capteurs)getService("Capteur"),
+																		(Deplacements)getService("Deplacements")));
+		else if(nom == "threadPosition")
+			services.put(nom, (Service)threadmanager.getThreadPosition(	(RobotVrai)getService("Robotvrai"),
+																		(ThreadTimer)getService("threadTimer")));
+		else if(nom == "threadCapteurs")
+			services.put(nom, (Service)threadmanager.getThreadCapteurs(	(RobotVrai)getService("Robotvrai"),
+																		(Pathfinding)getService("Pathfinding"),
+																		(ThreadTimer)getService("threadTimer"),
+																		(Table)getService("Table"),
+																		(Capteurs)getService("Capteur")));
+
+		else if(nom == "threadStrategie")
+			services.put(nom, (Service)threadmanager.getThreadStrategie((Strategie)getService("Strategie"),
+																		(Table)getService("Table"),
+																		(RobotVrai)getService("RobotVrai"),
+																		(MemoryManager)getService("MemoryManager")));
+		else if(nom == "threadLaser")
+			services.put(nom, (Service)threadmanager.getThreadLaser(	(Laser)getService("Laser"),
+																		(Table)getService("Table"),
+																		(ThreadTimer)getService("threadTimer"),
+																		(FiltrageLaser)getService("FiltrageLaser")));
+		else if(nom == "threadAnalyseEnnemi")
+			services.put(nom, (Service)threadmanager.getThreadAnalyseEnnemi(	(Table)getService("Table"),
+																				(ThreadTimer)getService("threadTimer")));
 		else if(nom == "Pathfinding")
 			services.put(nom, (Service)new Pathfinding(	(Table)getService("Table"),
 														(Read_Ini)getService("Read_Ini"),
@@ -146,7 +188,7 @@ public class Container {
 													(RobotVrai)getService("RobotVrai")));
 		else
 		{
-			System.out.println("Erreur de getService pour le service: "+nom);
+			log.critical("Erreur de getService pour le service: "+nom, this);
 			throw new ContainerException();
 		}
 		return services.get(nom);

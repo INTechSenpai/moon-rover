@@ -30,7 +30,7 @@ public class ThreadTimer extends AbstractThread {
 		
 		// facteur 1000 car temps_match est en secondes et duree_match en ms
 		try {
-			duree_match = 1000*Long.parseLong(AbstractThread.config.get("temps_match"));
+			duree_match = 1000*Long.parseLong(config.get("temps_match"));
 		}
 		catch(Exception e)
 		{
