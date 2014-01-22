@@ -66,6 +66,7 @@ public class Container {
 			services.put("Log", (Service)new Log(config));
 			log = (Log)services.get("Log");
 			threadmanager = new ThreadManager(config, log);
+			serialmanager = new SerialManager(log);
 		}
 		catch(Exception e)
 		{
@@ -85,20 +86,6 @@ public class Container {
 		}
 		else if(nom.length() > 4 && nom.substring(0,5).equals("serie"))
 		{
-			synchronized(serialmanager)
-			{
-				if(serialmanager == null)
-				{
-					serialmanager = new SerialManager((Log)getService("Log"));
-	
-					// On met ici un sleep car la construction se fait par threads. Il faut donc attendre que ceux-ci se terminent.
-					try {
-						Thread.sleep(2000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
 			services.put(nom, (Service)serialmanager.getSerial(nom));
 		}
 		else if(nom == "Deplacements")
