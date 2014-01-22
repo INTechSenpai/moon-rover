@@ -252,7 +252,7 @@ public class Table implements Service {
 		else
 			return 1;
 	}
-			
+
 	public void clone(Table ct)
 	{
 		if(ct.hashFire != hashFire)
@@ -292,5 +292,14 @@ public class Table implements Service {
 		return cloned_table;
 	}
 
+	/**
+	 * Utilisé par les tests unitaires uniquement. Vérifie que les hash sont bien mis à jour
+	 * @return
+	 */
+	public int hashTable()
+	{
+		return hashFire + hashTree + hashTorch + hashObstacles;
+	}
+	
 }
 
