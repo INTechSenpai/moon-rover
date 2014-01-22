@@ -29,6 +29,7 @@ public class JUnit_TableTest {
 	
 	@After
 	public void tearDown() throws Exception {
+		container = null;
 		table = null;
 	}
 	
@@ -52,14 +53,44 @@ public class JUnit_TableTest {
 	}
 	
 	@Test
+	public void test_creer_obstacle() throws Exception {
+		int ancien_hash = table.hashTable();
+		table.creer_obstacle(new Vec2(100, 100));
+		Assert.assertTrue(ancien_hash != table.hashTable());
+	}
+
+	@Test
+	public void test_pickFire() throws Exception {
+		int ancien_hash = table.hashTable();
+		table.pickFire(2);
+		Assert.assertTrue(ancien_hash != table.hashTable());
+	}
+
+	@Test
+	public void test_pickTree() throws Exception {
+		int ancien_hash = table.hashTable();
+		Assert.assertTrue(!table.isTreeTaken(2));
+		table.pickTree(2);
+		Assert.assertTrue(ancien_hash != table.hashTable());
+		Assert.assertTrue(table.isTreeTaken(2));
+	}
+
+	@Test
+	public void test_putFire() throws Exception {
+		int ancien_hash = table.hashTable();
+		table.putFire(2);
+		Assert.assertTrue(ancien_hash != table.hashTable());
+	}
+	
+	@Test
 	public void benchmark_clone() throws Exception {
 		MemoryManager memorymanager = (MemoryManager)container.getService("MemoryManager");
+		@SuppressWarnings("unused")
 		Table table1;
 		for(int i = 0; i < 10000; i++)
 		{
 			table1 = memorymanager.getCloneTable(1);
 		}
-
 	}
 	
 }
