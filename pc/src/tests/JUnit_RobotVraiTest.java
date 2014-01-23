@@ -1,23 +1,20 @@
 package tests;
 
 import static org.junit.Assert.*;
-import hook.HookGenerator;
+import hook.Hook;
+
+import java.util.ArrayList;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import exception.ContainerException;
-import table.Table;
 import container.Container;
-import pathfinding.*;
+import exception.MouvementImpossibleException;
 import robot.*;
 import robot.cartes.*;
-import robot.serial.*;
-import scripts.ScriptManager;
 import smartMath.Vec2;
-import strategie.*;
 	/**
 	 * Tests unitaires pour RobotVrai (non, sans blague...)
 	 * @author pf
@@ -38,7 +35,7 @@ public class JUnit_RobotVraiTest {
 		deplacements.set_y(1500);
 		deplacements.set_orientation(0);
 		deplacements.set_vitesse_translation(80);
-
+		deplacements.set_vitesse_rotation(130);
 	}
 	
 	@After
@@ -63,12 +60,48 @@ public class JUnit_RobotVraiTest {
 	public void test_setOrientation() throws Exception
 	{
 		robotvrai.setOrientation((float)1.2);
-		Thread.sleep(1000);
 		float[] infos_float = deplacements.get_infos_x_y_orientation();
 		assertEquals(0, infos_float[0], 0);
 		assertEquals(1500, infos_float[1], 0);
-		System.out.print(infos_float[2]);
 		assertEquals(1200, infos_float[2], 0);
+	}
+	
+	@Test
+	public void test_getOrientation() throws Exception
+	{
+		deplacements.tourner((float)1.2);
+		Thread.sleep(500);
+		robotvrai.update_x_y_orientation();
+		assertEquals(robotvrai.getOrientation(), 1.2, 0.001);
+	}
+
+	@Test
+	public void test_update_x_y_orientation() throws Exception
+	{
+		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,0)));
+		robotvrai.update_x_y_orientation();
+		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,1500)));
+	}
+	
+/*	@Test
+	public void test_avancer() throws Exception
+	{
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		robotvrai.avancer(10);
+		System.out.println(robotvrai.getPosition());
+		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(10,1500)));
+	}*/
+
+	@Test
+	public void test_tourner() throws Exception
+	{
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		robotvrai.tourner((float)1.2);
+		assertEquals(robotvrai.getOrientation(), 1.2, 0.001);
 	}
 
 }

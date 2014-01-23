@@ -374,50 +374,6 @@ public class RobotVrai extends Robot {
 		deplacements.set_orientation(orientation);
 	}
 
-	public Vec2 getConsigne() {
-		return consigne;
-	}
-
-	public void setConsigne(Vec2 consigne) {
-		synchronized(this.consigne)
-		{
-			this.consigne = consigne;
-		}
-	}
-
-	public boolean isBlocage() {
-		return blocage;
-	}
-
-	public void setBlocage(boolean blocage) {
-		this.blocage = blocage;
-	}
-
-	public boolean isEnMouvement() {
-		return enMouvement;
-	}
-
-	public void setEnMouvement(boolean enMouvement) {
-		this.enMouvement = enMouvement;
-	}
-
-/*
-	public boolean isMarche_arriere() {
-		return marche_arriere;
-	}
-
-	public void setMarche_arriere(boolean marche_arriere) {
-		this.marche_arriere = marche_arriere;
-	}
-*/
-	public boolean isEffectuer_symetrie() {
-		return effectuer_symetrie;
-	}
-
-	public void setEffectuer_symetrie(boolean effectuer_symetrie) {
-		this.effectuer_symetrie = effectuer_symetrie;
-	}
-	
 	/*
 	 * MÉTHODES PRIVÉES
 	 */
@@ -434,6 +390,8 @@ public class RobotVrai extends Robot {
 	{
 		blocage = false;
 		orientation_consigne = angle;
+		deplacements.tourner(angle);
+		
 		while(!acquittement(true, sans_lever_exception))
 		{
 			if(hooks != null)

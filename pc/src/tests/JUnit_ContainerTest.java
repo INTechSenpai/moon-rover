@@ -166,4 +166,22 @@ public class JUnit_ContainerTest {
 		container.getService("threadStrategie");
 	}
 
+	@Test
+	public void test_threadPosition() throws Exception
+	{
+		container.getService("threadPosition");
+	}
+	
+	@Test
+	public void test_threadAnalyseEnnemi() throws Exception
+	{
+		container.getService("threadAnalyseEnnemi");
+	}
+	
+	@Test
+	public void test_threadCapteurs() throws Exception
+	{
+		container.getService("threadCapteurs");
+	}
+
 }

@@ -38,6 +38,7 @@ public class ThreadManager {
 
 		AbstractThread.log = log;
 		AbstractThread.config = config;
+		AbstractThread.stop_threads = false;
 	}
 
 	/**
@@ -99,7 +100,18 @@ public class ThreadManager {
 
 	public void demarreThreads()
 	{
+		log.debug("Démarrage des threads enregistrés", this);
 		for(String nom: threads.keySet())
 			threads.get(nom).start();
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void arreteThreads()
+	{
+		AbstractThread.stop_threads = true;
 	}
 }

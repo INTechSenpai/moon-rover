@@ -82,5 +82,10 @@ public class Vec2
 		return "("+x+","+y+")";
 	}
 	
+	public boolean equals(Vec2 other)
+	{
+		return other.x == x && other.y == y;
+	}
+	
 }
 

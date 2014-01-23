@@ -144,10 +144,10 @@ public class Container {
 																		(Capteurs)getService("Capteur"),
 																		(Deplacements)getService("Deplacements")));
 		else if(nom == "threadPosition")
-			services.put(nom, (Service)threadmanager.getThreadPosition(	(RobotVrai)getService("Robotvrai"),
+			services.put(nom, (Service)threadmanager.getThreadPosition(	(RobotVrai)getService("RobotVrai"),
 																		(ThreadTimer)getService("threadTimer")));
 		else if(nom == "threadCapteurs")
-			services.put(nom, (Service)threadmanager.getThreadCapteurs(	(RobotVrai)getService("Robotvrai"),
+			services.put(nom, (Service)threadmanager.getThreadCapteurs(	(RobotVrai)getService("RobotVrai"),
 																		(Pathfinding)getService("Pathfinding"),
 																		(ThreadTimer)getService("threadTimer"),
 																		(Table)getService("Table"),
@@ -213,6 +213,22 @@ public class Container {
 	public boolean contient(String nom)
 	{
 		return services.containsKey(nom);
+	}
+	
+	/**
+	 * Demande au thread manager de démarrer les threads enregistrés
+	 */
+	public void demarreThreads()
+	{
+		threadmanager.demarreThreads();
+	}
+	
+	/**
+	 * Demande au thread manager d'arrêter les threads
+	 */
+	public void arreteThreads()
+	{
+		threadmanager.arreteThreads();
 	}
 	
 }
