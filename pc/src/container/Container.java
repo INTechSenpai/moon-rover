@@ -57,6 +57,19 @@ public class Container {
 	private ThreadManager threadmanager = null;
 	private Log log = null;
 	private Read_Ini config = null;
+
+	public void destructeur()
+	{
+		if(serialmanager != null)
+		{
+			if(serialmanager.serieAsservissement != null)
+				serialmanager.serieAsservissement.close();
+			if(serialmanager.serieCapteursActionneurs != null)
+				serialmanager.serieCapteursActionneurs.close();
+			if(serialmanager.serieLaser != null)
+				serialmanager.serieLaser.close();
+		}
+	}
 	
 	public Container()
 	{
@@ -76,7 +89,7 @@ public class Container {
 
 	public Service getService(String nom) throws ContainerException, ThreadException, ConfigException, SerialManagerException
 	{
-		log.debug("getService de "+nom, this);
+//		log.debug("getService de "+nom, this);
 		if(services.containsKey(nom));
 		else if(nom == "Table")
 		{
@@ -180,6 +193,5 @@ public class Container {
 		}
 		return services.get(nom);
 	}
-
 	
 }

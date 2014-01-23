@@ -29,6 +29,7 @@ public class JUnit_TableTest {
 	
 	@After
 	public void tearDown() throws Exception {
+		container.destructeur();
 		container = null;
 		table = null;
 	}

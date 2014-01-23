@@ -19,9 +19,9 @@ public class SerialManager
 	private Log log;
 
 	//Series a instancier
-	public Serial serieAsservissement;
-	public Serial serieCapteursActionneurs;
-	public Serial serieLaser;
+	public Serial serieAsservissement = null;
+	public Serial serieCapteursActionneurs = null;
+	public Serial serieLaser = null;
 	
 	//On stock les series dans une liste
 	private Hashtable<String, Serial> series = new Hashtable<String, Serial>();
