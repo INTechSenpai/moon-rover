@@ -194,4 +194,25 @@ public class Container {
 		return services.get(nom);
 	}
 	
+	
+	/**
+	 * Méthode utilisée pour les tests: container oublie un service
+	 * @param nom
+	 */
+	public void oublie(String nom)
+	{
+		if(services.containsKey(nom))
+			services.remove(nom);
+	}
+	
+	/**
+	 * Méthode utilisée uniquement pour les tests: renvoie si un service a déjà été créé
+	 * @param nom
+	 * @return
+	 */
+	public boolean contient(String nom)
+	{
+		return services.containsKey(nom);
+	}
+	
 }
