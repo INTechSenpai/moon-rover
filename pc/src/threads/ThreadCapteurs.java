@@ -86,7 +86,7 @@ class ThreadCapteurs extends AbstractThread {
 				double theta = robotvrai.getOrientation();
 //				if(marche_arriere)
 //					theta += Math.PI;
-				Vec2 position = robotvrai.getPosition().Plus(new Vec2((float)distance_inter_robots * (float)Math.cos(theta), (float)distance_inter_robots * (float)Math.sin(theta)));
+				Vec2 position = robotvrai.getPosition().PlusNewVector(new Vec2((float)distance_inter_robots * (float)Math.cos(theta), (float)distance_inter_robots * (float)Math.sin(theta)));
 
 				// on vérifie qu'un obstacle n'a pas été ajouté récemment
 				if(System.currentTimeMillis() - date_dernier_ajout > tempo)

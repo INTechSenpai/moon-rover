@@ -20,7 +20,7 @@ public abstract class Robot implements Service {
 	 * DÉPLACEMENT HAUT NIVEAU
 	 */
 	
-	public abstract void stopper();
+	public abstract void stopper(boolean avec_blocage);
 	public abstract void correction_angle(float angle); // peut-être à placer en private
 	public abstract void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception)
 			 	throws MouvementImpossibleException;
@@ -210,4 +210,9 @@ public abstract class Robot implements Service {
 		this.avancer(distance, null, 2, true, false);
 	}
 
+	public void stopper()
+	{
+		stopper(false);
+	}
+	
 }

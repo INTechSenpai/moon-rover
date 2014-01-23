@@ -36,7 +36,7 @@ public class RobotVrai extends Robot {
 	private float orientation_consigne = (float)-Math.PI/2;
 	
 	private boolean blocage = false;
-	private boolean enMouvement = true;
+//	private boolean enMouvement = true;
 	
 //	private boolean marche_arriere = false;
 	private boolean effectuer_symetrie = true;
@@ -416,13 +416,13 @@ public class RobotVrai extends Robot {
 	 * @param sans_lever_exception
 	 * @throws BlocageException 
 	 */
-	private void va_au_pointBasNiveau(Vec2 position, ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean sans_lever_exception) throws CollisionException, BlocageException
+	private void va_au_pointBasNiveau(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean sans_lever_exception) throws CollisionException, BlocageException
 	{
         // comme à toute consigne initiale de mouvement, le robot est débloqué
 		blocage = false;
 
 		// mise en place d'un point consigne, à atteindre (en attribut pour persister dans _mise_a_jour_consignes() )
-		consigne = position.clone();
+		consigne = point.clone();
 
 		Vec2 delta = consigne.clone();
 		delta.Minus(position);

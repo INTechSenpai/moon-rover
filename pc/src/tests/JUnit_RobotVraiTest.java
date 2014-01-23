@@ -1,9 +1,6 @@
 package tests;
 
 import static org.junit.Assert.*;
-import hook.Hook;
-
-import java.util.ArrayList;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -11,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import container.Container;
-import exception.MouvementImpossibleException;
 import robot.*;
 import robot.cartes.*;
 import smartMath.Vec2;
@@ -93,6 +89,18 @@ public class JUnit_RobotVraiTest {
 		System.out.println(robotvrai.getPosition());
 		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(10,1500)));
 	}*/
+
+	@Test
+	public void test_va_au_point() throws Exception
+	{
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		robotvrai.va_au_point(new Vec2(10, 1500));
+		robotvrai.update_x_y_orientation();
+		System.out.println(robotvrai.getPosition());
+		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(10,1500)));
+	}
 
 	@Test
 	public void test_tourner() throws Exception
