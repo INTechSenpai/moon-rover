@@ -66,5 +66,36 @@ public class JUnit_DeplacementsTest {
 		Assert.assertTrue(infos_float[1] == 1500);
 		Assert.assertTrue(infos_float[2] == 1200);
 	}
+	
+	@Test
+	public void test_set_x() throws Exception
+	{
+		deplacements.set_x(30);
+		float[] infos_float = deplacements.get_infos_x_y_orientation();
+		Assert.assertTrue(infos_float[0] == 30);
+		Assert.assertTrue(infos_float[1] == 1500);
+		Assert.assertTrue(infos_float[2] == 0);
+	}
+
+	@Test
+	public void test_set_y() throws Exception
+	{
+		deplacements.set_y(330);
+		float[] infos_float = deplacements.get_infos_x_y_orientation();
+		Assert.assertTrue(infos_float[0] == 0);
+		Assert.assertTrue(infos_float[1] == 330);
+		Assert.assertTrue(infos_float[2] == 0);
+	}
+	
+	@Test
+	public void test_set_orientation() throws Exception
+	{
+		deplacements.set_orientation((float)1.234);
+		float[] infos_float = deplacements.get_infos_x_y_orientation();
+		Assert.assertTrue(infos_float[0] == 0);
+		Assert.assertTrue(infos_float[1] == 1500);
+		System.out.println(infos_float[2]);
+		Assert.assertTrue(infos_float[2] == 1234);
+	}
 
 }

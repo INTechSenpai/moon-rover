@@ -159,9 +159,9 @@ public class Deplacements implements Service {
 	 * Ecrase l'orientation du robot au niveau de la carte
 	 * @param orientation
 	 */
-	public void set_orientation(int orientation)
+	public void set_orientation(float orientation)
 	{
-		String chaines[] = {"co", Integer.toString(orientation)};
+		String chaines[] = {"co", Float.toString(orientation)};
 		serie.communiquer(chaines, 0);
 	}
 	
@@ -287,6 +287,7 @@ public class Deplacements implements Service {
 		for(int i = 0; i < 3; i++)
 			infos_float[i] = Float.parseFloat(infos_string[i]);
 
+//		log.debug(infos_float[1], this);
 		return infos_float;
 	}
 

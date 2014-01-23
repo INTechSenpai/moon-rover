@@ -371,7 +371,7 @@ public class RobotVrai extends Robot {
 
 	public void setOrientation(float orientation) {
 		this.orientation = orientation;
-		deplacements.set_orientation((int)orientation);
+		deplacements.set_orientation(orientation);
 	}
 
 	public Vec2 getConsigne() {
