@@ -155,4 +155,16 @@ public class RobotChrono extends Robot {
 		orientation = robotvrai.orientation;
 		nombre_lances = robotvrai.nombre_lances;
 	}
+	
+	/**
+	 * Utilisé par les tests
+	 * @param other
+	 * @return
+	 */
+	public boolean equals(RobotChrono other)
+	{
+		return 	position.equals(other.position)
+				&& orientation == other.orientation
+				&& nombre_lances == other.nombre_lances;
+	}
 }

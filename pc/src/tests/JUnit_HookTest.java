@@ -18,6 +18,12 @@ import robot.cartes.Deplacements;
 import smartMath.Vec2;
 import container.Container;
 
+/**
+ * Tests unitaires des hooks
+ * @author pf
+ *
+ */
+
 public class JUnit_HookTest {
 
 	Container container;

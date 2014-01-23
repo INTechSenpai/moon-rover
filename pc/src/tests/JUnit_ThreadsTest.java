@@ -10,6 +10,12 @@ import robot.cartes.Deplacements;
 import smartMath.Vec2;
 import container.Container;
 
+/**
+ * Tests unitaires des threads
+ * @author pf
+ *
+ */
+
 public class JUnit_ThreadsTest {
 
 	Container container;

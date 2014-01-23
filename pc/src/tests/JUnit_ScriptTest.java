@@ -23,6 +23,12 @@ import utils.Log;
 import utils.Read_Ini;
 import container.Container;
 
+/**
+ * Tests unitaires des scripts
+ * @author pf
+ *
+ */
+
 public class JUnit_ScriptTest {
 
 	Container container;
