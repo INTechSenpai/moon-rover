@@ -319,8 +319,8 @@ public class RobotVrai extends Robot {
 	public void tirerBalles()
 	{
 		// TODO
+		nombre_lances--;
 	}
-	
 	
 	@Override
 	public void takefire() {
