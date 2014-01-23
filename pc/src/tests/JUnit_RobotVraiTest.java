@@ -18,6 +18,8 @@ import smartMath.Vec2;
 	 */
 public class JUnit_RobotVraiTest extends JUnit_Test {
 
+	// TODO vérifier les symétries
+	
 	private RobotVrai robotvrai;
 	private Deplacements deplacements;
 	

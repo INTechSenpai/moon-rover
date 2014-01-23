@@ -330,27 +330,36 @@ public class RobotVrai extends Robot {
 	}
 	
 	@Override
-	public void baisser_rateaux() {
-		// TODO Auto-generated method stub
-		
+	public void bac_bas()
+	{
+		actionneurs.bac_bas();
 	}
 
 	@Override
-	public void baisser_rateaux_bas() {
-		// TODO Auto-generated method stub
-		
+	public void bac_haut()
+	{
+		actionneurs.bac_haut();
 	}
 
 	@Override
-	public void remonter_rateau(boolean right) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void remonter_rateaux() {
-		// TODO Auto-generated method stub
-		
+	public void rateau(PositionRateau position, Cote cote)
+	{
+		if(position == PositionRateau.BAS && cote == Cote.DROIT)
+			actionneurs.rateau_bas_droit();
+		else if(position == PositionRateau.BAS && cote == Cote.GAUCHE)
+			actionneurs.rateau_bas_gauche();
+		else if(position == PositionRateau.HAUT && cote == Cote.DROIT)
+			actionneurs.rateau_haut_droit();
+		else if(position == PositionRateau.HAUT && cote == Cote.GAUCHE)
+			actionneurs.rateau_haut_gauche();
+		else if(position == PositionRateau.RANGER && cote == Cote.DROIT)
+			actionneurs.rateau_ranger_droit();
+		else if(position == PositionRateau.RANGER && cote == Cote.GAUCHE)
+			actionneurs.rateau_ranger_gauche();
+		else if(position == PositionRateau.SUPER_BAS && cote == Cote.DROIT)
+			actionneurs.rateau_super_bas_droit();
+		else if(position == PositionRateau.SUPER_BAS && cote == Cote.GAUCHE)
+			actionneurs.rateau_super_bas_gauche();
 	}
 
 	@Override

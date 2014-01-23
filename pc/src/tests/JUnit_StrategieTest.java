@@ -21,9 +21,4 @@ public class JUnit_StrategieTest extends JUnit_Test {
 		robotvrai = (RobotVrai)container.getService("RobotVrai");
 	}
 
-	@Test public void a()
-	{
-		robotvrai.baisser_rateaux();
-	}
-	
 }

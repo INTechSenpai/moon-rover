@@ -129,20 +129,20 @@ public class RobotChrono extends Robot {
 	}
 
 	@Override
-	public void baisser_rateaux() {
+	public void bac_bas()
+	{
 	}
 
 	@Override
-	public void baisser_rateaux_bas() {
+	public void bac_haut()
+	{
 	}
 
 	@Override
-	public void remonter_rateau(boolean right) {
+	public void rateau(PositionRateau position, Cote cote)
+	{
 	}
 
-	@Override
-	public void remonter_rateaux() {
-	}
 
 	@Override
 	public void deposer_fresques() {

@@ -48,11 +48,10 @@ public abstract class Robot implements Service {
 	
 	public abstract void tirerBalles();
 	public abstract void takefire();
-	public abstract void baisser_rateaux();
-	public abstract void baisser_rateaux_bas();
-	public abstract void remonter_rateau(boolean right);
-	public abstract void remonter_rateaux();
 	public abstract void deposer_fresques();
+	public abstract void bac_bas();
+	public abstract void bac_haut();
+	public abstract void rateau(PositionRateau position, Cote cote);
 
 	// Dépendances
 	protected Read_Ini config;
