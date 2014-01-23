@@ -352,7 +352,12 @@ public class RobotVrai extends Robot {
 		// TODO Auto-generated method stub
 		
 	}
-	
+
+	@Override
+	public void deposer_fresques() {
+		fresques_posees = true;
+	}
+
 	/* 
 	 * GETTERS & SETTERS
 	 */

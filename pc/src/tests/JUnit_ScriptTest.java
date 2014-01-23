@@ -61,16 +61,65 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	{
 		s = (Script)scriptmanager.getScript("ScriptLances");
 		Assert.assertTrue(s.score(0, robotvrai, table) == 16);
-		
+		robotvrai.tirerBalles();
+		Assert.assertTrue(s.score(0, robotvrai, table) == 14);
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
 		Executable tirerballes = new TirerBalles(robotvrai);
 		Hook hook = hookgenerator.hook_abscisse(20);
 		hook.ajouter_callback(new Callback(tirerballes, true));
 		hooks.add(hook);		
 		robotvrai.avancer(50, hooks);
-		Assert.assertTrue(s.score(0, robotvrai, table) == 14);
+		Assert.assertTrue(s.score(0, robotvrai, table) == 12);
 
 	}
 
+	/*
+	 * Tests des versions
+	 */
 	
+	@Test
+	public void test_ScriptLances_versions() throws Exception
+	{
+		s = (Script)scriptmanager.getScript("ScriptLances");
+		for(int i = 0; i < 8; i++)
+		{
+			Assert.assertTrue(s.version(robotvrai, table).size() == 2);
+			robotvrai.tirerBalles();
+		}
+		Assert.assertTrue(s.version(robotvrai, table).size() == 0);
+	}
+
+	@Test
+	public void test_ScriptTree_versions() throws Exception
+	{
+		s = (Script)scriptmanager.getScript("ScriptTree");
+		Assert.assertTrue(s.version(robotvrai, table).size() == 4);
+		table.pickTree(1);
+		Assert.assertTrue(s.version(robotvrai, table).size() == 3);
+		table.pickTree(3);
+		Assert.assertTrue(s.version(robotvrai, table).size() == 2);
+		table.pickTree(2);
+		Assert.assertTrue(s.version(robotvrai, table).size() == 1);
+		table.pickTree(1);
+		Assert.assertTrue(s.version(robotvrai, table).size() == 1);
+		table.pickTree(0);
+		Assert.assertTrue(s.version(robotvrai, table).size() == 0);
+	}
+
+	@Test
+	public void test_ScriptFresques_versions() throws Exception
+	{
+		s = (Script)scriptmanager.getScript("ScriptFresque");
+		Assert.assertTrue(s.version(robotvrai, table).size() == 1);
+		robotvrai.deposer_fresques();
+		Assert.assertTrue(s.version(robotvrai, table).size() == 0);
+	}
+
+	@Test
+	public void test_ScriptDeposerFeu_versions() throws Exception
+	{
+		// TODO
+		s = (Script)scriptmanager.getScript("ScriptDeposerFeu");
+	}
+
 }

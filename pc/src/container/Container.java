@@ -71,6 +71,7 @@ public class Container {
 			if(serialmanager.serieLaser != null)
 				serialmanager.serieLaser.close();
 		}
+		log.destructeur();
 	}
 	
 	public Container()

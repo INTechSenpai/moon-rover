@@ -143,7 +143,11 @@ public class RobotChrono extends Robot {
 	@Override
 	public void remonter_rateaux() {
 	}
-	
+
+	@Override
+	public void deposer_fresques() {
+	}
+
 	@Override
 	public void takefire() {
 	}
@@ -154,6 +158,7 @@ public class RobotChrono extends Robot {
 		position = robotvrai.position;
 		orientation = robotvrai.orientation;
 		nombre_lances = robotvrai.nombre_lances;
+		fresques_posees = robotvrai.fresques_posees;
 	}
 	
 	/**
@@ -165,6 +170,7 @@ public class RobotChrono extends Robot {
 	{
 		return 	position.equals(other.position)
 				&& orientation == other.orientation
-				&& nombre_lances == other.nombre_lances;
+				&& nombre_lances == other.nombre_lances
+				&& fresques_posees == other.fresques_posees;
 	}
 }

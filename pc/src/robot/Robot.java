@@ -52,6 +52,7 @@ public abstract class Robot implements Service {
 	public abstract void baisser_rateaux_bas();
 	public abstract void remonter_rateau(boolean right);
 	public abstract void remonter_rateaux();
+	public abstract void deposer_fresques();
 
 	// Dépendances
 	protected Read_Ini config;
@@ -64,6 +65,7 @@ public abstract class Robot implements Service {
 	protected float orientation = 0;
 	
 	protected int nombre_lances = 8;
+	protected boolean fresques_posees = false;
 	
 	public Robot(Read_Ini config, Log log)
 	{
