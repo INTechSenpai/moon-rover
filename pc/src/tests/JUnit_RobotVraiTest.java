@@ -1,7 +1,6 @@
 package tests;
 
 import static org.junit.Assert.*;
-import hook.Hook;
 
 import java.util.ArrayList;
 
@@ -11,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import container.Container;
-import exception.MouvementImpossibleException;
 import robot.*;
 import robot.cartes.*;
 import smartMath.Vec2;
