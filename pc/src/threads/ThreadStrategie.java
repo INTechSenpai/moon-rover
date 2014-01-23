@@ -39,6 +39,7 @@ public class ThreadStrategie extends AbstractThread {
 		int profondeur_max = 2;
 		while(!stop_threads)
 		{
+			log.debug("Lancement du thread de stratégie", this);
 			strategie.analyse_ennemi();
 			robotchrono.majRobotChrono(robotvrai);
 			// Evaluation d'une stratégie de secours si ce script bug (en premier car plus urgent)

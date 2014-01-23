@@ -1,6 +1,9 @@
 package tests;
 
 import static org.junit.Assert.*;
+import hook.Hook;
+
+import java.util.ArrayList;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -8,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import container.Container;
+import exception.MouvementImpossibleException;
 import robot.*;
 import robot.cartes.*;
 import smartMath.Vec2;
@@ -79,16 +83,18 @@ public class JUnit_RobotVraiTest {
 		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,1500)));
 	}
 	
-/*	@Test
+	@Test
 	public void test_avancer() throws Exception
 	{
+		robotvrai.setOrientation(0);
 		container.getService("threadPosition");
 		container.demarreThreads();
 		Thread.sleep(100);
+		robotvrai.update_x_y_orientation();
 		robotvrai.avancer(10);
-		System.out.println(robotvrai.getPosition());
+		robotvrai.update_x_y_orientation();
 		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(10,1500)));
-	}*/
+	}
 
 	@Test
 	public void test_va_au_point() throws Exception
@@ -96,10 +102,9 @@ public class JUnit_RobotVraiTest {
 		container.getService("threadPosition");
 		container.demarreThreads();
 		Thread.sleep(100);
-		robotvrai.va_au_point(new Vec2(10, 1500));
+		robotvrai.va_au_point(new Vec2(10, 1400));
 		robotvrai.update_x_y_orientation();
-		System.out.println(robotvrai.getPosition());
-		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(10,1500)));
+		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(10,1400)) < 2);
 	}
 
 	@Test
@@ -110,6 +115,20 @@ public class JUnit_RobotVraiTest {
 		Thread.sleep(100);
 		robotvrai.tourner((float)1.2);
 		assertEquals(robotvrai.getOrientation(), 1.2, 0.001);
+	}
+
+	@Test
+	public void test_suit_chemin() throws Exception
+	{
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
+		chemin.add(new Vec2(20, 1400));
+		chemin.add(new Vec2(40, 1500));
+		robotvrai.suit_chemin(chemin);		
+		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(40,1500)) < 2);
+		
 	}
 
 }

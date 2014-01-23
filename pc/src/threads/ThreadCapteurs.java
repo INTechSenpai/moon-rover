@@ -42,6 +42,7 @@ class ThreadCapteurs extends AbstractThread {
 	@Override
 	public void run()
 	{
+		log.debug("Lancement du thread de capteurs", this);
 		int date_dernier_ajout = 0;
 //		boolean marche_arriere = false;
 		try

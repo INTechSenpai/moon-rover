@@ -70,7 +70,7 @@ public class RobotVrai extends Robot {
 		{
 			largeur_robot = Integer.parseInt(config.get("largeur_robot"));
 			distance_detection = Integer.parseInt(config.get("distance_detection"));
-			disque_tolerance_consigne = Integer.parseInt(config.get("disque_tolerance_maj"));
+			disque_tolerance_consigne = Integer.parseInt(config.get("disque_tolerance_consigne"));
 			distance_degagement_robot = Integer.parseInt(config.get("distance_degagement_robot"));
 			sleep_milieu_boucle_acquittement = Integer.parseInt(config.get("sleep_milieu_boucle_acquittement"));
 			angle_degagement_robot = Float.parseFloat(config.get("angle_degagement_robot"));
@@ -295,9 +295,6 @@ public class RobotVrai extends Robot {
 		log.debug("Modification de la vitesse de rotation: "+vitesse, this);
 	}
 	
-	/**
-	 * UTILISÉ UNIQUEMENT PAR LE THREAD DE MISE À JOUR
-	 */	
 	public void update_x_y_orientation()
 	{
 		float[] infos = deplacements.get_infos_x_y_orientation();
@@ -371,6 +368,7 @@ public class RobotVrai extends Robot {
 
 	public void setOrientation(float orientation) {
 		this.orientation = orientation;
+		orientation_consigne = orientation;
 		deplacements.set_orientation(orientation);
 	}
 
@@ -425,6 +423,7 @@ public class RobotVrai extends Robot {
 		consigne = point.clone();
 
 		Vec2 delta = consigne.clone();
+		update_x_y_orientation();
 		delta.Minus(position);
 		float distance = delta.Length();
 		

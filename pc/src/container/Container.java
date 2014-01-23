@@ -60,6 +60,8 @@ public class Container {
 
 	public void destructeur()
 	{
+		arreteThreads();
+		log.debug("Arrêt des séries", this);
 		if(serialmanager != null)
 		{
 			if(serialmanager.serieAsservissement != null)
@@ -229,6 +231,11 @@ public class Container {
 	public void arreteThreads()
 	{
 		threadmanager.arreteThreads();
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

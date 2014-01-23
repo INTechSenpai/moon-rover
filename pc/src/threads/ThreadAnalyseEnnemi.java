@@ -26,6 +26,8 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 	
 	@Override
 	public void run() {
+		log.debug("Lancement du thread d'analyse de l'ennemi", this);
+
 		while(!threadtimer.match_demarre)
 		{
 			if(stop_threads)

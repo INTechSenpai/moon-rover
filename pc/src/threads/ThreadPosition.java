@@ -29,15 +29,8 @@ class ThreadPosition extends AbstractThread {
 		{
 			if(stop_threads)
 				break;
-			try
-			{
-				robotvrai.update_x_y_orientation();
-				robot_pret = true;
-			}
-			catch(Exception e)
-			{
-				log.warning(e.toString(), this);
-			}
+			robotvrai.update_x_y_orientation();
+			robot_pret = true;
 			sleep(100);
 		} while(!threadTimer.fin_match);
 

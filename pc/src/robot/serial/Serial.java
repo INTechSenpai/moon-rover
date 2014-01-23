@@ -121,51 +121,52 @@ public class Serial implements SerialPortEventListener, Service
 	 */
 	public synchronized String[] communiquer(String[] messages, int nb_lignes_reponse)
 	{
-
-		String inputLines[] = new String[nb_lignes_reponse];
-
-		try
+		synchronized(output)
 		{
-			for (String m : messages)
+			String inputLines[] = new String[nb_lignes_reponse];
+			try
 			{
-				m += "\r";
-				output.write(m.getBytes());
-				int nb_tests = 0;
-				char acquittement = ' ';
-
-				while (acquittement != '_')
+				for (String m : messages)
 				{
-					nb_tests++;
-					acquittement = input.readLine().charAt(0);
-					if (acquittement != '_')
+					m += "\r";
+					output.write(m.getBytes());
+					int nb_tests = 0;
+					char acquittement = ' ';
+	
+					while (acquittement != '_')
 					{
-						output.write(m.getBytes());
-					}
-					else if (nb_tests > 10)
-					{
-						log.critical("La série" + this.name + " ne répond pas après " + nb_tests + " tentatives", this);
-						break;
+						nb_tests++;
+						acquittement = input.readLine().charAt(0);
+						if (acquittement != '_')
+						{
+							output.write(m.getBytes());
+						}
+						else if (nb_tests > 10)
+						{
+							log.critical("La série" + this.name + " ne répond pas après " + nb_tests + " tentatives", this);
+							break;
+						}
 					}
 				}
 			}
-		}
-		catch (Exception e)
-		{
-			log.critical("Ne peut pas parler à la carte " + this.name, this);
-		}
-
-		try
-		{
-			for (int i = 0 ; i < nb_lignes_reponse; i++)
+			catch (Exception e)
 			{
-				inputLines[i] = input.readLine();
+				log.critical("Ne peut pas parler à la carte " + this.name, this);
 			}
-		}
-		catch (Exception e)
-		{
-			log.critical("Ne peut pas parler à la carte " + this.name, this);
-		}
+	
+			try
+			{
+				for (int i = 0 ; i < nb_lignes_reponse; i++)
+				{
+					inputLines[i] = input.readLine();
+				}
+			}
+			catch (Exception e)
+			{
+				log.critical("Ne peut pas parler à la carte " + this.name, this);
+			}
 		return inputLines;
+		}
 	}
 
 	/**
@@ -193,29 +194,31 @@ public class Serial implements SerialPortEventListener, Service
 	 */
 	synchronized String ping()
 	{
-		String ping = null;
-		try
-		{
-			//On vide le buffer de la serie cote PC
-			output.flush();
-
-			//On vide le buffer de la serie cote avr avec un texte random
-			output.write("çazç\r".getBytes());
-			input.readLine();
-
-			//ping
-			output.write("?\r".getBytes());
-			//evacuation de l'acquittement
-			input.readLine();
-
-			//recuperation de l'id de la carte
-			ping = input.readLine();
-
+		synchronized(output) {
+			String ping = null;
+			try
+			{
+				//On vide le buffer de la serie cote PC
+				output.flush();
+	
+				//On vide le buffer de la serie cote avr avec un texte random
+				output.write("çazç\r".getBytes());
+				input.readLine();
+	
+				//ping
+				output.write("?\r".getBytes());
+				//evacuation de l'acquittement
+				input.readLine();
+	
+				//recuperation de l'id de la carte
+				ping = input.readLine();
+	
+			}
+			catch (Exception e)
+			{
+			}
+			return ping;
 		}
-		catch (Exception e)
-		{
-		}
-		return ping;
 	}
 
 }
