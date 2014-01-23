@@ -4,12 +4,10 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import container.Container;
 import robot.*;
 import robot.cartes.*;
 import smartMath.Vec2;
@@ -18,15 +16,14 @@ import smartMath.Vec2;
 	 * @author pf
 	 *
 	 */
-public class JUnit_RobotVraiTest {
+public class JUnit_RobotVraiTest extends JUnit_Test {
 
-	Container container;
-	RobotVrai robotvrai;
-	Deplacements deplacements;
+	private RobotVrai robotvrai;
+	private Deplacements deplacements;
 	
 	@Before
 	public void setUp() throws Exception {
-		container = new Container();
+		super.setUp();
 		robotvrai = (RobotVrai) container.getService("RobotVrai");
 		deplacements = (Deplacements)container.getService("Deplacements");
 		deplacements.set_x(0);
@@ -35,14 +32,6 @@ public class JUnit_RobotVraiTest {
 		deplacements.set_vitesse_translation(80);
 		deplacements.set_vitesse_rotation(130);
 	}
-	
-	@After
-	public void tearDown() throws Exception {
-		robotvrai = null;
-		container.destructeur();
-		container = null;
-	}
-
 
 	@Test
 	public void test_setPosition() throws Exception

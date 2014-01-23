@@ -1,6 +1,5 @@
 package tests;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
@@ -12,7 +11,6 @@ import strategie.MemoryManager;
 import table.Table;
 import utils.Log;
 import utils.Read_Ini;
-import container.Container;
 
 /**
  * Tests unitaires du memory manager
@@ -20,19 +18,18 @@ import container.Container;
  *
  */
 
-public class JUnit_MemoryManagerTest {
+public class JUnit_MemoryManagerTest extends JUnit_Test {
 
-	Container container;
-	RobotVrai robotvrai;
-	Table table;
-	MemoryManager memorymanager;
-	RobotChrono robotchrono;
-	Read_Ini config;
-	Log log;
+	private RobotVrai robotvrai;
+	private Table table;
+	private MemoryManager memorymanager;
+	private RobotChrono robotchrono;
+	private Read_Ini config;
+	private Log log;
 	
 	@Before
 	public void setUp() throws Exception {
-		container = new Container();
+		super.setUp();
 		robotvrai = (RobotVrai) container.getService("RobotVrai");
 		table = (Table)container.getService("Table");
 		memorymanager = (MemoryManager)container.getService("MemoryManager");
@@ -44,12 +41,6 @@ public class JUnit_MemoryManagerTest {
 		log = (Log)container.getService("Log");
 		robotchrono = new RobotChrono(config, log);
 		robotchrono.majRobotChrono(robotvrai);
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-		container.destructeur();
-		container = null;
 	}
 
 	@Test

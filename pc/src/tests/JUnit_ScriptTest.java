@@ -8,7 +8,6 @@ import hook.methodes.TirerBalles;
 
 import java.util.ArrayList;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +20,6 @@ import smartMath.Vec2;
 import table.Table;
 import utils.Log;
 import utils.Read_Ini;
-import container.Container;
 
 /**
  * Tests unitaires des scripts
@@ -29,21 +27,20 @@ import container.Container;
  *
  */
 
-public class JUnit_ScriptTest {
+public class JUnit_ScriptTest extends JUnit_Test {
 
-	Container container;
-	ScriptManager scriptmanager;
-	Script s;
-	RobotVrai robotvrai;
-	RobotChrono robotchrono;
-	Table table;
-	Read_Ini config;
-	Log log;
-	HookGenerator hookgenerator;
+	private ScriptManager scriptmanager;
+	private Script s;
+	private RobotVrai robotvrai;
+	private RobotChrono robotchrono;
+	private Table table;
+	private Read_Ini config;
+	private Log log;
+	private HookGenerator hookgenerator;
 	
 	@Before
 	public void setUp() throws Exception {
-		container = new Container();
+		super.setUp();
 		scriptmanager = (ScriptManager)container.getService("ScriptManager");
 		robotvrai = (RobotVrai)container.getService("RobotVrai");
 		config = (Read_Ini)container.getService("Read_Ini");
@@ -57,12 +54,6 @@ public class JUnit_ScriptTest {
 		robotvrai.set_vitesse_rotation("entre_scripts");
 		robotvrai.set_vitesse_translation("entre_scripts");
 
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-		container.destructeur();
-		container = null;
 	}
 
 	@Test
