@@ -91,7 +91,6 @@ public class Container {
 
 	public Service getService(String nom) throws ContainerException, ThreadException, ConfigException, SerialManagerException
 	{
-//		log.debug("getService de "+nom, this);
 		if(services.containsKey(nom));
 		else if(nom == "Table")
 		{

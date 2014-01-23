@@ -45,7 +45,7 @@ public class JUnit_HookTest {
 	}
 
 	@Test
-	public void test_hookAbscisse() throws Exception
+	public void test_hookAbscisse_avancer() throws Exception
 	{
 		int nb_balles = robotvrai.getNbrLances();
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
@@ -60,7 +60,47 @@ public class JUnit_HookTest {
 	}
 
 	@Test
-	public void test_hookPosition() throws Exception
+	public void test_hookAbscisse_suit_chemin() throws Exception
+	{
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		int nb_balles = robotvrai.getNbrLances();
+		ArrayList<Hook> hooks = new ArrayList<Hook>();
+		Executable tirerballes = new TirerBalles(robotvrai);
+		Hook hook = hookgenerator.hook_abscisse(30);
+		hook.ajouter_callback(new Callback(tirerballes, true));
+		hooks.add(hook);
+		Assert.assertTrue(nb_balles == robotvrai.getNbrLances());
+		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
+		chemin.add(new Vec2(20, 1400));
+		chemin.add(new Vec2(40, 1500));
+		robotvrai.suit_chemin(chemin, hooks);
+		Assert.assertTrue(nb_balles != robotvrai.getNbrLances());
+	}
+
+	@Test
+	public void test_hookPosition_suit_chemin() throws Exception
+	{
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		int nb_balles = robotvrai.getNbrLances();
+		ArrayList<Hook> hooks = new ArrayList<Hook>();
+		Executable tirerballes = new TirerBalles(robotvrai);
+		Hook hook = hookgenerator.hook_position(new Vec2(20, 1400));
+		hook.ajouter_callback(new Callback(tirerballes, true));
+		hooks.add(hook);
+		Assert.assertTrue(nb_balles == robotvrai.getNbrLances());
+		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
+		chemin.add(new Vec2(20, 1400));
+		chemin.add(new Vec2(40, 1500));
+		robotvrai.suit_chemin(chemin, hooks);
+		Assert.assertTrue(nb_balles != robotvrai.getNbrLances());
+	}
+
+	@Test
+	public void test_hookPosition_avancer() throws Exception
 	{
 		int nb_balles = robotvrai.getNbrLances();
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
