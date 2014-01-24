@@ -1,6 +1,7 @@
 package hook;
 
 import container.Service;
+import exception.ConfigException;
 import robot.cartes.Capteurs;
 import smartMath.Vec2;
 import utils.Log;
@@ -27,12 +28,18 @@ public class HookGenerator implements Service {
 	private Capteurs capteur;
 
 	private int tolerance_position = 20;
+	String couleur;
 	
 	public HookGenerator(Read_Ini config, Log log, Capteurs capteur)
 	{
 		this.config = config;
 		this.log = log;
 		this.capteur = capteur;
+		try {
+			couleur = config.get("couleur");
+		} catch (ConfigException e1) {
+			e1.printStackTrace();
+		}
 		try {
 		tolerance_position = Integer.parseInt(this.config.get("hooks_tolerance_mm"));
 		}
@@ -47,45 +54,27 @@ public class HookGenerator implements Service {
 	 * Hook de position
 	 */
 	
-	public Hook hook_position(Vec2 position, int tolerance, boolean effectuer_symetrie)
-	{
-		return new HookPosition(config, log, position, tolerance, effectuer_symetrie);
-	}
 	public Hook hook_position(Vec2 position, int tolerance)
 	{
-		return hook_position(position, tolerance, false);
+		return new HookPosition(config, log, position, tolerance, couleur=="rouge");
 	}
 	public Hook hook_position(Vec2 position)
 	{
-		return hook_position(position, tolerance_position, false);
+		return hook_position(position, tolerance_position);
 	}
-	public Hook hook_position(Vec2 position, boolean effectuer_symetrie)
-	{
-		return hook_position(position, tolerance_position, effectuer_symetrie);
-	}
-
 	
 	/*
 	 * Hook d'abscisse
 	 */
 	
-	public Hook hook_abscisse(float abscisse, int tolerance, boolean effectuer_symetrie)
-	{
-		return new HookAbscisse(config, log, abscisse, tolerance, effectuer_symetrie);
-	}
 	public Hook hook_abscisse(float abscisse, int tolerance)
 	{
-		return hook_abscisse(abscisse, tolerance, false);
+		return new HookAbscisse(config, log, abscisse, tolerance, couleur=="rouge");
 	}
 	public Hook hook_abscisse(float abscisse)
 	{
-		return hook_abscisse(abscisse, tolerance_position, false);
+		return hook_abscisse(abscisse, tolerance_position);
 	}
-	public Hook hook_abscisse(float abscisse, boolean effectuer_symetrie)
-	{
-		return hook_abscisse(abscisse, tolerance_position, effectuer_symetrie);
-	}
-
 	
 	/*
 	 * Hook de feu

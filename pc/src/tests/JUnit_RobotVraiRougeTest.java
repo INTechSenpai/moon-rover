@@ -1,5 +1,9 @@
 package tests;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +48,49 @@ public class JUnit_RobotVraiRougeTest extends JUnit_Test {
 		robotvrai.update_x_y_orientation();
 		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(-10,1400)) < 2);
 	}
+
+	@Test
+	public void test_suit_chemin_symetrie() throws Exception
+	{
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
+		chemin.add(new Vec2(20, 1400));
+		chemin.add(new Vec2(40, 1500));
+		robotvrai.suit_chemin(chemin);
+		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(-40,1500)) < 2);
+	}
+
+	@Test
+	public void test_update_x_y_orientation() throws Exception
+	{
+		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,0)));
+		robotvrai.update_x_y_orientation();
+		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,1500)));
+	}
 	
+	@Test
+	public void test_tourner_symetrie() throws Exception
+	{
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		robotvrai.tourner((float)1.2);
+		assertEquals(robotvrai.getOrientation(), Math.PI-1.2, 0.001);
+	}
+	
+	@Test
+	public void test_avancer_symetrie() throws Exception
+	{
+		robotvrai.setOrientation(0);
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		robotvrai.update_x_y_orientation();
+		robotvrai.avancer(10);
+		robotvrai.update_x_y_orientation();
+		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(10,1500)));
+	}
 
 }

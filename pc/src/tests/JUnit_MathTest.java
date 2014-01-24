@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
 
-import exception.ContainerException;
 import exception.MatriceException;
 import smartMath.Matrn;
 import smartMath.Vec2;
@@ -78,7 +77,6 @@ public class JUnit_MathTest {
 		Assert.assertTrue(y.getCoeff(1, 0) == 23);
 		Assert.assertTrue(y.getCoeff(1, 1) == 72);
 	}
-
 
 	@Test
 	public void test_transpose() throws Exception
