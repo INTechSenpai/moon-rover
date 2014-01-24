@@ -10,7 +10,16 @@
 /*
  *	TODO : 	Implement Matrix product, String conversion and parsing
  */
+
 package smartMath;
+
+/**
+ * Classe de calcul de vecteurs de dimension 2
+ * @author martial
+ * @author pf
+ *
+ */
+
 public class Vec2
 {
 

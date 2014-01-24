@@ -23,7 +23,6 @@ public abstract class JUnit_Test {
 	@After
 	public void tearDown() throws Exception {
 		container.destructeur();
-		container = null;
 	}
 
 	

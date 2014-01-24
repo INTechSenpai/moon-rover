@@ -1,68 +1,107 @@
 package smartMath;
 
+import exception.MatriceException;
+
+/**
+ * Classe de calcul matriciel
+ * @author pf
+ * @author clément
+ *
+ */
+
 public class Matrn {
 	
 	private float[][] matrice;
 	private int[] taille;
+
 	public Matrn(float[][] t)
 	{
-		this.matrice = t;
-		this.taille[0] = t.length ;
-		this.taille[1] = t[0].length;
+		matrice = t;
+		taille = new int[2];
+		taille[0] = t.length ;
+		taille[1] = t[0].length;
 	}
+	
 	public Matrn(int n)
 	{
-		this.matrice = new float[n][n];
-		this.taille[0] = n;
-		this.taille[1] = n;
+		matrice = new float[n][n];
+		taille = new int[2];
+		taille[0] = n;
+		taille[1] = n;
 	}
-	public Matrn(int n,int p)
+	
+	/**
+	 * @param p nombre de lignes
+	 * @param n nombre de colonnes
+	 */
+	public Matrn(int p,int n)
 	{
-		this.matrice = new float[p][n];
-		this.taille[0] = n;
-		this.taille[1] = p;
+		matrice = new float[p][n];
+		taille = new int[2];
+		taille[0] = n;
+		taille[1] = p;
 	}
-	void addition (Matrn A)
+	
+	/**
+	 * Modifie le coeff en (i,j)
+	 * @param coeff
+	 * @param i la ligne
+	 * @param j la colonne
+	 */
+	public void setCoeff(float coeff, int i, int j)
+	{
+		matrice[i][j] = coeff;
+	}
+	
+	/**
+	 * Récupère le coeff de (i,j)
+	 * @param i la ligne
+	 * @param j la colonne
+	 */
+	public float getCoeff(int i, int j)
+	{
+		return matrice[i][j];
+	}
+
+	public void addition (Matrn A) throws MatriceException
 	{	
-		for(int i = 0; i <= taille[0]; i++)
-		{
-			for(int j = 0; j <=taille[1]; j++)
-			{
+		if(taille[0] != A.taille[0] || taille[1] != A.taille[1])
+			throw new MatriceException();
+		for(int i = 0; i < taille[0]; i++)
+			for(int j = 0; j < taille[1]; j++)
 				 matrice[j][i]= matrice[j][i]+A.matrice[j][i];
-			}
-		}
 	}
-	void multiplier(Matrn A)
+	
+	public void multiplier(Matrn A) throws MatriceException
 	{//multiplier this. avec A
-		if( this.taille[1] == A.taille[1])
-		{
+		if( this.taille[0] != A.taille[1])
+			throw new MatriceException();
 		Matrn m = new Matrn(taille[0], A.taille[1]);
 		for(int i = 0; i< taille[0]; i++)
 		{
 			for(int j = 0;j < A.taille[1];j++)
-			{	
-				m.matrice[j][i] = 0;
+			{
+				m.matrice[i][j] = 0;
 				for(int k = 0; k <this.taille[1];k++)
 				{
-					m.matrice[j][i] += this.matrice[k][i]*A.matrice[j][k];
+					m.matrice[i][j] += this.matrice[i][k]*A.matrice[k][j];
 				}
 			}
 		}
 		this.matrice = m.matrice;
-		}
 	}
-	void transpose()
+	
+	public void transpose() throws MatriceException
 	{
-		if(this.taille[0] == this.taille[1])
-		{
-		for(int i = 0; i < this.taille[0]; i++)
-		{
-			for(int j = 0; j < i;j++)
+		if(taille[0] != taille[1])
+			throw new MatriceException();
+		for(int i = 0; i < taille[0]; i++)
+			for(int j = 0; j < i; j++)
 			{
-				this.matrice[j][i] = this.matrice[i][j];
+				float tmp = matrice[j][i];
+				matrice[j][i] = matrice[i][j];
+				matrice[i][j] = tmp;
 			}
-		}
-		}
 	}
 	
 	
