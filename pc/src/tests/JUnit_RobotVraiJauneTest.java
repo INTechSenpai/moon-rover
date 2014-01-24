@@ -12,11 +12,11 @@ import robot.*;
 import robot.cartes.*;
 import smartMath.Vec2;
 	/**
-	 * Tests unitaires pour RobotVrai (non, sans blague...)
+	 * Tests unitaires pour RobotVrai (non, sans blague...), lorsqu'il est jaune
 	 * @author pf
 	 *
 	 */
-public class JUnit_RobotVraiTest extends JUnit_Test {
+public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 
 	// TODO vérifier les symétries
 	
@@ -26,6 +26,7 @@ public class JUnit_RobotVraiTest extends JUnit_Test {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
+		config.set("couleur", "jaune");
 		robotvrai = (RobotVrai) container.getService("RobotVrai");
 		deplacements = (Deplacements)container.getService("Deplacements");
 		deplacements.set_x(0);
@@ -85,6 +86,17 @@ public class JUnit_RobotVraiTest extends JUnit_Test {
 		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(10,1500)));
 	}
 
+	@Test
+	public void test_va_au_point_symetrie() throws Exception
+	{
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		robotvrai.va_au_point(new Vec2(10, 1400), null, false, 0, false, false, false);
+		robotvrai.update_x_y_orientation();
+		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(10,1400)) < 2);
+	}
+	
 	@Test
 	public void test_va_au_point() throws Exception
 	{

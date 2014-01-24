@@ -18,8 +18,6 @@ import scripts.Script;
 import scripts.ScriptManager;
 import smartMath.Vec2;
 import table.Table;
-import utils.Log;
-import utils.Read_Ini;
 
 /**
  * Tests unitaires des scripts
@@ -34,8 +32,6 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	private RobotVrai robotvrai;
 	private RobotChrono robotchrono;
 	private Table table;
-	private Read_Ini config;
-	private Log log;
 	private HookGenerator hookgenerator;
 	
 	@Before
@@ -43,8 +39,6 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		super.setUp();
 		scriptmanager = (ScriptManager)container.getService("ScriptManager");
 		robotvrai = (RobotVrai)container.getService("RobotVrai");
-		config = (Read_Ini)container.getService("Read_Ini");
-		log = (Log)container.getService("Log");
 		robotchrono = new RobotChrono(config, log);
 		robotchrono.majRobotChrono(robotvrai);
 		table = (Table)container.getService("Table");

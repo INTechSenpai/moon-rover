@@ -9,8 +9,6 @@ import robot.RobotVrai;
 import smartMath.Vec2;
 import strategie.MemoryManager;
 import table.Table;
-import utils.Log;
-import utils.Read_Ini;
 
 /**
  * Tests unitaires du memory manager
@@ -24,8 +22,6 @@ public class JUnit_MemoryManagerTest extends JUnit_Test {
 	private Table table;
 	private MemoryManager memorymanager;
 	private RobotChrono robotchrono;
-	private Read_Ini config;
-	private Log log;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -37,8 +33,6 @@ public class JUnit_MemoryManagerTest extends JUnit_Test {
 		robotvrai.setOrientation(0);
 		robotvrai.set_vitesse_rotation("entre_scripts");
 		robotvrai.set_vitesse_translation("entre_scripts");
-		config = (Read_Ini)container.getService("Read_Ini");
-		log = (Log)container.getService("Log");
 		robotchrono = new RobotChrono(config, log);
 		robotchrono.majRobotChrono(robotvrai);
 	}

@@ -51,7 +51,6 @@ public class RobotVrai extends Robot {
 //	private boolean maj_marche_arriere;
 	private int disque_tolerance_consigne;
 	private int distance_degagement_robot;
-	private String couleur;
 	private float angle_degagement_robot;
 	private boolean correction_trajectoire;
 	
@@ -69,13 +68,54 @@ public class RobotVrai extends Robot {
 		try
 		{
 			largeur_robot = Integer.parseInt(config.get("largeur_robot"));
+		}
+		catch(Exception e)
+		{
+			log.critical(e, this);
+		}
+		try
+		{
 			distance_detection = Integer.parseInt(config.get("distance_detection"));
+		}
+		catch(Exception e)
+		{
+			log.critical(e, this);
+		}
+		try
+		{
 			disque_tolerance_consigne = Integer.parseInt(config.get("disque_tolerance_consigne"));
+		}
+		catch(Exception e)
+		{
+			log.critical(e, this);
+		}
+		try
+		{
 			distance_degagement_robot = Integer.parseInt(config.get("distance_degagement_robot"));
+		}
+		catch(Exception e)
+		{
+			log.critical(e, this);
+		}
+		try
+		{
 			sleep_milieu_boucle_acquittement = Integer.parseInt(config.get("sleep_milieu_boucle_acquittement"));
+		}
+		catch(Exception e)
+		{
+			log.critical(e, this);
+		}
+		try
+		{
 			angle_degagement_robot = Float.parseFloat(config.get("angle_degagement_robot"));
+		}
+		catch(Exception e)
+		{
+			log.critical(e, this);
+		}
+		try
+		{
 			correction_trajectoire = Boolean.parseBoolean(config.get("correction_trajectoire"));
-			couleur = config.get("couleur");
 		}
 		catch(Exception e)
 		{
@@ -88,6 +128,7 @@ public class RobotVrai extends Robot {
 	 */
 	
 	// TODO
+	@Override
 	public void recaler()
 	{
 		
@@ -97,6 +138,7 @@ public class RobotVrai extends Robot {
 	 * Arrête le robot
 	 * @param avec_blocage
 	 */
+	@Override
 	public void stopper(boolean avec_blocage)
 	{
 		log.debug("Arrêt du robot", this);
@@ -108,6 +150,7 @@ public class RobotVrai extends Robot {
 	/**
 	 * Arrête le robot
 	 */
+	@Override
 	public void stopper()
 	{
 		stopper(true);
@@ -117,6 +160,7 @@ public class RobotVrai extends Robot {
 	 * Modifie la consigne en angle, de façon non bloquante
 	 * @param angle
 	 */
+	@Override
 	public void correction_angle(float angle)
 	{
 		orientation_consigne = angle;
@@ -126,6 +170,7 @@ public class RobotVrai extends Robot {
 	/**
 	 * Avance d'une certaine distance (méthode bloquante), gestion des hooks
 	 */
+	@Override
 	public void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
 		log.debug("Avancer de "+Integer.toString(distance), this);
@@ -163,6 +208,7 @@ public class RobotVrai extends Robot {
 	 * Fait tourner le robot (méthode bloquante)
 	 * @throws MouvementImpossibleException 
 	 */
+	@Override
 	public void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
 		if(effectuer_symetrie)
@@ -206,6 +252,7 @@ public class RobotVrai extends Robot {
 	 * Fait suivre au robot un chemin (fourni par la recherche de chemin)
 	 * @throws MouvementImpossibleException 
 	 */
+	@Override
 	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean marche_arriere_auto, boolean symetrie_effectuee) throws MouvementImpossibleException
 	{
 		for(Vec2 position: chemin)
@@ -220,6 +267,7 @@ public class RobotVrai extends Robot {
 	/**
 	 * Le robot va au point demandé
 	 */
+	@Override
 	public void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
 		// appliquer la symétrie ne doit pas modifier ce point !
@@ -278,6 +326,7 @@ public class RobotVrai extends Robot {
 	/**
 	 * Modifie la vitesse de translation
 	 */
+	@Override
 	public void set_vitesse_translation(String vitesse)
 	{
 		int pwm_max = conventions_vitesse_translation(vitesse);
@@ -288,6 +337,7 @@ public class RobotVrai extends Robot {
 	/**
 	 * Modifie la vitesse de rotation
 	 */
+	@Override
 	public void set_vitesse_rotation(String vitesse)
 	{
 		int pwm_max = conventions_vitesse_rotation(vitesse);
@@ -311,12 +361,14 @@ public class RobotVrai extends Robot {
 	 */
 
 	// TODO
+	@Override
 	public void initialiser_actionneurs()
 	{
 		actionneurs.rateau_ranger_droit();
 		actionneurs.rateau_ranger_gauche();		
 	}
 
+	@Override
 	public void tirerBalles()
 	{
 		// TODO
@@ -372,6 +424,7 @@ public class RobotVrai extends Robot {
 	 * GETTERS & SETTERS
 	 */
 	
+	@Override
 	public void setPosition(Vec2 position) {
 		synchronized(this.position)
 		{
@@ -381,6 +434,7 @@ public class RobotVrai extends Robot {
 		deplacements.set_y((int)position.y);
 	}
 
+	@Override
 	public void setOrientation(float orientation) {
 		this.orientation = orientation;
 		orientation_consigne = orientation;
@@ -617,7 +671,10 @@ public class RobotVrai extends Robot {
 		return marche_arriere_est_plus_rapide(consigne, -1000);
 	}
 */
-	
+
+	/**
+	 * Appelée par des exceptions
+	 */
 	public void annuleConsigneOrientation()
 	{
 		orientation_consigne = orientation;
