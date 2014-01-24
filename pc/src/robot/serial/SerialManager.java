@@ -185,6 +185,8 @@ public class SerialManager
 		else
 		{
 			log.critical("Aucune série du nom : " + name + " n'existe", this);
+			log.critical("Vérifiez les branchements ou l'interface+simulateur (redémarrez si besoin).", this);
+			log.critical("Vérifiez aussi que tous les processus Java exécutant ce code sont éteints.", this);
 			throw new SerialManagerException("serie non trouvée");
 		}
 	}

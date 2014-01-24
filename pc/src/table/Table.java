@@ -253,6 +253,10 @@ public class Table implements Service {
 			return 1;
 	}
 
+	/**
+	 * La table en argument deviendra la copie de this (this reste inchangé)
+	 * @param ct
+	 */
 	public void clone(Table ct)
 	{
 		if(ct.hashFire != hashFire)
@@ -299,6 +303,19 @@ public class Table implements Service {
 	public int hashTable()
 	{
 		return hashFire + hashTree + hashTorch + hashObstacles;
+	}
+
+	/**
+	 * Utilisé pour les tests
+	 * @param other
+	 * @return
+	 */
+	public boolean equals(Table other)
+	{
+		return 	hashFire == other.hashFire
+				&& hashTree == other.hashTree
+				&& hashTorch == other.hashTorch
+				&& hashObstacles == other.hashObstacles;
 	}
 	
 }

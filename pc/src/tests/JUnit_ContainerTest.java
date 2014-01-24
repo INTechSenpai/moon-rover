@@ -1,12 +1,8 @@
 package tests;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import exception.ContainerException;
-import container.Container;
 
 	/**
 	 * Tests unitaires pour le container
@@ -14,37 +10,13 @@ import container.Container;
 	 * @author pf
 	 *
 	 */
-public class JUnit_ContainerTest {
-
-	Container container;
+public class JUnit_ContainerTest extends JUnit_Test {
 	
-	@Before
-	public void setUp() throws Exception {
-		container = new Container();
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-		container.destructeur();
-		container = null;
-	}
-
 	@Test(expected=ContainerException.class)
 	public void test_erreur() throws Exception
 	{
 		container.getService("ABWABWA");
 	}
-
-	@Test
-	public void test_oublie() throws Exception
-	{
-		Assert.assertTrue(!container.contient("Table"));
-		container.getService("Table");
-		Assert.assertTrue(container.contient("Table"));
-		container.oublie("Table");
-		Assert.assertTrue(!container.contient("Table"));
-	}
-	
 	
 	@Test
 	public void test_log() throws Exception

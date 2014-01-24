@@ -22,63 +22,63 @@ public class Actionneurs implements Service {
 		this.serie = serie;
 	}
 	
-	public void baisser_bac()
+	public void bac_bas()
 	{
 		log.debug("Bac baissé", this);
 		serie.communiquer("bb", 0);
 	}
 
-	public void lever_bac()
+	public void bac_haut()
 	{
 		log.debug("Bac levé", this);
 		serie.communiquer("bh", 0);
 	}
 
-	public void ranger_rateau_gauche()
+	public void rateau_ranger_gauche()
 	{
 		log.debug("Rateau gauche rangé", this);
 		serie.communiquer("rrg", 0);
 	}
 	
-	public void ranger_rateau_droit()
+	public void rateau_ranger_droit()
 	{
 		log.debug("Rateau droit rangé", this);
 		serie.communiquer("rrd", 0);
 	}
 	
-	public void rateau_droit_bas()
+	public void rateau_bas_droit()
 	{
 		log.debug("Rateau droit baissé", this);
 		serie.communiquer("rbd", 0);
 	}
 	
-	public void rateau_gauche_bas()
+	public void rateau_bas_gauche()
 	{
 		log.debug("Rateau gauche baissé", this);
 		serie.communiquer("rbg", 0);
 	}
 	
-	public void rateau_droit_haut()
+	public void rateau_haut_droit()
 	{
 		log.debug("Rateau droit monté", this);
 		serie.communiquer("rhd", 0);
 	}
 	
-	public void rateau_gauche_haut()
+	public void rateau_haut_gauche()
 	{
 		log.debug("Rateau gauche monté", this);
 		serie.communiquer("rhg", 0);
 	}
 
-	public void rateau_gauche_super_bas()
+	public void rateau_super_bas_gauche()
 	{
 		log.debug("Rateau gauche vraiment baissé", this);
 		serie.communiquer("rbbg", 0);
 	}
 
-	public void rateau_droit_super_bas()
+	public void rateau_super_bas_droit()
 	{
-		log.debug("Rateau gauche vraiment baissé", this);
+		log.debug("Rateau droit vraiment baissé", this);
 		serie.communiquer("rbbd", 0);
 	}
 

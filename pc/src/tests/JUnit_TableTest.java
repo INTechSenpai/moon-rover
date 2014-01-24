@@ -1,11 +1,9 @@
 package tests;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import container.Container;
 import smartMath.Vec2;
 import strategie.MemoryManager;
 import table.Table;
@@ -16,22 +14,14 @@ import table.Table;
 	 *
 	 */
 
-public class JUnit_TableTest {
+public class JUnit_TableTest extends JUnit_Test {
 
 	private Table table;
-	private Container container;
 	
 	@Before
 	public void setUp() throws Exception {
-		container = new Container();
+		super.setUp();
 		table = (Table)container.getService("Table");
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-		container.destructeur();
-		container = null;
-		table = null;
 	}
 	
 	@Test

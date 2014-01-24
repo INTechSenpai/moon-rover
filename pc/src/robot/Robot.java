@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import hook.Hook;
 import smartMath.Vec2;
 import container.Service;
+import exception.ConfigException;
 import exception.MouvementImpossibleException;
 import utils.Log;
 import utils.Read_Ini;
@@ -48,10 +49,10 @@ public abstract class Robot implements Service {
 	
 	public abstract void tirerBalles();
 	public abstract void takefire();
-	public abstract void baisser_rateaux();
-	public abstract void baisser_rateaux_bas();
-	public abstract void remonter_rateau(boolean right);
-	public abstract void remonter_rateaux();
+	public abstract void deposer_fresques();
+	public abstract void bac_bas();
+	public abstract void bac_haut();
+	public abstract void rateau(PositionRateau position, Cote cote);
 
 	// Dépendances
 	protected Read_Ini config;
@@ -62,13 +63,20 @@ public abstract class Robot implements Service {
 	 */
 	protected Vec2 position = new Vec2(0, 0);
 	protected float orientation = 0;
+	protected String couleur;
 	
 	protected int nombre_lances = 8;
+	protected boolean fresques_posees = false;
 	
 	public Robot(Read_Ini config, Log log)
 	{
 		this.config = config;
 		this.log = log;
+		try {
+			couleur = config.get("couleur");
+		} catch (ConfigException e) {
+			log.critical(e, this);
+		}
 	}
 	
 	protected int conventions_vitesse_translation(String vitesse)
@@ -107,7 +115,7 @@ public abstract class Robot implements Service {
 		return position.clone();
 	}
 
-	public double getOrientation() {
+	public float getOrientation() {
 		return orientation;
 	}
 	
@@ -115,6 +123,11 @@ public abstract class Robot implements Service {
 		return nombre_lances;
 	}
 
+	public boolean isFresquesPosees()
+	{
+		return fresques_posees;
+	}
+	
 	public void va_au_point(Vec2 point, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
 		va_au_point(point, hooks, false, 2, retenterSiBlocage, sansLeverException, false);

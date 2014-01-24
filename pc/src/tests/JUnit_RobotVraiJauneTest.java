@@ -4,29 +4,29 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import container.Container;
 import robot.*;
 import robot.cartes.*;
 import smartMath.Vec2;
 	/**
-	 * Tests unitaires pour RobotVrai (non, sans blague...)
+	 * Tests unitaires pour RobotVrai (non, sans blague...), lorsqu'il est jaune
 	 * @author pf
 	 *
 	 */
-public class JUnit_RobotVraiTest {
+public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 
-	Container container;
-	RobotVrai robotvrai;
-	Deplacements deplacements;
+	// TODO vérifier les symétries
+	
+	private RobotVrai robotvrai;
+	private Deplacements deplacements;
 	
 	@Before
 	public void setUp() throws Exception {
-		container = new Container();
+		super.setUp();
+		config.set("couleur", "jaune");
 		robotvrai = (RobotVrai) container.getService("RobotVrai");
 		deplacements = (Deplacements)container.getService("Deplacements");
 		deplacements.set_x(0);
@@ -35,14 +35,6 @@ public class JUnit_RobotVraiTest {
 		deplacements.set_vitesse_translation(80);
 		deplacements.set_vitesse_rotation(130);
 	}
-	
-	@After
-	public void tearDown() throws Exception {
-		robotvrai = null;
-		container.destructeur();
-		container = null;
-	}
-
 
 	@Test
 	public void test_setPosition() throws Exception
@@ -94,6 +86,17 @@ public class JUnit_RobotVraiTest {
 		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(10,1500)));
 	}
 
+	@Test
+	public void test_va_au_point_symetrie() throws Exception
+	{
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		robotvrai.va_au_point(new Vec2(10, 1400), null, false, 0, false, false, false);
+		robotvrai.update_x_y_orientation();
+		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(10,1400)) < 2);
+	}
+	
 	@Test
 	public void test_va_au_point() throws Exception
 	{

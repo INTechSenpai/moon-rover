@@ -8,40 +8,33 @@ import hook.methodes.TirerBalles;
 
 import java.util.ArrayList;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import robot.RobotVrai;
-import robot.cartes.Deplacements;
 import smartMath.Vec2;
-import container.Container;
 
-public class JUnit_HookTest {
+/**
+ * Tests unitaires des hooks
+ * @author pf
+ *
+ */
 
-	Container container;
-	RobotVrai robotvrai;
-	Deplacements deplacements;
-	HookGenerator hookgenerator;
+public class JUnit_HookTest extends JUnit_Test {
+
+	private RobotVrai robotvrai;
+	private HookGenerator hookgenerator;
 	
 	@Before
 	public void setUp() throws Exception {
-		container = new Container();
+		super.setUp();
 		robotvrai = (RobotVrai) container.getService("RobotVrai");
-		deplacements = (Deplacements)container.getService("Deplacements");
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
 		robotvrai.setPosition(new Vec2(0, 1500));
 		robotvrai.setOrientation(0);
 		robotvrai.set_vitesse_rotation("entre_scripts");
 		robotvrai.set_vitesse_translation("entre_scripts");
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-		robotvrai = null;
-		container.destructeur();
-		container = null;
 	}
 
 	@Test

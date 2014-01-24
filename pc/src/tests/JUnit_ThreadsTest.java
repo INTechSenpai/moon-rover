@@ -1,31 +1,19 @@
 package tests;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import robot.RobotVrai;
 import robot.cartes.Deplacements;
 import smartMath.Vec2;
-import container.Container;
 
-public class JUnit_ThreadsTest {
+/**
+ * Tests unitaires des threads
+ * @author pf
+ *
+ */
 
-	Container container;
-	
-	@Before
-	public void setUp() throws Exception {
-		container = new Container();
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-		container.arreteThreads();
-		container.destructeur();
-		container = null;
-	}
-
+public class JUnit_ThreadsTest extends JUnit_Test {
 
 	@Test
 	public void test_threadPosition() throws Exception

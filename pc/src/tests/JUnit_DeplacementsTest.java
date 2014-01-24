@@ -1,11 +1,9 @@
 package tests;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import container.Container;
 import robot.cartes.*;
 
 	/**
@@ -13,14 +11,13 @@ import robot.cartes.*;
 	 * @author pf
 	 *
 	 */
-public class JUnit_DeplacementsTest {
+public class JUnit_DeplacementsTest extends JUnit_Test {
 
-	Container container;
-	Deplacements deplacements;
+	private Deplacements deplacements;
 	
 	@Before
 	public void setUp() throws Exception {
-		container = new Container();
+		super.setUp();
 		deplacements = (Deplacements)container.getService("Deplacements");
 		deplacements.set_x(0);
 		deplacements.set_y(1500);
@@ -28,13 +25,6 @@ public class JUnit_DeplacementsTest {
 		deplacements.set_vitesse_translation(80);
 	}
 	
-	@After
-	public void tearDown() throws Exception {
-		container.destructeur();
-		container = null;
-		deplacements = null;
-	}
-
 	@Test
 	public void test_infos_xyo() throws Exception
 	{
