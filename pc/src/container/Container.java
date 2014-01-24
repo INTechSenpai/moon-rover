@@ -97,12 +97,10 @@ public class Container {
 		{
 			services.put(nom, (Service)new Table(	(Log)getService("Log"),
 													(Read_Ini)getService("Read_Ini")));
-			((Table) services.get(nom)).initialise();
+			((Table) services.get(nom)).initialise(); // N'est pas mis dans le constructeur car ne doit être appelé que pour la toute première instance
 		}
 		else if(nom.length() > 4 && nom.substring(0,5).equals("serie"))
-		{
 			services.put(nom, (Service)serialmanager.getSerial(nom));
-		}
 		else if(nom == "Deplacements")
 			services.put(nom, (Service)new Deplacements((Log)getService("Log"),
 														(Serial)getService("serieAsservissement")));
@@ -196,17 +194,7 @@ public class Container {
 		return services.get(nom);
 	}
 	
-	
-	/**
-	 * Méthode utilisée pour les tests: container oublie un service
-	 * @param nom
-	 */
-	public void oublie(String nom)
-	{
-		if(services.containsKey(nom))
-			services.remove(nom);
-	}
-	
+		
 	/**
 	 * Méthode utilisée uniquement pour les tests: renvoie si un service a déjà été créé
 	 * @param nom
@@ -224,7 +212,24 @@ public class Container {
 	{
 		threadmanager.demarreThreads();
 	}
-	
+
+	/**
+	 * Demande au thread manager de démarrer tous les threads
+	 */
+	public void demarreTousThreads()
+	{
+		try {
+			getService("threadAnalyseEnnemi");
+			getService("threadLaser");
+			getService("threadStrategie");
+			getService("threadCapteurs");
+			getService("threadPosition");
+			getService("threadTimer");
+		} catch (Exception e) {
+		}
+		threadmanager.demarreThreads();
+	}
+
 	/**
 	 * Demande au thread manager d'arrêter les threads
 	 */

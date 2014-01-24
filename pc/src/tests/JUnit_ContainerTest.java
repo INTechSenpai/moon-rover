@@ -18,17 +18,6 @@ public class JUnit_ContainerTest extends JUnit_Test {
 	{
 		container.getService("ABWABWA");
 	}
-
-	@Test
-	public void test_oublie() throws Exception
-	{
-		Assert.assertTrue(!container.contient("Table"));
-		container.getService("Table");
-		Assert.assertTrue(container.contient("Table"));
-		container.oublie("Table");
-		Assert.assertTrue(!container.contient("Table"));
-	}
-	
 	
 	@Test
 	public void test_log() throws Exception

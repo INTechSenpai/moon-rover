@@ -313,7 +313,8 @@ public class RobotVrai extends Robot {
 	// TODO
 	public void initialiser_actionneurs()
 	{
-		
+		actionneurs.rateau_ranger_droit();
+		actionneurs.rateau_ranger_gauche();		
 	}
 
 	public void tirerBalles()
