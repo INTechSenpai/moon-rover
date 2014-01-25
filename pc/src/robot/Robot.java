@@ -27,7 +27,7 @@ public abstract class Robot implements Service {
 			 	throws MouvementImpossibleException;
 	public abstract void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
 				throws MouvementImpossibleException;
-	public abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean marche_arriere_auto, boolean symetrie_effectuee)
+	public abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean symetrie_effectuee)
 				throws MouvementImpossibleException;
 	public abstract void set_vitesse_translation(String vitesse);
 	public abstract void set_vitesse_rotation(String vitesse);
@@ -54,6 +54,8 @@ public abstract class Robot implements Service {
 	public abstract void bac_haut();
 	public abstract void rateau(PositionRateau position, Cote cote);
 
+	public abstract void sleep(long duree);
+	
 	// Dépendances
 	protected Read_Ini config;
 	protected Log log;
@@ -130,7 +132,7 @@ public abstract class Robot implements Service {
 	
 	public void va_au_point(Vec2 point, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
-		va_au_point(point, hooks, false, 2, retenterSiBlocage, sansLeverException, false);
+		va_au_point(point, hooks, false, 2, retenterSiBlocage, false, sansLeverException);
 	}
 
 	public void va_au_point(Vec2 point) throws MouvementImpossibleException
@@ -138,29 +140,14 @@ public abstract class Robot implements Service {
 		va_au_point(point, null, false, 2, true, false, false);
 	}
 
-	public void suit_chemin(ArrayList<Vec2> chemin, boolean marche_arriere_auto, boolean symetrie_effectuee) throws MouvementImpossibleException
-	{
-		suit_chemin(chemin, null, marche_arriere_auto, symetrie_effectuee);
-	}
-
 	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws MouvementImpossibleException
 	{
-		suit_chemin(chemin, hooks, true, false);
-	}
-
-	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean marche_arriere_auto) throws MouvementImpossibleException
-	{
-		suit_chemin(chemin, hooks, marche_arriere_auto, false);
-	}
-
-	public void suit_chemin(ArrayList<Vec2> chemin, boolean marche_arriere_auto) throws MouvementImpossibleException
-	{
-		suit_chemin(chemin, null, marche_arriere_auto, false);
+		suit_chemin(chemin, hooks, false);
 	}
 
 	public void suit_chemin(ArrayList<Vec2> chemin) throws MouvementImpossibleException
 	{
-		suit_chemin(chemin, null, true, false);		
+		suit_chemin(chemin, null, false);
 	}
 
 	public void tourner(float angle, int nombre_tentatives, boolean sans_lever_exception) throws MouvementImpossibleException

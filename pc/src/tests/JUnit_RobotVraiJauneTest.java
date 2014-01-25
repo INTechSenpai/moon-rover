@@ -8,6 +8,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import exception.ContainerException;
+import exception.MouvementImpossibleException;
 import robot.*;
 import robot.cartes.*;
 import smartMath.Vec2;
@@ -68,9 +70,10 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 	@Test
 	public void test_update_x_y_orientation() throws Exception
 	{
-		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,0)));
+		deplacements.set_x(0);
+		deplacements.set_y(500);
 		robotvrai.update_x_y_orientation();
-		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,1500)));
+		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,500)));
 	}
 	
 	@Test
@@ -135,4 +138,27 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(40,1500)) < 2);		
 	}
 
+	@Test(expected=MouvementImpossibleException.class)
+	public void test_exception_collision() throws Exception
+	{
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		robotvrai.setPosition(new Vec2(0, 1800));
+		robotvrai.setOrientation((float)Math.PI/2);
+		robotvrai.avancer(500);
+	}
+
+	@Test
+	public void test_sans_exception_collision() throws Exception
+	{
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		robotvrai.setPosition(new Vec2(0, 1800));
+		robotvrai.setOrientation((float)Math.PI/2);
+		robotvrai.avancer(500, null, 0, false, true);
+	}
+
+	
 }

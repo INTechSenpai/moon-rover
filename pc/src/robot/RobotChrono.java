@@ -119,7 +119,7 @@ public class RobotChrono extends Robot {
 	}
 
 	@Override
-	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean marche_arriere_auto, boolean symetrie_effectuee) throws MouvementImpossibleException
+	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean symetrie_effectuee) throws MouvementImpossibleException
 	{
 		for(Vec2 point: chemin)
 			va_au_point(point);
@@ -188,5 +188,10 @@ public class RobotChrono extends Robot {
 				&& orientation == other.orientation
 				&& nombre_lances == other.nombre_lances
 				&& fresques_posees == other.fresques_posees;
+	}
+
+	@Override
+	public void sleep(long duree) {
+		this.duree += duree;
 	}
 }

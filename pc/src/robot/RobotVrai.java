@@ -38,7 +38,7 @@ public class RobotVrai extends Robot {
 	private boolean blocage = false;
 //	private boolean enMouvement = true;
 	
-//	private boolean marche_arriere = false;
+	private boolean marche_arriere = false;
 	private boolean effectuer_symetrie = true;
 	
 	public boolean pret = false;
@@ -176,11 +176,11 @@ public class RobotVrai extends Robot {
 	{
 		log.debug("Avancer de "+Integer.toString(distance), this);
 
-//		boolean memoire_marche_arriere = marche_arriere;
 		boolean memoire_effectuer_symetrie = effectuer_symetrie;
-
-//		marche_arriere = (distance < 0);
 		effectuer_symetrie = false;
+
+		if(distance < 0)
+			marche_arriere = true;
 
 		Vec2 consigne = new Vec2(0,0);
 		consigne.x = (float) (position.x + distance*Math.cos(orientation_consigne));
@@ -199,8 +199,8 @@ public class RobotVrai extends Robot {
 		}
 		finally
 		{
-//			marche_arriere = memoire_marche_arriere;
 			effectuer_symetrie = memoire_effectuer_symetrie;
+			marche_arriere = false;
 		}
 		
 	}
@@ -254,14 +254,10 @@ public class RobotVrai extends Robot {
 	 * @throws MouvementImpossibleException 
 	 */
 	@Override
-	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean marche_arriere_auto, boolean symetrie_effectuee) throws MouvementImpossibleException
+	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean symetrie_effectuee) throws MouvementImpossibleException
 	{
 		for(Vec2 position: chemin)
-		{
-//			if(marche_arriere_auto)
-//				marche_arriere = marche_arriere_est_plus_rapide(position);
 			va_au_point(position, hooks, false, 2, true, symetrie_effectuee, false);
-		}
 	}
 
 
@@ -297,9 +293,9 @@ public class RobotVrai extends Robot {
 				if(retenter_si_blocage)
 				{
 					log.warning("Blocage en déplacement ! On recule... reste "+Integer.toString(nombre_tentatives)+" tentatives", this);
-//					if(marche_arriere)
-//						avancer(distance_degagement_robot, nombre_tentatives-1);
-//					else
+					if(marche_arriere)
+						avancer(distance_degagement_robot, nombre_tentatives-1);
+					else
 					avancer(-distance_degagement_robot, nombre_tentatives-1);
 				}
 			}
@@ -318,7 +314,7 @@ public class RobotVrai extends Robot {
 				sleep(1000);
 				va_au_point(point, hooks, trajectoire_courbe, nombre_tentatives-1, true, false, false);
 			}
-			else
+			else if(!sans_lever_exception)
 				throw new MouvementImpossibleException(this);
 		}
 	
@@ -503,12 +499,12 @@ public class RobotVrai extends Robot {
 //		maj_marche_arriere = marche_arriere;
 		maj_ancien_angle = angle;
 		
-/*		if(marche_arriere)
+		if(marche_arriere)
 		{
 			distance *= -1;
 			angle += Math.PI;
 		}
-*/		
+		
 		if(!trajectoire_courbe)
 		{
             // sans virage : la première rotation est blocante
@@ -610,7 +606,8 @@ public class RobotVrai extends Robot {
 		if(blocage || deplacements.gestion_blocage(infos))
 		{
 			blocage = true;
-			throw new BlocageException(this);
+			if(!sans_lever_exception)
+				throw new BlocageException(this);
 		}
 		
 		// ennemi détecté devant le robot?
@@ -624,8 +621,11 @@ public class RobotVrai extends Robot {
 		// robot encore en mouvement
 		return false;
 	}
-	
-	private void sleep(long duree)
+
+	/**
+	 * Méthode sleep utilisée par les scripts
+	 */
+	public void sleep(long duree)
 	{
 		try {
 		Thread.sleep(duree);
