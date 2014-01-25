@@ -104,7 +104,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	public void test_ScriptFresques_versions() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptFresque");
-		Assert.assertTrue(s.version(robotvrai, table).size() == 1);
+		Assert.assertTrue(s.version(robotvrai, table).size() == 3);
 		robotvrai.deposer_fresques();
 		Assert.assertTrue(s.version(robotvrai, table).size() == 0);
 	}

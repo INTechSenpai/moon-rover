@@ -66,10 +66,12 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 	 */
 	public int[] duree_freeze()
 	{
-		int[] duree_freeze = new int[2];
+/*		int[] duree_freeze = new int[2];
 		duree_freeze[0] = (int)(System.currentTimeMillis() - date_freeze[0]);
 		duree_freeze[1] = (int)(System.currentTimeMillis() - date_freeze[1]);
 		return duree_freeze;
+		*/
+		return null;
 	}
 	
 }

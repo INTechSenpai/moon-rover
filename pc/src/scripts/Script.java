@@ -52,7 +52,7 @@ public abstract class Script implements Service {
 	 */
 	public void agit(int id_version, RobotVrai robotvrai, Table table)
 	{
-		Vec2 point_entree = point_entree(id_version, robotvrai, table);
+		Vec2 point_entree = point_entree(id_version);
 
 		robotvrai.set_vitesse_translation("entre_scripts");
 		robotvrai.set_vitesse_rotation("entre_scripts");
@@ -81,7 +81,7 @@ public abstract class Script implements Service {
 	 */
 	public long calcule(int id_version, RobotChrono robotchrono, Table table, boolean use_cache)
 	{
-		Vec2 point_entree = point_entree(id_version, robotchrono, table);
+		Vec2 point_entree = point_entree(id_version);
 		robotchrono.set_vitesse_translation("entre_scripts");
 		robotchrono.set_vitesse_rotation("entre_scripts");
 		
@@ -110,7 +110,7 @@ public abstract class Script implements Service {
 	 * @param id de la version
 	 * @return la position du point d'entrée
 	 */
-	protected abstract Vec2 point_entree(int id, final Robot robot, final Table table);
+	protected abstract Vec2 point_entree(int id);
 	
 	/**
 	 * Renvoie le score que peut fournir un script

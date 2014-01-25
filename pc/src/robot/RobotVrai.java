@@ -121,7 +121,8 @@ public class RobotVrai extends Robot {
 		{
 			log.critical(e, this);
 		}
- 	}
+		update_x_y_orientation();
+	}
 	
 	/*
 	 * MÉTHODES PUBLIQUES
