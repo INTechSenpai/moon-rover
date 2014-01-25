@@ -77,7 +77,7 @@ public class Capteurs implements Service {
 	
     public boolean demarrage_match()
     {
-    	 return serie.communiquer("j", 1)[0] == "0";
+    	 return Integer.parseInt(serie.communiquer("j", 1)[0]) == 0;
     }
  
     // TODO
