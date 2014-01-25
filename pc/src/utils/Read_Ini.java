@@ -54,6 +54,12 @@ public class Read_Ini implements Service {
 		}	
 	}
 	
+	/**
+	 * Méthode de récupération des paramètres de configuration
+	 * @param nom
+	 * @return
+	 * @throws ConfigException
+	 */
 	public String get(String nom) throws ConfigException
 	{
 		String out = null;
@@ -62,7 +68,18 @@ public class Read_Ini implements Service {
 		{
 			throw new ConfigException("Erreur config: "+nom+" introuvable.");
 		}
+//		System.out.println("Valeur de "+nom+": "+out);
 		return out;
+	}
+
+	/**
+	 * Méthode utilisée seulement par les tests
+	 * @param nom
+	 * @return
+	 */
+	public void set(String nom, String value)
+	{
+		config.setProperty(nom, value);
 	}
 	
 }
