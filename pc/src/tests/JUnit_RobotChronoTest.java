@@ -1,5 +1,7 @@
 package tests;
 
+import hook.Hook;
+
 import java.util.ArrayList;
 
 import org.junit.Assert;
@@ -39,7 +41,7 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 		robotchrono = new RobotChrono(config, log);
 		robotchrono.setPosition(new Vec2(0, 1500));
 		robotchrono.setOrientation(0);
-		robotchrono.va_au_point(new Vec2(10, 1400), null, false, 0, false, true, false);
+		robotchrono.va_au_point(new Vec2(10, 1400));
 		System.out.println(robotchrono.getPosition());
 		Assert.assertTrue(robotchrono.getPosition().distance(new Vec2(10,1400)) < 2);
 
@@ -47,7 +49,7 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 		robotchrono = new RobotChrono(config, log);
 		robotchrono.setPosition(new Vec2(0, 1500));
 		robotchrono.setOrientation(0);
-		robotchrono.va_au_point(new Vec2(10, 1400), null, false, 0, false, true, false);
+		robotchrono.va_au_point(new Vec2(10, 1400));
 		Assert.assertTrue(robotchrono.getPosition().distance(new Vec2(-10,1400)) < 2);
 	}
 	

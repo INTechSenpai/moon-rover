@@ -254,7 +254,7 @@ public class RobotVrai extends Robot {
 	 * @throws MouvementImpossibleException 
 	 */
 	@Override
-	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean symetrie_effectuee) throws MouvementImpossibleException
+	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean symetrie_effectuee) throws MouvementImpossibleException
 	{
 		for(Vec2 position: chemin)
 			va_au_point(position, hooks, false, 2, true, symetrie_effectuee, false);
@@ -265,7 +265,7 @@ public class RobotVrai extends Robot {
 	 * Le robot va au point demandé
 	 */
 	@Override
-	public void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception) throws MouvementImpossibleException
+	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
 		// appliquer la symétrie ne doit pas modifier ce point !
 		point = point.clone();

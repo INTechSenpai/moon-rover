@@ -44,7 +44,7 @@ public class JUnit_RobotVraiRougeTest extends JUnit_Test {
 		container.getService("threadPosition");
 		container.demarreThreads();
 		Thread.sleep(100);
-		robotvrai.va_au_point(new Vec2(10, 1400), null, false, 0, false, false, false);
+		robotvrai.va_au_point(new Vec2(10, 1400), false);
 		robotvrai.update_x_y_orientation();
 		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(-10,1400)) < 2);
 	}

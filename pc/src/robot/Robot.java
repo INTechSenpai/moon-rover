@@ -23,15 +23,15 @@ public abstract class Robot implements Service {
 	
 	public abstract void stopper(boolean avec_blocage);
 	public abstract void correction_angle(float angle); // peut-être à placer en private
-	public abstract void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception)
+	protected abstract void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception)
 			 	throws MouvementImpossibleException;
-	public abstract void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
+	protected abstract void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
 				throws MouvementImpossibleException;
-	public abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean symetrie_effectuee)
+	protected abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean symetrie_effectuee)
 				throws MouvementImpossibleException;
 	public abstract void set_vitesse_translation(String vitesse);
 	public abstract void set_vitesse_rotation(String vitesse);
-	public abstract void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception)
+	protected abstract void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception)
 				throws MouvementImpossibleException;
 
 	/*
@@ -69,6 +69,7 @@ public abstract class Robot implements Service {
 	
 	protected int nombre_lances = 8;
 	protected boolean fresques_posees = false;
+	private int nb_tentatives = 2;
 	
 	public Robot(Read_Ini config, Log log)
 	{
@@ -76,6 +77,11 @@ public abstract class Robot implements Service {
 		this.log = log;
 		try {
 			couleur = config.get("couleur");
+		} catch (ConfigException e) {
+			log.critical(e, this);
+		}
+		try {
+			nb_tentatives = Integer.parseInt(config.get("nb_tentatives"));
 		} catch (ConfigException e) {
 			log.critical(e, this);
 		}
@@ -130,14 +136,19 @@ public abstract class Robot implements Service {
 		return fresques_posees;
 	}
 	
-	public void va_au_point(Vec2 point, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
+	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
-		va_au_point(point, hooks, false, 2, retenterSiBlocage, false, sansLeverException);
+		va_au_point(point, hooks, false, nb_tentatives, retenterSiBlocage, false, sansLeverException);
 	}
 
 	public void va_au_point(Vec2 point) throws MouvementImpossibleException
 	{
-		va_au_point(point, null, false, 2, true, false, false);
+		va_au_point(point, null, false, nb_tentatives, true, false, false);
+	}
+
+	public void va_au_point(Vec2 point, boolean retenterSiBlocage) throws MouvementImpossibleException
+	{
+		va_au_point(point, null, false, nb_tentatives, retenterSiBlocage, false, false);
 	}
 
 	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws MouvementImpossibleException
@@ -150,69 +161,64 @@ public abstract class Robot implements Service {
 		suit_chemin(chemin, null, false);
 	}
 
-	public void tourner(float angle, int nombre_tentatives, boolean sans_lever_exception) throws MouvementImpossibleException
-	{
-		tourner(angle, null, nombre_tentatives, sans_lever_exception);
-	}
-
 	public void tourner(float angle, ArrayList<Hook> hooks, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
-		tourner(angle, null, 2, sans_lever_exception);
-	}
-
-	public void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives) throws MouvementImpossibleException
-	{
-		tourner(angle, hooks, nombre_tentatives, false);				
+		tourner(angle, null, nb_tentatives, sans_lever_exception);
 	}
 
 	public void tourner(float angle, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
-		tourner(angle, null, 2, sans_lever_exception);
+		tourner(angle, null, nb_tentatives, sans_lever_exception);
 	}
 
-	public void tourner(float angle, int nombre_tentatives) throws MouvementImpossibleException
+	protected void tourner(float angle, int nombre_tentatives) throws MouvementImpossibleException
 	{
 		tourner(angle, null, nombre_tentatives, false);		
 	}
 
 	public void tourner(float angle, ArrayList<Hook> hooks) throws MouvementImpossibleException
 	{
-		tourner(angle, hooks, 2, false);
+		tourner(angle, hooks, nb_tentatives, false);
 	}
 
 	public void tourner(float angle) throws MouvementImpossibleException
 	{
-		tourner(angle, null, 2, false);
+		tourner(angle, null, nb_tentatives, false);
 	}
 
-	public void avancer(int distance, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
+	protected void avancer(int distance, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
 		this.avancer(distance, null, nbTentatives, retenterSiBlocage, sansLeverException);
 	}
 
-	public void avancer(int distance, int nbTentatives, boolean retenterSiBlocage) throws MouvementImpossibleException
+	protected void avancer(int distance, int nbTentatives, boolean retenterSiBlocage) throws MouvementImpossibleException
 	{
 		this.avancer(distance, null, nbTentatives, retenterSiBlocage, false);
 	}
 	
-	public void avancer(int distance, int nbTentatives) throws MouvementImpossibleException
+	protected void avancer(int distance, int nbTentatives) throws MouvementImpossibleException
 	{
 		this.avancer(distance, null, nbTentatives, true, false);
 	}
 
 	public void avancer(int distance, ArrayList<Hook> hooks) throws MouvementImpossibleException
 	{
-		this.avancer(distance, hooks, 2, true, false);
+		this.avancer(distance, hooks, nb_tentatives, true, false);
 	}
 
 	public void avancer(int distance) throws MouvementImpossibleException
 	{
-		this.avancer(distance, null, 2, true, false);
+		this.avancer(distance, null, nb_tentatives, true, false);
+	}
+
+	public void avancer(int distance, boolean retenterSiBlocage) throws MouvementImpossibleException
+	{
+		this.avancer(distance, null, nb_tentatives, retenterSiBlocage, false);
 	}
 
 	public void stopper()
 	{
 		stopper(false);
 	}
-	
+
 }

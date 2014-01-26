@@ -45,7 +45,7 @@ public class RobotChrono extends Robot {
 	}
 	
 	@Override
-	public void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
+	protected void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
 	{
 		duree += ((float)distance)/vitesse_mmpms;
 		Vec2 ecart = new Vec2((float)Math.cos(orientation), (float)Math.sin(orientation));
@@ -100,7 +100,7 @@ public class RobotChrono extends Robot {
 	}
 
 	@Override
-	public void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception)
+	protected void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception)
 	{
 		float delta = angle-orientation;
 		if(delta < 0)
@@ -119,14 +119,14 @@ public class RobotChrono extends Robot {
 	}
 
 	@Override
-	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean symetrie_effectuee) throws MouvementImpossibleException
+	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean symetrie_effectuee) throws MouvementImpossibleException
 	{
 		for(Vec2 point: chemin)
 			va_au_point(point);
 	}
 
 	@Override
-	public void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception)
+	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception)
 	{
 		if(couleur == "rouge")
 			point.x *= -1;

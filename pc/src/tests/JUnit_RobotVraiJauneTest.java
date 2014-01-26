@@ -181,7 +181,7 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 		container.getService("threadCapteurs");
 		container.demarreThreads();
 		Thread.sleep(300);
-		robotvrai.avancer(500);
+		robotvrai.avancer(500, false);
 	}
 
 	
