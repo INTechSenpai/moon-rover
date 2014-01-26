@@ -30,7 +30,7 @@ public class JUnit_ThreadsTest extends JUnit_Test {
 		container.demarreThreads();
 		deplacements.set_x(110);
 		deplacements.set_y(1500);
-		Thread.sleep(100);
+		Thread.sleep(150);
 		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(110,1500)));	
 	}
 

@@ -161,6 +161,18 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 	}
 
 	@Test
+	public void test_detection_ennemi_sans_exception() throws Exception
+	{
+		robotvrai.setPosition(new Vec2(0, 900));
+		robotvrai.setOrientation(0);
+		container.getService("threadPosition");
+		container.getService("threadCapteurs");
+		container.demarreThreads();
+		Thread.sleep(300);
+		robotvrai.avancer(500, null, 0, false, true);
+	}
+
+	@Test(expected=MouvementImpossibleException.class)
 	public void test_detection_ennemi() throws Exception
 	{
 		robotvrai.setPosition(new Vec2(0, 900));
@@ -168,6 +180,7 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 		container.getService("threadPosition");
 		container.getService("threadCapteurs");
 		container.demarreThreads();
+		Thread.sleep(300);
 		robotvrai.avancer(500);
 	}
 

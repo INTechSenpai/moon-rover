@@ -312,7 +312,8 @@ public class RobotVrai extends Robot {
 			{
 				log.warning("attente avant nouvelle tentative... reste "+Integer.toString(nombre_tentatives)+" tentative(s)", this);
 				sleep(1000);
-				va_au_point(point, hooks, trajectoire_courbe, nombre_tentatives-1, true, false, false);
+				// TODO
+				va_au_point(point, hooks, trajectoire_courbe, nombre_tentatives-1, true, false, sans_lever_exception);
 			}
 			else if(!sans_lever_exception)
 				throw new MouvementImpossibleException(this);

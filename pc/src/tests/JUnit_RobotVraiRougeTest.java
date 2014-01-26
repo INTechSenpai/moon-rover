@@ -65,9 +65,12 @@ public class JUnit_RobotVraiRougeTest extends JUnit_Test {
 	@Test
 	public void test_update_x_y_orientation() throws Exception
 	{
-		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,0)));
 		robotvrai.update_x_y_orientation();
 		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,1500)));
+		deplacements.set_x(100);
+		deplacements.set_y(1400);
+		robotvrai.update_x_y_orientation();
+		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(100,1400)));
 	}
 	
 	@Test

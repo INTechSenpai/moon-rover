@@ -95,8 +95,11 @@ class ThreadCapteurs extends AbstractThread {
 				if(System.currentTimeMillis() - date_dernier_ajout > tempo)
 					// si la position est bien sur la table (histoire de pas détecter un arbitre)
 					if(position.x > -table_x/2 && position.y > 0 && position.x < table_x/2 && position.y < table_y)
+					{
 						table.creer_obstacle(position);
 						date_dernier_ajout = (int)System.currentTimeMillis();
+						log.debug("Nouvel obstacle en "+position, this);
+					}
 				
 				pathfinding.update();
 			}
