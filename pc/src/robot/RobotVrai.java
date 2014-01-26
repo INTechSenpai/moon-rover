@@ -658,6 +658,7 @@ public class RobotVrai extends Robot {
 				blocage = true;
 				if(!sans_lever_exception)
 					throw new BlocageException(this);
+				return true;
 			}
 			
 			// ennemi détecté devant le robot?
