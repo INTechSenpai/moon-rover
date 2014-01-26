@@ -22,7 +22,6 @@ public abstract class Robot implements Service {
 	 */
 	
 	public abstract void stopper(boolean avec_blocage);
-	public abstract void correction_angle(float angle); // peut-être à placer en private
 	protected abstract void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception)
 			 	throws MouvementImpossibleException;
 	protected abstract void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
@@ -69,6 +68,7 @@ public abstract class Robot implements Service {
 	
 	protected int nombre_lances = 8;
 	protected boolean fresques_posees = false;
+
 	private int nb_tentatives = 2;
 	
 	public Robot(Read_Ini config, Log log)

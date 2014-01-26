@@ -8,7 +8,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import exception.ContainerException;
 import exception.MouvementImpossibleException;
 import robot.*;
 import robot.cartes.*;

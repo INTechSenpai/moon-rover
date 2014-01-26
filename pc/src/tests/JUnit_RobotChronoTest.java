@@ -1,7 +1,5 @@
 package tests;
 
-import hook.Hook;
-
 import java.util.ArrayList;
 
 import org.junit.Assert;

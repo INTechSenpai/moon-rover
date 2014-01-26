@@ -55,11 +55,6 @@ public class RobotChrono extends Robot {
 	}
 	
 	@Override
-	public void correction_angle(float angle)
-	{
-	}
-
-	@Override
 	public void set_vitesse_translation(String vitesse)
 	{
         int pwm_max = conventions_vitesse_translation(vitesse);

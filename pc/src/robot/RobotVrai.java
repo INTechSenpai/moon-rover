@@ -161,12 +161,12 @@ public class RobotVrai extends Robot {
 	 * Modifie la consigne en angle, de façon non bloquante
 	 * @param angle
 	 */
-	@Override
-	public void correction_angle(float angle)
+/*	private void correction_angle(float angle)
 	{
 		orientation_consigne = angle;
 		deplacements.tourner((int)angle);
 	}
+*/
 	
 	/**
 	 * Avance d'une certaine distance (méthode bloquante), gestion des hooks
@@ -374,7 +374,7 @@ public class RobotVrai extends Robot {
 	
 	@Override
 	public void takefire() {
-		boolean retourner = capteur.isFireRed() ^ couleur == "rouge";
+//		boolean retourner = capteur.isFireRed() ^ couleur == "rouge";
 		// TODO
 		
 	}
