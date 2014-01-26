@@ -6,6 +6,8 @@ import org.junit.Test;
 import robot.RobotVrai;
 import robot.cartes.Deplacements;
 import smartMath.Vec2;
+import table.Table;
+import threads.ThreadTimer;
 
 /**
  * Tests unitaires des threads
@@ -24,11 +26,12 @@ public class JUnit_ThreadsTest extends JUnit_Test {
 		deplacements.set_orientation(0);
 		deplacements.set_vitesse_translation(80);
 		RobotVrai robotvrai = (RobotVrai) container.getService("RobotVrai");
-		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,0)));
 		container.getService("threadPosition");
 		container.demarreThreads();
+		deplacements.set_x(110);
+		deplacements.set_y(1500);
 		Thread.sleep(100);
-		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,1500)));	
+		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(110,1500)));	
 	}
 
 	@Test
@@ -40,7 +43,6 @@ public class JUnit_ThreadsTest extends JUnit_Test {
 		deplacements.set_orientation(0);
 		deplacements.set_vitesse_translation(80);
 		RobotVrai robotvrai = (RobotVrai) container.getService("RobotVrai");
-		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,0)));
 		container.getService("threadPosition");
 		container.demarreThreads();
 		Thread.sleep(100);
@@ -50,6 +52,37 @@ public class JUnit_ThreadsTest extends JUnit_Test {
 		deplacements.set_y(1400);
 		Thread.sleep(100);
 		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,1500)));
+	}
+
+	@Test
+	public void test_detection_obstacle() throws Exception
+	{
+		RobotVrai robotvrai = (RobotVrai) container.getService("RobotVrai");
+		robotvrai.setPosition(new Vec2(0, 900));
+		robotvrai.setOrientation(0);
+		
+		Table table = (Table) container.getService("Table");
+		Assert.assertTrue(table.nb_obstacles() == 0);
+		
+		container.getService("threadCapteurs");
+		container.demarreThreads();
+		Thread.sleep(300);
+		Assert.assertTrue(table.nb_obstacles() >= 1);
+
+	}
+	
+	@Test
+	public void test_demarrage_match() throws Exception
+	{
+		ThreadTimer threadtimer = (ThreadTimer) container.getService("threadTimer");
+		System.out.println("Veuillez mettre le jumper");
+		Thread.sleep(2000);
+		container.demarreThreads();
+		Thread.sleep(200);
+		Assert.assertTrue(!threadtimer.match_demarre);
+		System.out.println("Veuillez retirer le jumper");
+		Thread.sleep(2000);
+		Assert.assertTrue(threadtimer.match_demarre);
 	}
 
 	

@@ -45,6 +45,7 @@ class ThreadCapteurs extends AbstractThread {
 		log.debug("Lancement du thread de capteurs", this);
 		int date_dernier_ajout = 0;
 //		boolean marche_arriere = false;
+
 		try
 		{
 			tempo = Double.parseDouble(config.get("capteurs_temporisation_obstacles"));
@@ -60,14 +61,15 @@ class ThreadCapteurs extends AbstractThread {
 			log.critical(e, this);
 		}
 		
-		log.debug("Lancement du thread de capteurs", this);
-	
 		while(!threadTimer.match_demarre)
+		{
 			if(stop_threads)
 			{
 				log.debug("Stoppage du thread capteurs", this);
 				return;
 			}
+			sleep(50);
+		}
 		
 		log.debug("Activation des capteurs", this);
 		while(!threadTimer.fin_match)

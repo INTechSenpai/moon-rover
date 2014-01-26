@@ -6,6 +6,7 @@ import java.util.Iterator;
 import robot.Orientation;
 import smartMath.Vec2;
 import container.Service;
+import exception.ConfigException;
 import utils.*;
 
 public class Table implements Service {
@@ -89,13 +90,11 @@ public class Table implements Service {
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-1500,700), 150));
 
 		int rayon_robot_adverse = 230;
-		try {
-			rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
-		}
-		catch(Exception e)
-		{
-			log.warning(e, this);
-		}
+			try {
+				rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
+			} catch (NumberFormatException | ConfigException e) {
+				e.printStackTrace();
+			}
 		robots_adverses[0] = new ObstacleCirculaire(new Vec2(0,0), rayon_robot_adverse);
 		robots_adverses[1] = new ObstacleCirculaire(new Vec2(0,0), rayon_robot_adverse);
 		
@@ -114,14 +113,16 @@ public class Table implements Service {
 		Vec2 position_sauv = position.clone();
 		int rayon_robot_adverse = 0;
 		long duree = 0;
-		try {
-			rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
-			duree = Integer.parseInt(config.get("duree_peremption_obstacles"));
-		}
-		catch(Exception e)
-		{
-			this.log.critical(e, this);
-		}
+			try {
+				rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
+			} catch (NumberFormatException | ConfigException e) {
+				e.printStackTrace();
+			}
+			try {
+				duree = Integer.parseInt(config.get("duree_peremption_obstacles"));
+			} catch (NumberFormatException | ConfigException e) {
+				e.printStackTrace();
+			}
 		
 		Obstacle obstacle = new ObstacleProximite(position_sauv, rayon_robot_adverse, System.currentTimeMillis()+duree);
 		synchronized(listObstacles)
@@ -316,6 +317,15 @@ public class Table implements Service {
 				&& hashTree == other.hashTree
 				&& hashTorch == other.hashTorch
 				&& hashObstacles == other.hashObstacles;
+	}
+	
+	/**
+	 * Utilisé pour les tests
+	 * @return le nombre d'obstacles mobiles détectés
+	 */
+	public int nb_obstacles()
+	{
+		return listObstacles.size();
 	}
 	
 }

@@ -160,5 +160,16 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 		robotvrai.avancer(500, null, 0, false, true);
 	}
 
+	@Test
+	public void test_detection_ennemi() throws Exception
+	{
+		robotvrai.setPosition(new Vec2(0, 900));
+		robotvrai.setOrientation(0);
+		container.getService("threadPosition");
+		container.getService("threadCapteurs");
+		container.demarreThreads();
+		robotvrai.avancer(500);
+	}
+
 	
 }

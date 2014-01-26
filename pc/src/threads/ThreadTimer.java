@@ -51,13 +51,7 @@ public class ThreadTimer extends AbstractThread {
 				log.debug("Arrêt du thread timer", this);
 				return;
 			}
-			try {
-				Thread.sleep(200);
-			}
-			catch(Exception e)
-			{
-				log.warning(e.toString(), this);
-			}
+			sleep(50);
 		}
 		log.debug("LE MATCH COMMENCE !", this);
 
