@@ -129,7 +129,6 @@ public class RobotVrai extends Robot {
 	 */
 	
 	// TODO
-	@Override
 	public void recaler()
 	{
 		
@@ -358,9 +357,10 @@ public class RobotVrai extends Robot {
 	 */
 
 	// TODO
-	@Override
-	public void initialiser_actionneurs()
+	public void initialiser_actionneurs_deplacements()
 	{
+		deplacements.activer_asservissement_rotation();
+		deplacements.activer_asservissement_translation();
 		actionneurs.rateau_ranger_droit();
 		actionneurs.rateau_ranger_gauche();		
 	}

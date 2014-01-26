@@ -61,7 +61,6 @@ public class Container {
 	public void destructeur()
 	{
 		arreteThreads();
-		log.debug("Arrêt des séries", this);
 		if(serialmanager != null)
 		{
 			if(serialmanager.serieAsservissement != null)
@@ -74,20 +73,19 @@ public class Container {
 		log.destructeur();
 	}
 	
-	public Container()
+	public Container() throws ContainerException
 	{
 		try {
 			services.put("Read_Ini", (Service)new Read_Ini("../pc/config/"));
 			config = (Read_Ini)services.get("Read_Ini");
 			services.put("Log", (Service)new Log(config));
 			log = (Log)services.get("Log");
-			threadmanager = new ThreadManager(config, log);
-			serialmanager = new SerialManager(log);
 		}
 		catch(Exception e)
 		{
-			System.out.println(e);
+			throw new ContainerException();
 		}
+		threadmanager = new ThreadManager(config, log);
 	}
 
 	public Service getService(String nom) throws ContainerException, ThreadException, ConfigException, SerialManagerException
@@ -100,7 +98,11 @@ public class Container {
 			((Table) services.get(nom)).initialise(); // N'est pas mis dans le constructeur car ne doit être appelé que pour la toute première instance
 		}
 		else if(nom.length() > 4 && nom.substring(0,5).equals("serie"))
+		{
+			if(serialmanager == null)
+				serialmanager = new SerialManager(log);
 			services.put(nom, (Service)serialmanager.getSerial(nom));
+		}
 		else if(nom == "Deplacements")
 			services.put(nom, (Service)new Deplacements((Log)getService("Log"),
 														(Serial)getService("serieAsservissement")));
@@ -236,11 +238,6 @@ public class Container {
 	public void arreteThreads()
 	{
 		threadmanager.arreteThreads();
-		try {
-			Thread.sleep(200);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 	
 }

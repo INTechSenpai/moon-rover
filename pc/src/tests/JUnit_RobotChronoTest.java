@@ -20,6 +20,7 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
+		log.debug("JUnit_RobotChronoTest.setUp()", this);
 		robotchrono = new RobotChrono(config, log);
 		robotchrono.setPosition(new Vec2(0, 1500));
 		robotchrono.setOrientation(0);
@@ -28,6 +29,7 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 	@Test
 	public void test_avancer() throws Exception
 	{
+		log.debug("JUnit_RobotChronoTest.test_avancer()", this);
 		robotchrono.avancer(10);
 		Assert.assertTrue(robotchrono.getPosition().equals(new Vec2(10,1500)));
 	}
@@ -35,12 +37,12 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 	@Test
 	public void test_va_au_point_symetrie() throws Exception
 	{
+		log.debug("JUnit_RobotChronoTest.test_va_au_point_symetrie()", this);
 		config.set("couleur", "jaune");
 		robotchrono = new RobotChrono(config, log);
 		robotchrono.setPosition(new Vec2(0, 1500));
 		robotchrono.setOrientation(0);
 		robotchrono.va_au_point(new Vec2(10, 1400));
-		System.out.println(robotchrono.getPosition());
 		Assert.assertTrue(robotchrono.getPosition().distance(new Vec2(10,1400)) < 2);
 
 		config.set("couleur", "rouge");
@@ -54,6 +56,7 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 	@Test
 	public void test_va_au_point() throws Exception
 	{
+		log.debug("JUnit_RobotChronoTest.test_va_au_point()", this);
 		robotchrono.va_au_point(new Vec2(10, 1400));
 		Assert.assertTrue(robotchrono.getPosition().distance(new Vec2(10,1400)) < 2);
 	}
@@ -61,6 +64,7 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 	@Test
 	public void test_tourner() throws Exception
 	{
+		log.debug("JUnit_RobotChronoTest.test_tourner()", this);
 		robotchrono.tourner((float)1.2);
 		Assert.assertTrue(robotchrono.getOrientation()==(float)1.2);
 	}
@@ -68,6 +72,7 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 	@Test
 	public void test_suit_chemin() throws Exception
 	{
+		log.debug("JUnit_RobotChronoTest.test_suit_chemin()", this);
 		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
 		chemin.add(new Vec2(20, 1400));
 		chemin.add(new Vec2(40, 1500));

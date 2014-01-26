@@ -39,8 +39,6 @@ public abstract class Robot implements Service {
 	
 	public abstract void setPosition(Vec2 position);
 	public abstract void setOrientation(float orientation);
-	public abstract void recaler();
-	public abstract void initialiser_actionneurs();
 	
 	/*
 	 * ACTIONNEURS
@@ -69,6 +67,7 @@ public abstract class Robot implements Service {
 	protected int nombre_lances = 8;
 	protected boolean fresques_posees = false;
 
+	// Attributs privés
 	private int nb_tentatives = 2;
 	
 	public Robot(Read_Ini config, Log log)

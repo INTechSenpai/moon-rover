@@ -130,16 +130,6 @@ public class RobotChrono extends Robot {
 	}
 
 	@Override
-	public void recaler()
-	{
-	}
-
-	@Override
-	public void initialiser_actionneurs()
-	{
-	}
-
-	@Override
 	public void bac_bas()
 	{
 	}

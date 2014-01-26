@@ -35,11 +35,17 @@ public class Log implements Service
 		
 		try {
 			affiche_debug = Boolean.parseBoolean(this.config.get("affiche_debug"));
+		}
+		catch(Exception e)
+		{
+			critical(e, this);
+		}
+		try {
 			sauvegarde_fichier = Boolean.parseBoolean(this.config.get("sauvegarde_fichier"));
 		}
 		catch(Exception e)
 		{
-			warning(e, this);
+			critical(e, this);
 		}
 
 		if(sauvegarde_fichier)
@@ -112,8 +118,9 @@ public class Log implements Service
 	{
 		if(sauvegarde_fichier)
 			try {
-			if(writer != null)
-				writer.close();
+				debug("Sauvegarde du fichier de logs", this);
+				if(writer != null)
+					writer.close();
 			}
 			catch(Exception e)
 			{

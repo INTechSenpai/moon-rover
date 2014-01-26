@@ -29,6 +29,7 @@ public class JUnit_HookRougeTest extends JUnit_Test {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
+		log.debug("JUnit_HookRougeTest.setUp()", this);
 		config.set("couleur", "rouge");
 		robotvrai = (RobotVrai) container.getService("RobotVrai");
 		robotvrai.setPosition(new Vec2(0, 1500));
@@ -40,6 +41,7 @@ public class JUnit_HookRougeTest extends JUnit_Test {
 	@Test
 	public void test_hookAbscisse_avancer_symetrie() throws Exception
 	{
+		log.debug("JUnit_HookRougeTest.test_hookAbscisse_avancer_symetrie()", this);
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
 		int nb_balles = robotvrai.getNbrLances();
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
@@ -56,6 +58,7 @@ public class JUnit_HookRougeTest extends JUnit_Test {
 	@Test
 	public void test_hookAbscisse_suit_chemin_symetrie() throws Exception
 	{
+		log.debug("JUnit_HookRougeTest.test_hookAbscisse_suit_chemin_symetrie()", this);
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
 		container.getService("threadPosition");
 		container.demarreThreads();
@@ -77,6 +80,7 @@ public class JUnit_HookRougeTest extends JUnit_Test {
 	@Test
 	public void test_hookPosition_suit_chemin_symetrie() throws Exception
 	{
+		log.debug("JUnit_HookRougeTest.test_hookPosition_suit_chemin_symetrie()", this);
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
 		container.getService("threadPosition");
 		container.demarreThreads();
@@ -98,6 +102,7 @@ public class JUnit_HookRougeTest extends JUnit_Test {
 	@Test
 	public void test_hookPosition_avancer_symetrie() throws Exception
 	{
+		log.debug("JUnit_HookRougeTest.test_hookPosition_avancer_symetrie()", this);
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
 		int nb_balles = robotvrai.getNbrLances();
 		ArrayList<Hook> hooks = new ArrayList<Hook>();

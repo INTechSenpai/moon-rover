@@ -1,6 +1,5 @@
 package tests;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
 
@@ -14,22 +13,19 @@ import smartMath.Vec2;
  *
  */
 
-public class JUnit_MathTest {
+public class JUnit_MathTest extends JUnit_Test {
 
 	Vec2 a;
 	Vec2 b;
 	Matrn y;
 	Matrn z;
 	
-	@Before
-	public void setUp() throws Exception {
-		a = new Vec2(10, 500);
-		b = new Vec2(20, -20);
-	}
-
 	@Test
 	public void test_Vec2() throws Exception
 	{
+		log.debug("JUnit_MathTest.test_Vec2()", this);
+		a = new Vec2(10, 500);
+		b = new Vec2(20, -20);
 		Assert.assertTrue(a.equals(a));
 		Assert.assertTrue(a.PlusNewVector(b).equals(new Vec2(30, 480)));
 	}
@@ -37,6 +33,7 @@ public class JUnit_MathTest {
 	@Test
 	public void test_add() throws Exception
 	{
+		log.debug("JUnit_MathTest.test_add()", this);
 		y = new Matrn(2);
 		y.setCoeff(1, 0, 0);
 		y.setCoeff(2, 0, 1);
@@ -59,6 +56,7 @@ public class JUnit_MathTest {
 	@Test
 	public void test_mul() throws Exception
 	{
+		log.debug("JUnit_MathTest.test_mul()", this);
 		y = new Matrn(2);
 		y.setCoeff(1, 0, 0);
 		y.setCoeff(2, 0, 1);
@@ -81,6 +79,7 @@ public class JUnit_MathTest {
 	@Test
 	public void test_transpose() throws Exception
 	{
+		log.debug("JUnit_MathTest.test_transpose()", this);
 		y = new Matrn(3);
 		y.setCoeff(1, 0, 0);
 		y.setCoeff(2, 0, 1);
@@ -107,6 +106,7 @@ public class JUnit_MathTest {
 	@Test(expected=MatriceException.class)
 	public void test_exception_add() throws Exception
 	{
+		log.debug("JUnit_MathTest.test_exception_add()", this);
 		y = new Matrn(2);
 		y.setCoeff(1, 0, 0);
 		y.setCoeff(2, 0, 1);
@@ -122,6 +122,7 @@ public class JUnit_MathTest {
 	@Test(expected=MatriceException.class)
 	public void test_exception_mul() throws Exception
 	{
+		log.debug("JUnit_MathTest.test_exception_mul()", this);
 		y = new Matrn(1,2);
 		y.setCoeff(1, 0, 0);
 		y.setCoeff(2, 0, 1);
@@ -135,6 +136,7 @@ public class JUnit_MathTest {
 	@Test(expected=MatriceException.class)
 	public void test_exception_transpose() throws Exception
 	{
+		log.debug("JUnit_MathTest.test_exception_transpose()", this);
 		y = new Matrn(1,2);
 		y.setCoeff(1, 0, 0);
 		y.setCoeff(2, 0, 1);
