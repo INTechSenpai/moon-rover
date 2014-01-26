@@ -65,7 +65,7 @@ public class Deplacements implements Service {
 			if(enCoursDeBlocage)
 			{
                 // la durée de tolérance au patinage est fixée ici 
-				if(System.currentTimeMillis() - debut_timer_blocage > 500)
+				if(System.currentTimeMillis() - debut_timer_blocage > 200)
 				{
 					log.warning("le robot a dû s'arrêter suite à un patinage.", this);
 					stopper();

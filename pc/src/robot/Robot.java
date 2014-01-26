@@ -136,6 +136,7 @@ public abstract class Robot implements Service {
 		return fresques_posees;
 	}
 	
+	// Les méthodes avec le paramètre nbTentatives sont en protected 
 	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
 		va_au_point(point, hooks, false, nb_tentatives, retenterSiBlocage, false, sansLeverException);
@@ -199,6 +200,11 @@ public abstract class Robot implements Service {
 	protected void avancer(int distance, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
 		this.avancer(distance, null, nbTentatives, retenterSiBlocage, sansLeverException);
+	}
+
+	public void avancer(int distance, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
+	{
+		this.avancer(distance, null, nb_tentatives, retenterSiBlocage, sansLeverException);
 	}
 
 	protected void avancer(int distance, int nbTentatives, boolean retenterSiBlocage) throws MouvementImpossibleException

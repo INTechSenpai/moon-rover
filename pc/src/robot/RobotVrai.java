@@ -627,6 +627,7 @@ public class RobotVrai extends Robot {
 	 */
 	public void sleep(long duree)
 	{
+//		log.debug("Sleep de "+duree+" ms", this);
 		try {
 		Thread.sleep(duree);
 		}

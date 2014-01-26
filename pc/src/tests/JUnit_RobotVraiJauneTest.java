@@ -156,7 +156,7 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 		Thread.sleep(100);
 		robotvrai.setPosition(new Vec2(0, 1800));
 		robotvrai.setOrientation((float)Math.PI/2);
-		robotvrai.avancer(500, null, 0, false, true);
+		robotvrai.avancer(500, false, true);
 	}
 
 	@Test
@@ -181,6 +181,13 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 		container.demarreThreads();
 		Thread.sleep(300);
 		robotvrai.avancer(500, false);
+	}
+
+	@Test
+	public void test_degager_mur() throws Exception
+	{
+		test_sans_exception_collision();
+		robotvrai.avancer(-500);
 	}
 
 	
