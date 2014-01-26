@@ -1,5 +1,6 @@
 package robot.serial;
 
+import exception.SerialException;
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -103,8 +104,9 @@ public class Serial implements SerialPortEventListener, Service
 	 * 					Nombre de lignes que l'avr va répondre (sans compter les acquittements)
 	 * @return
 	 * 					Un tableau contenant le message
+	 * @throws SerialException 
 	 */
-	public String[] communiquer(String message, int nb_lignes_reponse)
+	public String[] communiquer(String message, int nb_lignes_reponse) throws SerialException
 	{
 		String[] messages = {message};
 		return communiquer(messages, nb_lignes_reponse);
@@ -118,12 +120,11 @@ public class Serial implements SerialPortEventListener, Service
 	 * 					Nombre de lignes que l'avr va répondre (sans compter les acquittements)
 	 * @return
 	 * 					Un tableau contenant le message
+	 * @throws SerialException 
 	 */
-	public String[] communiquer(String[] messages, int nb_lignes_reponse)
+	public String[] communiquer(String[] messages, int nb_lignes_reponse) throws SerialException
 	{
 		long t1 = System.currentTimeMillis();
-		synchronized(input)
-		{
 		synchronized(output)
 		{
 			long t2 = System.currentTimeMillis();
@@ -161,6 +162,7 @@ public class Serial implements SerialPortEventListener, Service
 			catch (Exception e)
 			{
 				log.critical("Ne peut pas parler à la carte " + this.name, this);
+				throw new SerialException();
 			}
 	
 			try
@@ -173,6 +175,7 @@ public class Serial implements SerialPortEventListener, Service
 			catch (Exception e)
 			{
 				log.critical("Ne peut pas parler à la carte " + this.name, this);
+				throw new SerialException();
 			}
 			
 		if(t2-t1 > 1000)
@@ -182,7 +185,6 @@ public class Serial implements SerialPortEventListener, Service
 			
 		return inputLines;
 		
-		}
 		}
 	}
 

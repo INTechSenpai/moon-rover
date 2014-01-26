@@ -1,5 +1,6 @@
 package threads;
 
+import exception.SerialException;
 import robot.RobotVrai;
 
 /**
@@ -29,7 +30,11 @@ class ThreadPosition extends AbstractThread {
 		{
 			if(stop_threads)
 				break;
-			robotvrai.update_x_y_orientation();
+			try {
+				robotvrai.update_x_y_orientation();
+			} catch (SerialException e) {
+				e.printStackTrace();
+			}
 			robot_pret = true;
 			sleep(100);
 		} while(!threadTimer.fin_match);

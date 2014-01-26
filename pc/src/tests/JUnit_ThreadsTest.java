@@ -85,5 +85,15 @@ public class JUnit_ThreadsTest extends JUnit_Test {
 		Assert.assertTrue(threadtimer.match_demarre);
 	}
 
+	@Test
+	public void test_serie() throws Exception
+	{
+		RobotVrai robotvrai = (RobotVrai) container.getService("RobotVrai");
+		robotvrai.setPosition(new Vec2(1000, 1400));
+		robotvrai.setOrientation((float)Math.PI);
+		container.demarreTousThreads();
+		Thread.sleep(200);
+		robotvrai.avancer(1000);
+	}
 	
 }

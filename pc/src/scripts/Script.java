@@ -16,7 +16,9 @@ import hook.methodes.TakeFire;
 
 import java.util.ArrayList;
 
+import exception.ConfigException;
 import exception.MouvementImpossibleException;
+import exception.SerialException;
 /**
  * Classe abstraite dont hériteront les différents scripts. S'occupe le robotvrai et robotchrono de manière à ce que ce soit transparent pour les différents scripts
  * @author pf
@@ -32,6 +34,8 @@ public abstract class Script implements Service {
 	
 	protected static ArrayList<Hook> hookfeu;
 	
+	protected String couleur; 
+	
 	public Script(Pathfinding pathfinding, HookGenerator hookgenerator, Read_Ini config, Log log, RobotVrai robotvrai)
 	{
 		Script.pathfinding = pathfinding;
@@ -45,6 +49,11 @@ public abstract class Script implements Service {
 		hook.ajouter_callback(new Callback(takefire, true));		
 		hookfeu.add(hook);
 
+		try {
+			couleur = config.get("couleur");
+		} catch (ConfigException e) {
+			e.printStackTrace();
+		}
 	}
 		
 	/**
@@ -127,8 +136,9 @@ public abstract class Script implements Service {
 
 	/**
 	 * Exécute le script
+	 * @throws SerialException 
 	 */
-	abstract protected void execute(int id_version, Robot robot, Table table) throws MouvementImpossibleException;
+	abstract protected void execute(int id_version, Robot robot, Table table) throws MouvementImpossibleException, SerialException;
 
 	/**
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs.

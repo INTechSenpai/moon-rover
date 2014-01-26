@@ -82,7 +82,17 @@ public class JUnit_RobotVraiRougeTest extends JUnit_Test {
 		robotvrai.tourner((float)1.2);
 		assertEquals(robotvrai.getOrientation(), Math.PI-1.2, 0.001);
 	}
-	
+
+	@Test
+	public void test_tourner_symetrie_2() throws Exception
+	{
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		robotvrai.tourner((float)1.2, true);
+		assertEquals(robotvrai.getOrientation(), 1.2, 0.001);
+	}
+
 	@Test
 	public void test_avancer_symetrie() throws Exception
 	{

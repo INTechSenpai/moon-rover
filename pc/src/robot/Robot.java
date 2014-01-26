@@ -7,6 +7,7 @@ import smartMath.Vec2;
 import container.Service;
 import exception.ConfigException;
 import exception.MouvementImpossibleException;
+import exception.SerialException;
 import utils.Log;
 import utils.Read_Ini;
 
@@ -44,12 +45,12 @@ public abstract class Robot implements Service {
 	 * ACTIONNEURS
 	 */
 	
-	public abstract void tirerBalles();
-	public abstract void takefire();
-	public abstract void deposer_fresques();
-	public abstract void bac_bas();
-	public abstract void bac_haut();
-	public abstract void rateau(PositionRateau position, Cote cote);
+	public abstract void tirerBalles() throws SerialException;
+	public abstract void takefire() throws SerialException;
+	public abstract void deposer_fresques() throws SerialException;
+	public abstract void bac_bas() throws SerialException;
+	public abstract void bac_haut() throws SerialException;
+	public abstract void rateau(PositionRateau position, Cote cote) throws SerialException;
 
 	public abstract void sleep(long duree);
 	
@@ -63,6 +64,7 @@ public abstract class Robot implements Service {
 	protected Vec2 position = new Vec2(0, 0);
 	protected float orientation = 0;
 	protected String couleur;
+	protected boolean effectuer_symetrie = true;
 	
 	protected int nombre_lances = 8;
 	protected boolean fresques_posees = false;
@@ -176,11 +178,15 @@ public abstract class Robot implements Service {
 		tourner(angle, null, nb_tentatives, sans_lever_exception);
 	}
 
-	public void tourner(float angle, boolean sans_lever_exception) throws MouvementImpossibleException
+	public void tourner(float angle, boolean pas_de_symetrie) throws MouvementImpossibleException
 	{
-		tourner(angle, null, nb_tentatives, sans_lever_exception);
+		boolean mem_effectuer_symetrie = effectuer_symetrie;
+		if(pas_de_symetrie)
+			effectuer_symetrie = false;
+		tourner(angle, null, nb_tentatives, false);
+		effectuer_symetrie = mem_effectuer_symetrie;
 	}
-
+	
 	protected void tourner(float angle, int nombre_tentatives) throws MouvementImpossibleException
 	{
 		tourner(angle, null, nombre_tentatives, false);		

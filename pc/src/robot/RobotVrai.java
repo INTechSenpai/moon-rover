@@ -17,6 +17,7 @@ import java.util.Hashtable;
 import exception.BlocageException;
 import exception.CollisionException;
 import exception.MouvementImpossibleException;
+import exception.SerialException;
 
 /**
  * Classe qui fournit des déplacements haut niveau
@@ -39,7 +40,6 @@ public class RobotVrai extends Robot {
 //	private boolean enMouvement = true;
 	
 	private boolean marche_arriere = false;
-	private boolean effectuer_symetrie = true;
 	
 	public boolean pret = false;
 	
@@ -121,7 +121,11 @@ public class RobotVrai extends Robot {
 		{
 			log.critical(e, this);
 		}
-		update_x_y_orientation();
+		try {
+			update_x_y_orientation();
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/*
@@ -144,7 +148,11 @@ public class RobotVrai extends Robot {
 		log.debug("Arrêt du robot", this);
 		if(avec_blocage)
 			blocage = true;
-		deplacements.stopper();			
+		try {
+			deplacements.stopper();
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}			
 	}
 	
 	/**
@@ -326,7 +334,11 @@ public class RobotVrai extends Robot {
 	public void set_vitesse_translation(String vitesse)
 	{
 		int pwm_max = conventions_vitesse_translation(vitesse);
-		deplacements.set_vitesse_translation(pwm_max);
+		try {
+			deplacements.set_vitesse_translation(pwm_max);
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}
 		log.debug("Modification de la vitesse de translation: "+vitesse, this);
 	}
 
@@ -337,11 +349,15 @@ public class RobotVrai extends Robot {
 	public void set_vitesse_rotation(String vitesse)
 	{
 		int pwm_max = conventions_vitesse_rotation(vitesse);
-		deplacements.set_vitesse_rotation(pwm_max);
+		try {
+			deplacements.set_vitesse_rotation(pwm_max);
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}
 		log.debug("Modification de la vitesse de rotation: "+vitesse, this);
 	}
 	
-	public void update_x_y_orientation()
+	public void update_x_y_orientation() throws SerialException
 	{
 		float[] infos = deplacements.get_infos_x_y_orientation();
 		synchronized(position)
@@ -359,10 +375,14 @@ public class RobotVrai extends Robot {
 	// TODO
 	public void initialiser_actionneurs_deplacements()
 	{
-		deplacements.activer_asservissement_rotation();
-		deplacements.activer_asservissement_translation();
-		actionneurs.rateau_ranger_droit();
-		actionneurs.rateau_ranger_gauche();		
+		try {
+			deplacements.activer_asservissement_rotation();
+			deplacements.activer_asservissement_translation();
+			actionneurs.rateau_ranger_droit();
+			actionneurs.rateau_ranger_gauche();		
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -380,19 +400,19 @@ public class RobotVrai extends Robot {
 	}
 	
 	@Override
-	public void bac_bas()
+	public void bac_bas() throws SerialException
 	{
 		actionneurs.bac_bas();
 	}
 
 	@Override
-	public void bac_haut()
+	public void bac_haut() throws SerialException
 	{
 		actionneurs.bac_haut();
 	}
 
 	@Override
-	public void rateau(PositionRateau position, Cote cote)
+	public void rateau(PositionRateau position, Cote cote) throws SerialException
 	{
 		if(position == PositionRateau.BAS && cote == Cote.DROIT)
 			actionneurs.rateau_bas_droit();
@@ -427,15 +447,23 @@ public class RobotVrai extends Robot {
 		{
 			this.position = position;
 		}
-		deplacements.set_x((int)position.x);
-		deplacements.set_y((int)position.y);
+		try {
+			deplacements.set_x((int)position.x);
+			deplacements.set_y((int)position.y);
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void setOrientation(float orientation) {
 		this.orientation = orientation;
 		orientation_consigne = orientation;
-		deplacements.set_orientation(orientation);
+		try {
+			deplacements.set_orientation(orientation);
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/*
@@ -454,7 +482,11 @@ public class RobotVrai extends Robot {
 	{
 		blocage = false;
 		orientation_consigne = angle;
-		deplacements.tourner(angle);
+		try {
+			deplacements.tourner(angle);
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}
 		
 		while(!acquittement(true, sans_lever_exception))
 		{
@@ -489,7 +521,11 @@ public class RobotVrai extends Robot {
 		consigne = point.clone();
 
 		Vec2 delta = consigne.clone();
-		update_x_y_orientation();
+		try {
+			update_x_y_orientation();
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}
 		delta.Minus(position);
 		float distance = delta.Length();
 		
@@ -511,15 +547,23 @@ public class RobotVrai extends Robot {
 			tournerBasNiveau(angle);
 			// on n'avance pas si un obstacle est devant
 			detecter_collision();
-			deplacements.avancer(distance);
+			try {
+				deplacements.avancer(distance);
+			} catch (SerialException e) {
+				e.printStackTrace();
+			}
 		}
 		else
 		{
 			orientation_consigne = angle;
-			deplacements.tourner(angle);
+			try {
+				deplacements.tourner(angle);
+				detecter_collision();
+				deplacements.avancer(distance);			
+			} catch (SerialException e) {
+				e.printStackTrace();
+			}
 			// on n'avance pas si un obstacle est devant
-			detecter_collision();
-			deplacements.avancer(distance);			
 		}
 		
 		while(!acquittement(true, sans_lever_exception))
@@ -567,8 +611,12 @@ public class RobotVrai extends Robot {
 */
 			// L'attribut orientation_consigne doit être mis à jour à chaque deplacements.tourner() pour le fonctionnement de avancerBasNiveau()
 			orientation_consigne = angle;
-			deplacements.tourner(angle);
-			deplacements.avancer(distance);
+			try {
+				deplacements.tourner(angle);
+				deplacements.avancer(distance);
+			} catch (SerialException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -599,24 +647,29 @@ public class RobotVrai extends Robot {
 	private boolean acquittement(boolean detection_collision, boolean sans_lever_exception) throws BlocageException, CollisionException
 	{
         // récupérations des informations d'acquittement
-		Hashtable<String, Integer> infos = deplacements.maj_infos_stoppage_enMouvement();
-		
-        //robot bloqué ?
-        //deplacements.gestion_blocage() n'indique qu'un NOUVEAU blocage : garder le ou logique avant l'ancienne valeur (attention aux threads !)
-		if(blocage || deplacements.gestion_blocage(infos))
-		{
-			blocage = true;
-			if(!sans_lever_exception)
-				throw new BlocageException(this);
+		Hashtable<String, Integer> infos;
+		try {
+				infos = deplacements.maj_infos_stoppage_enMouvement();
+			
+	        //robot bloqué ?
+	        //deplacements.gestion_blocage() n'indique qu'un NOUVEAU blocage : garder le ou logique avant l'ancienne valeur (attention aux threads !)
+			if(blocage || deplacements.gestion_blocage(infos))
+			{
+				blocage = true;
+				if(!sans_lever_exception)
+					throw new BlocageException(this);
+			}
+			
+			// ennemi détecté devant le robot?
+			if(detection_collision)
+				detecter_collision();
+			
+			// robot arrivé?
+			if(!deplacements.update_enMouvement(infos))
+				return true;
+		} catch (SerialException e) {
+			e.printStackTrace();
 		}
-		
-		// ennemi détecté devant le robot?
-		if(detection_collision)
-			detecter_collision();
-		
-		// robot arrivé?
-		if(!deplacements.update_enMouvement(infos))
-			return true;
 
 		// robot encore en mouvement
 		return false;

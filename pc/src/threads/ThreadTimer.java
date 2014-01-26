@@ -1,5 +1,6 @@
 package threads;
 
+import exception.SerialException;
 import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
 import table.Table;
@@ -53,10 +54,11 @@ public class ThreadTimer extends AbstractThread {
 			}
 			sleep(50);
 		}
-		log.debug("LE MATCH COMMENCE !", this);
-
 		date_debut = System.currentTimeMillis();
 		match_demarre = true;
+
+		log.debug("LE MATCH COMMENCE !", this);
+
 
 		// Le match à démarré. Tous les 500ms, on retire les obstacles périmés
 		while(System.currentTimeMillis() - date_debut < duree_match)
@@ -80,12 +82,20 @@ public class ThreadTimer extends AbstractThread {
 		// Le match est fini, désasservissement
 		fin_match = true;
 
-		deplacements.stopper();
+		try {
+			deplacements.stopper();
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}
 		
 		sleep(500);
 		
-		deplacements.desactiver_asservissement_rotation();
-		deplacements.desactiver_asservissement_translation();
+		try {
+			deplacements.desactiver_asservissement_rotation();
+			deplacements.desactiver_asservissement_translation();
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}
 		deplacements.arret_final();
 
 		log.debug("Fin du thread timer", this);

@@ -133,6 +133,16 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 	}
 
 	@Test
+	public void test_tourner_symetrie_2() throws Exception
+	{
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		robotvrai.tourner((float)1.2, true);
+		assertEquals(robotvrai.getOrientation(), 1.2, 0.001);
+	}
+
+	@Test
 	public void test_suit_chemin() throws Exception
 	{
 		log.debug("JUnit_RobotVraiJauneTest.test_suit_chemin()", this);

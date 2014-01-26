@@ -77,7 +77,15 @@ public class Capteurs implements Service {
 	
     public boolean demarrage_match()
     {
-    	 return Integer.parseInt(serie.communiquer("j", 1)[0]) == 0;
+//    	log.debug(serie.communiquer("j", 1)[0], this);
+    	try {
+    		return Integer.parseInt(serie.communiquer("j", 1)[0]) == 0;
+    	}
+    	catch(Exception e)
+    	{
+    		log.critical("Aucune réponse du jumper", this);
+    		return false;
+    	}
     }
  
     // TODO

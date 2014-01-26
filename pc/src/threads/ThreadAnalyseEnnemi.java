@@ -32,7 +32,7 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 		{
 			if(stop_threads)
 			{
-				log.debug("Stoppage du thread laser", this);
+				log.debug("Arrêt du thread d'analyse de l'ennemi", this);
 				return;
 			}
 			sleep(100);
@@ -43,6 +43,12 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 		
 		while(!threadtimer.fin_match)
 		{
+			if(stop_threads)
+			{
+				log.debug("Arrêt du thread d'analyse de l'ennemi", this);
+				return;
+			}
+
 			Vec2[] positionsEnnemi = table.get_positions_ennemis();
 			for(int i = 0; i < 2; i++)
 			{
@@ -57,6 +63,8 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 			
 			sleep(500); // le sleep peut être long, le robot adverse ne bouge de toute façon pas très vite...
 		}
+		log.debug("Arrêt du thread d'analyse de l'ennemi", this);
+
 	}
 
 
