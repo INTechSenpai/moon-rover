@@ -48,7 +48,7 @@ public class ThreadTimer extends AbstractThread {
 		{
 			if(stop_threads)
 			{
-				log.debug("Arrêt du thread timer", this);
+				log.debug("Arrêt du thread timer avant le début du match", this);
 				return;
 			}
 			sleep(50);
@@ -63,7 +63,7 @@ public class ThreadTimer extends AbstractThread {
 		{
 			if(stop_threads)
 			{
-				log.debug("Arrêt du thread timer", this);
+				log.debug("Arrêt du thread timer avant la fin du match", this);
 				return;
 			}
 			table.supprimer_obstacles_perimes();

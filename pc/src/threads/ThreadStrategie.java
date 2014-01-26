@@ -36,7 +36,7 @@ public class ThreadStrategie extends AbstractThread {
 	@Override
 	public void run()
 	{
-		int profondeur_max = 2;
+/*		int profondeur_max = 2;
 		while(!stop_threads)
 		{
 			log.debug("Lancement du thread de stratégie", this);
@@ -77,7 +77,7 @@ public class ThreadStrategie extends AbstractThread {
 				strategie.prochainScript = meilleurProchain.script;
 			}
 			
-		}
+		}*/
 	}
 	
 }

@@ -13,8 +13,8 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 	Table table;
 	ThreadTimer threadtimer;
 	
-	long[] date_freeze;
-	Vec2[] positionsfreeze;
+	long[] date_freeze = new long[2];
+	Vec2[] positionsfreeze = new Vec2[2];
 	int tolerance = 1000;
 	
 	public ThreadAnalyseEnnemi(Table table, ThreadTimer threadtimer)

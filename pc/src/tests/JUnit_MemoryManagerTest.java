@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.Assert;
 
 import robot.RobotChrono;
-import robot.RobotVrai;
 import smartMath.Vec2;
 import strategie.MemoryManager;
 import table.Table;
@@ -18,7 +17,6 @@ import table.Table;
 
 public class JUnit_MemoryManagerTest extends JUnit_Test {
 
-	private RobotVrai robotvrai;
 	private Table table;
 	private MemoryManager memorymanager;
 	private RobotChrono robotchrono;
