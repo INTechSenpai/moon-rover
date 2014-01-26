@@ -91,7 +91,7 @@ public class Strategie implements Service {
 			}
 	
 			log.debug("Stratégie fait: "+scriptEnCours.toString()+", version "+Integer.toString(versionScriptEnCours), this);
-			scriptEnCours.agit(versionScriptEnCours, robotvrai, table);
+			scriptEnCours.agit(versionScriptEnCours, robotvrai, table, true); // le dernier argument, retenter_si_blocage, est vrai si c'est le dernier script. Sinon, on change de script sans attendre
 		}
 		log.debug("Arrêt de la stratégie", this);
 		

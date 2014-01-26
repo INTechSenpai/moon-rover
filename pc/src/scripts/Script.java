@@ -50,7 +50,7 @@ public abstract class Script implements Service {
 	/**
 	 * Exécute vraiment un script
 	 */
-	public void agit(int id_version, RobotVrai robotvrai, Table table)
+	public void agit(int id_version, RobotVrai robotvrai, Table table, boolean retenter_si_blocage)
 	{
 		Vec2 point_entree = point_entree(id_version);
 
@@ -61,7 +61,8 @@ public abstract class Script implements Service {
 
 		try
 		{
-			robotvrai.suit_chemin(chemin, hookfeu);
+			// Si on rencontre un obstacle en allant exécuter un script et qu'il reste d'autres scripts, alors on change de script
+			robotvrai.suit_chemin(chemin, hookfeu, retenter_si_blocage);
 			execute(id_version, robotvrai, table);
 		}
 		catch (Exception e)

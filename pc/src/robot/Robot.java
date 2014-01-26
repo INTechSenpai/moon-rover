@@ -27,7 +27,7 @@ public abstract class Robot implements Service {
 			 	throws MouvementImpossibleException;
 	protected abstract void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
 				throws MouvementImpossibleException;
-	protected abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean symetrie_effectuee)
+	protected abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee)
 				throws MouvementImpossibleException;
 	public abstract void set_vitesse_translation(String vitesse);
 	public abstract void set_vitesse_rotation(String vitesse);
@@ -153,12 +153,22 @@ public abstract class Robot implements Service {
 
 	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws MouvementImpossibleException
 	{
-		suit_chemin(chemin, hooks, false);
+		suit_chemin(chemin, hooks, false, false);
 	}
-
+	
 	public void suit_chemin(ArrayList<Vec2> chemin) throws MouvementImpossibleException
 	{
-		suit_chemin(chemin, null, false);
+		suit_chemin(chemin, null, false, false);
+	}
+
+	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage) throws MouvementImpossibleException
+	{
+		suit_chemin(chemin, hooks, retenter_si_blocage, false);
+	}
+
+	public void suit_chemin(ArrayList<Vec2> chemin, boolean retenter_si_blocage) throws MouvementImpossibleException
+	{
+		suit_chemin(chemin, null, retenter_si_blocage, false);
 	}
 
 	public void tourner(float angle, ArrayList<Hook> hooks, boolean sans_lever_exception) throws MouvementImpossibleException

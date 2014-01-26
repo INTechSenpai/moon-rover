@@ -254,10 +254,10 @@ public class RobotVrai extends Robot {
 	 * @throws MouvementImpossibleException 
 	 */
 	@Override
-	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean symetrie_effectuee) throws MouvementImpossibleException
+	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee) throws MouvementImpossibleException
 	{
 		for(Vec2 position: chemin)
-			va_au_point(position, hooks, false, 2, true, symetrie_effectuee, false);
+			va_au_point(position, hooks, false, 2, retenter_si_blocage, symetrie_effectuee, false);
 	}
 
 
@@ -312,8 +312,7 @@ public class RobotVrai extends Robot {
 			{
 				log.warning("attente avant nouvelle tentative... reste "+Integer.toString(nombre_tentatives)+" tentative(s)", this);
 				sleep(1000);
-				// TODO
-				va_au_point(point, hooks, trajectoire_courbe, nombre_tentatives-1, true, false, sans_lever_exception);
+				va_au_point(point, hooks, trajectoire_courbe, nombre_tentatives-1, retenter_si_blocage, true, sans_lever_exception);
 			}
 			else if(!sans_lever_exception)
 				throw new MouvementImpossibleException(this);

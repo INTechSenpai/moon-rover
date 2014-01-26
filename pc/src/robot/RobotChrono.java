@@ -119,7 +119,7 @@ public class RobotChrono extends Robot {
 	}
 
 	@Override
-	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean symetrie_effectuee) throws MouvementImpossibleException
+	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee) throws MouvementImpossibleException
 	{
 		for(Vec2 point: chemin)
 			va_au_point(point);
