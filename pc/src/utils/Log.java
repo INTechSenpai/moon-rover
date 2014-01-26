@@ -108,7 +108,7 @@ public class Log implements Service
 		}
 	}
 
-	public void finalize()
+	public void destructeur()
 	{
 		if(sauvegarde_fichier)
 			try {
