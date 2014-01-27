@@ -82,4 +82,14 @@ public class Read_Ini implements Service {
 		config.setProperty(nom, value);
 	}
 	
+	/**
+	 * Set en version user-friendly
+	 * @param nom
+	 * @param value
+	 */
+	public void set(String nom, Object value)
+	{
+		set(nom, value.toString());
+	}
+	
 }

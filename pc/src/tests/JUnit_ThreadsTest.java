@@ -72,6 +72,22 @@ public class JUnit_ThreadsTest extends JUnit_Test {
 	}
 	
 	@Test
+	public void test_fin_match() throws Exception
+	{
+		config.set("temps_match", 3);
+		ThreadTimer threadtimer = (ThreadTimer) container.getService("threadTimer");
+		long t1 = System.currentTimeMillis();
+		container.demarreTousThreads();
+		while(!threadtimer.fin_match)
+		{
+			Thread.sleep(500);
+			if(System.currentTimeMillis()-t1 >= 4000)
+				break;
+		}
+		Assert.assertTrue(System.currentTimeMillis()-t1 < 4000);
+	}
+	
+	@Test
 	public void test_demarrage_match() throws Exception
 	{
 		ThreadTimer threadtimer = (ThreadTimer) container.getService("threadTimer");

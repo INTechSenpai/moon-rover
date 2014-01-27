@@ -558,12 +558,12 @@ public class RobotVrai extends Robot {
 			orientation_consigne = angle;
 			try {
 				deplacements.tourner(angle);
+				// on n'avance pas si un obstacle est devant
 				detecter_collision();
 				deplacements.avancer(distance);			
 			} catch (SerialException e) {
 				e.printStackTrace();
 			}
-			// on n'avance pas si un obstacle est devant
 		}
 		
 		while(!acquittement(true, sans_lever_exception))

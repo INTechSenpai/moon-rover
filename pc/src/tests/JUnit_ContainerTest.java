@@ -118,6 +118,14 @@ public class JUnit_ContainerTest extends JUnit_Test {
 	}
 
 	@Test
+	public void test_doublon() throws Exception
+	{
+		log.debug("JUnit_ContainerTest.test_doublon()", this);
+		container.getService("FiltrageLaser");
+		container.getService("FiltrageLaser");
+	}
+
+	@Test
 	public void test_CheckUp() throws Exception
 	{
 		log.debug("JUnit_ContainerTest.test_CheckUp()", this);
