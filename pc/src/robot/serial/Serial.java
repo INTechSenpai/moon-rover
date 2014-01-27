@@ -161,6 +161,7 @@ public class Serial implements SerialPortEventListener, Service
 			}
 			catch (Exception e)
 			{
+				e.printStackTrace();
 				log.critical("Ne peut pas parler à la carte " + this.name, this);
 				throw new SerialException();
 			}

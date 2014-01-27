@@ -27,7 +27,7 @@ public class LeverRateau implements Executable  {
 	public void execute()
 	{
 		try {
-			robot.rateau(PositionRateau.BAS, cote);
+			robot.rateau(PositionRateau.HAUT, cote);
 		} catch (SerialException e) {
 			e.printStackTrace();
 		}

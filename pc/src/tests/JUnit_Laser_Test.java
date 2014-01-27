@@ -42,5 +42,13 @@ public class JUnit_Laser_Test extends JUnit_Test {
 		laser.verifier_balises_connectes();
 		laser.verifier_coherence_balise();
 	}
+	
+	@Test
+	public void test_on_off() throws Exception
+	{
+		log.debug("JUnit_Laser_Test.test_on_off()", this);
+		laser.allumer();
+		laser.eteindre();
+	}
 
 }
