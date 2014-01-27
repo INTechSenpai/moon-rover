@@ -15,8 +15,6 @@ import smartMath.Vec2;
 
 public class JUnit_MathTest extends JUnit_Test {
 
-	Vec2 a;
-	Vec2 b;
 	Matrn y;
 	Matrn z;
 	
@@ -24,10 +22,42 @@ public class JUnit_MathTest extends JUnit_Test {
 	public void test_Vec2() throws Exception
 	{
 		log.debug("JUnit_MathTest.test_Vec2()", this);
-		a = new Vec2(10, 500);
-		b = new Vec2(20, -20);
+		Vec2 a = new Vec2(10, 500);
+		Vec2 b = new Vec2(20, -20);
+		Vec2 c = new Vec2();
 		Assert.assertTrue(a.equals(a));
 		Assert.assertTrue(a.PlusNewVector(b).equals(new Vec2(30, 480)));
+		Assert.assertTrue(a.MinusNewVector(b).equals(new Vec2(-10, 520)));		
+		a.Plus(b);
+		Assert.assertTrue(a.equals(new Vec2(30, 480)));
+		c.Minus(b);
+		Assert.assertTrue(c.equals(new Vec2(-20, 20)));
+		Assert.assertTrue(c.SquaredDistance(new Vec2()) == 800);
+		Assert.assertTrue(c.SquaredLength() == 800);
+		Assert.assertTrue(c.dot(a) == (-20*30+20*480));
+		c.x = 4;
+		c.y = 5;
+		Assert.assertTrue(c.distance(new Vec2(1,1)) == 5);
+		c.x = 3;
+		c.y = 4;
+		Assert.assertTrue(c.Length() == 5);
+	}
+
+	@Test public void test_matrn_constructor() throws Exception
+	{
+		log.debug("JUnit_MathTest.test_matrn_constructor()", this);
+		y = new Matrn(2);
+		Assert.assertTrue(y.getNbColonnes() == 2);
+		Assert.assertTrue(y.getNbLignes() == 2);
+		y = new Matrn(2, 1);
+		Assert.assertTrue(y.getNbColonnes() == 1);
+		Assert.assertTrue(y.getNbLignes() == 2);
+		float[][] tab = new float[2][1];
+		tab[0][0] = 1;
+		tab[1][0] = 2;
+		y = new Matrn(tab);
+		Assert.assertTrue(y.getNbColonnes() == 2);
+		Assert.assertTrue(y.getNbLignes() == 1);
 	}
 
 	@Test

@@ -62,6 +62,16 @@ public class Matrn {
 	{
 		return matrice[i][j];
 	}
+	
+	public int getNbLignes()
+	{
+		return taille[1];
+	}
+
+	public int getNbColonnes()
+	{
+		return taille[0];
+	}
 
 	public void addition (Matrn A) throws MatriceException
 	{	
