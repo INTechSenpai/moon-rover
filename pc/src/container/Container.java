@@ -61,6 +61,11 @@ public class Container {
 	public void destructeur()
 	{
 		arreteThreads();
+		try {
+			Thread.sleep(700);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		if(serialmanager != null)
 		{
 			if(serialmanager.serieAsservissement != null)

@@ -192,10 +192,11 @@ public class Serial implements SerialPortEventListener, Service
 	/**
 	 * Doit être appelé quand on arrête de se servir de la série
 	 */
-	public synchronized void close()
+	public void close()
 	{
 		if (serialPort != null)
 		{
+			log.debug("Fermeture de "+name, this);
 			serialPort.close();
 		}
 	}

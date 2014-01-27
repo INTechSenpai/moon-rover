@@ -24,7 +24,7 @@ public abstract class JUnit_Test {
 	public void tearDown() throws Exception {
 		container.destructeur();
 		try {
-			Thread.sleep(700);
+			Thread.sleep(200);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

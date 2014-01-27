@@ -102,7 +102,7 @@ public class SerialManager
 				if (!deja_attribues.contains(k))
 				{
 					//Creation d'une serie de test
-					Serial serialTest = new Serial(log, "carte de test");
+					Serial serialTest = new Serial(log, "carte de test de ping");
 
 					serialTest.initialize(this.connectedSerial.get(k), baudrate);
 					
