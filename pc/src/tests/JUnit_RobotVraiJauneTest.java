@@ -213,5 +213,26 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 		test_sans_exception_collision();
 		robotvrai.avancer(-500);
 	}
-	
+
+	@Test
+	public void test_actionneurs() throws Exception
+	{
+		robotvrai.initialiser_actionneurs_deplacements();
+		robotvrai.recaler();
+		robotvrai.bac_bas();
+		robotvrai.bac_haut();
+		robotvrai.deposer_fresques();
+		robotvrai.isFresquesPosees();
+		robotvrai.rateau(PositionRateau.BAS, Cote.DROIT);
+		robotvrai.rateau(PositionRateau.BAS, Cote.GAUCHE);
+		robotvrai.rateau(PositionRateau.HAUT, Cote.DROIT);
+		robotvrai.rateau(PositionRateau.HAUT, Cote.GAUCHE);
+		robotvrai.rateau(PositionRateau.RANGER, Cote.DROIT);
+		robotvrai.rateau(PositionRateau.RANGER, Cote.GAUCHE);
+		robotvrai.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
+		robotvrai.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
+		robotvrai.tirerBalles();
+		robotvrai.sleep(100);
+	}
+
 }

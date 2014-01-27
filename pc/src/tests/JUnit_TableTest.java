@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import smartMath.Vec2;
-import strategie.MemoryManager;
 import table.Table;
 
 	/**
@@ -38,14 +37,24 @@ public class JUnit_TableTest extends JUnit_Test {
 	}
 
 	@Test
-	public void test_nearestTorch() throws Exception {
+	public void test_nearestTorch() throws Exception
+	{
+		log.debug("JUnit_TableTest.test_nearestTorch()", this);
+		Assert.assertTrue(table.nearestTorch(new Vec2(300,200)) == 0);
+		Assert.assertTrue(table.nearestTorch(new Vec2(1300,200)) == 0);
+		Assert.assertTrue(table.nearestTorch(new Vec2(-300,200)) == 1);
+		Assert.assertTrue(table.nearestTorch(new Vec2(-1300,200)) == 1);
+	}
+
+	@Test
+	public void test_nearestFire() throws Exception {
 		log.debug("JUnit_TableTest.test_nearestTorch()", this);
 		Assert.assertTrue(table.nearestFire(new Vec2(300,200)) == 4);
 		Assert.assertTrue(table.nearestFire(new Vec2(1300,200)) == 1);
 		Assert.assertTrue(table.nearestFire(new Vec2(-300,200)) == 5);
 		Assert.assertTrue(table.nearestFire(new Vec2(-1300,200)) == 7);
 	}
-	
+
 	@Test
 	public void test_creer_obstacle() throws Exception {
 		log.debug("JUnit_TableTest.test_creer_obstacle()", this);
@@ -79,17 +88,5 @@ public class JUnit_TableTest extends JUnit_Test {
 		table.putFire(2);
 		Assert.assertTrue(ancien_hash != table.hashTable());
 	}
-	
-	@Test
-	public void benchmark_clone() throws Exception {
-		log.debug("JUnit_TableTest.benchmark_clone()", this);
-		MemoryManager memorymanager = (MemoryManager)container.getService("MemoryManager");
-		@SuppressWarnings("unused")
-		Table table1;
-		for(int i = 0; i < 10000; i++)
-		{
-			table1 = memorymanager.getCloneTable(1);
-		}
-	}
-	
+
 }

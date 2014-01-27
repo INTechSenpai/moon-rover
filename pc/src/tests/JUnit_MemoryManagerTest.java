@@ -46,7 +46,10 @@ public class JUnit_MemoryManagerTest extends JUnit_Test {
 		memorymanager.setModelTable(table, 1);
 		Table cloned = memorymanager.getCloneTable(1);
 		table.creer_obstacle(new Vec2(0,1000));
+		table.pickFire(0);
+		table.pickTree(0);
 		Assert.assertTrue(!table.equals(cloned));
+		memorymanager.getCloneTable(1);
 	}
 
 	@Test

@@ -69,8 +69,7 @@ public abstract class Robot implements Service {
 	protected int nombre_lances = 8;
 	protected boolean fresques_posees = false;
 
-	// Attributs privés
-	private int nb_tentatives = 2;
+	protected int nb_tentatives = 2;
 	
 	public Robot(Read_Ini config, Log log)
 	{

@@ -81,4 +81,38 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 		
 	}
 
+	@Test
+	public void test_conventions_vitesse() throws Exception
+	{
+		robotchrono.set_vitesse_rotation("entre_scripts");
+		robotchrono.set_vitesse_rotation("recal_faible");
+		robotchrono.set_vitesse_rotation("recal_forte");
+		robotchrono.set_vitesse_rotation("vitesse_mammouth");
+
+		robotchrono.set_vitesse_translation("entre_scripts");
+		robotchrono.set_vitesse_translation("recal_faible");
+		robotchrono.set_vitesse_translation("recal_forte");
+		robotchrono.set_vitesse_translation("vitesse_mammouth");
+
+	}
+	
+	@Test
+	public void test_actionneurs() throws Exception
+	{
+		robotchrono.bac_bas();
+		robotchrono.bac_haut();
+		robotchrono.deposer_fresques();
+		robotchrono.isFresquesPosees();
+		robotchrono.rateau(PositionRateau.BAS, Cote.DROIT);
+		robotchrono.rateau(PositionRateau.BAS, Cote.GAUCHE);
+		robotchrono.rateau(PositionRateau.HAUT, Cote.DROIT);
+		robotchrono.rateau(PositionRateau.HAUT, Cote.GAUCHE);
+		robotchrono.rateau(PositionRateau.RANGER, Cote.DROIT);
+		robotchrono.rateau(PositionRateau.RANGER, Cote.GAUCHE);
+		robotchrono.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
+		robotchrono.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
+		robotchrono.tirerBalles();
+		robotchrono.sleep(100);
+	}
+		
 }

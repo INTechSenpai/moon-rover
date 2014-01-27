@@ -24,7 +24,6 @@ public class Table implements Service {
 	
 	private int hashFire;
 	private int hashTree;
-	private int hashTorch;
 	private int hashObstacles;
 
 	// Dépendances
@@ -100,7 +99,6 @@ public class Table implements Service {
 		
 		hashFire = 0;
 		hashTree = 0;
-		hashTorch = 0;
 		hashObstacles = 0;
 	}
 	
@@ -274,13 +272,6 @@ public class Table implements Service {
 			ct.hashTree = hashTree;
 		}
 
-		if(ct.hashTorch != hashTorch)
-		{
-			for(int i = 0; i < 2; i++)		
-				arrayTorch[i].clone(ct.arrayTorch[i]);
-			ct.hashTorch = hashTorch;
-		}
-
 		if(ct.hashObstacles != hashObstacles)
 		{
 			ct.listObstacles.clear();
@@ -303,7 +294,7 @@ public class Table implements Service {
 	 */
 	public int hashTable()
 	{
-		return hashFire + hashTree + hashTorch + hashObstacles;
+		return hashFire + hashTree + hashObstacles;
 	}
 
 	/**
@@ -315,7 +306,6 @@ public class Table implements Service {
 	{
 		return 	hashFire == other.hashFire
 				&& hashTree == other.hashTree
-				&& hashTorch == other.hashTorch
 				&& hashObstacles == other.hashObstacles;
 	}
 	

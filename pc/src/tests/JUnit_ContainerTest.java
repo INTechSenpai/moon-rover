@@ -3,6 +3,7 @@ package tests;
 import org.junit.Test;
 
 import exception.ContainerException;
+import exception.SerialManagerException;
 
 	/**
 	 * Tests unitaires pour le container
@@ -151,6 +152,20 @@ public class JUnit_ContainerTest extends JUnit_Test {
 	{
 		log.debug("JUnit_ContainerTest.test_serieLaser()", this);
 		container.getService("serieLaser");
+	}
+
+	@Test(expected=SerialManagerException.class)
+	public void test_serieErreur() throws Exception
+	{
+		log.debug("JUnit_ContainerTest.test_serieErreur()", this);
+		container.getService("serieABWAWA");
+	}
+
+	@Test(expected=ContainerException.class)
+	public void test_threadErreur() throws Exception
+	{
+		log.debug("JUnit_ContainerTest.test_threadErreur()", this);
+		container.getService("threadABWABWA");
 	}
 
 	@Test

@@ -32,7 +32,7 @@ public abstract class Script implements Service {
 	protected static Log log;
 	private static Pathfinding pathfinding;
 	
-	protected static ArrayList<Hook> hookfeu;
+	protected static ArrayList<Hook> hookfeu = new ArrayList<Hook>();
 	
 	protected String couleur; 
 	
@@ -43,7 +43,6 @@ public abstract class Script implements Service {
 		Script.config = config;
 		Script.log = log;
 
-		ArrayList<Hook> hookfeu = new ArrayList<Hook>();
 		Executable takefire = new TakeFire(robotvrai);
 		Hook hook = hookgenerator.hook_feu();
 		hook.ajouter_callback(new Callback(takefire, true));		

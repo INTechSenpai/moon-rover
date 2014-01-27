@@ -264,7 +264,7 @@ public class RobotVrai extends Robot {
 	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee) throws MouvementImpossibleException
 	{
 		for(Vec2 position: chemin)
-			va_au_point(position, hooks, false, 2, retenter_si_blocage, symetrie_effectuee, false);
+			va_au_point(position, hooks, false, nb_tentatives, retenter_si_blocage, symetrie_effectuee, false);
 	}
 
 
