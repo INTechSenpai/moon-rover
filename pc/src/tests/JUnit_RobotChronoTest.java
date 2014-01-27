@@ -88,11 +88,13 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 		robotchrono.set_vitesse_rotation("recal_faible");
 		robotchrono.set_vitesse_rotation("recal_forte");
 		robotchrono.set_vitesse_rotation("vitesse_mammouth");
+		robotchrono.set_vitesse_rotation("ABWABWA");
 
 		robotchrono.set_vitesse_translation("entre_scripts");
 		robotchrono.set_vitesse_translation("recal_faible");
 		robotchrono.set_vitesse_translation("recal_forte");
 		robotchrono.set_vitesse_translation("vitesse_mammouth");
+		robotchrono.set_vitesse_translation("ABWABWA");
 
 	}
 	
@@ -112,6 +114,7 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 		robotchrono.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
 		robotchrono.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
 		robotchrono.tirerBalles();
+		robotchrono.takefire();
 		robotchrono.sleep(100);
 	}
 		

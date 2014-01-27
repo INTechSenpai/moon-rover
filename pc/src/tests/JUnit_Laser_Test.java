@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.Assert;
 
 import robot.cartes.Laser;
+import smartMath.Vec2;
 
 public class JUnit_Laser_Test extends JUnit_Test {
 
@@ -51,4 +52,12 @@ public class JUnit_Laser_Test extends JUnit_Test {
 		laser.eteindre();
 	}
 
+	@Test
+	public void test_position_balise() throws Exception
+	{
+		log.debug("JUnit_Laser_Test.test_position_balise()", this); // TODO vérifier les valeurs
+		Assert.assertTrue(laser.position_balise(0).distance(new Vec2((float)1620,(float)50)) < 500);
+		Assert.assertTrue(laser.position_balise(1).distance(new Vec2((float)1620,(float)50)) < 500);
+	}
+	
 }

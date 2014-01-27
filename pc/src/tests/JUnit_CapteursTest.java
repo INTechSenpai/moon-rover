@@ -22,7 +22,7 @@ public class JUnit_CapteursTest extends JUnit_Test {
 	{
 		log.debug("JUnit_CapteursTest.test_feu()", this);
 		Assert.assertTrue(!capteurs.isThereFire());
-		Assert.assertTrue(!capteurs.isFireRed());
+		Assert.assertTrue(capteurs.isFireRed());
 	}
 
 

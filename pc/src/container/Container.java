@@ -199,19 +199,8 @@ public class Container {
 			throw new ContainerException();
 		}
 		return services.get(nom);
-	}
-	
+	}	
 		
-	/**
-	 * Méthode utilisée uniquement pour les tests: renvoie si un service a déjà été créé
-	 * @param nom
-	 * @return
-	 */
-	public boolean contient(String nom)
-	{
-		return services.containsKey(nom);
-	}
-	
 	/**
 	 * Demande au thread manager de démarrer les threads enregistrés
 	 */
