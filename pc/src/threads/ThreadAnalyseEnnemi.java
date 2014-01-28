@@ -2,6 +2,7 @@ package threads;
 
 import smartMath.Vec2;
 import table.Table;
+import utils.Sleep;
 
 /**
  * Thread qui analyse le comportement de l'ennemi à partir de sa position
@@ -13,8 +14,8 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 	Table table;
 	ThreadTimer threadtimer;
 	
-	long[] date_freeze;
-	Vec2[] positionsfreeze;
+	long[] date_freeze = new long[2];
+	Vec2[] positionsfreeze = new Vec2[2];
 	int tolerance = 1000;
 	
 	public ThreadAnalyseEnnemi(Table table, ThreadTimer threadtimer)
@@ -32,10 +33,10 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 		{
 			if(stop_threads)
 			{
-				log.debug("Stoppage du thread laser", this);
+				log.debug("Arrêt du thread d'analyse de l'ennemi", this);
 				return;
 			}
-			sleep(100);
+			Sleep.sleep(100);
 		}
 
 		date_freeze[0] = System.currentTimeMillis();
@@ -43,11 +44,18 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 		
 		while(!threadtimer.fin_match)
 		{
+			if(stop_threads)
+			{
+				log.debug("Arrêt du thread d'analyse de l'ennemi", this);
+				return;
+			}
+
 			Vec2[] positionsEnnemi = table.get_positions_ennemis();
 			for(int i = 0; i < 2; i++)
 			{
 				// défreeze
-				if(positionsfreeze[i].SquaredDistance(positionsEnnemi[i]) > 0)
+				// TODO
+				if(positionsfreeze[i].SquaredDistance(positionsEnnemi[i]) > 30)
 				{
 					date_freeze[i] = System.currentTimeMillis();
 					positionsfreeze[i] = positionsEnnemi[i];
@@ -55,8 +63,10 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 			
 			}
 			
-			sleep(500); // le sleep peut être long, le robot adverse ne bouge de toute façon pas très vite...
+			Sleep.sleep(500); // le sleep peut être long, le robot adverse ne bouge de toute façon pas très vite...
 		}
+		log.debug("Arrêt du thread d'analyse de l'ennemi", this);
+
 	}
 
 
@@ -66,10 +76,12 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 	 */
 	public int[] duree_freeze()
 	{
-		int[] duree_freeze = new int[2];
+/*		int[] duree_freeze = new int[2];
 		duree_freeze[0] = (int)(System.currentTimeMillis() - date_freeze[0]);
 		duree_freeze[1] = (int)(System.currentTimeMillis() - date_freeze[1]);
 		return duree_freeze;
+		*/
+		return null;
 	}
 	
 }

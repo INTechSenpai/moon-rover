@@ -7,6 +7,7 @@ import smartMath.Vec2;
 import utils.Log;
 import utils.Read_Ini;
 import exception.MouvementImpossibleException;
+import exception.RobotChronoException;
 
 /**
  * Robot particulier qui fait pas bouger le robot réel, mais détermine la durée des actions
@@ -45,20 +46,20 @@ public class RobotChrono extends Robot {
 	}
 	
 	@Override
-	public void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
+	protected void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
 	{
-		duree += ((float)distance)/vitesse_mmpms;
+		try {
+			dureePositive((long)(((float)Math.abs(distance))/vitesse_mmpms));
+		} catch (RobotChronoException e) {
+			e.printStackTrace();
+		}
+		duree += ((float)Math.abs(distance))/vitesse_mmpms;
 		Vec2 ecart = new Vec2((float)Math.cos(orientation), (float)Math.sin(orientation));
 		ecart.x *= distance;
 		ecart.y *= distance;
 		position.Plus(ecart);
 	}
 	
-	@Override
-	public void correction_angle(float angle)
-	{
-	}
-
 	@Override
 	public void set_vitesse_translation(String vitesse)
 	{
@@ -77,6 +78,11 @@ public class RobotChrono extends Robot {
 	
 	public void initialiser_compteur(int distance_initiale)
 	{
+		try {
+			dureePositive((long)(((float)distance_initiale)/vitesse_mmpms));
+		} catch (RobotChronoException e) {
+			e.printStackTrace();
+		}
 		duree = (int) (((float)distance_initiale)/vitesse_mmpms);
 	}
 	public int get_compteur()
@@ -100,7 +106,7 @@ public class RobotChrono extends Robot {
 	}
 
 	@Override
-	public void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception)
+	protected void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception)
 	{
 		float delta = angle-orientation;
 		if(delta < 0)
@@ -109,6 +115,11 @@ public class RobotChrono extends Robot {
 			delta = 2*(float)Math.PI - delta;
 		orientation = angle;
 		
+		try {
+			dureePositive((long)(delta/vitesse_rpms));
+		} catch (RobotChronoException e) {
+			e.printStackTrace();
+		}
 		duree += delta/vitesse_rpms;
 	}
 
@@ -119,29 +130,24 @@ public class RobotChrono extends Robot {
 	}
 
 	@Override
-	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean marche_arriere_auto, boolean symetrie_effectuee) throws MouvementImpossibleException
+	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee) throws MouvementImpossibleException
 	{
 		for(Vec2 point: chemin)
 			va_au_point(point);
 	}
 
 	@Override
-	public void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception)
+	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception)
 	{
 		if(couleur == "rouge")
 			point.x *= -1;
+		try {
+			dureePositive((long)(position.distance(point)/vitesse_mmpms));
+		} catch (RobotChronoException e) {
+			e.printStackTrace();
+		}
 		duree += position.distance(point)/vitesse_mmpms;
 		position = point.clone();
-	}
-
-	@Override
-	public void recaler()
-	{
-	}
-
-	@Override
-	public void initialiser_actionneurs()
-	{
 	}
 
 	@Override
@@ -188,5 +194,21 @@ public class RobotChrono extends Robot {
 				&& orientation == other.orientation
 				&& nombre_lances == other.nombre_lances
 				&& fresques_posees == other.fresques_posees;
+	}
+
+	@Override
+	public void sleep(long duree) {
+		try {
+			dureePositive(duree);
+		} catch (RobotChronoException e) {
+			e.printStackTrace();
+		}
+		this.duree += duree;
+	}
+	
+	private void dureePositive(long duree) throws RobotChronoException
+	{
+		if(duree < 0)
+			throw new RobotChronoException();
 	}
 }

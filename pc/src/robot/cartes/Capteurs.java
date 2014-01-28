@@ -6,6 +6,7 @@ import robot.serial.Serial;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
+import exception.SerialException;
 
 /**
  * Classe des capteurs, qui communique avec la carte capteur
@@ -77,19 +78,35 @@ public class Capteurs implements Service {
 	
     public boolean demarrage_match()
     {
-    	 return serie.communiquer("j", 1)[0] == "0";
+//    	log.debug(serie.communiquer("j", 1)[0], this);
+    	try {
+    		return Integer.parseInt(serie.communiquer("j", 1)[0]) == 0;
+    	}
+    	catch(Exception e)
+    	{
+    		log.critical("Aucune réponse du jumper", this);
+    		return false;
+    	}
     }
  
-    // TODO
     public boolean isThereFire()
     {
-    	return false;
+		try {
+			return Integer.parseInt(serie.communiquer("itf", 1)[0]) == 1;
+		} catch (NumberFormatException | SerialException e) {
+			e.printStackTrace();
+		}
+		return false;
     }
 
-    // TODO
     public boolean isFireRed()
     {
-    	return false;
+		try {
+			return Integer.parseInt(serie.communiquer("ifr", 1)[0]) == 1;
+		} catch (NumberFormatException | SerialException e) {
+			e.printStackTrace();
+		}
+		return false;
     }
 
 }

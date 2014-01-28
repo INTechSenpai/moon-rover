@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.Assert;
 
 import robot.RobotChrono;
-import robot.RobotVrai;
 import smartMath.Vec2;
 import strategie.MemoryManager;
 import table.Table;
@@ -18,7 +17,6 @@ import table.Table;
 
 public class JUnit_MemoryManagerTest extends JUnit_Test {
 
-	private RobotVrai robotvrai;
 	private Table table;
 	private MemoryManager memorymanager;
 	private RobotChrono robotchrono;
@@ -26,20 +24,16 @@ public class JUnit_MemoryManagerTest extends JUnit_Test {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		robotvrai = (RobotVrai) container.getService("RobotVrai");
+		log.debug("JUnit_MemoryManagerTest.setUp()", this);
 		table = (Table)container.getService("Table");
 		memorymanager = (MemoryManager)container.getService("MemoryManager");
-		robotvrai.setPosition(new Vec2(0, 1500));
-		robotvrai.setOrientation(0);
-		robotvrai.set_vitesse_rotation("entre_scripts");
-		robotvrai.set_vitesse_translation("entre_scripts");
 		robotchrono = new RobotChrono(config, log);
-		robotchrono.majRobotChrono(robotvrai);
 	}
 
 	@Test
 	public void test_cloneTable_1etage() throws Exception
 	{
+		log.debug("JUnit_MemoryManagerTest.test_cloneTable_1etage()", this);
 		memorymanager.setModelTable(table, 1);
 		Table cloned = memorymanager.getCloneTable(1);
 		Assert.assertTrue(table.equals(cloned));
@@ -48,15 +42,20 @@ public class JUnit_MemoryManagerTest extends JUnit_Test {
 	@Test
 	public void test_cloneTable_1etage_modification() throws Exception
 	{
+		log.debug("JUnit_MemoryManagerTest.test_cloneTable_1etage_modification()", this);
 		memorymanager.setModelTable(table, 1);
 		Table cloned = memorymanager.getCloneTable(1);
 		table.creer_obstacle(new Vec2(0,1000));
+		table.pickFire(0);
+		table.pickTree(0);
 		Assert.assertTrue(!table.equals(cloned));
+		memorymanager.getCloneTable(1);
 	}
 
 	@Test
 	public void test_cloneTable_2etages() throws Exception
 	{
+		log.debug("JUnit_MemoryManagerTest.test_cloneTable_2etages()", this);
 		memorymanager.setModelTable(table, 2);
 		Table cloned = memorymanager.getCloneTable(2);
 		cloned.creer_obstacle(new Vec2(0,1000));
@@ -69,6 +68,7 @@ public class JUnit_MemoryManagerTest extends JUnit_Test {
 	@Test
 	public void test_cloneTable_encore_un_test() throws Exception
 	{
+		log.debug("JUnit_MemoryManagerTest.test_cloneTable_encore_un_test()", this);
 		memorymanager.setModelTable(table, 2);
 		Table cloned = memorymanager.getCloneTable(2);
 		cloned.creer_obstacle(new Vec2(0,1000));
@@ -83,6 +83,7 @@ public class JUnit_MemoryManagerTest extends JUnit_Test {
 	@Test
 	public void test_cloneRobotChrono_1etage() throws Exception
 	{
+		log.debug("JUnit_MemoryManagerTest.test_cloneRobotChrono_1etage()", this);
 		memorymanager.setModelRobotChrono(robotchrono, 1);
 		RobotChrono cloned = memorymanager.getCloneRobotChrono(1);
 		Assert.assertTrue(robotchrono.equals(cloned));
@@ -91,6 +92,7 @@ public class JUnit_MemoryManagerTest extends JUnit_Test {
 	@Test
 	public void test_cloneRobotChrono_1etage_modification() throws Exception
 	{
+		log.debug("JUnit_MemoryManagerTest.test_cloneRobotChrono_1etage_modification()", this);
 		memorymanager.setModelRobotChrono(robotchrono, 1);
 		RobotChrono cloned = memorymanager.getCloneRobotChrono(1);
 		robotchrono.setPosition(new Vec2(1234,21));

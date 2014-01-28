@@ -1,8 +1,10 @@
 package threads;
 
+import exception.SerialException;
 import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
 import table.Table;
+import utils.Sleep;
 
 /**
  * Thread qui s'occupe de la gestion du temps: début du match, péremption des obstacles
@@ -48,28 +50,23 @@ public class ThreadTimer extends AbstractThread {
 		{
 			if(stop_threads)
 			{
-				log.debug("Arrêt du thread timer", this);
+				log.debug("Arrêt du thread timer avant le début du match", this);
 				return;
 			}
-			try {
-				Thread.sleep(200);
-			}
-			catch(Exception e)
-			{
-				log.warning(e.toString(), this);
-			}
+			Sleep.sleep(50);
 		}
-		log.debug("LE MATCH COMMENCE !", this);
-
 		date_debut = System.currentTimeMillis();
 		match_demarre = true;
+
+		log.debug("LE MATCH COMMENCE !", this);
+
 
 		// Le match à démarré. Tous les 500ms, on retire les obstacles périmés
 		while(System.currentTimeMillis() - date_debut < duree_match)
 		{
 			if(stop_threads)
 			{
-				log.debug("Arrêt du thread timer", this);
+				log.debug("Arrêt du thread timer avant la fin du match", this);
 				return;
 			}
 			table.supprimer_obstacles_perimes();
@@ -86,12 +83,20 @@ public class ThreadTimer extends AbstractThread {
 		// Le match est fini, désasservissement
 		fin_match = true;
 
-		deplacements.stopper();
+		try {
+			deplacements.stopper();
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}
 		
-		sleep(500);
+		Sleep.sleep(500);
 		
-		deplacements.desactiver_asservissement_rotation();
-		deplacements.desactiver_asservissement_translation();
+		try {
+			deplacements.desactiver_asservissement_rotation();
+			deplacements.desactiver_asservissement_translation();
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}
 		deplacements.arret_final();
 
 		log.debug("Fin du thread timer", this);

@@ -95,14 +95,14 @@ public class SerialManager
 		String pings[] = new String[20];
 		for (int baudrate : this.baudrate)
 		{
-			System.out.println("liste des pings pour le baudrate " + baudrate);
+			log.debug("liste des pings pour le baudrate " + baudrate, this);
 
 			for(int k = 0; k < this.connectedSerial.size(); k++)
 			{
 				if (!deja_attribues.contains(k))
 				{
 					//Creation d'une serie de test
-					Serial serialTest = new Serial(log, "carte de test");
+					Serial serialTest = new Serial(log, "carte de test de ping");
 
 					serialTest.initialize(this.connectedSerial.get(k), baudrate);
 					

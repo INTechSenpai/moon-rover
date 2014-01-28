@@ -23,6 +23,11 @@ public abstract class JUnit_Test {
 	@After
 	public void tearDown() throws Exception {
 		container.destructeur();
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	

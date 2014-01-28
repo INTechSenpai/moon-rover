@@ -6,6 +6,7 @@ import java.util.Iterator;
 import robot.Orientation;
 import smartMath.Vec2;
 import container.Service;
+import exception.ConfigException;
 import utils.*;
 
 public class Table implements Service {
@@ -23,7 +24,6 @@ public class Table implements Service {
 	
 	private int hashFire;
 	private int hashTree;
-	private int hashTorch;
 	private int hashObstacles;
 
 	// Dépendances
@@ -89,19 +89,16 @@ public class Table implements Service {
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-1500,700), 150));
 
 		int rayon_robot_adverse = 230;
-		try {
-			rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
-		}
-		catch(Exception e)
-		{
-			log.warning(e, this);
-		}
+			try {
+				rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
+			} catch (NumberFormatException | ConfigException e) {
+				e.printStackTrace();
+			}
 		robots_adverses[0] = new ObstacleCirculaire(new Vec2(0,0), rayon_robot_adverse);
 		robots_adverses[1] = new ObstacleCirculaire(new Vec2(0,0), rayon_robot_adverse);
 		
 		hashFire = 0;
 		hashTree = 0;
-		hashTorch = 0;
 		hashObstacles = 0;
 	}
 	
@@ -114,14 +111,16 @@ public class Table implements Service {
 		Vec2 position_sauv = position.clone();
 		int rayon_robot_adverse = 0;
 		long duree = 0;
-		try {
-			rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
-			duree = Integer.parseInt(config.get("duree_peremption_obstacles"));
-		}
-		catch(Exception e)
-		{
-			this.log.critical(e, this);
-		}
+			try {
+				rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
+			} catch (NumberFormatException | ConfigException e) {
+				e.printStackTrace();
+			}
+			try {
+				duree = Integer.parseInt(config.get("duree_peremption_obstacles"));
+			} catch (NumberFormatException | ConfigException e) {
+				e.printStackTrace();
+			}
 		
 		Obstacle obstacle = new ObstacleProximite(position_sauv, rayon_robot_adverse, System.currentTimeMillis()+duree);
 		synchronized(listObstacles)
@@ -252,40 +251,36 @@ public class Table implements Service {
 		else
 			return 1;
 	}
-
+	
 	/**
 	 * La table en argument deviendra la copie de this (this reste inchangé)
 	 * @param ct
 	 */
 	public void clone(Table ct)
 	{
-		if(ct.hashFire != hashFire)
+		if(!equals(ct))
 		{
-			for(int i = 0; i < 10; i++)
-				arrayFire[i].clone(ct.arrayFire[i]);
-			ct.hashFire = hashFire;
-		}
-
-		if(ct.hashTree != hashTree)
-		{
-			for(int i = 0; i < 4; i++)		
-				arrayTree[i].clone(ct.arrayTree[i]);
-			ct.hashTree = hashTree;
-		}
-
-		if(ct.hashTorch != hashTorch)
-		{
-			for(int i = 0; i < 2; i++)		
-				arrayTorch[i].clone(ct.arrayTorch[i]);
-			ct.hashTorch = hashTorch;
-		}
-
-		if(ct.hashObstacles != hashObstacles)
-		{
-			ct.listObstacles.clear();
-			for(Obstacle item: listObstacles)
-				ct.listObstacles.add(item.clone());
-			ct.hashObstacles = hashObstacles;
+			if(ct.hashFire != hashFire)
+			{
+				for(int i = 0; i < 10; i++)
+					arrayFire[i].clone(ct.arrayFire[i]);
+				ct.hashFire = hashFire;
+			}
+	
+			if(ct.hashTree != hashTree)
+			{
+				for(int i = 0; i < 4; i++)		
+					arrayTree[i].clone(ct.arrayTree[i]);
+				ct.hashTree = hashTree;
+			}
+	
+			if(ct.hashObstacles != hashObstacles)
+			{
+				ct.listObstacles.clear();
+				for(Obstacle item: listObstacles)
+					ct.listObstacles.add(item.clone());
+				ct.hashObstacles = hashObstacles;
+			}
 		}
 	}
 	
@@ -302,7 +297,7 @@ public class Table implements Service {
 	 */
 	public int hashTable()
 	{
-		return hashFire + hashTree + hashTorch + hashObstacles;
+		return hashFire + hashTree + hashObstacles;
 	}
 
 	/**
@@ -314,8 +309,16 @@ public class Table implements Service {
 	{
 		return 	hashFire == other.hashFire
 				&& hashTree == other.hashTree
-				&& hashTorch == other.hashTorch
 				&& hashObstacles == other.hashObstacles;
+	}
+	
+	/**
+	 * Utilisé pour les tests
+	 * @return le nombre d'obstacles mobiles détectés
+	 */
+	public int nb_obstacles()
+	{
+		return listObstacles.size();
 	}
 	
 }

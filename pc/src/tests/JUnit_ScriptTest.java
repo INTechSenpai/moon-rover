@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import exception.ScriptException;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import scripts.Script;
@@ -104,9 +105,43 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	public void test_ScriptFresques_versions() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptFresque");
-		Assert.assertTrue(s.version(robotvrai, table).size() == 1);
+		Assert.assertTrue(s.version(robotvrai, table).size() == 3);
 		robotvrai.deposer_fresques();
 		Assert.assertTrue(s.version(robotvrai, table).size() == 0);
+	}
+
+	@Test
+	public void test_ScriptFresques_agit() throws Exception
+	{
+		s = (Script)scriptmanager.getScript("ScriptFresque");
+		s.agit(0, robotvrai, table, false);
+	}
+
+	@Test
+	public void test_ScriptFresques_calcule() throws Exception
+	{
+		s = (Script)scriptmanager.getScript("ScriptFresque");
+		RobotChrono robotchrono = new RobotChrono(config, log);
+		Assert.assertTrue(s.calcule(0, robotchrono, table, true) > 0);
+		Assert.assertTrue(s.calcule(1, robotchrono, table, true) > 0);
+		Assert.assertTrue(s.calcule(2, robotchrono, table, true) > 0);
+	}
+
+	@Test
+	public void test_ScriptTree_calcule() throws Exception
+	{
+		s = (Script)scriptmanager.getScript("ScriptTree");
+		RobotChrono robotchrono = new RobotChrono(config, log);
+		Assert.assertTrue(s.calcule(0, robotchrono, table, true) > 0);
+		Assert.assertTrue(s.calcule(1, robotchrono, table, true) > 0);
+		Assert.assertTrue(s.calcule(2, robotchrono, table, true) > 0);
+		Assert.assertTrue(s.calcule(3, robotchrono, table, true) > 0);
+	}
+
+	@Test(expected=ScriptException.class)
+	public void test_erreur() throws Exception
+	{
+		s = (Script)scriptmanager.getScript("ABWABWA");
 	}
 
 	@Test

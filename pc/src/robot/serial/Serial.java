@@ -1,5 +1,6 @@
 package robot.serial;
 
+import exception.SerialException;
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -103,8 +104,9 @@ public class Serial implements SerialPortEventListener, Service
 	 * 					Nombre de lignes que l'avr va répondre (sans compter les acquittements)
 	 * @return
 	 * 					Un tableau contenant le message
+	 * @throws SerialException 
 	 */
-	public synchronized String[] communiquer(String message, int nb_lignes_reponse)
+	public String[] communiquer(String message, int nb_lignes_reponse) throws SerialException
 	{
 		String[] messages = {message};
 		return communiquer(messages, nb_lignes_reponse);
@@ -118,11 +120,19 @@ public class Serial implements SerialPortEventListener, Service
 	 * 					Nombre de lignes que l'avr va répondre (sans compter les acquittements)
 	 * @return
 	 * 					Un tableau contenant le message
+	 * @throws SerialException 
 	 */
-	public synchronized String[] communiquer(String[] messages, int nb_lignes_reponse)
+	public String[] communiquer(String[] messages, int nb_lignes_reponse) throws SerialException
 	{
+		long t1 = System.currentTimeMillis();
 		synchronized(output)
 		{
+			long t2 = System.currentTimeMillis();
+			if(t2-t1 > 1000)
+				log.critical("Temps accès mutex "+name+": "+(t2-t1), this);
+			else if(t2-t1 > 100)
+				log.warning("Temps accès mutex "+name+": "+(t2-t1), this);
+
 			String inputLines[] = new String[nb_lignes_reponse];
 			try
 			{
@@ -141,7 +151,7 @@ public class Serial implements SerialPortEventListener, Service
 						{
 							output.write(m.getBytes());
 						}
-						else if (nb_tests > 10)
+						if (nb_tests > 10)
 						{
 							log.critical("La série" + this.name + " ne répond pas après " + nb_tests + " tentatives", this);
 							break;
@@ -151,7 +161,9 @@ public class Serial implements SerialPortEventListener, Service
 			}
 			catch (Exception e)
 			{
+				e.printStackTrace();
 				log.critical("Ne peut pas parler à la carte " + this.name, this);
+				throw new SerialException();
 			}
 	
 			try
@@ -164,18 +176,27 @@ public class Serial implements SerialPortEventListener, Service
 			catch (Exception e)
 			{
 				log.critical("Ne peut pas parler à la carte " + this.name, this);
+				throw new SerialException();
 			}
+			
+		if(t2-t1 > 1000)
+			log.critical("Temps communiquer "+name+": "+(t2-t1), this);
+		else if(t2-t1 > 700)
+			log.warning("Temps communiquer "+name+": "+(t2-t1), this);
+			
 		return inputLines;
+		
 		}
 	}
 
 	/**
 	 * Doit être appelé quand on arrête de se servir de la série
 	 */
-	public synchronized void close()
+	public void close()
 	{
 		if (serialPort != null)
 		{
+			log.debug("Fermeture de "+name, this);
 			serialPort.close();
 		}
 	}

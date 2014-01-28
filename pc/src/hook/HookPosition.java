@@ -29,9 +29,7 @@ class HookPosition extends Hook {
 	{
 		Vec2 positionRobot = robot.getPosition();
 		if(position.SquaredDistance(positionRobot) <= tolerance*tolerance)
-		{
 			declencher();
-		}
 	}
 	
 }
