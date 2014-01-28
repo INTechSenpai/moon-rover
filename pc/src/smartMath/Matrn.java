@@ -43,6 +43,27 @@ public class Matrn {
 	}
 	
 	/**
+	 * la matrice aura une taille (p,n) et tous les éléments vaudront valeur
+	 * @param p
+	 * @param n
+	 * @param valeur : la valeur par défaut
+	 */
+	public Matrn(int p,int n, int valeur)
+	{
+		matrice = new double[p][n];
+		taille = new int[2];
+		taille[0] = n;
+		taille[1] = p;
+		for(int i = 0; i< taille[0]; i++)
+		{
+			for(int j = 0; j < taille[1]; j++)
+			{
+				setCoeff(valeur ,i, j);
+			}
+		}		
+	}
+	
+	/**
 	 * Modifie le coeff en (i,j)
 	 * @param coeff
 	 * @param i la ligne
@@ -70,6 +91,14 @@ public class Matrn {
 		for(int i = 0; i < taille[0]; i++)
 			for(int j = 0; j < taille[1]; j++)
 				 matrice[j][i]= matrice[j][i]+A.matrice[j][i];
+	}
+	public void soustraire (Matrn A) throws MatriceException
+	{	
+		if(taille[0] != A.taille[0] || taille[1] != A.taille[1])
+			throw new MatriceException();
+		for(int i = 0; i < taille[0]; i++)
+			for(int j = 0; j < taille[1]; j++)
+				 matrice[j][i]= matrice[j][i] - A.matrice[j][i];
 	}
 	
 	public void multiplier(Matrn A) throws MatriceException
@@ -104,6 +133,7 @@ public class Matrn {
 			}
 	}
 	
+	/*
 	public Matrn transpose_vecteur() throws MatriceException
 	{
 		if(taille[1] != 1)
@@ -119,8 +149,7 @@ public class Matrn {
 			}
 			return vect_tran;
 	}
+	*/
 		
 	}
 	
-	
-}
