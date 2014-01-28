@@ -11,10 +11,10 @@ import exception.MatriceException;
 
 public class Matrn {
 	
-	private float[][] matrice;
+	private double[][] matrice;
 	private int[] taille;
 
-	public Matrn(float[][] t)
+	public Matrn(double[][] t)
 	{
 		matrice = t;
 		taille = new int[2];
@@ -24,7 +24,7 @@ public class Matrn {
 	
 	public Matrn(int n)
 	{
-		matrice = new float[n][n];
+		matrice = new double[n][n];
 		taille = new int[2];
 		taille[0] = n;
 		taille[1] = n;
@@ -36,7 +36,7 @@ public class Matrn {
 	 */
 	public Matrn(int p,int n)
 	{
-		matrice = new float[p][n];
+		matrice = new double[p][n];
 		taille = new int[2];
 		taille[0] = n;
 		taille[1] = p;
@@ -48,7 +48,7 @@ public class Matrn {
 	 * @param i la ligne
 	 * @param j la colonne
 	 */
-	public void setCoeff(float coeff, int i, int j)
+	public void setCoeff(double coeff, int i, int j)
 	{
 		matrice[i][j] = coeff;
 	}
@@ -58,7 +58,7 @@ public class Matrn {
 	 * @param i la ligne
 	 * @param j la colonne
 	 */
-	public float getCoeff(int i, int j)
+	public double getCoeff(int i, int j)
 	{
 		return matrice[i][j];
 	}
@@ -82,9 +82,9 @@ public class Matrn {
 			for(int j = 0;j < A.taille[1];j++)
 			{
 				m.matrice[i][j] = 0;
-				for(int k = 0; k <this.taille[1];k++)
+				for(int k = 0; k < taille[1];k++)
 				{
-					m.matrice[i][j] += this.matrice[i][k]*A.matrice[k][j];
+					m.matrice[i][j] += matrice[i][k]*A.matrice[k][j];
 				}
 			}
 		}
@@ -98,13 +98,29 @@ public class Matrn {
 		for(int i = 0; i < taille[0]; i++)
 			for(int j = 0; j < i; j++)
 			{
-				float tmp = matrice[j][i];
+				double tmp = matrice[j][i];
 				matrice[j][i] = matrice[i][j];
 				matrice[i][j] = tmp;
 			}
 	}
 	
-	
+	public Matrn transpose_vecteur() throws MatriceException
+	{
+		if(taille[1] != 1)
+		{
+			throw new MatriceException();
+		}
+		else
+		{
+			Matrn vect_tran = new Matrn(taille[1], taille[0]);
+			for(int i = 0; i < taille[0]; i++)
+			{
+				vect_tran.matrice[i][0] = matrice[0][i];
+			}
+			return vect_tran;
+	}
+		
+	}
 	
 	
 }
