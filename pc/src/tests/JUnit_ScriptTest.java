@@ -122,7 +122,20 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	{
 		s = (Script)scriptmanager.getScript("ScriptFresque");
 		RobotChrono robotchrono = new RobotChrono(config, log);
-		s.calcule(0, robotchrono, table, true);
+		Assert.assertTrue(s.calcule(0, robotchrono, table, true) > 0);
+		Assert.assertTrue(s.calcule(1, robotchrono, table, true) > 0);
+		Assert.assertTrue(s.calcule(2, robotchrono, table, true) > 0);
+	}
+
+	@Test
+	public void test_ScriptTree_calcule() throws Exception
+	{
+		s = (Script)scriptmanager.getScript("ScriptTree");
+		RobotChrono robotchrono = new RobotChrono(config, log);
+		Assert.assertTrue(s.calcule(0, robotchrono, table, true) > 0);
+		Assert.assertTrue(s.calcule(1, robotchrono, table, true) > 0);
+		Assert.assertTrue(s.calcule(2, robotchrono, table, true) > 0);
+		Assert.assertTrue(s.calcule(3, robotchrono, table, true) > 0);
 	}
 
 	@Test(expected=ScriptException.class)

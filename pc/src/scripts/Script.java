@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import exception.ConfigException;
 import exception.MouvementImpossibleException;
+import exception.ScriptException;
 import exception.SerialException;
 /**
  * Classe abstraite dont hériteront les différents scripts. S'occupe le robotvrai et robotchrono de manière à ce que ce soit transparent pour les différents scripts
@@ -58,7 +59,7 @@ public abstract class Script implements Service {
 	/**
 	 * Exécute vraiment un script
 	 */
-	public void agit(int id_version, RobotVrai robotvrai, Table table, boolean retenter_si_blocage)
+	public void agit(int id_version, RobotVrai robotvrai, Table table, boolean retenter_si_blocage) throws ScriptException
 	{
 		Vec2 point_entree = point_entree(id_version);
 
@@ -69,13 +70,13 @@ public abstract class Script implements Service {
 
 		try
 		{
-			// Si on rencontre un obstacle en allant exécuter un script et qu'il reste d'autres scripts, alors on change de script
 			robotvrai.suit_chemin(chemin, hookfeu, retenter_si_blocage);
 			execute(id_version, robotvrai, table);
 		}
 		catch (Exception e)
 		{
-			System.err.println(e.toString());
+			// Si on rencontre un obstacle en allant exécuter un script et qu'il reste d'autres scripts, alors on change de script
+			throw new ScriptException();
 		}
 		finally
 		{

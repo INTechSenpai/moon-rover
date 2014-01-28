@@ -23,8 +23,8 @@ public class ScriptManager implements Service {
 
 	private Map<String,Script> instancesScripts = new Hashtable<String,Script>();
 
+	private ArrayList<String> scripts_robot0;
 	private ArrayList<String> scripts_robot1;
-	private ArrayList<String> scripts_robot2;
 	
 	public ScriptManager(Pathfinding pathfinding, HookGenerator hookgenerator, Read_Ini config, Log log, RobotVrai robotvrai)
 	{
@@ -36,20 +36,21 @@ public class ScriptManager implements Service {
 		instancesScripts.put("ScriptTorche", new ScriptTorche(pathfinding, hookgenerator, config, log, robotvrai));
 		instancesScripts.put("ScriptFresque", new ScriptFresque(pathfinding, hookgenerator, config, log, robotvrai));
 		
-		scripts_robot1 = new ArrayList<String>();
-		scripts_robot1.add("ScriptTree");
-		scripts_robot1.add("ScriptLances");
+		scripts_robot0 = new ArrayList<String>();
+		scripts_robot0.add("ScriptTree");
+		scripts_robot0.add("ScriptLances");
+		scripts_robot0.add("ScriptFresque");
 
-		scripts_robot2 = new ArrayList<String>();
+		scripts_robot1 = new ArrayList<String>();
 	}
 	
 	public ArrayList<String> getNomsScripts(int id_robot)
 	{
 		// if assez moche, il faudrait chercher à passer outre
-		if(id_robot == 1)
-			return scripts_robot1;
+		if(id_robot == 0)
+			return scripts_robot0;
 		else
-			return scripts_robot2;
+			return scripts_robot1;
 	}
 
 	public Script getScript(String nom) throws ScriptException

@@ -251,33 +251,36 @@ public class Table implements Service {
 		else
 			return 1;
 	}
-
+	
 	/**
 	 * La table en argument deviendra la copie de this (this reste inchangé)
 	 * @param ct
 	 */
 	public void clone(Table ct)
 	{
-		if(ct.hashFire != hashFire)
+		if(!equals(ct))
 		{
-			for(int i = 0; i < 10; i++)
-				arrayFire[i].clone(ct.arrayFire[i]);
-			ct.hashFire = hashFire;
-		}
-
-		if(ct.hashTree != hashTree)
-		{
-			for(int i = 0; i < 4; i++)		
-				arrayTree[i].clone(ct.arrayTree[i]);
-			ct.hashTree = hashTree;
-		}
-
-		if(ct.hashObstacles != hashObstacles)
-		{
-			ct.listObstacles.clear();
-			for(Obstacle item: listObstacles)
-				ct.listObstacles.add(item.clone());
-			ct.hashObstacles = hashObstacles;
+			if(ct.hashFire != hashFire)
+			{
+				for(int i = 0; i < 10; i++)
+					arrayFire[i].clone(ct.arrayFire[i]);
+				ct.hashFire = hashFire;
+			}
+	
+			if(ct.hashTree != hashTree)
+			{
+				for(int i = 0; i < 4; i++)		
+					arrayTree[i].clone(ct.arrayTree[i]);
+				ct.hashTree = hashTree;
+			}
+	
+			if(ct.hashObstacles != hashObstacles)
+			{
+				ct.listObstacles.clear();
+				for(Obstacle item: listObstacles)
+					ct.listObstacles.add(item.clone());
+				ct.hashObstacles = hashObstacles;
+			}
 		}
 	}
 	

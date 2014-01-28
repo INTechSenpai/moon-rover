@@ -74,11 +74,11 @@ public class ThreadManager {
 		return threads.get("threadCapteurs");
 	}
 
-	public AbstractThread getThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager)
+	public AbstractThread getThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, ThreadTimer threadtimer)
 	{
 		AbstractThread thread = threads.get("threadStrategie");
 		if(thread == null)
-			threads.put("threadStrategie", new ThreadStrategie(strategie, table, robotvrai, memorymanager));
+			threads.put("threadStrategie", new ThreadStrategie(strategie, table, robotvrai, memorymanager, threadtimer));
 		return threads.get("threadStrategie");
 	}
 

@@ -176,6 +176,13 @@ public class JUnit_ContainerTest extends JUnit_Test {
 	}
 
 	@Test
+	public void test_threadLaser() throws Exception
+	{
+		log.debug("JUnit_ContainerTest.test_threadLaser()", this);
+		container.getService("threadLaser");
+	}
+
+	@Test
 	public void test_threadStrategie() throws Exception
 	{
 		log.debug("JUnit_ContainerTest.test_threadStrategie()", this);

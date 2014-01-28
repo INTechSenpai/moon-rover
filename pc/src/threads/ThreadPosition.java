@@ -2,6 +2,7 @@ package threads;
 
 import exception.SerialException;
 import robot.RobotVrai;
+import utils.Sleep;
 
 /**
  * Thread qui demande en continu au robot de mettre à jour ses coordonnées
@@ -36,7 +37,7 @@ class ThreadPosition extends AbstractThread {
 				e.printStackTrace();
 			}
 			robot_pret = true;
-			sleep(100);
+			Sleep.sleep(100);
 		} while(!threadTimer.fin_match);
 
 		log.debug("Arrêt du thread de position", this);

@@ -25,5 +25,15 @@ public class NoteScriptVersion {
 		script = null;
 		version = 0;
 	}
+	
+	public NoteScriptVersion clone()
+	{
+		return new NoteScriptVersion(note, script, version);
+	}
+	
+	public String toString()
+	{
+		return "Script "+script+", version "+version+", note "+note;
+	}
 		
 }

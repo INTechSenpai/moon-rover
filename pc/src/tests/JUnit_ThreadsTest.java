@@ -111,5 +111,13 @@ public class JUnit_ThreadsTest extends JUnit_Test {
 		Thread.sleep(200);
 		robotvrai.avancer(1000);
 	}
+
+	@Test
+	public void test_fin_thread_avant_match() throws Exception
+	{
+		container.demarreTousThreads();
+		container.arreteThreads();
+	}
+
 	
 }

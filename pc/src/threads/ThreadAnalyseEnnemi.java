@@ -2,6 +2,7 @@ package threads;
 
 import smartMath.Vec2;
 import table.Table;
+import utils.Sleep;
 
 /**
  * Thread qui analyse le comportement de l'ennemi à partir de sa position
@@ -35,7 +36,7 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 				log.debug("Arrêt du thread d'analyse de l'ennemi", this);
 				return;
 			}
-			sleep(100);
+			Sleep.sleep(100);
 		}
 
 		date_freeze[0] = System.currentTimeMillis();
@@ -61,7 +62,7 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 			
 			}
 			
-			sleep(500); // le sleep peut être long, le robot adverse ne bouge de toute façon pas très vite...
+			Sleep.sleep(500); // le sleep peut être long, le robot adverse ne bouge de toute façon pas très vite...
 		}
 		log.debug("Arrêt du thread d'analyse de l'ennemi", this);
 

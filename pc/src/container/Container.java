@@ -61,11 +61,7 @@ public class Container {
 	public void destructeur()
 	{
 		arreteThreads();
-		try {
-			Thread.sleep(700);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		Sleep.sleep(700);
 		if(serialmanager != null)
 		{
 			if(serialmanager.serieAsservissement != null)
@@ -164,7 +160,8 @@ public class Container {
 			services.put(nom, (Service)threadmanager.getThreadStrategie((Strategie)getService("Strategie"),
 																		(Table)getService("Table"),
 																		(RobotVrai)getService("RobotVrai"),
-																		(MemoryManager)getService("MemoryManager")));
+																		(MemoryManager)getService("MemoryManager"),
+																		(ThreadTimer)getService("threadTimer")));
 		else if(nom == "threadLaser")
 			services.put(nom, (Service)threadmanager.getThreadLaser(	(Laser)getService("Laser"),
 																		(Table)getService("Table"),

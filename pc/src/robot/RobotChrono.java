@@ -7,6 +7,7 @@ import smartMath.Vec2;
 import utils.Log;
 import utils.Read_Ini;
 import exception.MouvementImpossibleException;
+import exception.RobotChronoException;
 
 /**
  * Robot particulier qui fait pas bouger le robot réel, mais détermine la durée des actions
@@ -47,7 +48,12 @@ public class RobotChrono extends Robot {
 	@Override
 	protected void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
 	{
-		duree += ((float)distance)/vitesse_mmpms;
+		try {
+			dureePositive((long)(((float)Math.abs(distance))/vitesse_mmpms));
+		} catch (RobotChronoException e) {
+			e.printStackTrace();
+		}
+		duree += ((float)Math.abs(distance))/vitesse_mmpms;
 		Vec2 ecart = new Vec2((float)Math.cos(orientation), (float)Math.sin(orientation));
 		ecart.x *= distance;
 		ecart.y *= distance;
@@ -72,6 +78,11 @@ public class RobotChrono extends Robot {
 	
 	public void initialiser_compteur(int distance_initiale)
 	{
+		try {
+			dureePositive((long)(((float)distance_initiale)/vitesse_mmpms));
+		} catch (RobotChronoException e) {
+			e.printStackTrace();
+		}
 		duree = (int) (((float)distance_initiale)/vitesse_mmpms);
 	}
 	public int get_compteur()
@@ -104,6 +115,11 @@ public class RobotChrono extends Robot {
 			delta = 2*(float)Math.PI - delta;
 		orientation = angle;
 		
+		try {
+			dureePositive((long)(delta/vitesse_rpms));
+		} catch (RobotChronoException e) {
+			e.printStackTrace();
+		}
 		duree += delta/vitesse_rpms;
 	}
 
@@ -125,6 +141,11 @@ public class RobotChrono extends Robot {
 	{
 		if(couleur == "rouge")
 			point.x *= -1;
+		try {
+			dureePositive((long)(position.distance(point)/vitesse_mmpms));
+		} catch (RobotChronoException e) {
+			e.printStackTrace();
+		}
 		duree += position.distance(point)/vitesse_mmpms;
 		position = point.clone();
 	}
@@ -177,6 +198,17 @@ public class RobotChrono extends Robot {
 
 	@Override
 	public void sleep(long duree) {
+		try {
+			dureePositive(duree);
+		} catch (RobotChronoException e) {
+			e.printStackTrace();
+		}
 		this.duree += duree;
+	}
+	
+	private void dureePositive(long duree) throws RobotChronoException
+	{
+		if(duree < 0)
+			throw new RobotChronoException();
 	}
 }

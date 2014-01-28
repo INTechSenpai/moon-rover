@@ -5,6 +5,7 @@ import robot.RobotVrai;
 import robot.cartes.Capteurs;
 import smartMath.Vec2;
 import table.Table;
+import utils.Sleep;
 
 /**
  * Thread qui ajoute en continu les obstacles détectés par les capteurs
@@ -68,7 +69,7 @@ class ThreadCapteurs extends AbstractThread {
 				log.debug("Stoppage du thread capteurs", this);
 				return;
 			}
-			sleep(50);
+			Sleep.sleep(50);
 		}
 		
 		log.debug("Activation des capteurs", this);
@@ -103,7 +104,7 @@ class ThreadCapteurs extends AbstractThread {
 				
 				pathfinding.update();
 			}
-			sleep((long)1/capteurs_frequence);
+			Sleep.sleep((long)1/capteurs_frequence);
 			
 		}
         log.debug("Fin du thread de capteurs", this);

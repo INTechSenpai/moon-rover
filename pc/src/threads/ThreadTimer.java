@@ -4,6 +4,7 @@ import exception.SerialException;
 import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
 import table.Table;
+import utils.Sleep;
 
 /**
  * Thread qui s'occupe de la gestion du temps: début du match, péremption des obstacles
@@ -52,7 +53,7 @@ public class ThreadTimer extends AbstractThread {
 				log.debug("Arrêt du thread timer avant le début du match", this);
 				return;
 			}
-			sleep(50);
+			Sleep.sleep(50);
 		}
 		date_debut = System.currentTimeMillis();
 		match_demarre = true;
@@ -88,7 +89,7 @@ public class ThreadTimer extends AbstractThread {
 			e.printStackTrace();
 		}
 		
-		sleep(500);
+		Sleep.sleep(500);
 		
 		try {
 			deplacements.desactiver_asservissement_rotation();

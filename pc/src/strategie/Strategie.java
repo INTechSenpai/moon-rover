@@ -1,6 +1,8 @@
 package strategie;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map;
 
 import robot.RobotChrono;
 import robot.RobotVrai;
@@ -11,6 +13,7 @@ import threads.ThreadAnalyseEnnemi;
 import threads.ThreadTimer;
 import utils.Log;
 import utils.Read_Ini;
+import utils.Sleep;
 import container.Service;
 import exception.ScriptException;
 
@@ -32,20 +35,18 @@ public class Strategie implements Service {
 	private Read_Ini config;
 	private Log log;
 	
-	public Script scriptEnCours;
-	public int versionScriptEnCours;
+	private Map<String,Integer> echecs = new Hashtable<String,Integer>();
+
+	private NoteScriptVersion scriptEnCours;
 	
 	public int TTL;
-	
+
 	// TODO initialisations des variables = première action
 	// Prochain script à exécuter si on est interrompu par l'ennemi
-	public Script prochainScriptEnnemi;
-	public Integer versionProchainScriptEnnemi;
+	private NoteScriptVersion prochainScriptEnnemi;
 	
 	// Prochain script à exécuter si l'actuel se passe bien
-	public Script prochainScript;
-	public int versionProchainScript;
-
+	private NoteScriptVersion prochainScript;
 	
 	public Strategie(MemoryManager memorymanager, ThreadAnalyseEnnemi threadanalyseennemi, ThreadTimer threadtimer, ScriptManager scriptmanager, Table table, RobotVrai robotvrai, Read_Ini config, Log log)
 	{
@@ -64,34 +65,50 @@ public class Strategie implements Service {
 	 */
 	public void boucle_strategie()
 	{
+		while(!threadtimer.match_demarre)
+			Sleep.sleep(20);
+
+		log.debug("Stratégie lancée", this);
 		while(!threadtimer.fin_match)
 		{
-			while(prochainScript == null)
+			synchronized(prochainScript)
 			{
-				synchronized(versionProchainScriptEnnemi)
+				if(prochainScript != null)
 				{
-					synchronized(prochainScript)
-					{
-						scriptEnCours = prochainScript;
-						versionScriptEnCours = versionProchainScriptEnnemi;
-						prochainScript = null;
-					}
+					scriptEnCours = prochainScript.clone();
+					prochainScript = null;
 				}
-				if(scriptEnCours == null)
+				else
+					scriptEnCours = null;
+			}
+
+			if(scriptEnCours != null)
+			{
+				boolean dernier = (nbScriptsRestants() == 1);
+				log.debug("Stratégie fait: "+scriptEnCours+", dernier: "+dernier, this);
+				// le dernier argument, retenter_si_blocage, est vrai si c'est le dernier script. Sinon, on change de script sans attendre
+				try {
+					scriptEnCours.script.agit(scriptEnCours.version, robotvrai, table, dernier);
+				}
+				catch(Exception e)
 				{
-					log.warning("Aucun ordre n'est à disposition.", this);
-					try {
-						Thread.sleep(500);
-					}
-					catch(Exception e)
+					// enregistrement de l'erreur
+					String nom = scriptEnCours.script.toString();
+					if(echecs.containsKey(nom))
 					{
-						System.out.println(e);
+						int nb = echecs.get(nom);
+						echecs.put(nom, nb+1);
 					}
+					else
+						echecs.put(nom, 1);
 				}
 			}
-	
-			log.debug("Stratégie fait: "+scriptEnCours.toString()+", version "+Integer.toString(versionScriptEnCours), this);
-			scriptEnCours.agit(versionScriptEnCours, robotvrai, table, true); // le dernier argument, retenter_si_blocage, est vrai si c'est le dernier script. Sinon, on change de script sans attendre
+			else
+			{
+				log.critical("Aucun ordre n'est à disposition. Attente.", this);
+				Sleep.sleep(25);
+			}
+
 		}
 		log.debug("Arrêt de la stratégie", this);
 		
@@ -124,19 +141,39 @@ public class Strategie implements Service {
 	 */
 	private float calculeNote(int score, int duree, int id)
 	{
-		return 0;
+		// TODO
+		return score/(duree+1);
 	}
 
+	/**
+	 * Evaluation des scripts pour un robot et une certaine profondeur
+	 * @param profondeur
+	 * @param id_robot
+	 * @return le meilleur triplet NoteScriptVersion
+	 * @throws ScriptException
+	 */
 	public NoteScriptVersion evaluation(int profondeur, int id_robot) throws ScriptException
 	{
 		return _evaluation(System.currentTimeMillis(), 0, profondeur, id_robot);
 	}
-	
+
+	/**
+	 * Evaluation des scripts pour un robot et une certaine profondeur, à partir d'une date future
+	 * @param date
+	 * @param profondeur
+	 * @param id_robot
+	 * @return le meilleur triplet NoteScriptVersion
+	 * @throws ScriptException
+	 */
+	public NoteScriptVersion evaluation(long date, int profondeur, int id_robot) throws ScriptException
+	{
+		return _evaluation(date, 0, profondeur, id_robot);
+	}
+
 	private NoteScriptVersion _evaluation(long date, int duree_totale, int profondeur, int id_robot) throws ScriptException
 	{
 		if(profondeur == 0)
 			return new NoteScriptVersion();
-		table.supprimer_obstacles_perimes(date);
 		NoteScriptVersion meilleur = new NoteScriptVersion(-1, null, -1);
 		int duree_connaissances = TTL;
 		
@@ -155,7 +192,11 @@ public class Strategie implements Service {
 					RobotChrono cloned_robotchrono = memorymanager.getCloneRobotChrono(profondeur);
 					int score = script.score(id, cloned_robotchrono, cloned_table);
 					int duree_script = (int)script.calcule(id, cloned_robotchrono, cloned_table, duree_totale > duree_connaissances);
+					log.debug("Durée de "+script+" "+id+": "+duree_script, this);
+					cloned_table.supprimer_obstacles_perimes(date+duree_script);
+					log.debug("Score de "+script+" "+id+": "+score, this);
 					float noteScript = calculeNote(score, duree_script, id);
+					log.debug("Note de "+script+" "+id+": "+noteScript, this);
 					NoteScriptVersion out = _evaluation(date + duree_script, duree_script, profondeur-1, id_robot);
 					out.note += noteScript;
 
@@ -168,10 +209,78 @@ public class Strategie implements Service {
 				}
 				catch(Exception e)
 				{
-					log.critical(e, this);
+					e.printStackTrace();
 				}
 			}
 		}
 		return meilleur;
 	}
+
+	/**
+	 * Renvoie le nombre de scripts qui peuvent encore être exécutés (indépendamment de leur nombre de version)
+	 * @return
+	 */
+	private int nbScriptsRestants()
+	{
+		int compteur = 0;
+		for(String nom_script : scriptmanager.getNomsScripts(0))
+		{
+			try {
+				Script script = scriptmanager.getScript(nom_script);
+				RobotChrono robotchrono = new RobotChrono(config, log);
+				if(script.version(robotchrono, table).size() >= 1)
+					compteur++;		
+			} catch (ScriptException e) {
+				e.printStackTrace();
+			}
+		}
+		return compteur;
+	}
+	
+	/*
+	 * GETTERS AND SETTERS
+	 */
+	
+	/**
+	 * Permet au thread de stratégie de définir le script à exécuter en cas de rencontre avec l'ennemi
+	 * @param prochainScriptEnnemi
+	 */
+	public void setProchainScriptEnnemi(NoteScriptVersion prochainScriptEnnemi)
+	{
+		synchronized(this.prochainScriptEnnemi)
+		{
+			this.prochainScriptEnnemi = prochainScriptEnnemi;
+		}
+	}
+
+	/**
+	 * Permet au thread de stratégie de définir le prochain script à faire
+	 * @param prochainScript
+	 */
+	public void setProchainScript(NoteScriptVersion prochainScript)
+	{
+		synchronized(this.prochainScript)
+		{
+			this.prochainScript = prochainScript;
+		}
+	}
+	
+	public boolean besoin_ProchainScript()
+	{
+		synchronized(prochainScript)
+		{
+			return prochainScript == null;
+		}
+	}
+	
+	public NoteScriptVersion getScriptEnCours()
+	{
+		synchronized(scriptEnCours)
+		{
+			return scriptEnCours.clone();
+		}
+	}
+
+
 }
+

@@ -7,6 +7,7 @@ import smartMath.Vec2;
 import table.Table;
 import utils.Log;
 import utils.Read_Ini;
+import utils.Sleep;
 import hook.Hook;
 import hook.HookGenerator;
 
@@ -681,14 +682,7 @@ public class RobotVrai extends Robot {
 	 */
 	public void sleep(long duree)
 	{
-//		log.debug("Sleep de "+duree+" ms", this);
-		try {
-		Thread.sleep(duree);
-		}
-		catch(Exception e)
-		{
-			System.out.println(e);
-		}
+		Sleep.sleep(duree);
 	}
 
 
