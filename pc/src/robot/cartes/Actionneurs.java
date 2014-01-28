@@ -23,6 +23,67 @@ public class Actionneurs implements Service {
 		this.serie = serie;
 	}
 	
+	public void ouvrir_pince_gauche() throws SerialException
+	{
+		log.debug("Pince gauche ouverte", this);
+		serie.communiquer("og", 0);
+	}
+
+	public void ouvrir_pince_droite() throws SerialException
+	{
+		log.debug("Pince droite ouverte", this);
+		serie.communiquer("od", 0);
+	}
+
+	public void fermer_pince_gauche() throws SerialException
+	{
+		log.debug("Pince gauche fermée", this);
+		serie.communiquer("fg", 0);
+	}
+
+	public void fermer_pince_droite() throws SerialException
+	{
+		log.debug("Pince droite fermée", this);
+		serie.communiquer("fd", 0);
+	}
+
+	public void milieu_pince_gauche() throws SerialException
+	{
+		log.debug("Pince gauche milieu", this);
+		serie.communiquer("mg", 0);
+	}
+
+	public void milieu_pince_droite() throws SerialException
+	{
+		log.debug("Pince droite milieu", this);
+		serie.communiquer("md", 0);
+	}
+
+	public void lever_pince_gauche() throws SerialException
+	{
+		log.debug("Pince gauche levée", this);
+		serie.communiquer("hg", 0);
+	}
+
+	public void lever_pince_droite() throws SerialException
+	{
+		log.debug("Pince droite levée", this);
+		serie.communiquer("hd", 0);
+	}
+	
+	public void baisser_pince_gauche() throws SerialException
+	{
+		log.debug("Pince gauche baissée", this);
+		serie.communiquer("bg", 0);
+	}
+
+	public void baisser_pince_droite() throws SerialException
+	{
+		log.debug("Pince droite baissée", this);
+		serie.communiquer("bd", 0);
+	}
+
+
 	public void bac_bas() throws SerialException
 	{
 		log.debug("Bac baissé", this);
