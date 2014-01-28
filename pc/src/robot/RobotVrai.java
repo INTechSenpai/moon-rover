@@ -300,11 +300,12 @@ public class RobotVrai extends Robot {
 				stopper();
 				if(retenter_si_blocage)
 				{
+					// TODO gérer nombre_tentatives = 0
 					log.warning("Blocage en déplacement ! On recule... reste "+Integer.toString(nombre_tentatives)+" tentatives", this);
 					if(marche_arriere)
 						avancer(distance_degagement_robot, nombre_tentatives-1);
 					else
-					avancer(-distance_degagement_robot, nombre_tentatives-1);
+						avancer(-distance_degagement_robot, nombre_tentatives-1);
 				}
 			}
 			finally

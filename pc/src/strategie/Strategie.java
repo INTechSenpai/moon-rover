@@ -129,6 +129,7 @@ public class Strategie implements Service {
 		 * Où l'ennemi dépose-t-il sa fresque?
 		 * Quel arbre récupère-t-il?
 		 * Quelle torche vide-t-il?
+		 * Où tire-t-il ses balles? (tirer au moins une balle là où il a tiré)
 		 */
 	}
 

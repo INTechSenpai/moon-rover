@@ -54,7 +54,8 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 			for(int i = 0; i < 2; i++)
 			{
 				// défreeze
-				if(positionsfreeze[i].SquaredDistance(positionsEnnemi[i]) > 0)
+				// TODO
+				if(positionsfreeze[i].SquaredDistance(positionsEnnemi[i]) > 30)
 				{
 					date_freeze[i] = System.currentTimeMillis();
 					positionsfreeze[i] = positionsEnnemi[i];
