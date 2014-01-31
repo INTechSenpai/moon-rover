@@ -52,7 +52,7 @@ public class JUnit_MathTest extends JUnit_Test {
 		y = new Matrn(2, 1);
 		Assert.assertTrue(y.getNbColonnes() == 1);
 		Assert.assertTrue(y.getNbLignes() == 2);
-		float[][] tab = new float[2][1];
+		double[][] tab = new double[2][1];
 		tab[0][0] = 1;
 		tab[1][0] = 2;
 		y = new Matrn(tab);
@@ -76,7 +76,7 @@ public class JUnit_MathTest extends JUnit_Test {
 		z.setCoeff(2, 1, 0);
 		z.setCoeff(12, 1, 1);
 
-		y.addition(z);
+		y.additionner(z);
 		Assert.assertTrue(y.getCoeff(0, 0) == 6);
 		Assert.assertTrue(y.getCoeff(0, 1) == 10);
 		Assert.assertTrue(y.getCoeff(1, 0) == 5);
@@ -146,7 +146,7 @@ public class JUnit_MathTest extends JUnit_Test {
 		z = new Matrn(1);
 		z.setCoeff(5, 0, 0);
 
-		y.addition(z);
+		y.additionner(z);
 	}
 
 	@Test(expected=MatriceException.class)

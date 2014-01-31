@@ -4,19 +4,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
 
+import robot.cartes.FiltrageLaser;
 import robot.cartes.Laser;
 import smartMath.Vec2;
 
 public class JUnit_Laser_Test extends JUnit_Test {
 
 	Laser laser;
+	FiltrageLaser filtragelaser;
 	
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 		log.debug("JUnit_Laser_Test.setUp()", this);
+		filtragelaser = (FiltrageLaser) container.getService("FiltrageLaser");
 		laser = (Laser) container.getService("Laser");
-		
 	}
 	
 	@Test
@@ -58,6 +60,13 @@ public class JUnit_Laser_Test extends JUnit_Test {
 		log.debug("JUnit_Laser_Test.test_position_balise()", this); // TODO vérifier les valeurs
 		Assert.assertTrue(laser.position_balise(0).distance(new Vec2((float)1620,(float)50)) < 500);
 		Assert.assertTrue(laser.position_balise(1).distance(new Vec2((float)1620,(float)50)) < 500);
+	}
+	
+	@Test
+	public void test_vitesse() throws Exception
+	{
+		log.debug("JUnit_Laser_Test.test_vitesse()", this);
+		Assert.assertTrue(filtragelaser.vitesse().SquaredLength() < 10);
 	}
 	
 }
