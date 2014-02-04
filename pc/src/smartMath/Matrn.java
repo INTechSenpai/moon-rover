@@ -183,13 +183,12 @@ public class Matrn {
 	}
 
 	public Matrn transpose() throws MatriceException
-	{
-		
+	{		
 		if(taille[0] != taille[1])
 			throw new MatriceException();
 		Matrn a = new Matrn(taille[0], taille[1]);
 		for(int i = 0; i < taille[0]; i++)
-			for(int j = 0; j < i; j++)
+			for(int j = 0; j <= i; j++)
 			{
 				a.matrice[j][i] = matrice[i][j];
 				a.matrice[i][j] = matrice[j][i];				
@@ -234,7 +233,12 @@ public class Matrn {
 		return ident;
 	}
 	
+	public void clone(Matrn m)
+	{
+		taille = m.taille.clone();
+		matrice = m.matrice.clone();		
+	}
+
 	
-		
 	}
 	
