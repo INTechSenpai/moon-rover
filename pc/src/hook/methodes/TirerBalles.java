@@ -20,11 +20,15 @@ public class TirerBalles implements Executable {
 
 	public void execute() {
 		try {
-			robot.tirerBalles();
+			robot.tirerBalle();
 		} catch (SerialException e) {
 			e.printStackTrace();
 		}
 	}
 
-	
+	@Override
+	public boolean bougeRobot() {
+		return false;
+	}	
+
 }

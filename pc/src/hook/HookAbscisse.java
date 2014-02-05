@@ -26,11 +26,13 @@ class HookAbscisse extends Hook {
 			abscisse *= -1;
 	}
 	
-	public void evaluate(final Robot robot)
+	public boolean evaluate(final Robot robot)
 	{
 		Vec2 positionRobot = robot.getPosition();
-		if(Math.abs(positionRobot.x-abscisse) < tolerance);
-			declencher();
+		log.debug(positionRobot+" "+abscisse, this);
+		if(Math.abs(positionRobot.x-abscisse) < tolerance)
+			return declencher();
+		return false;
 	}
 	
 }

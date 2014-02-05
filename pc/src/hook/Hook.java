@@ -37,19 +37,23 @@ abstract public class Hook {
 	
 	/**
 	 * Quand un hook est déclenché, tous ses callbacks sont exécutés
+	 * @return true si ce hook modifie les déplacements du robot
 	 */
-	protected void declencher()
+	protected boolean declencher()
 	{
+		boolean retour = false;
 		for(Callback callback : callbacks)
-			callback.appeler();
+			retour |= callback.appeler();
+		return retour;
 	}
 
 	/**
 	 * Méthode qui sera surchargée par les classes filles.
 	 * Elle contient la condition d'appel du hook
 	 * @param robot
+	 * @return true si ce hook modifie les déplacements du robot, false sinon
 	 */
-	public abstract void evaluate(final Robot robot);
+	public abstract boolean evaluate(final Robot robot);
 
 }
 

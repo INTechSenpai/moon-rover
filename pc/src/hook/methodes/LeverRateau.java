@@ -31,6 +31,11 @@ public class LeverRateau implements Executable  {
 		} catch (SerialException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public boolean bougeRobot() {
+		return false;
 	}	
 	
 }

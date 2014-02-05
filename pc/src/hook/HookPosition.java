@@ -25,11 +25,12 @@ class HookPosition extends Hook {
 			position.x *= -1;
 	}
 	
-	public void evaluate(final Robot robot)
+	public boolean evaluate(final Robot robot)
 	{
 		Vec2 positionRobot = robot.getPosition();
 		if(position.SquaredDistance(positionRobot) <= tolerance*tolerance)
-			declencher();
+			return declencher();
+		return false;
 	}
 	
 }

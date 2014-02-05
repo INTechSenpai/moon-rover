@@ -15,4 +15,10 @@ public interface Executable {
 	 */
 	public void execute();
 	
+	/**
+	 * Retourne un booléen qui renseignera sur la fait que la méthode fait ou non bouger le robot
+	 * @return
+	 */
+	public boolean bougeRobot();
+	
 }
