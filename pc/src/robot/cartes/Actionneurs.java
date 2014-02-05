@@ -144,5 +144,11 @@ public class Actionneurs implements Service {
 		serie.communiquer("rbbd", 0);
 	}
 
+	public void tirerBalle() throws SerialException
+	{
+		// TODO (protocole)
+		log.debug("Balle tirée", this);
+		serie.communiquer("b", 0);
+	}
 	
 }
