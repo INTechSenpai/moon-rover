@@ -124,7 +124,7 @@ public class RobotChrono extends Robot {
 	}
 
 	@Override
-	public void tirerBalles()
+	public void tirerBalle()
 	{
 		// durée "nulle" car appelé par un hook
 	}

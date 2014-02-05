@@ -41,20 +41,18 @@ public class RobotVrai extends Robot {
 //	private boolean enMouvement = true;
 	
 	private boolean marche_arriere = false;
-	
-	public boolean pret = false;
-	
-	private int sleep_milieu_boucle_acquittement;
+
+	private int sleep_boucle_acquittement;
 	private int largeur_robot;
 	private int distance_detection;
 	
 	private float maj_ancien_angle;
-//	private boolean maj_marche_arriere;
+	private boolean maj_marche_arriere;
 	private int disque_tolerance_consigne;
 	private int distance_degagement_robot;
 	private float angle_degagement_robot;
 	private boolean correction_trajectoire;
-	
+	private int pwm_max_translation;
 	// Constructeur
 	
 	public RobotVrai(Capteurs capteur, Actionneurs actionneurs, Deplacements deplacements, HookGenerator hookgenerator, Table table, Read_Ini config, Log log)
@@ -100,7 +98,7 @@ public class RobotVrai extends Robot {
 		}
 		try
 		{
-			sleep_milieu_boucle_acquittement = Integer.parseInt(config.get("sleep_milieu_boucle_acquittement"));
+			sleep_boucle_acquittement = Integer.parseInt(config.get("sleep_boucle_acquittement"));
 		}
 		catch(Exception e)
 		{
@@ -122,6 +120,10 @@ public class RobotVrai extends Robot {
 		{
 			log.critical(e, this);
 		}
+		
+		this.set_vitesse_rotation("entre_scripts");
+		this.set_vitesse_translation("entre_scripts");
+		
 		try {
 			update_x_y_orientation();
 		} catch (SerialException e) {
@@ -335,9 +337,9 @@ public class RobotVrai extends Robot {
 	@Override
 	public void set_vitesse_translation(String vitesse)
 	{
-		int pwm_max = conventions_vitesse_translation(vitesse);
+		pwm_max_translation = conventions_vitesse_translation(vitesse);
 		try {
-			deplacements.set_vitesse_translation(pwm_max);
+			deplacements.set_vitesse_translation(pwm_max_translation);
 		} catch (SerialException e) {
 			e.printStackTrace();
 		}
@@ -388,16 +390,19 @@ public class RobotVrai extends Robot {
 	}
 
 	@Override
-	public void tirerBalles()
+	public void tirerBalle() throws SerialException
 	{
-		// TODO
+		actionneurs.tirerBalle();
 		nombre_lances--;
 	}
 	
 	@Override
 	public void takefire() {
-//		boolean retourner = capteur.isFireRed() ^ couleur == "rouge";
 		// TODO
+
+//		boolean retourner = capteur.isFireRed() ^ couleur == "rouge";
+		stopper();
+		sleep(2000);
 		
 	}
 	
@@ -484,6 +489,8 @@ public class RobotVrai extends Robot {
 	{
 		blocage = false;
 		orientation_consigne = angle;
+		boolean relancer = false;
+		
 		try {
 			deplacements.tourner(angle);
 		} catch (SerialException e) {
@@ -494,10 +501,18 @@ public class RobotVrai extends Robot {
 		{
 			if(hooks != null)
 				for(Hook hook : hooks)
-					hook.evaluate(this);
-			sleep(sleep_milieu_boucle_acquittement);
+					relancer |= hook.evaluate(this);
+			if(relancer)
+				break;
+			sleep(sleep_boucle_acquittement);
 		}
+		
+		// Si un hook a bougé le robot, le dernier ordre est relancé après son exécution
+		if(relancer)
+			tournerBasNiveau(angle, hooks, sans_lever_exception);
+
 	}
+	
 	
 	private void tournerBasNiveau(float angle) throws BlocageException, CollisionException
 	{
@@ -516,6 +531,8 @@ public class RobotVrai extends Robot {
 	 */
 	private void va_au_pointBasNiveau(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean sans_lever_exception) throws CollisionException, BlocageException
 	{
+		boolean relancer = false;
+		
         // comme à toute consigne initiale de mouvement, le robot est débloqué
 		blocage = false;
 
@@ -534,7 +551,7 @@ public class RobotVrai extends Robot {
         //gestion de la marche arrière du déplacement (peut aller à l'encontre de marche_arriere)
 		float angle = (float) Math.atan2(delta.y, delta.x);
 
-//		maj_marche_arriere = marche_arriere;
+		maj_marche_arriere = marche_arriere;
 		maj_ancien_angle = angle;
 		
 		if(marche_arriere)
@@ -572,45 +589,68 @@ public class RobotVrai extends Robot {
 		{
 			if(hooks != null)
 				for(Hook hook : hooks)
-					hook.evaluate(this);
+					relancer |= hook.evaluate(this);
+			if(relancer)
+				break;
 			if(correction_trajectoire)
 				mise_a_jour_consignes();
-			sleep(sleep_milieu_boucle_acquittement);
+			sleep(sleep_boucle_acquittement);
 		}
+		
+		// Si un hook a bougé le robot, le dernier ordre est relancé après son exécution
+		if(relancer)
+			va_au_pointBasNiveau(point, hooks, trajectoire_courbe, sans_lever_exception);
 		
 	}
 	
 	private void mise_a_jour_consignes()
 	{
+		/*
+		 * Tonton PF, raconte-nous une histoire!
+		 * C'est l'histoire d'une routine qui remet le robot sur le bon chemin. Pour cela, elle prend la position du robot, la position de la consigne, et calcule l'angle et la distance entre les deux.
+		 * Pourtant, la routine arrive toujours trop loin! Pourquoi? Parce que le temps que la série lui donne la position du robot, celui-ci a déjà réduit la distance entre lui et la consigne.
+		 * La routine, ne le sachant pas, surestime donc la distance...
+		 * Morale de l'histoire: ne faîtes pas confiance à la série. Et corriger cette erreur en extrapolant la position future du robot connaissant sa vitesse actuelle.
+		 */
+		
+		long t1 = System.currentTimeMillis(); 
+		try {
+			update_x_y_orientation();
+		} catch (SerialException e1) {
+			e1.printStackTrace();
+		}
+		long t2 = System.currentTimeMillis(); 
+
+		float distance_entretemps = ((float)2500)/((float)613.52 * (float)(Math.pow((double)pwm_max_translation,(double)(-1.034))))/1000*(t2-t1);
 		Vec2 delta = consigne.clone();
 		delta.Minus(position);
-		float distance = delta.Length();
-		
+		float distance = delta.Length() - distance_entretemps;
+
         //gestion de la marche arrière du déplacement (peut aller à l'encontre de marche_arriere)
 		float angle = (float) Math.atan2(delta.y, delta.x);
 		float delta_angle = angle - maj_ancien_angle;
 
 		if(delta_angle > Math.PI)
-				delta_angle -= 2*Math.PI;
-		else if(delta_angle <= Math.PI)
+			delta_angle -= 2*Math.PI;
+		else if(delta_angle <= -Math.PI)
 			delta_angle += 2*Math.PI;
 		
 		maj_ancien_angle = angle;
 
 		// inversement de la marche si la destination n'est plus devant
-//		if(Math.abs(delta_angle) > Math.PI/2)
-//			maj_marche_arriere = !maj_marche_arriere;
+		if(Math.abs(delta_angle) > Math.PI/2)
+			maj_marche_arriere = !maj_marche_arriere;
 
 		// mise à jour des consignes en translation et rotation en dehors d'un disque de tolérance
 		if(distance > disque_tolerance_consigne)
 		{
 			// déplacement selon la marche
-/*			if(maj_marche_arriere)
+			if(maj_marche_arriere)
 			{
 				distance *= -1;
 				angle += Math.PI;
 			}
-*/
+
 			// L'attribut orientation_consigne doit être mis à jour à chaque deplacements.tourner() pour le fonctionnement de avancerBasNiveau()
 			orientation_consigne = angle;
 			try {
@@ -670,6 +710,7 @@ public class RobotVrai extends Robot {
 			// robot arrivé?
 			if(!deplacements.update_enMouvement(infos))
 				return true;
+
 		} catch (SerialException e) {
 			e.printStackTrace();
 		}

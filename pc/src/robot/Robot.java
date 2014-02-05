@@ -45,7 +45,7 @@ public abstract class Robot implements Service {
 	 * ACTIONNEURS
 	 */
 	
-	public abstract void tirerBalles() throws SerialException;
+	public abstract void tirerBalle() throws SerialException;
 	public abstract void takefire() throws SerialException;
 	public abstract void deposer_fresques() throws SerialException;
 	public abstract void bac_bas() throws SerialException;
@@ -66,7 +66,7 @@ public abstract class Robot implements Service {
 	protected String couleur;
 	protected boolean effectuer_symetrie = true;
 	
-	protected int nombre_lances = 8;
+	protected int nombre_lances = 6;
 	protected boolean fresques_posees = false;
 
 	protected int nb_tentatives = 2;
