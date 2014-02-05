@@ -89,23 +89,44 @@ public class Capteurs implements Service {
     	}
     }
  
-    public boolean isThereFire()
+    // TODO protocoles
+    public boolean isThereFireGauche()
     {
-		try {
+/*		try {
 			return Integer.parseInt(serie.communiquer("itf", 1)[0]) == 1;
 		} catch (NumberFormatException | SerialException e) {
 			e.printStackTrace();
-		}
+		}*/
 		return false;
     }
 
-    public boolean isFireRed()
+    public boolean isThereFireDroit()
     {
-		try {
+/*		try {
+			return Integer.parseInt(serie.communiquer("itf", 1)[0]) == 1;
+		} catch (NumberFormatException | SerialException e) {
+			e.printStackTrace();
+		}*/
+		return false;
+    }
+
+    public boolean isFireRedGauche()
+    {
+/*		try {
 			return Integer.parseInt(serie.communiquer("ifr", 1)[0]) == 1;
 		} catch (NumberFormatException | SerialException e) {
 			e.printStackTrace();
-		}
+		}*/
+		return false;
+    }
+
+    public boolean isFireRedDroit()
+    {
+/*		try {
+			return Integer.parseInt(serie.communiquer("ifr", 1)[0]) == 1;
+		} catch (NumberFormatException | SerialException e) {
+			e.printStackTrace();
+		}*/
 		return false;
     }
 
