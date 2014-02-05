@@ -20,9 +20,10 @@ public class JUnit_CapteursTest extends JUnit_Test {
 	@Test
 	public void test_feu() throws Exception
 	{
+		// TODO
 		log.debug("JUnit_CapteursTest.test_feu()", this);
-		Assert.assertTrue(!capteurs.isThereFire());
-		Assert.assertTrue(capteurs.isFireRed());
+		Assert.assertTrue(!capteurs.isThereFireDroit());
+		Assert.assertTrue(!capteurs.isFireRedDroit());
 	}
 
 

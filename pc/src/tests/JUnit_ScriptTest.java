@@ -48,6 +48,8 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		robotvrai.setOrientation(0);
 		robotvrai.set_vitesse_rotation("entre_scripts");
 		robotvrai.set_vitesse_translation("entre_scripts");
+		container.getService("threadPosition");
+		container.demarreThreads();
 
 	}
 
@@ -55,16 +57,16 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	public void test_ScriptLances_score() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptLances");
-		Assert.assertTrue(s.score(0, robotvrai, table) == 16);
-		robotvrai.tirerBalles();
-		Assert.assertTrue(s.score(0, robotvrai, table) == 14);
+		Assert.assertTrue(s.score(0, robotvrai, table) == 12);
+		robotvrai.tirerBalle();
+		Assert.assertTrue(s.score(0, robotvrai, table) == 10);
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
 		Executable tirerballes = new TirerBalles(robotvrai);
 		Hook hook = hookgenerator.hook_abscisse(20);
 		hook.ajouter_callback(new Callback(tirerballes, true));
-		hooks.add(hook);		
+		hooks.add(hook);
 		robotvrai.avancer(50, hooks);
-		Assert.assertTrue(s.score(0, robotvrai, table) == 12);
+		Assert.assertTrue(s.score(0, robotvrai, table) == 8);
 
 	}
 
@@ -79,7 +81,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		for(int i = 0; i < 8; i++)
 		{
 			Assert.assertTrue(s.version(robotvrai, table).size() == 2);
-			robotvrai.tirerBalles();
+			robotvrai.tirerBalle();
 		}
 		Assert.assertTrue(s.version(robotvrai, table).size() == 0);
 	}
@@ -136,6 +138,17 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		Assert.assertTrue(s.calcule(1, robotchrono, table, true) > 0);
 		Assert.assertTrue(s.calcule(2, robotchrono, table, true) > 0);
 		Assert.assertTrue(s.calcule(3, robotchrono, table, true) > 0);
+	}
+
+	@Test
+	public void test_ScriptTree_agit() throws Exception
+	{
+		s = (Script)scriptmanager.getScript("ScriptTree");
+		container.getService("threadPosition");
+		container.demarreThreads();
+		robotvrai.setPosition(new Vec2(1180,1200));
+		robotvrai.setOrientation((float)Math.PI);
+		s.agit(0, robotvrai, table, true);
 	}
 
 	@Test(expected=ScriptException.class)

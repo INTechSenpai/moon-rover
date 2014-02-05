@@ -39,6 +39,8 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 		robotvrai.setOrientation(0);
 		robotvrai.set_vitesse_rotation("entre_scripts");
 		robotvrai.set_vitesse_translation("entre_scripts");
+		container.getService("threadPosition");
+//		container.demarreThreads();
 	}
 
 	@Test
@@ -130,7 +132,20 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 		Hook hook = hookgenerator.hook_abscisse(20);
 		hook.ajouter_callback(new Callback(takefire, false));
 		hooks.add(hook);		
-		robotvrai.avancer(50, hooks);
+		robotvrai.avancer(1000, hooks);
+	}
+
+	@Test
+	public void test_hookFeu_takeFire() throws Exception
+	{
+		log.debug("JUnit_HookJauneTest.test_hookAbscisse_takeFire()", this);
+		hookgenerator = (HookGenerator)container.getService("HookGenerator");
+		ArrayList<Hook> hooks = new ArrayList<Hook>();
+		Executable takefire = new TakeFire(robotvrai);
+		Hook hook = hookgenerator.hook_feu();
+		hook.ajouter_callback(new Callback(takefire, false));
+		hooks.add(hook);		
+		robotvrai.avancer(1000, hooks);
 	}
 
 	@Test

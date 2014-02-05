@@ -118,6 +118,7 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 		Thread.sleep(100);
 		robotvrai.va_au_point(new Vec2(10, 1400));
 		robotvrai.update_x_y_orientation();
+		log.debug(robotvrai.getPosition(), this);
 		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(10,1400)) < 2);
 	}
 
@@ -135,10 +136,12 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 	@Test
 	public void test_tourner_symetrie_2() throws Exception
 	{
+		log.debug("JUnit_RobotVraiJauneTest.test_tourner_symetrie_2()", this);
 		container.getService("threadPosition");
 		container.demarreThreads();
 		Thread.sleep(100);
 		robotvrai.tourner((float)1.2, true);
+		log.debug(robotvrai.getOrientation(), this);
 		assertEquals(robotvrai.getOrientation(), 1.2, 0.001);
 	}
 
@@ -153,6 +156,7 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 		chemin.add(new Vec2(20, 1400));
 		chemin.add(new Vec2(40, 1500));
 		robotvrai.suit_chemin(chemin);		
+		log.debug(robotvrai.getPosition(), this);
 		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(40,1500)) < 2);		
 	}
 
@@ -217,6 +221,7 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 	@Test
 	public void test_actionneurs() throws Exception
 	{
+		log.debug("JUnit_RobotVraiJauneTest.test_actionneurs()", this);
 		robotvrai.initialiser_actionneurs_deplacements();
 		robotvrai.recaler();
 		robotvrai.bac_bas();
@@ -231,7 +236,7 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 		robotvrai.rateau(PositionRateau.RANGER, Cote.GAUCHE);
 		robotvrai.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
 		robotvrai.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
-		robotvrai.tirerBalles();
+		robotvrai.tirerBalle();
 		robotvrai.takefire();
 		robotvrai.sleep(100);
 	}
