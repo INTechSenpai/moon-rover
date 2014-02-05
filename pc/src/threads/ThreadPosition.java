@@ -37,7 +37,7 @@ class ThreadPosition extends AbstractThread {
 				e.printStackTrace();
 			}
 			robot_pret = true;
-			Sleep.sleep(100);
+			Sleep.sleep(80);
 		} while(!threadTimer.fin_match);
 
 		log.debug("Arrêt du thread de position", this);

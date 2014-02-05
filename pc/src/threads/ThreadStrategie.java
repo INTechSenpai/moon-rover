@@ -66,13 +66,11 @@ public class ThreadStrategie extends AbstractThread {
 			strategie.analyse_ennemi();
 
 			// Evaluation d'une stratégie de secours si ce script bug
-			maj_prochainScriptErreur();
+			if(evalueEnnemi())
+				maj_prochainScriptErreur();
 			
-			if(strategie.besoin_ProchainScript())
-			{
-				// Evaluation du prochain coup en supposant que celui-ci se passe sans problème
-				maj_prochainScript();
-			}
+			// Evaluation du prochain coup en supposant que celui-ci se passe sans problème
+			maj_prochainScript();
 			
 			Sleep.sleep(50);
 			
@@ -120,4 +118,10 @@ public class ThreadStrategie extends AbstractThread {
 		strategie.setProchainScript(meilleur);		
 	}
 
+	private boolean evalueEnnemi()
+	{
+		// TODO
+		return true;
+	}
+	
 }
