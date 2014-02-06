@@ -8,7 +8,7 @@ public abstract class Game_Element {//j'ai rendu ça public, c'est grave?
 	public Game_Element(Vec2 position)
 	{
 		this.position = position;
-		this.p = 1; //probab pas encore pris
+		this.p = 1; //proba pas encore pris
 	}
 	
 	public Vec2 getPosition()
