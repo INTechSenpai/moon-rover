@@ -16,6 +16,8 @@ import utils.Read_Ini;
 import utils.Sleep;
 import container.Service;
 import exception.ScriptException;
+import smartMath.Vec2;
+import robot.cartes.Laser;
 
 /**
  * Classe qui prend les décisions et exécute les scripts
@@ -106,7 +108,11 @@ public class Strategie implements Service {
 			else
 			{
 				log.critical("Aucun ordre n'est à disposition. Attente.", this);
-				Sleep.sleep(25);
+				Sleep.sleep(25);/**
+				 * Méthode qui, à partir de la durée de freeze et de l'emplacement des ennemis, tire des conclusions.
+				 * Exemples: l'ennemi vide cet arbre, il a posé sa fresque ici, ...
+				 * Modifie aussi la variable TTL Time To Live!
+				 */
 			}
 
 		}
@@ -123,6 +129,7 @@ public class Strategie implements Service {
 	{
 		int[] duree_freeze = threadanalyseennemi.duree_freeze();
 		
+		
 		// modificiation de la table en conséquence
 		/*
 		 * Où l'ennemi dépose-t-il ses feux?
@@ -134,16 +141,29 @@ public class Strategie implements Service {
 	}
 
 	/**
-	 * La note d'un script est fonction de son score, de sa durée, de la distance de l'ennemi
+	 * La note d'un script est fonction de son score, de sa durée, de la distance de l'ennemi à l'action 
 	 * @param score
 	 * @param duree
 	 * @param id
+	 * @param script
 	 * @return
 	 */
-	private float calculeNote(int score, int duree, int id)
+	private float calculeNote(int score, int duree, int id, Script script)
 	{
 		// TODO
-		return score/(duree+1);
+		int A = 1;
+		int B = 1;
+		float prob = script.proba_reussite();
+		
+		//abandon de prob_deja_fait
+		Vec2[] position_ennemie = table.get_positions_ennemis();
+		float pos = (float)1.0 - (float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0)));
+		// pos est une valeur qui décroît de manière exponentielle en fonction de la distance entre le robot adverse et là où on veut aller
+		float note = (score*A*prob/duree+pos*B)*prob;
+		
+		log.debug((float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0))), this);
+		
+		return note;
 	}
 
 	/**
@@ -196,7 +216,7 @@ public class Strategie implements Service {
 					log.debug("Durée de "+script+" "+id+": "+duree_script, this);
 					cloned_table.supprimer_obstacles_perimes(date+duree_script);
 					log.debug("Score de "+script+" "+id+": "+score, this);
-					float noteScript = calculeNote(score, duree_script, id);
+					float noteScript = calculeNote(score, duree_script, id, script);
 					log.debug("Note de "+script+" "+id+": "+noteScript, this);
 					NoteScriptVersion out = _evaluation(date + duree_script, duree_script, profondeur-1, id_robot);
 					out.note += noteScript;
