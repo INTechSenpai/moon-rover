@@ -1,4 +1,5 @@
 package scripts;
+
 import pathfinding.Pathfinding;
 import smartMath.Vec2;
 import hook.Callback;
@@ -43,7 +44,6 @@ public abstract class Script implements Service {
 		Script.hookgenerator = hookgenerator;
 		Script.config = config;
 		Script.log = log;
-
 		Executable takefire = new TakeFire(robotvrai);
 		Hook hook = hookgenerator.hook_feu();
 		hook.ajouter_callback(new Callback(takefire, true));		
@@ -123,7 +123,7 @@ public abstract class Script implements Service {
 	 * @param id de la version
 	 * @return la position du point d'entrée
 	 */
-	protected abstract Vec2 point_entree(int id);
+	public abstract Vec2 point_entree(int id);
 	
 	/**
 	 * Renvoie le score que peut fournir un script
@@ -138,6 +138,12 @@ public abstract class Script implements Service {
 	public abstract int poids(final Robot robot, final Table table);
 
 	/**
+ 	 * Donne la probabilité que le script réussisse
+	 * @return la proba que la script réussisse, en supposant que l'ennemi n'y soit pas
+	 */
+	public abstract float proba_reussite();
+
+	/**
 	 * Exécute le script
 	 * @throws SerialException 
 	 */
@@ -147,5 +153,6 @@ public abstract class Script implements Service {
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs.
 	 */
 	abstract protected void termine(Robot robot, Table table);
+	
 	
 }
