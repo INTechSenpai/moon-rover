@@ -128,6 +128,38 @@ public class Strategie implements Service {
 	public void analyse_ennemi()
 	{
 		int[] duree_freeze = threadanalyseennemi.duree_freeze();
+		//pourquoi avoir un tableau à 2 dimensions pour la durée_freeze
+		
+		Vec2[] pos_ennemi = threadanalyseennemi.positionsfreeze;
+		/*table.Fire[] arrayFire = table.getFire();
+				
+		for(int i = 0; i < 10; i++)
+		{
+			
+		}*/
+		
+		/*Si ça n'a pas été vraiment codé, c'est parce qu'il faut utiliser Container (ou pas) et on sait pas encore comment
+		 * Pour chaque feu 
+		 * si rayon_feu +rayon_robot_adverse > distance(feu, robot_adverse) et duree_freeze > duree_prise_feu_generique alors
+		 *	feu pris
+		 *Pour chaque arbre 
+		 *si rayon_arbre +rayon_robot_adverse > distance(arbre, robot_adverse) et duree_freeze > duree_prise_feu_generique alors
+		 *	fruits pris
+		 *Pour chaque bac
+		 *si dimensions_bac +rayon_robot_adverse > distance(bac, robot_adverse) et duree_freeze_depot > duree_prise_feu_generique alors
+		 *	fruits déposés
+		 *On prend pas en compte le lancer de balles
+		 *
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 */
+		
 		
 		
 		// modificiation de la table en conséquence
