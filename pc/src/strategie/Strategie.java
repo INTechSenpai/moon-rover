@@ -125,10 +125,8 @@ public class Strategie implements Service {
 	 * Exemples: l'ennemi vide cet arbre, il a posé sa fresque ici, ...
 	 * Modifie aussi la variable TTL!
 	 */
-	public void analyse_ennemi()
+	public void analyse_ennemi(Vec2[] positionsfreeze, long[] date_freeze)
 	{
-		int[] duree_freeze = threadanalyseennemi.duree_freeze();
-		
 		
 		// modificiation de la table en conséquence
 		/*
@@ -138,6 +136,10 @@ public class Strategie implements Service {
 		 * Quelle torche vide-t-il?
 		 * Où tire-t-il ses balles? (tirer au moins une balle là où il a tiré)
 		 */
+		
+		// Plus le robot ennemi reste fixe, plus le TTL doit être grand.
+		// Le TTL est une durée en ms sur laquelle on estime que le robot demeurera immobile
+		
 	}
 
 	/**

@@ -169,7 +169,8 @@ public class Container {
 																		(FiltrageLaser)getService("FiltrageLaser")));
 		else if(nom == "threadAnalyseEnnemi")
 			services.put(nom, (Service)threadmanager.getThreadAnalyseEnnemi(	(Table)getService("Table"),
-																				(ThreadTimer)getService("threadTimer")));
+																				(ThreadTimer)getService("threadTimer"),
+																				(Strategie)getService("Strategie")));
 		else if(nom == "Pathfinding")
 			services.put(nom, (Service)new Pathfinding(	(Table)getService("Table"),
 														(Read_Ini)getService("Read_Ini"),
