@@ -15,7 +15,7 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 	ThreadTimer threadtimer;
 	
 	long[] date_freeze = new long[2];
-	Vec2[] positionsfreeze = new Vec2[2];
+	public Vec2[] positionsfreeze = new Vec2[2];
 	int tolerance = 1000;
 	
 	public ThreadAnalyseEnnemi(Table table, ThreadTimer threadtimer)
@@ -59,8 +59,7 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 				{
 					date_freeze[i] = System.currentTimeMillis();
 					positionsfreeze[i] = positionsEnnemi[i];
-				}
-			
+				}			
 			}
 			
 			Sleep.sleep(500); // le sleep peut être long, le robot adverse ne bouge de toute façon pas très vite...
