@@ -125,19 +125,9 @@ public class Strategie implements Service {
 	 * Exemples: l'ennemi vide cet arbre, il a posé sa fresque ici, ...
 	 * Modifie aussi la variable TTL!
 	 */
-	public void analyse_ennemi()
+	public void analyse_ennemi(Vec2[] positionsfreeze, long[] date_freeze)
 	{
-		int[] duree_freeze = threadanalyseennemi.duree_freeze();
-		//pourquoi avoir un tableau à 2 dimensions pour la durée_freeze
-		
-		Vec2[] pos_ennemi = threadanalyseennemi.positionsfreeze;
-		/*table.Fire[] arrayFire = table.getFire();
 				
-		for(int i = 0; i < 10; i++)
-		{
-			
-		}*/
-		
 		/*Si ça n'a pas été vraiment codé, c'est parce qu'il faut utiliser Container (ou pas) et on sait pas encore comment
 		 * Pour chaque feu 
 		 * si rayon_feu +rayon_robot_adverse > distance(feu, robot_adverse) et duree_freeze > duree_prise_feu_generique alors
@@ -161,7 +151,6 @@ public class Strategie implements Service {
 		 */
 		
 		
-		
 		// modificiation de la table en conséquence
 		/*
 		 * Où l'ennemi dépose-t-il ses feux?
@@ -170,6 +159,10 @@ public class Strategie implements Service {
 		 * Quelle torche vide-t-il?
 		 * Où tire-t-il ses balles? (tirer au moins une balle là où il a tiré)
 		 */
+		
+		// Plus le robot ennemi reste fixe, plus le TTL doit être grand.
+		// Le TTL est une durée en ms sur laquelle on estime que le robot demeurera immobile
+		
 	}
 
 	/**

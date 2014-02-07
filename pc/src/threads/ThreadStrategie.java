@@ -63,8 +63,6 @@ public class ThreadStrategie extends AbstractThread {
 		
 		while(!stop_threads)
 		{
-			strategie.analyse_ennemi();
-
 			// Evaluation d'une stratégie de secours si ce script bug
 			if(evalueEnnemi())
 				maj_prochainScriptErreur();
