@@ -185,6 +185,9 @@ public class Strategie implements Service {
 			RobotChrono robotchrono_version = memorymanager.getCloneRobotChrono(profondeur);
 			ArrayList<Integer> versions = script.version(robotchrono_version, table_version);
 
+			// TODO corriger les scripts pour que ça n'arrive pas
+			if(versions == null)
+				break;
 			for(int id : versions)
 			{
 				try
@@ -193,11 +196,11 @@ public class Strategie implements Service {
 					RobotChrono cloned_robotchrono = memorymanager.getCloneRobotChrono(profondeur);
 					int score = script.score(id, cloned_robotchrono, cloned_table);
 					int duree_script = (int)script.calcule(id, cloned_robotchrono, cloned_table, duree_totale > duree_connaissances);
-					log.debug("Durée de "+script+" "+id+": "+duree_script, this);
+					//log.debug("Durée de "+script+" "+id+": "+duree_script, this);
 					cloned_table.supprimer_obstacles_perimes(date+duree_script);
-					log.debug("Score de "+script+" "+id+": "+score, this);
+					//log.debug("Score de "+script+" "+id+": "+score, this);
 					float noteScript = calculeNote(score, duree_script, id);
-					log.debug("Note de "+script+" "+id+": "+noteScript, this);
+					//log.debug("Note de "+script+" "+id+": "+noteScript, this);
 					NoteScriptVersion out = _evaluation(date + duree_script, duree_script, profondeur-1, id_robot);
 					out.note += noteScript;
 

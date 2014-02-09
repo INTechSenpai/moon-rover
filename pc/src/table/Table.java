@@ -174,15 +174,32 @@ public class Table implements Service {
 		    if (obstacle.position.SquaredDistance(centre_detection) < distance*distance)
 		    	return true;
 		}	
+		iterator = listObstaclesFixes.iterator();
+		while ( iterator.hasNext() )
+		{
+		    Obstacle obstacle = iterator.next();
+		    if (obstacle.position.SquaredDistance(centre_detection) < distance*distance)
+		    	return true;
+		}
+		
+		return robots_adverses[0].position.SquaredDistance(centre_detection) < distance*distance
+				|| robots_adverses[1].position.SquaredDistance(centre_detection) < distance*distance;
+	}	
 
-		return false;
-	}
-
+	/**
+	 * Utilisé par le thread de laser
+	 * @param i
+	 * @param position
+	 */
     public void deplacer_robot_adverse(int i, Vec2 position)
     {
     	robots_adverses[i].position = position.clone();
     }
 	
+    /**
+     * Utilisé par le thread de stratégie
+     * @return
+     */
     public Vec2[] get_positions_ennemis()
     {
     	Vec2[] positions =  new Vec2[2];
@@ -241,7 +258,7 @@ public class Table implements Service {
 	{
 		return arrayTree[tree_id].isTaken();
 	}
-		
+	
 	//Torches
 	
 	public int nearestTorch (Vec2 position)
