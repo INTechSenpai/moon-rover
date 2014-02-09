@@ -53,10 +53,10 @@ public class Table implements Service {
 		arrayFire[9] = new Fire(new Vec2(-1485,1200), 15, 0, Orientation.XPLUS, Colour.YELLOW);
 
 		// Initialisation des arbres
-		arrayTree[0] = new Tree();
-		arrayTree[1] = new Tree();
-		arrayTree[2] = new Tree();
-		arrayTree[3] = new Tree();
+		arrayTree[0] = new Tree(new Vec2(1500,700));
+		arrayTree[1] = new Tree(new Vec2(800,0));
+		arrayTree[2] = new Tree(new Vec2(-800,0));
+		arrayTree[3] = new Tree(new Vec2(-1500,700));
 
 		// Initialisation des torches
 		Fire feu0 = new Fire(new Vec2(600,900), 3, 1, Orientation.GROUND, Colour.YELLOW);
@@ -231,8 +231,27 @@ public class Table implements Service {
 		hashFire = indice++;
 	}
 	
+	public float distanceFire(Vec2 position, int i)
+	{
+		return position.distance(arrayFire[i].position);
+	}
+	
 	// Arbres
 	
+	public int nearestTree (Vec2 position)
+	{
+		int min = 0;
+		for (int i = 0; i < 4; i++)
+			if (arrayTree[i].getPosition().SquaredDistance(position) < arrayTree[min].getPosition().SquaredDistance(position))
+				min = i;
+		return min;
+	}
+	
+	public float distanceTree(Vec2 position, int i)
+	{
+		return position.distance(arrayTree[i].position);
+	}
+
 	public void pickTree (int id)
 	{
 		arrayTree[id].setTaken();
@@ -268,7 +287,12 @@ public class Table implements Service {
 		else
 			return 1;
 	}
-	
+
+	public float distanceTorch(Vec2 position, int i)
+	{
+		return position.distance(arrayTorch[i].position);
+	}
+
 	/**
 	 * La table en argument deviendra la copie de this (this reste inchangé)
 	 * @param ct

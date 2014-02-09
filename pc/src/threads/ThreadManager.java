@@ -90,11 +90,11 @@ public class ThreadManager {
 		return threads.get("threadLaser");
 	}
 
-	public AbstractThread getThreadAnalyseEnnemi(Table table, ThreadTimer threadtimer)
+	public AbstractThread getThreadAnalyseEnnemi(Table table, ThreadTimer threadtimer, Strategie strategie)
 	{
 		AbstractThread thread = threads.get("threadAnalyseEnnemi");
 		if(thread == null)
-			threads.put("threadAnalyseEnnemi", new ThreadAnalyseEnnemi(table, threadtimer));
+			threads.put("threadAnalyseEnnemi", new ThreadAnalyseEnnemi(table, threadtimer, strategie));
 		return threads.get("threadAnalyseEnnemi");
 	}
 

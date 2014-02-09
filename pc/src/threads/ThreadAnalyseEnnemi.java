@@ -1,6 +1,7 @@
 package threads;
 
 import smartMath.Vec2;
+import strategie.Strategie;
 import table.Table;
 import utils.Sleep;
 
@@ -13,12 +14,13 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 
 	Table table;
 	ThreadTimer threadtimer;
+	Strategie strategie;
 	
 	long[] date_freeze = new long[2];
-	Vec2[] positionsfreeze = new Vec2[2];
+	public Vec2[] positionsfreeze = new Vec2[2];
 	int tolerance = 1000;
 	
-	public ThreadAnalyseEnnemi(Table table, ThreadTimer threadtimer)
+	public ThreadAnalyseEnnemi(Table table, ThreadTimer threadtimer, Strategie strategie)
 	{
 		this.table = table;
 		this.threadtimer = threadtimer;
@@ -59,9 +61,10 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 				{
 					date_freeze[i] = System.currentTimeMillis();
 					positionsfreeze[i] = positionsEnnemi[i];
-				}
-			
+				}			
 			}
+			
+			strategie.analyse_ennemi(positionsfreeze, date_freeze);
 			
 			Sleep.sleep(500); // le sleep peut être long, le robot adverse ne bouge de toute façon pas très vite...
 		}
@@ -76,12 +79,10 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 	 */
 	public int[] duree_freeze()
 	{
-/*		int[] duree_freeze = new int[2];
+		int[] duree_freeze = new int[2];
 		duree_freeze[0] = (int)(System.currentTimeMillis() - date_freeze[0]);
 		duree_freeze[1] = (int)(System.currentTimeMillis() - date_freeze[1]);
 		return duree_freeze;
-		*/
-		return null;
 	}
 	
 }
