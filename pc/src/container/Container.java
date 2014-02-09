@@ -135,7 +135,6 @@ public class Container {
 															(RobotVrai)getService("RobotVrai")));
 		else if(nom == "Strategie")
 			services.put(nom, (Service)new Strategie(	(MemoryManager)getService("MemoryManager"),
-														(ThreadAnalyseEnnemi)getService("threadAnalyseEnnemi"),
 														(ThreadTimer)getService("threadTimer"),
 														(ScriptManager)getService("ScriptManager"),
 														(Table)getService("Table"),

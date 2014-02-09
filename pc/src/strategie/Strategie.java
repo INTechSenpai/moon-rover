@@ -9,7 +9,6 @@ import robot.RobotVrai;
 import scripts.Script;
 import scripts.ScriptManager;
 import table.Table;
-import threads.ThreadAnalyseEnnemi;
 import threads.ThreadTimer;
 import utils.Log;
 import utils.Read_Ini;
@@ -17,7 +16,6 @@ import utils.Sleep;
 import container.Service;
 import exception.ScriptException;
 import smartMath.Vec2;
-import robot.cartes.Laser;
 
 /**
  * Classe qui prend les décisions et exécute les scripts
@@ -29,7 +27,6 @@ public class Strategie implements Service {
 
 	// Dépendances
 	private MemoryManager memorymanager;
-	private ThreadAnalyseEnnemi threadanalyseennemi;
 	private ThreadTimer threadtimer;
 	private ScriptManager scriptmanager;
 	private Table table;
@@ -50,10 +47,9 @@ public class Strategie implements Service {
 	// Prochain script à exécuter si l'actuel se passe bien
 	private NoteScriptVersion prochainScript;
 	
-	public Strategie(MemoryManager memorymanager, ThreadAnalyseEnnemi threadanalyseennemi, ThreadTimer threadtimer, ScriptManager scriptmanager, Table table, RobotVrai robotvrai, Read_Ini config, Log log)
+	public Strategie(MemoryManager memorymanager, ThreadTimer threadtimer, ScriptManager scriptmanager, Table table, RobotVrai robotvrai, Read_Ini config, Log log)
 	{
 		this.memorymanager = memorymanager;
-		this.threadanalyseennemi = threadanalyseennemi;
 		this.threadtimer = threadtimer;
 		this.scriptmanager = scriptmanager;
 		this.table = table;
