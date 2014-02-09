@@ -123,6 +123,33 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 	}
 
 	@Test
+	public void test_trajectoire_courbe() throws Exception
+	{
+		log.debug("JUnit_RobotVraiJauneTest.test_correction_trajectoire()", this);
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
+		chemin.add(new Vec2(1150, 1050));
+		chemin.add(new Vec2(900, 400));
+		robotvrai.suit_chemin(chemin, true, true);		
+	}
+	
+	@Test
+	public void test_correction_trajectoire() throws Exception
+	{
+		log.debug("JUnit_RobotVraiJauneTest.test_correction_trajectoire()", this);
+		container.getService("threadPosition");
+		container.demarreThreads();
+		Thread.sleep(100);
+		deplacements.avancer(400);
+		robotvrai.va_au_point(new Vec2(1100, 900));
+		robotvrai.update_x_y_orientation();
+		log.debug(robotvrai.getPosition(), this);
+		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(10,1400)) < 2);
+	}
+
+	@Test
 	public void test_tourner() throws Exception
 	{
 		log.debug("JUnit_RobotVraiJauneTest.test_tourner()", this);
@@ -150,14 +177,15 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 	{
 		log.debug("JUnit_RobotVraiJauneTest.test_suit_chemin()", this);
 		container.getService("threadPosition");
-		container.demarreThreads();
+//		container.demarreThreads();
 		Thread.sleep(100);
 		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
 		chemin.add(new Vec2(20, 1400));
-		chemin.add(new Vec2(40, 1500));
-		robotvrai.suit_chemin(chemin);		
+		chemin.add(new Vec2(1200, 1500));
+		robotvrai.suit_chemin(chemin);
+		robotvrai.update_x_y_orientation();
 		log.debug(robotvrai.getPosition(), this);
-		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(40,1500)) < 2);		
+		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(1200,1500)) < 5);
 	}
 
 	@Test(expected=MouvementImpossibleException.class)

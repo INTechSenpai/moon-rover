@@ -144,8 +144,6 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	public void test_ScriptTree_agit() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptTree");
-		container.getService("threadPosition");
-		container.demarreThreads();
 		robotvrai.setPosition(new Vec2(1180,1200));
 		robotvrai.setOrientation((float)Math.PI);
 		s.agit(0, robotvrai, table, true);
