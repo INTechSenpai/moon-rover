@@ -70,11 +70,8 @@ public abstract class Script implements Service {
 
 		try
 		{
-			log.debug("A", this);
-			robotvrai.suit_chemin(chemin, hookfeu, retenter_si_blocage);
-			log.debug("B", this);
+			robotvrai.suit_chemin(chemin, hookfeu, retenter_si_blocage, true);
 			execute(id_version, robotvrai, table);
-			log.debug("C", this);
 		}
 		catch (Exception e)
 		{

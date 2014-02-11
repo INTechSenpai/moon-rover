@@ -27,11 +27,24 @@ public abstract class Robot implements Service {
 			 	throws MouvementImpossibleException;
 	protected abstract void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
 				throws MouvementImpossibleException;
-	protected abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee)
+	protected abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe)
 				throws MouvementImpossibleException;
 	public abstract void set_vitesse_translation(String vitesse);
 	public abstract void set_vitesse_rotation(String vitesse);
-	protected abstract void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception)
+	
+	/**
+	 * Va au point donné. Différentes options possibles.
+	 * @param point
+	 * @param hooks
+	 * @param trajectoire_courbe: le robot est-il autorisé à effectuer une trajectoire courbe? Une trajectoire courbe est plus rapide mais peu contrôlée (on parle bien d'autorisation; l'utilisation effective de la trajectoire courbe dépend d'autres paramètres, comme la place disponible)
+	 * @param nombre_tentatives: le nombre de tentatives restantes
+	 * @param retenter_si_blocage: le robot doit-il retenter en cas de blocage? (détection ennemi, ...). Dans notre cas, s'il y a d'autres scripts, il ne retente pas.
+	 * @param symetrie_effectuee: la symétrie a-t-elle déjà été effectuée? (il ne faut pas l'appliquer deux fois)
+	 * @param sans_lever_exception: utilisé pour foncer dans le mur exprès, par exemple pour poser les fresques ou pour se recaler.
+	 * @param enchainer: utilisé lors d'un enchaînement de va_au_point par suit_chemin. Au lieu de s'arrêter entre chaque segment, le robot conserve sa vitesse.
+	 * @throws MouvementImpossibleException
+	 */
+	protected abstract void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception, boolean enchainer)
 				throws MouvementImpossibleException;
 
 	/*
@@ -139,37 +152,47 @@ public abstract class Robot implements Service {
 	// Les méthodes avec le paramètre nbTentatives sont en protected 
 	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
-		va_au_point(point, hooks, false, nb_tentatives, retenterSiBlocage, false, sansLeverException);
+		va_au_point(point, hooks, false, nb_tentatives, retenterSiBlocage, false, sansLeverException, false);
 	}
 
 	public void va_au_point(Vec2 point) throws MouvementImpossibleException
 	{
-		va_au_point(point, null, false, nb_tentatives, true, false, false);
+		va_au_point(point, null, false, nb_tentatives, true, false, false, false);
 	}
 
 	public void va_au_point(Vec2 point, boolean retenterSiBlocage) throws MouvementImpossibleException
 	{
-		va_au_point(point, null, false, nb_tentatives, retenterSiBlocage, false, false);
+		va_au_point(point, null, false, nb_tentatives, retenterSiBlocage, false, false, false);
 	}
 
 	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws MouvementImpossibleException
 	{
-		suit_chemin(chemin, hooks, false, false);
+		suit_chemin(chemin, hooks, false, false, false);
 	}
-	
+
+	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean trajectoire_courbe) throws MouvementImpossibleException
+	{
+		suit_chemin(chemin, hooks, retenter_si_blocage, false, trajectoire_courbe);
+	}
+
 	public void suit_chemin(ArrayList<Vec2> chemin) throws MouvementImpossibleException
 	{
-		suit_chemin(chemin, null, false, false);
+		suit_chemin(chemin, null, false, false, false);
 	}
 
 	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage) throws MouvementImpossibleException
 	{
-		suit_chemin(chemin, hooks, retenter_si_blocage, false);
+		suit_chemin(chemin, hooks, retenter_si_blocage, false, false);
 	}
 
 	public void suit_chemin(ArrayList<Vec2> chemin, boolean retenter_si_blocage) throws MouvementImpossibleException
 	{
-		suit_chemin(chemin, null, retenter_si_blocage, false);
+		suit_chemin(chemin, null, retenter_si_blocage, false, false);
+	}
+
+	public void suit_chemin(ArrayList<Vec2> chemin, boolean retenter_si_blocage, boolean trajectoire_courbe) throws MouvementImpossibleException
+	{
+		suit_chemin(chemin, null, retenter_si_blocage, false, trajectoire_courbe);
 	}
 
 	public void tourner(float angle, ArrayList<Hook> hooks, boolean sans_lever_exception) throws MouvementImpossibleException

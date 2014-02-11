@@ -14,6 +14,7 @@ import hook.HookGenerator;
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import exception.BlocageException;
 import exception.CollisionException;
@@ -53,6 +54,8 @@ public class RobotVrai extends Robot {
 	private float angle_degagement_robot;
 	private boolean correction_trajectoire;
 	private int pwm_max_translation;
+	private int distance_securite_trajectoire_courbe;
+	private boolean autorise_trajectoire_courbe;
 	// Constructeur
 	
 	public RobotVrai(Capteurs capteur, Actionneurs actionneurs, Deplacements deplacements, HookGenerator hookgenerator, Table table, Read_Ini config, Log log)
@@ -114,7 +117,23 @@ public class RobotVrai extends Robot {
 		}
 		try
 		{
+			distance_securite_trajectoire_courbe = Integer.parseInt(config.get("distance_securite_trajectoire_courbe"));
+		}
+		catch(Exception e)
+		{
+			log.critical(e, this);
+		}
+		try
+		{
 			correction_trajectoire = Boolean.parseBoolean(config.get("correction_trajectoire"));
+		}
+		catch(Exception e)
+		{
+			log.critical(e, this);
+		}
+		try
+		{
+			autorise_trajectoire_courbe = Boolean.parseBoolean(config.get("autorise_trajectoire_courbe"));
 		}
 		catch(Exception e)
 		{
@@ -264,10 +283,14 @@ public class RobotVrai extends Robot {
 	 * @throws MouvementImpossibleException 
 	 */
 	@Override
-	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee) throws MouvementImpossibleException
+	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe) throws MouvementImpossibleException
 	{
-		for(Vec2 position: chemin)
-			va_au_point(position, hooks, false, nb_tentatives, retenter_si_blocage, symetrie_effectuee, false);
+		Iterator<Vec2> i = chemin.iterator();
+		while(i.hasNext())
+		{
+			Vec2 point = i.next();
+			va_au_point(point, hooks, trajectoire_courbe, nb_tentatives, retenter_si_blocage, symetrie_effectuee, false, false/*i.hasNext()*/);
+		}
 	}
 
 
@@ -275,8 +298,19 @@ public class RobotVrai extends Robot {
 	 * Le robot va au point demandé
 	 */
 	@Override
-	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception) throws MouvementImpossibleException
+	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception, boolean enchainer) throws MouvementImpossibleException
 	{
+		try {
+			update_x_y_orientation();
+		} catch (SerialException e1) {
+			e1.printStackTrace();
+		}
+		
+		// Si trajectoire_courbe a été donné en true, cela signifie que va_au_point prend lui-même la décision
+		// Là où on prendra plus de place, c'est devant le robot (marche avant)
+		if(autorise_trajectoire_courbe && trajectoire_courbe)
+			trajectoire_courbe = !table.obstaclePresent(position.PlusNewVector(new Vec2(50*(float)Math.cos(orientation),50*(float)Math.sin(orientation))), distance_securite_trajectoire_courbe);
+		
 		// appliquer la symétrie ne doit pas modifier ce point !
 		point = point.clone();
 		
@@ -293,7 +327,7 @@ public class RobotVrai extends Robot {
 
 		try
 		{
-			va_au_pointBasNiveau(point, hooks, trajectoire_courbe, sans_lever_exception);
+			va_au_pointBasNiveau(point, hooks, trajectoire_courbe, sans_lever_exception, enchainer);
 		}
 		catch(BlocageException e) // blocage durant le mouvement
 		{
@@ -323,7 +357,7 @@ public class RobotVrai extends Robot {
 			{
 				log.warning("attente avant nouvelle tentative... reste "+Integer.toString(nombre_tentatives)+" tentative(s)", this);
 				sleep(1000);
-				va_au_point(point, hooks, trajectoire_courbe, nombre_tentatives-1, retenter_si_blocage, true, sans_lever_exception);
+				va_au_point(point, hooks, trajectoire_courbe, nombre_tentatives-1, retenter_si_blocage, true, sans_lever_exception, false);
 			}
 			else if(!sans_lever_exception)
 				throw new MouvementImpossibleException(this);
@@ -529,7 +563,7 @@ public class RobotVrai extends Robot {
 	 * @param sans_lever_exception
 	 * @throws BlocageException 
 	 */
-	private void va_au_pointBasNiveau(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean sans_lever_exception) throws CollisionException, BlocageException
+	private void va_au_pointBasNiveau(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean sans_lever_exception, boolean enchainer) throws CollisionException, BlocageException
 	{
 		boolean relancer = false;
 		
@@ -585,21 +619,38 @@ public class RobotVrai extends Robot {
 			}
 		}
 		
-		while(!acquittement(true, sans_lever_exception))
+		float distance_restante_carre = 5000;
+		while((!acquittement(true, sans_lever_exception) && !enchainer) || (enchainer && distance_restante_carre > 1000))
 		{
 			if(hooks != null)
 				for(Hook hook : hooks)
 					relancer |= hook.evaluate(this);
+
 			if(relancer)
 				break;
-			if(correction_trajectoire)
+
+			// Si on utilise la trajectoire courbe, on doit nécessairement utiliser la correction de trajectoire.
+			// update_x_y_orientation() est déjà appelé dans mise_a_jour_consignes
+			if(correction_trajectoire || trajectoire_courbe)
 				mise_a_jour_consignes();
+			else
+				try {
+					update_x_y_orientation();
+				} catch (SerialException e) {
+					e.printStackTrace();
+				}
 			sleep(sleep_boucle_acquittement);
+			Vec2 delta_restant = consigne.clone();
+			delta_restant.Minus(position);
+			distance_restante_carre = delta_restant.SquaredLength();
+
 		}
+		
+		log.debug("Distance restante: "+Math.sqrt(distance_restante_carre), this);
 		
 		// Si un hook a bougé le robot, le dernier ordre est relancé après son exécution
 		if(relancer)
-			va_au_pointBasNiveau(point, hooks, trajectoire_courbe, sans_lever_exception);
+			va_au_pointBasNiveau(point, hooks, trajectoire_courbe, sans_lever_exception, enchainer);
 		
 	}
 	
@@ -614,18 +665,16 @@ public class RobotVrai extends Robot {
 		 */
 		
 		long t1 = System.currentTimeMillis(); 
+
 		try {
 			update_x_y_orientation();
 		} catch (SerialException e1) {
 			e1.printStackTrace();
 		}
-		long t2 = System.currentTimeMillis(); 
 
-		float distance_entretemps = ((float)2500)/((float)613.52 * (float)(Math.pow((double)pwm_max_translation,(double)(-1.034))))/1000*(t2-t1);
 		Vec2 delta = consigne.clone();
 		delta.Minus(position);
-		float distance = delta.Length() - distance_entretemps;
-
+		
         //gestion de la marche arrière du déplacement (peut aller à l'encontre de marche_arriere)
 		float angle = (float) Math.atan2(delta.y, delta.x);
 		float delta_angle = angle - maj_ancien_angle;
@@ -640,6 +689,12 @@ public class RobotVrai extends Robot {
 		// inversement de la marche si la destination n'est plus devant
 		if(Math.abs(delta_angle) > Math.PI/2)
 			maj_marche_arriere = !maj_marche_arriere;
+
+		long t2 = System.currentTimeMillis(); 
+		
+		float distance_entretemps = ((float)2500)/((float)613.52 * (float)(Math.pow((double)pwm_max_translation,(double)(-1.034))))/1000*(t2-t1);
+		float distance = delta.Length() - distance_entretemps;
+		log.debug("Correction trajectoire,  distance: "+distance, this);
 
 		// mise à jour des consignes en translation et rotation en dehors d'un disque de tolérance
 		if(distance > disque_tolerance_consigne)
