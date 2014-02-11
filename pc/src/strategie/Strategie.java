@@ -128,25 +128,40 @@ public class Strategie implements Service {
 		int distance_influence = 500; //50 cm
 		int duree_standard = 3000; //3 secondes
 		int duree_blocage = 10000; //10 secondes
-		int larg_max = 100; //10 cm est la largeur maximale de la fresque
+		//int larg_max = 100; //10 cm est la largeur maximale de la fresque
 		//valeur amenée à être modifiée
+		//inutile en fait
 		for(int i = 0; i <2; i++)
 		{
+			/*
+			 * Je mets en garde contre la façon dont peut être utilisé positionsfreeze
+			 * en effet, une fois que le robot adverse a été considéré commme preneur
+			 * de feu ou de fruit, alors il faut remettre à 0 le compteurmais si on fait ça, 
+			 * on ne se prémunit pas, entre autre, contre les freezes
+			 * 			 * 
+			 */
 			int i_min_fire = table.nearestFire(positionsfreeze[i]);
 			int i_min_tree = table.nearestTree(positionsfreeze[i]);
+			int i_min_fresco = table.nearestFreeFresco(positionsfreeze[i]);
 			
 			if (duree_freeze[i] > duree_blocage)
 			{
 				//Il y a un blocage de l'ennemi, réfléchissons un peu et agissons optimalement
 			}
-			else if (table.distanceTree(positionsfreeze[i], i_min_fire) < distance_influence && duree_freeze[i] > duree_standard)
+			if (table.distanceTree(positionsfreeze[i], i_min_fire) < distance_influence && duree_freeze[i] > duree_standard)
 			{
 				table.pickTree(i_min_tree);
 			}
-			else if(table.distanceFire(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
+			if(table.distanceFire(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
 			{
 				table.pickFire(i_min_fire);
 			}
+			if(table.distanceFresco(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
+			{
+				table.appendFresco(i_min_fresco);
+			}
+			
+			
 		
 			//il faudrait ajouter la gestion des fresques
 			//Il faudrait l'ajouter dans Table.java

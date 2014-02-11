@@ -25,6 +25,9 @@ public class Table implements Service {
 	private int hashFire;
 	private int hashTree;
 	private int hashObstacles;
+	
+	private Fresco[] list_fresco_pos;
+	private boolean[] list_fresco_hanged;
 
 	// Dépendances
 	private Log log;
@@ -100,6 +103,17 @@ public class Table implements Service {
 		hashFire = 0;
 		hashTree = 0;
 		hashObstacles = 0;
+		
+		//Gestion des fresques
+		list_fresco_pos[0] = new Fresco(new Vec2(0,0));
+		list_fresco_pos[1] = new Fresco(new Vec2(0,0));
+		list_fresco_pos[2]= new Fresco(new Vec2(0,0));
+		//false -> aucune fresque
+		//true -> fresque accrochée
+		list_fresco_hanged[0] = false;
+		list_fresco_hanged[1] = false;
+		list_fresco_hanged[2] = false;
+		
 	}
 	
 	/*
@@ -361,6 +375,26 @@ public class Table implements Service {
 	{
 		return listObstacles.size();
 	}
+	
+	public int nearestFreeFresco(Vec2 position)
+	{
+		int min = 0;
+		for (int i = 0; i < list_fresco_hanged.length ; i++)
+			if (!(list_fresco_hanged[i]) && list_fresco_pos[i].getPosition().SquaredDistance(position) < list_fresco_pos[min].getPosition().SquaredDistance(position))
+				min = i;
+		return min;
+	}
+	public void appendFresco(int i)
+	//ça ajoute une fresque par rapport à la position
+	//on utilisera nearestFrescoFree pour trouver i
+	{
+		list_fresco_hanged[i] = true;
+	}
+	public float distanceFresco(Vec2 position, int i)
+	{
+		return position.distance(list_fresco_pos[i].getPosition());		
+	}
+	//Il faudra faire gaffe à la différence entre les distance et les squaredDistance quand on les compare avec des constantes ! Achtung !!!
 	
 }
 
