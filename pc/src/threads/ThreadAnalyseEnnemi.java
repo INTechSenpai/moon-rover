@@ -64,7 +64,7 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 				}			
 			}
 			
-			strategie.analyse_ennemi(positionsfreeze, date_freeze);
+			strategie.analyse_ennemi(positionsfreeze, duree_freeze());
 			
 			Sleep.sleep(500); // le sleep peut être long, le robot adverse ne bouge de toute façon pas très vite...
 		}

@@ -123,11 +123,51 @@ public class Strategie implements Service {
 	/**
 	 * Méthode qui, à partir de la durée de freeze et de l'emplacement des ennemis, tire des conclusions.
 	 * Exemples: l'ennemi vide cet arbre, il a posé sa fresque ici, ...
-	 * Modifie aussi la variable TTL!
+	 * Modifie aussi la variable TTL!long
 	 */
-	public void analyse_ennemi(Vec2[] positionsfreeze, long[] date_freeze)
+	public void analyse_ennemi(Vec2[] positionsfreeze, int[] duree_freeze)
+	//en fait on n'a pas besoin de la date des freezes mais de la durée des freeze
 	{
+		//
+		int distance_influence = 500; //50 cm
+		int duree_standard = 3000; //3 secondes
+		int duree_blocage = 10000; //10 secondes
+		int larg_max = 100; //10 cm est la largeur maximale de la fresque
+		//valeur amenée à être modifiée
+		for(int i = 0; i <2; i++)
+		{
+			int i_min_fire = table.nearestFire(positionsfreeze[i]);
+			int i_min_tree = table.nearestTree(positionsfreeze[i]);
+			
+			if (duree_freeze[i] > duree_blocage)
+			{
+				//Il y a un blocage de l'ennemi, réfléchissons un peu et agissons optimalement
+			}
+			else if (table.distanceTree(positionsfreeze[i], i_min_fire) < distance_influence && duree_freeze[i] > duree_standard)
+			{
+				table.pickTree(i_min_tree);
+			}
+			else if(table.distanceFire(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
+			{
+				table.pickFire(i_min_fire);
+			}
+		
+			//il faudrait ajouter la gestion des fresques
+			//Il faudrait l'ajouter dans Table.java
+			/*
+			 * 
+			 * 
+			 * else if(table.distanceFresque(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
+				{
+				table.putOnFresque(larg_max);
 				
+				}
+			 * 
+			 * 
+			 */
+			 
+			
+		}
 		/*Si ça n'a pas été vraiment codé, c'est parce qu'il faut utiliser Container (ou pas) et on sait pas encore comment
 		 * Pour chaque feu 
 		 * si rayon_feu +rayon_robot_adverse > distance(feu, robot_adverse) et duree_freeze > duree_prise_feu_generique alors
