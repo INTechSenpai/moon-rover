@@ -107,6 +107,10 @@ public class Vec2
 	{
 		return x == other.x && y == other.y;
 	}
+	public Vec2 dotFloat(float a)
+	{
+		return new Vec2(x*a,y*a);
+	}
 	
 }
 
