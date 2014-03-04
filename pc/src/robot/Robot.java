@@ -81,6 +81,7 @@ public abstract class Robot implements Service {
 	
 	protected int nombre_lances = 6;
 	protected boolean fresques_posees = false;
+	protected int nombre_fruits_bac = 0;
 
 	protected int nb_tentatives = 2;
 	
@@ -144,6 +145,11 @@ public abstract class Robot implements Service {
 		return nombre_lances;
 	}
 
+	public int get_nombre_fruits_bac() {
+		return nombre_fruits_bac;
+	}
+
+	
 	public boolean isFresquesPosees()
 	{
 		return fresques_posees;
