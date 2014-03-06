@@ -173,6 +173,10 @@ public class RobotChrono extends Robot {
 	}
 
 	@Override
+	public void lancerFilet() {
+	}
+
+	@Override
 	public void takefire() {
 	}
 	
