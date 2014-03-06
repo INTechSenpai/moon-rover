@@ -477,7 +477,11 @@ public class RobotVrai extends Robot {
 	public void deposer_fresques() {
 		fresques_posees = true;
 	}
-
+	
+	public void lancerFilet() throws SerialException
+	{
+		actionneurs.lancerFilet();
+	}
 	/* 
 	 * GETTERS & SETTERS
 	 */

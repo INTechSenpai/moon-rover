@@ -150,5 +150,10 @@ public class Actionneurs implements Service {
 		log.debug("Balle tirée", this);
 		serie.communiquer("b", 0);
 	}
-	
+	public void lancerFilet() throws SerialException
+	{
+		log.debug("filet lancé", this);
+		serie.communiquer("lf", 0);
+		//lf -> lancer filet
+	}
 }

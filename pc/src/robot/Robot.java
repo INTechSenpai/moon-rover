@@ -64,7 +64,8 @@ public abstract class Robot implements Service {
 	public abstract void bac_bas() throws SerialException;
 	public abstract void bac_haut() throws SerialException;
 	public abstract void rateau(PositionRateau position, Cote cote) throws SerialException;
-
+	public abstract void lancerFilet() throws SerialException;
+	
 	public abstract void sleep(long duree);
 	
 	// Dépendances

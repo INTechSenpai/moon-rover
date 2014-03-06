@@ -128,7 +128,10 @@ public class RobotChrono extends Robot {
 	{
 		// durée "nulle" car appelé par un hook
 	}
-
+	public void lancerFilet()
+	{
+		duree = 1000;
+	}
 	@Override
 	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe) throws MouvementImpossibleException
 	{
