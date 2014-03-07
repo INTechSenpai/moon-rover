@@ -23,7 +23,7 @@ import exception.SerialException;
 
 /**
  * Classe qui fournit des déplacements haut niveau
- * @author pf
+ * @author pf, krissprolls
  *
  */
 
@@ -437,7 +437,6 @@ public class RobotVrai extends Robot {
 //		boolean retourner = capteur.isFireRed() ^ couleur == "rouge";
 		stopper();
 		sleep(2000);
-		
 	}
 	
 	@Override
@@ -482,10 +481,81 @@ public class RobotVrai extends Robot {
 	{
 		actionneurs.lancerFilet();
 	}
+	public void lever_pince_gauche() throws SerialException
+	{
+		actionneurs.lever_pince_gauche();
+	}
+	public void lever_pince_droite() throws SerialException
+	{
+		actionneurs.lever_pince_droite();
+	}
+	public void fermer_pince_gauche() throws SerialException
+	{
+		actionneurs.fermer_pince_gauche();
+	}
+	public void fermer_pince_droite() throws SerialException
+	{
+		actionneurs.fermer_pince_droite();
+	}
+	public void poserFeuBonCoteGauche() throws SerialException
+	{
+		//Ca remonte la pince aussi !
+		actionneurs.baisser_pince_gauche();
+		actionneurs.ouvrir_pince_gauche();
+		actionneurs.lever_pince_gauche();
+		actionneurs.fermer_pince_gauche();
+	}
+	public void poserFeuEnRetournantGauche() throws SerialException
+	{
+		//Ca remonte la pince aussi !
+		actionneurs.baisser_pince_gauche();
+		actionneurs.tourner_pince_gauche();
+		actionneurs.ouvrir_pince_gauche();
+		actionneurs.lever_pince_gauche();
+		actionneurs.fermer_pince_gauche();
+	}
+	public void poserFeuBonCoteDroit() throws SerialException
+	{
+		//Ca remonte la pince aussi !
+		actionneurs.baisser_pince_droite();
+		actionneurs.ouvrir_pince_droite();
+		actionneurs.lever_pince_droite();
+		actionneurs.fermer_pince_droite();
+	}
+	public void poserFeuEnRetournantDroit() throws SerialException
+	{
+		//Ca remonte la pince aussi !
+		actionneurs.baisser_pince_droite();
+		actionneurs.tourner_pince_droite();
+		actionneurs.ouvrir_pince_droite();
+		actionneurs.lever_pince_droite();
+		actionneurs.fermer_pince_droite();
+	}
+	
 	/* 
+	 * 
 	 * GETTERS & SETTERS
 	 */
-	
+	@Override
+	public boolean isFireRedGauche()
+	{
+		return capteur.isFireRedGauche();
+	}
+	@Override
+	public boolean isFireRedDroite()
+	{
+		return capteur.isFireRedGauche();
+	}
+	@Override
+	public boolean isThereFireGauche()
+	{
+		return capteur.isThereFireGauche();
+	}
+	@Override
+	public boolean isThereFireDroite()
+	{
+		return capteur.isThereFireDroit();
+	}
 	@Override
 	public void setPosition(Vec2 position) {
 		synchronized(this.position)

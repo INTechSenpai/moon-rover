@@ -8,10 +8,11 @@ import utils.Log;
 import utils.Read_Ini;
 import exception.MouvementImpossibleException;
 import exception.RobotChronoException;
+import exception.SerialException;
 
 /**
  * Robot particulier qui fait pas bouger le robot réel, mais détermine la durée des actions
- * @author pf
+ * @author pf, krissprolls
  *
  */
 
@@ -128,7 +129,57 @@ public class RobotChrono extends Robot {
 	{
 		// durée "nulle" car appelé par un hook
 	}
+	@Override
 	public void lancerFilet()
+	{
+		duree = 1000;
+	}
+	@Override
+	public void poserFeuBonCoteGauche()
+	{
+		duree = 1000;
+	}
+	@Override
+	public void poserFeuEnRetournantGauche()
+	{
+		duree =1500;
+	}
+	@Override
+	public void poserFeuBonCoteDroit()
+	{
+		duree = 1000;
+	}
+	@Override
+	public void poserFeuEnRetournantDroit()
+	{
+		duree = 1500;
+	}
+	@Override
+	public boolean isFireRedGauche()
+	{
+		duree = 0;
+	}
+	@Override
+	public boolean isFireRedDroite()
+	{
+		duree = 0;
+	}
+	@Override
+	public boolean isThereFireGauche()
+	{
+		duree = 0;
+	}
+	@Override
+	public boolean isThereFireDroite()
+	{
+		duree = 0;
+	}
+	@Override
+	public void lever_pince_gauche() 
+	{
+		duree = 1000;
+	}
+	public void lever_pince_droite()
 	{
 		duree = 1000;
 	}
@@ -172,13 +223,12 @@ public class RobotChrono extends Robot {
 	public void deposer_fresques() {
 	}
 
-	@Override
-	public void lancerFilet() {
-	}
 
 	@Override
 	public void takefire() {
 	}
+	
+	
 	
 	// TODO à compléter au fur et à mesure
 	public void majRobotChrono(RobotVrai robotvrai)

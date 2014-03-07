@@ -57,7 +57,7 @@ public abstract class Robot implements Service {
 	/*
 	 * ACTIONNEURS
 	 */
-	
+
 	public abstract void tirerBalle() throws SerialException;
 	public abstract void takefire() throws SerialException;
 	public abstract void deposer_fresques() throws SerialException;
@@ -65,6 +65,20 @@ public abstract class Robot implements Service {
 	public abstract void bac_haut() throws SerialException;
 	public abstract void rateau(PositionRateau position, Cote cote) throws SerialException;
 	public abstract void lancerFilet() throws SerialException;
+	public abstract void poserFeuBonCoteGauche() throws SerialException;
+	public abstract void poserFeuEnRetournantGauche() throws SerialException;
+	public abstract void poserFeuBonCoteDroit() throws SerialException;
+	public abstract void poserFeuEnRetournantDroit() throws SerialException;
+	public abstract boolean isFireRedGauche() throws SerialException;
+	public abstract boolean isFireRedDroite() throws SerialException;
+	public abstract boolean isThereFireGauche() throws SerialException;
+	public abstract boolean isThereFireDroite() throws SerialException;
+	public abstract void lever_pince_gauche() throws SerialException;
+	public abstract void lever_pince_droite() throws SerialException;
+	public abstract void fermer_pince_gauche()throws SerialException;
+	public abstract void fermer_pince_droite() throws SerialException;
+	
+	
 	
 	public abstract void sleep(long duree);
 	

@@ -82,7 +82,16 @@ public class Actionneurs implements Service {
 		log.debug("Pince droite baissée", this);
 		serie.communiquer("bd", 0);
 	}
-
+	public void tourner_pince_gauche() throws SerialException
+	{
+		log.debug("Pince gauche rotation 180°", this);
+		serie.communiquer("tg",0);
+	}
+	public void tourner_pince_droite() throws SerialException
+	{
+		log.debug("Pince droite rotation 180°", this);
+		serie.communiquer("td",0);
+	}
 
 	public void bac_bas() throws SerialException
 	{
