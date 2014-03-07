@@ -158,21 +158,26 @@ public class RobotChrono extends Robot {
 	public boolean isFireRedGauche()
 	{
 		duree = 0;
+		return true;
 	}
 	@Override
 	public boolean isFireRedDroite()
 	{
+		//TODO
 		duree = 0;
+		return true;
 	}
 	@Override
 	public boolean isThereFireGauche()
 	{
 		duree = 0;
+		return true;
 	}
 	@Override
 	public boolean isThereFireDroite()
 	{
 		duree = 0;
+		return true;
 	}
 	@Override
 	public void lever_pince_gauche() 
@@ -181,6 +186,17 @@ public class RobotChrono extends Robot {
 	}
 	public void lever_pince_droite()
 	{
+		duree = 1000;
+	}
+	
+	@Override
+	public void fermer_pince_gauche() throws SerialException {
+		duree = 1000;
+		
+	}
+
+	@Override
+	public void fermer_pince_droite() throws SerialException {
 		duree = 1000;
 	}
 	@Override
@@ -268,4 +284,6 @@ public class RobotChrono extends Robot {
 		if(duree < 0)
 			throw new RobotChronoException();
 	}
+
+	
 }
