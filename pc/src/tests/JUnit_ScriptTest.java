@@ -52,6 +52,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		robotvrai.set_vitesse_translation("entre_scripts");
 		container.getService("threadPosition");
 		container.demarreThreads();
+		robotvrai.avancer(100);
 	}
 
 	@Test
