@@ -38,19 +38,20 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
+		config.set("couleur", "rouge");
+		
 		scriptmanager = (ScriptManager)container.getService("ScriptManager");
 		robotvrai = (RobotVrai)container.getService("RobotVrai");
 		robotchrono = new RobotChrono(config, log);
 		robotchrono.majRobotChrono(robotvrai);
 		table = (Table)container.getService("Table");
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
-		robotvrai.setPosition(new Vec2(0, 1500));
-		robotvrai.setOrientation(0);
+		robotvrai.setPosition(new Vec2(1300, 1200));
+		robotvrai.setOrientation((float)Math.PI);
 		robotvrai.set_vitesse_rotation("entre_scripts");
 		robotvrai.set_vitesse_translation("entre_scripts");
 		container.getService("threadPosition");
 		container.demarreThreads();
-
 	}
 
 	@Test
@@ -116,6 +117,13 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	public void test_ScriptFresques_agit() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptFresque");
+		s.agit(0, robotvrai, table, false);
+	}
+
+	@Test
+	public void test_ScriptDeposerFruits_agit() throws Exception
+	{
+		s = (Script)scriptmanager.getScript("ScriptDeposerFruits");
 		s.agit(0, robotvrai, table, false);
 	}
 
