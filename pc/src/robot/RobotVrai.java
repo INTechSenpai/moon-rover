@@ -139,7 +139,6 @@ public class RobotVrai extends Robot {
 		{
 			log.critical(e, this);
 		}
-		
 		this.set_vitesse_rotation("entre_scripts");
 		this.set_vitesse_translation("entre_scripts");
 		
@@ -310,6 +309,8 @@ public class RobotVrai extends Robot {
 		// Là où on prendra plus de place, c'est devant le robot (marche avant)
 		if(autorise_trajectoire_courbe && trajectoire_courbe)
 			trajectoire_courbe = !table.obstaclePresent(position.PlusNewVector(new Vec2(50*(float)Math.cos(orientation),50*(float)Math.sin(orientation))), distance_securite_trajectoire_courbe);
+		else
+			trajectoire_courbe = false;
 		
 		// appliquer la symétrie ne doit pas modifier ce point !
 		point = point.clone();
@@ -548,7 +549,6 @@ public class RobotVrai extends Robot {
 	}
 	
 	/* 
-	 * 
 	 * GETTERS & SETTERS
 	 */
 	@Override
@@ -668,7 +668,11 @@ public class RobotVrai extends Robot {
             // sans virage : la première rotation est blocante
 			tournerBasNiveau(angle);
 			// on n'avance pas si un obstacle est devant
-			detecter_collision();
+			if(distance >= 0)
+				detecter_collision(true);
+			else
+				detecter_collision(false);
+
 			try {
 				deplacements.avancer(distance);
 			} catch (SerialException e) {
@@ -681,7 +685,10 @@ public class RobotVrai extends Robot {
 			try {
 				deplacements.tourner(angle);
 				// on n'avance pas si un obstacle est devant
-				detecter_collision();
+				if(distance >= 0)
+					detecter_collision(true);
+				else
+					detecter_collision(false);
 				deplacements.avancer(distance);			
 			} catch (SerialException e) {
 				e.printStackTrace();
@@ -715,7 +722,7 @@ public class RobotVrai extends Robot {
 
 		}
 		
-		log.debug("Distance restante: "+Math.sqrt(distance_restante_carre), this);
+//		log.debug("Distance restante: "+Math.sqrt(distance_restante_carre), this);
 		
 		// Si un hook a bougé le robot, le dernier ordre est relancé après son exécution
 		if(relancer)
@@ -787,11 +794,11 @@ public class RobotVrai extends Robot {
 		}
 	}
 
-	private void detecter_collision() throws CollisionException
+	private void detecter_collision(boolean devant) throws CollisionException
 	{
-		int signe = 1;
-//		if(marche_arriere)
-//			signe = -1;
+		int signe = -1;
+		if(devant)
+			signe = 1;
 		int rayon_detection = largeur_robot + distance_detection/2;
 		Vec2 centre_detection = new Vec2((float)(signe * rayon_detection * Math.cos(orientation)), (float)(signe * rayon_detection * Math.sin(orientation)));
 		centre_detection.Plus(position);
@@ -800,7 +807,12 @@ public class RobotVrai extends Robot {
 		{
 			log.warning("Ennemi détecté!", this);
 			throw new CollisionException();
-		}
+		}		
+	}
+	
+	private void detecter_collision() throws CollisionException
+	{
+		detecter_collision(!marche_arriere);
 	}
 
 	/**
