@@ -7,7 +7,6 @@ import utils.Log;
 import utils.Read_Ini;
 import container.Service;
 import exception.ConfigException;
-import exception.SerialException;
 
 /**
  * Classe des capteurs, qui communique avec la carte capteur
@@ -17,7 +16,6 @@ import exception.SerialException;
 public class Capteurs implements Service {
 
 	// Dépendances
-	private Read_Ini config;
 	private Log log;
 	private Serial serie;
 	
@@ -30,7 +28,6 @@ public class Capteurs implements Service {
     
 	public Capteurs(Read_Ini config, Log log, Serial serie)
 	{
-		this.config = config;
 		this.log = log;
 		this.serie = serie;
 		try {

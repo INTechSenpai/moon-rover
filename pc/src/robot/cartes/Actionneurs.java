@@ -161,7 +161,7 @@ public class Actionneurs implements Service {
 	}
 	public void lancerFilet() throws SerialException
 	{
-		log.debug("filet lancé", this);
+		log.debug("Filet lancé", this);
 		serie.communiquer("lf", 0);
 		//lf -> lancer filet
 	}
