@@ -97,7 +97,8 @@ public abstract class Robot implements Service {
 	protected int nombre_lances = 6;
 	protected boolean fresques_posees = false;
 	protected int nombre_fruits_bac = 0;
-
+	protected boolean tient_feu_droite = false;
+	protected boolean tient_feu_gauche = false;
 	protected int nb_tentatives = 2;
 	
 	public Robot(Read_Ini config, Log log)
@@ -170,6 +171,16 @@ public abstract class Robot implements Service {
 		return fresques_posees;
 	}
 	
+	public boolean isTient_feu_droite()
+	{
+		return tient_feu_droite;
+	}
+
+	public boolean isTient_feu_gauche()
+	{
+		return tient_feu_gauche;
+	}
+
 	// Les méthodes avec le paramètre nbTentatives sont en protected 
 	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
