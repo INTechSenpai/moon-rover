@@ -216,11 +216,16 @@ public class RobotChrono extends Robot {
 	public void deposer_fresques() {
 	}
 
+	@Override
+	public void takefiredroit() {
+		duree += 2000;
+	}
 
 	@Override
-	public void takefire() {
+	public void takefiregauche() {
+		duree += 2000;		
 	}
-	
+
 	
 	// TODO à compléter au fur et à mesure
 	public void majRobotChrono(RobotVrai robotvrai)
