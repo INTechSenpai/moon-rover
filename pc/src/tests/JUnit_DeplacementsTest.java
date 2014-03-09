@@ -43,9 +43,9 @@ public class JUnit_DeplacementsTest extends JUnit_Test {
 		deplacements.avancer(10);
 		Thread.sleep(1000);
 		float[] infos_float = deplacements.get_infos_x_y_orientation();
-		Assert.assertTrue(infos_float[0] == 10);
-		Assert.assertTrue(infos_float[1] == 1500);
-		Assert.assertTrue(infos_float[2] == 0);
+		Assert.assertEquals(10, infos_float[0], 5);
+		Assert.assertEquals(1500, infos_float[1], 5);
+		Assert.assertEquals(0, infos_float[2], 50);
 
 	}
 
@@ -56,9 +56,9 @@ public class JUnit_DeplacementsTest extends JUnit_Test {
 		deplacements.tourner((float)1.2);
 		Thread.sleep(2000);
 		float[] infos_float = deplacements.get_infos_x_y_orientation();
-		Assert.assertTrue(infos_float[0] == 0);
-		Assert.assertTrue(infos_float[1] == 1500);
-		Assert.assertTrue(infos_float[2] == 1200);
+		Assert.assertEquals(0, infos_float[0], 5);
+		Assert.assertEquals(1500, infos_float[1], 5);
+		Assert.assertEquals(1200, infos_float[2], 50);
 	}
 	
 	@Test
