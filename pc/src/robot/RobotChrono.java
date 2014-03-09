@@ -132,72 +132,72 @@ public class RobotChrono extends Robot {
 	@Override
 	public void lancerFilet()
 	{
-		duree = 1000;
+		duree += 1000;
 	}
 	@Override
 	public void poserFeuBonCoteGauche()
 	{
-		duree = 1000;
+		duree += 1000;
 	}
 	@Override
 	public void poserFeuEnRetournantGauche()
 	{
-		duree =1500;
+		duree += 1500;
 	}
 	@Override
 	public void poserFeuBonCoteDroit()
 	{
-		duree = 1000;
+		duree += 1000;
 	}
 	@Override
 	public void poserFeuEnRetournantDroit()
 	{
-		duree = 1500;
+		duree += 1500;
 	}
 	@Override
 	public boolean isFireRedGauche()
 	{
-		duree = 0;
+		duree += 0;
 		return true;
 	}
 	@Override
 	public boolean isFireRedDroite()
 	{
 		//TODO
-		duree = 0;
+		duree += 0;
 		return true;
 	}
 	@Override
 	public boolean isThereFireGauche()
 	{
-		duree = 0;
+		duree += 0;
 		return true;
 	}
 	@Override
 	public boolean isThereFireDroite()
 	{
-		duree = 0;
+		duree += 0;
 		return true;
 	}
 	@Override
 	public void lever_pince_gauche() 
 	{
-		duree = 1000;
+		duree += 1000;
 	}
 	public void lever_pince_droite()
 	{
-		duree = 1000;
+		duree += 1000;
 	}
 	
 	@Override
 	public void fermer_pince_gauche() throws SerialException {
-		duree = 1000;
+		duree += 1000;
 		
 	}
 
 	@Override
 	public void fermer_pince_droite() throws SerialException {
-		duree = 1000;
+		duree += 1000;
 	}
 	@Override
 	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe) throws MouvementImpossibleException
