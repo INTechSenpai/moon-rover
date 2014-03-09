@@ -24,6 +24,8 @@ public class JUnit_ActionneursTest extends JUnit_Test {
 		Thread.sleep(500);
 		actionneurs.bac_haut();
 		Thread.sleep(500);
+		actionneurs.bac_bas();
+		Thread.sleep(500);
 	}
 
 	@Test
@@ -56,6 +58,10 @@ public class JUnit_ActionneursTest extends JUnit_Test {
 	public void test_rateau() throws Exception
 	{
 		log.debug("JUnit_ActionneursTest.test_rateau()", this);
+		actionneurs.rateau_super_bas_droit();
+		Thread.sleep(500);
+		actionneurs.rateau_super_bas_gauche();
+		Thread.sleep(500);
 		actionneurs.rateau_bas_droit();
 		Thread.sleep(500);
 		actionneurs.rateau_bas_gauche();
@@ -67,10 +73,6 @@ public class JUnit_ActionneursTest extends JUnit_Test {
 		actionneurs.rateau_ranger_droit();
 		Thread.sleep(500);
 		actionneurs.rateau_ranger_gauche();
-		Thread.sleep(500);
-		actionneurs.rateau_super_bas_droit();
-		Thread.sleep(500);
-		actionneurs.rateau_super_bas_gauche();
 		Thread.sleep(500);
 	}
 
