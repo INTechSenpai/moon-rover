@@ -14,7 +14,6 @@ import scripts.ScriptManager;
 import strategie.MemoryManager;
 import strategie.Strategie;
 import table.Table;
-import threads.ThreadAnalyseEnnemi;
 import threads.ThreadTimer;
 import threads.ThreadManager;
 import robot.RobotVrai;
