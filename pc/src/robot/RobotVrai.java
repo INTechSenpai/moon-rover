@@ -418,6 +418,7 @@ public class RobotVrai extends Robot {
 			deplacements.activer_asservissement_translation();
 			actionneurs.rateau_ranger_droit();
 			actionneurs.rateau_ranger_gauche();		
+			actionneurs.bac_bas();
 		} catch (SerialException e) {
 			e.printStackTrace();
 		}
@@ -432,9 +433,6 @@ public class RobotVrai extends Robot {
 	
 	@Override
 	public void takefire() {
-		// TODO
-
-//		boolean retourner = capteur.isFireRed() ^ couleur == "rouge";
 		stopper();
 		sleep(2000);
 	}
@@ -476,27 +474,38 @@ public class RobotVrai extends Robot {
 	public void deposer_fresques() {
 		fresques_posees = true;
 	}
-	
+
+	@Override	
 	public void lancerFilet() throws SerialException
 	{
 		actionneurs.lancerFilet();
 	}
+
+	@Override	
 	public void lever_pince_gauche() throws SerialException
 	{
 		actionneurs.lever_pince_gauche();
 	}
+
+	@Override	
 	public void lever_pince_droite() throws SerialException
 	{
 		actionneurs.lever_pince_droite();
 	}
+
+	@Override	
 	public void fermer_pince_gauche() throws SerialException
 	{
 		actionneurs.fermer_pince_gauche();
 	}
+
+	@Override	
 	public void fermer_pince_droite() throws SerialException
 	{
 		actionneurs.fermer_pince_droite();
 	}
+
+	@Override	
 	public void poserFeuBonCoteGauche() throws SerialException
 	{
 		//Ca remonte la pince aussi !
@@ -505,6 +514,8 @@ public class RobotVrai extends Robot {
 		actionneurs.lever_pince_gauche();
 		actionneurs.fermer_pince_gauche();
 	}
+
+	@Override	
 	public void poserFeuEnRetournantGauche() throws SerialException
 	{
 		//Ca remonte la pince aussi !
@@ -514,6 +525,8 @@ public class RobotVrai extends Robot {
 		actionneurs.lever_pince_gauche();
 		actionneurs.fermer_pince_gauche();
 	}
+
+	@Override	
 	public void poserFeuBonCoteDroit() throws SerialException
 	{
 		//Ca remonte la pince aussi !
@@ -522,6 +535,8 @@ public class RobotVrai extends Robot {
 		actionneurs.lever_pince_droite();
 		actionneurs.fermer_pince_droite();
 	}
+
+	@Override	
 	public void poserFeuEnRetournantDroit() throws SerialException
 	{
 		//Ca remonte la pince aussi !
@@ -536,26 +551,6 @@ public class RobotVrai extends Robot {
 	 * 
 	 * GETTERS & SETTERS
 	 */
-	@Override
-	public boolean isFireRedGauche()
-	{
-		return capteur.isFireRedGauche();
-	}
-	@Override
-	public boolean isFireRedDroite()
-	{
-		return capteur.isFireRedGauche();
-	}
-	@Override
-	public boolean isThereFireGauche()
-	{
-		return capteur.isThereFireGauche();
-	}
-	@Override
-	public boolean isThereFireDroite()
-	{
-		return capteur.isThereFireDroit();
-	}
 	@Override
 	public void setPosition(Vec2 position) {
 		synchronized(this.position)
@@ -768,6 +763,7 @@ public class RobotVrai extends Robot {
 		
 		float distance_entretemps = ((float)2500)/((float)613.52 * (float)(Math.pow((double)pwm_max_translation,(double)(-1.034))))/1000*(t2-t1);
 		float distance = delta.Length() - distance_entretemps;
+
 		log.debug("Correction trajectoire,  distance: "+distance, this);
 
 		// mise à jour des consignes en translation et rotation en dehors d'un disque de tolérance
@@ -851,6 +847,8 @@ public class RobotVrai extends Robot {
 	/**
 	 * Méthode sleep utilisée par les scripts
 	 */
+
+	@Override	
 	public void sleep(long duree)
 	{
 		Sleep.sleep(duree);

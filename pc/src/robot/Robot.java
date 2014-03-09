@@ -69,10 +69,6 @@ public abstract class Robot implements Service {
 	public abstract void poserFeuEnRetournantGauche() throws SerialException;
 	public abstract void poserFeuBonCoteDroit() throws SerialException;
 	public abstract void poserFeuEnRetournantDroit() throws SerialException;
-	public abstract boolean isFireRedGauche() throws SerialException;
-	public abstract boolean isFireRedDroite() throws SerialException;
-	public abstract boolean isThereFireGauche() throws SerialException;
-	public abstract boolean isThereFireDroite() throws SerialException;
 	public abstract void lever_pince_gauche() throws SerialException;
 	public abstract void lever_pince_droite() throws SerialException;
 	public abstract void fermer_pince_gauche()throws SerialException;
@@ -99,6 +95,8 @@ public abstract class Robot implements Service {
 	protected int nombre_fruits_bac = 0;
 	protected boolean tient_feu_droite = false;
 	protected boolean tient_feu_gauche = false;
+	protected boolean feu_tenu_gauche_rouge = false;
+	protected boolean feu_tenu_droite_rouge = false;
 	protected int nb_tentatives = 2;
 	
 	public Robot(Read_Ini config, Log log)
@@ -164,7 +162,6 @@ public abstract class Robot implements Service {
 	public int get_nombre_fruits_bac() {
 		return nombre_fruits_bac;
 	}
-
 	
 	public boolean isFresquesPosees()
 	{
@@ -179,6 +176,16 @@ public abstract class Robot implements Service {
 	public boolean isTient_feu_gauche()
 	{
 		return tient_feu_gauche;
+	}
+	
+	public boolean isFeu_tenu_gauche_rouge()
+	{
+		return feu_tenu_gauche_rouge;
+	}
+
+	public boolean isFeu_tenu_droite_rouge()
+	{
+		return feu_tenu_droite_rouge;
 	}
 
 	// Les méthodes avec le paramètre nbTentatives sont en protected 

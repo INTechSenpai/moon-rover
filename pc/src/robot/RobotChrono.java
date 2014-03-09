@@ -155,35 +155,12 @@ public class RobotChrono extends Robot {
 		duree += 1500;
 	}
 	@Override
-	public boolean isFireRedGauche()
-	{
-		duree += 0;
-		return true;
-	}
-	@Override
-	public boolean isFireRedDroite()
-	{
-		//TODO
-		duree += 0;
-		return true;
-	}
-	@Override
-	public boolean isThereFireGauche()
-	{
-		duree += 0;
-		return true;
-	}
-	@Override
-	public boolean isThereFireDroite()
-	{
-		duree += 0;
-		return true;
-	}
-	@Override
 	public void lever_pince_gauche() 
 	{
 		duree += 1000;
 	}
+
+	@Override	
 	public void lever_pince_droite()
 	{
 		duree += 1000;
@@ -245,7 +222,6 @@ public class RobotChrono extends Robot {
 	}
 	
 	
-	
 	// TODO à compléter au fur et à mesure
 	public void majRobotChrono(RobotVrai robotvrai)
 	{
@@ -261,6 +237,7 @@ public class RobotChrono extends Robot {
 	 * @return
 	 */
 	// TODO à compléter au fur et à mesure
+
 	public boolean equals(RobotChrono other)
 	{
 		return 	position.equals(other.position)
