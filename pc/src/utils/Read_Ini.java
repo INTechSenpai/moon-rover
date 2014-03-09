@@ -52,6 +52,7 @@ public class Read_Ini implements Service {
 			}	
 			throw new ConfigException("Erreur ouverture de local.ini");
 		}	
+		affiche_tout();
 	}
 	
 	/**
@@ -77,8 +78,9 @@ public class Read_Ini implements Service {
 	 * @param nom
 	 * @return
 	 */
-	public void set(String nom, String value)
+	private void set(String nom, String value)
 	{
+		System.out.println(nom+" = "+value+" (ancienne valeur: "+config.getProperty(nom)+")");
 		config.setProperty(nom, value);
 	}
 	
@@ -90,6 +92,15 @@ public class Read_Ini implements Service {
 	public void set(String nom, Object value)
 	{
 		set(nom, value.toString());
+	}
+
+	private void affiche_tout()
+	{
+		System.out.println("Configuration initiale");
+		for(Object o: config.keySet())
+		{
+			System.out.println(o+": "+config.get(o));
+		}
 	}
 	
 }
