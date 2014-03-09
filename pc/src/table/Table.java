@@ -26,8 +26,8 @@ public class Table implements Service {
 	private int hashTree;
 	private int hashObstacles;
 	
-	private Fresco[] list_fresco_pos;
-	private boolean[] list_fresco_hanged;
+	private Fresco[] list_fresco_pos = new Fresco[3];
+	private boolean[] list_fresco_hanged = new boolean[3];
 
 	// Dépendances
 	private Log log;
@@ -233,7 +233,7 @@ public class Table implements Service {
 	public int nearestFire (Vec2 position)
 	{
 		int min = 0;
-		for (int i = 0; i < 10; i++)
+		for (int i = 1; i < 10; i++)
 			if (arrayFire[i].getPosition().SquaredDistance(position) < arrayFire[min].getPosition().SquaredDistance(position))
 				min = i;
 		return min;
