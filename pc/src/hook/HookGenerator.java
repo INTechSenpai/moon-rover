@@ -2,6 +2,7 @@ package hook;
 
 import container.Service;
 import exception.ConfigException;
+import robot.Cote;
 import robot.cartes.Capteurs;
 import smartMath.Vec2;
 import utils.Log;
@@ -80,9 +81,9 @@ public class HookGenerator implements Service {
 	 * Hook de feu
 	 */
 
-	public Hook hook_feu()
+	public Hook hook_feu(Cote cote)
 	{
-		return new HookFeu(config, log, capteur);
+		return new HookFeu(config, log, capteur, cote);
 	}
-	
+
 }

@@ -58,8 +58,9 @@ public abstract class Robot implements Service {
 	 * ACTIONNEURS
 	 */
 
+	public abstract void takefiredroit() throws SerialException;
+	public abstract void takefiregauche() throws SerialException;
 	public abstract void tirerBalle() throws SerialException;
-	public abstract void takefire() throws SerialException;
 	public abstract void deposer_fresques() throws SerialException;
 	public abstract void bac_bas() throws SerialException;
 	public abstract void bac_haut() throws SerialException;
@@ -79,7 +80,6 @@ public abstract class Robot implements Service {
 	public abstract void ouvrir_pince_droite() throws SerialException;
 	public abstract void milieu_pince_gauche() throws SerialException;
 	public abstract void milieu_pince_droite() throws SerialException;
-	
 	
 	
 	public abstract void sleep(long duree);

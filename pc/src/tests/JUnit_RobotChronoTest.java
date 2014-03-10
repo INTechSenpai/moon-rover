@@ -114,7 +114,6 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 		robotchrono.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
 		robotchrono.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
 		robotchrono.tirerBalle();
-		robotchrono.takefire();
 		robotchrono.sleep(100);
 	}
 		
