@@ -165,11 +165,38 @@ public class RobotChrono extends Robot {
 	{
 		duree += 1000;
 	}
-	
 	@Override
-	public void fermer_pince_gauche() throws SerialException {
+	public void baisser_pince_gauche()
+	{
+		duree +=1000;
+	}
+	@Override
+	public void baisser_pince_droite()
+	{
+		duree +=1000;
+	}
+	@Override
+	public void ouvrir_pince_gauche() 
+	{
+		duree +=1000;
+	}
+	@Override
+	public void ouvrir_pince_droite()
+	{
+		duree +=1000;
+	}
+	@Override
+	public void milieu_pince_gauche() throws SerialException
+	{
 		duree += 1000;
-		
+	}
+	@Override
+	public void milieu_pince_droite() throws SerialException
+	{
+		duree +=1000;
+	}
+	public void fermer_pince_gauche() throws SerialException {
+		duree += 1000;		
 	}
 
 	@Override

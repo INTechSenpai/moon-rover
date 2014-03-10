@@ -434,6 +434,8 @@ public class RobotVrai extends Robot {
 	
 	@Override
 	public void takefire() {
+		//vachement utile !
+		//mais de toute manière, il y a tellement de choses différenctes à faire avant de prendre un feu
 		stopper();
 		sleep(2000);
 	}
@@ -481,7 +483,27 @@ public class RobotVrai extends Robot {
 	{
 		actionneurs.lancerFilet();
 	}
-
+	@Override
+	public void milieu_pince_gauche() throws SerialException
+	{
+		actionneurs.milieu_pince_gauche();
+	}
+	@Override
+	public void milieu_pince_droite() throws SerialException
+	{
+		actionneurs.milieu_pince_droite();
+	}
+	@Override
+	public void baisser_pince_gauche() throws SerialException
+	{
+		actionneurs.baisser_pince_gauche();
+	}
+	@Override
+	public void baisser_pince_droite() throws SerialException
+	{
+		actionneurs.baisser_pince_droite();
+	}
+	
 	@Override	
 	public void lever_pince_gauche() throws SerialException
 	{
@@ -493,7 +515,16 @@ public class RobotVrai extends Robot {
 	{
 		actionneurs.lever_pince_droite();
 	}
-
+	@Override
+	public void ouvrir_pince_gauche() throws SerialException
+	{
+		actionneurs.ouvrir_pince_gauche();
+	}
+	@Override
+	public void ouvrir_pince_droite() throws SerialException
+	{
+		actionneurs.ouvrir_pince_droite();
+	}
 	@Override	
 	public void fermer_pince_gauche() throws SerialException
 	{

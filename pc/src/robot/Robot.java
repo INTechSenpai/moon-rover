@@ -71,8 +71,14 @@ public abstract class Robot implements Service {
 	public abstract void poserFeuEnRetournantDroit() throws SerialException;
 	public abstract void lever_pince_gauche() throws SerialException;
 	public abstract void lever_pince_droite() throws SerialException;
+	public abstract void baisser_pince_gauche() throws SerialException;
+	public abstract void baisser_pince_droite() throws SerialException;
 	public abstract void fermer_pince_gauche()throws SerialException;
 	public abstract void fermer_pince_droite() throws SerialException;
+	public abstract void ouvrir_pince_gauche() throws SerialException;
+	public abstract void ouvrir_pince_droite() throws SerialException;
+	public abstract void milieu_pince_gauche() throws SerialException;
+	public abstract void milieu_pince_droite() throws SerialException;
 	
 	
 	
