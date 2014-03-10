@@ -142,7 +142,7 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
 		Executable takefire = new TakeFireGauche(robotvrai);
-		Hook hook = hookgenerator.hook_feu();
+		Hook hook = hookgenerator.hook_feu(Cote.GAUCHE);
 		hook.ajouter_callback(new Callback(takefire, false));
 		hooks.add(hook);		
 		robotvrai.avancer(1000, hooks);
