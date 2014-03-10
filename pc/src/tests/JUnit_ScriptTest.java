@@ -167,8 +167,11 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	@Test
 	public void test_ScriptDeposerFeu_versions() throws Exception
 	{
-		// TODO
+		robotvrai.lever_pince_gauche();
+		robotvrai.lever_pince_droite();
+		robotvrai.takefiregauche();
 		s = (Script)scriptmanager.getScript("ScriptDeposerFeu");
+		s.agit(2, robotvrai, table, true);
 	}
 
 }

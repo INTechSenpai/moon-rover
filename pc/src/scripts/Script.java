@@ -6,6 +6,7 @@ import hook.Callback;
 import hook.Executable;
 import hook.Hook;
 import hook.HookGenerator;
+import robot.Cote;
 import robot.Robot;
 import robot.RobotChrono;
 import robot.RobotVrai;
@@ -13,7 +14,8 @@ import table.Table;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
-import hook.methodes.TakeFire;
+import hook.methodes.TakeFireDroit;
+import hook.methodes.TakeFireGauche;
 
 import java.util.ArrayList;
 
@@ -34,7 +36,7 @@ public abstract class Script implements Service {
 	protected static Log log;
 	private static Pathfinding pathfinding;
 	
-	protected static ArrayList<Hook> hookfeu = new ArrayList<Hook>();
+	protected static ArrayList<Hook> hooksfeu = new ArrayList<Hook>();
 	
 	protected String couleur; 
 	
@@ -44,10 +46,14 @@ public abstract class Script implements Service {
 		Script.hookgenerator = hookgenerator;
 		Script.config = config;
 		Script.log = log;
-		Executable takefire = new TakeFire(robotvrai);
-		Hook hook = hookgenerator.hook_feu();
+		Executable takefire = new TakeFireGauche(robotvrai);
+		Hook hook = hookgenerator.hook_feu(Cote.GAUCHE);
 		hook.ajouter_callback(new Callback(takefire, true));		
-		hookfeu.add(hook);
+		hooksfeu.add(hook);
+		takefire = new TakeFireDroit(robotvrai);
+		hook = hookgenerator.hook_feu(Cote.DROIT);
+		hook.ajouter_callback(new Callback(takefire, true));
+		hooksfeu.add(hook);
 
 		try {
 			couleur = config.get("couleur");
@@ -70,7 +76,7 @@ public abstract class Script implements Service {
 
 		try
 		{
-			robotvrai.suit_chemin(chemin, hookfeu, retenter_si_blocage, true);
+			robotvrai.suit_chemin(chemin, hooksfeu, retenter_si_blocage, true);
 			execute(id_version, robotvrai, table);
 		}
 		catch (Exception e)

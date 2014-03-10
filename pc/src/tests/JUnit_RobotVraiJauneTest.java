@@ -265,7 +265,6 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 		robotvrai.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
 		robotvrai.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
 		robotvrai.tirerBalle();
-		robotvrai.takefire();
 		robotvrai.sleep(100);
 	}
 
