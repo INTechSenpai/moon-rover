@@ -431,17 +431,36 @@ public class RobotVrai extends Robot {
 		actionneurs.tirerBalle();
 		nombre_lances--;
 	}
-	
 
-
-	public void takefiregauche() {
-		// TODO
+	public void takefiregauche() throws SerialException, MouvementImpossibleException {
+		avancer(-300);
+		actionneurs.baisser_pince_gauche();
+		sleep(500);
+		actionneurs.ouvrir_pince_gauche();
+		sleep(500);
+		avancer(300);
+		actionneurs.fermer_pince_gauche();
+		sleep(500);
+		actionneurs.lever_pince_gauche();
+		sleep(500);
 		tient_feu_gauche = true;
-
 	}
 
-	public void takefiredroit() {
-		// TODO
+	public void takefiredroit() throws SerialException, MouvementImpossibleException {
+		avancer(-130);
+		actionneurs.ouvrir_bas_pince_droite();
+		tourner(orientation + 0.2f, true);
+		sleep(500);
+		avancer(100);
+		actionneurs.presque_fermer_pince_droite();
+		log.debug("orientation = "+orientation, this);
+		set_vitesse_rotation("prise_feu");
+		tourner(orientation + 0.3f, true);
+		avancer(30);
+		actionneurs.fermer_pince_droite();
+		sleep(500);
+		actionneurs.lever_pince_droite();
+		sleep(500);
 		tient_feu_droite = true;
 	}
 

@@ -58,8 +58,8 @@ public abstract class Robot implements Service {
 	 * ACTIONNEURS
 	 */
 
-	public abstract void takefiredroit() throws SerialException;
-	public abstract void takefiregauche() throws SerialException;
+	public abstract void takefiredroit()  throws SerialException, MouvementImpossibleException;
+	public abstract void takefiregauche() throws SerialException, MouvementImpossibleException;
 	public abstract void tirerBalle() throws SerialException;
 	public abstract void deposer_fresques() throws SerialException;
 	public abstract void bac_bas() throws SerialException;
@@ -144,6 +144,8 @@ public abstract class Robot implements Service {
         	return 160;
         else if(vitesse == "recal_faible")
             return 120;
+        else if(vitesse == "prise_feu")
+            return 60;
         else if(vitesse == "recal_forte")
             return 130;
         else

@@ -46,6 +46,16 @@ public class Actionneurs implements Service {
 		log.debug("Pince droite fermée", this);
 		serie.communiquer("fd", 0);
 	}
+	public void ouvrir_bas_pince_droite() throws SerialException
+	{
+		log.debug("Pince droite ouvert en bas", this);
+		serie.communiquer("obd", 0);
+	}
+	public void presque_fermer_pince_droite() throws SerialException
+	{
+		log.debug("Pince droite presque fermée", this);
+		serie.communiquer("pfd", 0);
+	}
 
 	public void milieu_pince_gauche() throws SerialException
 	{

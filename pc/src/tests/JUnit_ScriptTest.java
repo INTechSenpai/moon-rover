@@ -186,9 +186,14 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	@Test
 	public void test_ScriptTorche_agit() throws Exception
 	{
-		
 		s = (Script)scriptmanager.getScript("ScriptTorche");
 		s.agit(0, robotvrai, table, true);
+	}
+	
+	@Test
+	public void test_takefiregauche() throws Exception
+	{
+		robotvrai.takefiredroit();
 	}
 
 }
