@@ -8,6 +8,7 @@ package tests;
  *
  */
 
-public class JUnit_PathfindingTest extends JUnit_Test {
+public class JUnit_PathfindingTest extends JUnit_Test 
+{
 
 }
