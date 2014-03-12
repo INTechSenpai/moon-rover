@@ -52,12 +52,13 @@ public class Pathfinding implements Service
 	}
 
 	/**
-	 * Renvoie la distance entre départ et arrivée. Utilise le cache ou non, selon le mode en cours.
+	 * Renvoie la distance entre départ et arrivée, en utilisant le cache ou non.
 	 * @param depart
 	 * @param arrivee
+	 * @param use_cache
 	 * @return
 	 */
-	public int distance(Vec2 depart, Vec2 arrivee)
+	public int distance(Vec2 depart, Vec2 arrivee, boolean use_cache)
 	{
 		return 0;
 	}

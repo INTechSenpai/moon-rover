@@ -100,8 +100,7 @@ public abstract class Script implements Service {
 		robotchrono.set_vitesse_translation("entre_scripts");
 		robotchrono.set_vitesse_rotation("entre_scripts");
 		
-		pathfinding.setUseCache(use_cache);
-		robotchrono.initialiser_compteur(pathfinding.distance(robotchrono.getPosition(), point_entree));
+		robotchrono.initialiser_compteur(pathfinding.distance(robotchrono.getPosition(), point_entree, use_cache));
 		robotchrono.setPosition(point_entree);
 
 		try {
