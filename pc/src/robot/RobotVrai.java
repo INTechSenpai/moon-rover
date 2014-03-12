@@ -433,12 +433,16 @@ public class RobotVrai extends Robot {
 	}
 
 	public void takefiregauche() throws SerialException, MouvementImpossibleException {
-		avancer(-300);
-		actionneurs.baisser_pince_gauche();
+		avancer(-130);
+		actionneurs.ouvrir_bas_pince_gauche();
+		tourner(orientation - 0.2f, true);
 		sleep(500);
-		actionneurs.ouvrir_pince_gauche();
-		sleep(500);
-		avancer(300);
+		avancer(100);
+		actionneurs.presque_fermer_pince_gauche();
+		set_vitesse_rotation("prise_feu");
+		tourner(orientation - 0.3f, true);
+		set_vitesse_rotation("entre_scripts");
+		avancer(30);
 		actionneurs.fermer_pince_gauche();
 		sleep(500);
 		actionneurs.lever_pince_gauche();
@@ -453,9 +457,9 @@ public class RobotVrai extends Robot {
 		sleep(500);
 		avancer(100);
 		actionneurs.presque_fermer_pince_droite();
-		log.debug("orientation = "+orientation, this);
 		set_vitesse_rotation("prise_feu");
 		tourner(orientation + 0.3f, true);
+		set_vitesse_rotation("entre_scripts");
 		avancer(30);
 		actionneurs.fermer_pince_droite();
 		sleep(500);

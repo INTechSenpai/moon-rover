@@ -46,10 +46,20 @@ public class Actionneurs implements Service {
 		log.debug("Pince droite fermée", this);
 		serie.communiquer("fd", 0);
 	}
+	public void ouvrir_bas_pince_gauche() throws SerialException
+	{
+		log.debug("Pince gauche ouvert en bas", this);
+		serie.communiquer("obg", 0);
+	}
 	public void ouvrir_bas_pince_droite() throws SerialException
 	{
 		log.debug("Pince droite ouvert en bas", this);
 		serie.communiquer("obd", 0);
+	}
+	public void presque_fermer_pince_gauche() throws SerialException
+	{
+		log.debug("Pince gauche presque fermée", this);
+		serie.communiquer("pfg", 0);
 	}
 	public void presque_fermer_pince_droite() throws SerialException
 	{
@@ -175,4 +185,5 @@ public class Actionneurs implements Service {
 		serie.communiquer("lf", 0);
 		//lf -> lancer filet
 	}
+
 }
