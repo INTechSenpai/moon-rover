@@ -48,11 +48,8 @@ public class JUnit_TableTest extends JUnit_Test {
 
 	@Test
 	public void test_nearestFire() throws Exception {
-		log.debug("JUnit_TableTest.test_nearestTorch()", this);
-		Assert.assertTrue(table.nearestUntakenFire(new Vec2(300,200)) == 4);
-		Assert.assertTrue(table.nearestUntakenFire(new Vec2(1300,200)) == 1);
-		Assert.assertTrue(table.nearestUntakenFire(new Vec2(-300,200)) == 5);
-		Assert.assertTrue(table.nearestUntakenFire(new Vec2(-1300,200)) == 7);
+		log.debug("JUnit_TableTest.test_nearestFire()", this);
+		// TODO
 	}
 
 	@Test

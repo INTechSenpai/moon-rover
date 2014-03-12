@@ -44,12 +44,12 @@ public class Table implements Service {
 	{
 		// Initialisation des feux
 		// TODO vérifier couleur. Torche fixe?
-		arrayFire[1] = new Fire(new Vec2(1100,900), 1, 0, Colour.RED);	// ok
-		arrayFire[2] = new Fire(new Vec2(600,1400), 2, 0, Colour.YELLOW); // OK
-		arrayFire[3] = new Fire(new Vec2(600,400), 6, 0, Colour.RED); // ok
-		arrayFire[6] = new Fire(new Vec2(-600,1400), 9, 0, Colour.YELLOW); //ok
-		arrayFire[7] = new Fire(new Vec2(-600,400), 13, 0, Colour.RED); // ok
-		arrayFire[8] = new Fire(new Vec2(-1100,900), 14, 0, Colour.YELLOW); // ok
+		arrayFire[0] = new Fire(new Vec2(1100,900), 1, 0, Colour.RED);	// ok
+		arrayFire[1] = new Fire(new Vec2(600,1400), 2, 0, Colour.YELLOW); // OK
+		arrayFire[2] = new Fire(new Vec2(600,400), 6, 0, Colour.RED); // ok
+		arrayFire[3] = new Fire(new Vec2(-600,1400), 9, 0, Colour.YELLOW); //ok
+		arrayFire[4] = new Fire(new Vec2(-600,400), 13, 0, Colour.RED); // ok
+		arrayFire[5] = new Fire(new Vec2(-1100,900), 14, 0, Colour.YELLOW); // ok
 
 		arrayFixedFire[0] = new Fire(new Vec2(1485,1200), 0, 0, Colour.YELLOW);
 		arrayFixedFire[1] = new Fire(new Vec2(200,15), 7, 0, Colour.YELLOW);

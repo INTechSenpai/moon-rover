@@ -12,6 +12,7 @@ import exception.MouvementImpossibleException;
 import robot.*;
 import robot.cartes.*;
 import smartMath.Vec2;
+import table.Colour;
 
 	/**
 	 * Tests unitaires pour RobotVrai (non, sans blague...), lorsqu'il est jaune
@@ -286,6 +287,54 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 		robotvrai.setOrientation((float)Math.PI);
 		robotvrai.tourner((float)Math.PI/2);
 		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(1050,900)) < 5);
+	}
+	
+	@Test
+	public void test_getColour() throws Exception
+	{
+		log.debug("JUnit_RobotVraiJauneTest.test_getColour", this);
+		robotvrai.setPosition(new Vec2(1000, 1400));
+		robotvrai.setOrientation((float)Math.PI);
+		Assert.assertTrue(robotvrai.getColour(Cote.GAUCHE) == Colour.RED);
+
+		robotvrai.setPosition(new Vec2(1000, 400));
+		robotvrai.setOrientation((float)Math.PI);
+		Assert.assertTrue(robotvrai.getColour(Cote.GAUCHE) == Colour.YELLOW);
+		robotvrai.setOrientation(0f);
+		Assert.assertTrue(robotvrai.getColour(Cote.GAUCHE) == Colour.YELLOW);
+
+		robotvrai.setPosition(new Vec2(300, 1400));
+		robotvrai.setOrientation((float)Math.PI);
+		Assert.assertTrue(robotvrai.getColour(Cote.GAUCHE) == Colour.YELLOW);
+		robotvrai.setOrientation(0f);
+		Assert.assertTrue(robotvrai.getColour(Cote.GAUCHE) == Colour.YELLOW);
+		
+		robotvrai.setPosition(new Vec2(300, 400));
+		robotvrai.setOrientation((float)Math.PI);
+		Assert.assertTrue(robotvrai.getColour(Cote.GAUCHE) == Colour.RED);
+		robotvrai.setOrientation(0f);
+		Assert.assertTrue(robotvrai.getColour(Cote.GAUCHE) == Colour.RED);
+
+		robotvrai.setPosition(new Vec2(300, 1400));
+		robotvrai.setOrientation((float)Math.PI);
+		Assert.assertTrue(robotvrai.getColour(Cote.GAUCHE) == Colour.YELLOW);
+		robotvrai.setOrientation(0f);
+		Assert.assertTrue(robotvrai.getColour(Cote.GAUCHE) == Colour.YELLOW);
+
+		robotvrai.setPosition(new Vec2(700, 1400));
+		robotvrai.setOrientation((float)Math.PI);
+		Assert.assertTrue(robotvrai.getColour(Cote.GAUCHE) == Colour.YELLOW);
+		robotvrai.setPosition(new Vec2(500, 1400));
+		robotvrai.setOrientation(0);
+		Assert.assertTrue(robotvrai.getColour(Cote.GAUCHE) == Colour.RED);
+
+		robotvrai.setPosition(new Vec2(1100, 800));
+		robotvrai.setOrientation((float)Math.PI/2);
+		Assert.assertTrue(robotvrai.getColour(Cote.GAUCHE) == Colour.RED);
+		robotvrai.setPosition(new Vec2(1200, 800));
+		robotvrai.setOrientation(-(float)Math.PI/2);
+		Assert.assertTrue(robotvrai.getColour(Cote.GAUCHE) == Colour.YELLOW);
+
 	}
 
 }
