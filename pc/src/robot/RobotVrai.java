@@ -4,6 +4,7 @@ import robot.cartes.Actionneurs;
 import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
 import smartMath.Vec2;
+import table.Colour;
 import table.Table;
 import utils.Log;
 import utils.Read_Ini;
@@ -152,6 +153,22 @@ public class RobotVrai extends Robot {
 	/*
 	 * MÉTHODES PUBLIQUES
 	 */
+
+	public boolean isFireRed(Cote cote)
+	{
+/*		if(cote == Cote.GAUCHE)
+			return capteur.isFireRedGauche();
+		else
+			return capteur.isThereFireDroit();*/
+
+		// Simulation de la sortie...
+		int i = table.nearestFire(position.clone());
+		Colour c = table.getFireColour(i);
+		if(orientation >= Math.PI/4 && orientation <= 5*Math.PI/4)
+			return c == Colour.RED;
+		else
+			return c != Colour.RED;
+	}
 	
 	// TODO
 	public void recaler()
@@ -439,12 +456,12 @@ public class RobotVrai extends Robot {
 			signe = -1;
 		avancer(-130);
 		ouvrir_bas_pince(cote);
-		tourner(orientation + signe*0.2f, true);
+		tourner_relatif(signe*0.2f);
 		sleep(500);
 		avancer(100);
 		presque_fermer_pince(cote);
 		set_vitesse_rotation("prise_feu");
-		tourner(orientation + signe*0.3f, true);
+		tourner_relatif(signe*0.3f);
 		set_vitesse_rotation("entre_scripts");
 		avancer(30);
 		fermer_pince(cote);

@@ -98,6 +98,8 @@ public abstract class Robot implements Service {
 	protected boolean feu_tenu_gauche_rouge = false;
 	protected boolean feu_tenu_droite_rouge = false;
 	protected int nb_tentatives = 2;
+	private String vitesse_translation;
+	private String vitesse_rotation;
 	
 	public Robot(Read_Ini config, Log log)
 	{
@@ -117,6 +119,7 @@ public abstract class Robot implements Service {
 	
 	protected int conventions_vitesse_translation(String vitesse)
 	{
+		vitesse_translation = vitesse;
         if(vitesse == "entre_scripts")
         	return 150;
         else if(vitesse == "recal_faible")
@@ -134,6 +137,7 @@ public abstract class Robot implements Service {
 
 	protected int conventions_vitesse_rotation(String vitesse)
 	{
+		vitesse_rotation = vitesse;
         if(vitesse == "entre_scripts")
         	return 160;
         else if(vitesse == "recal_faible")
@@ -149,6 +153,14 @@ public abstract class Robot implements Service {
         }
 	}
 	
+	public String get_vitesse_translation() {
+		return vitesse_translation;
+	}
+
+	public String get_vitesse_rotation() {
+		return vitesse_rotation;
+	}
+
 	public Vec2 getPosition() {
 		return position.clone();
 	}
@@ -193,7 +205,12 @@ public abstract class Robot implements Service {
 		else
 			return feu_tenu_droite_rouge;
 	}
-
+	
+	public void tourner_relatif(float angle) throws MouvementImpossibleException
+	{
+		tourner(orientation + angle, true);
+	}
+	
 	// Les méthodes avec le paramètre nbTentatives sont en protected 
 	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
