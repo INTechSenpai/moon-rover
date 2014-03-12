@@ -5,6 +5,7 @@ import gnu.io.CommPortIdentifier;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import exception.SerialManagerException;
 
@@ -22,17 +23,17 @@ public class SerialManager
 	public Serial serieAsservissement = null;
 	public Serial serieCapteursActionneurs = null;
 	public Serial serieLaser = null;
-	
+
 	//On stock les series dans une liste
 	private Hashtable<String, Serial> series = new Hashtable<String, Serial>();
-	
+
 	//Pour chaque carte, on connait a l'avance son nom, son ping et son baudrate
 	private SpecificationCard carteAsservissement = new SpecificationCard("serieAsservissement", 0, 9600);
 	private SpecificationCard carteCapteursActionneurs = new SpecificationCard("serieCapteursActionneurs", 3, 9600);
-	private SpecificationCard carteLaser = new SpecificationCard("serieLaser", 4, 9600); // TODO 38400);
+	private SpecificationCard carteLaser = new SpecificationCard("serieLaser", 4, 57600); // TODO 38400);
 
 	//On stock les cartes dans une liste
-	private Hashtable<String, SpecificationCard> cards = new Hashtable<String, SpecificationCard>();
+	private ArrayList <SpecificationCard> cards = new ArrayList <SpecificationCard>();
 
 	//Liste pour stocker les series qui sont connectees au pc 
 	private ArrayList<String> connectedSerial = new ArrayList<String>();
@@ -48,14 +49,14 @@ public class SerialManager
 	{
 		this.log = log;
 
-		cards.put(this.carteAsservissement.name, this.carteAsservissement);
-		cards.put(this.carteCapteursActionneurs.name, this.carteCapteursActionneurs);
-		cards.put(this.carteLaser.name, this.carteLaser);
+		cards.add(this.carteAsservissement);
+		cards.add(this.carteCapteursActionneurs);
+		cards.add(this.carteLaser);
 
-		Enumeration<SpecificationCard> e = cards.elements();
-		while (e.hasMoreElements())
+		Iterator<SpecificationCard> e = cards.iterator();
+		while (e.hasNext())
 		{
-			int baud = e.nextElement().baudrate;
+			int baud = e.next().baudrate;
 			if (!this.baudrate.contains(baud))
 				this.baudrate.add(baud);
 		}
@@ -63,7 +64,7 @@ public class SerialManager
 		this.serieAsservissement = new Serial(log, this.carteAsservissement.name);
 		this.serieCapteursActionneurs = new Serial(log, this.carteCapteursActionneurs.name);
 		this.serieLaser = new Serial(log, this.carteLaser.name);
-		
+
 		this.series.put(this.carteAsservissement.name, this.serieAsservissement);
 		this.series.put(this.carteCapteursActionneurs.name, this.serieCapteursActionneurs);
 		this.series.put(this.carteLaser.name, this.serieLaser);
@@ -105,15 +106,26 @@ public class SerialManager
 					Serial serialTest = new Serial(log, "carte de test de ping");
 
 					serialTest.initialize(this.connectedSerial.get(k), baudrate);
-					
+
 					if (serialTest.ping() != null)
 						id = Integer.parseInt(serialTest.ping());
 					else 
+					{
+						serialTest.close();
 						continue;
+					}
 
 					if(!isKnownPing(id))
+					{
+						serialTest.close();
 						continue;
-					
+					}
+
+					if (!goodBaudrate(baudrate, id))
+					{
+						serialTest.close();
+						continue;
+					}
 					//On stock le port de la serie (connectedSerial) dans le tabeau à la case [id]
 					pings[id] = this.connectedSerial.get(k);
 
@@ -127,12 +139,12 @@ public class SerialManager
 				}
 			}
 		}
-		
+
 		//Association de chaque serie a son port
-		Enumeration<SpecificationCard> e = cards.elements();
-		while (e.hasMoreElements())
+		Iterator<SpecificationCard> e = cards.iterator();
+		while (e.hasNext())
 		{
-			SpecificationCard serial = e.nextElement();
+			SpecificationCard serial = e.next();
 			if(serial.id == 0 && pings[serial.id] != null)
 			{
 				this.serieAsservissement.initialize(pings[serial.id], serial.baudrate);
@@ -153,6 +165,25 @@ public class SerialManager
 			}
 		}
 	}
+	
+	/**
+	 * 
+	 * @param baudrate
+	 * @param id
+	 * @return
+	 */
+	private boolean goodBaudrate(int baudrate, int id)
+	{
+		Iterator<SpecificationCard> e = cards.iterator();
+		while(e.hasNext())
+		{
+			SpecificationCard serial = e.next();
+			if((id == serial.id) && (baudrate == serial.baudrate))
+				return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Permet de savoir si une carte a déjà été pingée, utilisé que par SerialManager
 	 * @param id
@@ -160,15 +191,15 @@ public class SerialManager
 	 */
 	private boolean isKnownPing(int id)
 	{
-		Enumeration<SpecificationCard> e = cards.elements();
-		while(e.hasMoreElements())
+		Iterator<SpecificationCard> e = cards.iterator();
+		while(e.hasNext())
 		{
-			if(id == e.nextElement().id)
+			if(id == e.next().id)
 				return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Permet d'obtenir une série
 	 * @param name
