@@ -8,11 +8,6 @@ import smartMath.Vec2;
 import table.Table;
 import utils.Log;
 import utils.Read_Ini;
-/*
-import table.Table;
-import utils.Log;
-import utils.Read_Ini;
-*/
 import container.Service;
 
 /**
@@ -131,27 +126,5 @@ public class Pathfinding implements Service
 		
 		return out;
 	}
-	
-	
-	
-	
-	
-	/**
-	 * Modifie le mode de pathfinding: utilisation du cache ou calcul de recherche de chemin
-	 * @param use_cache
-	 */
-	public void setUseCache(boolean use_cache)
-	{
 		
-	}
-
-	/**
-	 * Retourne le mode actuel
-	 * @return
-	 */
-	public boolean getUseCache()
-	{
-		return true;
-	}
-	
 }
