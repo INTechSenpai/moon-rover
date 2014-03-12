@@ -3,7 +3,6 @@ package table;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import robot.Orientation;
 import smartMath.Vec2;
 import container.Service;
 import exception.ConfigException;
@@ -44,16 +43,17 @@ public class Table implements Service {
 	public void initialise()
 	{
 		// Initialisation des feux
-		arrayFire[0] = new Fire(new Vec2(1485,1200), 0, 0, Orientation.XPLUS, Colour.YELLOW);
-		arrayFire[1] = new Fire(new Vec2(1100,900), 1, 0, Orientation.YPLUS, Colour.YELLOW);
-		arrayFire[2] = new Fire(new Vec2(600,1400), 2, 0, Orientation.XPLUS, Colour.YELLOW);
-		arrayFire[3] = new Fire(new Vec2(600,400), 6, 0, Orientation.XPLUS, Colour.RED);
-		arrayFire[4] = new Fire(new Vec2(200,15), 7, 0, Orientation.YPLUS, Colour.YELLOW);
-		arrayFire[5] = new Fire(new Vec2(-200,15), 8, 0, Orientation.YPLUS, Colour.RED);
-		arrayFire[6] = new Fire(new Vec2(-600,1400), 9, 0, Orientation.XPLUS, Colour.RED);
-		arrayFire[7] = new Fire(new Vec2(-600,400), 13, 0, Orientation.XPLUS, Colour.RED);
-		arrayFire[8] = new Fire(new Vec2(-1100,900), 14, 0, Orientation.YPLUS, Colour.RED);
-		arrayFire[9] = new Fire(new Vec2(-1485,1200), 15, 0, Orientation.XPLUS, Colour.YELLOW);
+		// TODO
+		arrayFire[0] = new Fire(new Vec2(1485,1200), 0, 0, Colour.YELLOW);
+		arrayFire[1] = new Fire(new Vec2(1100,900), 1, 0, Colour.YELLOW);
+		arrayFire[2] = new Fire(new Vec2(600,1400), 2, 0, Colour.YELLOW);
+		arrayFire[3] = new Fire(new Vec2(600,400), 6, 0, Colour.RED);
+		arrayFire[4] = new Fire(new Vec2(200,15), 7, 0, Colour.YELLOW);
+		arrayFire[5] = new Fire(new Vec2(-200,15), 8, 0, Colour.RED);
+		arrayFire[6] = new Fire(new Vec2(-600,1400), 9, 0, Colour.RED);
+		arrayFire[7] = new Fire(new Vec2(-600,400), 13, 0, Colour.RED);
+		arrayFire[8] = new Fire(new Vec2(-1100,900), 14, 0, Colour.RED);
+		arrayFire[9] = new Fire(new Vec2(-1485,1200), 15, 0, Colour.YELLOW);
 
 		// Initialisation des arbres
 		arrayTree[0] = new Tree(new Vec2(1500,700));
@@ -62,14 +62,14 @@ public class Table implements Service {
 		arrayTree[3] = new Tree(new Vec2(-1500,700));
 
 		// Initialisation des torches
-		Fire feu0 = new Fire(new Vec2(600,900), 3, 1, Orientation.GROUND, Colour.YELLOW);
-		Fire feu1 = new Fire(new Vec2(600,900), 4, 2, Orientation.GROUND, Colour.RED);
-		Fire feu2 = new Fire(new Vec2(600,900), 5, 3, Orientation.GROUND, Colour.YELLOW);
+		Fire feu0 = new Fire(new Vec2(600,900), 3, 1, Colour.YELLOW);
+		Fire feu1 = new Fire(new Vec2(600,900), 4, 2, Colour.RED);
+		Fire feu2 = new Fire(new Vec2(600,900), 5, 3, Colour.YELLOW);
 		arrayTorch[0] = new Torch(new Vec2(600,900), feu0, feu1, feu2);
 
-		Fire feu3 = new Fire(new Vec2(-600,900), 10, 1, Orientation.GROUND, Colour.RED);
-		Fire feu4 = new Fire(new Vec2(-600,900), 11, 2, Orientation.GROUND, Colour.YELLOW);
-		Fire feu5 = new Fire(new Vec2(-600,900), 12, 3, Orientation.GROUND, Colour.RED);
+		Fire feu3 = new Fire(new Vec2(-600,900), 10, 1, Colour.RED);
+		Fire feu4 = new Fire(new Vec2(-600,900), 11, 2, Colour.YELLOW);
+		Fire feu5 = new Fire(new Vec2(-600,900), 12, 3, Colour.RED);
 		arrayTorch[1] = new Torch(new Vec2(-600,900), feu3, feu4, feu5); 
 		
 		// Ajout des torches mobiles
@@ -248,6 +248,11 @@ public class Table implements Service {
 	public float distanceFire(Vec2 position, int i)
 	{
 		return position.distance(arrayFire[i].position);
+	}
+	
+	public Colour getFireColour(int i)
+	{
+		return arrayFire[i].getColour();
 	}
 	
 	// Arbres

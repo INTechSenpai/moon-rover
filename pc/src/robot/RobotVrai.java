@@ -4,6 +4,7 @@ import robot.cartes.Actionneurs;
 import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
 import smartMath.Vec2;
+import table.Colour;
 import table.Table;
 import utils.Log;
 import utils.Read_Ini;
@@ -23,7 +24,7 @@ import exception.SerialException;
 
 /**
  * Classe qui fournit des déplacements haut niveau
- * @author pf, krissprolls
+ * @author pf
  *
  */
 
@@ -152,6 +153,22 @@ public class RobotVrai extends Robot {
 	/*
 	 * MÉTHODES PUBLIQUES
 	 */
+
+	public boolean isFireRed(Cote cote)
+	{
+/*		if(cote == Cote.GAUCHE)
+			return capteur.isFireRedGauche();
+		else
+			return capteur.isThereFireDroit();*/
+
+		// Simulation de la sortie...
+		int i = table.nearestFire(position.clone());
+		Colour c = table.getFireColour(i);
+		if(orientation >= Math.PI/4 && orientation <= 5*Math.PI/4)
+			return c == Colour.RED;
+		else
+			return c != Colour.RED;
+	}
 	
 	// TODO
 	public void recaler()
@@ -431,18 +448,27 @@ public class RobotVrai extends Robot {
 		actionneurs.tirerBalle();
 		nombre_lances--;
 	}
-	
 
-
-	public void takefiregauche() {
-		// TODO
-		tient_feu_gauche = true;
-
-	}
-
-	public void takefiredroit() {
-		// TODO
-		tient_feu_droite = true;
+	@Override
+	public void takefire(Cote cote) throws SerialException, MouvementImpossibleException {
+		int signe = 1;
+		if(cote == Cote.GAUCHE)
+			signe = -1;
+		avancer(-130);
+		ouvrir_bas_pince(cote);
+		tourner_relatif(signe*0.2f);
+		sleep(500);
+		avancer(100);
+		presque_fermer_pince(cote);
+		set_vitesse_rotation("prise_feu");
+		tourner_relatif(signe*0.3f);
+		set_vitesse_rotation("entre_scripts");
+		avancer(30);
+		fermer_pince(cote);
+		sleep(500);
+		lever_pince(cote);
+		sleep(500);
+		setTient_feu(cote);
 	}
 
 	@Override
@@ -489,108 +515,98 @@ public class RobotVrai extends Robot {
 		actionneurs.lancerFilet();
 	}
 	@Override
-	public void milieu_pince_gauche() throws SerialException
+	public void milieu_pince(Cote cote) throws SerialException
 	{
-		actionneurs.milieu_pince_gauche();
+		if(cote == Cote.GAUCHE)
+			actionneurs.milieu_pince_gauche();
+		else
+			actionneurs.milieu_pince_droite();
 	}
 	@Override
-	public void milieu_pince_droite() throws SerialException
+	public void baisser_pince(Cote cote) throws SerialException
 	{
-		actionneurs.milieu_pince_droite();
+		if(cote == Cote.GAUCHE)
+			actionneurs.baisser_pince_gauche();
+		else
+			actionneurs.baisser_pince_droite();
+	}	
+	@Override	
+	public void lever_pince(Cote cote) throws SerialException
+	{
+		if(cote == Cote.GAUCHE)
+			actionneurs.lever_pince_gauche();
+		else
+			actionneurs.lever_pince_droite();
+	}
+
+	@Override
+	public void ouvrir_pince(Cote cote) throws SerialException
+	{
+		if(cote == Cote.GAUCHE)
+			actionneurs.ouvrir_pince_gauche();
+		else
+			actionneurs.ouvrir_bas_pince_droite();
+	}
+	@Override	
+	public void fermer_pince(Cote cote) throws SerialException
+	{
+		if(cote == Cote.GAUCHE)
+			actionneurs.fermer_pince_gauche();
+		else
+			actionneurs.fermer_pince_droite();
 	}
 	@Override
-	public void baisser_pince_gauche() throws SerialException
+	public void presque_fermer_pince(Cote cote) throws SerialException
 	{
-		actionneurs.baisser_pince_gauche();
+		if(cote == Cote.GAUCHE)
+			actionneurs.presque_fermer_pince_gauche();
+		else
+			actionneurs.presque_fermer_pince_droite();
 	}
 	@Override
-	public void baisser_pince_droite() throws SerialException
+	public void ouvrir_bas_pince(Cote cote) throws SerialException
 	{
-		actionneurs.baisser_pince_droite();
+		if(cote == Cote.GAUCHE)
+			actionneurs.ouvrir_bas_pince_gauche();
+		else
+			actionneurs.ouvrir_bas_pince_droite();
+	}
+	@Override
+	public void tourner_pince(Cote cote) throws SerialException
+	{
+		if(cote == Cote.GAUCHE)
+			actionneurs.tourner_pince_gauche();
+		else
+			actionneurs.tourner_pince_droite();
 	}
 	
 	@Override	
-	public void lever_pince_gauche() throws SerialException
-	{
-		actionneurs.lever_pince_gauche();
-	}
-
-	@Override	
-	public void lever_pince_droite() throws SerialException
-	{
-		actionneurs.lever_pince_droite();
-	}
-	@Override
-	public void ouvrir_pince_gauche() throws SerialException
-	{
-		actionneurs.ouvrir_pince_gauche();
-	}
-	@Override
-	public void ouvrir_pince_droite() throws SerialException
-	{
-		actionneurs.ouvrir_pince_droite();
-	}
-	@Override	
-	public void fermer_pince_gauche() throws SerialException
-	{
-		actionneurs.fermer_pince_gauche();
-	}
-
-	@Override	
-	public void fermer_pince_droite() throws SerialException
-	{
-		actionneurs.fermer_pince_droite();
-	}
-
-	@Override	
-	public void poserFeuBonCoteGauche() throws SerialException
+	public void poserFeuBonCote(Cote cote) throws SerialException
 	{
 		log.debug("On pose le feu gauche sans le retourner", this);
 		//Ca remonte la pince aussi !
-		actionneurs.milieu_pince_gauche();
+		milieu_pince(cote);
 		sleep(1000);
-		actionneurs.ouvrir_pince_gauche();
+		ouvrir_pince(cote);
 		sleep(1000);
-		actionneurs.lever_pince_gauche();
+		lever_pince(cote);
 		sleep(1000);
-		actionneurs.fermer_pince_gauche();
+		fermer_pince(cote);
 		sleep(1000);
 	}
 
 	@Override	
-	public void poserFeuEnRetournantGauche() throws SerialException
+	public void poserFeuEnRetournant(Cote cote) throws SerialException
 	{
 		log.debug("On pose le feu gauche en le retournant", this);
 		//Ca remonte la pince aussi !
-		actionneurs.baisser_pince_gauche();
-		actionneurs.tourner_pince_gauche();
-		actionneurs.ouvrir_pince_gauche();
-		actionneurs.lever_pince_gauche();
-		actionneurs.fermer_pince_gauche();
+		baisser_pince(cote);
+		tourner_pince(cote);
+		ouvrir_pince(cote);
+		lever_pince(cote);
+		fermer_pince(cote);
 	}
 
-	@Override	
-	public void poserFeuBonCoteDroit() throws SerialException
-	{
-		log.debug("On pose le feu droit sans le retourner", this);
-		//Ca remonte la pince aussi !
-		actionneurs.baisser_pince_droite();
-		actionneurs.ouvrir_pince_droite();
-		actionneurs.lever_pince_droite();
-		actionneurs.fermer_pince_droite();
-	}
-
-	@Override	
-	public void poserFeuEnRetournantDroit() throws SerialException
-	{
-		log.debug("On pose le feu droit en le retournant", this);
-		//Ca remonte la pince aussi !
-		actionneurs.baisser_pince_droite();
-		actionneurs.tourner_pince_droite();
-		actionneurs.ouvrir_pince_droite();
-		actionneurs.lever_pince_droite();
-		actionneurs.fermer_pince_droite();
-	}
 	
 	/* 
 	 * GETTERS & SETTERS

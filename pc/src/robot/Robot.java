@@ -58,29 +58,23 @@ public abstract class Robot implements Service {
 	 * ACTIONNEURS
 	 */
 
-	public abstract void takefiredroit() throws SerialException;
-	public abstract void takefiregauche() throws SerialException;
+	public abstract void takefire(Cote cote)  throws SerialException, MouvementImpossibleException;
 	public abstract void tirerBalle() throws SerialException;
 	public abstract void deposer_fresques() throws SerialException;
 	public abstract void bac_bas() throws SerialException;
 	public abstract void bac_haut() throws SerialException;
 	public abstract void rateau(PositionRateau position, Cote cote) throws SerialException;
 	public abstract void lancerFilet() throws SerialException;
-	public abstract void poserFeuBonCoteGauche() throws SerialException;
-	public abstract void poserFeuEnRetournantGauche() throws SerialException;
-	public abstract void poserFeuBonCoteDroit() throws SerialException;
-	public abstract void poserFeuEnRetournantDroit() throws SerialException;
-	public abstract void lever_pince_gauche() throws SerialException;
-	public abstract void lever_pince_droite() throws SerialException;
-	public abstract void baisser_pince_gauche() throws SerialException;
-	public abstract void baisser_pince_droite() throws SerialException;
-	public abstract void fermer_pince_gauche()throws SerialException;
-	public abstract void fermer_pince_droite() throws SerialException;
-	public abstract void ouvrir_pince_gauche() throws SerialException;
-	public abstract void ouvrir_pince_droite() throws SerialException;
-	public abstract void milieu_pince_gauche() throws SerialException;
-	public abstract void milieu_pince_droite() throws SerialException;
-	
+	public abstract void poserFeuBonCote(Cote cote) throws SerialException;
+	public abstract void poserFeuEnRetournant(Cote cote) throws SerialException;
+	public abstract void lever_pince(Cote cote) throws SerialException;
+	public abstract void baisser_pince(Cote cote) throws SerialException;
+	public abstract void fermer_pince(Cote cote)throws SerialException;
+	public abstract void ouvrir_pince(Cote cote) throws SerialException;
+	public abstract void milieu_pince(Cote cote) throws SerialException;
+	public abstract void tourner_pince(Cote cote) throws SerialException;
+	public abstract void presque_fermer_pince(Cote cote) throws SerialException;
+	public abstract void ouvrir_bas_pince(Cote cote) throws SerialException;
 	
 	public abstract void sleep(long duree);
 	
@@ -104,6 +98,8 @@ public abstract class Robot implements Service {
 	protected boolean feu_tenu_gauche_rouge = false;
 	protected boolean feu_tenu_droite_rouge = false;
 	protected int nb_tentatives = 2;
+	private String vitesse_translation;
+	private String vitesse_rotation;
 	
 	public Robot(Read_Ini config, Log log)
 	{
@@ -123,6 +119,7 @@ public abstract class Robot implements Service {
 	
 	protected int conventions_vitesse_translation(String vitesse)
 	{
+		vitesse_translation = vitesse;
         if(vitesse == "entre_scripts")
         	return 150;
         else if(vitesse == "recal_faible")
@@ -140,10 +137,13 @@ public abstract class Robot implements Service {
 
 	protected int conventions_vitesse_rotation(String vitesse)
 	{
+		vitesse_rotation = vitesse;
         if(vitesse == "entre_scripts")
         	return 160;
         else if(vitesse == "recal_faible")
             return 120;
+        else if(vitesse == "prise_feu")
+            return 60;
         else if(vitesse == "recal_forte")
             return 130;
         else
@@ -153,6 +153,14 @@ public abstract class Robot implements Service {
         }
 	}
 	
+	public String get_vitesse_translation() {
+		return vitesse_translation;
+	}
+
+	public String get_vitesse_rotation() {
+		return vitesse_rotation;
+	}
+
 	public Vec2 getPosition() {
 		return position.clone();
 	}
@@ -174,26 +182,35 @@ public abstract class Robot implements Service {
 		return fresques_posees;
 	}
 	
-	public boolean isTient_feu_droite()
+	public void setTient_feu(Cote cote)
 	{
-		return tient_feu_droite;
-	}
-
-	public boolean isTient_feu_gauche()
-	{
-		return tient_feu_gauche;
+		if(cote == Cote.GAUCHE)
+			tient_feu_gauche = true;
+		else
+			tient_feu_droite = true;
 	}
 	
-	public boolean isFeu_tenu_gauche_rouge()
+	public boolean isTient_feu(Cote cote)
 	{
-		return feu_tenu_gauche_rouge;
+		if(cote == Cote.GAUCHE)
+			return tient_feu_gauche;
+		else
+			return tient_feu_droite;
 	}
-
-	public boolean isFeu_tenu_droite_rouge()
+	
+	public boolean isFeu_tenu_rouge(Cote cote)
 	{
-		return feu_tenu_droite_rouge;
+		if(cote == Cote.GAUCHE)
+			return feu_tenu_gauche_rouge;
+		else
+			return feu_tenu_droite_rouge;
 	}
-
+	
+	public void tourner_relatif(float angle) throws MouvementImpossibleException
+	{
+		tourner(orientation + angle, true);
+	}
+	
 	// Les méthodes avec le paramètre nbTentatives sont en protected 
 	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{

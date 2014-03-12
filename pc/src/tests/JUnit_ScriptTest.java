@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import exception.ScriptException;
+import robot.Cote;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import scripts.Script;
@@ -169,16 +170,16 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	{
 		s = (Script)scriptmanager.getScript("ScriptDeposerFeu");
 		Assert.assertTrue(s.version(robotvrai, table).size() == 0);
-		robotvrai.takefiregauche();
+		robotvrai.takefire(Cote.GAUCHE);
 		Assert.assertTrue(s.version(robotvrai, table).size() == 5);
 	}
 
 	@Test
 	public void test_ScriptDeposerFeu_agit() throws Exception
 	{
-		robotvrai.lever_pince_gauche();
-		robotvrai.lever_pince_droite();
-		robotvrai.takefiregauche();
+		robotvrai.lever_pince(Cote.DROIT);
+		robotvrai.lever_pince(Cote.GAUCHE);
+		robotvrai.takefire(Cote.GAUCHE);
 		s = (Script)scriptmanager.getScript("ScriptDeposerFeu");
 		s.agit(2, robotvrai, table, true);
 	}
@@ -186,9 +187,14 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	@Test
 	public void test_ScriptTorche_agit() throws Exception
 	{
-		
 		s = (Script)scriptmanager.getScript("ScriptTorche");
 		s.agit(0, robotvrai, table, true);
+	}
+	
+	@Test
+	public void test_takefire() throws Exception
+	{
+		robotvrai.takefire(Cote.DROIT);
 	}
 
 }

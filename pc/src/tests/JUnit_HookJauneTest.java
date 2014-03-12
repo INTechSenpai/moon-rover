@@ -5,7 +5,7 @@ import hook.Executable;
 import hook.Hook;
 import hook.HookGenerator;
 import hook.methodes.LeverRateau;
-import hook.methodes.TakeFireGauche;
+import hook.methodes.TakeFire;
 import hook.methodes.TirerBalles;
 
 import java.util.ArrayList;
@@ -128,7 +128,7 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 		log.debug("JUnit_HookJauneTest.test_hookAbscisse_takeFire()", this);
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
-		Executable takefire = new TakeFireGauche(robotvrai);
+		Executable takefire = new TakeFire(robotvrai, Cote.GAUCHE);
 		Hook hook = hookgenerator.hook_abscisse(20);
 		hook.ajouter_callback(new Callback(takefire, false));
 		hooks.add(hook);		
@@ -141,7 +141,7 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 		log.debug("JUnit_HookJauneTest.test_hookAbscisse_takeFire()", this);
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
-		Executable takefire = new TakeFireGauche(robotvrai);
+		Executable takefire = new TakeFire(robotvrai, Cote.GAUCHE);
 		Hook hook = hookgenerator.hook_feu(Cote.GAUCHE);
 		hook.ajouter_callback(new Callback(takefire, false));
 		hooks.add(hook);		
