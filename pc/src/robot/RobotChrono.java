@@ -135,75 +135,6 @@ public class RobotChrono extends Robot {
 		duree += 1000;
 	}
 	@Override
-	public void poserFeuBonCoteGauche()
-	{
-		duree += 1000;
-	}
-	@Override
-	public void poserFeuEnRetournantGauche()
-	{
-		duree += 1500;
-	}
-	@Override
-	public void poserFeuBonCoteDroit()
-	{
-		duree += 1000;
-	}
-	@Override
-	public void poserFeuEnRetournantDroit()
-	{
-		duree += 1500;
-	}
-	@Override
-	public void lever_pince_gauche() 
-	{
-		duree += 1000;
-	}
-
-	@Override	
-	public void lever_pince_droite()
-	{
-		duree += 1000;
-	}
-	@Override
-	public void baisser_pince_gauche()
-	{
-		duree +=1000;
-	}
-	@Override
-	public void baisser_pince_droite()
-	{
-		duree +=1000;
-	}
-	@Override
-	public void ouvrir_pince_gauche() 
-	{
-		duree +=1000;
-	}
-	@Override
-	public void ouvrir_pince_droite()
-	{
-		duree +=1000;
-	}
-	@Override
-	public void milieu_pince_gauche() throws SerialException
-	{
-		duree += 1000;
-	}
-	@Override
-	public void milieu_pince_droite() throws SerialException
-	{
-		duree +=1000;
-	}
-	public void fermer_pince_gauche() throws SerialException {
-		duree += 1000;		
-	}
-
-	@Override
-	public void fermer_pince_droite() throws SerialException {
-		duree += 1000;
-	}
-	@Override
 	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe) throws MouvementImpossibleException
 	{
 		for(Vec2 point: chemin)
@@ -227,16 +158,19 @@ public class RobotChrono extends Robot {
 	@Override
 	public void bac_bas()
 	{
+		duree += 1000;
 	}
 
 	@Override
 	public void bac_haut()
 	{
+		duree += 1000;
 	}
 
 	@Override
 	public void rateau(PositionRateau position, Cote cote)
 	{
+		duree += 1000;
 	}
 
 	@Override
@@ -244,15 +178,9 @@ public class RobotChrono extends Robot {
 	}
 
 	@Override
-	public void takefiredroit() {
+	public void takefire(Cote cote) {
 		duree += 2000;
 	}
-
-	@Override
-	public void takefiregauche() {
-		duree += 2000;		
-	}
-
 	
 	// TODO à compléter au fur et à mesure
 	public void majRobotChrono(RobotVrai robotvrai)
@@ -292,6 +220,56 @@ public class RobotChrono extends Robot {
 	{
 		if(duree < 0)
 			throw new RobotChronoException();
+	}
+
+	@Override
+	public void poserFeuBonCote(Cote cote) throws SerialException {
+		duree += 1000;
+	}
+
+	@Override
+	public void poserFeuEnRetournant(Cote cote) throws SerialException {
+		duree += 1000;
+	}
+
+	@Override
+	public void lever_pince(Cote cote) throws SerialException {
+		duree += 1000;
+	}
+
+	@Override
+	public void baisser_pince(Cote cote) throws SerialException {
+		duree += 1000;
+	}
+
+	@Override
+	public void fermer_pince(Cote cote) throws SerialException {
+		duree += 1000;
+	}
+
+	@Override
+	public void ouvrir_pince(Cote cote) throws SerialException {
+		duree += 1000;
+	}
+
+	@Override
+	public void milieu_pince(Cote cote) throws SerialException {
+		duree += 1000;
+	}
+
+	@Override
+	public void tourner_pince(Cote cote) throws SerialException {
+		duree += 1000;
+	}
+
+	@Override
+	public void presque_fermer_pince(Cote cote) throws SerialException {
+		duree += 1000;
+	}
+
+	@Override
+	public void ouvrir_bas_pince(Cote cote) throws SerialException {
+		duree += 1000;
 	}
 
 	

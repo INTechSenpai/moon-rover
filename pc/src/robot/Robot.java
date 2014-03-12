@@ -58,29 +58,23 @@ public abstract class Robot implements Service {
 	 * ACTIONNEURS
 	 */
 
-	public abstract void takefiredroit()  throws SerialException, MouvementImpossibleException;
-	public abstract void takefiregauche() throws SerialException, MouvementImpossibleException;
+	public abstract void takefire(Cote cote)  throws SerialException, MouvementImpossibleException;
 	public abstract void tirerBalle() throws SerialException;
 	public abstract void deposer_fresques() throws SerialException;
 	public abstract void bac_bas() throws SerialException;
 	public abstract void bac_haut() throws SerialException;
 	public abstract void rateau(PositionRateau position, Cote cote) throws SerialException;
 	public abstract void lancerFilet() throws SerialException;
-	public abstract void poserFeuBonCoteGauche() throws SerialException;
-	public abstract void poserFeuEnRetournantGauche() throws SerialException;
-	public abstract void poserFeuBonCoteDroit() throws SerialException;
-	public abstract void poserFeuEnRetournantDroit() throws SerialException;
-	public abstract void lever_pince_gauche() throws SerialException;
-	public abstract void lever_pince_droite() throws SerialException;
-	public abstract void baisser_pince_gauche() throws SerialException;
-	public abstract void baisser_pince_droite() throws SerialException;
-	public abstract void fermer_pince_gauche()throws SerialException;
-	public abstract void fermer_pince_droite() throws SerialException;
-	public abstract void ouvrir_pince_gauche() throws SerialException;
-	public abstract void ouvrir_pince_droite() throws SerialException;
-	public abstract void milieu_pince_gauche() throws SerialException;
-	public abstract void milieu_pince_droite() throws SerialException;
-	
+	public abstract void poserFeuBonCote(Cote cote) throws SerialException;
+	public abstract void poserFeuEnRetournant(Cote cote) throws SerialException;
+	public abstract void lever_pince(Cote cote) throws SerialException;
+	public abstract void baisser_pince(Cote cote) throws SerialException;
+	public abstract void fermer_pince(Cote cote)throws SerialException;
+	public abstract void ouvrir_pince(Cote cote) throws SerialException;
+	public abstract void milieu_pince(Cote cote) throws SerialException;
+	public abstract void tourner_pince(Cote cote) throws SerialException;
+	public abstract void presque_fermer_pince(Cote cote) throws SerialException;
+	public abstract void ouvrir_bas_pince(Cote cote) throws SerialException;
 	
 	public abstract void sleep(long duree);
 	

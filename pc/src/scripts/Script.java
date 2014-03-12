@@ -14,8 +14,7 @@ import table.Table;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
-import hook.methodes.TakeFireDroit;
-import hook.methodes.TakeFireGauche;
+import hook.methodes.TakeFire;
 
 import java.util.ArrayList;
 
@@ -46,11 +45,11 @@ public abstract class Script implements Service {
 		Script.hookgenerator = hookgenerator;
 		Script.config = config;
 		Script.log = log;
-		Executable takefire = new TakeFireGauche(robotvrai);
+		Executable takefire = new TakeFire(robotvrai, Cote.GAUCHE);
 		Hook hook = hookgenerator.hook_feu(Cote.GAUCHE);
 		hook.ajouter_callback(new Callback(takefire, true));		
 		hooksfeu.add(hook);
-		takefire = new TakeFireDroit(robotvrai);
+		takefire = new TakeFire(robotvrai, Cote.DROIT);
 		hook = hookgenerator.hook_feu(Cote.DROIT);
 		hook.ajouter_callback(new Callback(takefire, true));
 		hooksfeu.add(hook);
