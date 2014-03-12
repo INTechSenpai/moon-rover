@@ -1,5 +1,4 @@
 package tests;
-import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -11,6 +10,7 @@ import pathfinding.Pathfinding;
 import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.IntPair;
 import smartMath.Vec2;
+import table.Table;
 
 /**
  * 
@@ -20,12 +20,15 @@ import smartMath.Vec2;
  * @author karton
  *
  */
-public class JUnit_SimpleAStarTest
+public class JUnit_SimpleAStarTest extends JUnit_Test
 {
+	Table table;
 
 	@Test
-	public void test()
+	public void test() throws Exception
 	{
+		Table table = (Table)container.getService("Table");
+		
 		int mapSizeX = 300;
 		int mapSizeY = 200;
 
@@ -82,7 +85,7 @@ public class JUnit_SimpleAStarTest
 			}
 			
 			solver = new AStar(map, depart, arrivee);
-			Pathfinding pathfinder = new Pathfinding();
+			Pathfinding pathfinder = new Pathfinding(table, config, log);
 
 			long startTime = System.nanoTime();
 			solver.process();

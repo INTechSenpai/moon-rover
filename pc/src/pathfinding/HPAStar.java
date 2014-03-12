@@ -10,7 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Map;
 
-import SearchSpace.Grid2DSpace;
+import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.IntPair;
 
 /**

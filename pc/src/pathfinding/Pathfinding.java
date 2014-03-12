@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.IntPair;
 import smartMath.Vec2;
+import table.Table;
+import utils.Log;
+import utils.Read_Ini;
 /*
 import table.Table;
 import utils.Log;
@@ -21,7 +24,6 @@ import container.Service;
 public class Pathfinding implements Service
 {
 	// Dépendances
-	/*
 	private Table table;
 	private Read_Ini config;
 	private Log log;
@@ -31,11 +33,6 @@ public class Pathfinding implements Service
 		this.table = table;
 		this.config = config;
 		this.log = log;
-	}
-	*/
-
-	public Pathfinding()
-	{
 	}
 	
 	/**
