@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import hook.Hook;
 import smartMath.Vec2;
+import table.Colour;
 import container.Service;
 import exception.ConfigException;
 import exception.MouvementImpossibleException;
@@ -204,6 +205,14 @@ public abstract class Robot implements Service {
 			return feu_tenu_gauche_rouge;
 		else
 			return feu_tenu_droite_rouge;
+	}
+	
+	protected void setFeu_tenu_rouge(Cote cote, Colour colour)
+	{
+		if(cote == Cote.GAUCHE)
+			feu_tenu_gauche_rouge = (colour == Colour.RED);
+		else
+			feu_tenu_droite_rouge = (colour == Colour.RED);			
 	}
 	
 	public void tourner_relatif(float angle) throws MouvementImpossibleException

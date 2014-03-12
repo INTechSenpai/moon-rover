@@ -15,8 +15,8 @@ public class Table implements Service {
 
 	private Tree arrayTree[] = new Tree[4];
 	private Torch arrayTorch[] = new Torch[2];
-	private Fire arrayFire[] = new Fire[10];
-
+	private Fire arrayFire[] = new Fire[6];
+	private Fire arrayFixedFire[] = new Fire[4];
 	private ArrayList<Obstacle> listObstacles = new ArrayList<Obstacle>();
 	private static ArrayList<Obstacle> listObstaclesFixes = new ArrayList<Obstacle>();
 	private ObstacleCirculaire[] robots_adverses = new ObstacleCirculaire[2];
@@ -43,24 +43,25 @@ public class Table implements Service {
 	public void initialise()
 	{
 		// Initialisation des feux
-		// TODO
-		arrayFire[0] = new Fire(new Vec2(1485,1200), 0, 0, Colour.YELLOW);
-		arrayFire[1] = new Fire(new Vec2(1100,900), 1, 0, Colour.YELLOW);
-		arrayFire[2] = new Fire(new Vec2(600,1400), 2, 0, Colour.YELLOW);
-		arrayFire[3] = new Fire(new Vec2(600,400), 6, 0, Colour.RED);
-		arrayFire[4] = new Fire(new Vec2(200,15), 7, 0, Colour.YELLOW);
-		arrayFire[5] = new Fire(new Vec2(-200,15), 8, 0, Colour.RED);
-		arrayFire[6] = new Fire(new Vec2(-600,1400), 9, 0, Colour.RED);
-		arrayFire[7] = new Fire(new Vec2(-600,400), 13, 0, Colour.RED);
-		arrayFire[8] = new Fire(new Vec2(-1100,900), 14, 0, Colour.RED);
-		arrayFire[9] = new Fire(new Vec2(-1485,1200), 15, 0, Colour.YELLOW);
+		// TODO vérifier couleur. Torche fixe?
+		arrayFire[1] = new Fire(new Vec2(1100,900), 1, 0, Colour.RED);	// ok
+		arrayFire[2] = new Fire(new Vec2(600,1400), 2, 0, Colour.YELLOW); // OK
+		arrayFire[3] = new Fire(new Vec2(600,400), 6, 0, Colour.RED); // ok
+		arrayFire[6] = new Fire(new Vec2(-600,1400), 9, 0, Colour.YELLOW); //ok
+		arrayFire[7] = new Fire(new Vec2(-600,400), 13, 0, Colour.RED); // ok
+		arrayFire[8] = new Fire(new Vec2(-1100,900), 14, 0, Colour.YELLOW); // ok
 
+		arrayFixedFire[0] = new Fire(new Vec2(1485,1200), 0, 0, Colour.YELLOW);
+		arrayFixedFire[1] = new Fire(new Vec2(200,15), 7, 0, Colour.YELLOW);
+		arrayFixedFire[2] = new Fire(new Vec2(-200,15), 8, 0, Colour.RED);
+		arrayFixedFire[3] = new Fire(new Vec2(-1485,1200), 15, 0, Colour.YELLOW);
+		
 		// Initialisation des arbres
 		arrayTree[0] = new Tree(new Vec2(1500,700));
 		arrayTree[1] = new Tree(new Vec2(800,0));
 		arrayTree[2] = new Tree(new Vec2(-800,0));
 		arrayTree[3] = new Tree(new Vec2(-1500,700));
-
+		
 		// Initialisation des torches
 		Fire feu0 = new Fire(new Vec2(600,900), 3, 1, Colour.YELLOW);
 		Fire feu1 = new Fire(new Vec2(600,900), 4, 2, Colour.RED);
@@ -205,7 +206,7 @@ public class Table implements Service {
 	 * @param i
 	 * @param position
 	 */
-    public void deplacer_robot_adverse(int i, Vec2 position)
+    public void deplacer_robot_adverse(int i, final Vec2 position)
     {
     	robots_adverses[i].position = position.clone();
     }
@@ -230,11 +231,11 @@ public class Table implements Service {
 		hashFire = indice++;
 	}
 
-	public int nearestFire (Vec2 position)
+	public int nearestUntakenFire (final Vec2 position)
 	{
 		int min = 0;
-		for (int i = 1; i < 10; i++)
-			if (arrayFire[i].getPosition().SquaredDistance(position) < arrayFire[min].getPosition().SquaredDistance(position))
+		for (int i = 1; i < 6; i++)
+			if (!arrayFire[i].isTaken() && arrayFire[i].getPosition().SquaredDistance(position) < arrayFire[min].getPosition().SquaredDistance(position))
 				min = i;
 		return min;
 	}
@@ -245,9 +246,14 @@ public class Table implements Service {
 		hashFire = indice++;
 	}
 	
-	public float distanceFire(Vec2 position, int i)
+	public float distanceFire(final Vec2 position, int i)
 	{
 		return position.distance(arrayFire[i].position);
+	}
+	
+	public float angleFire(final Vec2 position, int i)
+	{
+		return (float) Math.atan2(position.y - arrayFire[i].getPosition().y, position.x - arrayFire[i].getPosition().x);
 	}
 	
 	public Colour getFireColour(int i)
@@ -257,16 +263,16 @@ public class Table implements Service {
 	
 	// Arbres
 	
-	public int nearestTree (Vec2 position)
+	public int nearestUntakenTree (final Vec2 position)
 	{
 		int min = 0;
 		for (int i = 0; i < 4; i++)
-			if (arrayTree[i].getPosition().SquaredDistance(position) < arrayTree[min].getPosition().SquaredDistance(position))
+			if (!arrayTree[i].isTaken() && arrayTree[i].getPosition().SquaredDistance(position) < arrayTree[min].getPosition().SquaredDistance(position))
 				min = i;
 		return min;
 	}
 	
-	public float distanceTree(Vec2 position, int i)
+	public float distanceTree(final Vec2 position, int i)
 	{
 		return position.distance(arrayTree[i].position);
 	}
@@ -299,7 +305,7 @@ public class Table implements Service {
 	
 	//Torches
 	
-	public int nearestTorch (Vec2 position)
+	public int nearestTorch (final Vec2 position)
 	{
 		if(arrayTorch[0].getPosition().SquaredDistance(position) < arrayTorch[1].getPosition().SquaredDistance(position))
 			return 0;
@@ -307,7 +313,7 @@ public class Table implements Service {
 			return 1;
 	}
 
-	public float distanceTorch(Vec2 position, int i)
+	public float distanceTorch(final Vec2 position, int i)
 	{
 		return position.distance(arrayTorch[i].position);
 	}
@@ -322,8 +328,10 @@ public class Table implements Service {
 		{
 			if(ct.hashFire != hashFire)
 			{
-				for(int i = 0; i < 10; i++)
+				for(int i = 0; i < 6; i++)
 					arrayFire[i].clone(ct.arrayFire[i]);
+				for(int i = 0; i < 4; i++)
+					arrayFixedFire[i].clone(ct.arrayFixedFire[i]);
 				ct.hashFire = hashFire;
 			}
 	

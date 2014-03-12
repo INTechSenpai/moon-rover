@@ -154,20 +154,49 @@ public class RobotVrai extends Robot {
 	 * MÉTHODES PUBLIQUES
 	 */
 
-	public boolean isFireRed(Cote cote)
+	// La couleur est simulée. Normalement, vu la disposition des couleurs, cela devrait se faire assez bien.
+	public Colour getColour(Cote cote)
 	{
-/*		if(cote == Cote.GAUCHE)
-			return capteur.isFireRedGauche();
+/*		boolean rouge;
+		if(cote == Cote.GAUCHE)
+			rouge = capteur.isFireRedGauche();
 		else
-			return capteur.isThereFireDroit();*/
+			rouge = capteur.isFireRedDroit();
+		if(rouge)
+			return Colour.RED;
+		else
+			return Colour.YELLOW;*/
 
-		// Simulation de la sortie...
-		int i = table.nearestFire(position.clone());
-		Colour c = table.getFireColour(i);
-		if(orientation >= Math.PI/4 && orientation <= 5*Math.PI/4)
-			return c == Colour.RED;
+		float orientation_utilisee;
+
+		// TODO vérifier que c'est bien la largeur
+		Vec2 avant_robot = new Vec2((float)(largeur_robot/2 * Math.cos(orientation)), (float)(largeur_robot/2 * Math.sin(orientation)));
+		avant_robot.Plus(position);
+		
+		int i = table.nearestUntakenFire(avant_robot.clone());
+		float distance = table.distanceFire(avant_robot.clone(), i);
+
+		// Si on est plus à 5cm de la position normale debout, c'est que le feu est tombé.
+		// Dans ce cas, on regarde où on a vu le feu, et on en déduit de quel côté il est tombé.
+		if(distance > 50)
+			orientation_utilisee = table.angleFire(avant_robot.clone(), i);
+		// Sinon, c'est que le feu est encore debout. On regarde alors de quel côté on vient.
 		else
-			return c != Colour.RED;
+			orientation_utilisee = orientation;
+		
+		Colour a_priori = table.getFireColour(i);
+		if(orientation_utilisee >= Math.PI/4 && orientation_utilisee <= 5*Math.PI/4)
+			return a_priori;
+		else
+			return inverserCouleur(a_priori);
+	}
+	
+	private Colour inverserCouleur(Colour colour)
+	{
+		if(colour == Colour.RED)
+			return Colour.YELLOW;
+		else
+			return Colour.RED;
 	}
 	
 	// TODO
@@ -469,6 +498,9 @@ public class RobotVrai extends Robot {
 		lever_pince(cote);
 		sleep(500);
 		setTient_feu(cote);
+		setFeu_tenu_rouge(cote, getColour(cote));
+		// On signale à la table qu'on a prit un feu. A priori, c'est le plus proche de cette position.
+		table.pickFire(table.nearestUntakenFire(position.clone()));
 	}
 
 	@Override

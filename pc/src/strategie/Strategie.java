@@ -140,8 +140,8 @@ public class Strategie implements Service {
 			 * on ne se prémunit pas, entre autre, contre les freezes
 			 * 			 * 
 			 */
-			int i_min_fire = table.nearestFire(positionsfreeze[i]);
-			int i_min_tree = table.nearestTree(positionsfreeze[i]);
+			int i_min_fire = table.nearestUntakenFire(positionsfreeze[i]);
+			int i_min_tree = table.nearestUntakenTree(positionsfreeze[i]);
 			int i_min_fresco = table.nearestFreeFresco(positionsfreeze[i]);
 			
 			if (duree_freeze[i] > duree_blocage)
