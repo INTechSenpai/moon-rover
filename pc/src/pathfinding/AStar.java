@@ -15,7 +15,7 @@ import java.util.Map;
 import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.IntPair;
 
-
+// Le test se trouve dans un test unitaire
 public class AStar
 {
 	private boolean 	processed,	// le chemin a-t-il �t� calcul� ou pas encore ?
