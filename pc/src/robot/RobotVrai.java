@@ -483,6 +483,8 @@ public class RobotVrai extends Robot {
 		int signe = 1;
 		if(cote == Cote.GAUCHE)
 			signe = -1;
+		String vitesse_rotation = get_vitesse_rotation();
+		
 		avancer(-130);
 		ouvrir_bas_pince(cote);
 		tourner_relatif(signe*0.2f);
@@ -491,7 +493,7 @@ public class RobotVrai extends Robot {
 		presque_fermer_pince(cote);
 		set_vitesse_rotation("prise_feu");
 		tourner_relatif(signe*0.3f);
-		set_vitesse_rotation("entre_scripts");
+		set_vitesse_rotation(vitesse_rotation);
 		avancer(30);
 		fermer_pince(cote);
 		sleep(500);
