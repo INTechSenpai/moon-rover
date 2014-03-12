@@ -170,24 +170,28 @@ public abstract class Robot implements Service {
 		return fresques_posees;
 	}
 	
-	public boolean isTient_feu_droite()
+	public void setTient_feu(Cote cote)
 	{
-		return tient_feu_droite;
-	}
-
-	public boolean isTient_feu_gauche()
-	{
-		return tient_feu_gauche;
+		if(cote == Cote.GAUCHE)
+			tient_feu_gauche = true;
+		else
+			tient_feu_droite = true;
 	}
 	
-	public boolean isFeu_tenu_gauche_rouge()
+	public boolean isTient_feu(Cote cote)
 	{
-		return feu_tenu_gauche_rouge;
+		if(cote == Cote.GAUCHE)
+			return tient_feu_gauche;
+		else
+			return tient_feu_droite;
 	}
-
-	public boolean isFeu_tenu_droite_rouge()
+	
+	public boolean isFeu_tenu_rouge(Cote cote)
 	{
-		return feu_tenu_droite_rouge;
+		if(cote == Cote.GAUCHE)
+			return feu_tenu_gauche_rouge;
+		else
+			return feu_tenu_droite_rouge;
 	}
 
 	// Les méthodes avec le paramètre nbTentatives sont en protected 

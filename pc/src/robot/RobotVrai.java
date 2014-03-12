@@ -23,7 +23,7 @@ import exception.SerialException;
 
 /**
  * Classe qui fournit des déplacements haut niveau
- * @author pf, krissprolls
+ * @author pf
  *
  */
 
@@ -451,10 +451,7 @@ public class RobotVrai extends Robot {
 		sleep(500);
 		lever_pince(cote);
 		sleep(500);
-		if(cote == Cote.GAUCHE)
-			tient_feu_gauche = true;
-		else
-			tient_feu_droite = true;
+		setTient_feu(cote);
 	}
 
 	@Override

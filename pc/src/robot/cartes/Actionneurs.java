@@ -175,7 +175,6 @@ public class Actionneurs implements Service {
 
 	public void tirerBalle() throws SerialException
 	{
-		// TODO (protocole)
 		log.debug("Balle tirée", this);
 		serie.communiquer("b", 0);
 	}
@@ -183,7 +182,6 @@ public class Actionneurs implements Service {
 	{
 		log.debug("Filet lancé", this);
 		serie.communiquer("lf", 0);
-		//lf -> lancer filet
 	}
 
 }
