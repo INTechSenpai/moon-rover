@@ -7,7 +7,7 @@ import utils.Sleep;
 
 /**
  * Thread qui analyse le comportement de l'ennemi à partir de sa position
- * @author pf
+ * @author pf, krissprolls
  *
  */
 public class ThreadAnalyseEnnemi extends AbstractThread  {

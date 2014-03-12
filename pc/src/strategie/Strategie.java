@@ -19,7 +19,7 @@ import smartMath.Vec2;
 
 /**
  * Classe qui prend les décisions et exécute les scripts
- * @author pf
+ * @author pf, krissprolls
  *
  */
 
@@ -38,7 +38,7 @@ public class Strategie implements Service {
 
 	private NoteScriptVersion scriptEnCours;
 	
-	public int TTL;
+	public int TTL; //time to live
 
 	// TODO initialisations des variables = première action
 	// Prochain script à exécuter si on est interrompu par l'ennemi
