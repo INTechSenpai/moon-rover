@@ -131,6 +131,9 @@ public class Strategie implements Service {
 		//int larg_max = 100; //10 cm est la largeur maximale de la fresque
 		//valeur amenée à être modifiée
 		//inutile en fait
+		int i_min_fire;
+		int i_min_tree ;
+		int i_min_fresco;
 		for(int i = 0; i <2; i++)
 		{
 			/*
@@ -140,9 +143,9 @@ public class Strategie implements Service {
 			 * on ne se prémunit pas, entre autre, contre les freezes
 			 * 			 * 
 			 */
-			int i_min_fire = table.nearestUntakenFire(positionsfreeze[i]);
-			int i_min_tree = table.nearestUntakenTree(positionsfreeze[i]);
-			int i_min_fresco = table.nearestFreeFresco(positionsfreeze[i]);
+			i_min_fire = table.nearestUntakenFire(positionsfreeze[i]);
+			i_min_tree = table.nearestUntakenTree(positionsfreeze[i]);
+			i_min_fresco = table.nearestFreeFresco(positionsfreeze[i]);
 			
 			if (duree_freeze[i] > duree_blocage)
 			{
@@ -161,12 +164,7 @@ public class Strategie implements Service {
 				table.appendFresco(i_min_fresco);
 			}
 			
-			
-		
-			//il faudrait ajouter la gestion des fresques
-			//Il faudrait l'ajouter dans Table.java
 			/*
-			 * 
 			 * 
 			 * else if(table.distanceFresque(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
 				{
@@ -179,26 +177,12 @@ public class Strategie implements Service {
 			 
 			
 		}
-		/*Si ça n'a pas été vraiment codé, c'est parce qu'il faut utiliser Container (ou pas) et on sait pas encore comment
-		 * Pour chaque feu 
-		 * si rayon_feu +rayon_robot_adverse > distance(feu, robot_adverse) et duree_freeze > duree_prise_feu_generique alors
-		 *	feu pris
-		 *Pour chaque arbre 
-		 *si rayon_arbre +rayon_robot_adverse > distance(arbre, robot_adverse) et duree_freeze > duree_prise_feu_generique alors
-		 *	fruits pris
-		 *Pour chaque bac
-		 *si dimensions_bac +rayon_robot_adverse > distance(bac, robot_adverse) et duree_freeze_depot > duree_prise_feu_generique alors
-		 *	fruits déposés
+		/*
 		 *On prend pas en compte le lancer de balles
-		 *
+		 *car on aura pas d'information sur le lancer potentiel qu'un adversaire a fait
+		 *Et pour la funny action, il n'y a pas de stratédie nécessaire
 		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
+		 *  
 		 */
 		
 		
