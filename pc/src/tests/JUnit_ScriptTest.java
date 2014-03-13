@@ -53,6 +53,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		robotvrai.set_vitesse_translation("entre_scripts");
 		container.getService("threadPosition");
 		container.demarreThreads();
+		robotvrai.set_vitesse_translation("30");
 		robotvrai.avancer(100);
 	}
 
@@ -154,7 +155,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	public void test_ScriptTree_agit() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptTree");
-		s.agit(3, robotvrai, table, true);
+		s.agit(2, robotvrai, table, true);
 	}
 
 	@Test(expected=ScriptException.class)
