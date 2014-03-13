@@ -144,10 +144,10 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 		container.demarreThreads();
 		Thread.sleep(100);
 		deplacements.avancer(400);
-		robotvrai.va_au_point(new Vec2(1100, 900));
+		robotvrai.va_au_point(new Vec2(1100, 1400));
 		robotvrai.update_x_y_orientation();
 		log.debug(robotvrai.getPosition(), this);
-		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(10,1400)) < 2);
+		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(1100,1400)) < 2);
 	}
 
 	@Test
