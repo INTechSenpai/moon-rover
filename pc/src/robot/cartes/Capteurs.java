@@ -7,6 +7,7 @@ import utils.Log;
 import utils.Read_Ini;
 import container.Service;
 import exception.ConfigException;
+import exception.SerialException;
 
 /**
  * Classe des capteurs, qui communique avec la carte capteur
@@ -90,22 +91,23 @@ public class Capteurs implements Service {
     // TODO protocoles
     public boolean isThereFireGauche()
     {
-/*		try {
-			return Integer.parseInt(serie.communiquer("itf", 1)[0]) == 1;
+		try {
+			return Integer.parseInt(serie.communiquer("cg", 1)[0]) != 0;
 		} catch (NumberFormatException | SerialException e) {
 			e.printStackTrace();
-		}*/
+		}
 		return false;
     }
 
     public boolean isThereFireDroit()
     {
-/*		try {
-			return Integer.parseInt(serie.communiquer("itf", 1)[0]) == 1;
-		} catch (NumberFormatException | SerialException e) {
-			e.printStackTrace();
-		}*/
-		return false;
+			try {
+				return Integer.parseInt(serie.communiquer("cd", 1)[0]) != 0;
+			} catch (NumberFormatException | SerialException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return false;
     }
 
     public boolean isFireRedGauche()
