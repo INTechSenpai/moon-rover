@@ -47,6 +47,8 @@ public class JUnit_Demo extends JUnit_Test {
 		container.getService("threadPosition");
 		container.demarreThreads();
 		robotvrai.set_vitesse_translation("30");
+		robotvrai.setPosition(new Vec2(1300, 1200));
+		robotvrai.setOrientation((float)Math.PI);
 	}
 
 	@Test
@@ -87,6 +89,7 @@ public class JUnit_Demo extends JUnit_Test {
 	@Test
 	public void tir_balles() throws Exception
 	{
+		robotvrai.avancer(1000);
 		s = (Script)scriptmanager.getScript("ScriptLances");
 		s.agit(0, robotvrai, table, true);
 	}
