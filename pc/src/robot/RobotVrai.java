@@ -480,29 +480,33 @@ public class RobotVrai extends Robot {
 
 	@Override
 	public void takefire(Cote cote) throws SerialException, MouvementImpossibleException {
-		int signe = 1;
-		if(cote == Cote.GAUCHE)
-			signe = -1;
-		String vitesse_rotation = get_vitesse_rotation();
-		
-		avancer(-130);
-		ouvrir_bas_pince(cote);
-		tourner_relatif(signe*0.2f);
-		sleep(500);
-		avancer(100);
-		presque_fermer_pince(cote);
-		set_vitesse_rotation("prise_feu");
-		tourner_relatif(signe*0.3f);
-		set_vitesse_rotation(vitesse_rotation);
-		avancer(30);
-		fermer_pince(cote);
-		sleep(500);
-		lever_pince(cote);
-		sleep(500);
-		setTient_feu(cote);
-		setFeu_tenu_rouge(cote, getColour(cote));
-		// On signale à la table qu'on a prit un feu. A priori, c'est le plus proche de cette position.
-		table.pickFire(table.nearestUntakenFire(position.clone()));
+
+		if(!isTient_feu(cote))
+		{
+			int signe = 1;
+			if(cote == Cote.GAUCHE)
+				signe = -1;
+			String vitesse_rotation = get_vitesse_rotation();
+			stopper();
+			avancer(-130);
+			ouvrir_bas_pince(cote);
+			tourner_relatif(signe*0.2f);
+			sleep(500);
+			avancer(100);
+			presque_fermer_pince(cote);
+			set_vitesse_rotation("prise_feu");
+			tourner_relatif(signe*0.3f);
+			set_vitesse_rotation(vitesse_rotation);
+			avancer(30);
+			fermer_pince(cote);
+			sleep(500);
+			lever_pince(cote);
+			sleep(500);
+			setTient_feu(cote);
+			setFeu_tenu_rouge(cote, getColour(cote));
+			// On signale à la table qu'on a prit un feu. A priori, c'est le plus proche de cette position.
+			table.pickFire(table.nearestUntakenFire(position.clone()));
+		}
 	}
 
 	@Override
@@ -800,6 +804,7 @@ public class RobotVrai extends Robot {
 			else
 				try {
 					update_x_y_orientation();
+					log.debug("Je suis en "+position, this);
 				} catch (SerialException e) {
 					e.printStackTrace();
 				}
@@ -814,7 +819,10 @@ public class RobotVrai extends Robot {
 		
 		// Si un hook a bougé le robot, le dernier ordre est relancé après son exécution
 		if(relancer)
+		{
+			log.debug("Un hook a bougé le robot, on le relance vers "+point, this);
 			va_au_pointBasNiveau(point, hooks, trajectoire_courbe, sans_lever_exception, enchainer);
+		}
 		
 	}
 	

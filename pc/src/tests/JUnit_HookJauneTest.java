@@ -126,13 +126,38 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 	public void test_hookAbscisse_takeFire() throws Exception
 	{
 		log.debug("JUnit_HookJauneTest.test_hookAbscisse_takeFire()", this);
+		robotvrai.set_vitesse_translation("vitesse_mammouth");
+		Assert.assertTrue(!robotvrai.isTient_feu(Cote.GAUCHE));
+		Assert.assertTrue(!robotvrai.isTient_feu(Cote.DROIT));
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
 		Executable takefire = new TakeFire(robotvrai, Cote.GAUCHE);
-		Hook hook = hookgenerator.hook_abscisse(20);
+		Hook hook = hookgenerator.hook_abscisse(100);
 		hook.ajouter_callback(new Callback(takefire, false));
 		hooks.add(hook);		
-		robotvrai.avancer(1000, hooks);
+		robotvrai.avancer(200, hooks);
+		Assert.assertTrue(robotvrai.isTient_feu(Cote.GAUCHE));
+	}
+
+	@Test
+	public void test_hookAbscisse_takeFire_suit_chemin() throws Exception
+	{
+		log.debug("JUnit_HookJauneTest.test_hookAbscisse_takeFire_suit_chemin()", this);
+		robotvrai.set_vitesse_translation("vitesse_mammouth");
+		Assert.assertTrue(!robotvrai.isTient_feu(Cote.GAUCHE));
+		Assert.assertTrue(!robotvrai.isTient_feu(Cote.DROIT));
+		hookgenerator = (HookGenerator)container.getService("HookGenerator");
+		ArrayList<Hook> hooks = new ArrayList<Hook>();
+		Executable takefire = new TakeFire(robotvrai, Cote.GAUCHE);
+		Hook hook = hookgenerator.hook_position(new Vec2(20, 1400));
+		hook.ajouter_callback(new Callback(takefire, true));
+		hooks.add(hook);
+		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
+		chemin.add(new Vec2(20, 1400));
+		chemin.add(new Vec2(1200, 1400));
+		robotvrai.suit_chemin(chemin, hooks);
+		Assert.assertTrue(robotvrai.isTient_feu(Cote.GAUCHE));
+		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(1200,1400)) < 5);
 	}
 
 	@Test
@@ -141,11 +166,11 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 		log.debug("JUnit_HookJauneTest.test_hookAbscisse_takeFire()", this);
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
-		Executable takefire = new TakeFire(robotvrai, Cote.GAUCHE);
+		Executable takefire = new TakeFire(robotvrai, Cote.DROIT);
 		Hook hook = hookgenerator.hook_feu(Cote.GAUCHE);
 		hook.ajouter_callback(new Callback(takefire, false));
-		hooks.add(hook);		
-		robotvrai.avancer(1000, hooks);
+		hooks.add(hook);
+		robotvrai.avancer(2000, hooks);
 	}
 
 	@Test

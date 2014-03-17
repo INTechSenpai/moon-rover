@@ -158,7 +158,7 @@ function reconstruct_path(came_from, current_node)
 	    			{
 	    				came_from.put(temp.makeCopy(), current.makeCopy());
 	    				g_score.put(temp, tentative_g_score);
-	    				f_score.put(temp, tentative_g_score + fastGridDistance(temp, arrivee));
+	    				f_score.put(temp, tentative_g_score + 5 * fastGridDistance(temp, arrivee));
 	    				if(openset.contains(temp) == false)
 	    					openset.add(new IntPair(temp.x, temp.y));
 	    				

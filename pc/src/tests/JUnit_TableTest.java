@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import robot.Cote;
 import smartMath.Vec2;
 import table.Table;
 
@@ -27,12 +28,12 @@ public class JUnit_TableTest extends JUnit_Test {
 	@Test
 	public void test_nbrTree() throws Exception {
 		log.debug("JUnit_TableTest.test_nbrTree()", this);
-		Assert.assertTrue(table.nbrLeftTree(1) == 3);
-		Assert.assertTrue(table.nbrRightTree(1) == 3);
+		Assert.assertTrue(table.nbrTree(1, Cote.DROIT) == 3);
+		Assert.assertTrue(table.nbrTree(1, Cote.GAUCHE) == 3);
 		Assert.assertTrue(table.nbrTotalTree(1) == 6);
 		table.pickTree(1);
-		Assert.assertTrue(table.nbrLeftTree(1) == 0);
-		Assert.assertTrue(table.nbrRightTree(1) == 0);
+		Assert.assertTrue(table.nbrTree(1, Cote.GAUCHE) == 0);
+		Assert.assertTrue(table.nbrTree(1, Cote.DROIT) == 0);
 		Assert.assertTrue(table.nbrTotalTree(1) == 0);
 	}
 
