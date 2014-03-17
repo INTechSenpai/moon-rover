@@ -40,7 +40,7 @@ public class JUnit_DeplacementsTest extends JUnit_Test {
 	public void test_avancer() throws Exception
 	{
 		log.debug("JUnit_DeplacementsTest.test_avancer()", this);
-		deplacements.avancer(10);
+		deplacements.avancer(100);
 		Thread.sleep(1000);
 		float[] infos_float = deplacements.get_infos_x_y_orientation();
 		Assert.assertEquals(10, infos_float[0], 5);
