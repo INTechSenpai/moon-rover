@@ -3,6 +3,7 @@ package table;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import robot.Cote;
 import smartMath.Vec2;
 import container.Service;
 import exception.ConfigException;
@@ -121,6 +122,24 @@ public class Table implements Service {
 	 * Gestions des obstacles
 	 */
 	
+	/**
+	 * Utilisé par le pathfinding
+	 * @return
+	 */
+	public ArrayList<Obstacle> getListObstacles()
+	{
+		return listObstacles;
+	}
+	
+	/**
+	 * Utilisé par le pathfinding
+	 * @return
+	 */
+	public ArrayList<Obstacle> getListObstaclesFixes()
+	{
+		return listObstaclesFixes;
+	}
+	
 	public void creer_obstacle(final Vec2 position)
 	{
 		Vec2 position_sauv = position.clone();
@@ -210,7 +229,7 @@ public class Table implements Service {
     {
     	robots_adverses[i].position = position.clone();
     }
-	
+    
     /**
      * Utilisé par le thread de stratégie
      * @return
@@ -283,14 +302,12 @@ public class Table implements Service {
 		hashTree = indice++;
 	}
 	
-	public int nbrLeftTree(int id)
+	public int nbrTree(int id, Cote cote)
 	{
-		return arrayTree[id].nbrLeft();
-	}
-	
-	public int nbrRightTree(int id)
-	{
-		return arrayTree[id].nbrRight();
+		if(cote == Cote.DROIT)
+			return arrayTree[id].nbrRight();
+		else
+			return arrayTree[id].nbrLeft();
 	}
 	
 	public int nbrTotalTree(int tree_id)
