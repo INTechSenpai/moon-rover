@@ -38,12 +38,23 @@ public class JUnit_Demo extends JUnit_Test {
 		container.getService("threadPosition");
 		container.demarreThreads();
 		robotvrai.set_vitesse_translation("30");
+		robotvrai.setPosition(new Vec2(1300, 1200));
 	}
 
 	@Test
-	public void test() throws Exception {
-		robotvrai.avancer(100);
-
+	public void defile() throws Exception {
+		robotvrai.avancer(1000);
+		robotvrai.tourner_relatif(-((float)Math.PI));
+		robotvrai.avancer(1000);
+	}
+	
+	@Test
+	public void arbre() throws Exception {
+		robotvrai.avancer(500);
+/*		robotvrai.tourner(-((float)(Math.PI /2)));
+		robotvrai.avancer(700);
+*/		s = (Script)scriptmanager.getScript("ScriptTree");
+		s.agit(1, robotvrai, table, true);
 	}
 
 }
