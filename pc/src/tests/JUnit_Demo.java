@@ -40,22 +40,21 @@ public class JUnit_Demo extends JUnit_Test {
 		robotchrono = new RobotChrono(config, log);
 		robotchrono.majRobotChrono(robotvrai);
 		table = (Table)container.getService("Table");
-		hookgenerator = (HookGenerator)container.getService("HookGenerator");
+ 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
+		robotvrai.setPosition(new Vec2(1300, 1200));
 		robotvrai.setOrientation((float)Math.PI);
 		robotvrai.set_vitesse_rotation("entre_scripts");
 		robotvrai.set_vitesse_translation("entre_scripts");
 		container.getService("threadPosition");
 		container.demarreThreads();
-		robotvrai.set_vitesse_translation("30");
-		robotvrai.setPosition(new Vec2(1300, 1200));
-		robotvrai.setOrientation((float)Math.PI);
+
 	}
 
 	@Test
 	public void defile() throws Exception {
 		robotvrai.avancer(1000);
 		robotvrai.tourner_relatif(-((float)Math.PI));
-		robotvrai.avancer(1000);
+		robotvrai.avancer(800);
 	}
 	
 	@Test

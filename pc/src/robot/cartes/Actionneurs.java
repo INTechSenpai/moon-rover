@@ -176,7 +176,7 @@ public class Actionneurs implements Service {
 	public void tirerBalle() throws SerialException
 	{
 		log.debug("Balle tirée", this);
-		serie.communiquer("b", 0);
+		serie.communiquer("tourne", 0);		
 	}
 	public void lancerFilet() throws SerialException
 	{

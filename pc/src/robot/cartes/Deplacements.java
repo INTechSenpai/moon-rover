@@ -148,6 +148,7 @@ public class Deplacements implements Service {
 	 */
 	public void set_x(int x) throws SerialException
 	{
+		log.debug("ABWABWA :"+x, this);
 		String chaines[] = {"cx", Integer.toString(x)};
 		serie.communiquer(chaines, 0);
 	}
