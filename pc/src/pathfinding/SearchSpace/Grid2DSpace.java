@@ -8,6 +8,11 @@ import java.util.Random;
 
 import smartMath.IntPair;
 import smartMath.Vec2;
+import table.ObstacleRectangulaire;
+import table.ObstacleCirculaire;
+import table.Table;
+import table.Obstacle;
+
 /**
  * @author Marsya
  *	La classe espace de recherche
@@ -20,7 +25,54 @@ public class Grid2DSpace
 	private float surface;
 	private int sizeX;
 	private int sizeY;
+	private Table table;
+	public Grid2DSpace(Vec2 size, int a)
+	{
+		
+		//Création du terrain avec obstacles fixes
+		surface = size.x * size.y;
+		sizeX = (int)Math.round(size.x);
+		sizeY = (int)Math.round(size.y);
+		System.out.println("Creating random Grid2DSpace, size :" + sizeX + "x" + sizeY);
+		
+		datas = new ArrayList<ArrayList<Boolean>>();
+		ArrayList<Obstacle> l_fixes = table.getListObstaclesFixes();
+		for(int i=0; i<sizeX; i++)
+		{
+			datas.add(new ArrayList<Boolean>(sizeY));
+			for(int j=0; j<sizeY;j++)
+			{
+				for(int k=0; k<l_fixes.size(); k++)
+				{
+					datas.get(i).add(dans_obstacle(new Vec2(i,j),l_fixes.get(k)));
+				}
+			}
+		}		
+	}
+	private boolean dans_obstacle(Vec2 pos, Obstacle obstacle) {
+		return dans_obstacle( pos,  obstacle);
+	}
+	public boolean dans_obstacle(Vec2 pos, ObstacleRectangulaire obs)
+	{
+		Vec2 position_obs = obs.getPosition();
+		return !(pos.x<obs.getLongueur()+position_obs.x && position_obs.x < pos.x && position_obs.y <pos.y && pos.y < position_obs.y+obs.getLargeur());
+	}
+	public boolean dans_obstacle(Vec2 pos, ObstacleCirculaire obs)
+	{
+		return   !(pos.distance(obs.getPosition()) < obs.getRadius());
+	}
+	public void peupler_obstacles_mobiles(Grid2DSpace terrain)
+	{
+		
+	}
+	public void append_obstacle_rectangle(Grid2DSpace terrain)
+	{
+		
+	}
 	
+	public void append_obstacle_circulaire()
+	{
+	}
 	public Grid2DSpace(Vec2 size)
 	{
 
@@ -133,7 +185,7 @@ public class Grid2DSpace
 		return datas.get(x).get(y);
 	}
 
-
+	
 	// renvois true si le tarrain est franchissable � en ligne droite entre les 2 positions donn�es, faux sinon
 	public boolean canCrossLine(int x0, int y0, int x1, int y1)
 	{
