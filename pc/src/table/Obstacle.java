@@ -6,7 +6,7 @@ import smartMath.Vec2;
  * @author pf
  *
  */
-abstract class Obstacle {
+public abstract class Obstacle {
 
 	protected Vec2 position;
 	
@@ -16,5 +16,9 @@ abstract class Obstacle {
 	}
 	
 	public abstract Obstacle clone();
+	public Vec2 getPosition()
+	{
+		return this.position;
+	}
 	
 }

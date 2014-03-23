@@ -2,7 +2,7 @@ package table;
 
 import smartMath.Vec2;
 
-class ObstacleCirculaire extends Obstacle
+public class ObstacleCirculaire extends Obstacle
 {
 
 	protected float radius;
@@ -17,5 +17,12 @@ class ObstacleCirculaire extends Obstacle
 	{
 		return new ObstacleCirculaire(position.clone(), radius);
 	}
-
+	public float getRadius()
+	{
+		return radius;
+	}
+	public String toString()
+	{
+		return "ObstacleCirculaire";
+	}
 }

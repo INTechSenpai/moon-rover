@@ -2,7 +2,7 @@ package table;
 
 import smartMath.Vec2;
 
-class ObstacleRectangulaire extends Obstacle {
+public class ObstacleRectangulaire extends Obstacle {
 
 	protected int longueur;
 	protected int largeur;
@@ -17,6 +17,18 @@ class ObstacleRectangulaire extends Obstacle {
 	public ObstacleRectangulaire clone()
 	{
 		return new ObstacleRectangulaire(position.clone(), largeur, longueur);
+	}
+	public String toString()
+	{
+		return "ObstacleRectangulaire";
+	}
+	public int getLongueur()
+	{
+		return this.longueur;
+	}
+	public int getLargeur()
+	{
+		return this.largeur;
 	}
 	
 }
