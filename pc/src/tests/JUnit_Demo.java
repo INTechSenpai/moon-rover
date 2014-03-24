@@ -61,7 +61,6 @@ public class JUnit_Demo extends JUnit_Test {
 	public void arbre() throws Exception {
 		s = (Script)scriptmanager.getScript("ScriptTree");
 		s.agit(1, robotvrai, table, true);
-		robotvrai.avancer(500);
 	}
 
 	@Test
