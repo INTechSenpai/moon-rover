@@ -14,7 +14,7 @@ import table.Table;
 import table.Obstacle;
 
 /**
- * @author Marsya
+ * @author Marsya, Krissprolls
  *	La classe espace de recherche
  *  Pour le robot, ce sera concr�tement la table
  */
@@ -26,7 +26,7 @@ public class Grid2DSpace
 	private int sizeX;
 	private int sizeY;
 	private Table table;
-	public Grid2DSpace(Vec2 size, int a)
+	public Grid2DSpace(Vec2 size, int precision)
 	{
 		
 		//Création du terrain avec obstacles fixes
@@ -61,8 +61,15 @@ public class Grid2DSpace
 	{
 		return   !(pos.distance(obs.getPosition()) < obs.getRadius());
 	}
-	public void peupler_obstacles_mobiles(Grid2DSpace terrain)
+	public void peupler_obstacles_mobiles(boolean[] pochoir,int precision)
 	{
+		//Méthode qui ajoute dansl le terrain les obstacles mobiles en fonction du pochoir
+		ArrayList<Obstacle> obs_mobiles = table.getListObstacles();
+		for(int i = 0; i < pochoir.length; i++)
+		{
+			datas;
+		}
+		
 		
 	}
 	public void append_obstacle_rectangle(Grid2DSpace terrain)
