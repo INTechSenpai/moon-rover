@@ -50,16 +50,13 @@ public class Grid2DSpace
 		}		
 	}
 	private boolean dans_obstacle(Vec2 pos, Obstacle obstacle) {
-		return dans_obstacle( pos,  obstacle);
-	}
-	public boolean dans_obstacle(Vec2 pos, ObstacleRectangulaire obs)
-	{
-		Vec2 position_obs = obs.getPosition();
-		return !(pos.x<obs.getLongueur()+position_obs.x && position_obs.x < pos.x && position_obs.y <pos.y && pos.y < position_obs.y+obs.getLargeur());
-	}
-	public boolean dans_obstacle(Vec2 pos, ObstacleCirculaire obs)
-	{
-		return   !(pos.distance(obs.getPosition()) < obs.getRadius());
+		if(obstacle instanceof ObstacleRectangulaire)
+		{
+			Vec2 position_obs = obstacle.getPosition();
+			return !(pos.x<((ObstacleRectangulaire)obstacle).getLongueur()+position_obs.x && position_obs.x < pos.x && position_obs.y <pos.y && pos.y < position_obs.y+((ObstacleRectangulaire)obstacle).getLargeur());
+		}			
+		// sinon, c'est qu'il est circulaire
+		return   !(pos.distance(obstacle.getPosition()) < ((ObstacleCirculaire)obstacle).getRadius());
 	}
 	public void peupler_obstacles_mobiles(boolean[] pochoir,int precision)
 	{
