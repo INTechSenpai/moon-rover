@@ -64,7 +64,7 @@ public class Grid2DSpace
 		ArrayList<Obstacle> obs_mobiles = table.getListObstacles();
 		for(int i = 0; i < pochoir.length; i++)
 		{
-			datas;
+			//datas;
 		}
 		
 		
