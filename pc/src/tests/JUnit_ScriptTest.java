@@ -39,7 +39,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		config.set("couleur", "rouge");
+		config.set("couleur", "jaune");
 		
 		scriptmanager = (ScriptManager)container.getService("ScriptManager");
 		robotvrai = (RobotVrai)container.getService("RobotVrai");
