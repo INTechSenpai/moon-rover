@@ -73,6 +73,12 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		Assert.assertTrue(s.score(0, robotvrai, table) == 8);
 
 	}
+	@Test
+	public void test_ScriptLances_agit() throws Exception
+	{
+		s = (Script)scriptmanager.getScript("ScriptLances");
+		s.agit(0, robotvrai, table, false);
+	}
 
 	/*
 	 * Tests des versions
