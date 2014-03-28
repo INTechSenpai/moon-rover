@@ -130,9 +130,9 @@ public abstract class Robot implements Service {
         else if(vitesse == "vitesse_mammouth")
         	return 50; // TODO
         else if(vitesse == "arbre_arriere")
-        	return 20; // TODO
+        	return 50; // TODO
         else if(vitesse == "arbre_avant")
-        	return 20; // TODO
+        	return 60; // TODO
         else
         {
         	log.warning("Erreur vitesse translation: "+vitesse, this);
