@@ -142,12 +142,12 @@ public class Grid2DSpace
 		
 		// recopie le pochoir
 		int i2 = 0, j2 = 0;
-		for(int i= obsPosX - diameter/2; i<obsPosX + diameter/2; i++)
+		for(int i = obsPosX - diameter/2; i<obsPosX + diameter/2; i++)
 		{
 			j2 = 0;
-			for(int j= obsPosY - diameter/2; j<obsPosY + diameter/2; j++);
+			for(int j = obsPosY - diameter/2; j<obsPosY + diameter/2; j++);
 			{	
-				datas.get(i).set(j), datas.get(i).get(j) && pochoir.get(i2).get(j2));
+				datas.get(i).set(j, datas.get(i).get(j) && pochoir.get(i2).get(j));
 				j2++;
 			}
 			i2++;
