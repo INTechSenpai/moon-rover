@@ -38,6 +38,58 @@ public class Capteurs implements Service {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Retourne la valeur la plus optimiste des capteurs de type capteur dans 
+	 * la direction voulue
+	 * Par rapport à la fonction suivante, c'est mieux de renvoyer séparément 
+	 * les données des capteurs qund c'est pas du même type.
+	 * @param capteur
+	 * @return la valeur la plus optimiste des capteurs
+	 */
+	public int mesurer(String capteur)
+	{
+		if(!capteurs_on)
+    		return 3000;
+		String[] ultrasons;
+		String[] infrarouges;
+		int[] distances;
+		
+		try{
+			if(capteur == "us")
+			{
+				distances = new int[nb_capteurs_ultrason_avant];
+				ultrasons = serie.communiquer("us_av", nb_capteurs_ultrason_avant);
+    		for(int i = 0; i < nb_capteurs_ultrason_avant; i++)
+    			distances[i] = Integer.parseInt(ultrasons[i]);
+			}
+			if(capteur == "ir")
+			{
+				distances = new int[nb_capteurs_infrarouge_avant];
+	    		infrarouges  = serie.communiquer("ir_av", nb_capteurs_infrarouge_avant);
+	    		for(int i = 0; i < nb_capteurs_infrarouge_avant; i++)
+	    			distances[i] = Integer.parseInt(infrarouges[i]);				
+			}
+			else
+			{
+				//C'est si on a donné une valeur inutile à capteur
+				return 0;
+			}
+    		
+	    	Arrays.sort(distances); // le dernier élément d'un tableau trié par ordre croissant est le plus grand
+	    	int distance = distances[distances.length-1];
+	    	
+	    	if(distance < 0)
+	    		return 3000;
+	    	return distance;
+		}
+		catch(Exception e)
+		{
+			log.critical(e.toString(), this);
+			return 3000; // valeur considérée comme infinie
+		}
+	}
+    
     
 	/**
 	 * Retourne la valeur la plus optimiste des capteurs dans la direction voulue
@@ -46,6 +98,7 @@ public class Capteurs implements Service {
 	 */
     public int mesurer(boolean marche_arriere)
     {
+    	//marche_arriere ne sert à rien là
     	if(!capteurs_on)
     		return 3000;
 		String[] ultrasons;
