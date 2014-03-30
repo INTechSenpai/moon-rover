@@ -83,7 +83,36 @@ class ThreadCapteurs extends AbstractThread {
 			
 //			marche_arriere = !marche_arriere;
 
-			int distance = capteur.mesurer(false);
+			//int distance = capteur.mesurer(false);
+			int distance_infrarouge = capteur.mesurer("ir");
+			int distance_ultrason = capteur.mesurer("us");
+			
+			//Ici on interprètera distance_infrarouge
+			int obs_infr =0; //Ca vaudra 0 ou 1
+			if(obs_infr == 0 && distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
+			{
+				
+			}
+			
+			else if(obs_infr ==1 &&distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
+			{
+				int distance_inter_robots = distance_ultrason + rayon_robot_adverse + largeur_robot/2;
+				double theta = robotvrai.getOrientation();
+				Vec2 position = robotvrai.getPosition().PlusNewVector(new Vec2((float)distance_inter_robots * (float)Math.cos(theta), (float)distance_inter_robots * (float)Math.sin(theta)));
+
+				if(System.currentTimeMillis() - date_dernier_ajout > tempo)
+					// si la position est bien sur la table (histoire de pas détecter un arbitre)
+					if(position.x > -table_x/2 && position.y > 0 && position.x < table_x/2 && position.y < table_y)
+					{
+						table.creer_obstacle(position);
+						date_dernier_ajout = (int)System.currentTimeMillis();
+						log.debug("Nouvel obstacle en "+position, this);
+					}
+				
+				pathfinding.update();
+			}
+			else if(obs_infr == 1)
+			/*
 			if(distance >= 0 && distance < horizon_capteurs)
 			{
 				int distance_inter_robots = distance + rayon_robot_adverse + largeur_robot/2;
@@ -103,7 +132,7 @@ class ThreadCapteurs extends AbstractThread {
 					}
 				
 				pathfinding.update();
-			}
+			}*/
 			Sleep.sleep((long)1/capteurs_frequence);
 			
 		}
