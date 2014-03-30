@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.IntPair;
 import smartMath.Vec2;
+import table.ObstacleCirculaire;
+import table.ObstacleRectangulaire;
 import table.Table;
 import utils.Log;
 import utils.Read_Ini;
@@ -33,11 +35,11 @@ public class Pathfinding implements Service
 	ArrayList<IntPair> result;
 	ArrayList<Vec2> output;
 	
-	public Pathfinding(Table table, Read_Ini config, Log log, int centimetresParCases)
+	public Pathfinding(Table requestedtable, Read_Ini requestedConfig, Log requestedLog, int centimetresParCases)
 	{
-		table = table;
-		config = config;
-		log = log;
+		table = requestedtable;
+		config = requestedConfig;
+		log = requestedLog;
 		map = new Grid2DSpace(new IntPair(300/centimetresParCases, 200/centimetresParCases), table);
 		solver = new AStar(map, new IntPair(0,0), new IntPair(0,0));
 	}
@@ -45,9 +47,18 @@ public class Pathfinding implements Service
 	/**
 	 * Méthode appelée par le thread de capteur. Met à jour les obstacles de la recherche de chemin en les demandant à table
 	 */
-	public void update()
+	public void update(Table newtable)
 	{
+		// TODO : clear map to initial state
+		// also figure out if a check can be founded to skip the whole process if newtable = map
 		
+		for (int i = 0; i < newtable.getListObstacles().size(); ++i)
+		{
+			if (newtable.getListObstacles().get(i) instanceof ObstacleRectangulaire)
+				map.appendObstacle((ObstacleRectangulaire)newtable.getListObstacles().get(i));
+			else
+				map.appendObstacle((ObstacleCirculaire)newtable.getListObstacles().get(i));
+		}
 	}
 
 	/**
@@ -79,12 +90,37 @@ public class Pathfinding implements Service
 	 * Renvoie la distance entre départ et arrivée, en utilisant le cache ou non.
 	 * @param depart
 	 * @param arrivee
-	 * @param use_cache
+	 * @param use_cache :  si le chemin doit être précisément calculé, ou si on peut utiliser un calcul préfait.
 	 * @return
 	 */
 	public int distance(Vec2 depart, Vec2 arrivee, boolean use_cache)
 	{
-		return 0;
+		if(!use_cache)
+		{
+			// calcule le chemin
+			solver.setDepart(new IntPair((int)Math.round(depart.x),(int)Math.round(depart.y)));
+			solver.setArrivee(new IntPair((int)Math.round(arrivee.x),(int)Math.round(arrivee.y)));
+			solver.process();
+			result = lissage(solver.getChemin(), map);
+			
+			// convertit la sortie de l'AStar en suite de Vec2
+			int out = 0;
+			out +=  Math.sqrt(	(result.get(0).x - solver.getDepart().x) * (result.get(0).x - solver.getDepart().x) +
+								(result.get(0).y - solver.getDepart().y) * (result.get(0).y - solver.getDepart().y));
+			for (int i = 1; i < result.size(); ++i)
+				out +=  Math.sqrt(	(result.get(i).x - result.get(i-1).x) * (result.get(i).x - result.get(i-1).x) +
+									(result.get(i).y - result.get(i-1).y) * (result.get(i).y - result.get(i-1).y));
+
+			out +=  Math.sqrt(	(solver.getArrivee().x - result.get(result.size()).x) * (solver.getArrivee().x - result.get(result.size()).x) + 
+								(solver.getArrivee().y - result.get(result.size()).y) * (solver.getArrivee().y - result.get(result.size()).y));
+			
+			return out;
+		}
+		else
+		{
+			// système de cache inside
+			return 0;
+		}
 	}
 	
 	
