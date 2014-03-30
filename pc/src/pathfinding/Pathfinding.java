@@ -12,7 +12,12 @@ import container.Service;
 
 /**
  * Service de recherche de chemin
- * @author Abwabwa
+ * @author Marsu
+ * 
+ * 
+ * Permet de traiter les problèmes de chemins : longueur d'un parcourt d'un point à un autre de la map,
+ * 												 trajet d'un point a un autre de la map
+ * 	Le tout indépendamment de l'algorithme (pour l'intantant que weithed A*
  *
  */
 
@@ -22,12 +27,19 @@ public class Pathfinding implements Service
 	private Table table;
 	private Read_Ini config;
 	private Log log;
+	public Grid2DSpace map;
+	private int centimetresParCases;
+	AStar solver;
+	ArrayList<IntPair> result;
+	ArrayList<Vec2> output;
 	
-	public Pathfinding(Table table, Read_Ini config, Log log)
+	public Pathfinding(Table table, Read_Ini config, Log log, int centimetresParCases)
 	{
-		this.table = table;
-		this.config = config;
-		this.log = log;
+		table = table;
+		config = config;
+		log = log;
+		map = new Grid2DSpace(new IntPair(300/centimetresParCases, 200/centimetresParCases), table);
+		solver = new AStar(map, new IntPair(0,0), new IntPair(0,0));
 	}
 	
 	/**
@@ -42,13 +54,25 @@ public class Pathfinding implements Service
 	 * Retourne l'itinéraire pour aller d'un point de départ à un point d'arrivée
 	 * @param depart
 	 * @param arrivee
-	 * @return l'itinéraire
+	 * @return l'ittinéraire, exprimé comme des vecteurs de déplacement, et non des positions absolues
 	 */
 	public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee)
 	{
-		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
-		chemin.add(arrivee);
-		return chemin;
+		// calcule le chemin
+		solver.setDepart(new IntPair((int)Math.round(depart.x),(int)Math.round(depart.y)));
+		solver.setArrivee(new IntPair((int)Math.round(arrivee.x),(int)Math.round(arrivee.y)));
+		solver.process();
+		result = lissage(solver.getChemin(), map);
+		
+		// convertit la sortie de l'AStar en suite de Vec2
+		output.clear();
+		output.add(new Vec2((float)(result.get(0).x - solver.getDepart().x), (float)(result.get(0).y - solver.getDepart().y)));
+		for (int i = 1; i < result.size(); ++i)
+			output.add(new Vec2((float)(result.get(i).x - result.get(i-1).x), (float)(result.get(i).y - result.get(i-1).y)));
+		output.add(new Vec2((float)(solver.getArrivee().x - result.get(result.size()).x), (float)(solver.getArrivee().y - result.get(result.size()).y)));
+		
+		return output;
+		
 	}
 
 	/**
