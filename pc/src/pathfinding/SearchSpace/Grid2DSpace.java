@@ -18,6 +18,7 @@ import table.Obstacle;
  *	La classe espace de recherche
  *  Pour le robot, ce sera concr�tement la table
  */
+
 public class Grid2DSpace 
 {
 
@@ -26,38 +27,80 @@ public class Grid2DSpace
 	private int sizeX;
 	private int sizeY;
 	private Table table;
-	public Grid2DSpace(Vec2 size, int precision)
+	
+	
+	public Grid2DSpace(Vec2 size, int precision)	// Skoi précision ?
 	{
 		
 		//Création du terrain avec obstacles fixes
 		surface = size.x * size.y;
 		sizeX = (int)Math.round(size.x);
 		sizeY = (int)Math.round(size.y);
-		System.out.println("Creating random Grid2DSpace, size :" + sizeX + "x" + sizeY);
+		System.out.println("Creating Grid2DSpace from table with a size of : " + sizeX + "x" + sizeY);
 		
 		datas = new ArrayList<ArrayList<Boolean>>();
 		ArrayList<Obstacle> l_fixes = table.getListObstaclesFixes();
+		
+		
+		// construit une map de sizeX * sizeY vide
+		for(int i=0; i<sizeX; i++)
+		{
+			datas.add(new ArrayList<Boolean>(sizeY));
+			for(int j=0; j<sizeY;j++)
+				datas.get(i).add(true);
+		}	
+		
+		// peuple les obstacles fixes
+		for(int k=0; k<l_fixes.size(); k++)
+		{
+			if(l_fixes.get(k) instanceof ObstacleRectangulaire)
+				appendObstacle((ObstacleRectangulaire)l_fixes.get(k));
+			else
+				appendObstacle((ObstacleCirculaire)l_fixes.get(k));
+
+		}
+		
+		
+		//@ Clément : Bravo, tu as un constructeur avec une compexité en sizeX * sizeY * l_fixes. Heureusement que j'avais dit d'optimiser !!
+			
+		/*
+		// construit une map de sizeX * sizeY
 		for(int i=0; i<sizeX; i++)
 		{
 			datas.add(new ArrayList<Boolean>(sizeY));
 			for(int j=0; j<sizeY;j++)
 			{
+				datas.get(i).add(true);
+				// vérifie si la case est dans un obstacle
 				for(int k=0; k<l_fixes.size(); k++)
 				{
-					datas.get(i).add(dans_obstacle(new Vec2(i,j),l_fixes.get(k)));
+					if(dans_obstacle(new Vec2(i,j),l_fixes.get(k)))
+					{
+						datas.get(i).set(j, false));
+						break
+					}
 				}
 			}
-		}		
+		}	*/	
 	}
-	private boolean dans_obstacle(Vec2 pos, Obstacle obstacle) {
+	
+	
+	private boolean dans_obstacle(Vec2 pos, Obstacle obstacle)
+	{
 		if(obstacle instanceof ObstacleRectangulaire)
 		{
 			Vec2 position_obs = obstacle.getPosition();
-			return !(pos.x<((ObstacleRectangulaire)obstacle).getLongueur()+position_obs.x && position_obs.x < pos.x && position_obs.y <pos.y && pos.y < position_obs.y+((ObstacleRectangulaire)obstacle).getLargeur());
+			return !(	pos.x < ((ObstacleRectangulaire)obstacle).getLongueur()+position_obs.x &&
+						position_obs.x < pos.x &&
+						position_obs.y < pos.y &&
+						pos.y < position_obs.y+((ObstacleRectangulaire)obstacle).getLargeur()
+					);
 		}			
 		// sinon, c'est qu'il est circulaire
-		return   !(pos.distance(obstacle.getPosition()) < ((ObstacleCirculaire)obstacle).getRadius());
+		return   !( pos.distance(obstacle.getPosition()) < ((ObstacleCirculaire)obstacle).getRadius() );
 	}
+	
+	
 	public void peupler_obstacles_mobiles(boolean[] pochoir,int precision)
 	{
 		//Méthode qui ajoute dansl le terrain les obstacles mobiles en fonction du pochoir
@@ -69,14 +112,49 @@ public class Grid2DSpace
 		
 		
 	}
-	public void append_obstacle_rectangle(Grid2DSpace terrain)
+	
+	
+	public void appendObstacle(ObstacleRectangulaire obs)
 	{
+		// Asumptions :  	obs.getPosition() returns the center of the rectangle
+		//					also, rectangle is Axis Aligned...
 		
+		int obsPosX = (int)Math.round(obs.getPosition().x);
+		int obsPosY = (int)Math.round(obs.getPosition().y);
+		int obsSizeX = (int)Math.round(obs.getLongueur());
+		int obsSizeY = (int)Math.round(obs.getLargeur());
+		
+		
+		for(int i= obsPosX - obsSizeX/2; i<obsPosX + obsSizeX/2; i++)
+			for(int j= obsPosY - obsSizeY/2; j<obsPosY + obsSizeY/2; j++)
+				datas.get(i).set(j, false);
 	}
 	
-	public void append_obstacle_circulaire()
+	
+	public void appendObstacle(ObstacleCirculaire obs)
 	{
+		// Asumptions :  	obs.getPosition() returns the center of the circle (pretty obvious, but still...)
+		
+		int obsPosX = (int)Math.round(obs.getPosition().x);
+		int obsPosY = (int)Math.round(obs.getPosition().y);
+		int diameter = (int)Math.round(obs.getRadius())*2;
+		ArrayList<ArrayList<Boolean>> pochoir = Grid2DPochoirManager.datas.get(diameter);
+		
+		// recopie le pochoir
+		int i2 = 0, j2 = 0;
+		for(int i= obsPosX - diameter/2; i<obsPosX + diameter/2; i++)
+		{
+			j2 = 0;
+			for(int j= obsPosY - diameter/2; j<obsPosY + diameter/2; j++);
+			{	
+				datas.get(i).set(j), datas.get(i).get(j) && pochoir.get(i2).get(j2));
+				j2++;
+			}
+			i2++;
+		}
 	}
+	
+	// Random map generation, debugging purpose.
 	public Grid2DSpace(Vec2 size)
 	{
 
@@ -205,9 +283,8 @@ public class Grid2DSpace
 			    if (!canCross(x0,y0))
 			    	return false;
 
-
-
 				if (x0==x1 && y0==y1) break;
+				
 				e2 = err;
 				if (e2 >-dx) { err -= dy; x0 += sx; }
 				if (e2 < dy) { err += dx; y0 += sy; }
