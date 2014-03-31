@@ -51,6 +51,7 @@ public class Capteurs implements Service {
 			if(!capteurs_on)
 	    		return 3000;
 			String[] ultrasons;
+			String[] infrarouges; //Pourquoi Martial veux-tu supprimer ça ??? Mais c'est utilisé !!!
 			int[] distances;
 			
 			try{
