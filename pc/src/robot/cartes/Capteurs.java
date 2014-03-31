@@ -51,7 +51,6 @@ public class Capteurs implements Service {
 			if(!capteurs_on)
 	    		return 3000;
 			String[] ultrasons;
-			String[] infrarouges;
 			int[] distances;
 			
 			try{
