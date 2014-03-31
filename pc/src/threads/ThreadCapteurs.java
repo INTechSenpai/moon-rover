@@ -83,6 +83,9 @@ class ThreadCapteurs extends AbstractThread {
 			
 //			marche_arriere = !marche_arriere;
 
+<<<<<<< HEAD
+			int distance = capteur.mesurer(false);
+=======
 			//int distance = capteur.mesurer(false);
 			int distance_infrarouge = capteur.mesurer("ir");
 			int distance_ultrason = capteur.mesurer("us");
@@ -120,6 +123,7 @@ class ThreadCapteurs extends AbstractThread {
 				//actualisant sa position. (En considérant que les torches ne quittent pas leur demie table par exemple)
 			}
 			/*
+>>>>>>> ff83f990dd028e0d40baad48845f22bb21949a3e
 			if(distance >= 0 && distance < horizon_capteurs)
 			{
 				int distance_inter_robots = distance + rayon_robot_adverse + largeur_robot/2;
@@ -139,7 +143,7 @@ class ThreadCapteurs extends AbstractThread {
 					}
 				
 				pathfinding.update();
-			}*/
+			}
 			Sleep.sleep((long)1/capteurs_frequence);
 			
 		}
