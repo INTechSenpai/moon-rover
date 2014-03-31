@@ -88,13 +88,13 @@ class ThreadCapteurs extends AbstractThread {
 			int distance_ultrason = capteur.mesurer("us");
 			
 			//Ici on interprètera distance_infrarouge
-			int obs_infr =0; //Ca vaudra 0 ou 1
-			if(obs_infr == 0 && distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
+			boolean obs_infr = (distance_infrarouge < 1100); //Ca vaudra 0 ou 1
+			if(obs_infr == false && distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
 			{
 				
 			}
 			
-			else if(obs_infr ==1 &&distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
+			else if(obs_infr == true &&distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
 			{
 				int distance_inter_robots = distance_ultrason + rayon_robot_adverse + largeur_robot/2;
 				double theta = robotvrai.getOrientation();
@@ -111,7 +111,8 @@ class ThreadCapteurs extends AbstractThread {
 				
 				pathfinding.update();
 			}
-			else if(obs_infr == 1)
+			else if(obs_infr == true)
+			{}
 			/*
 			if(distance >= 0 && distance < horizon_capteurs)
 			{
