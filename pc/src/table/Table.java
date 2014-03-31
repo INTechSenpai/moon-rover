@@ -320,6 +320,10 @@ public class Table implements Service {
 	{
 		return arrayTree[tree_id].isTaken();
 	}
+	public Tree[] getListTree()
+	{
+		return arrayTree;
+	}
 	
 	//Torches
 	
@@ -335,7 +339,11 @@ public class Table implements Service {
 	{
 		return position.distance(arrayTorch[i].position);
 	}
-
+	public Torch[] getListTorch()
+	{
+		return arrayTorch;
+	}
+	//La table
 	/**
 	 * La table en argument deviendra la copie de this (this reste inchangé)
 	 * @param ct
@@ -415,6 +423,7 @@ public class Table implements Service {
 				min = i;
 		return min;
 	}
+	//Fresco
 	public void appendFresco(int i)
 	//ça ajoute une fresque par rapport à la position
 	//on utilisera nearestFrescoFree pour trouver i
