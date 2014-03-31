@@ -88,10 +88,11 @@ class ThreadCapteurs extends AbstractThread {
 			int distance_ultrason = capteur.mesurer("us");
 			
 			//Ici on interprètera distance_infrarouge
-			boolean obs_infr = (distance_infrarouge < 1100); //Ca vaudra 0 ou 1
+			boolean obs_infr = (distance_infrarouge < 500); //Ca vaudra 0 ou 1
 			if(obs_infr == false && distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
 			{
-				
+				//on ne détecte qu'en haut. Il faut vérifier si ce qu'on détecte est un arbre (en regardant la position et l'orientation du robot). Si
+				//oui, on n'en tient pas compte, si non, c'est un obstacle.
 			}
 			
 			else if(obs_infr == true &&distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
@@ -112,7 +113,12 @@ class ThreadCapteurs extends AbstractThread {
 				pathfinding.update();
 			}
 			else if(obs_infr == true)
-			{}
+			{
+				//on ne détecte qu'en bas, normalement ca veux dire qu'il y a un feu debout ou une torche, un foyer ou un mur.
+				//On vérifie en fonction de la position si c'est un mur ou un foyer. Puis si non, on regarde si regartde vers la position initiale
+				//d'un feu debout. Si oui, on considère que c'est un feu et on peux taper dedans. Si non, c'est une torche mobile, et on l'évite, en 
+				//actualisant sa position. (En considérant que les torches ne quittent pas leur demie table par exemple)
+			}
 			/*
 			if(distance >= 0 && distance < horizon_capteurs)
 			{
