@@ -1,14 +1,4 @@
-/**
- * 
- */
 package pathfinding.cache;
-
-
-
-import pathfinding.Pathfinding;
-import smartMath.Vec2;
-import table.Table;
-import java.util.ArrayList;
 
 import java.io.*;
 
