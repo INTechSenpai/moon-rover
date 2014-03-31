@@ -26,35 +26,12 @@ public class CacheFileGenerator
 	private int sizeX;
 	private int sizeY;
 	
-	/*
-	=================  Serialisation demo :
-	
-	  Employee e = new Employee();
-      e.name = "Reyan Ali";
-      e.address = "Phokka Kuan, Ambehta Peer";
-      e.SSN = 11122333;
-      e.number = 101;
-      try
-      {
-         FileOutputStream fileOut =
-         new FileOutputStream("/tmp/employee.ser");
-         ObjectOutputStream out = new ObjectOutputStream(fileOut);
-         out.writeObject(e);
-         out.close();
-         fileOut.close();
-         System.out.printf("Serialized data is saved in /tmp/employee.ser");
-      }catch(IOException i)
-      {
-          i.printStackTrace();
-      }
-	
-	*/
-	
-	public CacheFileGenerator(int centimetresParCase, Table table)
+	public CacheFileGenerator(int requestedcentimetresParCase, Table table)
 	{
 		System.out.println("CacheFileGenerator initialisation");
 		
 		// Taille de la map
+		centimetresParCase = requestedcentimetresParCase;
 		sizeX = 300 / centimetresParCase;
 		sizeY = 200 / centimetresParCase;
 		
