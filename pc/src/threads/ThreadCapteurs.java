@@ -9,7 +9,7 @@ import utils.Sleep;
 
 /**
  * Thread qui ajoute en continu les obstacles détectés par les capteurs
- * @author pf
+ * @author pf, Krissprolls
  *
  */
 
@@ -83,19 +83,22 @@ class ThreadCapteurs extends AbstractThread {
 			
 //			marche_arriere = !marche_arriere;
 
-<<<<<<< HEAD
-			int distance = capteur.mesurer(false);
-=======
+
+
 			//int distance = capteur.mesurer(false);
 			int distance_infrarouge = capteur.mesurer("ir");
 			int distance_ultrason = capteur.mesurer("us");
 			
 			//Ici on interprètera distance_infrarouge
-			boolean obs_infr = (distance_infrarouge < 500); //Ca vaudra 0 ou 1
+			boolean obs_infr = (distance_infrarouge < 500); //Booléen car le capteur infrarouge n'est pas assez fiable pour qu'on puisse se servir des distances
 			if(obs_infr == false && distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
 			{
+				double obsX,obsY;//position de l'obstacle détecté
 				//on ne détecte qu'en haut. Il faut vérifier si ce qu'on détecte est un arbre (en regardant la position et l'orientation du robot). Si
 				//oui, on n'en tient pas compte, si non, c'est un obstacle.
+				obsX = robotvrai.getPosition().x + Math.cos(robotvrai.getOrientation());
+				obsY = robotvrai.getPosition().y + Math.sin(robotvrai.getOrientation());
+				//Il faudrait modifier table pour qu'on ait accès aux positions des arbres.
 			}
 			
 			else if(obs_infr == true &&distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
@@ -103,6 +106,7 @@ class ThreadCapteurs extends AbstractThread {
 				int distance_inter_robots = distance_ultrason + rayon_robot_adverse + largeur_robot/2;
 				double theta = robotvrai.getOrientation();
 				Vec2 position = robotvrai.getPosition().PlusNewVector(new Vec2((float)distance_inter_robots * (float)Math.cos(theta), (float)distance_inter_robots * (float)Math.sin(theta)));
+				//position du robot adverse détecté
 
 				if(System.currentTimeMillis() - date_dernier_ajout > tempo)
 					// si la position est bien sur la table (histoire de pas détecter un arbitre)
@@ -121,9 +125,11 @@ class ThreadCapteurs extends AbstractThread {
 				//On vérifie en fonction de la position si c'est un mur ou un foyer. Puis si non, on regarde si regartde vers la position initiale
 				//d'un feu debout. Si oui, on considère que c'est un feu et on peux taper dedans. Si non, c'est une torche mobile, et on l'évite, en 
 				//actualisant sa position. (En considérant que les torches ne quittent pas leur demie table par exemple)
+				//Il faudra voir accès aux positions obstacles sur la table, il faudra éviter les doublons de méthodes;
+				//Vec2 pos = table. robotvrai.getPosition()robotvrai.getOrientation();
 			}
+			
 			/*
->>>>>>> ff83f990dd028e0d40baad48845f22bb21949a3e
 			if(distance >= 0 && distance < horizon_capteurs)
 			{
 				int distance_inter_robots = distance + rayon_robot_adverse + largeur_robot/2;
@@ -143,7 +149,7 @@ class ThreadCapteurs extends AbstractThread {
 					}
 				
 				pathfinding.update();
-			}
+			}*/
 			Sleep.sleep((long)1/capteurs_frequence);
 			
 		}
