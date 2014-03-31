@@ -19,7 +19,7 @@ import container.Service;
  * 
  * Permet de traiter les problèmes de chemins : longueur d'un parcourt d'un point à un autre de la map,
  * 												 trajet d'un point a un autre de la map
- * 	Le tout indépendamment de l'algorithme (pour l'intantant que weithed A*
+ * 	Le tout indépendamment de l'algorithme (pour l'insantant que weithed A*
  *
  */
 
@@ -35,17 +35,19 @@ public class Pathfinding implements Service
 	ArrayList<IntPair> result;
 	ArrayList<Vec2> output;
 	
-	public Pathfinding(Table requestedtable, Read_Ini requestedConfig, Log requestedLog, int centimetresParCases)
+	public Pathfinding(Table requestedtable, Read_Ini requestedConfig, Log requestedLog, int requestedCentimetresParCases)
 	{
 		table = requestedtable;
 		config = requestedConfig;
 		log = requestedLog;
+		centimetresParCases = requestedCentimetresParCases;
 		map = new Grid2DSpace(new IntPair(300/centimetresParCases, 200/centimetresParCases), table);
 		solver = new AStar(map, new IntPair(0,0), new IntPair(0,0));
 	}
 	
 	/**
 	 * Méthode appelée par le thread de capteur. Met à jour les obstacles de la recherche de chemin en les demandant à table
+	 * @param newtable : le nouvel état du jeu a prendre en compte
 	 */
 	public void update(Table newtable)
 	{
