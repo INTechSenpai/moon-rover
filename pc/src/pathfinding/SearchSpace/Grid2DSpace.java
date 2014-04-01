@@ -45,11 +45,11 @@ public class Grid2DSpace
 			System.out.println("Grid2DSpace construction warning : given size of " + sizeX + "x" + sizeY + " is not of ratio 3/2");
 			sizeY = sizeX / ratio;
 		}
-		//System.out.println("Creating Grid2DSpace from table with a size of : " + sizeX + "x" + sizeY);
+		System.out.println("Creating Grid2DSpace from table with a size of : " + sizeX + "x" + sizeY);
 		
 		reductionFactor = (float)(sizeX)/300.0f;
 		
-		//System.out.println("reductionFactor : " + reductionFactor);
+		System.out.println("reductionFactor : " + reductionFactor);
 		
 
 		// TODO : proprer management of robot radius
