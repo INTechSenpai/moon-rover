@@ -33,6 +33,7 @@ class ThreadPosition extends AbstractThread {
 				break;
 			try {
 				robotvrai.update_x_y_orientation();
+				System.out.println("après update");
 			} catch (SerialException e) {
 				e.printStackTrace();
 			}

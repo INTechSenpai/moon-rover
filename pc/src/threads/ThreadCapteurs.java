@@ -104,7 +104,7 @@ class ThreadCapteurs extends AbstractThread {
 				Vec2 pos  = new Vec2(obsX,obsY);
 				//Il faudrait modifier table pour qu'on ait accès aux positions des arbres.
 				//150 est le rayon des arbres
-				Tree[] lArbres = table.getListTree();
+			/*TODO Tree[] lArbres = table.getListTree();
 				int j = 0 ;
 				//On regarde si là où le robot a détecté un obstacle, il y a un arbre.
 				for(int i = 0; i<lArbres.length; i++)
@@ -125,7 +125,7 @@ class ThreadCapteurs extends AbstractThread {
 					date_dernier_ajout = (int)System.currentTimeMillis();
 					log.debug("Nouvel obstacle en "+pos, this);
 				}
-				
+				*/
 			}
 			
 			else if(obs_infr == true && distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
