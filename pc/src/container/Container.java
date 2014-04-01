@@ -5,6 +5,7 @@ import java.util.Map;
 
 import hook.HookGenerator;
 import pathfinding.Pathfinding;
+import pathfinding.SearchSpace.Grid2DPochoirManager;
 import exception.ConfigException;
 import exception.ContainerException;
 import exception.SerialManagerException;
@@ -90,6 +91,7 @@ public class Container {
 
 	public Service getService(String nom) throws ContainerException, ThreadException, ConfigException, SerialManagerException
 	{
+		new Grid2DPochoirManager();
 		if(services.containsKey(nom));
 		else if(nom == "Table")
 		{

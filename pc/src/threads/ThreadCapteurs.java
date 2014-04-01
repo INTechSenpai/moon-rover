@@ -142,7 +142,7 @@ class ThreadCapteurs extends AbstractThread {
 						log.debug("Nouvel obstacle en "+position, this);
 					}
 				
-				pathfinding.update();
+				pathfinding.update(table);
 			}
 			else if(obs_infr == true)
 			{

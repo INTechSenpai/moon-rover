@@ -4,6 +4,7 @@ import java.io.*;
 
 /**
  * Classe utilisée à l'initialisation du robot pour charger en RAM le fichier de cache.
+ *TODO : merge this with holder
  * @author karton
  *
  */

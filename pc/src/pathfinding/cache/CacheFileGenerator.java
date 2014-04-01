@@ -32,40 +32,50 @@ public class CacheFileGenerator
 		
 		// Taille de la map
 		centimetresParCase = requestedcentimetresParCase;
-		sizeX = 300 / centimetresParCase;
-		sizeY = 200 / centimetresParCase;
+		sizeX = 1500;
+		sizeY = 2000;
 		
 		pathfinder = new Pathfinding(table, null, null, centimetresParCase);
 		Vec2 	depart 	= new Vec2(0,0),
 				arrivee = new Vec2(0,0);
 		
+		output = new CacheHolder();
+		output.data = new ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>>(); 
 		
 		System.out.println("CacheFileGenerator starting calculations");
 		// grosse boucle de remplissage du cache
-		for (int i = 0; i < sizeX; ++i)											// depart.x		== i
+		for (int i = -sizeX; i < sizeX; ++i)											// depart.x		== i
 		{
+			System.out.println(" i = " + i);
 			output.data.add(new ArrayList<ArrayList<ArrayList<Integer>>>());
-			for (int j = 0; j < sizeY; ++j)										// depart.y		== j
+			for (int j = 0; j < sizeY; ++j)											// depart.y		== j
 			{
-				output.data.get(i).add(new ArrayList<ArrayList<Integer>>());
-				for (int k = 0; k < sizeX; ++k)									// arrivee.x	== k
+				//System.out.println(" j = " + j);
+				output.data.get(i+1500).add(new ArrayList<ArrayList<Integer>>());
+				for (int k = -sizeX; k < sizeX; ++k)									// arrivee.x	== k
 				{
-					output.data.get(i).get(j).add(new ArrayList<Integer>());
+					//System.out.println(" k = " + k);
+					output.data.get(i+1500).get(j).add(new ArrayList<Integer>());
 					for (int l = 0; l < sizeY; ++l)								// arrivee.y	== l
 					{
+
+						//System.out.println(" l = " + l);
 						depart.x = i;
 						depart.y = j;
 						arrivee.x = k;
 						arrivee.y = l;
 						
 						// calcul de la distance, et stockage dans output
-						output.data.get(i).get(j).get(k).add(pathfinder.distance(depart, arrivee, false));
+						output.data.get(i+1500).get(j).get(k+1500).add(pathfinder.distance(depart, arrivee, false));
 					}
 				}
 			}
 		}
+
+		System.out.println("CacheFileGenerator calculations done !");
 		
-		
+
+		System.out.println("CacheFileGenerator serializing");
 		// Sauvegarde du fichier de cache à partir de l'instance output de CacheHolder
 		  try
 		  {

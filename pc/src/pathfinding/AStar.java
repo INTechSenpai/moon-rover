@@ -130,13 +130,52 @@ function reconstruct_path(came_from, current_node)
 	    		
 	    		chemin.clear();
     			chemin.add( new IntPair(arrivee.x,arrivee.y));
-	    		temp = came_from.get(current);	    		
-	    		while ( temp.x != depart.x || temp.y != depart.y )
-	    		{
-	    			chemin.add(0, new IntPair(temp.x,temp.y)); // insert le point d'avant au debut du parcours
-	    			current  = temp;
-	    			temp = came_from.get(temp);	    				
-	    		}
+    			if (arrivee.x != depart.x && arrivee.y != depart.y && came_from.get(current) != null)
+    			{
+		    		temp = came_from.get(current);	    		
+		    		while ( temp.x != depart.x || temp.y != depart.y )
+		    		{
+		    			chemin.add(0, new IntPair(temp.x,temp.y)); // insert le point d'avant au debut du parcours
+		    			current  = temp;
+		    			temp = came_from.get(temp);
+		    			
+		    			if(temp == null)	// null pointer exeption
+		    			{
+		    				System.out.println("Depart : " + depart.x + " - " + depart.y);
+		    				System.out.println("arrivee : " + arrivee.x + " - " + arrivee.y);
+		    				System.out.println("current : " + current.x + " - " + current.y);
+		    				
+		    				//System.out.println(espace.stringForm());
+
+		    				String out = "";
+		    				Integer i = 1;
+		    				for (int  j = 0; j < espace.getSizeX(); ++j)
+		    				{
+		    					for (int  k = espace.getSizeY() - 1; k >= 0; --k)
+		    					{
+		    						IntPair pos = new IntPair(j,k);
+		    						if (depart.x ==j && depart.y ==k)
+		    							out += 'D';
+		    						else if (arrivee.x ==j && arrivee.y ==k)
+		    							out += 'A';
+		    						else if (chemin.contains(pos))
+		    						{
+		    							out += i.toString();
+		    							i++;
+		    						}
+		    						else if(espace.canCross(j, k))
+		    							out += '.';
+		    						else
+		    							out += 'X';	
+		    					}
+		    					
+		    					out +='\n';
+		    				}
+		    				System.out.println(out);
+		    				
+		    			}
+		    		}
+    			}
     			chemin.add( new IntPair(depart.x,depart.y));
 	    		
 	    		processFinalisationWithSucess();

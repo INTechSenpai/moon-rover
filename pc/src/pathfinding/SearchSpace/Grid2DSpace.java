@@ -87,7 +87,7 @@ public class Grid2DSpace
 		for(int i= obsPosX - obsSizeX/2; i<obsPosX + obsSizeX/2; i++)
 			for(int j= obsPosY - obsSizeY/2; j<obsPosY + obsSizeY/2; j++)
 				if( i >= 0 && i < datas.size() && j >=0 && j < datas.get(0).size())
-				datas.get(i).set(j, false);
+					datas.get(i).set(j, false);
 	}
 	
 	public void appendObstacle(ObstacleCirculaire obs)
@@ -108,7 +108,7 @@ public class Grid2DSpace
 			for(int j = obsPosY - diameter/2; j<obsPosY + diameter/2; j++)
 			{	
 				if( i >= 0 && i < datas.size() && j >=0 && j < datas.get(0).size())
-				datas.get(i).set(j, datas.get(i).get(j) && pochoir.get(i2).get(j2));
+					datas.get(i).set(j, datas.get(i).get(j) && pochoir.get(i2).get(j2));
 				j2++;
 			}
 			i2++;

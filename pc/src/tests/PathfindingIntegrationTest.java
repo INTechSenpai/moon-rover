@@ -47,8 +47,10 @@ public class PathfindingIntegrationTest extends JUnit_Test
 		for(int i = 1; i < 11; ++i)
 		{
 			Pathfinding finder = new Pathfinding(table, config, log, i);
+			System.out.println(finder.distance(new Vec2(1100,300), new Vec2(1100,300), false));
+			
+			
 			//	System.out.println(finder.map.stringForm());
-			System.out.println(finder.chemin(new Vec2(-1020,100), new Vec2(1100,300)));
 		}
 		
 		

@@ -2,6 +2,7 @@
  * 
  */
 package pathfinding.cache;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -15,7 +16,7 @@ import java.util.ArrayList;
  * @author Marsu
  *
  */
-public class CacheHolder 
+public class CacheHolder implements Serializable
 {
 	public 	ArrayList						// Depart.x
 			<
