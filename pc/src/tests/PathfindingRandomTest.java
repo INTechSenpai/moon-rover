@@ -69,7 +69,7 @@ public class PathfindingRandomTest extends JUnit_Test
 		*/
 
 		Pathfinding finder = new Pathfinding(table, config, log, 1);
-		ArrayList<Vec2> chemin = finder.chemin(robotvrai.getPosition(), new Vec2(-1100,300));
+		ArrayList<Vec2> chemin = finder.chemin(robotvrai.getPosition(), new Vec2(-1100,350));
 		
 		for(int i = 0; i < chemin.size(); i++)
 		{
