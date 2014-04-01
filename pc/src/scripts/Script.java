@@ -72,7 +72,10 @@ public abstract class Script implements Service {
 		robotvrai.set_vitesse_rotation("entre_scripts");
 
 		ArrayList<Vec2> chemin = pathfinding.chemin(robotvrai.getPosition(), point_entree);
-
+		if(chemin == null)
+		{
+			System.out.println("coucou j'ai une ");
+		}
 		try
 		{
 			robotvrai.suit_chemin(chemin, hooksfeu, retenter_si_blocage, true);
@@ -80,6 +83,7 @@ public abstract class Script implements Service {
 		}
 		catch (Exception e)
 		{
+			System.out.println(e);
 			// Si on rencontre un obstacle en allant exécuter un script et qu'il reste d'autres scripts, alors on change de script
 			throw new ScriptException();
 		}

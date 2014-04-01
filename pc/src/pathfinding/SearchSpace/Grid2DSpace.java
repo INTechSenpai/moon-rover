@@ -76,11 +76,16 @@ public class Grid2DSpace
 
 		}
 		
+		// Ne rentre pas dans les bacs
+		//appendObstacle(new ObstacleRectangulaire(new Vec2(1100,1500), 1100, 100));
+		//appendObstacle(new ObstacleRectangulaire(new Vec2(-1100,1500), 1100, 100));
+		
+		
 		// les bords de la map sont non acessibles
-		appendObstacle( new ObstacleRectangulaire(new Vec2(0,0), robotRadius/2, 3000));
-		appendObstacle( new ObstacleRectangulaire(new Vec2(0,2000), robotRadius/2, 3000));
-		appendObstacle( new ObstacleRectangulaire(new Vec2(1500,1000), 2000, robotRadius/2));
-		appendObstacle( new ObstacleRectangulaire(new Vec2(-1500,1000), 2000, robotRadius/2));
+		appendObstacle( new ObstacleRectangulaire(new Vec2(0,0), (int)(robotRadius/2.0f), 3000));
+		appendObstacle( new ObstacleRectangulaire(new Vec2(0,2000), (int)(robotRadius/2.0f), 3000));
+		appendObstacle( new ObstacleRectangulaire(new Vec2(1500,1000), 2000, (int)(robotRadius/2.0f)));
+		appendObstacle( new ObstacleRectangulaire(new Vec2(-1500,1000), 2000, (int)(robotRadius/2.0f)));
 		
 		
 	}
@@ -92,8 +97,8 @@ public class Grid2DSpace
 		
 		int obsPosX = (int)Math.round((obs.getPosition().x + 1500) * reductionFactor /10 );
 		int obsPosY = (int)Math.round(obs.getPosition().y * reductionFactor /10 );
-		int obsSizeX = (int)Math.round((obs.getLongueur() +robotRadius)* reductionFactor /10 );
-		int obsSizeY = (int)Math.round((obs.getLargeur() +robotRadius*2)* reductionFactor /10 );
+		int obsSizeX = (int)Math.round((obs.getLongueur() +robotRadius) * reductionFactor /10 );
+		int obsSizeY = (int)Math.round((obs.getLargeur() +robotRadius) * reductionFactor /10 );
 		
 		
 		for(int i= obsPosX - obsSizeX/2; i<obsPosX + obsSizeX/2; i++)
