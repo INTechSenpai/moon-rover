@@ -43,6 +43,8 @@ public class Pathfinding implements Service
 		centimetresParCases = requestedCentimetresParCases;
 		map = new Grid2DSpace(new IntPair(300/centimetresParCases, 200/centimetresParCases), table);
 		solver = new AStar(map, new IntPair(0,0), new IntPair(0,0));
+		output = new ArrayList<Vec2>();
+		result = new ArrayList<IntPair>();
 	}
 	
 	/**
@@ -65,24 +67,29 @@ public class Pathfinding implements Service
 
 	/**
 	 * Retourne l'itinéraire pour aller d'un point de départ à un point d'arrivée
-	 * @param depart
-	 * @param arrivee
-	 * @return l'ittinéraire, exprimé comme des vecteurs de déplacement, et non des positions absolues
+	 * @param depart, exprimé en milimètres, avec comme origine le point en face du centre des mamouths
+	 * @param arrivee système de coords IDEM
+	 * @return l'itinéraire, exprimé comme des vecteurs de déplacement, et non des positions absolues, et en millimètres
+	 * 			Si l'itinéraire est non trouvable, null est retourné.
 	 */
+	
+	// TODO : deal with precision issue (divide by centimetresParCases)
 	public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee)
 	{
+		// Change de système de coordonnées
+		solver.setDepart(new IntPair((int)Math.round(depart.x/10 + 150)/centimetresParCases, (int)Math.round(depart.y/10)/centimetresParCases));
+		solver.setArrivee(new IntPair((int)Math.round(arrivee.x/10 + 150)/centimetresParCases, (int)Math.round(arrivee.y/10)/centimetresParCases));
+		
 		// calcule le chemin
-		solver.setDepart(new IntPair((int)Math.round(depart.x),(int)Math.round(depart.y)));
-		solver.setArrivee(new IntPair((int)Math.round(arrivee.x),(int)Math.round(arrivee.y)));
 		solver.process();
+		if (!solver.isValid())	// null si A* dit que pas possib'
+			return null;
 		result = lissage(solver.getChemin(), map);
 		
-		// convertit la sortie de l'AStar en suite de Vec2
+		// convertit la sortie de l'AStar en suite de Vec2 dasn la système de coords d'ntrée.
 		output.clear();
-		output.add(new Vec2((float)(result.get(0).x - solver.getDepart().x), (float)(result.get(0).y - solver.getDepart().y)));
 		for (int i = 1; i < result.size(); ++i)
-			output.add(new Vec2((float)(result.get(i).x - result.get(i-1).x), (float)(result.get(i).y - result.get(i-1).y)));
-		output.add(new Vec2((float)(solver.getArrivee().x - result.get(result.size()).x), (float)(solver.getArrivee().y - result.get(result.size()).y)));
+			output.add(new Vec2((float)(result.get(i).x - result.get(i-1).x)* 10*centimetresParCases, (float)(result.get(i).y - result.get(i-1).y)* 10*centimetresParCases));
 		
 		return output;
 		
@@ -93,30 +100,29 @@ public class Pathfinding implements Service
 	 * @param depart
 	 * @param arrivee
 	 * @param use_cache :  si le chemin doit être précisément calculé, ou si on peut utiliser un calcul préfait.
-	 * @return
+	 * @return la longeur du parsours, exprimée en milimèrtes. Le parsours calculé est diponible via getResult. -1 est retourné quand le chemin est pas trouvable
 	 */
 	public int distance(Vec2 depart, Vec2 arrivee, boolean use_cache)
 	{
 		if(!use_cache)
 		{
+			// Change de système de coordonnées
+			solver.setDepart(new IntPair((int)Math.round(depart.x/10 + 150)/centimetresParCases, (int)Math.round(depart.y/10)/centimetresParCases));
+			solver.setArrivee(new IntPair((int)Math.round(arrivee.x/10 + 150)/centimetresParCases, (int)Math.round(arrivee.y/10)/centimetresParCases));
+			
 			// calcule le chemin
-			solver.setDepart(new IntPair((int)Math.round(depart.x),(int)Math.round(depart.y)));
-			solver.setArrivee(new IntPair((int)Math.round(arrivee.x),(int)Math.round(arrivee.y)));
 			solver.process();
+			if (!solver.isValid())	// null si A* dit que pas possib'
+				return -1;
 			result = lissage(solver.getChemin(), map);
 			
 			// convertit la sortie de l'AStar en suite de Vec2
 			int out = 0;
-			out +=  Math.sqrt(	(result.get(0).x - solver.getDepart().x) * (result.get(0).x - solver.getDepart().x) +
-								(result.get(0).y - solver.getDepart().y) * (result.get(0).y - solver.getDepart().y));
 			for (int i = 1; i < result.size(); ++i)
 				out +=  Math.sqrt(	(result.get(i).x - result.get(i-1).x) * (result.get(i).x - result.get(i-1).x) +
 									(result.get(i).y - result.get(i-1).y) * (result.get(i).y - result.get(i-1).y));
-
-			out +=  Math.sqrt(	(solver.getArrivee().x - result.get(result.size()).x) * (solver.getArrivee().x - result.get(result.size()).x) + 
-								(solver.getArrivee().y - result.get(result.size()).y) * (solver.getArrivee().y - result.get(result.size()).y));
 			
-			return out;
+			return out*10*centimetresParCases;	// x 10 pour la distance en mm
 		}
 		else
 		{
@@ -130,7 +136,12 @@ public class Pathfinding implements Service
 
 	/**
 	 * Transforme un chemin ou chaque pas est spécifié en un chemin lissé ou il ne reste que très peu de sommets
-	 * chacun de ses sommets est séparé par une ligne droite sans obstacle
+	 * ch
+			// calcule le chemin
+			solver.setDepart(new IntPair((int)Math.round(depart.x),(int)Math.round(depart.y)));
+			solver.setArrivee(new IntPair((int)Math.round(arrivee.x),(int)Math.round(arrivee.y)));
+			solver.process();
+			result = lissage(solver.getChemin(), map);acun de ses sommets est séparé par une ligne droite sans obstacle
 	 * @param le chemin non lissé (avec tout les pas)
 	 * @return le chemin liss (avec typiquement une disaine de sommets grand maximum)
 	 */
@@ -167,8 +178,6 @@ public class Pathfinding implements Service
 		
 		// supprimes les points non nécéssaire.
 		ArrayList<IntPair> out = new ArrayList<IntPair>();
-		// 	on ajoute le point de départ au chemin final
-		out.add(chemin.get(chemin.size()-1));
 		
 		// saute les 2 derniers points, comme on ne pourra rien simplifier entre.
 		for (int i = 0; i < chemin.size(); ++i)	
@@ -186,8 +195,16 @@ public class Pathfinding implements Service
 				}
 			}
 		}
+		// 	on ajoute le point d'arrivée au chemin final
+		out.add(chemin.get(chemin.size()-1));
 		
 		return out;
+	}
+	
+
+	public ArrayList<IntPair> getResult() 
+	{
+		return result;
 	}
 		
 }

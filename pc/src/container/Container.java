@@ -172,7 +172,7 @@ public class Container {
 		else if(nom == "Pathfinding")
 			services.put(nom, (Service)new Pathfinding(	(Table)getService("Table"),
 														(Read_Ini)getService("Read_Ini"),
-														(Log)getService("Log")));
+														(Log)getService("Log"), 1));
 		else if(nom == "MemoryManager")
 			services.put(nom, (Service)new MemoryManager(	(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log"),

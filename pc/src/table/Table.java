@@ -85,7 +85,7 @@ public class Table implements Service {
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-1500,0), 250));
 
 		// Ajout bacs
-		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(400,1700), 700, 300));
+		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(1100,1700), 700, 300));
 		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-1100,1700), 700, 300));
 
 		// Ajout des arbres
@@ -320,10 +320,6 @@ public class Table implements Service {
 	{
 		return arrayTree[tree_id].isTaken();
 	}
-	public Tree[] getListTree()
-	{
-		return arrayTree;
-	}
 	
 	//Torches
 	
@@ -339,11 +335,7 @@ public class Table implements Service {
 	{
 		return position.distance(arrayTorch[i].position);
 	}
-	public Torch[] getListTorch()
-	{
-		return arrayTorch;
-	}
-	//La table
+
 	/**
 	 * La table en argument deviendra la copie de this (this reste inchangé)
 	 * @param ct
@@ -423,7 +415,6 @@ public class Table implements Service {
 				min = i;
 		return min;
 	}
-	//Fresco
 	public void appendFresco(int i)
 	//ça ajoute une fresque par rapport à la position
 	//on utilisera nearestFrescoFree pour trouver i

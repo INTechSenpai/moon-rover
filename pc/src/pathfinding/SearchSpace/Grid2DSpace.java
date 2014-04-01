@@ -44,10 +44,11 @@ public class Grid2DSpace
 			System.out.println("Grid2DSpace construction warning : given size of " + sizeX + "x" + sizeY + " is not of ratio 3/2");
 			sizeY = sizeX / ratio;
 		}
-		System.out.println("Creating Grid2DSpace from table with a size of : " + sizeX + "x" + sizeY);
+		//System.out.println("Creating Grid2DSpace from table with a size of : " + sizeX + "x" + sizeY);
 		
-		reductionFactor = sizeX/300;
+		reductionFactor = (float)(sizeX)/300.0f;
 		
+		//System.out.println("reductionFactor : " + reductionFactor);
 		
 		datas = new ArrayList<ArrayList<Boolean>>();
 		ArrayList<Obstacle> l_fixes = table.getListObstaclesFixes();
@@ -77,14 +78,15 @@ public class Grid2DSpace
 		// Asumptions :  	obs.getPosition() returns the center of the rectangle
 		//					also, rectangle is Axis Aligned...
 		
-		int obsPosX = (int)Math.round(obs.getPosition().x * reductionFactor);
-		int obsPosY = (int)Math.round(obs.getPosition().y * reductionFactor);
-		int obsSizeX = (int)Math.round(obs.getLongueur() * reductionFactor);
-		int obsSizeY = (int)Math.round(obs.getLargeur() * reductionFactor);
+		int obsPosX = (int)Math.round((obs.getPosition().x + 1500) * reductionFactor /10 );
+		int obsPosY = (int)Math.round(obs.getPosition().y * reductionFactor /10 );
+		int obsSizeX = (int)Math.round(obs.getLongueur() * reductionFactor /10 );
+		int obsSizeY = (int)Math.round(obs.getLargeur() * reductionFactor /10 );
 		
 		
 		for(int i= obsPosX - obsSizeX/2; i<obsPosX + obsSizeX/2; i++)
 			for(int j= obsPosY - obsSizeY/2; j<obsPosY + obsSizeY/2; j++)
+				if( i >= 0 && i < datas.size() && j >=0 && j < datas.get(0).size())
 				datas.get(i).set(j, false);
 	}
 	
@@ -92,9 +94,10 @@ public class Grid2DSpace
 	{
 		// Asumptions :  	obs.getPosition() returns the center of the circle (pretty obvious, but still...)
 		
-		int obsPosX = (int)Math.round(obs.getPosition().x * reductionFactor);
-		int obsPosY = (int)Math.round(obs.getPosition().y * reductionFactor);
-		int diameter = (int)Math.round(obs.getRadius() * reductionFactor)*2;
+		int obsPosX = (int)Math.round((obs.getPosition().x + 1500) * reductionFactor /10 );
+		int obsPosY = (int)Math.round(obs.getPosition().y * reductionFactor /10 );
+		int diameter = (int)Math.round(obs.getRadius() * reductionFactor /10 )*2;
+		
 		ArrayList<ArrayList<Boolean>> pochoir = Grid2DPochoirManager.datas.get(diameter);
 		
 		// recopie le pochoir
@@ -104,6 +107,7 @@ public class Grid2DSpace
 			j2 = 0;
 			for(int j = obsPosY - diameter/2; j<obsPosY + diameter/2; j++)
 			{	
+				if( i >= 0 && i < datas.size() && j >=0 && j < datas.get(0).size())
 				datas.get(i).set(j, datas.get(i).get(j) && pochoir.get(i2).get(j2));
 				j2++;
 			}
