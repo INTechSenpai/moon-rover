@@ -79,8 +79,6 @@ public class PathfindingRandomTest extends JUnit_Test
 			
 			robotvrai.va_au_point(newpos);
 		}
-		Assert.assertTrue(true);
-
 	}
 
 }
