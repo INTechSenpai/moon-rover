@@ -166,7 +166,7 @@ class ThreadCapteurs extends AbstractThread {
 				obsX = (float)(robotvrai.getPosition().x + Math.cos(robotvrai.getOrientation()));
 				obsY = (float)(robotvrai.getPosition().y + Math.sin(robotvrai.getOrientation()));
 				Vec2 pos  = new Vec2(obsX,obsY);
-				int j = 0,k = 0 ;
+				int j = 0,k = 0, l = 0 ;
 				Torch[] lTorch = table.getListTorch();
 				Fire[] lFire = table.getListFire();
 				//On regarde si là où le robot a détecté un obstacle, il y a un arbre.
@@ -174,23 +174,31 @@ class ThreadCapteurs extends AbstractThread {
 				{
 					if (lTorch[i].getPosition().SquaredDistance(pos) > 100*100)
 					{
-						j = j+1;
+						j = j+1;//C'est qu'on n'a pas détecté de torche
 					}
-					else if()
+					else
 					{
 						log.debug("On a detecte une torche en "+pos, this);
 						break;
 					}
 					if(lFire[i+lTorch.length].getPosition().SquaredDistance(pos) > 100*100)
 					{
-						k = k+1;
+						k = k+1;//C'est qu'on n'a pas détecté de feu
 					}
-					else if()
+					else
 					{
-						log.debug("On a detecte un arbre en "+pos, this);
+						log.debug("On a detecte une torche en "+pos, this);
 						break;
 					}
+			
 				}
+				if(j+k == lFire.length+lTorch.length) //C'est alors que le robot n'a détecté aucun arbre
+				{
+					table.creer_obstacle(pos);
+					date_dernier_ajout = (int)System.currentTimeMillis();
+					log.debug("Nouvel obstacle en "+pos, this);
+				}
+				
 			}
 			
 			/*

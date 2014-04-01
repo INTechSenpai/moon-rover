@@ -85,7 +85,7 @@ public class JUnit_SimpleAStarTest extends JUnit_Test
 			}
 			
 			solver = new AStar(map, depart, arrivee);
-			Pathfinding pathfinder = new Pathfinding(table, config, log);
+			Pathfinding pathfinder = new Pathfinding(table, config, log, 2);
 
 			long startTime = System.nanoTime();
 			solver.process();

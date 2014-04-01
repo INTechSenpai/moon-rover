@@ -71,8 +71,13 @@ public class PathfindingRandomTest extends JUnit_Test
 		*/
 		int cmParCase =2;
 		Pathfinding finder = new Pathfinding(table, config, log, cmParCase);
-		ArrayList<Vec2> chemin = finder.chemin(robotvrai.getPosition(), new Vec2(-1100,300));
-
+			System.out.println("robotvrai.getPosition() : " + robotvrai.getPosition().x + " -- " + robotvrai.getPosition().y);
+			ArrayList<Vec2> chemin = finder.chemin(robotvrai.getPosition(), new Vec2(-1100,300));
+		if(chemin == null)
+		{
+			System.out.println("Martial sait pas coder!!!");
+			throw new Exception();
+		}
 		
 		for(int j = 0; j < chemin.size(); j++)
 		{
