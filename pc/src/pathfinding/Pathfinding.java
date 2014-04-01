@@ -41,7 +41,7 @@ public class Pathfinding implements Service
 		config = requestedConfig;
 		log = requestedLog;
 		centimetresParCases = requestedCentimetresParCases;
-		map = new Grid2DSpace(new IntPair((int)((float)300.0f/centimetresParCases), (int)((float)200.0f/centimetresParCases)), table);
+		map = new Grid2DSpace(new IntPair((int)((float)300.0f/centimetresParCases), (int)((float)200.0f/centimetresParCases)), table, 200);
 		solver = new AStar(map, new IntPair(0,0), new IntPair(0,0));
 		output = new ArrayList<Vec2>();
 		result = new ArrayList<IntPair>();

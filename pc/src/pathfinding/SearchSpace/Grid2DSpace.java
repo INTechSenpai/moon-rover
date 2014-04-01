@@ -31,9 +31,12 @@ public class Grid2DSpace
 	int robotRadius;
 	
 	
-	public Grid2DSpace(IntPair size, Table requestedTable)
+	public Grid2DSpace(IntPair size, Table requestedTable, int requestedrobotRadius)
 	{
-		
+
+
+		// TODO : proprer management of robot radius
+		robotRadius = requestedrobotRadius; 
 		//Création du terrain avec obstacles fixes
 		table = requestedTable;
 		surface = size.x * size.y;
@@ -51,9 +54,6 @@ public class Grid2DSpace
 		
 		System.out.println("reductionFactor : " + reductionFactor);
 		
-
-		// TODO : proprer management of robot radius
-		robotRadius = 200; 
 		
 		datas = new ArrayList<ArrayList<Boolean>>();
 		ArrayList<Obstacle> l_fixes = table.getListObstaclesFixes();
@@ -75,6 +75,13 @@ public class Grid2DSpace
 				appendObstacle((ObstacleCirculaire)l_fixes.get(k));
 
 		}
+		
+		// les bords de la map sont non acessibles
+		appendObstacle( new ObstacleRectangulaire(new Vec2(0,0), robotRadius/2, 3000));
+		appendObstacle( new ObstacleRectangulaire(new Vec2(0,2000), robotRadius/2, 3000));
+		appendObstacle( new ObstacleRectangulaire(new Vec2(1500,1000), 2000, robotRadius/2));
+		appendObstacle( new ObstacleRectangulaire(new Vec2(-1500,1000), 2000, robotRadius/2));
+		
 		
 	}
 	
@@ -104,6 +111,8 @@ public class Grid2DSpace
 		int diameter = (int)Math.round((obs.getRadius() + robotRadius)* reductionFactor /10 )*2;
 		
 		ArrayList<ArrayList<Boolean>> pochoir = Grid2DPochoirManager.datas.get(diameter);
+		
+		System.out.println("diameter = " + diameter);
 		
 		// recopie le pochoir
 		int i2 = 0, j2 = 0;
