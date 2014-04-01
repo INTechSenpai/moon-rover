@@ -43,8 +43,8 @@ public class PathfindingIntegrationTest extends JUnit_Test
 	{
 		System.out.println("\n\n ====== Test d'intégration pathfinding =====");
 		System.out.println("Calcul d'un même parcours avec des cases de 1cm à 10cm de coté");
-		Vec2 depart = new Vec2(-1100,300);
-		Vec2 arrivee =  new Vec2(1300,1200);
+		Vec2 depart = new Vec2(1205,1203);
+		Vec2 arrivee =  new Vec2(-1100,300);
 		new Grid2DPochoirManager();
 		Pathfinding finder = new Pathfinding(table, config, log, 2);
 		System.out.println(finder.chemin(depart, arrivee));

@@ -38,7 +38,7 @@ public class PathfindingRandomTest extends JUnit_Test
 		super.setUp();
 		config.set("couleur", "jaune");
 		
-		scriptmanager = (ScriptManager)container.getService("ScriptManager");
+		//scriptmanager = (ScriptManager)container.getService("ScriptManager");
 		robotvrai = (RobotVrai)container.getService("RobotVrai");
 		robotchrono = new RobotChrono(config, log);
 		robotchrono.majRobotChrono(robotvrai);
@@ -71,6 +71,7 @@ public class PathfindingRandomTest extends JUnit_Test
 		*/
 		int cmParCase =2;
 		Pathfinding finder = new Pathfinding(table, config, log, cmParCase);
+		System.out.println("robotvrai.getPosition() : " + robotvrai.getPosition().x + " -- " + robotvrai.getPosition().y);
 		ArrayList<Vec2> chemin = finder.chemin(robotvrai.getPosition(), new Vec2(-1100,300));
 
 		
