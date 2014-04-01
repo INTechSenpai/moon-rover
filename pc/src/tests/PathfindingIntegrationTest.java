@@ -43,29 +43,31 @@ public class PathfindingIntegrationTest extends JUnit_Test
 	{
 		System.out.println("\n\n ====== Test d'intégration pathfinding =====");
 		System.out.println("Calcul d'un même parcours avec des cases de 1cm à 10cm de coté");
+		Vec2 depart = new Vec2(-1100,300);
+		Vec2 arrivee =  new Vec2(1300,1200);
 		new Grid2DPochoirManager();
+		Pathfinding finder = new Pathfinding(table, config, log, 2);
+		System.out.println(finder.chemin(depart, arrivee));
 		for(int i = 1; i < 11; ++i)
 		{
-			Pathfinding finder = new Pathfinding(table, config, log, i);
-			System.out.println(finder.distance(new Vec2(1100,300), new Vec2(1100,300), false));
 			
 			
 			//	System.out.println(finder.map.stringForm());
 		}
 		
 		
-		/*
+		
 		ArrayList<IntPair> chemin = finder.getResult();
 		String out = "";
 		Integer i = 1;
-		for (int  j = 0; j < 300; ++j)
+		for (int  j = 0; j < finder.map.getSizeX(); ++j)
 		{
-			for (int  k = 200 - 1; k >= 0; --k)
+			for (int  k = finder.map.getSizeY() - 1; k >= 0; --k)
 			{
 				IntPair pos = new IntPair(j,k);
-				if (40 ==j && 10 ==k)
+				if (finder.getDepart().x ==j && finder.getDepart().y ==k)
 					out += 'D';
-				else if (260 ==j && 10 ==k)
+				else if (finder.getArrivee().x ==j && finder.getArrivee().y ==k)
 					out += 'A';
 				else if (chemin.contains(pos))
 				{
@@ -81,7 +83,7 @@ public class PathfindingIntegrationTest extends JUnit_Test
 			out +='\n';
 		}
 		System.out.println(out);
-		*/
+		
 		Assert.assertTrue(true);
 
 	}

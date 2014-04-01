@@ -28,6 +28,7 @@ public class Grid2DSpace
 	private int sizeY;
 	private float reductionFactor; // facteur de reduction par rapport à 1case/cm Exemple : 150x100 a un rapport de 0.5
 	private Table table;
+	int robotRadius;
 	
 	
 	public Grid2DSpace(IntPair size, Table requestedTable)
@@ -49,6 +50,10 @@ public class Grid2DSpace
 		reductionFactor = (float)(sizeX)/300.0f;
 		
 		//System.out.println("reductionFactor : " + reductionFactor);
+		
+
+		// TODO : proprer management of robot radius
+		robotRadius = 200; 
 		
 		datas = new ArrayList<ArrayList<Boolean>>();
 		ArrayList<Obstacle> l_fixes = table.getListObstaclesFixes();
@@ -80,8 +85,8 @@ public class Grid2DSpace
 		
 		int obsPosX = (int)Math.round((obs.getPosition().x + 1500) * reductionFactor /10 );
 		int obsPosY = (int)Math.round(obs.getPosition().y * reductionFactor /10 );
-		int obsSizeX = (int)Math.round(obs.getLongueur() * reductionFactor /10 );
-		int obsSizeY = (int)Math.round(obs.getLargeur() * reductionFactor /10 );
+		int obsSizeX = (int)Math.round((obs.getLongueur() +robotRadius)* reductionFactor /10 );
+		int obsSizeY = (int)Math.round((obs.getLargeur() +robotRadius)* reductionFactor /10 );
 		
 		
 		for(int i= obsPosX - obsSizeX/2; i<obsPosX + obsSizeX/2; i++)
@@ -96,7 +101,7 @@ public class Grid2DSpace
 		
 		int obsPosX = (int)Math.round((obs.getPosition().x + 1500) * reductionFactor /10 );
 		int obsPosY = (int)Math.round(obs.getPosition().y * reductionFactor /10 );
-		int diameter = (int)Math.round(obs.getRadius() * reductionFactor /10 )*2;
+		int diameter = (int)Math.round((obs.getRadius() + robotRadius)* reductionFactor /10 )*2;
 		
 		ArrayList<ArrayList<Boolean>> pochoir = Grid2DPochoirManager.datas.get(diameter);
 		

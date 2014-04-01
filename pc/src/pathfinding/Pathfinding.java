@@ -45,7 +45,8 @@ public class Pathfinding implements Service
 		solver = new AStar(map, new IntPair(0,0), new IntPair(0,0));
 		output = new ArrayList<Vec2>();
 		result = new ArrayList<IntPair>();
-	}
+		
+	};
 	
 	/**
 	 * Méthode appelée par le thread de capteur. Met à jour les obstacles de la recherche de chemin en les demandant à table
@@ -206,5 +207,12 @@ public class Pathfinding implements Service
 	{
 		return result;
 	}
-		
+	public IntPair getDepart() 
+	{
+		return solver.getDepart();
+	}
+	public IntPair getArrivee() 
+	{
+		return solver.getArrivee();
+	}
 }
