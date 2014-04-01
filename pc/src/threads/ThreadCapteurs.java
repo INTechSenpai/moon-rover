@@ -6,6 +6,8 @@ import robot.cartes.Capteurs;
 import smartMath.Vec2;
 import table.Table;
 import table.Tree;
+import table.Torch;
+import table.Fire;
 import utils.Sleep;
 
 /**
@@ -107,7 +109,7 @@ class ThreadCapteurs extends AbstractThread {
 				//On regarde si là où le robot a détecté un obstacle, il y a un arbre.
 				for(int i = 0; i<lArbres.length; i++)
 				{
-					if (lArbres[i].getPosition().distance(pos) > 150)
+					if (lArbres[i].getPosition().SquaredDistance(pos) > 150*150)
 					{
 						j = j+1;
 					}
@@ -126,7 +128,7 @@ class ThreadCapteurs extends AbstractThread {
 				
 			}
 			
-			else if(obs_infr == true &&distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
+			else if(obs_infr == true && distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
 			{
 				int distance_inter_robots = distance_ultrason + rayon_robot_adverse + largeur_robot/2;
 				double theta = robotvrai.getOrientation();
@@ -156,6 +158,30 @@ class ThreadCapteurs extends AbstractThread {
 				// Il faut avoir accès aux positions des feux connus, des foyers, des torches et des murs
 				//Il faut aussi déterminer le rayon d'action de l'infrarouge pour limiter la zone de recherche
 				//Mais tout ça va prendre du temps et risque de d'être inadapté au final
+				
+				
+				float obsX,obsY;//position de l'obstacle détecté
+				//on ne détecte qu'en haut. Il faut vérifier si ce qu'on détecte est un arbre (en regardant la position et l'orientation du robot). Si
+				//oui, on n'en tient pas compte, si non, c'est un obstacle.
+				obsX = (float)(robotvrai.getPosition().x + Math.cos(robotvrai.getOrientation()));
+				obsY = (float)(robotvrai.getPosition().y + Math.sin(robotvrai.getOrientation()));
+				Vec2 pos  = new Vec2(obsX,obsY);
+				int j = 0 ;
+				Torch[] lTorch = table.getListTorch();
+				Fire[] lFire = table.getListFire();
+				//On regarde si là où le robot a détecté un obstacle, il y a un arbre.
+				for(int i = 0; i<lArbres.length; i++)
+				{
+					if (lArbres[i].getPosition().SquaredDistance(pos) > 150*150)
+					{
+						j = j+1;
+					}
+					else
+					{
+						log.debug("On a detecte un arbre en "+pos, this);
+						break;
+					}
+				}
 			}
 			
 			/*

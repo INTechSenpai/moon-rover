@@ -280,6 +280,10 @@ public class Table implements Service {
 	{
 		return arrayFire[i].getColour();
 	}
+	public Fire[] getListFire()
+	{
+		return arrayFire;
+	}
 	
 	// Arbres
 	
@@ -320,6 +324,10 @@ public class Table implements Service {
 	{
 		return arrayTree[tree_id].isTaken();
 	}
+	public Tree[] getListTree()
+		{
+			return arrayTree;
+		}
 	
 	//Torches
 	
@@ -335,7 +343,11 @@ public class Table implements Service {
 	{
 		return position.distance(arrayTorch[i].position);
 	}
-
+	public Torch[] getListTorch()
+		{
+			return arrayTorch;
+		}
+	//La table
 	/**
 	 * La table en argument deviendra la copie de this (this reste inchangé)
 	 * @param ct
@@ -406,7 +418,7 @@ public class Table implements Service {
 	{
 		return listObstacles.size();
 	}
-	
+	//Fresco
 	public int nearestFreeFresco(Vec2 position)
 	{
 		int min = 0;
@@ -427,5 +439,17 @@ public class Table implements Service {
 	}
 	//Il faudra faire gaffe à la différence entre les distance et les squaredDistance quand on les compare avec des constantes ! Achtung !!!
 	
+	public boolean dans_obstacle(Vec2 pos, Obstacle obstacle)
+		{
+	 		if(obstacle instanceof ObstacleRectangulaire)
+	 		{
+	 			Vec2 position_obs = obstacle.getPosition();
+				return !(pos.x<((ObstacleRectangulaire)obstacle).getLongueur()+position_obs.x && position_obs.x < pos.x && position_obs.y <pos.y && pos.y < position_obs.y+((ObstacleRectangulaire)obstacle).getLargeur());
+	
+	 		}			
+	 		// sinon, c'est qu'il est circulaire
+			return   !(pos.distance(obstacle.getPosition()) < ((ObstacleCirculaire)obstacle).getRadius());
+	
+	 	}
 }
 
