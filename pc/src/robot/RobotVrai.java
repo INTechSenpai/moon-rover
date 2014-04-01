@@ -450,7 +450,8 @@ public class RobotVrai extends Robot {
 			position.x = infos[0];
 			position.y = infos[1];
 		}
-		orientation = infos[2]/1000; // car get_infos renvoie des milliradians		
+		orientation = infos[2]/1000; // car get_infos renvoie des milliradians
+		System.out.println("dans update");
 	}
 
 	/*

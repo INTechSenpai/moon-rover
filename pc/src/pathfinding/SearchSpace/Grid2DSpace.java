@@ -93,7 +93,7 @@ public class Grid2DSpace
 		int obsPosX = (int)Math.round((obs.getPosition().x + 1500) * reductionFactor /10 );
 		int obsPosY = (int)Math.round(obs.getPosition().y * reductionFactor /10 );
 		int obsSizeX = (int)Math.round((obs.getLongueur() +robotRadius)* reductionFactor /10 );
-		int obsSizeY = (int)Math.round((obs.getLargeur() +robotRadius)* reductionFactor /10 );
+		int obsSizeY = (int)Math.round((obs.getLargeur() +robotRadius*2)* reductionFactor /10 );
 		
 		
 		for(int i= obsPosX - obsSizeX/2; i<obsPosX + obsSizeX/2; i++)
@@ -112,7 +112,6 @@ public class Grid2DSpace
 		
 		ArrayList<ArrayList<Boolean>> pochoir = Grid2DPochoirManager.datas.get(diameter);
 		
-		System.out.println("diameter = " + diameter);
 		
 		// recopie le pochoir
 		int i2 = 0, j2 = 0;
