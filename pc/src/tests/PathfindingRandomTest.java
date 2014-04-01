@@ -125,8 +125,12 @@ public class PathfindingRandomTest extends JUnit_Test
 				newpos.y = robotvrai.getPosition().y +  chemin.get(i).y;
 				
 				robotvrai.va_au_point(newpos);
-			}
 			
+				while(robotvrai.getPosition().distance(newpos) < 10)
+	            	Thread.sleep(100);
+				
+			}
+
 			
 			Assert.assertTrue(true);
 		}
