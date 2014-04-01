@@ -8,6 +8,7 @@ import hook.HookGenerator;
 import hook.methodes.TirerBalles;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,6 +19,7 @@ import robot.RobotChrono;
 import robot.RobotVrai;
 import scripts.Script;
 import scripts.ScriptManager;
+import smartMath.IntPair;
 import smartMath.Vec2;
 import table.Table;
 
@@ -81,4 +83,55 @@ public class PathfindingRandomTest extends JUnit_Test
 		}
 	}
 
+	@Test
+	public void test_marche_aleatoire() throws Exception
+	{
+		/*
+		s = (Script)scriptmanager.getScript("ScriptLances");
+		Assert.assertTrue(s.score(0, robotvrai, table) == 12);
+		robotvrai.tirerBalle();
+		Assert.assertTrue(s.score(0, robotvrai, table) == 10);
+		ArrayList<Hook> hooks = new ArrayList<Hook>();
+		Executable tirerballes = new TirerBalles(robotvrai);
+		Hook hook = hookgenerator.hook_abscisse(20);
+		hook.ajouter_callback(new Callback(tirerballes, true));
+		hooks.add(hook);
+		robotvrai.avancer(50, hooks);
+		*/
+
+		int cmParCase = 2;
+	    Random randomGenerator = new Random();
+		Pathfinding finder = new Pathfinding(table, config, log, cmParCase);
+		while (true)
+		{
+		    // g�n�re une deamnde de chemin ou les cases de d�part et d'arriv�e sont valides.
+			
+			Vec2 arrivee = new Vec2(randomGenerator.nextInt(3000)-1500,randomGenerator.nextInt(2000));
+			while (finder.map.canCross((int)((float)(arrivee.x + 1500) / cmParCase /10), (int)((float)(arrivee.y) / cmParCase /10)) == false)
+			{
+				arrivee.x = randomGenerator.nextInt(3000)-1500;
+				arrivee.y = randomGenerator.nextInt(2000); 
+			}
+			
+			
+			ArrayList<Vec2> chemin = finder.chemin(robotvrai.getPosition(), arrivee);
+			
+			for(int i = 0; i < chemin.size(); i++)
+			{
+				Vec2 newpos = new Vec2(0,0);
+				newpos.x = robotvrai.getPosition().x +  chemin.get(i).x;
+				newpos.y = robotvrai.getPosition().y +  chemin.get(i).y;
+				
+				robotvrai.va_au_point(newpos);
+			
+				while(robotvrai.getPosition().distance(newpos) < 10)
+	            	Thread.sleep(100);
+				
+			}
+
+			
+			Assert.assertTrue(true);
+		}
+
+	}
 }
