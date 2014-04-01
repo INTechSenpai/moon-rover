@@ -104,7 +104,7 @@ class ThreadCapteurs extends AbstractThread {
 				Vec2 pos  = new Vec2(obsX,obsY);
 				//Il faudrait modifier table pour qu'on ait accès aux positions des arbres.
 				//150 est le rayon des arbres
-			/*TODO Tree[] lArbres = table.getListTree();
+				Tree[] lArbres = table.getListTree();
 				int j = 0 ;
 				//On regarde si là où le robot a détecté un obstacle, il y a un arbre.
 				for(int i = 0; i<lArbres.length; i++)
@@ -125,7 +125,7 @@ class ThreadCapteurs extends AbstractThread {
 					date_dernier_ajout = (int)System.currentTimeMillis();
 					log.debug("Nouvel obstacle en "+pos, this);
 				}
-				*/
+				
 			}
 			
 			else if(obs_infr == true && distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
@@ -166,17 +166,26 @@ class ThreadCapteurs extends AbstractThread {
 				obsX = (float)(robotvrai.getPosition().x + Math.cos(robotvrai.getOrientation()));
 				obsY = (float)(robotvrai.getPosition().y + Math.sin(robotvrai.getOrientation()));
 				Vec2 pos  = new Vec2(obsX,obsY);
-				int j = 0 ;
+				int j = 0,k = 0 ;
 				Torch[] lTorch = table.getListTorch();
 				Fire[] lFire = table.getListFire();
 				//On regarde si là où le robot a détecté un obstacle, il y a un arbre.
-				for(int i = 0; i<lArbres.length; i++)
+				for(int i = 0; i<lTorch.length+lFire.length; i++)
 				{
-					if (lArbres[i].getPosition().SquaredDistance(pos) > 150*150)
+					if (lTorch[i].getPosition().SquaredDistance(pos) > 100*100)
 					{
 						j = j+1;
 					}
-					else
+					else if()
+					{
+						log.debug("On a detecte une torche en "+pos, this);
+						break;
+					}
+					if(lFire[i+lTorch.length].getPosition().SquaredDistance(pos) > 100*100)
+					{
+						k = k+1;
+					}
+					else if()
 					{
 						log.debug("On a detecte un arbre en "+pos, this);
 						break;
