@@ -43,7 +43,7 @@ public class Capteurs implements Service {
 	-	 * la direction voulue
 	-	 * Par rapport à la fonction suivante, c'est mieux de renvoyer séparément 
 	-	 * les données des capteurs qund c'est pas du même type.
-	-	 * @param capteur
+	-	 * @param capteur (soit "ir", soit "us")
 	-	 * @return la valeur la plus optimiste des capteurs
 	-	 */
 		public int mesurer(String capteur)
@@ -51,7 +51,7 @@ public class Capteurs implements Service {
 			if(!capteurs_on)
 	    		return 3000;
 			String[] ultrasons;
-			String[] infrarouges; //Pourquoi Martial veux-tu supprimer ça ??? Mais c'est utilisé !!!
+			String[] infrarouges; 
 			int[] distances;
 			
 			try{
