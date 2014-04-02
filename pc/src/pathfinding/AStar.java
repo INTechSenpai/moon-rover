@@ -141,6 +141,8 @@ function reconstruct_path(came_from, current_node)
 		    			
 		    			if(temp == null)	// null pointer exeption
 		    			{
+		    				System.out.println("=======================================================\nPathfinding : NULL pointer exeption\n=============================");
+		    				
 		    				System.out.println("Depart : " + depart.x + " - " + depart.y);
 		    				System.out.println("arrivee : " + arrivee.x + " - " + arrivee.y);
 		    				System.out.println("current : " + current.x + " - " + current.y);
@@ -172,6 +174,8 @@ function reconstruct_path(came_from, current_node)
 		    					out +='\n';
 		    				}
 		    				System.out.println(out);
+		    				System.out.println("=======================================================\nEnd of dumpn\n=============================");
+		    				
 		    				
 		    			}
 		    		}

@@ -41,7 +41,7 @@ public class Pathfinding implements Service
 		config = requestedConfig;
 		log = requestedLog;
 		centimetresParCases = requestedCentimetresParCases;
-		map = new Grid2DSpace(new IntPair((int)((float)300.0f/centimetresParCases), (int)((float)220.0f/centimetresParCases)), table, 200);
+		map = new Grid2DSpace(new IntPair((int)((float)300.0f/centimetresParCases), (int)((float)220.0f/centimetresParCases)), table, 180);
 		solver = new AStar(map, new IntPair(0,0), new IntPair(0,0));
 		output = new ArrayList<Vec2>();
 		result = new ArrayList<IntPair>();
@@ -87,7 +87,7 @@ public class Pathfinding implements Service
 			return null;
 		result = lissage(solver.getChemin(), map);
 		
-		// convertit la sortie de l'AStar en suite de Vec2 dasn la système de coords d'ntrée.
+		// convertit la sortie de l'AStar en suite de Vec2 dans le système de coords d'entrée.
 		output.clear();
 		for (int i = 1; i < result.size(); ++i)
 			output.add(new Vec2((float)(result.get(i).x - result.get(i-1).x)* 10*centimetresParCases, (float)(result.get(i).y - result.get(i-1).y)* 10*centimetresParCases));

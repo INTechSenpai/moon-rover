@@ -85,8 +85,11 @@ public class Table implements Service {
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-1500,0), 250));
 
 		// Ajout bacs
-		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(1100,1700), 700, 300));
-		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-1100,1700), 700, 300));
+		//listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(1100,1700), 700, 300));
+		//listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-1100,1700), 700, 300));
+
+		//listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(750,1850), 700, 300));
+		//listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-750,1850), 700, 300));
 
 		// Ajout des arbres
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(1500,700), 150));
