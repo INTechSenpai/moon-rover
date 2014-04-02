@@ -95,6 +95,8 @@ class ThreadCapteurs extends AbstractThread {
 			//Ici on interprètera distance_infrarouge
 			boolean obs_infr = (distance_infrarouge < 500); //Booléen car le capteur infrarouge n'est pas assez fiable pour qu'on puisse se servir des distances
 			if(obs_infr == false && distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
+				
+				//La condition signifie qu'on vioit des trucs en haut mais pas en bas
 			{
 				float obsX,obsY;//position de l'obstacle détecté
 				//on ne détecte qu'en haut. Il faut vérifier si ce qu'on détecte est un arbre (en regardant la position et l'orientation du robot). Si
@@ -105,11 +107,11 @@ class ThreadCapteurs extends AbstractThread {
 				//Il faudrait modifier table pour qu'on ait accès aux positions des arbres.
 				//150 est le rayon des arbres
 				Tree[] lArbres = table.getListTree();
-				int j = 0 ;
+				int j = 0 ;//C'est un compteur qui s'incrémente quand c'est pas un arbre
 				//On regarde si là où le robot a détecté un obstacle, il y a un arbre.
 				for(int i = 0; i<lArbres.length; i++)
 				{
-					if (lArbres[i].getPosition().SquaredDistance(pos) > 150*150)
+					if (lArbres[i].getPosition().SquaredDistance(pos) > 50*150)
 					{
 						j = j+1;
 					}
@@ -121,6 +123,7 @@ class ThreadCapteurs extends AbstractThread {
 				}
 				if(j == lArbres.length) //C'est alors que le robot n'a détecté aucun arbre
 				{
+					//On a sans doute détecté le robot adverse
 					table.creer_obstacle(pos);
 					date_dernier_ajout = (int)System.currentTimeMillis();
 					log.debug("Nouvel obstacle en "+pos, this);
@@ -130,6 +133,7 @@ class ThreadCapteurs extends AbstractThread {
 			
 			else if(obs_infr == true && distance_ultrason >= 0 && distance_ultrason <horizon_capteurs)
 			{
+				//On détecte un truc en face de nous qui est un obstacle de haut en bas
 				int distance_inter_robots = distance_ultrason + rayon_robot_adverse + largeur_robot/2;
 				double theta = robotvrai.getOrientation();
 				Vec2 position = robotvrai.getPosition().PlusNewVector(new Vec2((float)distance_inter_robots * (float)Math.cos(theta), (float)distance_inter_robots * (float)Math.sin(theta)));
