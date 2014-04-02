@@ -77,8 +77,8 @@ public class Grid2DSpace
 		}
 		
 		// Ne rentre pas dans les bacs
-		//appendObstacle(new ObstacleRectangulaire(new Vec2(1100,1500), 1100, 100));
-		//appendObstacle(new ObstacleRectangulaire(new Vec2(-1100,1500), 1100, 100));
+		appendObstacle(new ObstacleRectangulaire(new Vec2(750,1850), 700, 900));
+		appendObstacle(new ObstacleRectangulaire(new Vec2(-750,1850), 700, 900));
 		
 		
 		// les bords de la map sont non acessibles
