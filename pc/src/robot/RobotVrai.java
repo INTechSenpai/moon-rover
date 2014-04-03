@@ -199,10 +199,23 @@ public class RobotVrai extends Robot {
 			return Colour.RED;
 	}
 	
-	// TODO
+	// Un début, on va voir si ça marche
 	public void recaler()
 	{
-		
+		/*Pas besoin de cette fonction -> il faudra utiliser la cale en carton fait maison
+		try {
+			deplacements.set_vitesse_translation(30);
+			position.x = ;
+			deplacements.tourner((float)Math.PI);
+			deplacements.avancer(-100);
+			deplacements.set_x(1300);
+			deplacements.avancer(50);
+			deplacements.tourner((float)-Math.PI/2);
+			deplacements.avancer();
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}
+		*/
 	}
 	
 	/**
@@ -1008,5 +1021,6 @@ public class RobotVrai extends Robot {
 	{
 		orientation_consigne = orientation;
 	}
+	
 	
 }
