@@ -64,7 +64,7 @@ public class PathfindingRandomTest extends JUnit_Test
 		robotvrai.setPosition(new Vec2(1300, 1200));
 				
 		
-		int cmParCase =2;
+		int cmParCase = 2;
 		
 		Pathfinding finder = new Pathfinding(table, config, log, cmParCase);
 
@@ -79,77 +79,19 @@ public class PathfindingRandomTest extends JUnit_Test
 			if (chemin != null)
 			{
 				
-				// Affiche le calcul du chemin
-				String out = "";
-				Integer i = 1;
-				for (int  j = 0; j < finder.map.getSizeX(); ++j)
-				{
-					for (int  k = finder.map.getSizeY() - 1; k >= 0; --k)
-					{
-						
-						IntPair pos = new IntPair(j,k);
-						if (finder.getDepart().x ==j && finder.getDepart().y ==k)
-							out += 'D';
-						else if (finder.getArrivee().x ==j && finder.getArrivee().y ==k)
-							out += 'A';
-						else if (chemin.contains(pos))
-						{
-							out += i.toString();
-							i++;
-						}
-						
-						else if(finder.map.canCross(j, k))
-							out += '.';
-						else
-							out += 'X';
-						
-						
-					}
-					
-					out +='\n';
-				}
-				System.out.println(out);
-				
 				
 				// suit le teajet
 				for(int j = 0; j < chemin.size(); j++)
 				{
 					Vec2 newpos = new Vec2(0,0);
-					newpos.x = robotvrai.getPosition().x +  chemin.get(j).x;
-					newpos.y = robotvrai.getPosition().y +  chemin.get(j).y;
+					newpos.x =  chemin.get(j).x;
+					newpos.y =  chemin.get(j).y;
 					
 					robotvrai.va_au_point(newpos);
 					
 				}
 				
 			}
-			else
-			{
-				System.out.println("chemin == null");
-				
-				// Affiche la map
-				String out = "";
-				Integer i = 1;
-				for (int  j = 0; j < finder.map.getSizeX(); ++j)
-				{
-					for (int  k = finder.map.getSizeY() - 1; k >= 0; --k)
-					{
-						if (finder.getDepart().x ==j && finder.getDepart().y ==k)
-							out += 'D';
-						else if (finder.getArrivee().x ==j && finder.getArrivee().y ==k)
-							out += 'A';						
-						else if(finder.map.canCross(j, k))
-							out += '.';
-						else
-							out += 'X';						
-					}
-					
-					out +='\n';
-				}
-				System.out.println(out);
-			}
-				
-
 		}
 		else
 			System.out.println("Arrivee unreachable");
@@ -180,11 +122,13 @@ public class PathfindingRandomTest extends JUnit_Test
 				arrivee.y = randomGenerator.nextInt(2000); 
 			}
 			depart = robotvrai.getPosition();
+			if (finder.map.canCross((int)((float)(depart.x + 1500) / cmParCase /10), (int)((float)(depart.y) / cmParCase /10)) == false)
+				System.out.println("depart not crossable");
 			ArrayList<Vec2> chemin = finder.chemin(depart, arrivee);
-			
+
 			if (chemin != null)
 			{
-				
+				/*
 				// affiche la feuille de route
 				Vec2 newpos = new Vec2(0,0);
 				System.out.println("Chemin (test_marche_aleatoire) : ");
@@ -229,11 +173,11 @@ public class PathfindingRandomTest extends JUnit_Test
 					out +='\n';
 				}
 				System.out.println(out);
-				
+				*/
 				
 				// suit le trajet
-			/*	newpos = new Vec2(0,0);
-				newpos.x = depart.x +  chemin.get(0).x;
+				Vec2 newpos = new Vec2(0,0);
+			/*	newpos.x = depart.x +  chemin.get(0).x;
 				newpos.y = depart.y +  chemin.get(0).y;
 				System.out.println("Goto : " + newpos);
 				robotvrai.va_au_point(newpos);*/
@@ -243,8 +187,9 @@ public class PathfindingRandomTest extends JUnit_Test
 					newpos.y = chemin.get(j).y;
 					
 
-					System.out.println("Goto : " + newpos);
+					//System.out.println("Goto : " + newpos);
 					robotvrai.va_au_point(newpos);
+					//Thread.sleep(1000);
 					
 				}
 				compteTrajets++;

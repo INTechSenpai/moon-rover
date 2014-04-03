@@ -38,12 +38,34 @@ public class AStar
 	{
 		// Construit la demande d'un futur calcul
 		processed = false;
+		isValid = false;
 		chemin = new ArrayList<IntPair>();
 		
 		depart = new IntPair(departVoulu.x, departVoulu.y);
 		arrivee = new IntPair(arriveeVoulue.x, arriveeVoulue.y);
 		
 		espace = espaceVoulu.makeCopy();
+		
+		closedset = new LinkedHashSet<IntPair>();
+		openset = new LinkedHashSet<IntPair>();
+		
+		came_from = new HashMap<IntPair, IntPair>();
+		g_score = new HashMap<IntPair, Integer>();
+		f_score = new HashMap<IntPair, Integer>();
+		
+	}
+	
+	public void cleanup()
+	{
+		// Construit la demande d'un futur calcul
+		processed = false;
+		isValid = false;
+		chemin = new ArrayList<IntPair>();
+		
+		//depart = new IntPair(0,0);
+		//arrivee = new IntPair(0,0);
+		
+		//espace = espaceVoulu.makeCopy();
 		
 		closedset = new LinkedHashSet<IntPair>();
 		openset = new LinkedHashSet<IntPair>();
@@ -99,6 +121,8 @@ function reconstruct_path(came_from, current_node)
 	 */
 	public void process()
 	{
+		
+		
 		closedset.clear();		// The set of nodes already evaluated.
 		openset.add(depart);	// The set of tentative nodes to be evaluated, initially containing the start node
 		came_from.clear(); 		// The map of navigated nodes.
@@ -139,97 +163,11 @@ function reconstruct_path(came_from, current_node)
 		    			current  = temp;
 		    			temp = came_from.get(temp);
 		    			
-		    			if(temp == null)	// null pointer exeption
-		    			{
-		    				System.out.println("=======================================================\nPathfinding : NULL pointer exeption\n=============================");
-		    				
-		    				System.out.println("Depart : " + depart.x + " - " + depart.y);
-		    				System.out.println("arrivee : " + arrivee.x + " - " + arrivee.y);
-		    				System.out.println("current : " + current.x + " - " + current.y);
-		    				
-		    				//System.out.println(espace.stringForm());
-
-		    				String out = "";
-		    				Integer i = 1;
-		    				for (int  j = 0; j < espace.getSizeX(); ++j)
-		    				{
-		    					for (int  k = espace.getSizeY() - 1; k >= 0; --k)
-		    					{
-		    						IntPair pos = new IntPair(j,k);
-		    						if (depart.x ==j && depart.y ==k)
-		    							out += 'D';
-		    						else if (arrivee.x ==j && arrivee.y ==k)
-		    							out += 'A';
-		    						else if (chemin.contains(pos))
-		    						{
-		    							out += i.toString();
-		    							i++;
-		    						}
-		    						else if(espace.canCross(j, k))
-		    							out += '.';
-		    						else
-		    							out += 'X';	
-		    					}
-		    					
-		    					out +='\n';
-		    				}
-		    				System.out.println(out);
-		    				System.out.println("=======================================================\nEnd of dump\n=============================");
-		    				
-		    				
-		    				// Puisque ce bug est difficile a corriger, on fait un cas particulier à l'arrache pour que ce soit transparent
-		    				// TODO : find where does the bug comes from
-		    				
-		    				AStar gaffeur = new AStar(espace, depart, current);
-		    				gaffeur.process();
-		    				ArrayList<IntPair> gaffeurOut = gaffeur.getChemin();
-		    				
-		    				
-		    				
-		    				
-		    				
-
-		    				System.out.println("=======================================================\nGAffeurOut : \n=============================");
-		    				out = "";
-		    				for (int  j = 0; j < gaffeur.getEspace().getSizeX(); ++j)
-		    				{
-		    					for (int  k =  gaffeur.getEspace().getSizeY() - 1; k >= 0; --k)
-		    					{
-		    						IntPair pos = new IntPair(j,k);
-		    						if (gaffeur.getDepart().x ==j && gaffeur.getDepart().y ==k)
-		    							out += 'D';
-		    						else if (gaffeur.getArrivee().x ==j && gaffeur.getArrivee().y ==k)
-		    							out += 'A';
-		    						else if (gaffeurOut.contains(pos))
-		    						{
-		    							out += '|';
-		    						}
-		    						else if(gaffeur.getEspace().canCross(j, k))
-		    							out += '.';
-		    						else
-		    							out += 'X';	
-		    					}
-		    					
-		    					out +='\n';
-		    				}
-		    				System.out.println(out);
-		    				
-		    				
-		    				
-		    				for (i = 1; i <= gaffeurOut.size(); ++i)
-		    					chemin.add(0, new IntPair(gaffeurOut.get(gaffeurOut.size()-i).x, gaffeurOut.get(gaffeurOut.size()-i).y));
-		    				System.out.println("=======================================================\nGaffeur sucessfulln\n=============================");
-		        			chemin.add(0, new IntPair(depart.x,depart.y));
-		    				break; // sors du while
-		    				
-		    				
-		    				
-		    			}
 		    		}
     			}
-    			chemin.add( new IntPair(depart.x,depart.y));
+    			chemin.add(0, new IntPair(depart.x,depart.y));
     			
-
+/*
 				System.out.println("=======================================================\nPostGaffeur dump\n=============================");
 				
 				
@@ -260,7 +198,7 @@ function reconstruct_path(came_from, current_node)
 				}
 				System.out.println(out);
 				System.out.println("=======================================================\nEnd of dump\n=============================");
-	    		
+	    		*/
 	    		processFinalisationWithSucess();
 	    		return;	//  reconstruct path
 	    	}
@@ -350,19 +288,25 @@ function reconstruct_path(came_from, current_node)
 	public Grid2DSpace getEspace() {
 		return espace;
 	}
-	public void setEspace(Grid2DSpace espace) {
+	public void setEspace(Grid2DSpace espace)
+	{
+		cleanup();
 		this.espace = espace;
 	}
 	public IntPair getDepart() {
 		return depart;
 	}
-	public void setDepart(IntPair depart) {
+	public void setDepart(IntPair depart) 
+	{
+		cleanup();
 		this.depart = depart;
 	}
 	public IntPair getArrivee() {
 		return arrivee;
 	}
-	public void setArrivee(IntPair arrivee) {
+	public void setArrivee(IntPair arrivee) 
+	{
+		cleanup();
 		this.arrivee = arrivee;
 	}
 	/**
@@ -380,7 +324,8 @@ function reconstruct_path(came_from, current_node)
 	{
 		this.processed = processed;
 	}
-	public boolean isValid() {
+	public boolean isValid()
+	{
 		return isValid;
 	}
 }
