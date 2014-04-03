@@ -77,7 +77,7 @@ public class Container {
 	public Container() throws ContainerException
 	{
 		try {
-			services.put("Read_Ini", (Service)new Read_Ini("./config/"));
+			services.put("Read_Ini", (Service)new Read_Ini("../config/"));
 			config = (Read_Ini)services.get("Read_Ini");
 			services.put("Log", (Service)new Log(config));
 			log = (Log)services.get("Log");
