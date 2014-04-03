@@ -7,7 +7,6 @@ import smartMath.Vec2;
 import table.Colour;
 import container.Service;
 import exception.ConfigException;
-import exception.FunnyActionException;
 import exception.MouvementImpossibleException;
 import exception.SerialException;
 import utils.Log;
@@ -26,11 +25,11 @@ public abstract class Robot implements Service {
 	
 	public abstract void stopper(boolean avec_blocage);
 	protected abstract void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception)
-			 	throws MouvementImpossibleException, FunnyActionException;
+			 	throws MouvementImpossibleException;
 	protected abstract void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
-				throws MouvementImpossibleException, FunnyActionException;
+				throws MouvementImpossibleException;
 	protected abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe)
-				throws MouvementImpossibleException, FunnyActionException;
+				throws MouvementImpossibleException;
 	public abstract void set_vitesse_translation(String vitesse);
 	public abstract void set_vitesse_rotation(String vitesse);
 	
@@ -47,7 +46,7 @@ public abstract class Robot implements Service {
 	 * @throws MouvementImpossibleException
 	 */
 	protected abstract void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception, boolean enchainer)
-				throws MouvementImpossibleException, FunnyActionException;
+				throws MouvementImpossibleException;
 
 	/*
 	 * Méthodes d'initialisation
@@ -60,7 +59,7 @@ public abstract class Robot implements Service {
 	 * ACTIONNEURS
 	 */
 
-	public abstract void takefire(Cote cote)  throws SerialException, MouvementImpossibleException, FunnyActionException;
+	public abstract void takefire(Cote cote)  throws SerialException, MouvementImpossibleException;
 	public abstract void tirerBalle() throws SerialException;
 	public abstract void deposer_fresques() throws SerialException;
 	public abstract void bac_bas() throws SerialException;
@@ -220,63 +219,63 @@ public abstract class Robot implements Service {
 			feu_tenu_droite_rouge = (colour == Colour.RED);			
 	}
 	
-	public void tourner_relatif(float angle) throws MouvementImpossibleException, FunnyActionException
+	public void tourner_relatif(float angle) throws MouvementImpossibleException
 	{
 		tourner(orientation + angle, true);
 	}
 	
 	// Les méthodes avec le paramètre nbTentatives sont en protected 
-	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException, FunnyActionException
+	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
 		va_au_point(point, hooks, false, nb_tentatives, retenterSiBlocage, false, sansLeverException, false);
 	}
 
-	public void va_au_point(Vec2 point) throws MouvementImpossibleException, FunnyActionException
+	public void va_au_point(Vec2 point) throws MouvementImpossibleException
 	{
 		va_au_point(point, null, false, nb_tentatives, true, false, false, false);
 	}
 
-	public void va_au_point(Vec2 point, boolean retenterSiBlocage) throws MouvementImpossibleException, FunnyActionException
+	public void va_au_point(Vec2 point, boolean retenterSiBlocage) throws MouvementImpossibleException
 	{
 		va_au_point(point, null, false, nb_tentatives, retenterSiBlocage, false, false, false);
 	}
 
-	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws MouvementImpossibleException, FunnyActionException
+	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws MouvementImpossibleException
 	{
 		suit_chemin(chemin, hooks, false, false, false);
 	}
 
-	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean trajectoire_courbe) throws MouvementImpossibleException, FunnyActionException
+	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean trajectoire_courbe) throws MouvementImpossibleException
 	{
 		suit_chemin(chemin, hooks, retenter_si_blocage, false, trajectoire_courbe);
 	}
 
-	public void suit_chemin(ArrayList<Vec2> chemin) throws MouvementImpossibleException, FunnyActionException
+	public void suit_chemin(ArrayList<Vec2> chemin) throws MouvementImpossibleException
 	{
 		suit_chemin(chemin, null, false, false, false);
 	}
 
-	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage) throws MouvementImpossibleException, FunnyActionException
+	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage) throws MouvementImpossibleException
 	{
 		suit_chemin(chemin, hooks, retenter_si_blocage, false, false);
 	}
 
-	public void suit_chemin(ArrayList<Vec2> chemin, boolean retenter_si_blocage) throws MouvementImpossibleException, FunnyActionException
+	public void suit_chemin(ArrayList<Vec2> chemin, boolean retenter_si_blocage) throws MouvementImpossibleException
 	{
 		suit_chemin(chemin, null, retenter_si_blocage, false, false);
 	}
 
-	public void suit_chemin(ArrayList<Vec2> chemin, boolean retenter_si_blocage, boolean trajectoire_courbe) throws MouvementImpossibleException, FunnyActionException
+	public void suit_chemin(ArrayList<Vec2> chemin, boolean retenter_si_blocage, boolean trajectoire_courbe) throws MouvementImpossibleException
 	{
 		suit_chemin(chemin, null, retenter_si_blocage, false, trajectoire_courbe);
 	}
 
-	public void tourner(float angle, ArrayList<Hook> hooks, boolean sans_lever_exception) throws MouvementImpossibleException, FunnyActionException
+	public void tourner(float angle, ArrayList<Hook> hooks, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
 		tourner(angle, null, nb_tentatives, sans_lever_exception);
 	}
 
-	public void tourner(float angle, boolean pas_de_symetrie) throws MouvementImpossibleException, FunnyActionException
+	public void tourner(float angle, boolean pas_de_symetrie) throws MouvementImpossibleException
 	{
 		boolean mem_effectuer_symetrie = effectuer_symetrie;
 		if(pas_de_symetrie)
@@ -285,52 +284,52 @@ public abstract class Robot implements Service {
 		effectuer_symetrie = mem_effectuer_symetrie;
 	}
 	
-	protected void tourner(float angle, int nombre_tentatives) throws MouvementImpossibleException, FunnyActionException
+	protected void tourner(float angle, int nombre_tentatives) throws MouvementImpossibleException
 	{
 		tourner(angle, null, nombre_tentatives, false);		
 	}
 
-	public void tourner(float angle, ArrayList<Hook> hooks) throws MouvementImpossibleException, FunnyActionException
+	public void tourner(float angle, ArrayList<Hook> hooks) throws MouvementImpossibleException
 	{
 		tourner(angle, hooks, nb_tentatives, false);
 	}
 
-	public void tourner(float angle) throws MouvementImpossibleException, FunnyActionException
+	public void tourner(float angle) throws MouvementImpossibleException
 	{
 		tourner(angle, null, nb_tentatives, false);
 	}
 
-	protected void avancer(int distance, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException, FunnyActionException
+	protected void avancer(int distance, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
 		this.avancer(distance, null, nbTentatives, retenterSiBlocage, sansLeverException);
 	}
 
-	public void avancer(int distance, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException, FunnyActionException
+	public void avancer(int distance, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
 	{
 		this.avancer(distance, null, nb_tentatives, retenterSiBlocage, sansLeverException);
 	}
 
-	protected void avancer(int distance, int nbTentatives, boolean retenterSiBlocage) throws MouvementImpossibleException, FunnyActionException
+	protected void avancer(int distance, int nbTentatives, boolean retenterSiBlocage) throws MouvementImpossibleException
 	{
 		this.avancer(distance, null, nbTentatives, retenterSiBlocage, false);
 	}
 	
-	protected void avancer(int distance, int nbTentatives) throws MouvementImpossibleException, FunnyActionException
+	protected void avancer(int distance, int nbTentatives) throws MouvementImpossibleException
 	{
 		this.avancer(distance, null, nbTentatives, true, false);
 	}
 
-	public void avancer(int distance, ArrayList<Hook> hooks) throws MouvementImpossibleException, FunnyActionException
+	public void avancer(int distance, ArrayList<Hook> hooks) throws MouvementImpossibleException
 	{
 		this.avancer(distance, hooks, nb_tentatives, true, false);
 	}
 
-	public void avancer(int distance) throws MouvementImpossibleException, FunnyActionException
+	public void avancer(int distance) throws MouvementImpossibleException
 	{
 		this.avancer(distance, null, nb_tentatives, true, false);
 	}
 
-	public void avancer(int distance, boolean retenterSiBlocage) throws MouvementImpossibleException, FunnyActionException
+	public void avancer(int distance, boolean retenterSiBlocage) throws MouvementImpossibleException
 	{
 		this.avancer(distance, null, nb_tentatives, retenterSiBlocage, false);
 	}

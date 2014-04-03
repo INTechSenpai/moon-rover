@@ -6,7 +6,6 @@ import robot.cartes.Deplacements;
 import smartMath.Vec2;
 import table.Colour;
 import table.Table;
-import threads.ThreadTimer;
 import utils.Log;
 import utils.Read_Ini;
 import utils.Sleep;
@@ -20,7 +19,6 @@ import java.util.Iterator;
 
 import exception.BlocageException;
 import exception.CollisionException;
-import exception.FunnyActionException;
 import exception.MouvementImpossibleException;
 import exception.SerialException;
 
@@ -37,7 +35,6 @@ public class RobotVrai extends Robot {
 	protected Deplacements deplacements;
 	protected HookGenerator hookgenerator;
 	protected Table table;
-	protected ThreadTimer threadtimer;
 
 	private Vec2 consigne = new Vec2(0,0);
 	private float orientation_consigne = (float)-Math.PI/2;
@@ -62,7 +59,7 @@ public class RobotVrai extends Robot {
 	private boolean autorise_trajectoire_courbe;
 	// Constructeur
 	
-	public RobotVrai(Capteurs capteur, Actionneurs actionneurs, Deplacements deplacements, HookGenerator hookgenerator, Table table, Read_Ini config, Log log, ThreadTimer threadtimer)
+	public RobotVrai(Capteurs capteur, Actionneurs actionneurs, Deplacements deplacements, HookGenerator hookgenerator, Table table, Read_Ini config, Log log)
  	{
 		super(config, log);
 		this.capteur = capteur;
@@ -70,7 +67,6 @@ public class RobotVrai extends Robot {
 		this.deplacements = deplacements;
 		this.hookgenerator =  hookgenerator;
 		this.table = table;
-		this.threadtimer = threadtimer;
 		
 		try
 		{
@@ -286,10 +282,9 @@ public class RobotVrai extends Robot {
 	/**
 	 * Fait tourner le robot (méthode bloquante)
 	 * @throws MouvementImpossibleException 
-	 * @throws FunnyActionException 
 	 */
 	@Override
-	public void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception) throws MouvementImpossibleException, FunnyActionException
+	public void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
 		if(effectuer_symetrie)
 		{
@@ -331,10 +326,9 @@ public class RobotVrai extends Robot {
 	/**
 	 * Fait suivre au robot un chemin (fourni par la recherche de chemin)
 	 * @throws MouvementImpossibleException 
-	 * @throws FunnyActionException 
 	 */
 	@Override
-	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe) throws MouvementImpossibleException, FunnyActionException
+	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe) throws MouvementImpossibleException
 	{
 		Iterator<Vec2> i = chemin.iterator();
 		while(i.hasNext())
@@ -347,10 +341,9 @@ public class RobotVrai extends Robot {
 
 	/**
 	 * Le robot va au point demandé
-	 * @throws FunnyActionException 
 	 */
 	@Override
-	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception, boolean enchainer) throws MouvementImpossibleException, FunnyActionException
+	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception, boolean enchainer) throws MouvementImpossibleException
 	{
 		try {
 			update_x_y_orientation();
@@ -487,8 +480,7 @@ public class RobotVrai extends Robot {
 	}
 
 	@Override
-	public void takefire(Cote cote) throws SerialException, MouvementImpossibleException, FunnyActionException
-	{
+	public void takefire(Cote cote) throws SerialException, MouvementImpossibleException {
 
 		if(!isTient_feu(cote))
 		{
@@ -695,7 +687,7 @@ public class RobotVrai extends Robot {
 		this.va_au_pointBasNiveau(consigne);
 	}*/
 
-	private void tournerBasNiveau(float angle, ArrayList<Hook> hooks, boolean sans_lever_exception) throws BlocageException, CollisionException, FunnyActionException
+	private void tournerBasNiveau(float angle, ArrayList<Hook> hooks, boolean sans_lever_exception) throws BlocageException, CollisionException
 	{
 		blocage = false;
 		orientation_consigne = angle;
@@ -714,8 +706,6 @@ public class RobotVrai extends Robot {
 					relancer |= hook.evaluate(this);
 			if(relancer)
 				break;
-			if(threadtimer.funny_action)
-				throw new FunnyActionException();
 			sleep(sleep_boucle_acquittement);
 		}
 		
@@ -726,7 +716,7 @@ public class RobotVrai extends Robot {
 	}
 	
 	
-	private void tournerBasNiveau(float angle) throws BlocageException, CollisionException, FunnyActionException
+	private void tournerBasNiveau(float angle) throws BlocageException, CollisionException
 	{
 		tournerBasNiveau(angle, null, false);
 	}
@@ -740,9 +730,8 @@ public class RobotVrai extends Robot {
 	 * @param trajectoire_courbe
 	 * @param sans_lever_exception
 	 * @throws BlocageException 
-	 * @throws FunnyActionException 
 	 */
-	private void va_au_pointBasNiveau(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean sans_lever_exception, boolean enchainer) throws CollisionException, BlocageException, FunnyActionException
+	private void va_au_pointBasNiveau(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean sans_lever_exception, boolean enchainer) throws CollisionException, BlocageException
 	{
 		boolean relancer = false;
 		
@@ -808,9 +797,6 @@ public class RobotVrai extends Robot {
 
 			if(relancer)
 				break;
-
-			if(threadtimer.funny_action)
-				throw new FunnyActionException();
 
 			// Si on utilise la trajectoire courbe, on doit nécessairement utiliser la correction de trajectoire.
 			// update_x_y_orientation() est déjà appelé dans mise_a_jour_consignes

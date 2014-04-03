@@ -21,10 +21,8 @@ public class ThreadTimer extends AbstractThread {
 	
 	public boolean match_demarre = false;
 	public boolean fin_match = false;
-	public boolean funny_action = false;
 	public long date_debut;
 	public long duree_match = 90000;
-	public long duree_match_delai_funny_action = 85000;
 	
 	ThreadTimer(Table table, Capteurs capteur, Deplacements deplacements)
 	{
@@ -72,8 +70,6 @@ public class ThreadTimer extends AbstractThread {
 				return;
 			}
 			table.supprimer_obstacles_perimes();
-			if(System.currentTimeMillis() - date_debut > duree_match_delai_funny_action)
-				funny_action = true;
 			
 			try {
 				Thread.sleep(500);
