@@ -127,7 +127,8 @@ public class Container {
 														(HookGenerator)getService("HookGenerator"),
 														(Table)getService("Table"),
 														(Read_Ini)getService("Read_Ini"),
-														(Log)getService("Log")));		
+														(Log)getService("Log"),
+														(ThreadTimer)getService("threadTimer")));
 		else if(nom == "ScriptManager")
 			services.put(nom, (Service)new ScriptManager(	(Pathfinding)getService("Pathfinding"),
 															(HookGenerator)getService("HookGenerator"),
