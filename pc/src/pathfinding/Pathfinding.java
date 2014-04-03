@@ -87,12 +87,59 @@ public class Pathfinding implements Service
 			return null;
 		result = lissage(solver.getChemin(), map);
 		
+
+		System.out.println("=======================================================\n PostLissage dump\n=============================");
+		
+		
+
+		String out = "";
+		Integer ptCount = 0;
+		for (int  j = 0; j < map.getSizeX(); ++j)
+		{
+			for (int  k = map.getSizeY() - 1; k >= 0; --k)
+			{
+				IntPair pos = new IntPair(j,k);
+				if (depart.x ==j && depart.y ==k)
+					out += "D ";
+				else if (arrivee.x ==j && arrivee.y ==k)
+					out += "A ";
+				else if (result.contains(pos))
+				{
+					ptCount ++;
+					out += ptCount.toString();
+				}
+				else if(map.canCross(j, k))
+					out += ". ";
+				else
+					out += "X ";	
+			}
+			
+			out +='\n';
+		}
+		System.out.println(out);
+		System.out.println("=======================================================\nEnd of dump\n=============================");
+		
+		
+		
+		
+		// affiche la liste des positions
+		output.clear();
+		for (int i = 0; i < result.size(); ++i)
+			output.add(new Vec2((float)(result.get(i).x)* 10*centimetresParCases -1500, (float)(result.get(i).y)* 10*centimetresParCases));
+		System.out.println("Chemin : " + output);
+		
+
+		return output;
+		
 		// convertit la sortie de l'AStar en suite de Vec2 dans le système de coords d'entrée.
+		/*
 		output.clear();
 		for (int i = 1; i < result.size(); ++i)
 			output.add(new Vec2((float)(result.get(i).x - result.get(i-1).x)* 10*centimetresParCases, (float)(result.get(i).y - result.get(i-1).y)* 10*centimetresParCases));
 		
-		return output;
+		
+		
+		return output;*/
 		
 	}
 
@@ -158,7 +205,7 @@ public class Pathfinding implements Service
 				yDelta = 0;
 		
 		// On doit rentrer les 2 premiers points du parcours
-		chemin.add(cheminFull.get(cheminFull.size()-1)); // ajoute la fin
+		//chemin.add(cheminFull.get(cheminFull.size()-1)); // ajoute la fin
 		chemin.add(cheminFull.get(0));
 		chemin.add(cheminFull.get(1));
 		
@@ -174,7 +221,8 @@ public class Pathfinding implements Service
 			if (xDelta != lastXDelta && yDelta != lastYDelta)	// Si virage, on garde le point, sinon non.
 				chemin.add(cheminFull.get(i-1));
 		}
-		chemin.remove(1);
+		chemin.remove(1); // retire l'intermédiare de calcul
+		chemin.add(cheminFull.get(cheminFull.size()-1)); // ajoute la fin
 		
 		
 		// supprimes les points non nécéssaire.
@@ -188,7 +236,8 @@ public class Pathfinding implements Service
 			{
 				if (map.canCrossLine(chemin.get(i).x, chemin.get(i).y, chemin.get(j).x, chemin.get(j).y))
 				{
-					//map.drawLine(chemin.get(i).x, chemin.get(i).y, chemin.get(j).x, chemin.get(j).y);
+					System.out.println("Lissage loops parameters :  i = " + i + ";  j = " + j);
+					map.drawLine(chemin.get(i).x, chemin.get(i).y, chemin.get(j).x, chemin.get(j).y);
 					// on a trouvé le point le plus loin que l'on peut rejoindre en ligne droite
 					out.add(chemin.get(i));
 					i = j-1;	// on continuras la recherche a partir de ce point.

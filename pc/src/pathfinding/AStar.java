@@ -174,13 +174,92 @@ function reconstruct_path(came_from, current_node)
 		    					out +='\n';
 		    				}
 		    				System.out.println(out);
-		    				System.out.println("=======================================================\nEnd of dumpn\n=============================");
+		    				System.out.println("=======================================================\nEnd of dump\n=============================");
+		    				
+		    				
+		    				// Puisque ce bug est difficile a corriger, on fait un cas particulier à l'arrache pour que ce soit transparent
+		    				// TODO : find where does the bug comes from
+		    				
+		    				AStar gaffeur = new AStar(espace, depart, current);
+		    				gaffeur.process();
+		    				ArrayList<IntPair> gaffeurOut = gaffeur.getChemin();
+		    				
+		    				
+		    				
+		    				
+		    				
+
+		    				System.out.println("=======================================================\nGAffeurOut : \n=============================");
+		    				out = "";
+		    				for (int  j = 0; j < gaffeur.getEspace().getSizeX(); ++j)
+		    				{
+		    					for (int  k =  gaffeur.getEspace().getSizeY() - 1; k >= 0; --k)
+		    					{
+		    						IntPair pos = new IntPair(j,k);
+		    						if (gaffeur.getDepart().x ==j && gaffeur.getDepart().y ==k)
+		    							out += 'D';
+		    						else if (gaffeur.getArrivee().x ==j && gaffeur.getArrivee().y ==k)
+		    							out += 'A';
+		    						else if (gaffeurOut.contains(pos))
+		    						{
+		    							out += '|';
+		    						}
+		    						else if(gaffeur.getEspace().canCross(j, k))
+		    							out += '.';
+		    						else
+		    							out += 'X';	
+		    					}
+		    					
+		    					out +='\n';
+		    				}
+		    				System.out.println(out);
+		    				
+		    				
+		    				
+		    				for (i = 1; i <= gaffeurOut.size(); ++i)
+		    					chemin.add(0, new IntPair(gaffeurOut.get(gaffeurOut.size()-i).x, gaffeurOut.get(gaffeurOut.size()-i).y));
+		    				System.out.println("=======================================================\nGaffeur sucessfulln\n=============================");
+		        			chemin.add(0, new IntPair(depart.x,depart.y));
+		    				break; // sors du while
+		    				
 		    				
 		    				
 		    			}
 		    		}
     			}
     			chemin.add( new IntPair(depart.x,depart.y));
+    			
+
+				System.out.println("=======================================================\nPostGaffeur dump\n=============================");
+				
+				
+
+				String out = "";
+				Integer ptCount = 0;
+				for (int  j = 0; j < espace.getSizeX(); ++j)
+				{
+					for (int  k = espace.getSizeY() - 1; k >= 0; --k)
+					{
+						IntPair pos = new IntPair(j,k);
+						if (depart.x ==j && depart.y ==k)
+							out += "D ";
+						else if (arrivee.x ==j && arrivee.y ==k)
+							out += "A ";
+						else if (chemin.contains(pos))
+						{
+							ptCount ++;
+							out += ptCount.toString();
+						}
+						else if(espace.canCross(j, k))
+							out += ". ";
+						else
+							out += "X ";	
+					}
+					
+					out +='\n';
+				}
+				System.out.println(out);
+				System.out.println("=======================================================\nEnd of dump\n=============================");
 	    		
 	    		processFinalisationWithSucess();
 	    		return;	//  reconstruct path

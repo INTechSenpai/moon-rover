@@ -163,6 +163,7 @@ public class PathfindingRandomTest extends JUnit_Test
 	public void test_marche_aleatoire() throws Exception
 	{
 
+		int compteTrajets = 0;
 		int cmParCase =2;
 		
 		Pathfinding finder = new Pathfinding(table, config, log, cmParCase);
@@ -171,16 +172,32 @@ public class PathfindingRandomTest extends JUnit_Test
 	    while(true)
 	    {
 			
-			Vec2 arrivee = new Vec2(randomGenerator.nextInt(3000)-1500,randomGenerator.nextInt(2000));
+			Vec2 arrivee = new Vec2(randomGenerator.nextInt(3000)-1500,randomGenerator.nextInt(2000))
+					,depart;
 			while (finder.map.canCross((int)((float)(arrivee.x + 1500) / cmParCase /10), (int)((float)(arrivee.y) / cmParCase /10)) == false)
 			{
 				arrivee.x = randomGenerator.nextInt(3000)-1500;
 				arrivee.y = randomGenerator.nextInt(2000); 
 			}
-			ArrayList<Vec2> chemin = finder.chemin(robotvrai.getPosition(), arrivee);
+			depart = robotvrai.getPosition();
+			ArrayList<Vec2> chemin = finder.chemin(depart, arrivee);
 			
 			if (chemin != null)
 			{
+				
+				// affiche la feuille de route
+				Vec2 newpos = new Vec2(0,0);
+				System.out.println("Chemin (test_marche_aleatoire) : ");
+				//newpos.x = depart.x +  chemin.get(0).x;
+				//.y = depart.y +  chemin.get(0).y;
+				System.out.println("pox n°" + 0 + " : " + newpos);
+				for(int j = 0; j < chemin.size(); j++)
+				{
+					newpos.x = chemin.get(j).x;
+					newpos.y = chemin.get(j).y;
+					System.out.println("pox n°" + j + " : " + newpos);
+					
+				}
 				
 				// Affiche le calcul du chemin
 				String out = "";
@@ -215,15 +232,25 @@ public class PathfindingRandomTest extends JUnit_Test
 				
 				
 				// suit le trajet
+			/*	newpos = new Vec2(0,0);
+				newpos.x = depart.x +  chemin.get(0).x;
+				newpos.y = depart.y +  chemin.get(0).y;
+				System.out.println("Goto : " + newpos);
+				robotvrai.va_au_point(newpos);*/
 				for(int j = 0; j < chemin.size(); j++)
 				{
-					Vec2 newpos = new Vec2(0,0);
-					newpos.x = robotvrai.getPosition().x +  chemin.get(j).x;
-					newpos.y = robotvrai.getPosition().y +  chemin.get(j).y;
+					newpos.x = chemin.get(j).x;
+					newpos.y = chemin.get(j).y;
 					
+
+					System.out.println("Goto : " + newpos);
 					robotvrai.va_au_point(newpos);
 					
 				}
+				compteTrajets++;
+
+				System.out.println("Trajets effectués : " + compteTrajets);
+				
 				
 			}
 	    }
