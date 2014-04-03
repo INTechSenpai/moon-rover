@@ -82,10 +82,10 @@ public class Grid2DSpace
 		
 		
 		// les bords de la map sont non acessibles
-		appendObstacle( new ObstacleRectangulaire(new Vec2(0,0), (int)(robotRadius/2.0f), 3000));
-		appendObstacle( new ObstacleRectangulaire(new Vec2(0,2000), (int)(robotRadius/2.0f), 3000));
-		appendObstacle( new ObstacleRectangulaire(new Vec2(1500,1000), 2000, (int)(robotRadius/2.0f)));
-		appendObstacle( new ObstacleRectangulaire(new Vec2(-1500,1000), 2000, (int)(robotRadius/2.0f)));
+		appendObstacle( new ObstacleRectangulaire(new Vec2(0,0), (int)(robotRadius*1.1f), 3000));
+		appendObstacle( new ObstacleRectangulaire(new Vec2(0,2000), (int)(robotRadius*1.1f), 3000));
+		appendObstacle( new ObstacleRectangulaire(new Vec2(1500,1000), 2000, (int)(robotRadius*1.1f)));
+		appendObstacle( new ObstacleRectangulaire(new Vec2(-1500,1000), 2000, (int)(robotRadius*1.1f)));
 		
 		
 	}
