@@ -77,17 +77,25 @@ public class Pathfinding implements Service
 	// TODO : deal with precision issue (divide by centimetresParCases)
 	public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee)
 	{
-		// Change de système de coordonnées
+		
+
+		solver.setDepart(new IntPair((int)((float)(depart.x + 1500) / centimetresParCases /10), (int)((float)(depart.y) / centimetresParCases /10)));
+		solver.setArrivee(new IntPair((int)((float)(arrivee.x + 1500) / centimetresParCases /10), (int)((float)(arrivee.y) / centimetresParCases /10)));
+/*		// Change de système de coordonnées
 		solver.setDepart(new IntPair((int)Math.round(depart.x/10 + 150)/centimetresParCases, (int)Math.round(depart.y/10)/centimetresParCases));
 		solver.setArrivee(new IntPair((int)Math.round(arrivee.x/10 + 150)/centimetresParCases, (int)Math.round(arrivee.y/10)/centimetresParCases));
-		
+
+		System.out.println("solver.depart : " + solver.getDepart().x + "   " + solver.getDepart().y);
+		System.out.println("solver.arrivee : " + solver.getArrivee().x + "   " + solver.getArrivee().y);
+		System.out.println("solver.espace.size : " + solver.getEspace().getSizeX() + "   " + solver.getEspace().getSizeY());
+		*/
 		// calcule le chemin
 		solver.process();
 		if (!solver.isValid())	// null si A* dit que pas possib'
 			return null;
 		result = lissage(solver.getChemin(), map);
 		
-
+/*
 		System.out.println("=======================================================\n PostLissage dump\n=============================");
 		
 		
@@ -119,7 +127,7 @@ public class Pathfinding implements Service
 		System.out.println(out);
 		System.out.println("=======================================================\nEnd of dump\n=============================");
 		
-		
+		*/
 		
 		
 		// affiche la liste des positions
@@ -236,8 +244,8 @@ public class Pathfinding implements Service
 			{
 				if (map.canCrossLine(chemin.get(i).x, chemin.get(i).y, chemin.get(j).x, chemin.get(j).y))
 				{
-					System.out.println("Lissage loops parameters :  i = " + i + ";  j = " + j);
-					map.drawLine(chemin.get(i).x, chemin.get(i).y, chemin.get(j).x, chemin.get(j).y);
+					//System.out.println("Lissage loops parameters :  i = " + i + ";  j = " + j);
+					//map.drawLine(chemin.get(i).x, chemin.get(i).y, chemin.get(j).x, chemin.get(j).y);
 					// on a trouvé le point le plus loin que l'on peut rejoindre en ligne droite
 					out.add(chemin.get(i));
 					i = j-1;	// on continuras la recherche a partir de ce point.
@@ -263,5 +271,12 @@ public class Pathfinding implements Service
 	public IntPair getArrivee() 
 	{
 		return solver.getArrivee();
+	}
+	/**
+	 * @return the map
+	 */
+	public Grid2DSpace getMap()
+	{
+		return map;
 	}
 }
