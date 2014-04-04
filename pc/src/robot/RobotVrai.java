@@ -202,20 +202,25 @@ public class RobotVrai extends Robot {
 	// Un début, on va voir si ça marche
 	public void recaler()
 	{
-		/*Pas besoin de cette fonction -> il faudra utiliser la cale en carton fait maison
+		//Pas besoin de cette fonction -> il faudra utiliser la cale en carton fait maison
 		try {
-			deplacements.set_vitesse_translation(30);
-			position.x = ;
-			deplacements.tourner((float)Math.PI);
-			deplacements.avancer(-100);
-			deplacements.set_x(1300);
-			deplacements.avancer(50);
-			deplacements.tourner((float)-Math.PI/2);
-			deplacements.avancer();
-		} catch (SerialException e) {
+			deplacements.set_vitesse_translation(50);
+			deplacements.set_vitesse_rotation(80);
+			avancer(-200, false, true);
+			position.x = 1500 - 165;
+			deplacements.set_x(1500-165);
+			setOrientation((float)Math.PI);
+			avancer(60);
+			tourner(-(float)Math.PI/2);
+			avancer(-600, false, true);
+			position.y = 2000 - 165;
+			deplacements.set_y(2000 - 165);
+			avancer(100);
+			setOrientation((float)(-Math.PI));
+			//Normalement on se trouve à (1500 - 170 - 70 = 1260 ; 2000 - 170 - 100 = 1730)
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		*/
 	}
 	
 	/**
