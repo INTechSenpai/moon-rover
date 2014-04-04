@@ -502,14 +502,14 @@ public class RobotVrai extends Robot {
 				signe = -1;
 			String vitesse_rotation = get_vitesse_rotation();
 			stopper();
-			avancer(-130);
+			avancer(-150);
 			ouvrir_bas_pince(cote);
 			tourner_relatif(signe*0.2f);
-			sleep(500);
-			avancer(100);
+			sleep(600);
+			avancer(120);
 			presque_fermer_pince(cote);
 			set_vitesse_rotation("prise_feu");
-			tourner_relatif(signe*0.3f);
+			tourner_relatif(-signe*0.3f);
 			set_vitesse_rotation(vitesse_rotation);
 			avancer(30);
 			fermer_pince(cote);
