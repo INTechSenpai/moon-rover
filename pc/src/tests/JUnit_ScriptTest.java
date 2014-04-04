@@ -161,7 +161,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	public void test_ScriptTree_agit() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptTree");
-		s.agit(2, robotvrai, table, true);
+		s.agit(1, robotvrai, table, true);
 	}
 
 	@Test(expected=ScriptException.class)

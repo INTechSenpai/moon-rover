@@ -219,6 +219,12 @@ public class Serial implements SerialPortEventListener, Service
 			String ping = null;
 			try
 			{
+
+				//Evacuation de l'eventuel buffer indésirable
+				output.write("\r".getBytes());
+				//Evacuation de l'acquittement
+				input.readLine();
+				
 				//ping
 				output.write("?\r".getBytes());
 				//evacuation de l'acquittement
