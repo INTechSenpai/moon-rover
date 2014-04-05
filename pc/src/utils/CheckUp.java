@@ -34,4 +34,8 @@ public class CheckUp implements Service {
 		}
 	}
 	
+	public void maj_config()
+	{
+		// TODO
+	}
 }

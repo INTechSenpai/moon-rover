@@ -103,4 +103,8 @@ public class Read_Ini implements Service {
 		}
 	}
 	
+	public void maj_config()
+	{
+	}
+	
 }

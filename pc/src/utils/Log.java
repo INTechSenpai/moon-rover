@@ -127,5 +127,10 @@ public class Log implements Service
 				System.out.println(e);
 			}
 	}
+	
+	public void maj_config()
+	{
+		// TODO
+	}
 
 }
