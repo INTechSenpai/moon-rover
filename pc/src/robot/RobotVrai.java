@@ -924,8 +924,7 @@ public class RobotVrai extends Robot {
 
 	private void detecter_collision(boolean devant) throws CollisionException
 	{
-		return; // TODO
-/*		int signe = -1;
+		int signe = -1;
 		if(devant)
 			signe = 1;
 		int rayon_detection = largeur_robot + distance_detection/2;
@@ -936,7 +935,7 @@ public class RobotVrai extends Robot {
 		{
 			log.warning("Ennemi détecté!", this);
 			throw new CollisionException();
-		}*/		
+		}
 	}
 	
 	private void detecter_collision() throws CollisionException

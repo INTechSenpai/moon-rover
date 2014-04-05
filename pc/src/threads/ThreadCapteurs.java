@@ -89,8 +89,8 @@ class ThreadCapteurs extends AbstractThread {
 
 
 			//int distance = capteur.mesurer(false);
-			int distance_infrarouge = capteur.mesurer("ir");
-			int distance_ultrason = capteur.mesurer("us");
+			int distance_infrarouge = capteur.mesurer_infrarouge();
+			int distance_ultrason = capteur.mesurer_ultrason();
 			
 			//Ici on interprètera distance_infrarouge
 			boolean obs_infr = (distance_infrarouge < 500); //Booléen car le capteur infrarouge n'est pas assez fiable pour qu'on puisse se servir des distances

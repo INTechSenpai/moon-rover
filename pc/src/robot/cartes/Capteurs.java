@@ -46,34 +46,29 @@ public class Capteurs implements Service {
 	-	 * @param capteur (soit "ir", soit "us")
 	-	 * @return la valeur la plus optimiste des capteurs
 	-	 */
-		public int mesurer(String capteur)
+		public int mesurer_ultrason()
+		{
+			return mesurer("us_av", nb_capteurs_ultrason_avant);
+		}
+
+		public int mesurer_infrarouge()
+		{
+			return mesurer("ir_av", nb_capteurs_infrarouge_avant);
+		}
+
+		private int mesurer(String protocole, int nb)
 		{
 			if(!capteurs_on)
 	    		return 3000;
-			String[] ultrasons;
-			String[] infrarouges; 
+			
+			String[] distances_string;
 			int[] distances;
 			
 			try{
-				if(capteur == "us")
-				{
-					distances = new int[nb_capteurs_ultrason_avant];
-					ultrasons = serie.communiquer("us_av", nb_capteurs_ultrason_avant);
-	    		for(int i = 0; i < nb_capteurs_ultrason_avant; i++)
-	    			distances[i] = Integer.parseInt(ultrasons[i]);
-				}
-				if(capteur == "ir")
-				{
-					distances = new int[nb_capteurs_infrarouge_avant];
-		    		infrarouges  = serie.communiquer("ir_av", nb_capteurs_infrarouge_avant);
-		    		for(int i = 0; i < nb_capteurs_infrarouge_avant; i++)
-		    			distances[i] = Integer.parseInt(infrarouges[i]);				
-				}
-				else
-				{
-					//C'est si on a donné une valeur inutile à capteur
-					return 0;
-				}
+				distances = new int[nb];
+				distances_string = serie.communiquer(protocole, nb);
+	    		for(int i = 0; i < nb; i++)
+	    			distances[i] = Integer.parseInt(distances_string[i]);
 	    		
 		    	Arrays.sort(distances); // le dernier élément d'un tableau trié par ordre croissant est le plus grand
 		    	int distance = distances[distances.length-1];
