@@ -67,7 +67,24 @@ public class RobotVrai extends Robot {
 		this.deplacements = deplacements;
 		this.hookgenerator =  hookgenerator;
 		this.table = table;
+		maj_config();
+		this.set_vitesse_rotation("entre_scripts");
+		this.set_vitesse_translation("entre_scripts");
 		
+		try {
+			update_x_y_orientation();
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/*
+	 * MÉTHODES PUBLIQUES
+	 */
+	
+	public void maj_config()
+	{
+		super.maj_config();
 		try
 		{
 			largeur_robot = Integer.parseInt(config.get("largeur_robot"));
@@ -140,23 +157,6 @@ public class RobotVrai extends Robot {
 		{
 			log.critical(e, this);
 		}
-		this.set_vitesse_rotation("entre_scripts");
-		this.set_vitesse_translation("entre_scripts");
-		
-		try {
-			update_x_y_orientation();
-		} catch (SerialException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/*
-	 * MÉTHODES PUBLIQUES
-	 */
-	
-	public void maj_config()
-	{
-		// TODO
 	}
 
 	// La couleur est simulée. Normalement, vu la disposition des couleurs, cela devrait se faire assez bien.
@@ -692,12 +692,13 @@ public class RobotVrai extends Robot {
 		synchronized(this.position)
 		{
 			this.position = position;
-		}
-		try {
-			deplacements.set_x((int)position.x);
-			deplacements.set_y((int)position.y);
-		} catch (SerialException e) {
-			e.printStackTrace();
+			try {
+				deplacements.set_x((int)position.x);
+				deplacements.set_y((int)position.y);
+			} catch (SerialException e) {
+				e.printStackTrace();
+			}
+			sleep(300);
 		}
 	}
 

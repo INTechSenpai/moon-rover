@@ -106,6 +106,11 @@ public abstract class Robot implements Service {
 	{
 		this.config = config;
 		this.log = log;
+		maj_config();
+	}
+	
+	public void maj_config()
+	{
 		try {
 			couleur = config.get("couleur");
 		} catch (ConfigException e) {
@@ -113,16 +118,6 @@ public abstract class Robot implements Service {
 		}
 		try {
 			nb_tentatives = Integer.parseInt(config.get("nb_tentatives"));
-		} catch (ConfigException e) {
-			log.critical(e, this);
-		}
-	}
-	
-	
-	public void update_couleur()
-	{
-		try {
-			couleur = config.get("couleur");
 		} catch (ConfigException e) {
 			log.critical(e, this);
 		}

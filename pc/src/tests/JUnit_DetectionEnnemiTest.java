@@ -35,10 +35,11 @@ public class JUnit_DetectionEnnemiTest extends JUnit_Test {
 		log.debug("JUnit_DetectionEnnemiTest.test_ajoutObstacle()", this);
 		robotvrai.setPosition(new Vec2(-600, 1410));
 		robotvrai.setOrientation((float)-Math.PI/2);
-		Thread.sleep(300);
+		Thread.sleep(1000);
 		container.demarreThreads();
-		Thread.sleep(300);
+		Thread.sleep(1000);
 		Assert.assertEquals(table.nb_obstacles(), 0);
+		log.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this);
 		log.warning("Vous avez 5 secondes pour placer un obstacle devant le robot", this);
 		Thread.sleep(6000);
 		Assert.assertTrue(table.nb_obstacles() >= 1);
@@ -48,10 +49,10 @@ public class JUnit_DetectionEnnemiTest extends JUnit_Test {
 	public void non_detection_arbre() throws Exception
 	{
 		log.debug("JUnit_DetectionEnnemiTest.non_detection_arbre()", this);
-		robotvrai.setPosition(new Vec2(1300, 1200));
+		robotvrai.setPosition(new Vec2(-1300, 1200));
 		robotvrai.setOrientation(-(float)Math.PI/2);
 		container.demarreThreads();
-		Thread.sleep(300);
+		Thread.sleep(1000);
 		Assert.assertTrue(table.nb_obstacles() == 0);
 	}
 
@@ -62,8 +63,48 @@ public class JUnit_DetectionEnnemiTest extends JUnit_Test {
 		robotvrai.setPosition(new Vec2(0, 1700));
 		robotvrai.setOrientation((float)Math.PI/2);
 		container.demarreThreads();
-		Thread.sleep(300);
+		Thread.sleep(1000);
 		Assert.assertTrue(table.nb_obstacles() == 0);
+		robotvrai.setPosition(new Vec2(-100, 1700));
+		Thread.sleep(1000);
+		Assert.assertTrue(table.nb_obstacles() == 0);
+		robotvrai.setPosition(new Vec2(100, 1700));
+		Thread.sleep(1000);
+		Assert.assertTrue(table.nb_obstacles() == 0);
+	}
+
+	@Test
+	public void non_detection_bac() throws Exception
+	{
+		log.debug("JUnit_DetectionEnnemiTest.non_detection_bac()", this);
+		robotvrai.setPosition(new Vec2(-740, 1500));
+		robotvrai.setOrientation((float)Math.PI/2);
+		container.demarreThreads();
+		Thread.sleep(1000);
+		Assert.assertTrue(table.nb_obstacles() == 0);
+		robotvrai.setPosition(new Vec2(-450, 1500));
+		Thread.sleep(1000);
+		Assert.assertTrue(table.nb_obstacles() == 0);
+		robotvrai.setPosition(new Vec2(-1170, 1500));
+		Thread.sleep(1000);
+		Assert.assertTrue(table.nb_obstacles() == 0);
+	}
+
+	@Test
+	public void non_detection_torche() throws Exception
+	{
+		log.debug("JUnit_DetectionEnnemiTest.non_detection_torche()", this);
+		robotvrai.setPosition(new Vec2(-600, 1200));
+		robotvrai.setOrientation(-(float)Math.PI/2);
+		container.demarreThreads();
+		Thread.sleep(1000);
+		Assert.assertTrue(table.nb_obstacles() == 0);
+		for(int i = 0; i < 5; i++)
+		{
+			robotvrai.avancer(-10);
+			Thread.sleep(1000);
+			Assert.assertTrue(table.nb_obstacles() == 0);
+		}
 	}
 
 

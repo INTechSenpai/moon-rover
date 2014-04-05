@@ -214,13 +214,15 @@ public class Table implements Service {
 		    if (obstacle.position.SquaredDistance(centre_detection) < distance*distance)
 		    	return true;
 		}	
-		iterator = listObstaclesFixes.iterator();
+		//  Cela ne concerne pas les obstacles fixes, qui sont déjà pris en compte par la recherche de chemin.
+		
+/*		iterator = listObstaclesFixes.iterator();
 		while ( iterator.hasNext() )
 		{
 		    Obstacle obstacle = iterator.next();
 		    if (obstacle.position.SquaredDistance(centre_detection) < distance*distance)
 		    	return true;
-		}
+		}*/
 		
 		return robots_adverses[0].position.SquaredDistance(centre_detection) < distance*distance
 				|| robots_adverses[1].position.SquaredDistance(centre_detection) < distance*distance;

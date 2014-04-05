@@ -61,6 +61,18 @@ public class Log implements Service
 	
 	}
 	
+	public void special(Object message)
+	{
+		special(message.toString());
+	}
+	
+	public void special(String message)
+	{
+		if(affiche_debug)
+			ecrire("Lanceur: "+message, couleurDebug);
+	}
+	
+	
 	public void debug(Object message, Object objet)
 	{
 		debug(message.toString(), objet);
