@@ -56,7 +56,11 @@ public class Grid2DSpace
 		
 		
 		datas = new ArrayList<ArrayList<Boolean>>();
+		
+		
+		// TODO : efficient Grid2DSpace creation based on precreated fixed Obstacle table
 		ArrayList<Obstacle> l_fixes = table.getListObstaclesFixes();
+		l_fixes.addAll(table.getListObstacles());
 		
 		// construit une map de sizeX * sizeY vide
 		for(int i=0; i<sizeX; i++)

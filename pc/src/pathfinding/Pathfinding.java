@@ -56,7 +56,8 @@ public class Pathfinding implements Service
 	{
 		// TODO : clear map to initial state
 		// also figure out if a check can be founded to skip the whole process if newtable = map
-		
+
+		map = new Grid2DSpace(new IntPair((int)((float)300.0f/centimetresParCases), (int)((float)200.0f/centimetresParCases)), table, 265);
 		for (int i = 0; i < newtable.getListObstacles().size(); ++i)
 		{
 			if (newtable.getListObstacles().get(i) instanceof ObstacleRectangulaire)
