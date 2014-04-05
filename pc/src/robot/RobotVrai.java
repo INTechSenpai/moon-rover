@@ -216,7 +216,7 @@ public class RobotVrai extends Robot {
 			position.y = 2000 - 165;
 			deplacements.set_y(2000 - 165);
 			avancer(100);
-			setOrientation((float)(-Math.PI));
+			setOrientation((float)(-Math.PI/2));
 			//Normalement on se trouve à (1500 - 170 - 70 = 1260 ; 2000 - 170 - 100 = 1730)
 		} catch (Exception e) {
 			e.printStackTrace();

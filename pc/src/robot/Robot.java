@@ -123,6 +123,8 @@ public abstract class Robot implements Service {
 		vitesse_translation = vitesse;
         if(vitesse == "entre_scripts")
         	return 150;
+        else if(vitesse == "prudent")
+        	return 100;
         else if(vitesse == "recal_faible")
             return 90;
         else if(vitesse == "recal_forte")
@@ -145,6 +147,8 @@ public abstract class Robot implements Service {
 		vitesse_rotation = vitesse;
         if(vitesse == "entre_scripts")
         	return 160;
+        else if(vitesse == "prudent")
+        	return 120;
         else if(vitesse == "recal_faible")
             return 120;
         else if(vitesse == "prise_feu")

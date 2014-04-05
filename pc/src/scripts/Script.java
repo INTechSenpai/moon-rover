@@ -68,9 +68,11 @@ public abstract class Script implements Service {
 	{
 		Vec2 point_entree = point_entree(id_version);
 
-		robotvrai.set_vitesse_translation("entre_scripts");
-		robotvrai.set_vitesse_rotation("entre_scripts");
-
+//		robotvrai.set_vitesse_translation("entre_scripts");
+//		robotvrai.set_vitesse_rotation("entre_scripts");
+		robotvrai.set_vitesse_translation("prudent");
+		robotvrai.set_vitesse_rotation("prudent");
+		
 		ArrayList<Vec2> chemin = pathfinding.chemin(robotvrai.getPosition(), point_entree);
 		//ArrayList<Vec2> chemin = new ArrayList<Vec2>();
 		//chemin.add(robotvrai.getPosition());
