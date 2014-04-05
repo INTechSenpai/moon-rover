@@ -199,11 +199,40 @@ public class RobotVrai extends Robot {
 			return Colour.RED;
 	}
 	
-	// TODO
+	// Un début, on va voir si ça marche
 	public void recaler()
 	{
-		
+		//Pas besoin de cette fonction -> il faudra utiliser la cale en carton fait maison
+		try {
+			deplacements.set_vitesse_translation(50);
+			deplacements.set_vitesse_rotation(80);
+			avancer(-200, false, true);
+			position.x = 1500 - 165;
+			if(couleur == "rouge")
+			{
+				deplacements.set_x(-1500+165);
+				setOrientation(0f);
+			}
+			else
+			{
+				deplacements.set_x(1500-165);
+				setOrientation((float)Math.PI);
+			}
+			sleep(500);
+			avancer(60);
+			tourner(-(float)Math.PI/2);
+			avancer(-600, false, true);
+			position.y = 2000 - 165;
+			deplacements.set_y(2000 - 165);
+			sleep(500);
+			avancer(100);
+			setOrientation((float)(-Math.PI)/2);
+			//Normalement on se trouve à (1500 - 170 - 70 = 1260 ; 2000 - 170 - 100 = 1730)
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+
 	
 	/**
 	 * Arrête le robot
@@ -489,14 +518,14 @@ public class RobotVrai extends Robot {
 				signe = -1;
 			String vitesse_rotation = get_vitesse_rotation();
 			stopper();
-			avancer(-130);
+			avancer(-150);
 			ouvrir_bas_pince(cote);
 			tourner_relatif(signe*0.2f);
-			sleep(500);
-			avancer(100);
+			sleep(600);
+			avancer(120);
 			presque_fermer_pince(cote);
 			set_vitesse_rotation("prise_feu");
-			tourner_relatif(signe*0.3f);
+			tourner_relatif(-signe*0.3f);
 			set_vitesse_rotation(vitesse_rotation);
 			avancer(30);
 			fermer_pince(cote);
@@ -551,6 +580,9 @@ public class RobotVrai extends Robot {
 	@Override	
 	public void lancerFilet() throws SerialException
 	{
+		stopper();
+		deplacements.desactiver_asservissement_rotation();
+		deplacements.desactiver_asservissement_translation();
 		actionneurs.lancerFilet();
 	}
 	@Override
@@ -1008,5 +1040,6 @@ public class RobotVrai extends Robot {
 	{
 		orientation_consigne = orientation;
 	}
+	
 	
 }

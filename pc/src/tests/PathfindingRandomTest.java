@@ -104,6 +104,31 @@ public class PathfindingRandomTest extends JUnit_Test
 	@Test
 	public void test_marche_aleatoire() throws Exception
 	{
+		
+		// init =======================
+		
+/**
+		super.setUp();
+		config.set("couleur", "jaune");
+		
+		//scriptmanager = (ScriptManager)container.getService("ScriptManager");
+		robotvrai = (RobotVrai)container.getService("RobotVrai");
+		robotchrono = new RobotChrono(config, log);
+		robotchrono.majRobotChrono(robotvrai);
+		table = (Table)container.getService("Table");
+		hookgenerator = (HookGenerator)container.getService("HookGenerator");
+		robotvrai.setPosition(new Vec2(1300, 1200));
+		robotvrai.setOrientation((float)Math.PI);
+		robotvrai.set_vitesse_rotation("entre_scripts");
+		robotvrai.set_vitesse_translation("entre_scripts");
+		container.getService("threadPosition");
+		container.demarreThreads();
+		robotvrai.set_vitesse_translation("30");
+		robotvrai.avancer(100);
+		
+		**/
+		
+		// ============================
 
 		int compteTrajets = 0;
 		int cmParCase =2;
@@ -124,10 +149,15 @@ public class PathfindingRandomTest extends JUnit_Test
 			depart = robotvrai.getPosition();
 			if (finder.map.canCross((int)((float)(depart.x + 1500) / cmParCase /10), (int)((float)(depart.y) / cmParCase /10)) == false)
 				System.out.println("depart not crossable");
+			
+
+			System.out.println("==========================================================================================================\nNouveau trajet : Depart = " + depart.x + " ; "+ depart.y + "     Arrivée = " + arrivee.x + " ; "+ arrivee.y);
 			ArrayList<Vec2> chemin = finder.chemin(depart, arrivee);
 
 			if (chemin != null)
 			{
+				
+				
 				/*
 				// affiche la feuille de route
 				Vec2 newpos = new Vec2(0,0);
@@ -143,6 +173,7 @@ public class PathfindingRandomTest extends JUnit_Test
 					
 				}
 				
+
 				// Affiche le calcul du chemin
 				String out = "";
 				Integer i = 1;
@@ -172,8 +203,10 @@ public class PathfindingRandomTest extends JUnit_Test
 					
 					out +='\n';
 				}
-				System.out.println(out);
-				*/
+				System.out.println(out);	
+				*/			
+				
+				
 				
 				// suit le trajet
 				Vec2 newpos = new Vec2(0,0);

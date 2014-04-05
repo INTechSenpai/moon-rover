@@ -47,13 +47,14 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		robotchrono.majRobotChrono(robotvrai);
 		table = (Table)container.getService("Table");
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
-		robotvrai.setPosition(new Vec2(1300, 1200));
-		robotvrai.setOrientation((float)Math.PI);
+		robotvrai.setPosition(new Vec2(1251, 1695));
+		//On démarre avec la cale !!!!
+		robotvrai.setOrientation((float)(-Math.PI/2));
 		robotvrai.set_vitesse_rotation("entre_scripts");
 		robotvrai.set_vitesse_translation("entre_scripts");
 		container.getService("threadPosition");
 		container.demarreThreads();
-		robotvrai.set_vitesse_translation("30");
+		//robotvrai.set_vitesse_translation("30");
 		robotvrai.avancer(100);
 	}
 
@@ -161,7 +162,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	public void test_ScriptTree_agit() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptTree");
-		s.agit(2, robotvrai, table, true);
+		s.agit(1, robotvrai, table, true);
 	}
 
 	@Test(expected=ScriptException.class)
@@ -199,7 +200,8 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	@Test
 	public void test_takefire() throws Exception
 	{
-		robotvrai.takefire(Cote.DROIT);
+		robotvrai.setTient_feu(Cote.DROIT);
+		robotvrai.takefire(Cote.GAUCHE);
 	}
 
 }

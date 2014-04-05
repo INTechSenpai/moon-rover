@@ -50,6 +50,15 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 	}
 
 	@Test
+	public void test_recalage() throws Exception
+	{
+		log.debug("JUnit_RobotVraiJauneTest.test_recalage()", this);
+		robotvrai.setPosition(new Vec2(1300, 1700));
+		robotvrai.setOrientation((float)Math.PI);
+		robotvrai.recaler();
+	}
+
+	@Test
 	public void test_setOrientation() throws Exception
 	{
 		log.debug("JUnit_RobotVraiJauneTest.test_setOrientation()", this);
