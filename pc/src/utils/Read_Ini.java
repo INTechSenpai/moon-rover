@@ -94,7 +94,8 @@ public class Read_Ini implements Service {
 		set(nom, value.toString());
 	}
 
-	private void affiche_tout()
+	// TODO private
+	public void affiche_tout()
 	{
 		System.out.println("Configuration initiale");
 		for(Object o: config.keySet())

@@ -86,7 +86,7 @@ public abstract class Script implements Service {
 		}
 		catch (Exception e)
 		{
-			System.out.println(e);
+			e.printStackTrace();
 			// Si on rencontre un obstacle en allant exécuter un script et qu'il reste d'autres scripts, alors on change de script
 			throw new ScriptException();
 		}

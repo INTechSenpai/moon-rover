@@ -33,16 +33,12 @@ public class Capteurs implements Service {
 		this.log = log;
 		this.config = config;
 		this.serie = serie;
-		try {
-			capteurs_on = Boolean.parseBoolean(config.get("capteurs_on"));
-		} catch (ConfigException e) {
-			capteurs_on = true;
-			e.printStackTrace();
-		}
+		maj_config();
 	}
 	
 	public void maj_config()
 	{
+		config.affiche_tout();
 		try {
 			capteurs_on = Boolean.parseBoolean(config.get("capteurs_on"));
 		} catch (ConfigException e) {
@@ -72,7 +68,10 @@ public class Capteurs implements Service {
 		private int mesurer(String protocole, int nb)
 		{
 			if(!capteurs_on)
+			{
+				log.critical("Capteurs désactivés", this);
 	    		return 3000;
+			}
 			
 			String[] distances_string;
 			int[] distances;

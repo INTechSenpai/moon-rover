@@ -34,14 +34,24 @@ public class JUnit_CapteursTest extends JUnit_Test {
 		log.debug("JUnit_CapteursTest.desactivation_capteur()", this);
 
 		// Avec capteurs
-		Assert.assertTrue(capteurs.mesurer_infrarouge() != 3000);
+		log.debug(capteurs.mesurer_ultrason(), this);
+	//	Assert.assertTrue(capteurs.mesurer_infrarouge() != 3000);
 		Assert.assertTrue(capteurs.mesurer_ultrason() != 3000);
 
 		// Sans capteurs
 		config.set("capteurs_on", false);
 		capteurs.maj_config();
-		Assert.assertTrue(capteurs.mesurer_infrarouge() == 3000);
+		log.debug(capteurs.mesurer_ultrason(), this);
+	//	Assert.assertTrue(capteurs.mesurer_infrarouge() == 3000);
 		Assert.assertTrue(capteurs.mesurer_ultrason() == 3000);
+
+		// Et re avec
+		config.set("capteurs_on", true);
+		capteurs.maj_config();
+		log.debug(capteurs.mesurer_ultrason(), this);
+	//	Assert.assertTrue(capteurs.mesurer_infrarouge() != 3000);
+		Assert.assertTrue(capteurs.mesurer_ultrason() != 3000);
+
 	}
 
 

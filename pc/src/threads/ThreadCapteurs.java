@@ -208,6 +208,7 @@ class ThreadCapteurs extends AbstractThread {
 			}
 	*/		
 			int distance = capteur.mesurer_ultrason();
+			log.debug("Distance: "+distance, this);
 			if(distance >= 0 && distance < horizon_capteurs)
 			{
 				int distance_inter_robots = distance + rayon_robot_adverse + largeur_robot/2;
@@ -224,12 +225,17 @@ class ThreadCapteurs extends AbstractThread {
 				if(System.currentTimeMillis() - date_dernier_ajout > tempo)
 					// si la position est bien sur la table (histoire de pas détecter un arbitre)
 					if(position.x > -table_x/2 && position.y > 0 && position.x < table_x/2 && position.y < table_y)
+					{
 						if(!table.obstacle_existe(position_brute))
 						{
 							table.creer_obstacle(position);
 							date_dernier_ajout = (int)System.currentTimeMillis();
 							log.debug("Nouvel obstacle en "+position, this);
 						}
+						else
+							log.debug("L'objet vu est un obstacle fixe.", this);
+					}
+
 				pathfinding.update(table);
 			}
 			Sleep.sleep((long)1/capteurs_frequence);

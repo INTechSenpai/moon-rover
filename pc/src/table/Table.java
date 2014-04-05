@@ -500,7 +500,7 @@ public class Table implements Service {
 	private boolean obstacle_existe(Vec2 position, Obstacle o)
 	{
 		// Obstacle circulaire
-		if(o instanceof ObstacleCirculaire && position.SquaredDistance(o.position) <= (1.5*((ObstacleCirculaire)o).getRadius())*1.5*((ObstacleCirculaire)o).getRadius())
+		if(o instanceof ObstacleCirculaire && position.SquaredDistance(o.position) <= (1.2*((ObstacleCirculaire)o).getRadius())*1.2*((ObstacleCirculaire)o).getRadius())
 			return true;
 		// Obstacle rectangulaire
 		else if(o instanceof ObstacleRectangulaire && ((ObstacleRectangulaire)o).SquaredDistance(position) <= 100*100)
