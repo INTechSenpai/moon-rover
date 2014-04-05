@@ -43,5 +43,10 @@ class ThreadPosition extends AbstractThread {
 		log.debug("Arrêt du thread de position", this);
 	
 	}
+	
+	public void maj_config()
+	{
+		// TODO
+	}
 
 }

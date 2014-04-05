@@ -153,6 +153,11 @@ public class RobotVrai extends Robot {
 	/*
 	 * MÉTHODES PUBLIQUES
 	 */
+	
+	public void maj_config()
+	{
+		// TODO
+	}
 
 	// La couleur est simulée. Normalement, vu la disposition des couleurs, cela devrait se faire assez bien.
 	public Colour getColour(Cote cote)

@@ -26,5 +26,15 @@ public class JUnit_CapteursTest extends JUnit_Test {
 		Assert.assertTrue(!capteurs.isFireRedDroit());
 	}
 
+	@Test
+	public void desactivation_capteur() throws Exception
+	{
+		log.debug("JUnit_CapteursTest.desactivation_capteur()", this);
+		config.set("capteurs_on", true);
+		Assert.assertTrue(capteurs.mesurer_infrarouge() != 3000);
+		config.set("capteurs_on", false);
+		Assert.assertTrue(capteurs.mesurer_infrarouge() == 3000);
+	}
+
 
 }

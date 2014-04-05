@@ -42,6 +42,10 @@ public class Deplacements implements Service {
 		infos_stoppage_enMouvement.put("derivee_erreur_translation", 0);
 	}
 	
+	public void maj_config()
+	{
+	}	
+	
 	/**
 	 * Renvoie vrai si le robot bloque (c'est-à-dire que les moteurs forcent mais que le robot ne bouge pas). Blocage automatique au bout de 500ms
 	 * @param PWMmoteurGauche

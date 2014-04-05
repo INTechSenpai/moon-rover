@@ -48,6 +48,11 @@ public class Pathfinding implements Service
 		
 	};
 	
+	public void maj_config()
+	{
+		// TODO
+	}
+
 	/**
 	 * Méthode appelée par le thread de capteur. Met à jour les obstacles de la recherche de chemin en les demandant à table
 	 * @param newtable : le nouvel état du jeu a prendre en compte

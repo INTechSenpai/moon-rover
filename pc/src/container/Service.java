@@ -8,5 +8,6 @@ package container;
 
 public interface Service {
 
+	public void maj_config();
 	
 }

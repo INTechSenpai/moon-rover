@@ -70,5 +70,10 @@ public class MemoryManager implements Service {
 		productsRobotChrono[profondeur].clone(out);
 		return out;
 	}
+	
+	public void maj_config()
+	{
+		// TODO
+	}
 			
 }

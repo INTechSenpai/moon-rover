@@ -469,5 +469,10 @@ public class Table implements Service {
 			return   !(pos.distance(obstacle.getPosition()) < ((ObstacleCirculaire)obstacle).getRadius());
 	
 	 	}
+	
+	public void maj_config()
+	{
+		// TODO
+	}
 }
 

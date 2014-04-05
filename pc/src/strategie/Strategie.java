@@ -365,6 +365,10 @@ public class Strategie implements Service {
 		}
 	}
 
-
+	public void maj_config()
+	{
+		// TODO
+	}
+	
 }
 

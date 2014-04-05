@@ -19,6 +19,7 @@ public class Capteurs implements Service {
 	// Dépendances
 	private Log log;
 	private Serial serie;
+	private Read_Ini config;
 	
 	private boolean capteurs_on;
 
@@ -30,6 +31,7 @@ public class Capteurs implements Service {
 	public Capteurs(Read_Ini config, Log log, Serial serie)
 	{
 		this.log = log;
+		this.config = config;
 		this.serie = serie;
 		try {
 			capteurs_on = Boolean.parseBoolean(config.get("capteurs_on"));
@@ -38,6 +40,17 @@ public class Capteurs implements Service {
 			e.printStackTrace();
 		}
 	}
+	
+	public void maj_config()
+	{
+		try {
+			capteurs_on = Boolean.parseBoolean(config.get("capteurs_on"));
+		} catch (ConfigException e) {
+			capteurs_on = true;
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	-	 * Retourne la valeur la plus optimiste des capteurs de type capteur dans 
 	-	 * la direction voulue

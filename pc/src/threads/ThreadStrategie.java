@@ -122,4 +122,8 @@ public class ThreadStrategie extends AbstractThread {
 		return true;
 	}
 	
+	public void maj_config()
+	{
+		// TODO
+	}
 }

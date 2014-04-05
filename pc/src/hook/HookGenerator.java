@@ -51,6 +51,11 @@ public class HookGenerator implements Service {
 		
 	}
 
+	public void maj_config()
+	{
+		// TODO
+	}
+	
 	/*
 	 * Hook de position
 	 */

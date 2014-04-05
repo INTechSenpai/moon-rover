@@ -22,7 +22,11 @@ public class Actionneurs implements Service {
 		this.log = log;
 		this.serie = serie;
 	}
-	
+
+	public void maj_config()
+	{
+	}
+
 	public void ouvrir_pince_gauche() throws SerialException
 	{
 		log.debug("Pince gauche ouverte", this);

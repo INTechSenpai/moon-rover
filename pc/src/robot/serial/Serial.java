@@ -240,5 +240,10 @@ public class Serial implements SerialPortEventListener, Service
 			return ping;
 		}
 	}
+	
+	public void maj_config()
+	{
+		// TODO
+	}
 
 }

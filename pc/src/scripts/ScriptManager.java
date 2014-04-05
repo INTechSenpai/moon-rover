@@ -70,4 +70,8 @@ public class ScriptManager implements Service {
 		return script;
 	}
 	
+	public void maj_config()
+	{
+		// TODO
+	}
 }

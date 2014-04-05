@@ -233,4 +233,9 @@ class ThreadCapteurs extends AbstractThread {
 		
 	}
 	
+	public void maj_config()
+	{
+		// TODO
+	}
+	
 }
