@@ -168,6 +168,8 @@ public class JUnit_RobotVraiJauneTest extends JUnit_Test {
 		Thread.sleep(100);
 		robotvrai.tourner((float)1.2);
 		assertEquals(robotvrai.getOrientation(), 1.2, 0.001);
+		robotvrai.tourner((float)Math.PI/2);
+		assertEquals(robotvrai.getOrientation(), Math.PI/2, 0.001);
 	}
 
 	@Test

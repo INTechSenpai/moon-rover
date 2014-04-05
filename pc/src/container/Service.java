@@ -8,6 +8,9 @@ package container;
 
 public interface Service {
 
+	/**
+	 * Cette méthode sert surtout aux tests, afin de rendre propre les modifications de config en plein match.
+	 */
 	public void maj_config();
 	
 }

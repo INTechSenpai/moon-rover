@@ -15,6 +15,8 @@ public class JUnit_CapteursTest extends JUnit_Test {
 		super.setUp();
 		log.debug("JUnit_ActionneursTest.setUp()", this);
 		capteurs = (Capteurs)container.getService("Capteurs");
+		config.set("capteurs_on", true);
+		capteurs.maj_config();
 	}
 	
 	@Test
@@ -30,10 +32,16 @@ public class JUnit_CapteursTest extends JUnit_Test {
 	public void desactivation_capteur() throws Exception
 	{
 		log.debug("JUnit_CapteursTest.desactivation_capteur()", this);
-		config.set("capteurs_on", true);
+
+		// Avec capteurs
 		Assert.assertTrue(capteurs.mesurer_infrarouge() != 3000);
+		Assert.assertTrue(capteurs.mesurer_ultrason() != 3000);
+
+		// Sans capteurs
 		config.set("capteurs_on", false);
+		capteurs.maj_config();
 		Assert.assertTrue(capteurs.mesurer_infrarouge() == 3000);
+		Assert.assertTrue(capteurs.mesurer_ultrason() == 3000);
 	}
 
 

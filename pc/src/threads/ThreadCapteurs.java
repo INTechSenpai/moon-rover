@@ -87,7 +87,7 @@ class ThreadCapteurs extends AbstractThread {
 //			marche_arriere = !marche_arriere;
 
 
-
+/*
 			//int distance = capteur.mesurer(false);
 			int distance_infrarouge = capteur.mesurer_infrarouge();
 			int distance_ultrason = capteur.mesurer_ultrason();
@@ -101,6 +101,7 @@ class ThreadCapteurs extends AbstractThread {
 				float obsX,obsY;//position de l'obstacle détecté
 				//on ne détecte qu'en haut. Il faut vérifier si ce qu'on détecte est un arbre (en regardant la position et l'orientation du robot). Si
 				//oui, on n'en tient pas compte, si non, c'est un obstacle.
+				log.debug(robotvrai.getOrientation(), this);
 				obsX = (float)(robotvrai.getPosition().x + Math.cos(robotvrai.getOrientation()));
 				obsY = (float)(robotvrai.getPosition().y + Math.sin(robotvrai.getOrientation()));
 				Vec2 pos  = new Vec2(obsX,obsY);
@@ -135,6 +136,7 @@ class ThreadCapteurs extends AbstractThread {
 			{
 				//On détecte un truc en face de nous qui est un obstacle de haut en bas
 				int distance_inter_robots = distance_ultrason + rayon_robot_adverse + largeur_robot/2;
+				log.debug(robotvrai.getOrientation(), this);
 				double theta = robotvrai.getOrientation();
 				Vec2 position = robotvrai.getPosition().PlusNewVector(new Vec2((float)distance_inter_robots * (float)Math.cos(theta), (float)distance_inter_robots * (float)Math.sin(theta)));
 				//position du robot adverse détecté
@@ -204,28 +206,32 @@ class ThreadCapteurs extends AbstractThread {
 				}
 				
 			}
-			
-			/*
+	*/		
+			int distance = capteur.mesurer_ultrason();
 			if(distance >= 0 && distance < horizon_capteurs)
 			{
 				int distance_inter_robots = distance + rayon_robot_adverse + largeur_robot/2;
+				int distance_brute = distance + largeur_robot/2;
 				double theta = robotvrai.getOrientation();
 //				if(marche_arriere)
 //					theta += Math.PI;
+				// On ne prend pas en compte le rayon du robot adverse dans la position brute. Il s'agit en fait du point effectivement vu
+				// Utilisé pour voir si l'obstacle n'est justement pas un robot adverse.
+				Vec2 position_brute = robotvrai.getPosition().PlusNewVector(new Vec2((float)distance_brute * (float)Math.cos(theta), (float)distance_brute * (float)Math.sin(theta)));
 				Vec2 position = robotvrai.getPosition().PlusNewVector(new Vec2((float)distance_inter_robots * (float)Math.cos(theta), (float)distance_inter_robots * (float)Math.sin(theta)));
-
+				
 				// on vérifie qu'un obstacle n'a pas été ajouté récemment
 				if(System.currentTimeMillis() - date_dernier_ajout > tempo)
 					// si la position est bien sur la table (histoire de pas détecter un arbitre)
 					if(position.x > -table_x/2 && position.y > 0 && position.x < table_x/2 && position.y < table_y)
-					{
-						table.creer_obstacle(position);
-						date_dernier_ajout = (int)System.currentTimeMillis();
-						log.debug("Nouvel obstacle en "+position, this);
-					}
-				
-				pathfinding.update();
-			}*/
+						if(!table.obstacle_existe(position_brute))
+						{
+							table.creer_obstacle(position);
+							date_dernier_ajout = (int)System.currentTimeMillis();
+							log.debug("Nouvel obstacle en "+position, this);
+						}
+				pathfinding.update(table);
+			}
 			Sleep.sleep((long)1/capteurs_frequence);
 			
 		}

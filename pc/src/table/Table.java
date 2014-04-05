@@ -87,8 +87,8 @@ public class Table implements Service {
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-1500,0), 250));
 
 		// Ajout bacs
-		//listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(1100,1700), 700, 300));
-		//listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-1100,1700), 700, 300));
+		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(1100,1700), 700, 300));
+		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-1100,1700), 700, 300));
 
 		//listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(750,1850), 700, 300));
 		//listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-750,1850), 700, 300));
@@ -258,6 +258,7 @@ public class Table implements Service {
 
 	public int nearestUntakenFire (final Vec2 position)
 	{
+		// On ne prend pas en compte les feux dans les torches
 		int min = 0;
 		for (int i = 1; i < 6; i++)
 			if (!arrayFire[i].isTaken() && arrayFire[i].getPosition().SquaredDistance(position) < arrayFire[min].getPosition().SquaredDistance(position))
@@ -473,6 +474,37 @@ public class Table implements Service {
 	public void maj_config()
 	{
 		// TODO
+	}
+	
+	/**
+	 * Indique si un obstacle de centre proche de la position indiquée existe.
+	 * Cela permet de ne pas détecter en obstacle mobile des obstacles fixes (comme les arbres).
+	 * De plus, ça allège le nombre d'obstacles.
+	 * @param position
+	 * @return
+	 */
+	public boolean obstacle_existe(Vec2 position) {
+		for(Obstacle o: listObstacles)
+			if(obstacle_existe(position, o))
+				return true;
+		for(Obstacle o: listObstaclesFixes)
+			if(obstacle_existe(position, o))
+				return true;
+		return false;
+	}
+	
+	private boolean obstacle_existe(Vec2 position, Obstacle o)
+	{
+		// Obstacle circulaire
+		if(o instanceof ObstacleCirculaire && position.SquaredDistance(o.position) <= (1.5*((ObstacleCirculaire)o).getRadius())*1.5*((ObstacleCirculaire)o).getRadius())
+			return true;
+		// Obstacle rectangulaire
+		else if(o instanceof ObstacleRectangulaire && ((ObstacleRectangulaire)o).SquaredDistance(position) <= 100*100)
+			return true;
+		// Autre obstacle
+		else if(position.SquaredDistance(o.position) <= 100)
+			return true;
+		return false;
 	}
 }
 

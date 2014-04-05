@@ -86,5 +86,12 @@ public class JUnit_TableTest extends JUnit_Test {
 		table.putFire(2);
 		Assert.assertTrue(ancien_hash != table.hashTable());
 	}
+	
+	@Test
+	public void test_obstacle_existe() throws Exception {
+		log.debug("JUnit_TableTest.test_obstacle_existe()", this);
+		
+		Assert.assertTrue(table.obstacle_existe(new Vec2(-517, 900)));
+	}
 
 }
