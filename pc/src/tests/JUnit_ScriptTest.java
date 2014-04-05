@@ -200,7 +200,8 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	@Test
 	public void test_takefire() throws Exception
 	{
-		robotvrai.takefire(Cote.DROIT);
+		robotvrai.setTient_feu(Cote.DROIT);
+		robotvrai.takefire(Cote.GAUCHE);
 	}
 
 }

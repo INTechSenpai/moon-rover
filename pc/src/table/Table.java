@@ -315,6 +315,11 @@ public class Table implements Service {
 		//La nomenclature des positions des fruits noirs provient de la description de la classe Tree
 		
 		arrayTree[id].getArrayFruit()[pos_fruit_noir] = new Fruit(false);
+		for(Fruit f : arrayTree[id].getArrayFruit())
+		{
+			System.out.println(f.isGood());
+		}
+
 		
 	}
 	

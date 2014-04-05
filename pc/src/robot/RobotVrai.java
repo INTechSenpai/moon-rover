@@ -580,6 +580,9 @@ public class RobotVrai extends Robot {
 	@Override	
 	public void lancerFilet() throws SerialException
 	{
+		stopper();
+		deplacements.desactiver_asservissement_rotation();
+		deplacements.desactiver_asservissement_translation();
 		actionneurs.lancerFilet();
 	}
 	@Override
