@@ -17,6 +17,7 @@ import org.junit.Test;
 import pathfinding.Pathfinding;
 import robot.RobotChrono;
 import robot.RobotVrai;
+import robot.cartes.Deplacements;
 import scripts.Script;
 import scripts.ScriptManager;
 import smartMath.IntPair;
@@ -40,18 +41,24 @@ public class PathfindingRandomTest extends JUnit_Test
 		
 		//scriptmanager = (ScriptManager)container.getService("ScriptManager");
 		robotvrai = (RobotVrai)container.getService("RobotVrai");
+		Deplacements deplacements = (Deplacements)container.getService("Deplacements");
 		robotchrono = new RobotChrono(config, log);
 		robotchrono.majRobotChrono(robotvrai);
 		table = (Table)container.getService("Table");
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
-		robotvrai.setPosition(new Vec2(1300, 1200));
+		robotvrai.setPosition(new Vec2(1300, 1700));
 		robotvrai.setOrientation((float)Math.PI);
-		robotvrai.set_vitesse_rotation("entre_scripts");
-		robotvrai.set_vitesse_translation("entre_scripts");
 		container.getService("threadPosition");
 		container.demarreThreads();
 		robotvrai.set_vitesse_translation("30");
-		robotvrai.avancer(100);
+		robotvrai.recaler();
+		robotvrai.set_vitesse_rotation("entre_scripts");
+		robotvrai.set_vitesse_translation("entre_scripts");
+		//deplacements.set_vitesse_translation(500);		// A ne pas faire en vrai, danger pour les actionneurs
+		//deplacements.set_vitesse_rotation(500);
+		robotvrai.avancer(600);
+		robotvrai.tourner(3.14f);
+		robotvrai.avancer(300);
 	}
 
 	
@@ -61,7 +68,7 @@ public class PathfindingRandomTest extends JUnit_Test
 	{
 		
 		// init
-		robotvrai.setPosition(new Vec2(1300, 1200));
+		//robotvrai.setPosition(new Vec2(1300, 1200));
 				
 		
 		int cmParCase = 2;
@@ -104,31 +111,6 @@ public class PathfindingRandomTest extends JUnit_Test
 	@Test
 	public void test_marche_aleatoire() throws Exception
 	{
-		
-		// init =======================
-		
-/**
-		super.setUp();
-		config.set("couleur", "jaune");
-		
-		//scriptmanager = (ScriptManager)container.getService("ScriptManager");
-		robotvrai = (RobotVrai)container.getService("RobotVrai");
-		robotchrono = new RobotChrono(config, log);
-		robotchrono.majRobotChrono(robotvrai);
-		table = (Table)container.getService("Table");
-		hookgenerator = (HookGenerator)container.getService("HookGenerator");
-		robotvrai.setPosition(new Vec2(1300, 1200));
-		robotvrai.setOrientation((float)Math.PI);
-		robotvrai.set_vitesse_rotation("entre_scripts");
-		robotvrai.set_vitesse_translation("entre_scripts");
-		container.getService("threadPosition");
-		container.demarreThreads();
-		robotvrai.set_vitesse_translation("30");
-		robotvrai.avancer(100);
-		
-		**/
-		
-		// ============================
 
 		int compteTrajets = 0;
 		int cmParCase =2;

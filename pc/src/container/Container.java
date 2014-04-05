@@ -68,8 +68,8 @@ public class Container {
 				serialmanager.serieAsservissement.close();
 			if(serialmanager.serieCapteursActionneurs != null)
 				serialmanager.serieCapteursActionneurs.close();
-			if(serialmanager.serieLaser != null)
-				serialmanager.serieLaser.close();
+//Laser		if(serialmanager.serieLaser != null)
+//			serialmanager.serieLaser.close();
 		}
 		log.destructeur();
 	}
