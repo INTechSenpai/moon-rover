@@ -208,8 +208,16 @@ public class RobotVrai extends Robot {
 			deplacements.set_vitesse_rotation(80);
 			avancer(-200, false, true);
 			position.x = 1500 - 165;
-			deplacements.set_x(1500-165);
-			setOrientation((float)Math.PI);
+			if(couleur == "rouge")
+			{
+				deplacements.set_x(-1500+165);
+				setOrientation(0f);
+			}
+			else
+			{
+				deplacements.set_x(1500-165);
+				setOrientation((float)Math.PI);
+			}
 			sleep(500);
 			avancer(60);
 			tourner(-(float)Math.PI/2);
@@ -224,6 +232,7 @@ public class RobotVrai extends Robot {
 			e.printStackTrace();
 		}
 	}
+
 	
 	/**
 	 * Arrête le robot

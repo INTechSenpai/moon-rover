@@ -118,6 +118,16 @@ public abstract class Robot implements Service {
 		}
 	}
 	
+	
+	public void update_couleur()
+	{
+		try {
+			couleur = config.get("couleur");
+		} catch (ConfigException e) {
+			log.critical(e, this);
+		}
+	}
+	
 	protected int conventions_vitesse_translation(String vitesse)
 	{
 		vitesse_translation = vitesse;
