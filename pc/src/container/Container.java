@@ -214,12 +214,33 @@ public class Container {
 	{
 		try {
 			getService("threadAnalyseEnnemi");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
 			getService("threadLaser");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
 			getService("threadStrategie");
-			getService("threadCapteurs");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+				getService("threadCapteurs");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
 			getService("threadPosition");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
 			getService("threadTimer");
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		threadmanager.demarreThreads();
 	}
