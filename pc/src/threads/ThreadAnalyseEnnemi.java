@@ -16,14 +16,15 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 	ThreadTimer threadtimer;
 	Strategie strategie;
 	
-	long[] date_freeze = new long[2];
+	private long[] date_freeze = new long[2];
 	public Vec2[] positionsfreeze = new Vec2[2];
-	int tolerance = 1000;
+//	private int tolerance = 1000;
 	
 	public ThreadAnalyseEnnemi(Table table, ThreadTimer threadtimer, Strategie strategie)
 	{
 		this.table = table;
 		this.threadtimer = threadtimer;
+		this.strategie = strategie;
 		positionsfreeze = table.get_positions_ennemis();
 	}
 	

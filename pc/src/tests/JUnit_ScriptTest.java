@@ -89,7 +89,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	public void test_ScriptLances_versions() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptLances");
-		for(int i = 0; i < 8; i++)
+		for(int i = 0; i < 6; i++)
 		{
 			Assert.assertTrue(s.version(robotvrai, table).size() == 2);
 			robotvrai.tirerBalle();
