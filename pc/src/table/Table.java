@@ -18,7 +18,9 @@ public class Table implements Service {
 	private Torch arrayTorch[] = new Torch[2];
 	private Fire arrayFire[] = new Fire[6];
 	private Fire arrayFixedFire[] = new Fire[4];
-	//TODO : explain if  listObstaclesFixes is included in listObstacles
+
+	// TODO Obstacles fixes (circulaires) pour support de feux en bordure
+	
 	private ArrayList<Obstacle> listObstacles = new ArrayList<Obstacle>();
 	private static ArrayList<Obstacle> listObstaclesFixes = new ArrayList<Obstacle>();
 	private ObstacleCirculaire[] robots_adverses = new ObstacleCirculaire[2];
@@ -127,7 +129,7 @@ public class Table implements Service {
 	 */
 	
 	/**
-	 * Utilisé par le pathfinding
+	 * Utilisé par le pathfinding. Retourne uniquement les obstacles temporaires.
 	 * @return
 	 */
 	public ArrayList<Obstacle> getListObstacles()
@@ -136,7 +138,7 @@ public class Table implements Service {
 	}
 	
 	/**
-	 * Utilisé par le pathfinding
+	 * Utilisé par le pathfinding. Retourne uniquement les obstacles fixes.
 	 * @return
 	 */
 	public ArrayList<Obstacle> getListObstaclesFixes()
