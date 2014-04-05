@@ -43,7 +43,7 @@ public class JUnit_DeplacementsTest extends JUnit_Test {
 		deplacements.avancer(100);
 		Thread.sleep(1000);
 		float[] infos_float = deplacements.get_infos_x_y_orientation();
-		Assert.assertEquals(10, infos_float[0], 5);
+		Assert.assertEquals(100, infos_float[0], 5);
 		Assert.assertEquals(1500, infos_float[1], 5);
 		Assert.assertEquals(0, infos_float[2], 50);
 

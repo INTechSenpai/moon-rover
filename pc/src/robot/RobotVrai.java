@@ -837,7 +837,6 @@ public class RobotVrai extends Robot {
 			else
 				try {
 					update_x_y_orientation();
-					log.debug("Je suis en "+position, this);
 				} catch (SerialException e) {
 					e.printStackTrace();
 				}
