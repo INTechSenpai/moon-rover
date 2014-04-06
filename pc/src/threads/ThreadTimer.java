@@ -103,7 +103,7 @@ public class ThreadTimer extends AbstractThread {
 	
 	public long temps_restant()
 	{
-		return duree_match - System.currentTimeMillis();
+		return date_debut + duree_match - System.currentTimeMillis();
 	}
 	
 	public void maj_config()
