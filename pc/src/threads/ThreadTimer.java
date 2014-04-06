@@ -101,6 +101,11 @@ public class ThreadTimer extends AbstractThread {
 		
 	}
 	
+	public long temps_restant()
+	{
+		return duree_match - System.currentTimeMillis();
+	}
+	
 	public void maj_config()
 	{
 		// facteur 1000 car temps_match est en secondes et duree_match en ms

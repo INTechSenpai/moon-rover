@@ -1055,6 +1055,5 @@ public class RobotVrai extends Robot {
 	{
 		orientation_consigne = orientation;
 	}
-
 	
 }

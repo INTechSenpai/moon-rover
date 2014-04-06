@@ -274,6 +274,5 @@ public class RobotChrono extends Robot {
 	public void ouvrir_bas_pince(Cote cote) throws SerialException {
 		duree += 1000;
 	}
-
 	
 }

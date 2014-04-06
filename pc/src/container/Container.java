@@ -109,8 +109,8 @@ public class Container {
 		else if(nom == "Deplacements")
 			services.put(nom, (Service)new Deplacements((Log)getService("Log"),
 														(Serial)getService("serieAsservissement")));
-		else if(nom == "Capteur")
-			services.put(nom, (Service)new Capteurs(	(Read_Ini)getService("Read_Ini"),
+		else if(nom == "Capteur" || nom == "Capteurs")
+			services.put("Capteur", (Service)new Capteurs(	(Read_Ini)getService("Read_Ini"),
 													(Log)getService("Log"),
 													(Serial)getService("serieCapteursActionneurs")));
 		else if(nom == "Actionneurs")
@@ -131,6 +131,7 @@ public class Container {
 														(Log)getService("Log")));		
 		else if(nom == "ScriptManager")
 			services.put(nom, (Service)new ScriptManager(	(HookGenerator)getService("HookGenerator"),
+															(ThreadTimer)getService("threadTimer"),
 															(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log"),
 															(RobotVrai)getService("RobotVrai")));
@@ -218,17 +219,17 @@ public class Container {
 			e.printStackTrace();
 		}
 		try {
-		//	getService("threadLaser");
+			getService("threadLaser");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		try {
-		//	getService("threadStrategie");
+			getService("threadStrategie");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		try {
-				getService("threadCapteurs");
+			getService("threadCapteurs");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
