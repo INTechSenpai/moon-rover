@@ -4,8 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
 
-import robot.cartes.FiltrageLaser;
 import robot.cartes.Laser;
+import robot.cartes.laser.FiltrageLaser;
 import smartMath.Vec2;
 
 public class JUnit_Laser_Test extends JUnit_Test {
