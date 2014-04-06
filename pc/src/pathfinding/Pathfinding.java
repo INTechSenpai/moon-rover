@@ -26,7 +26,8 @@ import container.Service;
 public class Pathfinding implements Service
 {
 	// Dépendances
-	private Table table;
+	private final Table table;	// Final: protection contre le changement de référence.
+								// Si la référence change, tout le memorymanager foire.
 	private static Read_Ini config;
 	private static Log log;
 	private boolean resultUpToDate;
