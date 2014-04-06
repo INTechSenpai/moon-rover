@@ -928,12 +928,17 @@ public class RobotVrai extends Robot {
 		}
 	}
 
+	// fonction vérifiant que l'on ne va pas taper dans le robot adverse. 
+	// Renvois true si ennemi droit devant.
+	// @param devant : fait la détection derrière le robot si l'on avance a reculons 
 	private void detecter_collision(boolean devant) throws CollisionException
 	{
 		int signe = -1;
 		if(devant)
 			signe = 1;
-		int rayon_detection = largeur_robot + distance_detection/2;
+		
+		// was largeur_robot + distance_detection/2;
+		int rayon_detection = largeur_robot/2 + distance_detection;
 		Vec2 centre_detection = new Vec2((float)(signe * rayon_detection * Math.cos(orientation)), (float)(signe * rayon_detection * Math.sin(orientation)));
 		centre_detection.Plus(position);
 

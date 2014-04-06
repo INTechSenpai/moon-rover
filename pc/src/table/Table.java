@@ -200,7 +200,7 @@ public class Table implements Service {
 	}
 
 	/**
-	 * Renvoie si un obstacle est à une distance inférieur à "distance" du point "centre_detection"
+	 * Renvoie true si un obstacle est à une distance inférieur à "distance" du point "centre_detection"
 	 * @param centre_detection
 	 * @param distance
 	 * @return

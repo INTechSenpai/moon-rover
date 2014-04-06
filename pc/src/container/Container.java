@@ -92,7 +92,8 @@ public class Container {
 	public Service getService(String nom) throws ContainerException, ThreadException, ConfigException, SerialManagerException
 	{
 		new Grid2DPochoirManager();
-		if(services.containsKey(nom));
+		if(services.containsKey(nom))
+			;
 		else if(nom == "Table")
 		{
 			services.put(nom, (Service)new Table(	(Log)getService("Log"),
@@ -108,7 +109,7 @@ public class Container {
 		else if(nom == "Deplacements")
 			services.put(nom, (Service)new Deplacements((Log)getService("Log"),
 														(Serial)getService("serieAsservissement")));
-		else if(nom == "Capteur" || nom == "Capteurs")
+		else if(nom == "Capteur")
 			services.put(nom, (Service)new Capteurs(	(Read_Ini)getService("Read_Ini"),
 													(Log)getService("Log"),
 													(Serial)getService("serieCapteursActionneurs")));
@@ -218,12 +219,12 @@ public class Container {
 			e.printStackTrace();
 		}
 		try {
-			getService("threadLaser");
+		//	getService("threadLaser");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		try {
-			getService("threadStrategie");
+		//	getService("threadStrategie");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

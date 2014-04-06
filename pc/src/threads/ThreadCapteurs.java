@@ -208,7 +208,7 @@ class ThreadCapteurs extends AbstractThread {
 			}
 	*/		
 			int distance = capteur.mesurer_ultrason();
-			log.debug("Distance: "+distance, this);
+			//log.debug("Distance: "+distance, this);
 			if(distance >= 0 && distance < horizon_capteurs)
 			{
 				int distance_inter_robots = distance + rayon_robot_adverse + largeur_robot/2;

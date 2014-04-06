@@ -137,8 +137,9 @@ public class Pathfinding implements Service
 		
 		// affiche la liste des positions
 		output.clear();
-		for (int i = 0; i < result.size(); ++i)
+		for (int i = 0; i < result.size()-1; ++i)
 			output.add(new Vec2((float)(result.get(i).x)* 10*centimetresParCases -1500, (float)(result.get(i).y)* 10*centimetresParCases));
+		output.add(arrivee);
 		System.out.println("Chemin : " + output);
 		
 

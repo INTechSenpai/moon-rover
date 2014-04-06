@@ -20,7 +20,7 @@ public class Capteurs implements Service {
 	private Log log;
 	private Serial serie;
 	private Read_Ini config;
-	
+
 	private boolean capteurs_on;
 
 	private final int nb_capteurs_infrarouge_avant = 1;
@@ -68,10 +68,7 @@ public class Capteurs implements Service {
 		private int mesurer(String protocole, int nb)
 		{
 			if(!capteurs_on)
-			{
-				log.critical("Capteurs désactivés", this);
 	    		return 3000;
-			}
 			
 			String[] distances_string;
 			int[] distances;

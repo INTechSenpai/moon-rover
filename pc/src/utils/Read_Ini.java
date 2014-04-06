@@ -91,6 +91,7 @@ public class Read_Ini implements Service {
 	 */
 	public void set(String nom, Object value)
 	{
+		System.out.println(nom+" = "+value.toString()+" (ancienne valeur: "+config.getProperty(nom)+")");
 		set(nom, value.toString());
 	}
 
