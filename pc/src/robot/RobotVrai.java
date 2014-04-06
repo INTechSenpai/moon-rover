@@ -815,7 +815,7 @@ public class RobotVrai extends Robot {
 		if(!trajectoire_courbe)
 		{
             // sans virage : la première rotation est blocante
-			tournerBasNiveau(angle, null, sans_lever_exception);
+			tournerBasNiveau(angle, hooks, sans_lever_exception);
 			
 			
 			

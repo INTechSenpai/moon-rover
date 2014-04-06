@@ -306,4 +306,19 @@ public class Pathfinding implements Service
 		// TODO
 	}
 	
+	/**
+	 * @return the centimetresParCases
+	 */
+	public int getCentimetresParCases() 
+	{
+		return centimetresParCases;
+	}
+
+	/**
+	 * @param centimetresParCases the centimetresParCases to set
+	 */
+	public void setCentimetresParCases(int centimetresParCases) 
+	{
+		this.centimetresParCases = centimetresParCases;
+	}
 }
