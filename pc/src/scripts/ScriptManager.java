@@ -26,17 +26,17 @@ public class ScriptManager implements Service {
 	private ArrayList<String> scripts_robot0;
 	private ArrayList<String> scripts_robot1;
 	
-	public ScriptManager(Pathfinding pathfinding, HookGenerator hookgenerator, Read_Ini config, Log log, RobotVrai robotvrai)
+	public ScriptManager(HookGenerator hookgenerator, Read_Ini config, Log log, RobotVrai robotvrai)
 	{
 		this.log = log;
 		
-		instancesScripts.put("ScriptTree", new ScriptTree(pathfinding, hookgenerator, config, log, robotvrai));
-		instancesScripts.put("ScriptLances", new ScriptLances(pathfinding, hookgenerator, config, log, robotvrai));
-		instancesScripts.put("ScriptDeposerFeu", new ScriptDeposerFeu(pathfinding, hookgenerator, config, log, robotvrai));
-		instancesScripts.put("ScriptTorche", new ScriptTorche(pathfinding, hookgenerator, config, log, robotvrai));
-		instancesScripts.put("ScriptFresque", new ScriptFresque(pathfinding, hookgenerator, config, log, robotvrai));
-		instancesScripts.put("ScriptDeposerFruits", new ScriptDeposerFruits(pathfinding, hookgenerator, config, log, robotvrai));
-		instancesScripts.put("ScriptFunnyAction", new ScriptFunnyAction(pathfinding, hookgenerator, config, log, robotvrai));
+		instancesScripts.put("ScriptTree", new ScriptTree(hookgenerator, config, log, robotvrai));
+		instancesScripts.put("ScriptLances", new ScriptLances(hookgenerator, config, log, robotvrai));
+		instancesScripts.put("ScriptDeposerFeu", new ScriptDeposerFeu(hookgenerator, config, log, robotvrai));
+		instancesScripts.put("ScriptTorche", new ScriptTorche(hookgenerator, config, log, robotvrai));
+		instancesScripts.put("ScriptFresque", new ScriptFresque(hookgenerator, config, log, robotvrai));
+		instancesScripts.put("ScriptDeposerFruits", new ScriptDeposerFruits(hookgenerator, config, log, robotvrai));
+		instancesScripts.put("ScriptFunnyAction", new ScriptFunnyAction(hookgenerator, config, log, robotvrai));
 		
 		scripts_robot0 = new ArrayList<String>();
 		scripts_robot0.add("ScriptTree");

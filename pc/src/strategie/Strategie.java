@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
+import pathfinding.Pathfinding;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import scripts.Script;
@@ -31,6 +32,7 @@ public class Strategie implements Service {
 	private ScriptManager scriptmanager;
 	private Table table;
 	private RobotVrai robotvrai;
+	private Pathfinding pathfinding;
 	private Read_Ini config;
 	private Log log;
 	
@@ -56,6 +58,7 @@ public class Strategie implements Service {
 		this.robotvrai = robotvrai;
 		this.config = config;
 		this.log = log;
+		pathfinding = new Pathfinding(table, config, log, 1);
 	}
 	
 	/**
@@ -86,7 +89,7 @@ public class Strategie implements Service {
 				log.debug("Stratégie fait: "+scriptEnCours+", dernier: "+dernier, this);
 				// le dernier argument, retenter_si_blocage, est vrai si c'est le dernier script. Sinon, on change de script sans attendre
 				try {
-					scriptEnCours.script.agit(scriptEnCours.version, robotvrai, table, dernier);
+					scriptEnCours.script.agit(scriptEnCours.version, robotvrai, table, pathfinding, dernier);
 				}
 				catch(Exception e)
 				{
@@ -263,7 +266,8 @@ public class Strategie implements Service {
 			Script script = scriptmanager.getScript(nom_script);
 			Table table_version = memorymanager.getCloneTable(profondeur);
 			RobotChrono robotchrono_version = memorymanager.getCloneRobotChrono(profondeur);
-			ArrayList<Integer> versions = script.version(robotchrono_version, table_version);
+			Pathfinding pathfinding_version = memorymanager.getClonePathfinding(profondeur);
+			ArrayList<Integer> versions = script.version(robotchrono_version, table_version, pathfinding_version);
 
 			// TODO corriger les scripts pour que ça n'arrive pas
 			if(versions == null)
@@ -274,8 +278,9 @@ public class Strategie implements Service {
 				{
 					Table cloned_table = memorymanager.getCloneTable(profondeur);
 					RobotChrono cloned_robotchrono = memorymanager.getCloneRobotChrono(profondeur);
+					Pathfinding cloned_pathfinding = memorymanager.getClonePathfinding(profondeur);
 					int score = script.score(id, cloned_robotchrono, cloned_table);
-					int duree_script = (int)script.calcule(id, cloned_robotchrono, cloned_table, duree_totale > duree_connaissances);
+					int duree_script = (int)script.calcule(id, cloned_robotchrono, cloned_table, cloned_pathfinding, duree_totale > duree_connaissances);
 					//log.debug("Durée de "+script+" "+id+": "+duree_script, this);
 					cloned_table.supprimer_obstacles_perimes(date+duree_script);
 					//log.debug("Score de "+script+" "+id+": "+score, this);
@@ -312,7 +317,9 @@ public class Strategie implements Service {
 			try {
 				Script script = scriptmanager.getScript(nom_script);
 				RobotChrono robotchrono = new RobotChrono(config, log);
-				if(script.version(robotchrono, table).size() >= 1)
+				// TODO
+				Pathfinding pathfinding = null;
+				if(script.version(robotchrono, table, pathfinding).size() >= 1)
 					compteur++;		
 			} catch (ScriptException e) {
 				e.printStackTrace();

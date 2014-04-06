@@ -17,7 +17,6 @@ import container.Service;
 import hook.methodes.TakeFire;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import exception.ConfigException;
 import exception.MouvementImpossibleException;
@@ -34,15 +33,13 @@ public abstract class Script implements Service {
 	protected static HookGenerator hookgenerator;
 	protected static Read_Ini config;
 	protected static Log log;
-	private static Pathfinding pathfinding;
 	
 	protected static ArrayList<Hook> hooksfeu = new ArrayList<Hook>();
 	
 	protected String couleur; 
 	
-	public Script(Pathfinding pathfinding, HookGenerator hookgenerator, Read_Ini config, Log log, RobotVrai robotvrai)
+	public Script(HookGenerator hookgenerator, Read_Ini config, Log log, RobotVrai robotvrai)
 	{
-		Script.pathfinding = pathfinding;
 		Script.hookgenerator = hookgenerator;
 		Script.config = config;
 		Script.log = log;
@@ -65,18 +62,19 @@ public abstract class Script implements Service {
 	/**
 	 * Exécute vraiment un script
 	 */
-	public void agit(int id_version, RobotVrai robotvrai, Table table, boolean retenter_si_blocage) throws ScriptException
+	public void agit(int id_version, RobotVrai robotvrai, Table table, Pathfinding pathfinding, boolean retenter_si_blocage) throws ScriptException
 	{
 		Vec2 point_entree = point_entree(id_version);
 
 		robotvrai.set_vitesse_translation("entre_scripts");
 		robotvrai.set_vitesse_rotation("entre_scripts");
 
+		pathfinding.update();
 		ArrayList<Vec2> chemin = pathfinding.chemin(robotvrai.getPosition(), point_entree);
 		try
 		{
 			robotvrai.suit_chemin(chemin, hooksfeu, retenter_si_blocage, false);
-			execute(id_version, robotvrai, table);
+			execute(id_version, robotvrai, table, pathfinding);
 		}
 		catch (Exception e)
 		{
@@ -86,7 +84,7 @@ public abstract class Script implements Service {
 		}
 		finally
 		{
-			termine(robotvrai, table);
+			termine(robotvrai, table, pathfinding);
 		}
 		
 	}
@@ -95,7 +93,7 @@ public abstract class Script implements Service {
 	 * Calcule le temps d'exécution de ce script (grâce à robotChrono)
 	 * @return le temps d'exécution
 	 */
-	public long calcule(int id_version, RobotChrono robotchrono, Table table, boolean use_cache)
+	public long calcule(int id_version, RobotChrono robotchrono, Table table, Pathfinding pathfinding, boolean use_cache)
 	{
 		Vec2 point_entree = point_entree(id_version);
 		robotchrono.set_vitesse_translation("entre_scripts");
@@ -105,7 +103,7 @@ public abstract class Script implements Service {
 		robotchrono.setPosition(point_entree);
 
 		try {
-			execute(id_version, robotchrono, table);
+			execute(id_version, robotchrono, table, pathfinding);
 		}
 		catch(Exception e)
 		{
@@ -118,7 +116,7 @@ public abstract class Script implements Service {
 	 * Renvoie le tableau des versions d'un script
 	 * @return le tableau des versions possibles
 	 */
-	public abstract ArrayList<Integer> version(final Robot robot, final Table table);
+	public abstract ArrayList<Integer> version(final Robot robot, final Table table, Pathfinding pathfinding);
 
 	/**
 	 * Retourne la position d'entrée associée à la version id
@@ -149,12 +147,12 @@ public abstract class Script implements Service {
 	 * Exécute le script
 	 * @throws SerialException 
 	 */
-	abstract protected void execute(int id_version, Robot robot, Table table) throws MouvementImpossibleException, SerialException;
+	abstract protected void execute(int id_version, Robot robot, Table table, Pathfinding pathfinding) throws MouvementImpossibleException, SerialException;
 
 	/**
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs.
 	 */
-	abstract protected void termine(Robot robot, Table table);
+	abstract protected void termine(Robot robot, Table table, Pathfinding pathfinding);
 	
 	
 }
