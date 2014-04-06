@@ -21,8 +21,8 @@ import robot.RobotVrai;
 import robot.cartes.Actionneurs;
 import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
-import robot.cartes.FiltrageLaser;
 import robot.cartes.Laser;
+import robot.cartes.laser.FiltrageLaser;
 import robot.serial.SerialManager;
 import robot.serial.Serial;
 
@@ -130,8 +130,7 @@ public class Container {
 														(Read_Ini)getService("Read_Ini"),
 														(Log)getService("Log")));		
 		else if(nom == "ScriptManager")
-			services.put(nom, (Service)new ScriptManager(	(Pathfinding)getService("Pathfinding"),
-															(HookGenerator)getService("HookGenerator"),
+			services.put(nom, (Service)new ScriptManager(	(HookGenerator)getService("HookGenerator"),
 															(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log"),
 															(RobotVrai)getService("RobotVrai")));

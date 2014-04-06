@@ -1,7 +1,5 @@
 package tests;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 
 import hook.Callback;
@@ -9,11 +7,11 @@ import hook.Executable;
 import hook.Hook;
 import hook.HookGenerator;
 import hook.methodes.TakeFire;
-import hook.methodes.TirerBalles;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import pathfinding.Pathfinding;
 import robot.Cote;
 import robot.RobotChrono;
 import robot.RobotVrai;
@@ -28,6 +26,7 @@ public class JUnit_Demo extends JUnit_Test {
 	private Script s;
 	private RobotVrai robotvrai;
 	private RobotChrono robotchrono;
+	private Pathfinding pathfinding;
 	private Table table;
 	private HookGenerator hookgenerator;
 	
@@ -45,6 +44,7 @@ public class JUnit_Demo extends JUnit_Test {
 		robotvrai.setOrientation((float)Math.PI);
 		robotvrai.set_vitesse_rotation("entre_scripts");
 		robotvrai.set_vitesse_translation("entre_scripts");
+		pathfinding = new Pathfinding(table, config, log, 1);
 		container.getService("threadPosition");
 		container.demarreThreads();
 
@@ -60,7 +60,7 @@ public class JUnit_Demo extends JUnit_Test {
 	@Test
 	public void arbre() throws Exception {
 		s = (Script)scriptmanager.getScript("ScriptTree");
-		s.agit(1, robotvrai, table, true);
+		s.agit(1, robotvrai, table, pathfinding, true);
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class JUnit_Demo extends JUnit_Test {
 	public void depose_fruits() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptDeposerFruits");
-		s.agit(0, robotvrai, table, false);
+		s.agit(0, robotvrai, table, pathfinding, false);
 	}
 	
 	@Test
@@ -89,7 +89,7 @@ public class JUnit_Demo extends JUnit_Test {
 	{
 		robotvrai.avancer(1000);
 		s = (Script)scriptmanager.getScript("ScriptLances");
-		s.agit(0, robotvrai, table, true);
+		s.agit(0, robotvrai, table, pathfinding, true);
 	}
 	
 	@Test
@@ -100,7 +100,7 @@ public class JUnit_Demo extends JUnit_Test {
 		robotvrai.lever_pince(Cote.GAUCHE);
 		robotvrai.takefire(Cote.GAUCHE);
 		s = (Script)scriptmanager.getScript("ScriptDeposerFeu");
-		s.agit(2, robotvrai, table, true);
+		s.agit(2, robotvrai, table, pathfinding, true);
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class JUnit_Demo extends JUnit_Test {
 		robotvrai.lever_pince(Cote.GAUCHE);
 		robotvrai.takefire(Cote.DROIT);
 		s = (Script)scriptmanager.getScript("ScriptDeposerFeu");
-		s.agit(2, robotvrai, table, true);
+		s.agit(2, robotvrai, table, pathfinding, true);
 	}
 	
 	@Test

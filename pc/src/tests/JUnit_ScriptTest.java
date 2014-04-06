@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import pathfinding.Pathfinding;
 import exception.ScriptException;
 import robot.Cote;
 import robot.RobotChrono;
@@ -35,6 +36,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	private RobotChrono robotchrono;
 	private Table table;
 	private HookGenerator hookgenerator;
+	private Pathfinding pathfinding;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -47,6 +49,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		robotchrono.majRobotChrono(robotvrai);
 		table = (Table)container.getService("Table");
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
+		pathfinding = new Pathfinding(table, config, log, 1);
 		robotvrai.setPosition(new Vec2(1251, 1695));
 		//On démarre avec la cale !!!!
 		robotvrai.setOrientation((float)(-Math.PI/2));
@@ -78,7 +81,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	public void test_ScriptLances_agit() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptLances");
-		s.agit(0, robotvrai, table, false);
+		s.agit(0, robotvrai, table, pathfinding, false);
 	}
 
 	/*
@@ -91,50 +94,50 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		s = (Script)scriptmanager.getScript("ScriptLances");
 		for(int i = 0; i < 6; i++)
 		{
-			Assert.assertTrue(s.version(robotvrai, table).size() == 2);
+			Assert.assertTrue(s.version(robotvrai, table, pathfinding).size() == 2);
 			robotvrai.tirerBalle();
 		}
-		Assert.assertTrue(s.version(robotvrai, table).size() == 0);
+		Assert.assertTrue(s.version(robotvrai, table, pathfinding).size() == 0);
 	}
 
 	@Test
 	public void test_ScriptTree_versions() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptTree");
-		Assert.assertTrue(s.version(robotvrai, table).size() == 4);
+		Assert.assertTrue(s.version(robotvrai, table, pathfinding).size() == 4);
 		table.pickTree(1);
-		Assert.assertTrue(s.version(robotvrai, table).size() == 3);
+		Assert.assertTrue(s.version(robotvrai, table, pathfinding).size() == 3);
 		table.pickTree(3);
-		Assert.assertTrue(s.version(robotvrai, table).size() == 2);
+		Assert.assertTrue(s.version(robotvrai, table, pathfinding).size() == 2);
 		table.pickTree(2);
-		Assert.assertTrue(s.version(robotvrai, table).size() == 1);
+		Assert.assertTrue(s.version(robotvrai, table, pathfinding).size() == 1);
 		table.pickTree(1);
-		Assert.assertTrue(s.version(robotvrai, table).size() == 1);
+		Assert.assertTrue(s.version(robotvrai, table, pathfinding).size() == 1);
 		table.pickTree(0);
-		Assert.assertTrue(s.version(robotvrai, table).size() == 0);
+		Assert.assertTrue(s.version(robotvrai, table, pathfinding).size() == 0);
 	}
 
 	@Test
 	public void test_ScriptFresques_versions() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptFresque");
-		Assert.assertTrue(s.version(robotvrai, table).size() == 3);
+		Assert.assertTrue(s.version(robotvrai, table, pathfinding).size() == 3);
 		robotvrai.deposer_fresques();
-		Assert.assertTrue(s.version(robotvrai, table).size() == 0);
+		Assert.assertTrue(s.version(robotvrai, table, pathfinding).size() == 0);
 	}
 
 	@Test
 	public void test_ScriptFresques_agit() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptFresque");
-		s.agit(0, robotvrai, table, false);
+		s.agit(0, robotvrai, table, pathfinding, false);
 	}
 
 	@Test
 	public void test_ScriptDeposerFruits_agit() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptDeposerFruits");
-		s.agit(0, robotvrai, table, false);
+		s.agit(0, robotvrai, table, pathfinding, false);
 	}
 
 	@Test
@@ -142,9 +145,9 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	{
 		s = (Script)scriptmanager.getScript("ScriptFresque");
 		RobotChrono robotchrono = new RobotChrono(config, log);
-		Assert.assertTrue(s.calcule(0, robotchrono, table, true) > 0);
-		Assert.assertTrue(s.calcule(1, robotchrono, table, true) > 0);
-		Assert.assertTrue(s.calcule(2, robotchrono, table, true) > 0);
+		Assert.assertTrue(s.calcule(0, robotchrono, table, pathfinding, true) > 0);
+		Assert.assertTrue(s.calcule(1, robotchrono, table, pathfinding, true) > 0);
+		Assert.assertTrue(s.calcule(2, robotchrono, table, pathfinding, true) > 0);
 	}
 
 	@Test
@@ -152,17 +155,17 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	{
 		s = (Script)scriptmanager.getScript("ScriptTree");
 		RobotChrono robotchrono = new RobotChrono(config, log);
-		Assert.assertTrue(s.calcule(0, robotchrono, table, true) > 0);
-		Assert.assertTrue(s.calcule(1, robotchrono, table, true) > 0);
-		Assert.assertTrue(s.calcule(2, robotchrono, table, true) > 0);
-		Assert.assertTrue(s.calcule(3, robotchrono, table, true) > 0);
+		Assert.assertTrue(s.calcule(0, robotchrono, table, pathfinding, true) > 0);
+		Assert.assertTrue(s.calcule(1, robotchrono, table, pathfinding, true) > 0);
+		Assert.assertTrue(s.calcule(2, robotchrono, table, pathfinding, true) > 0);
+		Assert.assertTrue(s.calcule(3, robotchrono, table, pathfinding, true) > 0);
 	}
 
 	@Test
 	public void test_ScriptTree_agit() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptTree");
-		s.agit(1, robotvrai, table, true);
+		s.agit(1, robotvrai, table, pathfinding, true);
 	}
 
 	@Test(expected=ScriptException.class)
@@ -175,9 +178,9 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	public void test_ScriptDeposerFeu_versions() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptDeposerFeu");
-		Assert.assertTrue(s.version(robotvrai, table).size() == 0);
+		Assert.assertTrue(s.version(robotvrai, table, pathfinding).size() == 0);
 		robotvrai.takefire(Cote.GAUCHE);
-		Assert.assertTrue(s.version(robotvrai, table).size() == 5);
+		Assert.assertTrue(s.version(robotvrai, table, pathfinding).size() == 5);
 	}
 
 	@Test
@@ -187,14 +190,14 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		robotvrai.lever_pince(Cote.GAUCHE);
 		robotvrai.takefire(Cote.GAUCHE);
 		s = (Script)scriptmanager.getScript("ScriptDeposerFeu");
-		s.agit(2, robotvrai, table, true);
+		s.agit(2, robotvrai, table, pathfinding, true);
 	}
 
 	@Test
 	public void test_ScriptTorche_agit() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptTorche");
-		s.agit(0, robotvrai, table, true);
+		s.agit(0, robotvrai, table, pathfinding, true);
 	}
 	
 	@Test

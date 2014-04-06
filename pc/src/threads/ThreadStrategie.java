@@ -102,7 +102,7 @@ public class ThreadStrategie extends AbstractThread {
 		NoteScriptVersion enCours = strategie.getScriptEnCours();
 		// TODO: la durée est importante pour supprimer les obstacles périmés
 		// La mise en cache est systématique car on ne cherche pas à récupérer le décompte mais seulement à modifier l'état de robotchrono et de table
-		enCours.script.calcule(enCours.version, robotchrono, tableFuture, true);
+//		enCours.script.calcule(enCours.version, robotchrono, tableFuture, true);
 		memorymanager.setModelTable(tableFuture, profondeur_max);
 		memorymanager.setModelRobotChrono(robotchrono, profondeur_max);
 		NoteScriptVersion meilleur = new NoteScriptVersion();
