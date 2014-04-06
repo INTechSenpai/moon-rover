@@ -58,6 +58,7 @@ public class Strategie implements Service {
 		this.robotvrai = robotvrai;
 		this.config = config;
 		this.log = log;
+		maj_config();
 		pathfinding = new Pathfinding(table, config, log, 1);
 	}
 	
@@ -261,7 +262,7 @@ public class Strategie implements Service {
 		NoteScriptVersion meilleur = new NoteScriptVersion(-1, null, -1);
 		int duree_connaissances = TTL;
 		
-		for(String nom_script : scriptmanager.getNomsScripts(id_robot))
+		for(String nom_script : scriptmanager.getNomsScripts())
 		{
 			Script script = scriptmanager.getScript(nom_script);
 			Table table_version = memorymanager.getCloneTable(profondeur);
@@ -312,7 +313,7 @@ public class Strategie implements Service {
 	private int nbScriptsRestants()
 	{
 		int compteur = 0;
-		for(String nom_script : scriptmanager.getNomsScripts(0))
+		for(String nom_script : scriptmanager.getNomsScripts())
 		{
 			try {
 				Script script = scriptmanager.getScript(nom_script);
@@ -374,7 +375,6 @@ public class Strategie implements Service {
 
 	public void maj_config()
 	{
-		// TODO
 	}
 	
 }

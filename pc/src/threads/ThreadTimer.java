@@ -31,15 +31,7 @@ public class ThreadTimer extends AbstractThread {
 		this.capteur = capteur;
 		this.deplacements = deplacements;
 		
-		// facteur 1000 car temps_match est en secondes et duree_match en ms
-		try {
-			duree_match = 1000*Long.parseLong(config.get("temps_match"));
-		}
-		catch(Exception e)
-		{
-			log.warning(e, this);
-		}
-
+		maj_config();
 	}
 
 	@Override
@@ -111,7 +103,14 @@ public class ThreadTimer extends AbstractThread {
 	
 	public void maj_config()
 	{
-		// TODO
+		// facteur 1000 car temps_match est en secondes et duree_match en ms
+		try {
+			duree_match = 1000*Long.parseLong(config.get("temps_match"));
+		}
+		catch(Exception e)
+		{
+			log.warning(e, this);
+		}
 	}
 	
 }

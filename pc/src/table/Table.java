@@ -100,6 +100,7 @@ public class Table implements Service {
 			try {
 				rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
 			} catch (NumberFormatException | ConfigException e) {
+				rayon_robot_adverse = 230;
 				e.printStackTrace();
 			}
 		robots_adverses[0] = new ObstacleCirculaire(new Vec2(0,0), rayon_robot_adverse);
@@ -485,7 +486,6 @@ public class Table implements Service {
 	
 	public void maj_config()
 	{
-		// TODO
 	}
 	
 	/**

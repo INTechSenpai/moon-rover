@@ -243,7 +243,6 @@ public class Serial implements SerialPortEventListener, Service
 	
 	public void maj_config()
 	{
-		// TODO
 	}
 
 }

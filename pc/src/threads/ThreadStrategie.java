@@ -36,14 +36,7 @@ public class ThreadStrategie extends AbstractThread {
 		this.robotchrono = new RobotChrono(config, log);
 		this.memorymanager = memorymanager;
 		this.threadtimer = threadtimer;
-		try {
-			profondeur_max = Integer.parseInt(config.get("profondeur_max_arbre")) - 1;
-		}
-		catch(Exception e)
-		{
-			profondeur_max = 9;
-			log.critical(e, this);
-		}
+		maj_config();
 	}
 	
 	@Override
@@ -124,6 +117,13 @@ public class ThreadStrategie extends AbstractThread {
 	
 	public void maj_config()
 	{
-		// TODO
+		try {
+			profondeur_max = Integer.parseInt(config.get("profondeur_max_arbre")) - 1;
+		}
+		catch(Exception e)
+		{
+			profondeur_max = 9;
+			e.printStackTrace();
+		}
 	}
 }

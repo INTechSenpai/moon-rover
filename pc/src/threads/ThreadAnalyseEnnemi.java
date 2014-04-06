@@ -86,8 +86,4 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 		return duree_freeze;
 	}
 	
-	public void maj_config()
-	{
-		// TODO
-	}
 }

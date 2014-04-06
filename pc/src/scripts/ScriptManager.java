@@ -22,8 +22,7 @@ public class ScriptManager implements Service {
 
 	private Map<String,Script> instancesScripts = new Hashtable<String,Script>();
 
-	private ArrayList<String> scripts_robot0;
-	private ArrayList<String> scripts_robot1;
+	private ArrayList<String> scripts_robot;
 	
 	public ScriptManager(HookGenerator hookgenerator, Read_Ini config, Log log, RobotVrai robotvrai)
 	{
@@ -37,25 +36,20 @@ public class ScriptManager implements Service {
 		instancesScripts.put("ScriptDeposerFruits", new ScriptDeposerFruits(hookgenerator, config, log, robotvrai));
 		instancesScripts.put("ScriptFunnyAction", new ScriptFunnyAction(hookgenerator, config, log, robotvrai));
 		
-		scripts_robot0 = new ArrayList<String>();
-		scripts_robot0.add("ScriptTree");
-		scripts_robot0.add("ScriptLances");
-		scripts_robot0.add("ScriptFresque");
-		scripts_robot0.add("ScriptTorche");
-		scripts_robot0.add("ScriptDeposerFruits");
-		scripts_robot0.add("ScriptFunnyAction");
-		scripts_robot0.add("ScriptDeposerFeu");
-
-		scripts_robot1 = new ArrayList<String>();
+		scripts_robot = new ArrayList<String>();
+		scripts_robot.add("ScriptTree");
+		scripts_robot.add("ScriptLances");
+		scripts_robot.add("ScriptFresque");
+		scripts_robot.add("ScriptTorche");
+		scripts_robot.add("ScriptDeposerFruits");
+		scripts_robot.add("ScriptFunnyAction");
+		scripts_robot.add("ScriptDeposerFeu");
 	}
 	
-	public ArrayList<String> getNomsScripts(int id_robot)
+	public ArrayList<String> getNomsScripts()
 	{
 		// if assez moche, il faudrait chercher à passer outre
-		if(id_robot == 0)
-			return scripts_robot0;
-		else
-			return scripts_robot1;
+		return scripts_robot;
 	}
 
 	public Script getScript(String nom) throws ScriptException
@@ -71,6 +65,5 @@ public class ScriptManager implements Service {
 	
 	public void maj_config()
 	{
-		// TODO
 	}
 }

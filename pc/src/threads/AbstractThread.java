@@ -27,6 +27,10 @@ public abstract class AbstractThread extends Thread implements Service {
 	{		
 	}
 
+	public void maj_config()
+	{
+	}
+	
 	public abstract void run();
 
 }

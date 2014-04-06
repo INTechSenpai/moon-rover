@@ -46,21 +46,7 @@ class ThreadCapteurs extends AbstractThread {
 		log.debug("Lancement du thread de capteurs", this);
 		int date_dernier_ajout = 0;
 //		boolean marche_arriere = false;
-
-		try
-		{
-			tempo = Double.parseDouble(config.get("capteurs_temporisation_obstacles"));
-			horizon_capteurs = Integer.parseInt(config.get("horizon_capteurs"));
-			rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
-			largeur_robot = Integer.parseInt(config.get("largeur_robot"));
-			table_x = Integer.parseInt(config.get("table_x"));
-			table_y = Integer.parseInt(config.get("table_y"));
-			capteurs_frequence = Integer.parseInt(config.get("capteurs_frequence"));
-		}
-		catch(Exception e)
-		{
-			log.critical(e, this);
-		}
+		maj_config();
 		
 		while(!threadTimer.match_demarre)
 		{
@@ -250,7 +236,62 @@ class ThreadCapteurs extends AbstractThread {
 	
 	public void maj_config()
 	{
-		// TODO
+		try
+		{
+			tempo = Double.parseDouble(config.get("capteurs_temporisation_obstacles"));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		try
+		{
+			horizon_capteurs = Integer.parseInt(config.get("horizon_capteurs"));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		try
+		{
+			rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		try
+		{
+			largeur_robot = Integer.parseInt(config.get("largeur_robot"));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		try
+		{
+			table_x = Integer.parseInt(config.get("table_x"));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		try
+		{
+			table_y = Integer.parseInt(config.get("table_y"));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		try
+		{
+			capteurs_frequence = Integer.parseInt(config.get("capteurs_frequence"));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 }

@@ -152,5 +152,9 @@ public abstract class Script implements Service {
 	 */
 	abstract protected void termine(Robot robot, Table table, Pathfinding pathfinding);
 	
+	public void maj_config()
+	{
+	}
+
 	
 }

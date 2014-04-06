@@ -952,7 +952,6 @@ public class RobotVrai extends Robot {
 			log.warning("Ennemi détecté en : " + centre_detection.x + "; " + centre_detection.y, this);
 			throw new CollisionException();
 		}
-		log.debug("Pas d'obstacles", this);
 
 	}
 	

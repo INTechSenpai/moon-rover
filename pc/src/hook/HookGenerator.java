@@ -36,6 +36,11 @@ public class HookGenerator implements Service {
 		this.config = config;
 		this.log = log;
 		this.capteur = capteur;
+		maj_config();
+	}
+
+	public void maj_config()
+	{
 		try {
 			couleur = config.get("couleur");
 		} catch (ConfigException e1) {
@@ -49,11 +54,6 @@ public class HookGenerator implements Service {
 			log.warning(e, this);
 		}
 		
-	}
-
-	public void maj_config()
-	{
-		// TODO
 	}
 	
 	/*
