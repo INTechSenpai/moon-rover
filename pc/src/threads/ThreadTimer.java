@@ -8,6 +8,7 @@ import utils.Sleep;
 
 /**
  * Thread qui s'occupe de la gestion du temps: début du match, péremption des obstacles
+ * C'est lui qui active les capteurs en début de match.
  * @author pf
  *
  */
@@ -44,6 +45,8 @@ public class ThreadTimer extends AbstractThread {
 	@Override
 	public void run()
 	{
+		config.set("capteurs_on", false);
+		capteur.maj_config();
 		log.debug("Lancement du thread timer", this);
 		// Attente du démarrage du match
 		while(!capteur.demarrage_match() && !match_demarre)
@@ -57,6 +60,9 @@ public class ThreadTimer extends AbstractThread {
 		}
 		date_debut = System.currentTimeMillis();
 		match_demarre = true;
+
+		config.set("capteurs_on", true);
+		capteur.maj_config();
 
 		log.debug("LE MATCH COMMENCE !", this);
 
