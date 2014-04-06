@@ -21,8 +21,8 @@ import robot.RobotVrai;
 import robot.cartes.Actionneurs;
 import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
-import robot.cartes.Laser;
 import robot.cartes.laser.FiltrageLaser;
+import robot.cartes.laser.Laser;
 import robot.serial.SerialManager;
 import robot.serial.Serial;
 
