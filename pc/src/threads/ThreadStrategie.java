@@ -37,6 +37,7 @@ public class ThreadStrategie extends AbstractThread {
 		this.memorymanager = memorymanager;
 		this.threadtimer = threadtimer;
 		maj_config();
+		Thread.currentThread().setPriority(5);
 	}
 	
 	@Override

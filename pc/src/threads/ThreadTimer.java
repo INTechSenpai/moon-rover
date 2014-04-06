@@ -32,6 +32,7 @@ public class ThreadTimer extends AbstractThread {
 		this.deplacements = deplacements;
 		
 		maj_config();
+		Thread.currentThread().setPriority(1);
 	}
 
 	@Override

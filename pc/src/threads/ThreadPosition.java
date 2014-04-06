@@ -20,6 +20,7 @@ class ThreadPosition extends AbstractThread {
 	{
 		this.robotvrai = robotvrai;
 		this.threadTimer = threadTimer;
+		Thread.currentThread().setPriority(6);
 	}
 	
 	@Override

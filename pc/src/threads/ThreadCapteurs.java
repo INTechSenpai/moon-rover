@@ -38,6 +38,7 @@ class ThreadCapteurs extends AbstractThread {
 		this.threadTimer = threadTimer;
 		this.table = table;
 		this.capteur = capteur;
+		Thread.currentThread().setPriority(2);
 	}
 	
 	@Override

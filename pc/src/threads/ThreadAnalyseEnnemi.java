@@ -26,6 +26,7 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 		this.threadtimer = threadtimer;
 		this.strategie = strategie;
 		positionsfreeze = table.get_positions_ennemis();
+		Thread.currentThread().setPriority(1);
 	}
 	
 	@Override
