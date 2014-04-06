@@ -96,6 +96,7 @@ public class Table implements Service {
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-800,0), 150));
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-1500,700), 150));
 
+		// Pas dans maj_config, car cette valeur n'est utilisée qu'au constructeur
 		int rayon_robot_adverse = 230;
 			try {
 				rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
@@ -219,16 +220,6 @@ public class Table implements Service {
 			    	return true;		    
 			}
 		}
-		    
-		//  Cela ne concerne pas les obstacles fixes, qui sont déjà pris en compte par la recherche de chemin.
-		
-/*		iterator = listObstaclesFixes.iterator();
-		while ( iterator.hasNext() )
-		{
-		    Obstacle obstacle = iterator.next();
-		    if (obstacle.position.SquaredDistance(centre_detection) < distance*distance)
-		    	return true;
-		}*/
 		
 		return robots_adverses[0].position.SquaredDistance(centre_detection) < distance*distance
 				|| robots_adverses[1].position.SquaredDistance(centre_detection) < distance*distance;

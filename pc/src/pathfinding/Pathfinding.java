@@ -31,8 +31,14 @@ public class Pathfinding implements Service
 	private static Read_Ini config;
 	private static Log log;
 	private boolean resultUpToDate;
+	/* Rajouter quatre Grid2DSpace qui seront la base, avec les obstacles fixes. On appliquera des pochoirs dessus.
+	 * Quatre parce qu'il y a la table initiale, la table à laquelle il manque une torche fixe et la table sans torche fixe.
+	 * Ces quatre cas permettront de n'ajouter au final que les obstacles mobiles.
+	 */
 	public Grid2DSpace map;
 	private int centimetresParCases;
+
+	// Visibilité?
 	AStar solver;
 	ArrayList<IntPair> result;
 	ArrayList<Vec2> output;
@@ -60,25 +66,27 @@ public class Pathfinding implements Service
 	public void maj_config()
 	{
 		// TODO
+		// Besoin d'aucun paramètre de config? Si besoin est, me contacter (PF)
+		// Sinon, laisser cette méthode vide.
 	}
 
 	/**
 	 * Méthode appelée par le thread de capteur. Met à jour les obstacles de la recherche de chemin en les demandant à table
-	 * @param newtable : le nouvel état du jeu a prendre en compte
+	 * On consulte pour cela l'attribut table qui a été modifié de l'extérieur.
 	 */
-	public void update(Table newtable)
+	public void update()
 	{
 		// TODO : clear map to initial state
 		// also figure out if a check can be founded to skip the whole process if newtable = map
 		
 		//System.out.println(map.stringForm());
 		
-		for (int i = 0; i < newtable.getListObstacles().size(); ++i)
+		for (int i = 0; i < table.getListObstacles().size(); ++i)
 		{
-			if (newtable.getListObstacles().get(i) instanceof ObstacleRectangulaire)
-				map.appendObstacle((ObstacleRectangulaire)newtable.getListObstacles().get(i));
+			if (table.getListObstacles().get(i) instanceof ObstacleRectangulaire)
+				map.appendObstacle((ObstacleRectangulaire)table.getListObstacles().get(i));
 			else
-				map.appendObstacle((ObstacleCirculaire)newtable.getListObstacles().get(i));
+				map.appendObstacle((ObstacleCirculaire)table.getListObstacles().get(i));
 		}
 		
 		// les chemins sont périmés puisque la map est différente
@@ -302,11 +310,6 @@ public class Pathfinding implements Service
 	{
 		return map;
 	}
-
-	public void update()
-	{
-		// TODO
-	}
 	
 	/**
 	 * @return the centimetresParCases
@@ -331,7 +334,13 @@ public class Pathfinding implements Service
 	public void clone(Pathfinding cp)
 	{
 		table.clone(cp.table); // clone de la table
-		// TODO: mise à
+
+		// Si les tables sont identiques, alors les map sont identiques et on n'a pas besoin de copier.
+		if(!table.equals(cp.table))
+		{
+			// TODO on copie avec System.arraycopy la bonne map de base (avec les obstacles fixes) dans cp
+			// Ensuite, on applique à partir d'une liste d'obstacles les pochoirs sur cp			
+		}
 	}
 
 }
