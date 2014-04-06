@@ -1,4 +1,4 @@
-package robot.cartes;
+package robot.cartes.laser;
 
 /**
  * Classe des balises, utilisée par la classe Laser
