@@ -220,7 +220,6 @@ class ThreadCapteurs extends AbstractThread {
 							date_dernier_ajout = (int)System.currentTimeMillis();
 							log.debug("Nouvel obstacle en "+position, this);
 							log.debug("obstacle a une distance de : "+distance, this);
-							pathfinding.update(table);
 						}
 							
 						//	log.debug("L'objet vu est un obstacle fixe.", this);

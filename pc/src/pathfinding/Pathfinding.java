@@ -28,6 +28,7 @@ public class Pathfinding implements Service
 	// Dépendances
 	private final Table table;	// Final: protection contre le changement de référence.
 								// Si la référence change, tout le memorymanager foire.
+	private int hashTable = -1;	// Permet, à l'update, de ne recalculer map que si la table a effectivement changé.
 	private static Read_Ini config;
 	private static Log log;
 	private boolean resultUpToDate;
@@ -76,21 +77,29 @@ public class Pathfinding implements Service
 	 */
 	public void update()
 	{
-		// TODO : clear map to initial state
-		// also figure out if a check can be founded to skip the whole process if newtable = map
-		
-		//System.out.println(map.stringForm());
-		
-		for (int i = 0; i < table.getListObstacles().size(); ++i)
+		synchronized(table) // Mutex sur la table, afin qu'elle ne change pas pendant qu'on met à jour le pathfinding
 		{
-			if (table.getListObstacles().get(i) instanceof ObstacleRectangulaire)
-				map.appendObstacle((ObstacleRectangulaire)table.getListObstacles().get(i));
-			else
-				map.appendObstacle((ObstacleCirculaire)table.getListObstacles().get(i));
+			// Si le hash actuel est égal au hash du dernier update, on annule la copie car la map n'a pas changé.
+			if(table.hashTable() == hashTable)
+				return;
+			
+			hashTable = table.hashTable();
+			// TODO : clear map to initial state
+			// also figure out if a check can be founded to skip the whole process if newtable = map
+			
+			//System.out.println(map.stringForm());
+			
+			for (int i = 0; i < table.getListObstacles().size(); ++i)
+			{
+				if (table.getListObstacles().get(i) instanceof ObstacleRectangulaire)
+					map.appendObstacle((ObstacleRectangulaire)table.getListObstacles().get(i));
+				else
+					map.appendObstacle((ObstacleCirculaire)table.getListObstacles().get(i));
+			}
+			
+			// les chemins sont périmés puisque la map est différente
+			resultUpToDate = true;
 		}
-		
-		// les chemins sont périmés puisque la map est différente
-		resultUpToDate = true;
 	}
 
 	/**

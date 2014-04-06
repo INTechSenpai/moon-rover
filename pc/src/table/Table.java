@@ -28,9 +28,13 @@ public class Table implements Service {
 	private int hashFire;
 	private int hashTree;
 	private int hashObstacles;
+	private int hashEnnemis;
 	
 	private Fresco[] list_fresco_pos = new Fresco[3];
 	private boolean[] list_fresco_hanged = new boolean[3];
+
+	private int rayon_robot_adverse = 200;
+	private long duree = 0;
 
 	// Dépendances
 	private Log log;
@@ -110,6 +114,7 @@ public class Table implements Service {
 		hashFire = 0;
 		hashTree = 0;
 		hashObstacles = 0;
+		hashEnnemis = 0;
 		
 		//Gestion des fresques
 		list_fresco_pos[0] = new Fresco(new Vec2(0,0));
@@ -120,6 +125,8 @@ public class Table implements Service {
 		list_fresco_hanged[0] = false;
 		list_fresco_hanged[1] = false;
 		list_fresco_hanged[2] = false;
+		
+		maj_config();
 		
 	}
 	
@@ -145,28 +152,13 @@ public class Table implements Service {
 		return listObstaclesFixes;
 	}
 	
-	public void creer_obstacle(final Vec2 position)
+	public synchronized void creer_obstacle(final Vec2 position)
 	{
 		Vec2 position_sauv = position.clone();
-		int rayon_robot_adverse = 200;
-		long duree = 0;
-			try {
-				rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
-			} catch (NumberFormatException | ConfigException e) {
-				e.printStackTrace();
-			}
-			try {
-				duree = Integer.parseInt(config.get("duree_peremption_obstacles"));
-			} catch (NumberFormatException | ConfigException e) {
-				e.printStackTrace();
-			}
 		
 		Obstacle obstacle = new ObstacleProximite(position_sauv, rayon_robot_adverse, System.currentTimeMillis()+duree);
 		log.warning("Obstacle créé, rayon = "+rayon_robot_adverse+", centre = "+position, this);
-		synchronized(listObstacles)
-		{
-			listObstacles.add(obstacle);
-		}
+		listObstacles.add(obstacle);
 		hashObstacles = indice++;
 	}
 
@@ -174,21 +166,18 @@ public class Table implements Service {
 	 * Appel fait lors de l'anticipation, supprime les obstacles périmés à une date future
 	 * @param date
 	 */
-	public void supprimer_obstacles_perimes(long date)
+	public synchronized void supprimer_obstacles_perimes(long date)
 	{
 		Iterator<Obstacle> iterator = listObstacles.iterator();
-		synchronized(listObstacles)
+		while ( iterator.hasNext() )
 		{
-			while ( iterator.hasNext() )
-			{
-			    Obstacle obstacle = iterator.next();
-			    if (obstacle instanceof ObstacleProximite && ((ObstacleProximite) obstacle).death_date <= date)
-			    {
-			        iterator.remove();
-					hashObstacles = indice++;
-			    }
-			}	
-		}
+		    Obstacle obstacle = iterator.next();
+		    if (obstacle instanceof ObstacleProximite && ((ObstacleProximite) obstacle).death_date <= date)
+		    {
+		        iterator.remove();
+				hashObstacles = indice++;
+		    }
+		}	
 	}
 	
 	/**
@@ -230,9 +219,10 @@ public class Table implements Service {
 	 * @param i
 	 * @param position
 	 */
-    public void deplacer_robot_adverse(int i, final Vec2 position)
+    public synchronized void deplacer_robot_adverse(int i, final Vec2 position)
     {
     	robots_adverses[i].position = position.clone();
+    	hashEnnemis = indice++;
     }
     
     /**
@@ -249,7 +239,7 @@ public class Table implements Service {
     
 	// Feux
 	
-	public void pickFire (int id)
+	public synchronized void pickFire (int id)
 	{
 		arrayFire[id].pickFire();
 		hashFire = indice++;
@@ -265,7 +255,7 @@ public class Table implements Service {
 		return min;
 	}
 	
-	public void putFire (int id)
+	public synchronized void putFire (int id)
 	{
 		arrayFire[id].ejectFire();
 		hashFire = indice++;
@@ -306,7 +296,7 @@ public class Table implements Service {
 		return position.distance(arrayTree[i].position);
 	}
 
-	public void pickTree (int id)
+	public synchronized void pickTree (int id)
 	{
 		arrayTree[id].setTaken();
 		hashTree = indice++;
@@ -394,7 +384,14 @@ public class Table implements Service {
 					arrayTree[i].clone(ct.arrayTree[i]);
 				ct.hashTree = hashTree;
 			}
-	
+
+			if(ct.hashEnnemis != hashEnnemis)
+			{
+				robots_adverses[0].clone(robots_adverses[0]);
+				robots_adverses[1].clone(robots_adverses[1]);
+				ct.hashEnnemis = hashEnnemis;
+			}
+
 			if(ct.hashObstacles != hashObstacles)
 			{
 				ct.listObstacles.clear();
@@ -418,7 +415,7 @@ public class Table implements Service {
 	 */
 	public int hashTable()
 	{
-		return hashFire + hashTree + hashObstacles;
+		return hashFire*1000000 + hashTree*1000 + hashObstacles;
 	}
 
 	/**
@@ -477,6 +474,16 @@ public class Table implements Service {
 	
 	public void maj_config()
 	{
+		try {
+			rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
+		} catch (NumberFormatException | ConfigException e) {
+			e.printStackTrace();
+		}
+		try {
+			duree = Integer.parseInt(config.get("duree_peremption_obstacles"));
+		} catch (NumberFormatException | ConfigException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
