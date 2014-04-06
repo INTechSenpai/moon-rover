@@ -234,7 +234,6 @@ class ThreadCapteurs extends AbstractThread {
 							log.debug("Nouvel obstacle en "+position, this);
 							log.debug("obstacle a une distance de : "+distance, this);
 							pathfinding.update(table);
-							robotvrai.setObstacleImprevuDevantCapteur(true); // informe le robot
 						}
 							
 						//	log.debug("L'objet vu est un obstacle fixe.", this);

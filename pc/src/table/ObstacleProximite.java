@@ -22,4 +22,9 @@ class ObstacleProximite extends ObstacleCirculaire {
 		return new ObstacleProximite(position.clone(), radius, death_date);
 	}
 	
+	public String toString()
+	{
+		return super.toString()+", meurt dans "+(death_date-System.currentTimeMillis())+" ms";
+	}
+	
 }

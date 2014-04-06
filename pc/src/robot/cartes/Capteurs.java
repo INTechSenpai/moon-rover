@@ -38,7 +38,6 @@ public class Capteurs implements Service {
 	
 	public void maj_config()
 	{
-		config.affiche_tout();
 		try {
 			capteurs_on = Boolean.parseBoolean(config.get("capteurs_on"));
 		} catch (ConfigException e) {

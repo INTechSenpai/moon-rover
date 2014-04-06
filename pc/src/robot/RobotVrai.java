@@ -58,9 +58,6 @@ public class RobotVrai extends Robot {
 	private int distance_securite_trajectoire_courbe;
 	private boolean autorise_trajectoire_courbe;
 	
-	private boolean obstacleImprevuDevantCapteur;
-	private float obstacleImprevuDevantCapteurDeathDate;
-	
 	// Constructeur
 	public RobotVrai(Capteurs capteur, Actionneurs actionneurs, Deplacements deplacements, HookGenerator hookgenerator, Table table, Read_Ini config, Log log)
  	{
@@ -70,7 +67,6 @@ public class RobotVrai extends Robot {
 		this.deplacements = deplacements;
 		this.hookgenerator =  hookgenerator;
 		this.table = table;
-		obstacleImprevuDevantCapteur = false;
 		maj_config();
 		this.set_vitesse_rotation("entre_scripts");
 		this.set_vitesse_translation("entre_scripts");
@@ -95,7 +91,7 @@ public class RobotVrai extends Robot {
 		}
 		catch(Exception e)
 		{
-			log.critical(e, this);
+			e.printStackTrace();
 		}
 		try
 		{
@@ -103,7 +99,7 @@ public class RobotVrai extends Robot {
 		}
 		catch(Exception e)
 		{
-			log.critical(e, this);
+			e.printStackTrace();
 		}
 		try
 		{
@@ -111,7 +107,7 @@ public class RobotVrai extends Robot {
 		}
 		catch(Exception e)
 		{
-			log.critical(e, this);
+			e.printStackTrace();
 		}
 		try
 		{
@@ -119,7 +115,7 @@ public class RobotVrai extends Robot {
 		}
 		catch(Exception e)
 		{
-			log.critical(e, this);
+			e.printStackTrace();
 		}
 		try
 		{
@@ -127,7 +123,7 @@ public class RobotVrai extends Robot {
 		}
 		catch(Exception e)
 		{
-			log.critical(e, this);
+			e.printStackTrace();
 		}
 		try
 		{
@@ -135,7 +131,7 @@ public class RobotVrai extends Robot {
 		}
 		catch(Exception e)
 		{
-			log.critical(e, this);
+			e.printStackTrace();
 		}
 		try
 		{
@@ -143,7 +139,7 @@ public class RobotVrai extends Robot {
 		}
 		catch(Exception e)
 		{
-			log.critical(e, this);
+			e.printStackTrace();
 		}
 		try
 		{
@@ -151,7 +147,7 @@ public class RobotVrai extends Robot {
 		}
 		catch(Exception e)
 		{
-			log.critical(e, this);
+			e.printStackTrace();
 		}
 		try
 		{
@@ -159,7 +155,7 @@ public class RobotVrai extends Robot {
 		}
 		catch(Exception e)
 		{
-			log.critical(e, this);
+			e.printStackTrace();
 		}
 	}
 
@@ -949,31 +945,27 @@ public class RobotVrai extends Robot {
 		}
 	}
 
-	// fonction vérifiant que l'on ne va pas taper dans le robot adverse. 
-	// Renvois true si ennemi droit devant.
-	// @param devant : fait la détection derrière le robot si l'on avance a reculons 
-	private void detecter_collision(boolean devant) throws CollisionException
+	/**
+	 *  fonction vérifiant que l'on ne va pas taper dans le robot adverse. 
+	 * @param devant: fait la détection derrière le robot si l'on avance à reculons 
+	 * @throws CollisionException si obstacle sur le chemin
+	 */
+	public void detecter_collision(boolean devant) throws CollisionException
 	{
 		int signe = -1;
 		if(devant)
 			signe = 1;
 		
-		// was largeur_robot + distance_detection/2;
 		int rayon_detection = largeur_robot/2 + distance_detection;
 		Vec2 centre_detection = new Vec2((float)(signe * rayon_detection * Math.cos(orientation)), (float)(signe * rayon_detection * Math.sin(orientation)));
 		centre_detection.Plus(position);
-
-		if(table.obstaclePresent(centre_detection, distance_detection/2))
+		if(table.obstaclePresent(centre_detection, distance_detection))
 		{
 			log.warning("Ennemi détecté en : " + centre_detection.x + "; " + centre_detection.y, this);
 			throw new CollisionException();
 		}
-		if(isObstacleImprevuDevantCapteur())
-		{
-			log.warning("Obstacle capteur droit devant !", this);
-			throw new CollisionException();
-		}
-			
+		log.debug("Pas d'obstacles", this);
+
 	}
 	
 	private void detecter_collision() throws CollisionException
@@ -1075,23 +1067,6 @@ public class RobotVrai extends Robot {
 	public void annuleConsigneOrientation()
 	{
 		orientation_consigne = orientation;
-	}
-
-	
-	/**
-	 * @return the obstacleDevantCapteur
-	 */
-	public boolean isObstacleImprevuDevantCapteur()
-	{
-		return obstacleImprevuDevantCapteur;
-	}
-
-	/**
-	 * @param obstacleDevantCapteur the obstacleDevantCapteur to set
-	 */
-	public void setObstacleImprevuDevantCapteur(boolean obstacleDevantCapteur) 
-	{
-		this.obstacleImprevuDevantCapteur = obstacleDevantCapteur;
 	}
 
 	

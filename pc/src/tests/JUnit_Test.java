@@ -18,6 +18,8 @@ public abstract class JUnit_Test {
 		container = new Container();
 		config = (Read_Ini) container.getService("Read_Ini");
 		log = (Log) container.getService("Log");
+		config.set("affiche_debug", false);
+		log.maj_config();
 	}
 
 	@After

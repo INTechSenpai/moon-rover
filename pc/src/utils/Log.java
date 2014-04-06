@@ -34,21 +34,8 @@ public class Log implements Service
 	{
 		this.config = config;
 		
-		try {
-			affiche_debug = Boolean.parseBoolean(this.config.get("affiche_debug"));
-		}
-		catch(Exception e)
-		{
-			critical(e, this);
-		}
-		try {
-			sauvegarde_fichier = Boolean.parseBoolean(this.config.get("sauvegarde_fichier"));
-		}
-		catch(Exception e)
-		{
-			critical(e, this);
-		}
-
+		maj_config();
+		
 		if(sauvegarde_fichier)
 			try {
 				java.util.GregorianCalendar calendar = new GregorianCalendar();
@@ -141,9 +128,23 @@ public class Log implements Service
 			}
 	}
 	
+	@Override
 	public void maj_config()
 	{
-		// TODO
+		try {
+			affiche_debug = Boolean.parseBoolean(this.config.get("affiche_debug"));
+		}
+		catch(Exception e)
+		{
+			critical(e, this);
+		}
+		try {
+			sauvegarde_fichier = Boolean.parseBoolean(this.config.get("sauvegarde_fichier"));
+		}
+		catch(Exception e)
+		{
+			critical(e, this);
+		}
 	}
 
 }

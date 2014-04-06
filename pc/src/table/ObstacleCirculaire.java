@@ -23,6 +23,6 @@ public class ObstacleCirculaire extends Obstacle
 	}
 	public String toString()
 	{
-		return "ObstacleCirculaire";
+		return super.toString()+", rayon: "+radius;
 	}
 }

@@ -90,9 +90,6 @@ public class Table implements Service {
 		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(1100,1700), 700, 300));
 		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-1100,1700), 700, 300));
 
-		//listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(750,1850), 700, 300));
-		//listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-750,1850), 700, 300));
-
 		// Ajout des arbres
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(1500,700), 150));
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(800,0), 150));
@@ -149,7 +146,7 @@ public class Table implements Service {
 	public void creer_obstacle(final Vec2 position)
 	{
 		Vec2 position_sauv = position.clone();
-		int rayon_robot_adverse = 0;
+		int rayon_robot_adverse = 200;
 		long duree = 0;
 			try {
 				rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
@@ -163,6 +160,7 @@ public class Table implements Service {
 			}
 		
 		Obstacle obstacle = new ObstacleProximite(position_sauv, rayon_robot_adverse, System.currentTimeMillis()+duree);
+		log.warning("Obstacle créé, rayon = "+rayon_robot_adverse+", centre = "+position, this);
 		synchronized(listObstacles)
 		{
 			listObstacles.add(obstacle);
@@ -207,13 +205,20 @@ public class Table implements Service {
 	 */
 	public boolean obstaclePresent(final Vec2 centre_detection, int distance)
 	{
-		Iterator<Obstacle> iterator = listObstacles.iterator();
-		while ( iterator.hasNext() )
+		for(Obstacle obstacle: listObstacles)
 		{
-		    Obstacle obstacle = iterator.next();
-		    if (obstacle.position.SquaredDistance(centre_detection) < distance*distance)
-		    	return true;
-		}	
+			// On regarde si l'intersection des cercles est vides
+			if(obstacle instanceof ObstacleCirculaire && obstacle.position.SquaredDistance(centre_detection) < (distance+((ObstacleCirculaire)obstacle).radius)*(distance+((ObstacleCirculaire)obstacle).radius))
+				return true;
+			else if(!(obstacle instanceof ObstacleCirculaire))
+			{
+				// Normalement, les obstacles non fixes sont toujours circulaires
+				log.warning("Etrange, un obstacle non circulaire... actualiser \"obstaclePresent\" dans Table", this);
+				if(obstacle.position.SquaredDistance(centre_detection) < distance*distance)
+			    	return true;		    
+			}
+		}
+		    
 		//  Cela ne concerne pas les obstacles fixes, qui sont déjà pris en compte par la recherche de chemin.
 		
 /*		iterator = listObstaclesFixes.iterator();
@@ -438,7 +443,7 @@ public class Table implements Service {
 	
 	/**
 	 * Utilisé pour les tests
-	 * @return le nombre d'obstacles mobiles détectés
+	 * @return le nombre ed'obstacles mobiles détectés
 	 */
 	public int nb_obstacles()
 	{

@@ -37,4 +37,9 @@ public abstract class Obstacle {
 		return   !( pos.distance(obstacle.getPosition()) < ((ObstacleCirculaire)obstacle).getRadius() );
 	}
 	
+	public String toString()
+	{
+		return "Obstacle en "+position;
+	}
+	
 }

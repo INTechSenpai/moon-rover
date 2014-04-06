@@ -96,12 +96,13 @@ public class Read_Ini implements Service {
 	}
 
 	// TODO private
-	public void affiche_tout()
+	private void affiche_tout()
 	{
-		System.out.println("Configuration initiale");
-		for(Object o: config.keySet())
+		if(Boolean.parseBoolean(config.getProperty("affiche_debug")))
 		{
-			System.out.println(o+": "+config.get(o));
+			System.out.println("Configuration initiale");
+			for(Object o: config.keySet())
+				System.out.println(o+": "+config.get(o));
 		}
 	}
 	
