@@ -99,7 +99,7 @@ public class ThreadStrategie extends AbstractThread {
 	{
 		robotchrono.majRobotChrono(robotvrai);
 		Table tableFuture = table.clone();
-		NoteScriptVersion enCours = strategie.getScriptEnCours();
+//		NoteScriptVersion enCours = strategie.getScriptEnCours();
 		// TODO: la durée est importante pour supprimer les obstacles périmés
 		// La mise en cache est systématique car on ne cherche pas à récupérer le décompte mais seulement à modifier l'état de robotchrono et de table
 //		enCours.script.calcule(enCours.version, robotchrono, tableFuture, true);

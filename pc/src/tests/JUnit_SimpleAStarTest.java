@@ -213,7 +213,6 @@ public class JUnit_SimpleAStarTest extends JUnit_Test
 		Pathfinding finder = new Pathfinding(table, config, log, 2);
 		System.out.println("Calculating " + testNb + " path...");
 		
-		ArrayList<Vec2> chemin;
 		for (int i = 0; i< testNb; ++i)
 		{
 		    // g�n�re une deamnde de chemin ou les cases de d�part et d'arriv�e sont valides.
@@ -233,7 +232,7 @@ public class JUnit_SimpleAStarTest extends JUnit_Test
 				arrivee.x = randomGenerator.nextInt(3000)-1500;
 				arrivee.y = randomGenerator.nextInt(2000); 
 			}
-			chemin = finder.chemin(depart, arrivee);
+			finder.chemin(depart, arrivee);
 		}
 		System.out.println("done");
 		

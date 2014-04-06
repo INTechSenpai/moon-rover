@@ -1,37 +1,23 @@
 package tests;
 
-import static org.junit.Assert.*;
-import hook.Callback;
-import hook.Executable;
-import hook.Hook;
-import hook.HookGenerator;
-import hook.methodes.TirerBalles;
-
 import java.util.ArrayList;
 import java.util.Random;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import pathfinding.Pathfinding;
 import robot.RobotChrono;
 import robot.RobotVrai;
-import scripts.Script;
-import scripts.ScriptManager;
-import smartMath.IntPair;
 import smartMath.Vec2;
 import table.Table;
 
 public class PathfindingRandomTest extends JUnit_Test
 {
 
-	private ScriptManager scriptmanager;
-	private Script s;
 	private RobotVrai robotvrai;
 	private RobotChrono robotchrono;
 	private Table table;
-	private HookGenerator hookgenerator;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -43,7 +29,6 @@ public class PathfindingRandomTest extends JUnit_Test
 		robotchrono = new RobotChrono(config, log);
 		robotchrono.majRobotChrono(robotvrai);
 		table = (Table)container.getService("Table");
-		hookgenerator = (HookGenerator)container.getService("HookGenerator");
 		robotvrai.setPosition(new Vec2(1300, 1200));
 		robotvrai.setOrientation((float)Math.PI);
 		robotvrai.set_vitesse_rotation("entre_scripts");

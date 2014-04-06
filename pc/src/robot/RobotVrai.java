@@ -760,10 +760,10 @@ public class RobotVrai extends Robot {
 	}
 	
 	
-	private void tournerBasNiveau(float angle) throws BlocageException, CollisionException
+/*	private void tournerBasNiveau(float angle) throws BlocageException, CollisionException
 	{
 		tournerBasNiveau(angle, null, false);
-	}
+	}*/
 
 	/**
      * Méthode pour parcourir un segment : le robot se rend en (x,y) en corrigeant dynamiquement ses consignes en rotation et translation.

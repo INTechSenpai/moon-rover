@@ -5,9 +5,6 @@ import robot.RobotVrai;
 import robot.cartes.Capteurs;
 import smartMath.Vec2;
 import table.Table;
-import table.Tree;
-import table.Torch;
-import table.Fire;
 import utils.Sleep;
 
 /**
