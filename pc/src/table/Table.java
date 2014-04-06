@@ -71,7 +71,7 @@ public class Table implements Service {
 		arrayTree[3] = new Tree(new Vec2(-1500,700));
 		
 		// Initialisation des torches
-		Fire feu0 = new Fire(new Vec2(600,900), 3, 1, Colour.YELLOW);
+/*		Fire feu0 = new Fire(new Vec2(600,900), 3, 1, Colour.YELLOW);
 		Fire feu1 = new Fire(new Vec2(600,900), 4, 2, Colour.RED);
 		Fire feu2 = new Fire(new Vec2(600,900), 5, 3, Colour.YELLOW);
 		arrayTorch[0] = new Torch(new Vec2(600,900), feu0, feu1, feu2);
@@ -80,7 +80,11 @@ public class Table implements Service {
 		Fire feu4 = new Fire(new Vec2(-600,900), 11, 2, Colour.YELLOW);
 		Fire feu5 = new Fire(new Vec2(-600,900), 12, 3, Colour.RED);
 		arrayTorch[1] = new Torch(new Vec2(-600,900), feu3, feu4, feu5); 
-		
+*/
+
+		arrayTorch[0] = new Torch(new Vec2(600,900));
+		arrayTorch[1] = new Torch(new Vec2(-600,900)); 
+
 		// Ajout des torches mobiles
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(600,900), 80));
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-600,900), 80));
@@ -140,6 +144,25 @@ public class Table implements Service {
 	public ArrayList<Obstacle> getListObstaclesFixes()
 	{
 		return listObstaclesFixes;
+	}
+	
+	/**
+	 * Renvoie un code selon la présence ou non des torches mobiles
+	 * 0: les deux torches sont là
+	 * 1: la torche de gauche a disparue
+	 * 2: la torche de droite a disparue
+	 * 3: les deux torches sont absentes
+	 * @return ce code
+	 */
+	public int codeTorches()
+	{
+		int out = 0;
+		if(arrayTorch[0].isDisparue())
+			out++;
+		out <<= 1;
+		if(arrayTorch[1].isDisparue())
+			out++;
+		return out;
 	}
 	
 	public synchronized void creer_obstacle(final Vec2 position)
@@ -359,6 +382,10 @@ public class Table implements Service {
 	{
 		if(!equals(ct))
 		{
+			// Pour les torches, un hash ralentirait plus qu'autre chose
+			arrayTorch[0].clone(ct.arrayTorch[0]);
+			arrayTorch[1].clone(ct.arrayTorch[1]);
+			
 			if(ct.hashFire != hashFire)
 			{
 				for(int i = 0; i < 6; i++)
@@ -405,7 +432,7 @@ public class Table implements Service {
 	 */
 	public int hashTable()
 	{
-		return hashEnnemis*1000000 + hashFire*10000 + hashTree*100 + hashObstacles;
+		return (((hashEnnemis*100 + hashFire)*100 + hashTree)*100 + hashObstacles)*4+codeTorches();
 	}
 
 	/**

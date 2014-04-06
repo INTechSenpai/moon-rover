@@ -348,7 +348,27 @@ public class Pathfinding implements Service
 		if(!table.equals(cp.table))
 		{
 			// TODO on copie avec System.arraycopy la bonne map de base (avec les obstacles fixes) dans cp
-			// Ensuite, on applique à partir d'une liste d'obstacles les pochoirs sur cp			
+
+			
+			
+/*
+ * Convention de retour de table.codeTorches
+ * 0: les deux torches sont là
+ * 1: la torche de gauche a disparue
+ * 2: la torche de droite a disparue
+ * 3: les deux torches sont absentes
+ * */
+			int code = table.codeTorches();
+//			if(code == 0)
+				// arraycopy
+//			else if(code == 1)
+				// arraycopy
+//			else if(code == 2)
+				// arraycopy
+//			else if(code == 3)
+				// arraycopy
+				
+			// TODO Ensuite, on applique à partir d'une liste d'obstacles les pochoirs sur cp
 		}
 	}
 
