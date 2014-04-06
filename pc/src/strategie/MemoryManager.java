@@ -71,7 +71,7 @@ public class MemoryManager implements Service {
 	public Pathfinding getClonePathfinding(int profondeur)
 	{
 		Pathfinding out = productsPathfinding[profondeur-1];
-		//productsPathfinding[profondeur].clone(out);
+		productsPathfinding[profondeur].clone(out);
 		return out;
 	}
 	

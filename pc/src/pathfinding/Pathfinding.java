@@ -27,8 +27,8 @@ public class Pathfinding implements Service
 {
 	// Dépendances
 	private Table table;
-	private Read_Ini config;
-	private Log log;
+	private static Read_Ini config;
+	private static Log log;
 	private boolean resultUpToDate;
 	public Grid2DSpace map;
 	private int centimetresParCases;
@@ -41,6 +41,7 @@ public class Pathfinding implements Service
 		table = requestedtable;
 		config = requestedConfig;
 		log = requestedLog;
+		maj_config();
 		centimetresParCases = requestedCentimetresParCases;
 		map = new Grid2DSpace(new IntPair((int)((float)300.0f/centimetresParCases), (int)((float)220.0f/centimetresParCases)), table, 200);
 		solver = new AStar(map, new IntPair(0,0), new IntPair(0,0));
@@ -321,4 +322,15 @@ public class Pathfinding implements Service
 	{
 		this.centimetresParCases = centimetresParCases;
 	}
+	
+	/**
+	 * Le pathfinding en argument deviendra la copie de this (this reste inchangé)
+	 * @param cp (cloned_pathfinding)
+	 */
+	public void clone(Pathfinding cp)
+	{
+		table.clone(cp.table); // clone de la table
+		// TODO: mise à
+	}
+
 }
