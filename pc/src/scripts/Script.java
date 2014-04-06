@@ -69,11 +69,9 @@ public abstract class Script implements Service {
 		robotvrai.set_vitesse_translation("entre_scripts");
 		robotvrai.set_vitesse_rotation("entre_scripts");
 
-		pathfinding.update();
-		ArrayList<Vec2> chemin = pathfinding.chemin(robotvrai.getPosition(), point_entree);
 		try
 		{
-			robotvrai.suit_chemin(chemin, hooksfeu, retenter_si_blocage, false);
+			robotvrai.va_au_point_pathfinding(pathfinding, point_entree, hooksfeu, retenter_si_blocage, false, true, false);
 			execute(id_version, robotvrai, table, pathfinding);
 		}
 		catch (Exception e)

@@ -44,7 +44,7 @@ public class JUnit_RobotVraiRougeTest extends JUnit_Test {
 		container.getService("threadPosition");
 		container.demarreThreads();
 		Thread.sleep(100);
-		robotvrai.va_au_point(new Vec2(10, 1400), false);
+		robotvrai.va_au_point(new Vec2(10, 1400));
 		robotvrai.update_x_y_orientation();
 		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(-10,1400)) < 2);
 	}
@@ -58,7 +58,7 @@ public class JUnit_RobotVraiRougeTest extends JUnit_Test {
 		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
 		chemin.add(new Vec2(20, 1400));
 		chemin.add(new Vec2(40, 1500));
-		robotvrai.suit_chemin(chemin);
+		robotvrai.suit_chemin_droit(chemin);
 		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(-40,1500)) < 2);
 	}
 
@@ -89,7 +89,7 @@ public class JUnit_RobotVraiRougeTest extends JUnit_Test {
 		container.getService("threadPosition");
 		container.demarreThreads();
 		Thread.sleep(100);
-		robotvrai.tourner((float)1.2, true);
+		robotvrai.tourner_sans_symetrie((float)1.2);
 		assertEquals(robotvrai.getOrientation(), 1.2, 0.001);
 	}
 

@@ -2,6 +2,7 @@ package robot;
 
 import java.util.ArrayList;
 
+import pathfinding.Pathfinding;
 import hook.Hook;
 import smartMath.Vec2;
 import table.Colour;
@@ -24,12 +25,14 @@ public abstract class Robot implements Service {
 	 */
 	
 	public abstract void stopper(boolean avec_blocage);
-	protected abstract void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception)
+	protected abstract void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception, boolean symetrie_effectuee, boolean retenter_si_blocage)
 			 	throws MouvementImpossibleException;
 	protected abstract void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
 				throws MouvementImpossibleException;
-	protected abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe)
-				throws MouvementImpossibleException;
+	public abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks,
+			boolean retenter_si_blocage, boolean symetrie_effectuee,
+			boolean trajectoire_courbe, boolean sans_lever_exception)
+			throws MouvementImpossibleException;
 	public abstract void set_vitesse_translation(String vitesse);
 	public abstract void set_vitesse_rotation(String vitesse);
 	
@@ -224,15 +227,29 @@ public abstract class Robot implements Service {
 			feu_tenu_droite_rouge = (colour == Colour.RED);			
 	}
 	
-	public void tourner_relatif(float angle) throws MouvementImpossibleException
+	/**
+	 * Va au point en utilisant le pathfinding donné
+	 * @param pathfinding
+	 * @param arrivee
+	 * @param hooks
+	 * @param retenter_si_blocage
+	 * @param symetrie_effectuee
+	 * @param trajectoire_courbe
+	 * @throws MouvementImpossibleException
+	 */
+	public void va_au_point_pathfinding(Pathfinding pathfinding, Vec2 arrivee, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
-		tourner(orientation + angle, true);
+		// TODO exception pathfinding
+		if(couleur == "rouge" && !symetrie_effectuee)
+			arrivee.x = -arrivee.x;
+		pathfinding.update();
+		ArrayList<Vec2> chemin = pathfinding.chemin(position, arrivee);
+		suit_chemin(chemin, hooks, retenter_si_blocage, true, trajectoire_courbe, sans_lever_exception);
 	}
 	
-	// Les méthodes avec le paramètre nbTentatives sont en protected 
-	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
+	public void tourner_relatif(float angle) throws MouvementImpossibleException
 	{
-		va_au_point(point, hooks, false, nb_tentatives, retenterSiBlocage, false, sansLeverException, false);
+		tourner(orientation + angle, null, nb_tentatives, false, false, true);
 	}
 
 	public void va_au_point(Vec2 point) throws MouvementImpossibleException
@@ -240,103 +257,59 @@ public abstract class Robot implements Service {
 		va_au_point(point, null, false, nb_tentatives, true, false, false, false);
 	}
 
-	public void va_au_point(Vec2 point, boolean retenterSiBlocage) throws MouvementImpossibleException
+	public void va_au_point(Vec2 point, ArrayList<Hook> hooks) throws MouvementImpossibleException
 	{
-		va_au_point(point, null, false, nb_tentatives, retenterSiBlocage, false, false, false);
-	}
-
-	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws MouvementImpossibleException
-	{
-		suit_chemin(chemin, hooks, false, false, false);
-	}
-
-	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean trajectoire_courbe) throws MouvementImpossibleException
-	{
-		suit_chemin(chemin, hooks, retenter_si_blocage, false, trajectoire_courbe);
-	}
-
-	public void suit_chemin(ArrayList<Vec2> chemin) throws MouvementImpossibleException
-	{
-		suit_chemin(chemin, null, false, false, false);
-	}
-
-	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage) throws MouvementImpossibleException
-	{
-		suit_chemin(chemin, hooks, retenter_si_blocage, false, false);
-	}
-
-	public void suit_chemin(ArrayList<Vec2> chemin, boolean retenter_si_blocage) throws MouvementImpossibleException
-	{
-		suit_chemin(chemin, null, retenter_si_blocage, false, false);
-	}
-
-	public void suit_chemin(ArrayList<Vec2> chemin, boolean retenter_si_blocage, boolean trajectoire_courbe) throws MouvementImpossibleException
-	{
-		suit_chemin(chemin, null, retenter_si_blocage, false, trajectoire_courbe);
-	}
-
-	public void tourner(float angle, ArrayList<Hook> hooks, boolean sans_lever_exception) throws MouvementImpossibleException
-	{
-		tourner(angle, null, nb_tentatives, sans_lever_exception);
-	}
-
-	public void tourner(float angle, boolean pas_de_symetrie) throws MouvementImpossibleException
-	{
-		boolean mem_effectuer_symetrie = effectuer_symetrie;
-		if(pas_de_symetrie)
-			effectuer_symetrie = false;
-		tourner(angle, null, nb_tentatives, false);
-		effectuer_symetrie = mem_effectuer_symetrie;
+		va_au_point(point, hooks, false, nb_tentatives, true, false, false, false);
 	}
 	
-	protected void tourner(float angle, int nombre_tentatives) throws MouvementImpossibleException
+	public void suit_chemin_droit(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws MouvementImpossibleException
 	{
-		tourner(angle, null, nombre_tentatives, false);		
+		suit_chemin(chemin, hooks, true, false, false, false);
 	}
 
-	public void tourner(float angle, ArrayList<Hook> hooks) throws MouvementImpossibleException
+	public void suit_chemin_droit(ArrayList<Vec2> chemin) throws MouvementImpossibleException
 	{
-		tourner(angle, hooks, nb_tentatives, false);
+		suit_chemin(chemin, null, true, false, false, false);
 	}
 
+	public void suit_chemin_courbe(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws MouvementImpossibleException
+	{
+		suit_chemin(chemin, hooks, true, false, true, false);
+	}
+
+	public void suit_chemin_courbe(ArrayList<Vec2> chemin) throws MouvementImpossibleException
+	{
+		suit_chemin(chemin, null, true, false, true, false);
+	}
+
+	public void tourner_sans_symetrie(float angle) throws MouvementImpossibleException
+	{
+		tourner(angle, null, nb_tentatives, false, true, true);
+	}
+	
 	public void tourner(float angle) throws MouvementImpossibleException
 	{
-		tourner(angle, null, nb_tentatives, false);
+		tourner(angle, null, nb_tentatives, false, false, true);
 	}
 
-	protected void avancer(int distance, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
+	public void avancer_dans_mur(int distance) throws MouvementImpossibleException
 	{
-		this.avancer(distance, null, nbTentatives, retenterSiBlocage, sansLeverException);
-	}
-
-	public void avancer(int distance, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
-	{
-		this.avancer(distance, null, nb_tentatives, retenterSiBlocage, sansLeverException);
-	}
-
-	protected void avancer(int distance, int nbTentatives, boolean retenterSiBlocage) throws MouvementImpossibleException
-	{
-		this.avancer(distance, null, nbTentatives, retenterSiBlocage, false);
-	}
-	
-	protected void avancer(int distance, int nbTentatives) throws MouvementImpossibleException
-	{
-		this.avancer(distance, null, nbTentatives, true, false);
+		avancer(distance, null, nb_tentatives, false, true);		
 	}
 
 	public void avancer(int distance, ArrayList<Hook> hooks) throws MouvementImpossibleException
 	{
-		this.avancer(distance, hooks, nb_tentatives, true, false);
+		avancer(distance, hooks, nb_tentatives, true, false);
 	}
 
 	public void avancer(int distance) throws MouvementImpossibleException
 	{
-		this.avancer(distance, null, nb_tentatives, true, false);
+		avancer(distance, null, nb_tentatives, true, false);
 	}
 
-	public void avancer(int distance, boolean retenterSiBlocage) throws MouvementImpossibleException
+	public void va_au_point_pathfinding(Pathfinding pathfinding, Vec2 arrivee) throws MouvementImpossibleException
 	{
-		this.avancer(distance, null, nb_tentatives, retenterSiBlocage, false);
+		va_au_point_pathfinding(pathfinding, arrivee, null, true, false, true, false);
 	}
 
 	public void stopper()

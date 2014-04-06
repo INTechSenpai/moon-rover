@@ -39,6 +39,7 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 	{
 		log.debug("JUnit_RobotChronoTest.test_va_au_point_symetrie()", this);
 		config.set("couleur", "jaune");
+		robotchrono.maj_config();
 		robotchrono = new RobotChrono(config, log);
 		robotchrono.setPosition(new Vec2(0, 1500));
 		robotchrono.setOrientation(0);
@@ -76,7 +77,7 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
 		chemin.add(new Vec2(20, 1400));
 		chemin.add(new Vec2(40, 1500));
-		robotchrono.suit_chemin(chemin);
+		robotchrono.suit_chemin_droit(chemin);
 		Assert.assertTrue(robotchrono.getPosition().distance(new Vec2(40,1500)) < 2);
 		
 	}

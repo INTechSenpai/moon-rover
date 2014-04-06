@@ -207,7 +207,7 @@ public class Table implements Service {
 	{
 		for(Obstacle obstacle: listObstacles)
 		{
-			// On regarde si l'intersection des cercles est vides
+			// On regarde si l'intersection des cercles est vide
 			if(obstacle instanceof ObstacleCirculaire && obstacle.position.SquaredDistance(centre_detection) < (distance+((ObstacleCirculaire)obstacle).radius)*(distance+((ObstacleCirculaire)obstacle).radius))
 				return true;
 			else if(!(obstacle instanceof ObstacleCirculaire))

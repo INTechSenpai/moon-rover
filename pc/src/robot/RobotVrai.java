@@ -209,13 +209,12 @@ public class RobotVrai extends Robot {
 	{
 
 		try {
+			// TODO: vitesses normalisées
 			deplacements.set_vitesse_translation(50);
 			deplacements.set_vitesse_rotation(80);
-
-
-			avancer(-200, false, true);
+			avancer_dans_mur(-200);
 			deplacements.set_vitesse_translation(80);
-			avancer(-200, false, true);
+			avancer_dans_mur(-200);
 			deplacements.set_vitesse_translation(50);
 			position.x = 1500 - 165;
 			if(couleur == "rouge")
@@ -229,11 +228,11 @@ public class RobotVrai extends Robot {
 				setOrientation((float)Math.PI);
 			}
 			sleep(500);
-			avancer(45, false, true);	// toujours pas d'exeption, car on ne sait toujours pas ou on est sur la map
-			tourner(-(float)Math.PI/2, null, true);
-			avancer(-600, false, true);
+			avancer_dans_mur(-45);	// toujours pas d'exeption, car on ne sait toujours pas ou on est sur la map
+			tourner(-(float)Math.PI/2);
+			avancer_dans_mur(-600);
 			deplacements.set_vitesse_translation(80);
-			avancer(-200, false, true);
+			avancer_dans_mur(-200);
 			position.y = 2000 - 165;
 			deplacements.set_y(2000 - 165);
 			sleep(500);
@@ -286,9 +285,10 @@ public class RobotVrai extends Robot {
 	
 	/**
 	 * Avance d'une certaine distance (méthode bloquante), gestion des hooks
+	 * @throws MouvementImpossibleException 
 	 */
 	@Override
-	public void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException) throws MouvementImpossibleException
+	public void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenter_si_blocage, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
 		log.debug("Avancer de "+Integer.toString(distance), this);
 
@@ -302,16 +302,10 @@ public class RobotVrai extends Robot {
 		consigne.x = (float) (position.x + distance*Math.cos(orientation_consigne));
 		consigne.y = (float) (position.y + distance*Math.sin(orientation_consigne));
 		
-		try {
-			va_au_point(consigne, hooks, nbTentatives, retenterSiBlocage, sansLeverException);
-		}
-		catch(MouvementImpossibleException e)
+		try
 		{
-			throw e;
-		}
-		catch(Exception e)
-		{
-			log.warning("Avancer a catché: "+e, this);
+			// Pas de trajectoire courbe parce qu'on va tout droit
+			va_au_point(consigne, hooks, false, nbTentatives, retenter_si_blocage, true, sans_lever_exception, false);
 		}
 		finally
 		{
@@ -326,9 +320,9 @@ public class RobotVrai extends Robot {
 	 * @throws MouvementImpossibleException 
 	 */
 	@Override
-	public void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception) throws MouvementImpossibleException
+	public void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception, boolean symetrie_effectuee, boolean retenter_si_blocage) throws MouvementImpossibleException
 	{
-		if(effectuer_symetrie)
+		if(effectuer_symetrie && !symetrie_effectuee)
 		{
 			if(couleur == "rouge")
 				angle = (float)Math.PI - angle;
@@ -344,11 +338,13 @@ public class RobotVrai extends Robot {
 		{
 			try
 			{
-				if(nombre_tentatives > 0)
+				if(retenter_si_blocage && nombre_tentatives > 0)
 				{
 					log.warning("Blocage en rotation ! On tourne dans l'autre sens... reste "+Integer.toString(nombre_tentatives)+" tentative(s)", this);
 					if(angle < 0)
-						tourner(orientation + angle_degagement_robot, null, nombre_tentatives-1, sans_lever_exception);
+						tourner(orientation + angle_degagement_robot, null, nombre_tentatives-1, sans_lever_exception, true, retenter_si_blocage);
+					else
+						tourner(orientation - angle_degagement_robot, null, nombre_tentatives-1, sans_lever_exception, true, retenter_si_blocage);
 				}
 			}
 			finally
@@ -360,6 +356,7 @@ public class RobotVrai extends Robot {
 		catch(CollisionException e)
 		{
 			stopper();
+			// Pas besoin de vérifier sans_lever_exception car c'est donné à tournerBasNiveau
 			throw new MouvementImpossibleException();
 		}
 	}
@@ -370,19 +367,19 @@ public class RobotVrai extends Robot {
 	 * @throws MouvementImpossibleException 
 	 */
 	@Override
-	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe) throws MouvementImpossibleException
+	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
 		Iterator<Vec2> i = chemin.iterator();
 		while(i.hasNext())
 		{
 			Vec2 point = i.next();
-			va_au_point(point, hooks, trajectoire_courbe, nb_tentatives, retenter_si_blocage, symetrie_effectuee, false, false/*i.hasNext()*/);
+			va_au_point(point, hooks, trajectoire_courbe, nb_tentatives, retenter_si_blocage, symetrie_effectuee, sans_lever_exception, i.hasNext());
 		}
 	}
-
-
+	
 	/**
 	 * Le robot va au point demandé
+	 * @throws MouvementImpossibleException 
 	 */
 	@Override
 	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception, boolean enchainer) throws MouvementImpossibleException
@@ -426,11 +423,12 @@ public class RobotVrai extends Robot {
 				if(retenter_si_blocage)
 				{
 					// TODO gérer nombre_tentatives = 0
+					// En cas de blocage, on annule les hooks
 					log.warning("Blocage en déplacement ! On recule... reste "+Integer.toString(nombre_tentatives)+" tentatives", this);
 					if(marche_arriere)
-						avancer(distance_degagement_robot, nombre_tentatives-1);
+						avancer(distance_degagement_robot, null, nombre_tentatives-1, retenter_si_blocage, sans_lever_exception);
 					else
-						avancer(-distance_degagement_robot, nombre_tentatives-1);
+						avancer(-distance_degagement_robot, null, nombre_tentatives-1, retenter_si_blocage, sans_lever_exception);
 				}
 			}
 			finally
@@ -761,12 +759,6 @@ public class RobotVrai extends Robot {
 
 	}
 	
-	
-/*	private void tournerBasNiveau(float angle) throws BlocageException, CollisionException
-	{
-		tournerBasNiveau(angle, null, false);
-	}*/
-
 	/**
      * Méthode pour parcourir un segment : le robot se rend en (x,y) en corrigeant dynamiquement ses consignes en rotation et translation.
      * Si le paramètre trajectoire_courbe=False, le robot évite d'effectuer un virage, et donc tourne sur lui meme avant la translation.
@@ -811,14 +803,9 @@ public class RobotVrai extends Robot {
 		if(!trajectoire_courbe)
 		{
             // sans virage : la première rotation est blocante
-			tournerBasNiveau(angle, hooks, sans_lever_exception);
-			
-			
-			
+			tournerBasNiveau(angle, hooks, sans_lever_exception);			
 			
 			// on n'avance pas si un obstacle est devant
-			
-			//Probleme : recalage utilise ceci avant que la position du robot  ne soit connue. Donc uniquement si !sans_lever_exception
 			if(!sans_lever_exception)
 				detecter_collision();
 
@@ -834,7 +821,8 @@ public class RobotVrai extends Robot {
 			try {
 				deplacements.tourner(angle);
 				// on n'avance pas si un obstacle est devant
-				detecter_collision();
+				if(!sans_lever_exception)
+					detecter_collision();
 				deplacements.avancer(distance);			
 			} catch (SerialException e) {
 				e.printStackTrace();
@@ -999,7 +987,7 @@ public class RobotVrai extends Robot {
 			}
 			
 			// ennemi détecté devant le robot?
-			if(detection_collision)
+			if(detection_collision && !sans_lever_exception)
 				detecter_collision();
 			
 			// robot arrivé?

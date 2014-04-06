@@ -79,7 +79,7 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
 		chemin.add(new Vec2(20, 1400));
 		chemin.add(new Vec2(40, 1500));
-		robotvrai.suit_chemin(chemin, hooks);
+		robotvrai.suit_chemin_droit(chemin, hooks);
 		Assert.assertTrue(nb_balles != robotvrai.getNbrLances());
 	}
 
@@ -101,7 +101,7 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
 		chemin.add(new Vec2(20, 1400));
 		chemin.add(new Vec2(40, 1500));
-		robotvrai.suit_chemin(chemin, hooks);
+		robotvrai.suit_chemin_droit(chemin, hooks);
 		Assert.assertTrue(nb_balles != robotvrai.getNbrLances());
 	}
 
@@ -115,7 +115,7 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 		Executable tirerballes = new TirerBalles(robotvrai);
 		Hook hook = hookgenerator.hook_position(new Vec2(20, 1500));
 		hook.ajouter_callback(new Callback(tirerballes, true));
-		hooks.add(hook);		
+		hooks.add(hook);
 		robotvrai.avancer(10, hooks);
 		Assert.assertTrue(nb_balles == robotvrai.getNbrLances());
 		robotvrai.avancer(50, hooks);
@@ -155,7 +155,7 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
 		chemin.add(new Vec2(20, 1400));
 		chemin.add(new Vec2(1200, 1400));
-		robotvrai.suit_chemin(chemin, hooks);
+		robotvrai.suit_chemin_droit(chemin, hooks);
 		Assert.assertTrue(robotvrai.isTient_feu(Cote.GAUCHE));
 		Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(1200,1400)) < 5);
 	}

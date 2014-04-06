@@ -41,11 +41,6 @@ public class RobotChrono extends Robot {
 
 	// La plupart de ces méthodes resteront vides
 
-	public void maj_config()
-	{
-		// TODO
-	}
-	
 	@Override
 	public void stopper(boolean avec_blocage)
 	{
@@ -112,7 +107,10 @@ public class RobotChrono extends Robot {
 	}
 
 	@Override
-	protected void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception)
+	protected void tourner(float angle, ArrayList<Hook> hooks,
+			int nombre_tentatives, boolean sans_lever_exception,
+			boolean symetrie_effectuee, boolean retenter_si_blocage)
+			throws MouvementImpossibleException
 	{
 		float delta = angle-orientation;
 		if(delta < 0)
@@ -140,12 +138,12 @@ public class RobotChrono extends Robot {
 		duree += 1000;
 	}
 	@Override
-	protected void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe) throws MouvementImpossibleException
+	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe, boolean sans_lever_exception) throws MouvementImpossibleException
 	{
 		for(Vec2 point: chemin)
 			va_au_point(point);
 	}
-
+	
 	@Override
 	protected void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception, boolean enchainer)
 	{
