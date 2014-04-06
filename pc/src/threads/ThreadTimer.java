@@ -46,7 +46,7 @@ public class ThreadTimer extends AbstractThread {
 	{
 		log.debug("Lancement du thread timer", this);
 		// Attente du démarrage du match
-		while(!capteur.demarrage_match())
+		while(!capteur.demarrage_match() && !match_demarre)
 		{
 			if(stop_threads)
 			{
