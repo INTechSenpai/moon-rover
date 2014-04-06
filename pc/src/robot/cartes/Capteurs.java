@@ -131,6 +131,7 @@ public class Capteurs implements Service {
 	
     public boolean demarrage_match()
     {
+    	return false;
 //    	log.debug(serie.communiquer("j", 1)[0], this);
     	try {
     		return Integer.parseInt(serie.communiquer("j", 1)[0]) == 0;

@@ -218,6 +218,9 @@ public class RobotVrai extends Robot {
 
 
 			avancer(-200, false, true);
+			deplacements.set_vitesse_translation(80);
+			avancer(-200, false, true);
+			deplacements.set_vitesse_translation(50);
 			position.x = 1500 - 165;
 			if(couleur == "rouge")
 			{
@@ -233,9 +236,12 @@ public class RobotVrai extends Robot {
 			avancer(45, false, true);	// toujours pas d'exeption, car on ne sait toujours pas ou on est sur la map
 			tourner(-(float)Math.PI/2, null, true);
 			avancer(-600, false, true);
+			deplacements.set_vitesse_translation(80);
+			avancer(-200, false, true);
 			position.y = 2000 - 165;
 			deplacements.set_y(2000 - 165);
 			sleep(500);
+			deplacements.set_vitesse_translation(50);
 			avancer(100);
 			setOrientation((float)(-Math.PI)/2);
 			//Normalement on se trouve à (1500 - 170 - 70 = 1260 ; 2000 - 170 - 100 = 1730)
@@ -1077,22 +1083,15 @@ public class RobotVrai extends Robot {
 	 */
 	public boolean isObstacleImprevuDevantCapteur()
 	{
-		System.out.println("isObstacleImprevuDevantCapteur : " +((Boolean)obstacleImprevuDevantCapteur).toString());
-		
-		if (System.currentTimeMillis() > obstacleImprevuDevantCapteurDeathDate)
-			obstacleImprevuDevantCapteur = false;
-		
 		return obstacleImprevuDevantCapteur;
 	}
 
 	/**
 	 * @param obstacleDevantCapteur the obstacleDevantCapteur to set
 	 */
-	public void setObstacleImprevuDevantCapteur(boolean obstacleDevantCapteur, float TTL) 
+	public void setObstacleImprevuDevantCapteur(boolean obstacleDevantCapteur) 
 	{
 		this.obstacleImprevuDevantCapteur = obstacleDevantCapteur;
-		if (obstacleImprevuDevantCapteur)
-			obstacleImprevuDevantCapteurDeathDate = TTL + System.currentTimeMillis();
 	}
 
 	
