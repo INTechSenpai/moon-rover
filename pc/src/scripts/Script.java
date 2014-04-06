@@ -17,6 +17,7 @@ import container.Service;
 import hook.methodes.TakeFire;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import exception.ConfigException;
 import exception.MouvementImpossibleException;
@@ -72,16 +73,9 @@ public abstract class Script implements Service {
 		robotvrai.set_vitesse_rotation("entre_scripts");
 
 		ArrayList<Vec2> chemin = pathfinding.chemin(robotvrai.getPosition(), point_entree);
-		//ArrayList<Vec2> chemin = new ArrayList<Vec2>();
-		//chemin.add(robotvrai.getPosition());
-		//chemin.add(point_entree);
-		/*if(chemin == null)
-		{
-			System.out.println("coucou j'ai une ");
-		}*/
 		try
 		{
-			robotvrai.suit_chemin(chemin, hooksfeu, retenter_si_blocage, true);
+			robotvrai.suit_chemin(chemin, hooksfeu, retenter_si_blocage, false);
 			execute(id_version, robotvrai, table);
 		}
 		catch (Exception e)

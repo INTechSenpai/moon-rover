@@ -29,6 +29,7 @@ public class Pathfinding implements Service
 	private Table table;
 	private Read_Ini config;
 	private Log log;
+	private boolean resultUpToDate;
 	public Grid2DSpace map;
 	private int centimetresParCases;
 	AStar solver;
@@ -45,9 +46,15 @@ public class Pathfinding implements Service
 		solver = new AStar(map, new IntPair(0,0), new IntPair(0,0));
 		output = new ArrayList<Vec2>();
 		result = new ArrayList<IntPair>();
+		resultUpToDate = false;
 		
 	};
 	
+	public boolean isResultUpToDate() 
+	{
+		return resultUpToDate;
+	}
+
 	public void maj_config()
 	{
 		// TODO
@@ -62,6 +69,8 @@ public class Pathfinding implements Service
 		// TODO : clear map to initial state
 		// also figure out if a check can be founded to skip the whole process if newtable = map
 		
+		//System.out.println(map.stringForm());
+		
 		for (int i = 0; i < newtable.getListObstacles().size(); ++i)
 		{
 			if (newtable.getListObstacles().get(i) instanceof ObstacleRectangulaire)
@@ -69,6 +78,9 @@ public class Pathfinding implements Service
 			else
 				map.appendObstacle((ObstacleCirculaire)newtable.getListObstacles().get(i));
 		}
+		
+		// les chemins sont périmés puisque la map est différente
+		resultUpToDate = true;
 	}
 
 	/**
@@ -143,6 +155,7 @@ public class Pathfinding implements Service
 		System.out.println("Chemin : " + output);
 		
 
+		resultUpToDate = true;
 		return output;
 		
 		// convertit la sortie de l'AStar en suite de Vec2 dans le système de coords d'entrée.
@@ -183,12 +196,14 @@ public class Pathfinding implements Service
 			for (int i = 1; i < result.size(); ++i)
 				out +=  Math.sqrt(	(result.get(i).x - result.get(i-1).x) * (result.get(i).x - result.get(i-1).x) +
 									(result.get(i).y - result.get(i-1).y) * (result.get(i).y - result.get(i-1).y));
-			
+
+			resultUpToDate = true;
 			return out*10*centimetresParCases;	// x 10 pour la distance en mm
 		}
 		else
 		{
 			// système de cache inside
+			resultUpToDate = true;
 			return 0;
 		}
 	}

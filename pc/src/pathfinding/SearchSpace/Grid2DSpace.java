@@ -95,7 +95,7 @@ public class Grid2DSpace
 		// Asumptions :  	obs.getPosition() returns the center of the rectangle
 		//					also, rectangle is Axis Aligned...
 		
-		int obsPosX = (int)Math.round((obs.getPosition().x + 1500) * reductionFactor /10 );
+		int obsPosX = (int)Math.round(( -1 * obs.getPosition().x + 1500) * reductionFactor /10 );
 		int obsPosY = (int)Math.round(obs.getPosition().y * reductionFactor /10 );
 		int obsSizeX = (int)Math.round((obs.getLongueur() +robotRadius) * reductionFactor /10 );
 		int obsSizeY = (int)Math.round((obs.getLargeur() +robotRadius) * reductionFactor /10 );
@@ -111,7 +111,7 @@ public class Grid2DSpace
 	{
 		// Asumptions :  	obs.getPosition() returns the center of the circle (pretty obvious, but still...)
 		
-		int obsPosX = (int)Math.round((obs.getPosition().x + 1500) * reductionFactor /10 );
+		int obsPosX = (int)Math.round((-1 * obs.getPosition().x + 1500) * reductionFactor /10 );
 		int obsPosY = (int)Math.round(obs.getPosition().y * reductionFactor /10 );
 		int diameter = (int)Math.round((obs.getRadius() + robotRadius)* reductionFactor /10 )*2;
 		

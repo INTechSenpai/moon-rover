@@ -49,6 +49,7 @@ public class PathfindingRandomTest extends JUnit_Test
 		robotvrai.set_vitesse_rotation("entre_scripts");
 		robotvrai.set_vitesse_translation("entre_scripts");
 		container.getService("threadPosition");
+		container.getService("threadCapteur");
 		container.demarreThreads();
 		robotvrai.set_vitesse_translation("30");
 		robotvrai.avancer(100);

@@ -57,8 +57,10 @@ public class RobotVrai extends Robot {
 	private int pwm_max_translation;
 	private int distance_securite_trajectoire_courbe;
 	private boolean autorise_trajectoire_courbe;
-	// Constructeur
 	
+	private boolean obstacleImprevuDevantCapteur;
+	
+	// Constructeur
 	public RobotVrai(Capteurs capteur, Actionneurs actionneurs, Deplacements deplacements, HookGenerator hookgenerator, Table table, Read_Ini config, Log log)
  	{
 		super(config, log);
@@ -67,6 +69,7 @@ public class RobotVrai extends Robot {
 		this.deplacements = deplacements;
 		this.hookgenerator =  hookgenerator;
 		this.table = table;
+		obstacleImprevuDevantCapteur = false;
 		maj_config();
 		this.set_vitesse_rotation("entre_scripts");
 		this.set_vitesse_translation("entre_scripts");
@@ -207,10 +210,12 @@ public class RobotVrai extends Robot {
 	// Un début, on va voir si ça marche
 	public void recaler()
 	{
-		//Pas besoin de cette fonction -> il faudra utiliser la cale en carton fait maison
+
 		try {
 			deplacements.set_vitesse_translation(50);
 			deplacements.set_vitesse_rotation(80);
+
+
 			avancer(-200, false, true);
 			position.x = 1500 - 165;
 			if(couleur == "rouge")
@@ -224,8 +229,8 @@ public class RobotVrai extends Robot {
 				setOrientation((float)Math.PI);
 			}
 			sleep(500);
-			avancer(60);
-			tourner(-(float)Math.PI/2);
+			avancer(45, false, true);	// toujours pas d'exeption, car on ne sait toujours pas ou on est sur la map
+			tourner(-(float)Math.PI/2, null, true);
 			avancer(-600, false, true);
 			position.y = 2000 - 165;
 			deplacements.set_y(2000 - 165);
@@ -737,7 +742,7 @@ public class RobotVrai extends Robot {
 			e.printStackTrace();
 		}
 		
-		while(!acquittement(true, sans_lever_exception))
+		while(!acquittement(!sans_lever_exception, sans_lever_exception))
 		{
 			if(hooks != null)
 				for(Hook hook : hooks)
@@ -803,9 +808,16 @@ public class RobotVrai extends Robot {
 		if(!trajectoire_courbe)
 		{
             // sans virage : la première rotation est blocante
-			tournerBasNiveau(angle);
+			tournerBasNiveau(angle, null, sans_lever_exception);
+			
+			
+			
+			
 			// on n'avance pas si un obstacle est devant
-			detecter_collision();
+			
+			//Probleme : recalage utilise ceci avant que la position du robot  ne soit connue. Donc uniquement si !sans_lever_exception
+			if(!sans_lever_exception)
+				detecter_collision();
 
 			try {
 				deplacements.avancer(distance);
@@ -827,7 +839,9 @@ public class RobotVrai extends Robot {
 		}
 		
 		float distance_restante_carre = 5000;
-		while((!acquittement(true, sans_lever_exception) && !enchainer) || (enchainer && distance_restante_carre > 1000))
+		
+		//meme soucis ici que pour le premier detecter_collision, acquittement ne doit pas vérifier les collisions si on lui demande justement de ne pas lever d'exeption.
+		while((!acquittement(!sans_lever_exception, sans_lever_exception) && !enchainer) || (enchainer && distance_restante_carre > 1000))
 		{
 			if(hooks != null)
 				for(Hook hook : hooks)
@@ -944,9 +958,15 @@ public class RobotVrai extends Robot {
 
 		if(table.obstaclePresent(centre_detection, distance_detection/2))
 		{
-			log.warning("Ennemi détecté!", this);
+			log.warning("Ennemi détecté en : " + centre_detection.x + "; " + centre_detection.y, this);
 			throw new CollisionException();
 		}
+		if(obstacleImprevuDevantCapteur)
+		{
+			log.warning("Obstacle capteur droit devant !", this);
+			throw new CollisionException();
+		}
+			
 	}
 	
 	private void detecter_collision() throws CollisionException
@@ -1049,6 +1069,21 @@ public class RobotVrai extends Robot {
 	{
 		orientation_consigne = orientation;
 	}
+
 	
+	/**
+	 * @return the obstacleDevantCapteur
+	 */
+	public boolean isObstacleImprevuDevantCapteur() {
+		return obstacleImprevuDevantCapteur;
+	}
+
+	/**
+	 * @param obstacleDevantCapteur the obstacleDevantCapteur to set
+	 */
+	public void setObstacleImprevuDevantCapteur(boolean obstacleDevantCapteur) {
+		this.obstacleImprevuDevantCapteur = obstacleDevantCapteur;
+	}
+
 	
 }

@@ -209,7 +209,11 @@ class ThreadCapteurs extends AbstractThread {
 	*/		
 			int distance = capteur.mesurer_ultrason();
 			//log.debug("Distance: "+distance, this);
-			if(distance >= 0 && distance < horizon_capteurs)
+			
+			if (distance > 0 && distance < 70)
+				log.debug("Câlin !", this);
+			
+			if(distance >= 40 && distance < horizon_capteurs)
 			{
 				int distance_inter_robots = distance + rayon_robot_adverse + largeur_robot/2;
 				int distance_brute = distance + largeur_robot/2;
@@ -218,25 +222,29 @@ class ThreadCapteurs extends AbstractThread {
 //					theta += Math.PI;
 				// On ne prend pas en compte le rayon du robot adverse dans la position brute. Il s'agit en fait du point effectivement vu
 				// Utilisé pour voir si l'obstacle n'est justement pas un robot adverse.
-				Vec2 position_brute = robotvrai.getPosition().PlusNewVector(new Vec2((float)distance_brute * (float)Math.cos(theta), (float)distance_brute * (float)Math.sin(theta)));
-				Vec2 position = robotvrai.getPosition().PlusNewVector(new Vec2((float)distance_inter_robots * (float)Math.cos(theta), (float)distance_inter_robots * (float)Math.sin(theta)));
-				
-				// on vérifie qu'un obstacle n'a pas été ajouté récemment
-				if(System.currentTimeMillis() - date_dernier_ajout > tempo)
-					// si la position est bien sur la table (histoire de pas détecter un arbitre)
-					if(position.x > -table_x/2 && position.y > 0 && position.x < table_x/2 && position.y < table_y)
+				Vec2 position_brute = robotvrai.getPosition().PlusNewVector(new Vec2((float)distance_brute * (float)Math.cos(theta), (float)distance_brute * (float)Math.sin(theta))); // position du point détecté
+				Vec2 position = robotvrai.getPosition().PlusNewVector(new Vec2((float)distance_inter_robots * (float)Math.cos(theta), (float)distance_inter_robots * (float)Math.sin(theta))); // centre supposé de l'obstacle détecté
+
+				// si la position est bien sur la table (histoire de pas détecter un arbitre)
+				if(position.x > -table_x/2 && position.y > 0 && position.x < table_x/2 && position.y < table_y)
+					// on vérifie qu'un obstacle n'a pas été ajouté récemment
+					if(System.currentTimeMillis() - date_dernier_ajout > tempo)
 					{
 						if(!table.obstacle_existe(position_brute))
 						{
 							table.creer_obstacle(position);
 							date_dernier_ajout = (int)System.currentTimeMillis();
 							log.debug("Nouvel obstacle en "+position, this);
+							log.debug("obstacle a une distance de : "+distance, this);
+							pathfinding.update(table);
+							robotvrai.setObstacleImprevuDevantCapteur(true); // informe le robot
 						}
 						else
-							log.debug("L'objet vu est un obstacle fixe.", this);
+							robotvrai.setObstacleImprevuDevantCapteur(false); // informe le robot
+							
+						//	log.debug("L'objet vu est un obstacle fixe.", this);
 					}
 
-				pathfinding.update(table);
 			}
 			Sleep.sleep((long)1/capteurs_frequence);
 			
