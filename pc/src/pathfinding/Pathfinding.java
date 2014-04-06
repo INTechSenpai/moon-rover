@@ -300,4 +300,10 @@ public class Pathfinding implements Service
 	{
 		return map;
 	}
+
+	public void update()
+	{
+		// TODO
+	}
+	
 }
