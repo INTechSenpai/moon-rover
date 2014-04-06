@@ -59,6 +59,7 @@ public class RobotVrai extends Robot {
 	private boolean autorise_trajectoire_courbe;
 	
 	private boolean obstacleImprevuDevantCapteur;
+	private float obstacleImprevuDevantCapteurDeathDate;
 	
 	// Constructeur
 	public RobotVrai(Capteurs capteur, Actionneurs actionneurs, Deplacements deplacements, HookGenerator hookgenerator, Table table, Read_Ini config, Log log)
@@ -742,7 +743,7 @@ public class RobotVrai extends Robot {
 			e.printStackTrace();
 		}
 		
-		while(!acquittement(!sans_lever_exception, sans_lever_exception))
+		while(!acquittement(false, sans_lever_exception))
 		{
 			if(hooks != null)
 				for(Hook hook : hooks)
@@ -961,7 +962,7 @@ public class RobotVrai extends Robot {
 			log.warning("Ennemi détecté en : " + centre_detection.x + "; " + centre_detection.y, this);
 			throw new CollisionException();
 		}
-		if(obstacleImprevuDevantCapteur)
+		if(isObstacleImprevuDevantCapteur())
 		{
 			log.warning("Obstacle capteur droit devant !", this);
 			throw new CollisionException();
@@ -1074,15 +1075,24 @@ public class RobotVrai extends Robot {
 	/**
 	 * @return the obstacleDevantCapteur
 	 */
-	public boolean isObstacleImprevuDevantCapteur() {
+	public boolean isObstacleImprevuDevantCapteur()
+	{
+		System.out.println("isObstacleImprevuDevantCapteur : " +((Boolean)obstacleImprevuDevantCapteur).toString());
+		
+		if (System.currentTimeMillis() > obstacleImprevuDevantCapteurDeathDate)
+			obstacleImprevuDevantCapteur = false;
+		
 		return obstacleImprevuDevantCapteur;
 	}
 
 	/**
 	 * @param obstacleDevantCapteur the obstacleDevantCapteur to set
 	 */
-	public void setObstacleImprevuDevantCapteur(boolean obstacleDevantCapteur) {
+	public void setObstacleImprevuDevantCapteur(boolean obstacleDevantCapteur, float TTL) 
+	{
 		this.obstacleImprevuDevantCapteur = obstacleDevantCapteur;
+		if (obstacleImprevuDevantCapteur)
+			obstacleImprevuDevantCapteurDeathDate = TTL + System.currentTimeMillis();
 	}
 
 	

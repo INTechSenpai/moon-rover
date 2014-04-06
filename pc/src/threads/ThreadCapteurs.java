@@ -226,7 +226,7 @@ class ThreadCapteurs extends AbstractThread {
 				Vec2 position = robotvrai.getPosition().PlusNewVector(new Vec2((float)distance_inter_robots * (float)Math.cos(theta), (float)distance_inter_robots * (float)Math.sin(theta))); // centre supposé de l'obstacle détecté
 
 				// si la position est bien sur la table (histoire de pas détecter un arbitre)
-				if(position.x > -table_x/2 && position.y > 0 && position.x < table_x/2 && position.y < table_y)
+				if(position.x-200 > -table_x/2 && position.y > 200 && position.x+200 < table_x/2 && position.y+200 < table_y)
 					// on vérifie qu'un obstacle n'a pas été ajouté récemment
 					if(System.currentTimeMillis() - date_dernier_ajout > tempo)
 					{
@@ -237,15 +237,14 @@ class ThreadCapteurs extends AbstractThread {
 							log.debug("Nouvel obstacle en "+position, this);
 							log.debug("obstacle a une distance de : "+distance, this);
 							pathfinding.update(table);
-							robotvrai.setObstacleImprevuDevantCapteur(true); // informe le robot
+							robotvrai.setObstacleImprevuDevantCapteur(true, (float)200.0f); // informe le robot
 						}
-						else
-							robotvrai.setObstacleImprevuDevantCapteur(false); // informe le robot
 							
 						//	log.debug("L'objet vu est un obstacle fixe.", this);
 					}
 
 			}
+			
 			Sleep.sleep((long)1/capteurs_frequence);
 			
 		}
