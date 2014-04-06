@@ -1,6 +1,7 @@
 package utils;
 
 import java.io.FileWriter;
+import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -69,7 +70,7 @@ public class Log implements Service
 	public void special(String message)
 	{
 		if(affiche_debug)
-			ecrire("Lanceur: "+message, couleurDebug);
+			ecrire("Lanceur: "+message, couleurDebug, System.out);
 	}
 	
 	
@@ -81,7 +82,7 @@ public class Log implements Service
 	public void debug(String message, Object objet)
 	{
 		if(affiche_debug)
-			ecrire(objet.getClass().getName()+": "+message, couleurDebug);
+			ecrire(objet.getClass().getName()+": "+message, couleurDebug, System.out);
 	}
 
 	public void warning(Object message, Object objet)
@@ -91,7 +92,7 @@ public class Log implements Service
 
 	public void warning(String message, Object objet)
 	{
-		ecrire(objet.getClass().getName()+": "+message, couleurWarning);
+		ecrire(objet.getClass().getName()+": "+message, couleurWarning, System.out);
 	}
 
 	public void critical(Object message, Object objet)
@@ -101,15 +102,15 @@ public class Log implements Service
 	
 	public void critical(String message, Object objet)
 	{
-		ecrire(objet.getClass().getName()+": "+message, couleurCritical);
+		ecrire(objet.getClass().getName()+": "+message, couleurCritical, System.err);
 	}
 
-	private void ecrire(String message, String couleur)
+	private void ecrire(String message, String couleur, PrintStream ou)
 	{
 		java.util.GregorianCalendar calendar = new GregorianCalendar();
 		String heure = calendar.get(Calendar.HOUR)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+","+calendar.get(Calendar.MILLISECOND);
 		if(couleur != couleurDebug || affiche_debug)
-			System.out.println(couleur+heure+" "+message+"\u001B[0m");
+			ou.println(couleur+heure+" "+message+"\u001B[0m");
 		if(sauvegarde_fichier)
 			ecrireFichier(couleur+heure+" "+message+"\u001B[0m");
 	}
