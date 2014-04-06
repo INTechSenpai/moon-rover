@@ -23,7 +23,7 @@ public class Table implements Service {
 	
 	private ArrayList<Obstacle> listObstacles = new ArrayList<Obstacle>();
 	private static ArrayList<Obstacle> listObstaclesFixes = new ArrayList<Obstacle>();
-	private ObstacleCirculaire[] robots_adverses = new ObstacleCirculaire[2];
+	private ObstacleBalise[] robots_adverses = new ObstacleBalise[2];
 	
 	private int hashFire;
 	private int hashTree;
@@ -44,7 +44,7 @@ public class Table implements Service {
 	{
 		this.log = log;
 		this.config = config;
-		
+		maj_config();
 		initialise();
 	}
 	
@@ -99,17 +99,9 @@ public class Table implements Service {
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(800,0), 150));
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-800,0), 150));
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-1500,700), 150));
-
-		// Pas dans maj_config, car cette valeur n'est utilisée qu'au constructeur
-		int rayon_robot_adverse = 230;
-			try {
-				rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
-			} catch (NumberFormatException | ConfigException e) {
-				rayon_robot_adverse = 230;
-				e.printStackTrace();
-			}
-		robots_adverses[0] = new ObstacleCirculaire(new Vec2(0,0), rayon_robot_adverse);
-		robots_adverses[1] = new ObstacleCirculaire(new Vec2(0,0), rayon_robot_adverse);
+		
+		robots_adverses[0] = new ObstacleBalise(new Vec2(-1000, -1000), rayon_robot_adverse, new Vec2(0, 0));
+		robots_adverses[1] = new ObstacleBalise(new Vec2(-1000, -1000), rayon_robot_adverse, new Vec2(0, 0));
 		
 		hashFire = 0;
 		hashTree = 0;
@@ -125,8 +117,6 @@ public class Table implements Service {
 		list_fresco_hanged[0] = false;
 		list_fresco_hanged[1] = false;
 		list_fresco_hanged[2] = false;
-		
-		maj_config();
 		
 	}
 	
@@ -415,7 +405,7 @@ public class Table implements Service {
 	 */
 	public int hashTable()
 	{
-		return hashFire*1000000 + hashTree*1000 + hashObstacles;
+		return hashEnnemis*1000000 + hashFire*10000 + hashTree*100 + hashObstacles;
 	}
 
 	/**

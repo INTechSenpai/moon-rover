@@ -10,14 +10,15 @@ class ObstacleBalise extends ObstacleCirculaire {
 
 	private Vec2 speed;
 	
-	public ObstacleBalise (Vec2 position, float rad, Vec2 spe)
+	public ObstacleBalise (Vec2 position, float rad, Vec2 speed)
 	{
 		super(position,rad);
-		this.speed = spe;
+		this.speed = speed;
 	}
-	
-	public ObstacleBalise clone()
+
+	public void clone(ObstacleBalise ob)
 	{
-		return new ObstacleBalise(position.clone(), radius, speed);
+		super.clone(ob);
+		ob.speed = speed;
 	}
 }

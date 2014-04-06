@@ -16,6 +16,7 @@ public abstract class Obstacle {
 	}
 	
 	public abstract Obstacle clone();
+
 	public Vec2 getPosition()
 	{
 		return this.position;
