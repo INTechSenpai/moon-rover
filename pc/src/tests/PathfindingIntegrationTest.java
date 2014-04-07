@@ -22,7 +22,6 @@ public class PathfindingIntegrationTest extends JUnit_Test
 		config.set("couleur", "jaune");
 	//	robotchrono = new RobotChrono(config, log);
 		table = (Table)container.getService("Table");
-		table.initialise();
 //		container.getService("threadPosition");
 	//	container.demarreThreads();
 	}

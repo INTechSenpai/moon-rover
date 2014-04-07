@@ -9,6 +9,7 @@ import table.Colour;
 import container.Service;
 import exception.ConfigException;
 import exception.MouvementImpossibleException;
+import exception.PathfindingException;
 import exception.SerialException;
 import utils.Log;
 import utils.Read_Ini;
@@ -236,8 +237,9 @@ public abstract class Robot implements Service {
 	 * @param symetrie_effectuee
 	 * @param trajectoire_courbe
 	 * @throws MouvementImpossibleException
+	 * @throws PathfindingException 
 	 */
-	public void va_au_point_pathfinding(Pathfinding pathfinding, Vec2 arrivee, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe, boolean sans_lever_exception) throws MouvementImpossibleException
+	public void va_au_point_pathfinding(Pathfinding pathfinding, Vec2 arrivee, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe, boolean sans_lever_exception) throws MouvementImpossibleException, PathfindingException
 	{
 		// TODO exception pathfinding
 		if(couleur == "rouge" && !symetrie_effectuee)
@@ -307,7 +309,7 @@ public abstract class Robot implements Service {
 		avancer(distance, null, nb_tentatives, true, false);
 	}
 
-	public void va_au_point_pathfinding(Pathfinding pathfinding, Vec2 arrivee) throws MouvementImpossibleException
+	public void va_au_point_pathfinding(Pathfinding pathfinding, Vec2 arrivee) throws MouvementImpossibleException, PathfindingException
 	{
 		va_au_point_pathfinding(pathfinding, arrivee, null, true, false, true, false);
 	}

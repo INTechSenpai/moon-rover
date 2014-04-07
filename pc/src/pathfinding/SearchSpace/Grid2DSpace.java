@@ -12,17 +12,19 @@ import table.ObstacleRectangulaire;
 import table.ObstacleCirculaire;
 import table.Table;
 import table.Obstacle;
+import utils.Log;
 
 /**
- * @author Marsya, Krissprolls
+ * @author Marsya, Krissprolls, pf
  *	La classe espace de recherche
  *  Pour le robot, ce sera concr�tement la table
  */
 
 public class Grid2DSpace 
 {
+	private Log log;
 
-	private ArrayList<ArrayList<Boolean>> datas;
+	private boolean[][] datas;
 	private int surface;
 	private int sizeX;
 	private int sizeY;
@@ -31,11 +33,10 @@ public class Grid2DSpace
 	int robotRadius;
 	
 	
-	public Grid2DSpace(IntPair size, Table requestedTable, int requestedrobotRadius)
+	public Grid2DSpace(IntPair size, Table requestedTable, int requestedrobotRadius, Log log)
 	{
+		this.log = log;
 
-
-		// TODO : proprer management of robot radius
 		robotRadius = requestedrobotRadius; 
 		//Création du terrain avec obstacles fixes
 		table = requestedTable;
@@ -45,35 +46,33 @@ public class Grid2DSpace
 		int ratio = sizeX / sizeY;
 		if(ratio != 3/2)
 		{
-			System.out.println("Grid2DSpace construction warning : given size of " + sizeX + "x" + sizeY + " is not of ratio 3/2");
+			log.warning("Grid2DSpace construction warning : given size of " + sizeX + "x" + sizeY + " is not of ratio 3/2", this);
 			sizeY = sizeX / ratio;
 		}
-		System.out.println("Creating Grid2DSpace from table with a size of : " + sizeX + "x" + sizeY);
+		log.debug("Creating Grid2DSpace from table with a size of : " + sizeX + "x" + sizeY, this);
 		
 		reductionFactor = (float)(sizeX)/300.0f;
 		
-		System.out.println("reductionFactor : " + reductionFactor);
+		log.debug("reductionFactor : " + reductionFactor, this);
 		
 		
-		datas = new ArrayList<ArrayList<Boolean>>();
+		datas = new boolean[sizeX][sizeY];
 		ArrayList<Obstacle> l_fixes = table.getListObstaclesFixes();
 		
 		// construit une map de sizeX * sizeY vide
 		for(int i=0; i<sizeX; i++)
-		{
-			datas.add(new ArrayList<Boolean>(sizeY));
 			for(int j=0; j<sizeY;j++)
-				datas.get(i).add(true);
-		}	
-		
+				datas[i][j] = true;
+				
 		// peuple les obstacles fixes
 		for(int k=0; k<l_fixes.size(); k++)
 		{
 			if(l_fixes.get(k) instanceof ObstacleRectangulaire)
 				appendObstacle((ObstacleRectangulaire)l_fixes.get(k));
-			else
+			else if(l_fixes.get(k) instanceof ObstacleCirculaire)
 				appendObstacle((ObstacleCirculaire)l_fixes.get(k));
-
+			else
+				log.critical("Obstacle non géré", this);
 		}
 		
 		// Ne rentre pas dans les bacs
@@ -103,8 +102,8 @@ public class Grid2DSpace
 		
 		for(int i= obsPosX - obsSizeX/2; i<obsPosX + obsSizeX/2; i++)
 			for(int j= obsPosY - obsSizeY/2; j<obsPosY + obsSizeY/2; j++)
-				if( i >= 0 && i < datas.size() && j >=0 && j < datas.get(0).size())
-					datas.get(i).set(j, false);
+				if( i >= 0 && i < sizeX && j >=0 && j < sizeY)
+					datas[i][j] = false;
 	}
 	
 	public void appendObstacle(ObstacleCirculaire obs)
@@ -119,14 +118,16 @@ public class Grid2DSpace
 		
 		
 		// recopie le pochoir
+		
+		// TODO arraycopy
 		int i2 = 0, j2 = 0;
 		for(int i = obsPosX - diameter/2; i<obsPosX + diameter/2; i++)
 		{
 			j2 = 0;
 			for(int j = obsPosY - diameter/2; j<obsPosY + diameter/2; j++)
 			{	
-				if( i >= 0 && i < datas.size() && j >=0 && j < datas.get(0).size())
-					datas.get(i).set(j, datas.get(i).get(j) && pochoir.get(i2).get(j2));
+				if( i >= 0 && i < sizeX && j >=0 && j < sizeY)
+					datas[i][j] = datas[i][j] && pochoir.get(i2).get(j2);
 				j2++;
 			}
 			i2++;
@@ -141,15 +142,12 @@ public class Grid2DSpace
 		surface = (int) (size.x * size.y);
 		sizeX = (int)Math.round(size.x);
 		sizeY = (int)Math.round(size.y);
-		System.out.println("Creating random Grid2DSpace, size :" + sizeX + "x" + sizeY);
+		log.debug("Creating random Grid2DSpace, size :" + sizeX + "x" + sizeY, this);
 		
-		datas = new ArrayList<ArrayList<Boolean>>();
+		datas = new boolean[sizeX][sizeY];
 		for (int  i = 0; i < sizeX; ++i)
-		{
-			datas.add(new ArrayList<Boolean>(sizeY));
 			for (int  j = 0; j < sizeY; ++j)
-				datas.get(i).add(true);
-		}
+				datas[i][j] = true;
 		
 
 		ArrayList<ArrayList<Float>> floatdatas = new ArrayList<ArrayList<Float>>();
@@ -183,9 +181,9 @@ public class Grid2DSpace
 		for (int  j = 0; j < sizeX; ++j)
 			for (int  k = 0; k < sizeY; ++k)
 				if((int)Math.round(floatdatas.get(j).get(k)) > seuil)
-					datas.get(j).set(k, false);			// au dessus du seuil, on ne passe pas
+					datas[j][k] = false;			// au dessus du seuil, on ne passe pas
 				else
-					datas.get(j).set(k, true);			// en dessous, ca roule
+					datas[j][k] = true;				// en dessous, ca roule
 					
 					
 				
@@ -195,20 +193,17 @@ public class Grid2DSpace
 
 	
 	// WARING WARING : size have to be consistant with originalDatas
-	public Grid2DSpace(Vec2 size, ArrayList<ArrayList<Boolean>> originalDatas)
+	public Grid2DSpace(Vec2 size, boolean[][] originalDatas)
 	{
 		surface = (int)(size.x * size.y);
 		sizeX = (int)Math.round(size.x);
 		sizeY = (int)Math.round(size.y);
 
-
-		datas = new ArrayList<ArrayList<Boolean>>();
+		
+		datas = new boolean[sizeX][sizeY];
 		for (int  i = 0; i < sizeX; ++i)
-		{
-			datas.add(new ArrayList<Boolean>(sizeY));
 			for (int  j = 0; j < sizeY; ++j)
-				datas.get(i).add(originalDatas.get(i).get(j));
-		}
+				datas[i][j] = originalDatas[i][j];
 					
 	}
 	
@@ -227,8 +222,9 @@ public class Grid2DSpace
 			return makeCopy();
 		else
 		{
+			// TODO
 			//Abwabwa
-			Grid2DSpace smaller = new Grid2DSpace(new Vec2(sizeX, sizeY), datas);
+//			Grid2DSpace smaller = new Grid2DSpace(new Vec2(sizeX, sizeY), datas);
 			return new Grid2DSpace(new Vec2(sizeX, sizeY), datas);
 			
 		}
@@ -243,7 +239,7 @@ public class Grid2DSpace
 		if(x < 0 || x >= sizeX || y < 0 || y >= sizeY)
 			return false;
 		
-		return datas.get(x).get(y);
+		return datas[x][y];
 	}
 
 	
@@ -338,7 +334,7 @@ public class Grid2DSpace
 		for (int  j = 0; j < sizeX; ++j)
 		{
 			for (int  k = sizeY - 1; k >= 0; --k)
-				if(datas.get(j).get(k) == true)
+				if(datas[j][k] == true)
 					out += '.';
 				else
 					out += 'X';	
@@ -348,4 +344,26 @@ public class Grid2DSpace
 		return out;
 	}
 
+	/**
+	 * Clone "this" into "other". "this" is not modified.
+	 * @param other
+	 */
+	public void clone(Grid2DSpace other)
+	{
+		for (int i = 0; i < datas.length; i++) {
+		    System.arraycopy(datas[i], 0, other.datas[i], 0, datas[0].length);
+		}
+	}
+	
+	/**
+	 * Retourne un objet Grid2DSpace sauvegardé.
+	 * Les objets sauvegardés seront les 4 map de base, avec les obstacles fixes
+	 * @return
+	 */
+	public static Grid2DSpace load(int i)
+	{
+		// TODO
+		return null;
+	}
+	
 }

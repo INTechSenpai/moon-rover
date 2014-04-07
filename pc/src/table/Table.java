@@ -48,7 +48,7 @@ public class Table implements Service {
 		initialise();
 	}
 	
-	public void initialise()
+	private void initialise()
 	{
 		// Initialisation des feux
 		// TODO vérifier couleur. Torche fixe?
@@ -369,10 +369,15 @@ public class Table implements Service {
 	{
 		return position.distance(arrayTorch[i].position);
 	}
-	public Torch[] getListTorch()
-		{
-			return arrayTorch;
-		}
+
+	public void torche_disparue(Cote cote)
+	{
+		if(cote == Cote.DROIT)
+			arrayTorch[0].setDisparue();
+		else
+			arrayTorch[1].setDisparue();
+	}
+	
 	//La table
 	/**
 	 * La table en argument deviendra la copie de this (this reste inchangé)

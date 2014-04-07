@@ -34,7 +34,7 @@ public class JUnit_SimpleAStarTest extends JUnit_Test
 		int mapSizeY = 100;
 
 
-		Grid2DSpace map = new Grid2DSpace(new IntPair(mapSizeX,mapSizeY),table,200);
+		Grid2DSpace map = new Grid2DSpace(new IntPair(mapSizeX,mapSizeY),table,200,log);
 		
 		//String mapStr = map.stringForm();
 	    Random randomGenerator = new Random();

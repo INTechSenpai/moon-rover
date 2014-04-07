@@ -95,11 +95,8 @@ public class Container {
 		if(services.containsKey(nom))
 			;
 		else if(nom == "Table")
-		{
 			services.put(nom, (Service)new Table(	(Log)getService("Log"),
 													(Read_Ini)getService("Read_Ini")));
-			((Table) services.get(nom)).initialise(); // N'est pas mis dans le constructeur car ne doit être appelé que pour la toute première instance
-		}
 		else if(nom.length() > 4 && nom.substring(0,5).equals("serie"))
 		{
 			if(serialmanager == null)
