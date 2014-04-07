@@ -2,7 +2,6 @@ package threads;
 
 import java.util.Hashtable;
 
-import pathfinding.Pathfinding;
 import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
 import robot.cartes.laser.FiltrageLaser;
@@ -66,11 +65,11 @@ public class ThreadManager {
 		return threads.get("threadPosition");
 	}
 
-	public AbstractThread getThreadCapteurs(RobotVrai robotvrai, Pathfinding pathfinding, ThreadTimer threadtimer, Table table, Capteurs capteurs)
+	public AbstractThread getThreadCapteurs(RobotVrai robotvrai, ThreadTimer threadtimer, Table table, Capteurs capteurs)
 	{
 		AbstractThread thread = threads.get("threadCapteurs");
 		if(thread == null)
-			threads.put("threadCapteurs", new ThreadCapteurs(robotvrai, pathfinding, threadtimer, table, capteurs));
+			threads.put("threadCapteurs", new ThreadCapteurs(robotvrai, threadtimer, table, capteurs));
 		return threads.get("threadCapteurs");
 	}
 

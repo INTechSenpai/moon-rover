@@ -149,7 +149,6 @@ public class Container {
 																		(ThreadTimer)getService("threadTimer")));
 		else if(nom == "threadCapteurs")
 			services.put(nom, (Service)threadmanager.getThreadCapteurs(	(RobotVrai)getService("RobotVrai"),
-																		(Pathfinding)getService("Pathfinding"),
 																		(ThreadTimer)getService("threadTimer"),
 																		(Table)getService("Table"),
 																		(Capteurs)getService("Capteur")));

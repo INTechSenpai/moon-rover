@@ -29,7 +29,6 @@ public class Grid2DSpace
 	private int sizeX;
 	private int sizeY;
 	private float reductionFactor; // facteur de reduction par rapport à 1case/cm Exemple : 150x100 a un rapport de 0.5
-	private Table table;
 	int robotRadius;
 	
 	
@@ -39,7 +38,7 @@ public class Grid2DSpace
 
 		robotRadius = requestedrobotRadius; 
 		//Création du terrain avec obstacles fixes
-		table = requestedTable;
+		Table table = requestedTable;
 		surface = size.x * size.y;
 		sizeX = size.x;
 		sizeY = size.y;	
