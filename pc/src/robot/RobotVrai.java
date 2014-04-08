@@ -654,6 +654,16 @@ public class RobotVrai extends Robot {
 			actionneurs.ouvrir_bas_pince_droite();
 	}
 	@Override
+	public void prendre_torche(Cote cote) throws SerialException
+	{
+		if(cote == Cote.GAUCHE)
+			actionneurs.prendre_torche_gauche();
+		else
+			actionneurs.prendre_torche_droite();
+	}
+	
+	
+	@Override
 	public void tourner_pince(Cote cote) throws SerialException
 	{
 		if(cote == Cote.GAUCHE)

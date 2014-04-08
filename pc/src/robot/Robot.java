@@ -80,7 +80,7 @@ public abstract class Robot implements Service {
 	public abstract void tourner_pince(Cote cote) throws SerialException;
 	public abstract void presque_fermer_pince(Cote cote) throws SerialException;
 	public abstract void ouvrir_bas_pince(Cote cote) throws SerialException;
-	
+	public abstract void prendre_torche(Cote cote) throws SerialException;
 	public abstract void sleep(long duree);
 	
 	// Dépendances
@@ -142,6 +142,8 @@ public abstract class Robot implements Service {
         	return 50; // TODO
         else if(vitesse == "arbre_avant")
         	return 60; // TODO
+        else if(vitesse == "torche")
+        	return 40; //TODO
         else
         {
         	log.warning("Erreur vitesse translation: "+vitesse, this);

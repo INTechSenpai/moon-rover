@@ -197,7 +197,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	public void test_ScriptTorche_agit() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptTorche");
-		s.agit(0, robotvrai, table, pathfinding, true);
+		s.agit(1, robotvrai, table, pathfinding, true);
 	}
 	
 	@Test
@@ -206,5 +206,4 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		robotvrai.setTient_feu(Cote.DROIT);
 		robotvrai.takefire(Cote.GAUCHE);
 	}
-
 }
