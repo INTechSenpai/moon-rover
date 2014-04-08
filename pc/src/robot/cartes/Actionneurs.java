@@ -21,6 +21,7 @@ public class Actionneurs implements Service {
 	{
 		this.log = log;
 		this.serie = serie;
+		
 	}
 
 	public void maj_config()
