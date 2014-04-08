@@ -261,6 +261,18 @@ public class Deplacements implements Service {
 		String chaines[] = {"crv", Double.toString(kp), Double.toString(kd), Integer.toString(pwm_max)};
 		serie.communiquer(chaines, 0);
 	}
+	
+	public void change_const_translation(float kp, float kd, int pwm_max) throws SerialException
+	{
+		String chaines[] = {"ctv", Double.toString(kp), Double.toString(kd), Integer.toString(pwm_max)};
+		serie.communiquer(chaines, 0);
+	}
+	
+	public void change_const_rotation(float kp, float kd, int pwm_max) throws SerialException
+	{
+		String chaines[] = {"crv", Double.toString(kp), Double.toString(kd), Integer.toString(pwm_max)};
+		serie.communiquer(chaines, 0);
+	}
 
 	/**
 	 * Met à jour PWMmoteurGauche, PWMmoteurDroit, erreur_rotation, erreur_translation, derivee_erreur_rotation, derivee_erreur_translation
