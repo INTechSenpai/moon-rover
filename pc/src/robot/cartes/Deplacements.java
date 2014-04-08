@@ -217,13 +217,13 @@ public class Deplacements implements Service {
 		double kp, kd;
 		if(pwm_max > 120)
 		{
-			kp = 0.8;
-			kd = 22.0;
+			kp = 2;
+			kd = 70;
 		}
 		else if(pwm_max > 55)
 		{
-			kp = 0.8;
-			kd = 16.0;
+			kp = 2;
+			kd = 30;
 		}
 		else
 		{
