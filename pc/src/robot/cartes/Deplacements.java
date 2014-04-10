@@ -217,13 +217,13 @@ public class Deplacements implements Service {
 		double kp, kd;
 		if(pwm_max > 120)
 		{
-			kp = 0.8;
-			kd = 22.0;
+			kp = 2;
+			kd = 70;
 		}
 		else if(pwm_max > 55)
 		{
-			kp = 0.8;
-			kd = 16.0;
+			kp = 2;
+			kd = 30;
 		}
 		else
 		{
@@ -258,6 +258,18 @@ public class Deplacements implements Service {
 			kd = 15.0;
 		}
 		
+		String chaines[] = {"crv", Double.toString(kp), Double.toString(kd), Integer.toString(pwm_max)};
+		serie.communiquer(chaines, 0);
+	}
+	
+	public void change_const_translation(float kp, float kd, int pwm_max) throws SerialException
+	{
+		String chaines[] = {"ctv", Double.toString(kp), Double.toString(kd), Integer.toString(pwm_max)};
+		serie.communiquer(chaines, 0);
+	}
+	
+	public void change_const_rotation(float kp, float kd, int pwm_max) throws SerialException
+	{
 		String chaines[] = {"crv", Double.toString(kp), Double.toString(kd), Integer.toString(pwm_max)};
 		serie.communiquer(chaines, 0);
 	}

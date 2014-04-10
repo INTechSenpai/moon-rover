@@ -21,6 +21,7 @@ public class Actionneurs implements Service {
 	{
 		this.log = log;
 		this.serie = serie;
+		
 	}
 
 	public void maj_config()
@@ -116,7 +117,16 @@ public class Actionneurs implements Service {
 		log.debug("Pince droite rotation 180°", this);
 		serie.communiquer("td",0);
 	}
-
+	public void prendre_torche_gauche() throws SerialException
+	{
+		log.debug("Prendre la torche gauche", this);
+		serie.communiquer("torcheg",0);
+	}
+	public void prendre_torche_droite() throws SerialException
+	{
+		log.debug("Prendre la torche gauche", this);
+		serie.communiquer("torched",0);
+	}
 	public void bac_bas() throws SerialException
 	{
 		log.debug("Bac baissé", this);
