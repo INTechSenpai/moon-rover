@@ -29,6 +29,7 @@ public class MapCacheGenerator {
 				e.printStackTrace();
 			}
 
+			log.appel_static("\n\n ====== Generation cache map for pathfinding =====");
 			table.initialise();
 			generate(false, false);
 			table.initialise();
@@ -37,6 +38,7 @@ public class MapCacheGenerator {
 			generate(false, true);
 			table.initialise();
 			generate(true, true);
+			log.appel_static("\n\n ====== Generation ended =====");
 		}
 		catch(Exception e)
 		{
@@ -46,12 +48,11 @@ public class MapCacheGenerator {
 
 	public static void generate(boolean droite, boolean gauche) throws Exception
 	{
-		log.appel_static("\n\n ====== Generation cache map for pathfinding =====");
 		if(droite)
 			table.torche_disparue(Cote.DROIT);
 		if(gauche)
 			table.torche_disparue(Cote.GAUCHE);
-		for(int millimetresParCases = 1; millimetresParCases < 100; millimetresParCases++)
+		for(int millimetresParCases = 1; millimetresParCases < 17; millimetresParCases++)
 			Grid2DSpace.cache_file_generate(log, config, table, "cache/map-"+millimetresParCases+"-"+table.codeTorches()+".cache", millimetresParCases, rayon_robot);
 	}
 		

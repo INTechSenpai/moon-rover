@@ -19,6 +19,7 @@ public class DataSaver {
         
     public static <T> void sauvegarder(T obj, String filename)
     {
+    	System.out.println("Sauvegarde de "+filename);
     	try {
 			java.io.File fichier_creation;
 			FileOutputStream fichier;
@@ -34,12 +35,13 @@ public class DataSaver {
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
     }
     
     public static Object charger(String filename)
     {
+    	System.out.println("Chargement de "+filename);
 		try {
 			FileInputStream fichier = new FileInputStream(filename);
 			ObjectInputStream ois = new ObjectInputStream(fichier);
@@ -49,7 +51,7 @@ public class DataSaver {
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		return null;
     }

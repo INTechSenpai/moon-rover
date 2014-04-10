@@ -17,21 +17,4 @@ public class Grid2DPochoir {
 				datas[i][j] = (new Vec2(i, j)).distance(centre) > radius;
 	}
 	
-	public String toString()
-	{
-		String s = new String();
-		for(int i = 0; i < radius*2; i++)
-		{
-			for(int j = 0; j < radius*2; j++)
-			{
-				if(datas[i][j])
-					s+=".";
-				else
-					s+="X";
-			}
-			s+="\n";
-		}
-		return s;
-	}
-	
 }

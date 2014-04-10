@@ -38,14 +38,16 @@ public class Pathfinding implements Service
 	private int rayon_robot = 200;
 	private int table_x = 3000;
 	private int table_y = 2000;
+	private int code_torches_actuel = -1;
 
+	
 	public Grid2DSpace map;
 
 	/* Quatre Grid2DSpace qui sont la base, avec les obstacles fixes. On applique des pochoirs dessus.
 	 * Quatre parce qu'il y a la table initiale, la table à laquelle il manque une torche fixe et la table sans torche fixe.
 	 * Ces quatre cas permettront de n'ajouter au final que les obstacles mobiles.
 	 */
-	private static Grid2DSpace[][] map_obstacles_fixes;
+	private static Grid2DSpace[] map_obstacles_fixes;
 	
 	/* Les caches des distances, un pour chaque map_obstacles_fixes
 	 */
@@ -55,22 +57,12 @@ public class Pathfinding implements Service
 	 * Ce code, en static, n'est exécuté qu'une seule fois
 	 */
 	static {
-		map_obstacles_fixes = new Grid2DSpace[100][4];
-		for(int nb_table = 0; nb_table < 4; nb_table++)
-			try {
-				for(int millimetresParCases = 1; millimetresParCases < 100; millimetresParCases++)
-					map_obstacles_fixes[millimetresParCases][nb_table] = Grid2DSpace.load(millimetresParCases, nb_table);
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
 		distance_caches = new CacheHolder[4];
 		try {
 			for(int i = 0; i < 4; i++)
 				distance_caches[i] = CacheHolder.load(i);
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 	
@@ -92,7 +84,7 @@ public class Pathfinding implements Service
 		output = new ArrayList<Vec2>();
 		result = new ArrayList<IntPair>();
 		resultUpToDate = false;
-		update();
+		update(); 	// initialisation de la map
 	}
 	
 	public boolean isResultUpToDate() 
@@ -130,17 +122,32 @@ public class Pathfinding implements Service
 			// Si le hash actuel est égal au hash du dernier update, on annule la copie car la map n'a pas changé.
 			if(table.hashTable() == hashTableSaved)
 				return;
-			
+
+			// On recharge les map_fixes quand le code des torches changent. Deux raisons:
+			// 1) Ces codes changent rarement
+			// 2) Mieux vaut économiser la mémoire
+			if(table.codeTorches() != code_torches_actuel)
+			{
+				code_torches_actuel = table.codeTorches();
+				try {
+					for(int millimetresParCases = 1; millimetresParCases <= 16; millimetresParCases++)
+						map_obstacles_fixes[millimetresParCases] = Grid2DSpace.load(millimetresParCases, table.codeTorches());
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+
 			hashTableSaved = table.hashTable();
 			
 			// On recopie les obstacles fixes
-			map_obstacles_fixes[millimetresParCases][table.codeTorches()].clone(map);
+			map_obstacles_fixes[millimetresParCases].clone(map);
 
 			// Puis les obstacles temporaires
 			ArrayList<ObstacleCirculaire> obs = table.getListObstacles();
 			for(ObstacleCirculaire o: obs)
-				map.appendObstacle(o);
-			
+				map.appendObstacleTemporaire(o);
 			// les chemins sont périmés puisque la map est différente
 			resultUpToDate = true;
 		}
@@ -158,7 +165,6 @@ public class Pathfinding implements Service
 	// TODO : deal with precision issue (divide by millimetresParCases)
 	public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
-		
 		solver.setDepart(new IntPair((int)((float)(depart.x + table_x/2) / millimetresParCases), (int)((float)(depart.y) / millimetresParCases)));
 		solver.setArrivee(new IntPair((int)((float)(arrivee.x + table_x/2) / millimetresParCases), (int)((float)(arrivee.y) / millimetresParCases)));
 /*		// Change de système de coordonnées
@@ -174,40 +180,6 @@ public class Pathfinding implements Service
 		if (!solver.isValid())	// null si A* dit que pas possib'
 			throw new PathfindingException();
 		result = lissage(solver.getChemin(), map);
-		
-/*
-		System.out.println("=======================================================\n PostLissage dump\n=============================");
-		
-		
-
-		String out = "";
-		Integer ptCount = 0;
-		for (int  j = 0; j < map.getSizeX(); ++j)
-		{
-			for (int  k = map.getSizeY() - 1; k >= 0; --k)
-			{
-				IntPair pos = new IntPair(j,k);
-				if (depart.x ==j && depart.y ==k)
-					out += "D ";
-				else if (arrivee.x ==j && arrivee.y ==k)
-					out += "A ";
-				else if (result.contains(pos))
-				{
-					ptCount ++;
-					out += ptCount.toString();
-				}
-				else if(map.canCross(j, k))
-					out += ". ";
-				else
-					out += "X ";	
-			}
-			
-			out +='\n';
-		}
-		System.out.println(out);
-		System.out.println("=======================================================\nEnd of dump\n=============================");
-		
-		*/
 		
 		
 		// affiche la liste des positions

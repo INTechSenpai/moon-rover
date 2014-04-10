@@ -64,8 +64,7 @@ public class Log implements Service
 	 */
 	public void appel_static(String message)
 	{
-		if(affiche_debug)
-			ecrire("Lanceur: "+message, couleurDebug, System.out);
+		ecrire("Lanceur: "+message, couleurDebug, System.out);
 	}
 	
 	
