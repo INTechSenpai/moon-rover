@@ -18,7 +18,7 @@ import smartMath.IntPair;
  *
  */
 @SuppressWarnings("unused")
-public class HPAStar 
+class HPAStar 
 {
 	private ArrayList<Grid2DSpace> espace;
 	private IntPair		depart,

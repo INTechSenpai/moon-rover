@@ -2,7 +2,12 @@ package pathfinding.SearchSpace;
 
 import smartMath.Vec2;
 
-public class Grid2DPochoir {
+/**
+ * Pochoir utilisé par Grid2DSpace pour accélérer les copies
+ * @author pf
+ *
+ */
+class Grid2DPochoir {
 
 	public boolean[][] datas;
 	int radius;

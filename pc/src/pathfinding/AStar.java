@@ -16,7 +16,7 @@ import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.IntPair;
 
 // Le test se trouve dans un test unitaire
-public class AStar
+class AStar
 {
 	private boolean 	processed,	// le chemin a-t-il �t� calcul� ou pas encore ?
 						isValid;	// indique si le chamin calcul� est valide ou non ( auquel cas une erreur a emp�ch� son calcul)
@@ -218,6 +218,7 @@ function reconstruct_path(came_from, current_node)
 	    			{
 	    				came_from.put(temp.makeCopy(), current.makeCopy());
 	    				g_score.put(temp, tentative_g_score);
+	    				// TODO: vérifier que 5 est bien le meilleur coefficient
 	    				f_score.put(temp, tentative_g_score + 5 * fastGridDistance(temp, arrivee));
 	    				if(openset.contains(temp) == false)
 	    					openset.add(new IntPair(temp.x, temp.y));

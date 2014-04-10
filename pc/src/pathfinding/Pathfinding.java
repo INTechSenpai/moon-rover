@@ -7,6 +7,7 @@ import smartMath.IntPair;
 import smartMath.Vec2;
 import table.ObstacleCirculaire;
 import table.Table;
+import utils.DataSaver;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
@@ -30,23 +31,21 @@ public class Pathfinding implements Service
 	// Dépendances
 	private final Table table;	// Final: protection contre le changement de référence.
 								// Si la référence change, tout le memorymanager foire.
-	private int hashTableSaved = -1;	// Permet, à l'update, de ne recalculer map que si la table a effectivement changé.
+	private int[] hashTableSaved;	// Permet, à l'update, de ne recalculer map que si la table a effectivement changé.
 	private static Read_Ini config;
 	private static Log log;
 	private boolean resultUpToDate;
-	private int rayon_robot = 200;
-	private int table_x = 3000;
-	private int table_y = 2000;
+	private int table_x = 3000; // écrasé par la config
 	private int code_torches_actuel = -1;
 
 	
-	public Grid2DSpace map;
+	private Grid2DSpace[] map;
 
 	/* Quatre Grid2DSpace qui sont la base, avec les obstacles fixes. On applique des pochoirs dessus.
 	 * Quatre parce qu'il y a la table initiale, la table à laquelle il manque une torche fixe et la table sans torche fixe.
 	 * Ces quatre cas permettront de n'ajouter au final que les obstacles mobiles.
 	 */
-	private static Grid2DSpace[] map_obstacles_fixes;
+	private static Grid2DSpace[] map_obstacles_fixes = new Grid2DSpace[10];
 	
 	/* Les caches des distances, un pour chaque map_obstacles_fixes
 	 */
@@ -59,31 +58,50 @@ public class Pathfinding implements Service
 		distance_caches = new CacheHolder[4];
 		try {
 			for(int i = 0; i < 4; i++)
-				distance_caches[i] = CacheHolder.load(i);
+				distance_caches[i] = (CacheHolder) DataSaver.charger("distance-"+i+".cache");
 		} catch (Exception e) {
 //			e.printStackTrace();
 		}
 	}
 	
-	private int millimetresParCases;
+	private int degree;
 
 	private AStar solver;
 	private ArrayList<IntPair> result;
 	private ArrayList<Vec2> output;
 	
-	public Pathfinding(Table requestedtable, Read_Ini requestedConfig, Log requestedLog, int requestedMillimetresParCases)
+	/**
+	 * Constructeur appelé rarement.
+	 * @param requestedtable
+	 * @param requestedConfig
+	 * @param requestedLog
+	 * @param requestedMillimetresParCases
+	 */
+	public Pathfinding(Table requestedtable, Read_Ini requestedConfig, Log requestedLog, int degree)
 	{
 		table = requestedtable;
 		config = requestedConfig;
 		log = requestedLog;
 		maj_config();
-		millimetresParCases = requestedMillimetresParCases;
-		map = new Grid2DSpace(new IntPair(table_x/millimetresParCases, table_y/millimetresParCases), table, rayon_robot, log, config);
-		solver = new AStar(map, new IntPair(0,0), new IntPair(0,0));
+		this.degree = degree;
+		hashTableSaved = new int[10];
+
+		Grid2DSpace.set_static_variables(config, log);
+		map = new Grid2DSpace[10];
+
+		int reductionFactor = 1;
+		for(int i = 0; i < 10; i++)
+		{
+			hashTableSaved[i] = -1;
+			map[i] = new Grid2DSpace(reductionFactor);
+			reductionFactor <<= 1;
+		}
+		update(); 	// initialisation des map
+
+		solver = new AStar(map[degree], new IntPair(0,0), new IntPair(0,0));
 		output = new ArrayList<Vec2>();
 		result = new ArrayList<IntPair>();
 		resultUpToDate = false;
-		update(); 	// initialisation de la map
 	}
 	
 	public boolean isResultUpToDate() 
@@ -94,17 +112,7 @@ public class Pathfinding implements Service
 	public void maj_config()
 	{
 		try {
-			rayon_robot = Integer.parseInt(config.get("rayon_robot"));
-		} catch (NumberFormatException | ConfigException e) {
-			e.printStackTrace();
-		}
-		try {
 			table_x = Integer.parseInt(config.get("table_x"));
-		} catch (NumberFormatException | ConfigException e) {
-			e.printStackTrace();
-		}
-		try {
-			table_y = Integer.parseInt(config.get("table_y"));
 		} catch (NumberFormatException | ConfigException e) {
 			e.printStackTrace();
 		}
@@ -115,28 +123,14 @@ public class Pathfinding implements Service
 	 * On consulte pour cela l'attribut table qui a été modifié de l'extérieur.
 	 */
 	public void update()
-	{
-		boolean force_update = false;
-		
-		/* La table a modifié entre temps. Il faut donc modifier la map.
-		 * Si la précision demandée est plus grossière, on peut utiliser map.makecopy
-		 * Sinon, il faut recalculer la map (on ne peut pas passer d'une map grossière à une map précise)
+	{		
+		/* La table est modifiée entre temps. Il faut donc modifier la map.
 		 */		
-		if(map.getReductionFactor() != millimetresParCases)
-		{
-			if(map.getReductionFactor() < millimetresParCases)
-				map = map.makeSmallerCopy(millimetresParCases/map.getReductionFactor());
-			else
-			{
-				map = new Grid2DSpace(new IntPair(table_x/millimetresParCases, table_y/millimetresParCases), table, rayon_robot, log, config);
-				force_update = true;
-			}
-		}
-			
+
 		synchronized(table) // Mutex sur la table, afin qu'elle ne change pas pendant qu'on met à jour le pathfinding
 		{
 			// Si le hash actuel est égal au hash du dernier update, on annule la copie car la map n'a pas changé.
-			if(table.hashTable() == hashTableSaved && !force_update)
+			if(table.hashTable() == hashTableSaved[degree])
 				return;
 
 			// On recharge les map_fixes quand le code des torches changent. Deux raisons:
@@ -147,8 +141,8 @@ public class Pathfinding implements Service
 			{
 				code_torches_actuel = table.codeTorches();
 				try {
-					for(int millimetresParCases = 1; millimetresParCases <= 16; millimetresParCases++)
-						map_obstacles_fixes[millimetresParCases] = Grid2DSpace.load(millimetresParCases, table.codeTorches());
+					for(int i = 0; i < 10; i++)
+						map_obstacles_fixes[i] = (Grid2DSpace)DataSaver.charger("cache/map-"+degree+"-"+table.codeTorches()+".cache");
 				}
 				catch(Exception e)
 				{
@@ -156,15 +150,15 @@ public class Pathfinding implements Service
 				}
 			}
 
-			hashTableSaved = table.hashTable();
+			hashTableSaved[degree] = table.hashTable();
 			
 			// On recopie les obstacles fixes
-			map_obstacles_fixes[millimetresParCases].clone(map);
+			map_obstacles_fixes[degree].clone(map[degree]);
 
 			// Puis les obstacles temporaires
 			ArrayList<ObstacleCirculaire> obs = table.getListObstacles();
 			for(ObstacleCirculaire o: obs)
-				map.appendObstacleTemporaire(o);
+				map[degree].appendObstacleTemporaire(o);
 			// les chemins sont périmés puisque la map est différente
 			resultUpToDate = true;
 		}
@@ -182,6 +176,7 @@ public class Pathfinding implements Service
 	// TODO : deal with precision issue (divide by millimetresParCases)
 	public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
+		int millimetresParCases = exponentiation(2, degree);
 		solver.setDepart(new IntPair((int)((float)(depart.x + table_x/2) / millimetresParCases), (int)((float)(depart.y) / millimetresParCases)));
 		solver.setArrivee(new IntPair((int)((float)(arrivee.x + table_x/2) / millimetresParCases), (int)((float)(arrivee.y) / millimetresParCases)));
 /*		// Change de système de coordonnées
@@ -196,7 +191,7 @@ public class Pathfinding implements Service
 		solver.process();
 		if (!solver.isValid())	// null si A* dit que pas possib'
 			throw new PathfindingException();
-		result = lissage(solver.getChemin(), map);
+		result = lissage(solver.getChemin(), map[millimetresParCases]);
 		
 		
 		// affiche la liste des positions
@@ -233,6 +228,7 @@ public class Pathfinding implements Service
 	{
 		if(!use_cache || distance_caches == null)
 		{
+			int millimetresParCases = exponentiation(2, degree);
 			// Change de système de coordonnées
 			solver.setDepart(new IntPair((int)Math.round(depart.x + table_x/2)/millimetresParCases, (int)Math.round(depart.y)/millimetresParCases));
 			solver.setArrivee(new IntPair((int)Math.round(arrivee.x + table_x/2)/millimetresParCases, (int)Math.round(arrivee.y)/millimetresParCases));
@@ -241,7 +237,7 @@ public class Pathfinding implements Service
 			solver.process();
 			if (!solver.isValid())	// lève une exception si A* dit que pas possible
 				throw new PathfindingException();
-			result = lissage(solver.getChemin(), map);
+			result = lissage(solver.getChemin(), map[millimetresParCases]);
 			
 			// convertit la sortie de l'AStar en suite de Vec2
 			int out = 0;
@@ -344,28 +340,10 @@ public class Pathfinding implements Service
 	{
 		return solver.getArrivee();
 	}
-	/**
-	 * @return the map
-	 */
-	public Grid2DSpace getMap()
-	{
-		return map;
-	}
 	
-	/**
-	 * @return the millimetresParCases
-	 */
-	public int getMillimetresParCases() 
+	public void setDegree(int degree) 
 	{
-		return millimetresParCases;
-	}
-
-	/**
-	 * @param millimetresParCases the millimetresParCases to set
-	 */
-	public void setMillimetresParCases(int millimetresParCases) 
-	{
-		this.millimetresParCases = millimetresParCases;
+		this.degree = degree;
 	}
 	
 	/**
@@ -378,4 +356,17 @@ public class Pathfinding implements Service
 		cp.update();		    // et update
 	}
 
+	public int exponentiation(int a, int b)
+	{
+		if(b == 0)
+			return 1;
+		else if(b == 1)
+			return a;
+		int c = exponentiation(a, b/2);
+		if((b&1) == 0)	// si b est pair
+			return c*c;
+		else
+			return c*c*a;
+	}
+	
 }

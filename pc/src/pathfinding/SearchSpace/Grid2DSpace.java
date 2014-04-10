@@ -3,19 +3,12 @@
  */
 package pathfinding.SearchSpace;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Random;
 
 import exception.ConfigException;
-import smartMath.IntPair;
 import smartMath.Vec2;
 import table.ObstacleRectangulaire;
 import table.ObstacleCirculaire;
-import table.Table;
-import table.Obstacle;
-import utils.DataSaver;
 import utils.Log;
 import utils.Read_Ini;
 
@@ -29,10 +22,8 @@ public class Grid2DSpace implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 
-	private static Log log;
-
 	private boolean[][] datas;
-	private static Grid2DPochoir[] pochoirs = null; // Non sérialisé car static
+	private static Grid2DPochoir[] pochoirs; // Non sérialisé car static
 	private int surface;
 	
 	// Taille de datas
@@ -40,14 +31,16 @@ public class Grid2DSpace implements Serializable
 	private int sizeY;
 	
 	// Taille "normale" de la table
-	private int table_x = 3000;
-	private int table_y = 2000;
+	private static int table_x = 3000;
+	private static int table_y = 2000;
 	
 	private int reductionFactor; // facteur de reduction par rapport à 1case/mm Exemple : 1500x1000 a un rapport de 2
-	private int robotRadius;
-	private int rayon_robot_adverse = 200;
-
-	public Grid2DSpace(IntPair size, Table requestedTable, int requestedrobotRadius, Log log, Read_Ini config)
+	private int num_pochoir; // 2^num_pochoir = reductionFactor
+	private static int robotRadius;
+	private static int rayon_robot_adverse = 200;
+	
+	
+	public static void set_static_variables(Read_Ini config, Log log)
 	{
 		try {
 			table_x = Integer.parseInt(config.get("table_x"));
@@ -64,64 +57,49 @@ public class Grid2DSpace implements Serializable
 		} catch (NumberFormatException | ConfigException e) {
 			e.printStackTrace();
 		}
-
-		if(pochoirs == null)
-		{
-			log.debug("Début génération pochoirs", this);
-			pochoirs = new Grid2DPochoir[10];
-			int reduction = 1;
-			for(int i = 0; i < 10; i++)
-			{
-				pochoirs[i] = new Grid2DPochoir(rayon_robot_adverse/reduction);
-				reduction <<= 1;
-			}
-			log.debug("Pochoirs générés", this);
+		try {
+			robotRadius = Integer.parseInt(config.get("rayon_robot"));
+		} catch (NumberFormatException | ConfigException e) {
+			e.printStackTrace();
 		}
 
-		Grid2DSpace.log = log;
-		robotRadius = requestedrobotRadius; 
-		//Création du terrain avec obstacles fixes
-		Table table = requestedTable;
-		surface = size.x * size.y;
-		sizeX = size.x;
-		sizeY = size.y;	
-/*		float ratio = ((float)sizeX) / ((float)sizeY);
-		if(ratio != ((float)table_x)/((float)table_y))
+		log.appel_static("Début génération pochoirs");
+		pochoirs = new Grid2DPochoir[10];
+		int reduction = 1;
+		for(int i = 0; i < 10; i++)
 		{
-			log.warning("Grid2DSpace construction warning : given size of " + sizeX + "x" + sizeY + " is not of ratio 3/2", this);
-			sizeY = (int)(((float)sizeX) / ratio);
-		}*/
-		log.debug("Creating Grid2DSpace from table with a size of : " + sizeX + "x" + sizeY, this);
+			pochoirs[i] = new Grid2DPochoir(rayon_robot_adverse/reduction);
+			reduction <<= 1;
+		}
+		log.appel_static("Pochoirs générés");
 		
-		reductionFactor = 3000/sizeX;
+	}
+	
+	/**
+	 * Ce constructeur est utilisé uniquement pour générer les caches.
+	 * Construit un Grid2DSpace vide.
+	 * @param reductionFactor
+	 */
+	public Grid2DSpace(int reductionFactor)
+	{
+		//Création du terrain avec obstacles fixes
+		sizeX = table_x/reductionFactor;
+		sizeY = table_y/reductionFactor;
+		surface = sizeX * sizeY;
+		reductionFactor = table_x/sizeX;
 		
-		log.debug("reductionFactor : " + reductionFactor, this);
+		for(int num_pochoir = 0; num_pochoir < 10; num_pochoir++)
+		{
+			if(reductionFactor == 1)
+				break;
+			reductionFactor >>= 1;
+		}		
 		
 		datas = new boolean[sizeX+1][sizeY+1];
-		ArrayList<Obstacle> l_fixes = table.getListObstaclesFixes();
-		
 		// construit une map de sizeX * sizeY vide
 		for(int i=0; i<sizeX; i++)
 			for(int j=0; j<sizeY;j++)
-				datas[i][j] = true;
-				
-		// peuple les obstacles fixes
-		for(Obstacle obs: l_fixes)
-		{
-			if(obs instanceof ObstacleRectangulaire)
-				appendObstacle((ObstacleRectangulaire)obs);
-			else if(obs instanceof ObstacleCirculaire)
-				appendObstacle((ObstacleCirculaire)obs);
-			else
-				log.critical("Obstacle non géré", this);
-		}
-
-		// les bords de la map sont non acessibles
-		appendObstacle( new ObstacleRectangulaire(new Vec2(0,0), (int)(robotRadius*1.1f), 3000));
-		appendObstacle( new ObstacleRectangulaire(new Vec2(0,2000), (int)(robotRadius*1.1f), 3000));
-		appendObstacle( new ObstacleRectangulaire(new Vec2(1500,1000), 2000, (int)(robotRadius*1.1f)));
-		appendObstacle( new ObstacleRectangulaire(new Vec2(-1500,1000), 2000, (int)(robotRadius*1.1f)));		
-		
+				datas[i][j] = true;		
 	}
 
 	/**
@@ -134,7 +112,6 @@ public class Grid2DSpace implements Serializable
 		// Asumptions :  	obs.getPosition() returns the top left corner of the rectangle
 		//					also, rectangle is Axis Aligned...
 		int marge = 20;
-		
 		for(int i = (int) (obs.getPosition().x - robotRadius - marge); i < (int) (obs.getPosition().x +obs.getLargeur() + robotRadius + marge + 1); i++)	
 			for(int j = (int) (obs.getPosition().y - robotRadius - marge); j < (int) (obs.getPosition().y +obs.getLongueur() + robotRadius + marge + 1); j++)	
 				if(i >= -table_x/2 && i < table_x/2 && j >= 0 && j < table_y && obs.distance(new Vec2(i,j)) < robotRadius + marge)
@@ -154,7 +131,7 @@ public class Grid2DSpace implements Serializable
 		int marge = 20;
 		int radius = (int) obs.getRadius();
 		for(int i = (int) (obs.getPosition().x - robotRadius - marge - radius); i < (int) (obs.getPosition().x + radius + robotRadius + marge + 1); i++)	
-			for(int j = (int) (obs.getPosition().y - robotRadius - marge - radius); j < (int) (obs.getPosition().y + radius + robotRadius + marge + 1); j++)	
+			for(int j = (int) (obs.getPosition().y - robotRadius - marge - radius); j < (int) (obs.getPosition().y + radius + robotRadius + marge + 1); j++)
 				if(i >= -table_x/2 && i < table_x/2 && j >= 0 && j < table_y && obs.getPosition().distance(new Vec2(i,j)) < radius + robotRadius + marge)
 				{
 					Vec2 posGrid = conversionTable2Grid(new Vec2(i,j));
@@ -174,44 +151,8 @@ public class Grid2DSpace implements Serializable
 		
 		Vec2 posPochoir = conversionTable2Grid(obs.getPosition());
 		
-		Grid2DPochoir pochoir;
+		Grid2DPochoir pochoir = pochoirs[num_pochoir];
 
-		// C'est moche, c'est mais plus optimisé qu'un calcul de logarithme
-		switch(reductionFactor)
-		{
-		case 1:
-			pochoir = pochoirs[0];
-			break;
-		case 2:
-			pochoir = pochoirs[1];
-			break;
-		case 4:
-			pochoir = pochoirs[2];
-			break;
-		case 8:
-			pochoir = pochoirs[3];
-			break;
-		case 16:
-			pochoir = pochoirs[4];
-			break;
-		case 32:
-			pochoir = pochoirs[5];
-			break;
-		case 64:
-			pochoir = pochoirs[6];
-			break;
-		case 128:
-			pochoir = pochoirs[7];
-			break;
-		case 256:
-			pochoir = pochoirs[8];
-			break;
-		case 512:
-			pochoir = pochoirs[9];
-			break;
-		default:
-			pochoir = pochoirs[0];
-		}
 		int radius = pochoir.datas[0].length/2;
 
 		// Recopie le pochoir
@@ -220,11 +161,11 @@ public class Grid2DSpace implements Serializable
 				if( i >= 0 && i < sizeX && j >=0 && j < sizeY)
 				{
 					datas[i][j] = datas[i][j] && pochoir.datas[i-(int)posPochoir.x+radius][j-(int)posPochoir.y + radius];
-					System.out.println(i+" "+j+" "+(i-(int)posPochoir.x+radius)+" "+(j-(int)posPochoir.y + radius));
+//					System.out.println(i+" "+j+" "+(i-(int)posPochoir.x+radius)+" "+(j-(int)posPochoir.y + radius));
 				}
 	}
 	
-	// Random map generation, debugging purpose.
+/*	// Random map generation, debugging purpose.
 	public Grid2DSpace(Vec2 size)
 	{
 		// initialise le terrain
@@ -278,9 +219,9 @@ public class Grid2DSpace implements Serializable
 				
 		
 	}
-	
+	*/
 
-	
+/*	
 	// WARNING WARNING : size have to be consistant with originalDatas
 	public Grid2DSpace(Vec2 size, boolean[][] originalDatas)
 	{
@@ -294,22 +235,34 @@ public class Grid2DSpace implements Serializable
 				datas[i][j] = originalDatas[i][j];
 					
 	}
+	*/
+	// Utilisé seulement par makecopy
+	private Grid2DSpace()
+	{
+	}
 	
+	/**
+	 * Génère une copie. Utilise la méthode clone.
+	 * @return
+	 */
 	public Grid2DSpace makeCopy()
 	{
-		return new Grid2DSpace(new Vec2(sizeX, sizeY), datas.clone());
+		Grid2DSpace output = new Grid2DSpace();
+		clone(output);
+		return output;
 	}
-
-	/*
+	
+	/**
+	 * A priori non utilisé
 	 *  Create an approximation of the current Grid2DSpace
 	 *  Réduction = 1: pleine taille
 	 *  Réduction = 2: demi-taille
 	 *  Réduction = 3: tiers de la taille
 	 *  Etc.
+	 * @param reduction
+	 * @return
 	 */
-	/* TODO Vérifier si c'est plus rapide que la création d'une nouvelle map
-	 */
-	public Grid2DSpace makeSmallerCopy(int reduction)
+/*	public Grid2DSpace makeSmallerCopy(int reduction)
 	{
 		if (reduction == 1)
 			return makeCopy();
@@ -340,7 +293,7 @@ public class Grid2DSpace implements Serializable
 		
 		return smaller;
 	}
-			
+*/			
 	// renvois true si le tarrain est franchissable � la position donn�e, faux sinon
 	// x est de droite a gauche et y de bas en haut
 	public boolean canCross(int x, int y)
@@ -377,7 +330,7 @@ public class Grid2DSpace implements Serializable
 		 return true;
 	}
 	
-	// debug purpose
+/*	// debug purpose
 	public boolean drawLine(int x0, int y0, int x1, int y1)
 	{
 		
@@ -428,16 +381,6 @@ public class Grid2DSpace implements Serializable
 		return surface;
 	}
 
-	public int getSizeX() 
-	{
-		return sizeX;
-	}
-
-	public int getSizeY() 
-	{
-		return sizeY;
-	}
-	
 	public String stringForm()
 	{
 		String out = "";
@@ -453,7 +396,7 @@ public class Grid2DSpace implements Serializable
 		}
 		return out;
 	}
-
+*/
 	/**
 	 * Clone "this" into "other". "this" is not modified.
 	 * @param other
@@ -463,41 +406,11 @@ public class Grid2DSpace implements Serializable
 		for (int i = 0; i < datas.length; i++) {
 		    System.arraycopy(datas[i], 0, other.datas[i], 0, datas[0].length);
 		}
-	}
-	
-	/**
-	 * Retourne un objet Grid2DSpace sauvegardé.
-	 * Les objets sauvegardés seront les 4 map de base, avec les obstacles fixes
-	 * @return
-	 * @throws IOException 
-	 * @throws ClassNotFoundException 
-	 */
-	public static Grid2DSpace load(int millimetresParCases, int nb_table) throws IOException, ClassNotFoundException
-	{
-		return (Grid2DSpace) DataSaver.charger("cache/map-"+millimetresParCases+"-"+nb_table+".cache");
-	}
-	
-	public static void cache_file_generate(Log log, Read_Ini config, Table table, String filename, int millimetresParCases, int robotRadius)
-	{
-		IntPair size = new IntPair(3000/millimetresParCases, 2000/millimetresParCases);
-		boolean[][] originalDatas = new boolean[size.x+1][size.y+1];
-		for(int i = 0; i < size.x; i++)
-			for(int j = 0; j < size.y; j++)
-				originalDatas[i][j] = true;
-		
-		ArrayList<Obstacle> obstacles_fixes = table.getListObstaclesFixes();
-		Grid2DSpace output = new Grid2DSpace(size, table, robotRadius, log, config);
-		for(Obstacle o: obstacles_fixes)
-		{
-			if(o instanceof ObstacleCirculaire)
-				output.appendObstacle((ObstacleCirculaire)o);
-			else if(o instanceof ObstacleRectangulaire)
-				output.appendObstacle((ObstacleRectangulaire)o);
-			else
-				log.appel_static("Erreur: type d'obstacle inconnu");
-		}
-		// Sauvegarde du fichier de cache à partir de l'instance output de CacheHolder
-		DataSaver.sauvegarder(output, filename);
+		other.surface = surface;
+		other.sizeX = sizeX;
+		other.sizeY = sizeY;
+		other.reductionFactor = reductionFactor;
+		other.num_pochoir = num_pochoir;
 	}
 	
 	/**
@@ -505,17 +418,7 @@ public class Grid2DSpace implements Serializable
 	 * @param nb
 	 * @return
 	 */
-	public int conversionTable2Grid(int nb)
-	{
-		return nb / reductionFactor;
-	}
-
-	/**
-	 * Convertit une longueur depuis les unités de la table dans les unités de la grille
-	 * @param nb
-	 * @return
-	 */
-	public float conversionTable2Grid(float nb)
+	private float conversionTable2Grid(float nb)
 	{
 		return nb / reductionFactor;
 	}
@@ -524,7 +427,7 @@ public class Grid2DSpace implements Serializable
 	 * Convertit un point depuis les unités de la table dans les unités de la grille
 	 * @return
 	 */
-	public Vec2 conversionTable2Grid(Vec2 pos)
+	private Vec2 conversionTable2Grid(Vec2 pos)
 	{
 		return new Vec2(conversionTable2Grid(pos.x + table_x/2),
 						conversionTable2Grid(pos.y));
