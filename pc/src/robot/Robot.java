@@ -90,8 +90,8 @@ public abstract class Robot implements Service {
 	/* Ces attributs sont nécessaires à robotvrai et à robotchrono, donc ils sont ici.
 	 * Cela regroupe tous les attributs ayant une conséquence dans la stratégie
 	 */
-	protected Vec2 position = new Vec2(0, 0);
-	protected float orientation = 0;
+	protected volatile Vec2 position = new Vec2(0, 0);
+	protected volatile float orientation = 0;
 	protected String couleur;
 	protected boolean effectuer_symetrie = true;
 	
