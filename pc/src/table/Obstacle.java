@@ -2,7 +2,7 @@ package table;
 import smartMath.Vec2;
 
 /**
- * Super classe des obstacles. Les obstacles fixes en sont (foyer, ...)
+ * Superclasse abstraite des obstacles.
  * @author pf
  *
  */

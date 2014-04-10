@@ -2,6 +2,11 @@ package table;
 
 import smartMath.Vec2;
 
+/**
+ * Obstacle circulaire
+ * @author pf
+ *
+ */
 public class ObstacleCirculaire extends Obstacle
 {
 

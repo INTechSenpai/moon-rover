@@ -2,6 +2,12 @@ package table;
 
 import smartMath.Vec2;
 
+/**
+ * Convention: la "position" d'un ObstacleRectangulaire est son coin supérieur gauche
+ * "largeur" est selon x, "longueur" selon y
+ * @author pf
+ *
+ */
 public class ObstacleRectangulaire extends Obstacle {
 
 	protected int longueur;
