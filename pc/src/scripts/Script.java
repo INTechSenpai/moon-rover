@@ -14,6 +14,7 @@ import table.Table;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
+import hook.methodes.DisparitionTorche;
 import hook.methodes.TakeFire;
 
 import java.util.ArrayList;
@@ -35,30 +36,29 @@ public abstract class Script implements Service {
 	protected static Read_Ini config;
 	protected static Log log;
 	
-	protected static ArrayList<Hook> hooksfeu = new ArrayList<Hook>();
+	private ArrayList<Hook> hooks_chemin = new ArrayList<Hook>();
 	
 	protected String couleur; 
+	private int rayon_robot;
 	
 	public Script(HookGenerator hookgenerator, Read_Ini config, Log log, RobotVrai robotvrai)
 	{
 		Script.hookgenerator = hookgenerator;
 		Script.config = config;
 		Script.log = log;
-		Executable takefire = new TakeFire(robotvrai, Cote.GAUCHE);
-		Hook hook = hookgenerator.hook_feu(Cote.GAUCHE);
-		hook.ajouter_callback(new Callback(takefire, true));		
-		hooksfeu.add(hook);
-		takefire = new TakeFire(robotvrai, Cote.DROIT);
-		hook = hookgenerator.hook_feu(Cote.DROIT);
-		hook.ajouter_callback(new Callback(takefire, true));
-		hooksfeu.add(hook);
-
+		
 		try {
 			couleur = config.get("couleur");
 		} catch (ConfigException e) {
 			e.printStackTrace();
 		}
-	}
+
+		try {
+			rayon_robot = Integer.parseInt(config.get("rayon_robot"));
+		} catch (NumberFormatException | ConfigException e) {
+			e.printStackTrace();
+		}
+}
 		
 	/**
 	 * Exécute vraiment un script
@@ -70,9 +70,29 @@ public abstract class Script implements Service {
 		robotvrai.set_vitesse_translation("entre_scripts");
 		robotvrai.set_vitesse_rotation("entre_scripts");
 
+		Executable takefire = new TakeFire(robotvrai, Cote.GAUCHE);
+		Hook hook = hookgenerator.hook_feu(Cote.GAUCHE);
+		hook.ajouter_callback(new Callback(takefire, true));		
+		hooks_chemin.add(hook);
+
+		takefire = new TakeFire(robotvrai, Cote.DROIT);
+		hook = hookgenerator.hook_feu(Cote.DROIT);
+		hook.ajouter_callback(new Callback(takefire, true));
+		hooks_chemin.add(hook);
+
+		Executable torche_disparue = new DisparitionTorche(table, Cote.DROIT);
+		hook = hookgenerator.hook_position(table.getPositionTorche(Cote.DROIT), table.getRayonTorche(Cote.DROIT)+rayon_robot);
+		hook.ajouter_callback(new Callback(torche_disparue, true));
+		hooks_chemin.add(hook);
+	
+		torche_disparue = new DisparitionTorche(table, Cote.GAUCHE);
+		hook = hookgenerator.hook_position(table.getPositionTorche(Cote.GAUCHE), table.getRayonTorche(Cote.GAUCHE)+rayon_robot);
+		hook.ajouter_callback(new Callback(torche_disparue, true));
+		hooks_chemin.add(hook);
+
 		try
 		{
-			robotvrai.va_au_point_pathfinding(pathfinding, point_entree, hooksfeu, retenter_si_blocage, false, true, false);
+			robotvrai.va_au_point_pathfinding(pathfinding, point_entree, hooks_chemin, retenter_si_blocage, false, true, false);
 			execute(id_version, robotvrai, table, pathfinding);
 		}
 		catch (Exception e)

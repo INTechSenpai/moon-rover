@@ -1,7 +1,7 @@
 package generators;
 
 import container.Container;
-import pathfinding.cache.CacheHolder;
+import pathfinding.CacheHolder;
 import robot.Cote;
 import table.Table;
 import tests.JUnit_Test;
@@ -31,9 +31,9 @@ class DistanceCacheGenerator extends JUnit_Test
 			table.initialise();
 			generate(false, false);
 			table.initialise();
-			generate(true, false);
-			table.initialise();
 			generate(false, true);
+			table.initialise();
+			generate(true, false);
 			table.initialise();
 			generate(true, true);
 		}

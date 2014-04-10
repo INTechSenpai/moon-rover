@@ -37,6 +37,11 @@ public class ObstacleRectangulaire extends Obstacle {
 		return this.largeur;
 	}
 	
+	public float distance(Vec2 point)
+	{
+		return (float) Math.sqrt(SquaredDistance(point));
+	}
+	
 	/**
 	 * Fourni la distance au carré d'un point à l'obstacle
 	 * @param point

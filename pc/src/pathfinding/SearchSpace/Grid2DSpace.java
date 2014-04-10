@@ -123,33 +123,41 @@ public class Grid2DSpace implements Serializable
 	}
 
 	/**
-	 * Ajoute un obstacle rectangulaire au Grid2DSpace
-	 * L'ajout peut être lent car il n'est jamais fait en match
-	 * En effet, les obstacles temporaires sont toujours circulaires.
+	 * Ajout long d'un obstacle rectangulaire.
+	 * Exécuté seulement lors de la génération du cache.
 	 * @param obs
 	 */
 	public void appendObstacle(ObstacleRectangulaire obs)
 	{
 		// Asumptions :  	obs.getPosition() returns the top left corner of the rectangle
 		//					also, rectangle is Axis Aligned...
-//		System.out.println("Reductionfactor = "+reductionFactor);
-		
 		int marge = 20;
 		
 		for(int i = (int) (obs.getPosition().x - robotRadius - marge); i < (int) (obs.getPosition().x +obs.getLargeur() + robotRadius + marge + 1); i++)	
 			for(int j = (int) (obs.getPosition().y - robotRadius - marge); j < (int) (obs.getPosition().y +obs.getLongueur() + robotRadius + marge + 1); j++)	
-				if(i >= -table_x/2 && i < table_x/2 && j >= 0 && j < table_y && obs.SquaredDistance(new Vec2(i,j)) < robotRadius + marge)
+				if(i >= -table_x/2 && i < table_x/2 && j >= 0 && j < table_y && obs.distance(new Vec2(i,j)) < robotRadius + marge)
 				{
-//					System.out.println("ij= "+new Vec2(i,j));
-					
 					Vec2 posGrid = conversionTable2Grid(new Vec2(i,j));
 					datas[(int)posGrid.x][(int)posGrid.y] = false;
 				}
 	}
 
+	/**
+	 * Ajout long d'un obstacle circulaire.
+	 * Exécuté seulement lors de la génération du cache.
+	 * @param obs
+	 */
 	public void appendObstacle(ObstacleCirculaire obs)
 	{
-		// TODO
+		int marge = 20;
+		int radius = (int) obs.getRadius();
+		for(int i = (int) (obs.getPosition().x - robotRadius - marge - radius); i < (int) (obs.getPosition().x + radius + robotRadius + marge + 1); i++)	
+			for(int j = (int) (obs.getPosition().y - robotRadius - marge - radius); j < (int) (obs.getPosition().y + radius + robotRadius + marge + 1); j++)	
+				if(i >= -table_x/2 && i < table_x/2 && j >= 0 && j < table_y && obs.getPosition().distance(new Vec2(i,j)) < radius + robotRadius + marge)
+				{
+					Vec2 posGrid = conversionTable2Grid(new Vec2(i,j));
+					datas[(int)posGrid.x][(int)posGrid.y] = false;
+				}
 	}
 
 	

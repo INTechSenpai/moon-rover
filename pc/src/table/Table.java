@@ -378,6 +378,22 @@ public class Table implements Service {
 			arrayTorch[1].setDisparue();
 	}
 	
+	public Vec2 getPositionTorche(Cote cote)
+	{
+		if(cote == Cote.DROIT)
+			return arrayTorch[0].position.clone();
+		else
+			return arrayTorch[1].position.clone();
+	}
+
+	public int getRayonTorche(Cote cote)
+	{
+		if(cote == Cote.DROIT)
+			return arrayTorch[0].rayon;
+		else
+			return arrayTorch[1].rayon;
+	}
+
 	//La table
 	/**
 	 * La table en argument deviendra la copie de this (this reste inchangé)

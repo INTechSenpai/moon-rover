@@ -33,9 +33,9 @@ public class MapCacheGenerator {
 			table.initialise();
 			generate(false, false);
 			table.initialise();
-			generate(true, false);
-			table.initialise();
 			generate(false, true);
+			table.initialise();
+			generate(true, false);
 			table.initialise();
 			generate(true, true);
 			log.appel_static("\n\n ====== Generation ended =====");

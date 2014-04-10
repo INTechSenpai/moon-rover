@@ -3,7 +3,6 @@ package pathfinding;
 import java.util.ArrayList;
 
 import pathfinding.SearchSpace.Grid2DSpace;
-import pathfinding.cache.CacheHolder;
 import smartMath.IntPair;
 import smartMath.Vec2;
 import table.ObstacleCirculaire;

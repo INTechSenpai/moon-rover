@@ -1,14 +1,13 @@
 /**
  * 
  */
-package pathfinding.cache;
+package pathfinding;
 
 import java.io.IOException;
 import java.io.Serializable;
 
 import exception.ConfigException;
 import exception.PathfindingException;
-import pathfinding.Pathfinding;
 import smartMath.Vec2;
 import table.Table;
 import utils.DataSaver;
