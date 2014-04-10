@@ -116,15 +116,33 @@ public class Pathfinding implements Service
 	 */
 	public void update()
 	{
+		boolean force_update = false;
+		
+		/* La table a modifié entre temps. Il faut donc modifier la map.
+		 * Si la précision demandée est plus grossière, on peut utiliser map.makecopy
+		 * Sinon, il faut recalculer la map (on ne peut pas passer d'une map grossière à une map précise)
+		 */		
+		if(map.getReductionFactor() != millimetresParCases)
+		{
+			if(map.getReductionFactor() < millimetresParCases)
+				map = map.makeSmallerCopy(millimetresParCases/map.getReductionFactor());
+			else
+			{
+				map = new Grid2DSpace(new IntPair(table_x/millimetresParCases, table_y/millimetresParCases), table, rayon_robot, log, config);
+				force_update = true;
+			}
+		}
+			
 		synchronized(table) // Mutex sur la table, afin qu'elle ne change pas pendant qu'on met à jour le pathfinding
 		{
 			// Si le hash actuel est égal au hash du dernier update, on annule la copie car la map n'a pas changé.
-			if(table.hashTable() == hashTableSaved)
+			if(table.hashTable() == hashTableSaved && !force_update)
 				return;
 
 			// On recharge les map_fixes quand le code des torches changent. Deux raisons:
 			// 1) Ces codes changent rarement
 			// 2) Mieux vaut économiser la mémoire
+			// TODO: tester en vrai pour voir ce qu'il y a de plus performant (recharge ou tout en mémoire)
 			if(table.codeTorches() != code_torches_actuel)
 			{
 				code_torches_actuel = table.codeTorches();

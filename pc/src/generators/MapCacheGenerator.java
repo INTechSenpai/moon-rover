@@ -52,8 +52,12 @@ public class MapCacheGenerator {
 			table.torche_disparue(Cote.DROIT);
 		if(gauche)
 			table.torche_disparue(Cote.GAUCHE);
-		for(int millimetresParCases = 1; millimetresParCases < 17; millimetresParCases++)
-			Grid2DSpace.cache_file_generate(log, config, table, "cache/map-"+millimetresParCases+"-"+table.codeTorches()+".cache", millimetresParCases, rayon_robot);
+		int reductionFactor = 1;
+		for(int i = 0; i < 10; i++)
+		{
+			Grid2DSpace.cache_file_generate(log, config, table, "cache/map-"+reductionFactor+"-"+table.codeTorches()+".cache", reductionFactor, rayon_robot);
+			reductionFactor <<= 1;
+		}
 	}
 		
 }

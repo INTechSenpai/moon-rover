@@ -68,10 +68,12 @@ public class Grid2DSpace implements Serializable
 		if(pochoirs == null)
 		{
 			log.debug("Début génération pochoirs", this);
-			pochoirs = new Grid2DPochoir[17];
-			for(int reduction = 1; reduction <= 16; reduction++)
+			pochoirs = new Grid2DPochoir[10];
+			int reduction = 1;
+			for(int i = 0; i < 10; i++)
 			{
-				pochoirs[reduction] = new Grid2DPochoir(rayon_robot_adverse/reduction);
+				pochoirs[i] = new Grid2DPochoir(rayon_robot_adverse/reduction);
+				reduction <<= 1;
 			}
 			log.debug("Pochoirs générés", this);
 		}
@@ -173,15 +175,42 @@ public class Grid2DSpace implements Serializable
 		Vec2 posPochoir = conversionTable2Grid(obs.getPosition());
 		
 		Grid2DPochoir pochoir;
-		try {
-			 pochoir = pochoirs[reductionFactor];
-		}
-		catch(Exception e)
+
+		// C'est moche, c'est mais plus optimisé qu'un calcul de logarithme
+		switch(reductionFactor)
 		{
-			// Si le pochoir n'existe pas, c'est que le diamètre demandé est a priori trop grand.
-			// Pour ne pas faire planter le programme, on lui donne le plus grand pochoir disponible.
-			e.printStackTrace();
+		case 1:
+			pochoir = pochoirs[0];
+			break;
+		case 2:
 			pochoir = pochoirs[1];
+			break;
+		case 4:
+			pochoir = pochoirs[2];
+			break;
+		case 8:
+			pochoir = pochoirs[3];
+			break;
+		case 16:
+			pochoir = pochoirs[4];
+			break;
+		case 32:
+			pochoir = pochoirs[5];
+			break;
+		case 64:
+			pochoir = pochoirs[6];
+			break;
+		case 128:
+			pochoir = pochoirs[7];
+			break;
+		case 256:
+			pochoir = pochoirs[8];
+			break;
+		case 512:
+			pochoir = pochoirs[9];
+			break;
+		default:
+			pochoir = pochoirs[0];
 		}
 		int radius = pochoir.datas[0].length/2;
 
@@ -277,6 +306,8 @@ public class Grid2DSpace implements Serializable
 	 *  Réduction = 2: demi-taille
 	 *  Réduction = 3: tiers de la taille
 	 *  Etc.
+	 */
+	/* TODO Vérifier si c'est plus rapide que la création d'une nouvelle map
 	 */
 	public Grid2DSpace makeSmallerCopy(int reduction)
 	{
@@ -490,6 +521,11 @@ public class Grid2DSpace implements Serializable
 	{
 		return new Vec2(conversionTable2Grid(pos.x + table_x/2),
 						conversionTable2Grid(pos.y));
+	}
+	
+	public int getReductionFactor()
+	{
+		return reductionFactor;
 	}
 	
 }
