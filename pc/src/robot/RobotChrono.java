@@ -274,5 +274,11 @@ public class RobotChrono extends Robot {
 	public void ouvrir_bas_pince(Cote cote) throws SerialException {
 		duree += 1000;
 	}
+
+	@Override
+	public void prendre_torche(Cote cote) throws SerialException {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
