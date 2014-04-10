@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import exception.ConfigException;
 import smartMath.Vec2;
+import table.Obstacle;
 import table.ObstacleRectangulaire;
 import table.ObstacleCirculaire;
 import utils.Log;
@@ -40,6 +41,11 @@ public class Grid2DSpace implements Serializable
 	private static int rayon_robot_adverse = 200;
 	
 	
+	/**
+	 * Utilisé très rarement.
+	 * @param config
+	 * @param log
+	 */
 	public static void set_static_variables(Read_Ini config, Log log)
 	{
 		try {
@@ -86,7 +92,7 @@ public class Grid2DSpace implements Serializable
 		sizeX = table_x/reductionFactor;
 		sizeY = table_y/reductionFactor;
 		surface = sizeX * sizeY;
-		reductionFactor = table_x/sizeX;
+		this.reductionFactor = reductionFactor;
 		
 		for(int num_pochoir = 0; num_pochoir < 10; num_pochoir++)
 		{
@@ -103,17 +109,29 @@ public class Grid2DSpace implements Serializable
 	}
 
 	/**
+	 * Surcouche user-friendly d'ajout d'obstacle fixe
+	 * @param obs
+	 */
+	public void appendObstacleFixe(Obstacle obs)
+	{
+		if(obs instanceof ObstacleRectangulaire)
+			appendObstacleFixe((ObstacleRectangulaire)obs);
+		else if(obs instanceof ObstacleCirculaire)
+			appendObstacleFixe((ObstacleCirculaire)obs);
+	}
+	
+	/**
 	 * Ajout long d'un obstacle rectangulaire.
 	 * Exécuté seulement lors de la génération du cache.
 	 * @param obs
 	 */
-	public void appendObstacle(ObstacleRectangulaire obs)
+	private void appendObstacleFixe(ObstacleRectangulaire obs)
 	{
 		// Asumptions :  	obs.getPosition() returns the top left corner of the rectangle
 		//					also, rectangle is Axis Aligned...
 		int marge = 20;
-		for(int i = (int) (obs.getPosition().x - robotRadius - marge); i < (int) (obs.getPosition().x +obs.getLargeur() + robotRadius + marge + 1); i++)	
-			for(int j = (int) (obs.getPosition().y - robotRadius - marge); j < (int) (obs.getPosition().y +obs.getLongueur() + robotRadius + marge + 1); j++)	
+		for(int i = (int) (obs.getPosition().x - robotRadius - marge); i < (int) (obs.getPosition().x +obs.getLargeur() + robotRadius + marge + 1); i++)
+			for(int j = (int) (obs.getPosition().y - robotRadius - marge); j < (int) (obs.getPosition().y +obs.getLongueur() + robotRadius + marge + 1); j++)
 				if(i >= -table_x/2 && i < table_x/2 && j >= 0 && j < table_y && obs.distance(new Vec2(i,j)) < robotRadius + marge)
 				{
 					Vec2 posGrid = conversionTable2Grid(new Vec2(i,j));
@@ -126,7 +144,7 @@ public class Grid2DSpace implements Serializable
 	 * Exécuté seulement lors de la génération du cache.
 	 * @param obs
 	 */
-	public void appendObstacle(ObstacleCirculaire obs)
+	private void appendObstacleFixe(ObstacleCirculaire obs)
 	{
 		int marge = 20;
 		int radius = (int) obs.getRadius();
@@ -143,6 +161,7 @@ public class Grid2DSpace implements Serializable
 	/**
 	 * Ajout optimisé d'obstacle temporaires, de taille fixe.
 	 * Utilise les pochoirs.
+	 * Usage très courant.
 	 * @param obs
 	 */
 	public void appendObstacleTemporaire(ObstacleCirculaire obs)
@@ -418,7 +437,7 @@ public class Grid2DSpace implements Serializable
 	 * @param nb
 	 * @return
 	 */
-	private float conversionTable2Grid(float nb)
+	private int conversionTable2Grid(int nb)
 	{
 		return nb / reductionFactor;
 	}

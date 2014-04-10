@@ -58,8 +58,8 @@ public class JUnit_Laser_Test extends JUnit_Test {
 	public void test_position_balise() throws Exception
 	{
 		log.debug("JUnit_Laser_Test.test_position_balise()", this); // TODO vérifier les valeurs
-		Assert.assertTrue(laser.position_balise(0).distance(new Vec2((float)1620,(float)50)) < 500);
-		Assert.assertTrue(laser.position_balise(1).distance(new Vec2((float)1620,(float)50)) < 500);
+		Assert.assertTrue(laser.position_balise(0).distance(new Vec2(1620,50)) < 500);
+		Assert.assertTrue(laser.position_balise(1).distance(new Vec2(1620,50)) < 500);
 	}
 	
 	@Test

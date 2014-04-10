@@ -175,7 +175,7 @@ public class RobotVrai extends Robot {
 		float orientation_utilisee;
 
 		// TODO vérifier que c'est bien la largeur
-		Vec2 avant_robot = new Vec2((float)(largeur_robot/2 * Math.cos(orientation)), (float)(largeur_robot/2 * Math.sin(orientation)));
+		Vec2 avant_robot = new Vec2((int)(largeur_robot/2 * Math.cos(orientation)), (int)(largeur_robot/2 * Math.sin(orientation)));
 		avant_robot.Plus(position);
 		
 		int i = table.nearestUntakenFire(avant_robot.clone());
@@ -299,8 +299,8 @@ public class RobotVrai extends Robot {
 			marche_arriere = true;
 
 		Vec2 consigne = new Vec2(0,0);
-		consigne.x = (float) (position.x + distance*Math.cos(orientation_consigne));
-		consigne.y = (float) (position.y + distance*Math.sin(orientation_consigne));
+		consigne.x = (int) (position.x + distance*Math.cos(orientation_consigne));
+		consigne.y = (int) (position.y + distance*Math.sin(orientation_consigne));
 		
 		try
 		{
@@ -393,7 +393,7 @@ public class RobotVrai extends Robot {
 		// Si trajectoire_courbe a été donné en true, cela signifie que va_au_point prend lui-même la décision
 		// Là où on prendra plus de place, c'est devant le robot (marche avant)
 		if(autorise_trajectoire_courbe && trajectoire_courbe)
-			trajectoire_courbe = !table.obstaclePresent(position.PlusNewVector(new Vec2(50*(float)Math.cos(orientation),50*(float)Math.sin(orientation))), distance_securite_trajectoire_courbe);
+			trajectoire_courbe = !table.obstaclePresent(position.PlusNewVector(new Vec2((int)(50*Math.cos(orientation)),(int)(50*Math.sin(orientation)))), distance_securite_trajectoire_courbe);
 		else
 			trajectoire_courbe = false;
 		
@@ -487,8 +487,8 @@ public class RobotVrai extends Robot {
 		float[] infos = deplacements.get_infos_x_y_orientation();
 		synchronized(position)
 		{
-			position.x = infos[0];
-			position.y = infos[1];
+			position.x = (int)infos[0];
+			position.y = (int)infos[1];
 		}
 		orientation = infos[2]/1000; // car get_infos renvoie des milliradians
 	}
@@ -955,7 +955,7 @@ public class RobotVrai extends Robot {
 			signe = 1;
 		
 		int rayon_detection = largeur_robot/2 + distance_detection;
-		Vec2 centre_detection = new Vec2((float)(signe * rayon_detection * Math.cos(orientation)), (float)(signe * rayon_detection * Math.sin(orientation)));
+		Vec2 centre_detection = new Vec2((int)(signe * rayon_detection * Math.cos(orientation)), (int)(signe * rayon_detection * Math.sin(orientation)));
 		centre_detection.Plus(position);
 		if(table.obstaclePresent(centre_detection, distance_detection))
 		{

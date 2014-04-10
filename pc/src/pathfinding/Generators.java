@@ -4,8 +4,6 @@ import pathfinding.SearchSpace.Grid2DSpace;
 import robot.Cote;
 import smartMath.Vec2;
 import table.Obstacle;
-import table.ObstacleCirculaire;
-import table.ObstacleRectangulaire;
 import table.Table;
 import utils.DataSaver;
 import utils.Log;
@@ -78,15 +76,11 @@ public class Generators {
 		int reductionFactor = 1;
 		for(int i = 0; i < 10; i++)
 		{
+			System.out.println(reductionFactor);
 			Grid2DSpace map = new Grid2DSpace(reductionFactor);
 			reductionFactor <<= 1;
 			for(Obstacle obs: table.getListObstaclesFixes())
-			{
-				if(obs instanceof ObstacleRectangulaire)
-					map.appendObstacle((ObstacleRectangulaire)obs);
-				else if(obs instanceof ObstacleCirculaire)
-					map.appendObstacle((ObstacleCirculaire)obs);
-			}
+				map.appendObstacleFixe(obs);
 			DataSaver.sauvegarder(map, "cache/map-"+reductionFactor+"-"+table.codeTorches()+".cache");
 		}
 		

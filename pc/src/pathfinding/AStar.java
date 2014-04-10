@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.Map;
 
 import pathfinding.SearchSpace.Grid2DSpace;
-import smartMath.IntPair;
+import smartMath.Vec2;
 
 // Le test se trouve dans un test unitaire
 class AStar
@@ -21,37 +21,37 @@ class AStar
 	private boolean 	processed,	// le chemin a-t-il �t� calcul� ou pas encore ?
 						isValid;	// indique si le chamin calcul� est valide ou non ( auquel cas une erreur a emp�ch� son calcul)
 	private Grid2DSpace espace;		// espace de travail
-	private ArrayList<IntPair> chemin;	// r�ceptacle du calcul
+	private ArrayList<Vec2> chemin;	// r�ceptacle du calcul
 	
-	private Set<IntPair> 	closedset,	// The set of nodes already evaluated.
+	private Set<Vec2> 	closedset,	// The set of nodes already evaluated.
 							openset;	 // The set of tentative nodes to be evaluated
-	private Map<IntPair, IntPair>	came_from; // The map of navigated nodes.
-	private Map<IntPair, Integer>	g_score,
+	private Map<Vec2, Vec2>	came_from; // The map of navigated nodes.
+	private Map<Vec2, Integer>	g_score,
 									f_score;
 	
-	private IntPair 	depart, 
+	private Vec2 	depart, 
 						arrivee;
 	
 
 
-	public AStar( Grid2DSpace espaceVoulu, IntPair departVoulu, IntPair arriveeVoulue)
+	public AStar( Grid2DSpace espaceVoulu, Vec2 departVoulu, Vec2 arriveeVoulue)
 	{
 		// Construit la demande d'un futur calcul
 		processed = false;
 		isValid = false;
-		chemin = new ArrayList<IntPair>();
+		chemin = new ArrayList<Vec2>();
 		
-		depart = new IntPair(departVoulu.x, departVoulu.y);
-		arrivee = new IntPair(arriveeVoulue.x, arriveeVoulue.y);
+		depart = new Vec2(departVoulu.x, departVoulu.y);
+		arrivee = new Vec2(arriveeVoulue.x, arriveeVoulue.y);
 		
 		espace = espaceVoulu.makeCopy();
 		
-		closedset = new LinkedHashSet<IntPair>();
-		openset = new LinkedHashSet<IntPair>();
+		closedset = new LinkedHashSet<Vec2>();
+		openset = new LinkedHashSet<Vec2>();
 		
-		came_from = new HashMap<IntPair, IntPair>();
-		g_score = new HashMap<IntPair, Integer>();
-		f_score = new HashMap<IntPair, Integer>();
+		came_from = new HashMap<Vec2, Vec2>();
+		g_score = new HashMap<Vec2, Integer>();
+		f_score = new HashMap<Vec2, Integer>();
 		
 	}
 	
@@ -60,19 +60,19 @@ class AStar
 		// Construit la demande d'un futur calcul
 		processed = false;
 		isValid = false;
-		chemin = new ArrayList<IntPair>();
+		chemin = new ArrayList<Vec2>();
 		
-		//depart = new IntPair(0,0);
-		//arrivee = new IntPair(0,0);
+		//depart = new Vec2(0,0);
+		//arrivee = new Vec2(0,0);
 		
 		//espace = espaceVoulu.makeCopy();
 		
-		closedset = new LinkedHashSet<IntPair>();
-		openset = new LinkedHashSet<IntPair>();
+		closedset = new LinkedHashSet<Vec2>();
+		openset = new LinkedHashSet<Vec2>();
 		
-		came_from = new HashMap<IntPair, IntPair>();
-		g_score = new HashMap<IntPair, Integer>();
-		f_score = new HashMap<IntPair, Integer>();
+		came_from = new HashMap<Vec2, Vec2>();
+		g_score = new HashMap<Vec2, Integer>();
+		f_score = new HashMap<Vec2, Integer>();
 		
 	}
 	/**
@@ -132,9 +132,9 @@ function reconstruct_path(came_from, current_node)
 	    // Estimated total cost from start to goal through y.
 	    f_score.put(depart, g_score.get(depart) + fastGridDistance(depart, arrivee));
 	    
-	    IntPair current = 	new IntPair(0,0),
-	    		temp =		new IntPair(0,0);			
-	    Iterator<IntPair> NodeIterator = openset.iterator();
+	    Vec2 current = 	new Vec2(0,0),
+	    		temp =		new Vec2(0,0);			
+	    Iterator<Vec2> NodeIterator = openset.iterator();
 	    int tentative_g_score = 0;
 	    
 	    while (openset.size() != 0)
@@ -153,19 +153,19 @@ function reconstruct_path(came_from, current_node)
 	    	{
 	    		
 	    		chemin.clear();
-    			chemin.add( new IntPair(arrivee.x,arrivee.y));
+    			chemin.add( new Vec2(arrivee.x,arrivee.y));
     			if (arrivee.x != depart.x && arrivee.y != depart.y && came_from.get(current) != null)
     			{
 		    		temp = came_from.get(current);	    		
 		    		while ( temp.x != depart.x || temp.y != depart.y )
 		    		{
-		    			chemin.add(0, new IntPair(temp.x,temp.y)); // insert le point d'avant au debut du parcours
+		    			chemin.add(0, new Vec2(temp.x,temp.y)); // insert le point d'avant au debut du parcours
 		    			current  = temp;
 		    			temp = came_from.get(temp);
 		    			
 		    		}
     			}
-    			chemin.add(0, new IntPair(depart.x,depart.y));
+    			chemin.add(0, new Vec2(depart.x,depart.y));
     			
 /*
 				System.out.println("=======================================================\nPostGaffeur dump\n=============================");
@@ -178,7 +178,7 @@ function reconstruct_path(came_from, current_node)
 				{
 					for (int  k = espace.getSizeY() - 1; k >= 0; --k)
 					{
-						IntPair pos = new IntPair(j,k);
+						Vec2 pos = new Vec2(j,k);
 						if (depart.x ==j && depart.y ==k)
 							out += "D ";
 						else if (arrivee.x ==j && arrivee.y ==k)
@@ -204,7 +204,7 @@ function reconstruct_path(came_from, current_node)
 	    	}
 	    	
 	    	openset.remove(current);
-	    	closedset.add(new IntPair(current.x, current.y));
+	    	closedset.add(new Vec2(current.x, current.y));
 	    	
 	    	for(int i = 1; i <= 4; ++i)
 	    	{
@@ -221,7 +221,7 @@ function reconstruct_path(came_from, current_node)
 	    				// TODO: vérifier que 5 est bien le meilleur coefficient
 	    				f_score.put(temp, tentative_g_score + 5 * fastGridDistance(temp, arrivee));
 	    				if(openset.contains(temp) == false)
-	    					openset.add(new IntPair(temp.x, temp.y));
+	    					openset.add(new Vec2(temp.x, temp.y));
 	    				
 	    				
 	    			}
@@ -257,22 +257,22 @@ function reconstruct_path(came_from, current_node)
 	
 	// Calcule rapidement la distance entre A et B en nombre de cases a traverser. Pas besoin d'op�rations en
 	// virgule flottante ni de multiplication
-	public int fastGridDistance( IntPair A, IntPair B)
+	public int fastGridDistance( Vec2 A, Vec2 B)
 	{
 		return Math.abs(A.x - B.x) + Math.abs(A.y - B.y); 
 	}
 	
 	// donne les voisins d'un node par index : 1, droite, 2, haut, 3, gauche, 4, bas
-	public IntPair neighbor_nodes(IntPair center, int index)
+	public Vec2 neighbor_nodes(Vec2 center, int index)
 	{
 		if( index == 1 && espace.canCross(center.x + 1, center.y))
-			return new IntPair(center.x + 1, center.y);
+			return new Vec2(center.x + 1, center.y);
 		if( index == 2 && espace.canCross(center.x, center.y + 1))
-			return new IntPair(center.x, center.y + 1);
+			return new Vec2(center.x, center.y + 1);
 		if( index == 3 && espace.canCross(center.x - 1, center.y))
-			return new IntPair(center.x - 1, center.y);
+			return new Vec2(center.x - 1, center.y);
 		if( index == 4 && espace.canCross(center.x, center.y - 1))
-			return new IntPair(center.x, center.y - 1);
+			return new Vec2(center.x, center.y - 1);
 		return center;
 	}
 	
@@ -281,7 +281,7 @@ function reconstruct_path(came_from, current_node)
 	/**
 	 * @return the chemin
 	 */
-	public ArrayList<IntPair> getChemin() 
+	public ArrayList<Vec2> getChemin() 
 	{
 		return chemin;
 	}
@@ -294,18 +294,18 @@ function reconstruct_path(came_from, current_node)
 		cleanup();
 		this.espace = espace;
 	}
-	public IntPair getDepart() {
+	public Vec2 getDepart() {
 		return depart;
 	}
-	public void setDepart(IntPair depart) 
+	public void setDepart(Vec2 depart) 
 	{
 		cleanup();
 		this.depart = depart;
 	}
-	public IntPair getArrivee() {
+	public Vec2 getArrivee() {
 		return arrivee;
 	}
-	public void setArrivee(IntPair arrivee) 
+	public void setArrivee(Vec2 arrivee) 
 	{
 		cleanup();
 		this.arrivee = arrivee;

@@ -55,9 +55,7 @@ public class RobotChrono extends Robot {
 			e.printStackTrace();
 		}
 		duree += ((float)Math.abs(distance))/vitesse_mmpms;
-		Vec2 ecart = new Vec2((float)Math.cos(orientation), (float)Math.sin(orientation));
-		ecart.x *= distance;
-		ecart.y *= distance;
+		Vec2 ecart = new Vec2((int)(distance*Math.cos(orientation)), (int)(distance*Math.sin(orientation)));
 		position.Plus(ecart);
 	}
 	

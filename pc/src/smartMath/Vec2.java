@@ -7,10 +7,6 @@
  * Refactoring : Martial
  */
 
-/*
- *	TODO : 	Implement Matrix product, String conversion and parsing
- */
-
 package smartMath;
 
 /**
@@ -23,8 +19,8 @@ package smartMath;
 public class Vec2
 {
 
-	public float x;
-	public float y;
+	public int x;
+	public int y;
 	
 	public Vec2()
 	{
@@ -32,7 +28,7 @@ public class Vec2
 		y = 0;
 	}
 
-	public Vec2(float requestedX, float requestedY)
+	public Vec2(int requestedX, int requestedY)
 	{
 		x = requestedX;
 		y = requestedY;
@@ -40,7 +36,7 @@ public class Vec2
 	
 	// Do not square a length, use squared length directly
 	// to increase performances
-	public float SquaredLength()
+	public int SquaredLength()
 	{
 		return x*x + y*y;
 	}
@@ -52,7 +48,7 @@ public class Vec2
 	}
 	
 	// dot product
-	public float dot(Vec2 other)
+	public int dot(Vec2 other)
 	{
 		return x*other.x + y*other.y;
 	}
@@ -107,10 +103,47 @@ public class Vec2
 	{
 		return x == other.x && y == other.y;
 	}
-	public Vec2 dotFloat(float a)
+	public Vec2 dotFloat(int a)
 	{
 		return new Vec2(x*a,y*a);
 	}
+	
+	public void set(Vec2 other)
+	{
+		x = other.x;
+		y = other.y;
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + x;
+		result = prime * result + y;
+		return result;
+	}
+	
+	public Vec2 makeCopy()
+	{
+		return new Vec2(x, y);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		else if (obj == null)
+			return false;
+		else if (!(obj instanceof Vec2))
+			return false;
+		Vec2 other = (Vec2) obj;
+		if (x != other.x)
+			return false;
+		else if (y != other.y)
+			return false;
+		return true;
+	}
+
 	
 }
 

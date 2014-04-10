@@ -50,10 +50,10 @@ public class ObstacleRectangulaire extends Obstacle {
 	public float SquaredDistance(Vec2 point)
 	{
 		// Si le point est à un des coins
-		Vec2 coinBasGauche = position.PlusNewVector((new Vec2(0,(float)longueur)));
+		Vec2 coinBasGauche = position.PlusNewVector((new Vec2(0,longueur)));
 		Vec2 coinHautGauche = position.PlusNewVector((new Vec2(0,0)));
-		Vec2 coinBasDroite = position.PlusNewVector((new Vec2((float)largeur,(float)longueur)));
-		Vec2 coinHautDroite = position.PlusNewVector((new Vec2((float)largeur,0)));
+		Vec2 coinBasDroite = position.PlusNewVector((new Vec2(largeur,longueur)));
+		Vec2 coinHautDroite = position.PlusNewVector((new Vec2(largeur,0)));
 
 		if(point.x < coinBasGauche.x && point.y < coinBasGauche.y)
 			return point.SquaredDistance(coinBasGauche);

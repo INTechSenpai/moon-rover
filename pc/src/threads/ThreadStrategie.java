@@ -73,7 +73,7 @@ public class ThreadStrategie extends AbstractThread {
 	{
 		robotchrono.majRobotChrono(robotvrai);
 		Table tableBlocage = table.clone();
-		Vec2 centre_detection = new Vec2((float)(400 * Math.cos(robotvrai.getOrientation())), (float)(400 * Math.sin(robotvrai.getOrientation())));
+		Vec2 centre_detection = new Vec2((int)(400 * Math.cos(robotvrai.getOrientation())), (int)(400 * Math.sin(robotvrai.getOrientation())));
 		centre_detection.Plus(robotvrai.getPosition());
 		tableBlocage.creer_obstacle(centre_detection);
 		memorymanager.setModelTable(tableBlocage, profondeur_max);
