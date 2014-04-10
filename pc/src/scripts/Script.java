@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import exception.ConfigException;
 import exception.MouvementImpossibleException;
+import exception.PathfindingException;
 import exception.ScriptException;
 import exception.SerialException;
 /**
@@ -97,7 +98,13 @@ public abstract class Script implements Service {
 		robotchrono.set_vitesse_translation("entre_scripts");
 		robotchrono.set_vitesse_rotation("entre_scripts");
 		
-		robotchrono.initialiser_compteur(pathfinding.distance(robotchrono.getPosition(), point_entree, use_cache));
+		try {
+			robotchrono.initialiser_compteur(pathfinding.distance(robotchrono.getPosition(), point_entree, use_cache));
+		} catch (PathfindingException e1) {
+			// En cas de problème du pathfinding, on évalue la longueur du chemin
+			robotchrono.initialiser_compteur((int)(robotchrono.getPosition().distance(point_entree)*1.5));
+			e1.printStackTrace();
+		}
 		robotchrono.setPosition(point_entree);
 
 		try {
@@ -105,7 +112,7 @@ public abstract class Script implements Service {
 		}
 		catch(Exception e)
 		{
-			log.warning("Exception scripts: "+e.toString(), this);
+			e.printStackTrace();
 		}
 		return robotchrono.get_compteur();
 	}
