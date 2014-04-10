@@ -5,7 +5,6 @@ import java.util.Map;
 
 import hook.HookGenerator;
 import pathfinding.Pathfinding;
-import pathfinding.SearchSpace.Grid2DPochoirManager;
 import exception.ConfigException;
 import exception.ContainerException;
 import exception.SerialManagerException;
@@ -45,6 +44,7 @@ import robot.serial.Serial;
  * Laser
  * FiltrageLaser
  * CheckUp
+ * (à compléter peut-être)
  * 
  * @author pf
  *
@@ -54,10 +54,13 @@ public class Container {
 
 	private Map<String,Service> services = new Hashtable<String,Service>();
 	private SerialManager serialmanager = null;
-	private ThreadManager threadmanager = null;
-	private Log log = null;
-	private Read_Ini config = null;
+	private ThreadManager threadmanager;
+	private Log log;
+	private Read_Ini config;
 
+	/**
+	 * Fonction à appeler à la fin du programme.
+	 */
 	public void destructeur()
 	{
 		arreteThreads();
@@ -74,6 +77,11 @@ public class Container {
 		log.destructeur();
 	}
 	
+	/*
+	 * Table et pathfinding sont des services mais il en existe plusieurs versions.
+	 * Le container renvoie la table et le pathfinding utilisé en dehors de l'arbre des possibles.
+	 * La gestion des tables et des pathfindings dans l'arbre des possibles est faite par le MemoryManager.
+	 */
 	public Container() throws ContainerException
 	{
 		try {
@@ -91,7 +99,6 @@ public class Container {
 
 	public Service getService(String nom) throws ContainerException, ThreadException, ConfigException, SerialManagerException
 	{
-		new Grid2DPochoirManager();
 		if(services.containsKey(nom))
 			;
 		else if(nom == "Table")
