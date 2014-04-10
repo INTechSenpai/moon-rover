@@ -326,9 +326,16 @@ public class Grid2DSpace implements Serializable
 				// On applique un ET logique
 				smaller.datas[i][j] = true;
 				for(int a = 0; a < reduction; a++)
+				{
 					for(int b = 0; b < reduction; b++)
 						if(!datas[reduction*i+a][reduction*j+b])
+						{
 							smaller.datas[i][j] = false;
+							break; // évaluation paresseuse
+						}
+					if(!smaller.datas[i][j])
+						break;
+				}
 			}
 		
 		return smaller;
