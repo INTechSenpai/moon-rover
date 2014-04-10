@@ -2,16 +2,16 @@
  * 
  */
 package pathfinding.cache;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import exception.ConfigException;
+import exception.PathfindingException;
 import pathfinding.Pathfinding;
 import smartMath.Vec2;
 import table.Table;
+import utils.DataSaver;
 import utils.Log;
 import utils.Read_Ini;
 
@@ -39,15 +39,7 @@ public class CacheHolder implements Serializable
 	
 	public static CacheHolder load(int i) throws IOException, ClassNotFoundException
 	{
-		String filename = "distance-"+i+".cache";
-		// retourne l'instance du cache si correctemnt chargé, lève une exception sinon
-		CacheHolder out = null;
-	    FileInputStream fileIn = new FileInputStream(filename);
-	    ObjectInputStream in = new ObjectInputStream(fileIn);
-	    out = (CacheHolder) in.readObject();
-	    in.close();
-	    fileIn.close();
-		return out;
+		return (CacheHolder) DataSaver.charger("distance-"+i+".cache");
 	}
 	
 	/**
@@ -56,27 +48,38 @@ public class CacheHolder implements Serializable
 	 * @param log
 	 * @param table: la table pour laquelle le cache est demandé
 	 * @param filename: nom de fichier dans lequel sera enregistré le cache
+	 * @throws PathfindingException 
 	 */
-	public static void cache_file_generate(Read_Ini config, Log log, Table table, String filename)
+	public static void cache_file_generate(Read_Ini config, Log log, Table table, String filename) throws PathfindingException
 	{
-		log.special("CacheFileGenerator initialisation");
+		log.appel_static("CacheFileGenerator initialisation");
+		int table_x = 3000;
+		int table_y = 2000;
 		
 		// Taille de la map. Précision maximale pour ce cache.
-		int sizeX = 1500;
-		int sizeY = 2000;
+		try {
+			table_x = Integer.parseInt(config.get("table_x"));
+		} catch (NumberFormatException | ConfigException e) {
+			e.printStackTrace();
+		}
+		try {
+			table_y = Integer.parseInt(config.get("table_y"));
+		} catch (NumberFormatException | ConfigException e) {
+			e.printStackTrace();
+		}
 		
 		Pathfinding pathfinder = new Pathfinding(table, config, log, 1);
 		Vec2 	depart 	= new Vec2(0,0),
 				arrivee = new Vec2(0,0);
 		
-		CacheHolder output = new CacheHolder(2*sizeX, sizeY);
+		CacheHolder output = new CacheHolder(table_x, table_y);
 		
-		log.special("CacheFileGenerator starting calculations");
+		log.appel_static("CacheFileGenerator starting calculations");
 		// grosse boucle de remplissage du cache
-		for (int i = -sizeX; i < sizeX; ++i)											// depart.x		== i
-			for (int j = 0; j < sizeY; ++j)											// depart.y		== j
-				for (int k = -sizeX; k < sizeX; ++k)									// arrivee.x	== k
-					for (int l = 0; l < sizeY; ++l)								// arrivee.y	== l
+		for (int i = -table_x/2; i < (table_x/2); ++i)											// depart.x		== i
+			for (int j = 0; j < table_y; ++j)											// depart.y		== j
+				for (int k = -table_x/2; k < (table_x/2); ++k)									// arrivee.x	== k
+					for (int l = 0; l < table_y; ++l)								// arrivee.y	== l
 					{
 						depart.x = i;
 						depart.y = j;
@@ -84,27 +87,15 @@ public class CacheHolder implements Serializable
 						arrivee.y = l;
 						
 						// calcul de la distance, et stockage dans output
-						output.data[i+1500][j][k+1500][l] = pathfinder.distance(depart, arrivee, false);
+						output.data[i+table_x/2][j][k+table_x/2][l] = pathfinder.distance(depart, arrivee, false);
 					}
 
-		log.special("CacheFileGenerator calculations done !");
+		log.appel_static("CacheFileGenerator calculations done !");
 		
 
-		log.special("CacheFileGenerator serializing");
+		log.appel_static("CacheFileGenerator serializing");
 		// Sauvegarde du fichier de cache à partir de l'instance output de CacheHolder
-		  try
-		  {
-		     FileOutputStream fileOut = new FileOutputStream(filename);
-			 ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			 out.writeObject(output);
-			 out.close();
-			 fileOut.close();
-			 log.special("Serialized data is saved in "+filename);
-		  }
-		  catch(IOException i)
-		  {
-		      i.printStackTrace();
-		  }
+		DataSaver.sauvegarder(output, filename);
 	}
 
 }

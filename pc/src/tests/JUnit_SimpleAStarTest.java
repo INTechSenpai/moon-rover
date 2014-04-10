@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import pathfinding.AStar;
 import pathfinding.Pathfinding;
-import pathfinding.SearchSpace.Grid2DPochoirManager;
 import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.IntPair;
 import smartMath.Vec2;
@@ -34,7 +33,7 @@ public class JUnit_SimpleAStarTest extends JUnit_Test
 		int mapSizeY = 100;
 
 
-		Grid2DSpace map = new Grid2DSpace(new IntPair(mapSizeX,mapSizeY),table,200,log);
+		Grid2DSpace map = new Grid2DSpace(new IntPair(mapSizeX,mapSizeY),table,200,log, config);
 		
 		//String mapStr = map.stringForm();
 	    Random randomGenerator = new Random();
@@ -208,7 +207,6 @@ public class JUnit_SimpleAStarTest extends JUnit_Test
 
 		Vec2 depart = new Vec2(1205,1140);
 		Vec2 arrivee =  new Vec2(-1100,300);
-		new Grid2DPochoirManager();
 	    Random randomGenerator = new Random();
 		Pathfinding finder = new Pathfinding(table, config, log, 2);
 		System.out.println("Calculating " + testNb + " path...");

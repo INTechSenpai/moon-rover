@@ -21,7 +21,7 @@ public class Table implements Service {
 
 	// TODO Obstacles fixes (circulaires) pour support de feux en bordure
 	
-	private ArrayList<Obstacle> listObstacles = new ArrayList<Obstacle>();
+	private ArrayList<ObstacleCirculaire> listObstacles = new ArrayList<ObstacleCirculaire>();
 	private static ArrayList<Obstacle> listObstaclesFixes = new ArrayList<Obstacle>();
 	private ObstacleBalise[] robots_adverses = new ObstacleBalise[2];
 	
@@ -48,7 +48,7 @@ public class Table implements Service {
 		initialise();
 	}
 	
-	private void initialise()
+	public void initialise()
 	{
 		// Initialisation des feux
 		// TODO vérifier couleur. Torche fixe?
@@ -95,8 +95,8 @@ public class Table implements Service {
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-1500,0), 250));
 
 		// Ajout bacs
-		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(1100,1700), 700, 300));
-		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-1100,1700), 700, 300));
+		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(400,2000), 700, 300));
+		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-1100,2000), 700, 300));
 
 		// Ajout des arbres
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(1500,700), 150));
@@ -132,7 +132,7 @@ public class Table implements Service {
 	 * Utilisé par le pathfinding. Retourne uniquement les obstacles temporaires.
 	 * @return
 	 */
-	public ArrayList<Obstacle> getListObstacles()
+	public ArrayList<ObstacleCirculaire> getListObstacles()
 	{
 		return listObstacles;
 	}
@@ -169,7 +169,7 @@ public class Table implements Service {
 	{
 		Vec2 position_sauv = position.clone();
 		
-		Obstacle obstacle = new ObstacleProximite(position_sauv, rayon_robot_adverse, System.currentTimeMillis()+duree);
+		ObstacleProximite obstacle = new ObstacleProximite(position_sauv, rayon_robot_adverse, System.currentTimeMillis()+duree);
 		log.warning("Obstacle créé, rayon = "+rayon_robot_adverse+", centre = "+position, this);
 		listObstacles.add(obstacle);
 		hashObstacles = indice++;
@@ -181,7 +181,7 @@ public class Table implements Service {
 	 */
 	public synchronized void supprimer_obstacles_perimes(long date)
 	{
-		Iterator<Obstacle> iterator = listObstacles.iterator();
+		Iterator<ObstacleCirculaire> iterator = listObstacles.iterator();
 		while ( iterator.hasNext() )
 		{
 		    Obstacle obstacle = iterator.next();
@@ -417,7 +417,7 @@ public class Table implements Service {
 			if(ct.hashObstacles != hashObstacles)
 			{
 				ct.listObstacles.clear();
-				for(Obstacle item: listObstacles)
+				for(ObstacleCirculaire item: listObstacles)
 					ct.listObstacles.add(item.clone());
 				ct.hashObstacles = hashObstacles;
 			}
@@ -447,7 +447,8 @@ public class Table implements Service {
 	 */
 	public boolean equals(Table other)
 	{
-		return 	hashFire == other.hashFire
+		return 	other != null
+				&& hashFire == other.hashFire
 				&& hashTree == other.hashTree
 				&& hashObstacles == other.hashObstacles;
 	}

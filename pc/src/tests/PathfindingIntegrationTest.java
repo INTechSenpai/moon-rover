@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import pathfinding.Pathfinding;
-import pathfinding.SearchSpace.Grid2DPochoirManager;
 import smartMath.IntPair;
 import smartMath.Vec2;
 import table.Table;
@@ -33,7 +32,6 @@ public class PathfindingIntegrationTest extends JUnit_Test
 		System.out.println("Calcul d'un même parcours avec des cases de 1cm à 10cm de coté");
 		Vec2 depart = new Vec2(1205,1140);
 		Vec2 arrivee =  new Vec2(-1100,300);
-		new Grid2DPochoirManager();
 		Pathfinding finder = new Pathfinding(table, config, log, 2);
 		System.out.println(finder.chemin(depart, arrivee));
 		for(int i = 1; i < 11; ++i)
