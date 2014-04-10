@@ -49,44 +49,82 @@ public class Log implements Service
 	
 	}
 	
-	public void special(Object message)
+	/**
+	 * Méthode à appeler uniquement depuis une méthode statique. User-friendly
+	 * @param message
+	 */
+	public void appel_static(Object message)
 	{
-		special(message.toString());
+		appel_static(message.toString());
 	}
-	
-	public void special(String message)
+		
+	/**
+	 * Méthode à appeler uniquement depuis une méthode statique
+	 * @param message
+	 */
+	public void appel_static(String message)
 	{
 		if(affiche_debug)
 			ecrire("Lanceur: "+message, couleurDebug, System.out);
 	}
 	
 	
+	/**
+	 * Affichage de debug, en vert. User-friendly
+	 * @param message
+	 * @param objet
+	 */
 	public void debug(Object message, Object objet)
 	{
 		debug(message.toString(), objet);
 	}
 	
+	/**
+	 * Affichage de debug, en vert
+	 * @param message
+	 * @param objet
+	 */
 	public void debug(String message, Object objet)
 	{
 		if(affiche_debug)
 			ecrire(objet.getClass().getName()+": "+message, couleurDebug, System.out);
 	}
 
+	/**
+	 * Affichage de warnings, en orange. User-friendly
+	 * @param message
+	 * @param objet
+	 */
 	public void warning(Object message, Object objet)
 	{
 		warning(message.toString(), objet);
 	}
 
+	/**
+	 * Affichage de warnings, en orange
+	 * @param message
+	 * @param objet
+	 */
 	public void warning(String message, Object objet)
 	{
 		ecrire(objet.getClass().getName()+": "+message, couleurWarning, System.out);
 	}
 
+	/**
+	 * Affichage d'erreurs critiques, en rouge. User-friendly
+	 * @param message
+	 * @param objet
+	 */
 	public void critical(Object message, Object objet)
 	{
 		critical(message.toString(), objet);
 	}
 	
+	/**
+	 * Affichage d'erreurs critiques, en rouge
+	 * @param message
+	 * @param objet
+	 */
 	public void critical(String message, Object objet)
 	{
 		ecrire(objet.getClass().getName()+": "+message, couleurCritical, System.err);
@@ -114,6 +152,9 @@ public class Log implements Service
 		}
 	}
 
+	/**
+	 * Sorte de destructeur, dans lequel le fichier est sauvegardé.
+	 */
 	public void destructeur()
 	{
 		if(sauvegarde_fichier)
