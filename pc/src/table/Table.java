@@ -148,19 +148,19 @@ public class Table implements Service {
 	
 	/**
 	 * Renvoie un code selon la présence ou non des torches mobiles
-	 * 0: les deux torches sont là
-	 * 1: la torche de gauche a disparue
-	 * 2: la torche de droite a disparue
-	 * 3: les deux torches sont absentes
+	 * 3: les deux torches sont là
+	 * 2: la torche de gauche a disparue
+	 * 1: la torche de droite a disparue
+	 * 0: les deux torches sont absentes
 	 * @return ce code
 	 */
 	public int codeTorches()
 	{
 		int out = 0;
-		if(arrayTorch[0].isDisparue())
+		if(!arrayTorch[0].isDisparue())
 			out++;
 		out <<= 1;
-		if(arrayTorch[1].isDisparue())
+		if(!arrayTorch[1].isDisparue())
 			out++;
 		return out;
 	}

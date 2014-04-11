@@ -1,7 +1,7 @@
 /**
  *  Classe encapsulant le calcul par A* d'un chemin sur un graphe quelconque
  *
- * @author Marsya
+ * @author Marsya, PF
  */
 package pathfinding;
 
@@ -12,13 +12,13 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Map;
 
+import exception.PathfindingException;
 import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.Vec2;
 
 // Le test se trouve dans un test unitaire
 class AStar
 {
-	private boolean 	isValid;	// indique si le chamin calcul� est valide ou non ( auquel cas une erreur a emp�ch� son calcul)
 	public Grid2DSpace espace;		// espace de travail
 	private ArrayList<Vec2> chemin;	// r�ceptacle du calcul
 	
@@ -28,42 +28,14 @@ class AStar
 	private Map<Vec2, Integer>	g_score,
 									f_score;
 	
-	private Vec2 	depart, 
-						arrivee;
-	
-
 	public AStar(Grid2DSpace espaceVoulu)
 	{
 		// Construit la demande d'un futur calcul
-		isValid = false;
-		chemin = new ArrayList<Vec2>();
 		
-		depart = new Vec2();
-		arrivee = new Vec2();
 //		depart = new Vec2(departVoulu.x, departVoulu.y);
 //		arrivee = new Vec2(arriveeVoulue.x, arriveeVoulue.y);
 		
-		espace = espaceVoulu.makeCopy();
-		
-		closedset = new LinkedHashSet<Vec2>();
-		openset = new LinkedHashSet<Vec2>();
-		
-		came_from = new HashMap<Vec2, Vec2>();
-		g_score = new HashMap<Vec2, Integer>();
-		f_score = new HashMap<Vec2, Integer>();
-		
-	}
-	
-	public void cleanup()
-	{
-		// Construit la demande d'un futur calcul
-		isValid = false;
-		chemin = new ArrayList<Vec2>();
-		
-		//depart = new Vec2(0,0);
-		//arrivee = new Vec2(0,0);
-		
-		//espace = espaceVoulu.makeCopy();
+		espace = espaceVoulu;
 		
 		closedset = new LinkedHashSet<Vec2>();
 		openset = new LinkedHashSet<Vec2>();
@@ -117,21 +89,21 @@ function reconstruct_path(came_from, current_node)
         
 	 * 
 	 */
-	public void process()
+	public ArrayList<Vec2> process(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
-		
+		arrivee = espace.conversionTable2Grid(arrivee);
+		depart = espace.conversionTable2Grid(depart);
 		
 		closedset.clear();		// The set of nodes already evaluated.
 		openset.add(depart);	// The set of tentative nodes to be evaluated, initially containing the start node
 		came_from.clear(); 		// The map of navigated nodes.
-
 		
 		g_score.put(depart, 0);	// Cost from start along best known path.
 	    // Estimated total cost from start to goal through y.
 	    f_score.put(depart, g_score.get(depart) + fastGridDistance(depart, arrivee));
 	    
 	    Vec2 current = 	new Vec2(0,0),
-	    		temp =		new Vec2(0,0);			
+	    		temp =	new Vec2(0,0);			
 	    Iterator<Vec2> NodeIterator = openset.iterator();
 	    int tentative_g_score = 0;
 	    
@@ -165,40 +137,7 @@ function reconstruct_path(came_from, current_node)
     			}
     			chemin.add(0, new Vec2(depart.x,depart.y));
     			
-/*
-				System.out.println("=======================================================\nPostGaffeur dump\n=============================");
-				
-				
-
-				String out = "";
-				Integer ptCount = 0;
-				for (int  j = 0; j < espace.getSizeX(); ++j)
-				{
-					for (int  k = espace.getSizeY() - 1; k >= 0; --k)
-					{
-						Vec2 pos = new Vec2(j,k);
-						if (depart.x ==j && depart.y ==k)
-							out += "D ";
-						else if (arrivee.x ==j && arrivee.y ==k)
-							out += "A ";
-						else if (chemin.contains(pos))
-						{
-							ptCount ++;
-							out += ptCount.toString();
-						}
-						else if(espace.canCross(j, k))
-							out += ". ";
-						else
-							out += "X ";	
-					}
-					
-					out +='\n';
-				}
-				System.out.println(out);
-				System.out.println("=======================================================\nEnd of dump\n=============================");
-	    		*/
-	    		processFinalisationWithSucess();
-	    		return;	//  reconstruct path
+	    		return chemin;	//  reconstruct path
 	    	}
 	    	
 	    	openset.remove(current);
@@ -225,24 +164,11 @@ function reconstruct_path(came_from, current_node)
 	    			}
 	    		}	
 	    	}
-	    	
-	    	
-	    	
+	    		    	
 	    }// while
-	    
-	    processFinalisationWithError();
-	    return;
+	    throw new PathfindingException();
 	}	// process
 	
-	private void processFinalisationWithSucess()
-	{
-		isValid = true;
-	}
-	
-	private void processFinalisationWithError()
-	{
-		isValid = false;
-	}
 		
 	// =====================================  Utilitaires ===============================
 	
@@ -269,41 +195,7 @@ function reconstruct_path(came_from, current_node)
 	
 	// ======================================= Getters / Setters ========================================
 	
-	/**
-	 * @return the chemin
-	 */
-	public ArrayList<Vec2> getChemin() 
-	{
-		return chemin;
-	}
-	
 	public Grid2DSpace getEspace() {
 		return espace;
-	}
-	public void setEspace(Grid2DSpace espace)
-	{
-		cleanup();
-		this.espace = espace;
-	}
-	public Vec2 getDepart() {
-		return depart;
-	}
-	public void setDepart(Vec2 depart) 
-	{
-		cleanup();
-		this.depart = espace.conversionTable2Grid(depart);
-	}
-	public Vec2 getArrivee() {
-		return arrivee;
-	}
-	public void setArrivee(Vec2 arrivee) 
-	{
-		cleanup();
-		this.arrivee = espace.conversionTable2Grid(arrivee);
-	}
-
-	public boolean isValid()
-	{
-		return isValid;
 	}
 }

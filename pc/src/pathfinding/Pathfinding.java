@@ -39,7 +39,6 @@ public class Pathfinding implements Service
 	
 	private AStar[] solvers;
 	private AStar solver;
-//	private Grid2DSpace[] map;
 
 	/* Quatre Grid2DSpace qui sont la base, avec les obstacles fixes. On applique des pochoirs dessus.
 	 * Quatre parce qu'il y a la table initiale, la table à laquelle il manque une torche fixe et la table sans torche fixe.
@@ -54,8 +53,6 @@ public class Pathfinding implements Service
 
 	private int degree;
 
-//	private PathfindingAlgo solver;
-	private ArrayList<Vec2> result;
 	private ArrayList<Vec2> output;
 	
 	/**
@@ -75,7 +72,6 @@ public class Pathfinding implements Service
 		degree = 0;
 
 		output = new ArrayList<Vec2>();
-		result = new ArrayList<Vec2>();
 	}
 	
 	/**
@@ -99,7 +95,6 @@ public class Pathfinding implements Service
 		Grid2DSpace.set_static_variables(config, log);
 		solvers = new AStar[nb_precisions];
 		solver = solvers[degree];
-//		map = new Grid2DSpace[nb_precisions];
 
 		// On ne recharge les maps que si elles n'ont jamais été créées, ou avec une précision différente
 		if(map_obstacles_fixes == null || map_obstacles_fixes.length != nb_precisions)
@@ -156,6 +151,43 @@ public class Pathfinding implements Service
 		}
 	}
 
+	// TODO: cas de l'anneau
+	public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee) throws PathfindingException
+	{
+		/* Diviser pour régner!
+		 * Puisqu'un chemin fait un moyenne 1000mm ou moins, en équilibrant les différentes étages on tombe sur:
+		 * degré i: (précision macroscopique) * (précision microscopique)
+		 * degré 0: 32*32
+		 * degré 1: 16*32
+		 * degré 2: 16*16
+		 * degré 3: 18*6
+		 * degré 4: 8*8
+		 * degré 5 et plus: pas de HPA*
+		 */
+		if(degree >= 5)
+			return cheminAStar(depart, arrivee);
+		
+		// Le degré macro est celui utilisé pour diviser
+		int degree_macro = 5-(degree+1)/2;
+		
+		// Première rechercher, précision faible
+		ArrayList<Vec2> chemin = solvers[degree_macro].process(depart, arrivee);
+		// Lissage est conversion
+		chemin = lissage(chemin, solvers[degree_macro].espace);
+		for(Vec2 pos: chemin)
+			pos = solvers[degree_macro].espace.conversionGrid2Table(pos);
+
+		ArrayList<Vec2> output = new ArrayList<Vec2>();
+		for(int i = 0; i < chemin.size()-1; i++)
+			output.addAll(solver.process(chemin.get(i), chemin.get(i+1)));
+
+		output = lissage(chemin, solver.espace);
+		for(Vec2 pos: output)
+			pos = solver.espace.conversionGrid2Table(pos);
+
+		return output;
+	}
+	
 	/**
 	 * Retourne l'itinéraire pour aller d'un point de départ à un point d'arrivée
 	 * @param depart, exprimé en milimètres, avec comme origine le point en face du centre des mamouths
@@ -164,24 +196,16 @@ public class Pathfinding implements Service
 	 * 			Si l'itinéraire est non trouvable, une exception est est retournée.
 	 * @throws PathfindingException 
 	 */
-	public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee) throws PathfindingException
+	public ArrayList<Vec2> cheminAStar(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
-		solver.setDepart(depart);
-		solver.setArrivee(arrivee);
+		// calcule le chemin. Lève une exception en cas d'erreur.
+		ArrayList<Vec2> chemin = solver.process(depart, arrivee);
 
-		// calcule le chemin
-		solver.process();
-		if (!solver.isValid())	// null si A* dit que pas possib'
-			throw new PathfindingException();
-
-		result = lissage(solver.getChemin(), solver.espace);
+		chemin = lissage(chemin, solver.espace);
+		for(Vec2 pos: chemin)
+			pos = solver.espace.conversionGrid2Table(pos);
 		
-		// affiche la liste des positions
-		output.clear();
-		for (int i = 0; i < result.size()-1; ++i)
-			output.add(solver.espace.conversionGrid2Table(result.get(i)));
-		output.add(arrivee);
-		log.debug("Chemin : " + output, this);
+		log.debug("Chemin : " + chemin, this);
 		
 		return output;
 	}
@@ -198,28 +222,13 @@ public class Pathfinding implements Service
 	{
 		if(!use_cache || distance_cache == null)
 		{
-			// pas plus simple d'appeler chemin?
-			
-			int millimetresParCases = exponentiation(2, degree);
-			// Change de système de coordonnées
-			solver.setDepart(depart);
-			solver.setArrivee(arrivee);
-			
-			// calcule le chemin
-			System.out.println("Boucle infinie?");
-			solver.process();
-			System.out.println("Pas de boucle infinie.");
-
-			if (!solver.isValid())	// lève une exception si A* dit que pas possible
-				throw new PathfindingException();
-			result = lissage(solver.getChemin(), solver.espace);
-			
-			// convertit la sortie de l'AStar en suite de Vec2
+			ArrayList<Vec2> result = chemin(depart, arrivee);
 			int out = 0;
 			for (int i = 1; i < result.size(); ++i)
 				out += result.get(i-1).distance(result.get(i));
 
-			return out*millimetresParCases;
+			return out;
+			// result est dans les coordonnées de la table, pas besoin de coefficient multiplicateur
 		}
 		else
 		{
@@ -325,7 +334,7 @@ public class Pathfinding implements Service
 		cp.update();		    // et update
 	}
 
-	public int exponentiation(int a, int b)
+/*	private int exponentiation(int a, int b)
 	{
 		if(b == 0)
 			return 1;
@@ -336,6 +345,6 @@ public class Pathfinding implements Service
 			return c*c;
 		else
 			return c*c*a;
-	}
+	}*/
 	
 }
