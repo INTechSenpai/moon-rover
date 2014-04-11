@@ -17,16 +17,17 @@ import java.io.Serializable;
  *
  */
 
-// TODO: passer en visibilité default
 class CacheHolder implements Serializable
 {
 	private static final long serialVersionUID = 1L;
-
-	public int[][][][] data;
+	public int reduction;
+	// 16 bits signés, soit une distance maximale de 32000 environ, ce qui est largement suffisant
+	public short[][][][] data;
 	
-	public CacheHolder(int sizeX, int sizeY)
+	public CacheHolder(int sizeX, int sizeY, int reduction)
 	{
-		data = new int[sizeX][sizeY][sizeX][sizeY];
+		this.reduction = reduction;
+		data = new short[sizeX][sizeY][sizeX][sizeY];
 	}
 	
 }

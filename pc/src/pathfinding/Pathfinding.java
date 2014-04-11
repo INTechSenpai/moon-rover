@@ -59,7 +59,7 @@ public class Pathfinding implements Service
 			for(int i = 0; i < 4; i++)
 				distance_caches[i] = (CacheHolder) DataSaver.charger("distance-"+i+".cache");
 		} catch (Exception e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 	
@@ -82,7 +82,6 @@ public class Pathfinding implements Service
 		config = requestedConfig;
 		log = requestedLog;
 		maj_config();
-		this.degree = degree;
 		hashTableSaved = new int[10];
 
 		Grid2DSpace.set_static_variables(config, log);
@@ -94,8 +93,11 @@ public class Pathfinding implements Service
 			hashTableSaved[i] = -1;
 			map[i] = new Grid2DSpace(reductionFactor);
 			reductionFactor <<= 1;
+			this.degree = i; // modification temporaire de degree afin d'updater toutes les maps
+			update(); 	// initialisation des map
 		}
-		update(); 	// initialisation des map
+
+		this.degree = degree;
 
 		solver = new AStar(map[degree], new Vec2(0,0), new Vec2(0,0));
 		output = new ArrayList<Vec2>();
@@ -141,14 +143,13 @@ public class Pathfinding implements Service
 				code_torches_actuel = table.codeTorches();
 				try {
 					for(int i = 0; i < 10; i++)
-						map_obstacles_fixes[i] = (Grid2DSpace)DataSaver.charger("cache/map-"+degree+"-"+table.codeTorches()+".cache");
+						map_obstacles_fixes[i] = (Grid2DSpace)DataSaver.charger("cache/map-"+i+"-"+table.codeTorches()+".cache");
 				}
 				catch(Exception e)
 				{
 					e.printStackTrace();
 				}
 			}
-
 			hashTableSaved[degree] = table.hashTable();
 			
 			// On recopie les obstacles fixes
@@ -159,6 +160,7 @@ public class Pathfinding implements Service
 			for(ObstacleCirculaire o: obs)
 				map[degree].appendObstacleTemporaire(o);
 			// les chemins sont périmés puisque la map est différente
+			
 			resultUpToDate = true;
 		}
 	}
@@ -233,7 +235,10 @@ public class Pathfinding implements Service
 			solver.setArrivee(new Vec2((int)Math.round(arrivee.x + table_x/2)/millimetresParCases, (int)Math.round(arrivee.y)/millimetresParCases));
 			
 			// calcule le chemin
+			System.out.println("Boucle infinie?");
 			solver.process();
+			System.out.println("Pas de boucle infinie.");
+
 			if (!solver.isValid())	// lève une exception si A* dit que pas possible
 				throw new PathfindingException();
 			result = lissage(solver.getChemin(), map[millimetresParCases]);
@@ -250,7 +255,8 @@ public class Pathfinding implements Service
 		else
 		{
 			resultUpToDate = true;
-			return distance_caches[table.codeTorches()].data[(int)depart.x+table_x/2][(int)depart.y][(int)arrivee.x+table_x/2][(int)arrivee.y];
+			int cacheReduction = distance_caches[table.codeTorches()].reduction;
+			return distance_caches[table.codeTorches()].data[(depart.x+table_x/2)/cacheReduction][depart.y/cacheReduction][(arrivee.x+table_x/2)/cacheReduction][arrivee.y/cacheReduction];
 		}
 	}
 	

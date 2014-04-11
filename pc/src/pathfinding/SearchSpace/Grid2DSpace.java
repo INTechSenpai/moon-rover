@@ -69,7 +69,6 @@ public class Grid2DSpace implements Serializable
 			e.printStackTrace();
 		}
 
-		log.appel_static("Début génération pochoirs");
 		pochoirs = new Grid2DPochoir[10];
 		int reduction = 1;
 		for(int i = 0; i < 10; i++)
@@ -77,7 +76,6 @@ public class Grid2DSpace implements Serializable
 			pochoirs[i] = new Grid2DPochoir(rayon_robot_adverse/reduction);
 			reduction <<= 1;
 		}
-		log.appel_static("Pochoirs générés");
 		
 	}
 	
@@ -422,6 +420,7 @@ public class Grid2DSpace implements Serializable
 	 */
 	public void clone(Grid2DSpace other)
 	{
+		other.datas = new boolean[sizeX+1][sizeY+1];
 		for (int i = 0; i < datas.length; i++) {
 		    System.arraycopy(datas[i], 0, other.datas[i], 0, datas[0].length);
 		}

@@ -35,7 +35,7 @@ public class DataSaver {
 		}
 		catch(Exception e)
 		{
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
     }
     
@@ -51,7 +51,7 @@ public class DataSaver {
 		}
 		catch(Exception e)
 		{
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 		return null;
     }
