@@ -33,7 +33,6 @@ public class Pathfinding implements Service
 	private int[] hashTableSaved;	// Permet, à l'update, de ne recalculer map que si la table a effectivement changé.
 	private static Read_Ini config;
 	private static Log log;
-	private boolean resultUpToDate;
 	private int table_x = 3000; // écrasé par la config
 	private int code_torches_actuel = -1;
 
@@ -46,23 +45,11 @@ public class Pathfinding implements Service
 	 */
 	private static Grid2DSpace[] map_obstacles_fixes = new Grid2DSpace[10];
 	
-	/* Les caches des distances, un pour chaque map_obstacles_fixes
+	/* Le caches des distances
+	 * Sera rechargé en match (au plus 4 fois), car prend trop de mémoire sinon
 	 */
-	private static CacheHolder[] distance_caches;
+	private static CacheHolder distance_cache;
 
-	/*
-	 * Ce code, en static, n'est exécuté qu'une seule fois
-	 */
-	static {
-		distance_caches = new CacheHolder[4];
-		try {
-			for(int i = 0; i < 4; i++)
-				distance_caches[i] = (CacheHolder) DataSaver.charger("distance-"+i+".cache");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
 	private int degree;
 
 	private AStar solver;
@@ -102,14 +89,8 @@ public class Pathfinding implements Service
 		solver = new AStar(map[degree], new Vec2(0,0), new Vec2(0,0));
 		output = new ArrayList<Vec2>();
 		result = new ArrayList<Vec2>();
-		resultUpToDate = false;
 	}
 	
-	public boolean isResultUpToDate() 
-	{
-		return resultUpToDate;
-	}
-
 	public void maj_config()
 	{
 		try {
@@ -149,6 +130,8 @@ public class Pathfinding implements Service
 				{
 					e.printStackTrace();
 				}
+				distance_cache = (CacheHolder) DataSaver.charger("distance-"+code_torches_actuel+".cache");
+
 			}
 			hashTableSaved[degree] = table.hashTable();
 			
@@ -159,9 +142,6 @@ public class Pathfinding implements Service
 			ArrayList<ObstacleCirculaire> obs = table.getListObstacles();
 			for(ObstacleCirculaire o: obs)
 				map[degree].appendObstacleTemporaire(o);
-			// les chemins sont périmés puisque la map est différente
-			
-			resultUpToDate = true;
 		}
 	}
 
@@ -173,48 +153,27 @@ public class Pathfinding implements Service
 	 * 			Si l'itinéraire est non trouvable, une exception est est retournée.
 	 * @throws PathfindingException 
 	 */
-	
-	// TODO : deal with precision issue (divide by millimetresParCases)
 	public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
 		int millimetresParCases = exponentiation(2, degree);
-		solver.setDepart(new Vec2((int)((float)(depart.x + table_x/2) / millimetresParCases), (int)((float)(depart.y) / millimetresParCases)));
-		solver.setArrivee(new Vec2((int)((float)(arrivee.x + table_x/2) / millimetresParCases), (int)((float)(arrivee.y) / millimetresParCases)));
-/*		// Change de système de coordonnées
-		solver.setDepart(new Vec2((int)Math.round(depart.x + 1500)/millimetresParCases, (int)Math.round(depart.y)/millimetresParCases));
-		solver.setArrivee(new Vec2((int)Math.round(arrivee.x + 1500)/millimetresParCases, (int)Math.round(arrivee.y)/millimetresParCases));
+		solver.setDepart(map[millimetresParCases].conversionTable2Grid(depart));
+		solver.setArrivee(map[millimetresParCases].conversionTable2Grid(arrivee));
 
-		System.out.println("solver.depart : " + solver.getDepart().x + "   " + solver.getDepart().y);
-		System.out.println("solver.arrivee : " + solver.getArrivee().x + "   " + solver.getArrivee().y);
-		System.out.println("solver.espace.size : " + solver.getEspace().getSizeX() + "   " + solver.getEspace().getSizeY());
-		*/
 		// calcule le chemin
 		solver.process();
 		if (!solver.isValid())	// null si A* dit que pas possib'
 			throw new PathfindingException();
+
 		result = lissage(solver.getChemin(), map[millimetresParCases]);
-		
 		
 		// affiche la liste des positions
 		output.clear();
 		for (int i = 0; i < result.size()-1; ++i)
-			output.add(new Vec2((result.get(i).x)* millimetresParCases -table_x/2, (result.get(i).y)* millimetresParCases));
+			output.add(map[millimetresParCases].conversionGrid2Table(result.get(i)));
 		output.add(arrivee);
 		System.out.println("Chemin : " + output);
 		
-		resultUpToDate = true;
 		return output;
-		
-		// convertit la sortie de l'AStar en suite de Vec2 dans le système de coords d'entrée.
-		/*
-		output.clear();
-		for (int i = 1; i < result.size(); ++i)
-			output.add(new Vec2((float)(result.get(i).x - result.get(i-1).x)* millimetresParCases, (float)(result.get(i).y - result.get(i-1).y)* millimetresParCases));
-		
-		
-		
-		return output;*/
-		
 	}
 
 	/**
@@ -227,7 +186,7 @@ public class Pathfinding implements Service
 	 */
 	public int distance(Vec2 depart, Vec2 arrivee, boolean use_cache) throws PathfindingException
 	{
-		if(!use_cache || distance_caches == null)
+		if(!use_cache || distance_cache == null)
 		{
 			int millimetresParCases = exponentiation(2, degree);
 			// Change de système de coordonnées
@@ -249,14 +208,12 @@ public class Pathfinding implements Service
 				out +=  Math.sqrt(	(result.get(i).x - result.get(i-1).x) * (result.get(i).x - result.get(i-1).x) +
 									(result.get(i).y - result.get(i-1).y) * (result.get(i).y - result.get(i-1).y));
 
-			resultUpToDate = true;
 			return out*millimetresParCases;
 		}
 		else
 		{
-			resultUpToDate = true;
-			int cacheReduction = distance_caches[table.codeTorches()].reduction;
-			return distance_caches[table.codeTorches()].data[(depart.x+table_x/2)/cacheReduction][depart.y/cacheReduction][(arrivee.x+table_x/2)/cacheReduction][arrivee.y/cacheReduction];
+			int cacheReduction = distance_cache.reduction;
+			return distance_cache.data[(depart.x+table_x/2)/cacheReduction][depart.y/cacheReduction][(arrivee.x+table_x/2)/cacheReduction][arrivee.y/cacheReduction];
 		}
 	}
 	

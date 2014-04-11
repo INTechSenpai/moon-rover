@@ -440,15 +440,31 @@ public class Grid2DSpace implements Serializable
 	{
 		return nb / reductionFactor;
 	}
-	
+
+	/**
+	 * Convertit une longueur depuis les unités de la grille dans les unités de la tabme
+	 * @param nb
+	 * @return
+	 */
+	private int conversionGrid2Table(int nb)
+	{
+		return nb * reductionFactor;
+	}
+
 	/**
 	 * Convertit un point depuis les unités de la table dans les unités de la grille
 	 * @return
 	 */
-	private Vec2 conversionTable2Grid(Vec2 pos)
+	public Vec2 conversionTable2Grid(Vec2 pos)
 	{
 		return new Vec2(conversionTable2Grid(pos.x + table_x/2),
 						conversionTable2Grid(pos.y));
+	}
+	
+	public Vec2 conversionGrid2Table(Vec2 pos)
+	{
+		return new Vec2(conversionGrid2Table(pos.x)-table_x/2,
+						conversionGrid2Table(pos.y));
 	}
 	
 	public int getReductionFactor()
