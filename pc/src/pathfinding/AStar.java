@@ -35,25 +35,21 @@ class AStar
 	 * Vitesse translatoire entre script: 725 mm/s
 	 * La réponse est donc 150mm.
 	 */
-	// TODO intégrer
-	private int coefficient_rotation = 150;
+	// TODO intégrer coefficient_rotation
+//	private int coefficient_rotation = 150;
 	
 	public AStar(Grid2DSpace espaceVoulu)
 	{
-		// Construit la demande d'un futur calcul
-		
-//		depart = new Vec2(departVoulu.x, departVoulu.y);
-//		arrivee = new Vec2(arriveeVoulue.x, arriveeVoulue.y);
-
 		espace = espaceVoulu;
+
+		chemin = new ArrayList<Vec2>();
 		
 		closedset = new LinkedHashSet<Vec2>();
 		openset = new LinkedHashSet<Vec2>();
 		
 		came_from = new HashMap<Vec2, Vec2>();
 		g_score = new HashMap<Vec2, Integer>();
-		f_score = new HashMap<Vec2, Integer>();
-		
+		f_score = new HashMap<Vec2, Integer>();		
 	}
 	/**
 	 * From wikipedia :
@@ -104,6 +100,7 @@ function reconstruct_path(came_from, current_node)
 		arrivee = espace.conversionTable2Grid(arrivee);
 		depart = espace.conversionTable2Grid(depart);
 		
+		chemin.clear();
 		closedset.clear();		// The set of nodes already evaluated.
 		openset.add(depart);	// The set of tentative nodes to be evaluated, initially containing the start node
 		came_from.clear(); 		// The map of navigated nodes.
@@ -136,7 +133,7 @@ function reconstruct_path(came_from, current_node)
     			chemin.add( new Vec2(arrivee.x,arrivee.y));
     			if (arrivee.x != depart.x && arrivee.y != depart.y && came_from.get(current) != null)
     			{
-		    		temp = came_from.get(current);	    		
+		    		temp = came_from.get(current);
 		    		while ( temp.x != depart.x || temp.y != depart.y )
 		    		{
 		    			chemin.add(0, new Vec2(temp.x,temp.y)); // insert le point d'avant au debut du parcours
@@ -166,7 +163,7 @@ function reconstruct_path(came_from, current_node)
 	    				came_from.put(temp.makeCopy(), current.makeCopy());
 	    				g_score.put(temp, tentative_g_score);
 	    				// TODO: vérifier que 5 est bien le meilleur coefficient
-	    				f_score.put(temp, tentative_g_score + 5 * temp.manhattan_distance(arrivee) + coefficient_rotation);
+	    				f_score.put(temp, tentative_g_score + 5 * temp.manhattan_distance(arrivee));
 	    				if(openset.contains(temp) == false)
 	    					openset.add(new Vec2(temp.x, temp.y));
 	    				

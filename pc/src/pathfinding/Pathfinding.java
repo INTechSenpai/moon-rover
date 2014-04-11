@@ -246,13 +246,13 @@ public class Pathfinding implements Service
 		}
 		else
 		{
-			int cacheReduction = distance_cache.reduction;
-			int distance = distance_cache.data[(depart.x+table_x/2)/cacheReduction][depart.y/cacheReduction][(arrivee.x+table_x/2)/cacheReduction][arrivee.y/cacheReduction];
+			int cacheReduction = distance_cache.getReduction();
+			int distance = CacheHolder.byte2int(distance_cache.data[(depart.x+table_x/2)/cacheReduction][depart.y/cacheReduction][(arrivee.x+table_x/2)/cacheReduction][arrivee.y/cacheReduction]);
 
-			if(distance == -1)
+			if(distance == 255)
 				throw new PathfindingException();
 			else
-				return distance;
+				return distance*distance_cache.getMm_per_unit();
 		}
 	}	
 

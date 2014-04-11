@@ -47,7 +47,7 @@ public class Generators {
 			} catch (NumberFormatException | ConfigException e) {
 				e.printStackTrace();
 			}
-		
+			
 			// On créé déjà toutes les map
 /*			table.initialise();
 			table.torche_disparue(Cote.GAUCHE);
@@ -105,7 +105,8 @@ public class Generators {
 				arrivee = new Vec2(0,0);
 		
 		int reduction = 32;
-		CacheHolder output = new CacheHolder(table_x/reduction+1, table_y/reduction+1, reduction);
+		int mm_per_unit = 15;
+		CacheHolder output = new CacheHolder(table_x/reduction+1, table_y/reduction+1, reduction, mm_per_unit);
 		
 		for (int i = -table_x/2; i < (table_x/2); i+=reduction)											// depart.x		== i
 		{
@@ -123,11 +124,11 @@ public class Generators {
 						
 						// calcul de la distance, et stockage dans output
 						try {
-							output.data[(i+table_x/2)/reduction][j/reduction][(k+table_x/2)/reduction][l/reduction] = (short) pathfinder.distance(depart, arrivee, false);
+							output.data[(i+table_x/2)/reduction][j/reduction][(k+table_x/2)/reduction][l/reduction] = CacheHolder.int2byte(pathfinder.distance(depart, arrivee, false)/mm_per_unit);
 						}
 						catch(PathfindingException e)
 						{
-							output.data[(i+table_x/2)/reduction][j/reduction][(k+table_x/2)/reduction][l/reduction] = -1;
+							output.data[(i+table_x/2)/reduction][j/reduction][(k+table_x/2)/reduction][l/reduction] = CacheHolder.int2byte(255);
 						}
 						catch(Exception e)
 						{
