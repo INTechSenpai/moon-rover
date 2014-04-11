@@ -29,7 +29,7 @@ public class JUnit_PathfindingTest extends JUnit_Test
 	@Test
 	public void itineraire_test() throws Exception
 	{
-		Assert.assertTrue(pathfinding.chemin(new Vec2(-500,1000), new Vec2(500, 1000)).size() > 1);
+		Assert.assertTrue(pathfinding.cheminAStar(new Vec2(-500,1300), new Vec2(1000, 500)).size() > 1);
 	}
 	
 	

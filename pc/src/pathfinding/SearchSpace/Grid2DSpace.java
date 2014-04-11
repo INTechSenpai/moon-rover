@@ -323,6 +323,17 @@ public class Grid2DSpace implements Serializable
 	}
 
 	
+	/**
+	 * Implémentation user-friendly de canCrossLine
+	 * @param a un point
+	 * @param b un autre point
+	 * @return
+	 */
+	public boolean canCrossLine(Vec2 a, Vec2 b)
+	{
+		return canCrossLine(a.x, a.y, b.x, b.y);
+	}
+	
 	// renvois true si le tarrain est franchissable � en ligne droite entre les 2 positions donn�es, faux sinon
 	public boolean canCrossLine(int x0, int y0, int x1, int y1)
 	{

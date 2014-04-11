@@ -16,6 +16,7 @@ import exception.PathfindingException;
 import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.Vec2;
 
+// TODO: coefficient de rotation
 // Le test se trouve dans un test unitaire
 class AStar
 {
@@ -28,13 +29,22 @@ class AStar
 	private Map<Vec2, Integer>	g_score,
 									f_score;
 	
+	/* Combien de millimètre aurait-on eu le temps de faire pendant cette rotation?
+	 * Rotation moyenne: 1/6 de tour (PI/3)
+	 * Vitesse angulaire entre script: 5.15 r/s
+	 * Vitesse translatoire entre script: 725 mm/s
+	 * La réponse est donc 150mm.
+	 */
+	// TODO intégrer
+	private int coefficient_rotation = 150;
+	
 	public AStar(Grid2DSpace espaceVoulu)
 	{
 		// Construit la demande d'un futur calcul
 		
 //		depart = new Vec2(departVoulu.x, departVoulu.y);
 //		arrivee = new Vec2(arriveeVoulue.x, arriveeVoulue.y);
-		
+
 		espace = espaceVoulu;
 		
 		closedset = new LinkedHashSet<Vec2>();
@@ -100,7 +110,7 @@ function reconstruct_path(came_from, current_node)
 		
 		g_score.put(depart, 0);	// Cost from start along best known path.
 	    // Estimated total cost from start to goal through y.
-	    f_score.put(depart, g_score.get(depart) + fastGridDistance(depart, arrivee));
+	    f_score.put(depart, g_score.get(depart) + depart.manhattan_distance(arrivee));
 	    
 	    Vec2 current = 	new Vec2(0,0),
 	    		temp =	new Vec2(0,0);			
@@ -156,7 +166,7 @@ function reconstruct_path(came_from, current_node)
 	    				came_from.put(temp.makeCopy(), current.makeCopy());
 	    				g_score.put(temp, tentative_g_score);
 	    				// TODO: vérifier que 5 est bien le meilleur coefficient
-	    				f_score.put(temp, tentative_g_score + 5 * fastGridDistance(temp, arrivee));
+	    				f_score.put(temp, tentative_g_score + 5 * temp.manhattan_distance(arrivee) + coefficient_rotation);
 	    				if(openset.contains(temp) == false)
 	    					openset.add(new Vec2(temp.x, temp.y));
 	    				
@@ -171,24 +181,17 @@ function reconstruct_path(came_from, current_node)
 	
 		
 	// =====================================  Utilitaires ===============================
-	
-	// Calcule rapidement la distance entre A et B en nombre de cases a traverser. Pas besoin d'op�rations en
-	// virgule flottante ni de multiplication
-	private int fastGridDistance( Vec2 A, Vec2 B)
-	{
-		return Math.abs(A.x - B.x) + Math.abs(A.y - B.y); 
-	}
-	
+		
 	// donne les voisins d'un node par index : 1, droite, 2, haut, 3, gauche, 4, bas
 	private Vec2 neighbor_nodes(Vec2 center, int index)
 	{
 		if( index == 1 && espace.canCross(center.x + 1, center.y))
 			return new Vec2(center.x + 1, center.y);
-		if( index == 2 && espace.canCross(center.x, center.y + 1))
+		else if( index == 2 && espace.canCross(center.x, center.y + 1))
 			return new Vec2(center.x, center.y + 1);
-		if( index == 3 && espace.canCross(center.x - 1, center.y))
+		else if( index == 3 && espace.canCross(center.x - 1, center.y))
 			return new Vec2(center.x - 1, center.y);
-		if( index == 4 && espace.canCross(center.x, center.y - 1))
+		else if( index == 4 && espace.canCross(center.x, center.y - 1))
 			return new Vec2(center.x, center.y - 1);
 		return center;
 	}

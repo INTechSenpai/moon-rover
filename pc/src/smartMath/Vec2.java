@@ -144,6 +144,11 @@ public class Vec2
 		return true;
 	}
 
+	public int manhattan_distance(Vec2 other)
+	{
+		return Math.abs(x - other.x) + Math.abs(y - other.y); 
+	}
+
 	
 }
 

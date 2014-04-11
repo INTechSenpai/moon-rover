@@ -48,26 +48,35 @@ public class Generators {
 				e.printStackTrace();
 			}
 		
-			table.initialise();
+			// On créé déjà toutes les map
+/*			table.initialise();
+			table.torche_disparue(Cote.GAUCHE);
+			table.torche_disparue(Cote.DROIT);
 			generate_map();
-			// Il faut instancier le pathfinding ici, car il a besoin des map générées
+			table.initialise();
+			table.torche_disparue(Cote.DROIT);
+			generate_map();
+			table.initialise();
+			table.torche_disparue(Cote.GAUCHE);
+			generate_map();
+			table.initialise();
+			generate_map();*/
+
+			// Puis on calcule les distances
 			pathfinder = new Pathfinding(table, config, log);
-			pathfinder.setPrecision(0);
-			generate_distance();
-			table.initialise();
-			table.torche_disparue(Cote.GAUCHE);
-			generate_map();
-			generate_distance();
-			table.initialise();
-			table.torche_disparue(Cote.DROIT);
-			generate_map();
-			generate_distance();
 			table.initialise();
 			table.torche_disparue(Cote.GAUCHE);
 			table.torche_disparue(Cote.DROIT);
-			generate_map();
 			generate_distance();
-			
+			table.initialise();
+			table.torche_disparue(Cote.DROIT);
+			generate_distance();
+			table.initialise();
+			table.torche_disparue(Cote.GAUCHE);
+			generate_distance();
+			table.initialise();
+			generate_distance();
+
 		}
 		catch(Exception e)
 		{
@@ -77,7 +86,6 @@ public class Generators {
 
 	public static void generate_map()
 	{
-		log.appel_static("Generation map...");
 		int reductionFactor = 1;
 		for(int i = 0; i < 10; i++)
 		{
@@ -87,7 +95,6 @@ public class Generators {
 				map.appendObstacleFixe(obs);
 			DataSaver.sauvegarder(map, "cache/map-"+i+"-"+table.codeTorches()+".cache");
 		}
-		log.appel_static("Generation map done.");
 		
 	}
 	

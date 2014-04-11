@@ -21,7 +21,7 @@ import exception.PathfindingException;
  * 
  * Permet de traiter les problèmes de chemins : longueur d'un parcourt d'un point à un autre de la map,
  * 												 trajet d'un point a un autre de la map
- * 	Le tout indépendamment de l'algorithme (pour l'instant que weithed A*)
+ * Dispose de plusieurs solver A*, utilisé pour calculer un HPA*
  *
  */
 
@@ -69,8 +69,6 @@ public class Pathfinding implements Service
 		log = requestedLog;
 		maj_config();
 
-		degree = 0;
-
 		output = new ArrayList<Vec2>();
 	}
 	
@@ -93,29 +91,34 @@ public class Pathfinding implements Service
 		hashTableSaved = new int[nb_precisions];
 
 		Grid2DSpace.set_static_variables(config, log);
-		solvers = new AStar[nb_precisions];
-		solver = solvers[degree];
-
 		// On ne recharge les maps que si elles n'ont jamais été créées, ou avec une précision différente
-		if(map_obstacles_fixes == null || map_obstacles_fixes.length != nb_precisions)
+		// TODO vérifier concordance nb_precisions et taille map_obstacles_fixes
+		try {
+			if(map_obstacles_fixes == null)
+			{
+				map_obstacles_fixes = new Grid2DSpace[nb_precisions][4];
+				for(int i = 0; i < nb_precisions; i++)
+					for(int j = 0; j < 4; j++)
+						map_obstacles_fixes[i][j] = (Grid2DSpace)DataSaver.charger("cache/map-"+i+"-"+j+".cache");
+			}
+		}
+		catch(Exception e)
 		{
-			map_obstacles_fixes = new Grid2DSpace[nb_precisions][4];
-			for(int i = 0; i < nb_precisions; i++)
-				for(int j = 0; j < 4; j++)
-					map_obstacles_fixes[i][j] = (Grid2DSpace)DataSaver.charger("cache/map-"+i+"-"+j+".cache");
+			e.printStackTrace();
 		}
 		
+		solvers = new AStar[nb_precisions];
 		int reductionFactor = 1;
 		for(int i = 0; i < nb_precisions; i++)
 		{
 			hashTableSaved[i] = -1;
-			solver = new AStar(new Grid2DSpace(reductionFactor));
+			solvers[i] = new AStar(new Grid2DSpace(reductionFactor));
 			reductionFactor <<= 1;
-			degree = i; // modification temporaire de degree afin d'updater toutes les maps
+			setPrecision(i);
 			update(); 	// initialisation des map
 		}
+		setPrecision(0);
 
-//		solver = new AStar(map[degree], new Vec2(0,0), new Vec2(0,0));
 	}
 
 	/**
@@ -136,11 +139,17 @@ public class Pathfinding implements Service
 			if(table.codeTorches() != code_torches_actuel)
 			{
 				code_torches_actuel = table.codeTorches();
-				distance_cache = (CacheHolder) DataSaver.charger("cache/distance-"+code_torches_actuel+".cache");
+				try {
+					distance_cache = (CacheHolder) DataSaver.charger("cache/distance-"+code_torches_actuel+".cache");
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+				}
 			}
 			
 			hashTableSaved[degree] = table.hashTable();
-			
+
 			// On recopie les obstacles fixes
 			map_obstacles_fixes[degree][code_torches_actuel].clone(solver.espace);
 
@@ -170,16 +179,21 @@ public class Pathfinding implements Service
 		// Le degré macro est celui utilisé pour diviser
 		int degree_macro = 5-(degree+1)/2;
 		
-		// Première rechercher, précision faible
+		// Première recherche, précision faible
 		ArrayList<Vec2> chemin = solvers[degree_macro].process(depart, arrivee);
 		// Lissage est conversion
 		chemin = lissage(chemin, solvers[degree_macro].espace);
 		for(Vec2 pos: chemin)
 			pos = solvers[degree_macro].espace.conversionGrid2Table(pos);
 
+		// Seconde recherche
 		ArrayList<Vec2> output = new ArrayList<Vec2>();
+		// TODO vérifier si l'optimisation de canCrossLine est utile
 		for(int i = 0; i < chemin.size()-1; i++)
-			output.addAll(solver.process(chemin.get(i), chemin.get(i+1)));
+			if(solver.espace.canCrossLine(chemin.get(i), chemin.get(i+1)))
+				output.add(chemin.get(i+1));
+			else
+				output.addAll(solver.process(chemin.get(i), chemin.get(i+1)));
 
 		output = lissage(chemin, solver.espace);
 		for(Vec2 pos: output)
@@ -333,18 +347,5 @@ public class Pathfinding implements Service
 		table.clone(cp.table);  // clone de la table
 		cp.update();		    // et update
 	}
-
-/*	private int exponentiation(int a, int b)
-	{
-		if(b == 0)
-			return 1;
-		else if(b == 1)
-			return a;
-		int c = exponentiation(a, b/2);
-		if((b&1) == 0)	// si b est pair
-			return c*c;
-		else
-			return c*c*a;
-	}*/
 	
 }
