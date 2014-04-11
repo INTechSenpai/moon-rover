@@ -129,7 +129,7 @@ public class Generators {
 			}
 		}
 
-		DataSaver.sauvegarder(output, "distance-"+table.codeTorches()+".cache");
+		DataSaver.sauvegarder(output, "cache/distance-"+table.codeTorches()+".cache");
 		log.appel_static("Generation distance done.");
 
 	}

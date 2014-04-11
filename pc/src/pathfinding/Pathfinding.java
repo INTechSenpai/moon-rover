@@ -130,7 +130,7 @@ public class Pathfinding implements Service
 				{
 					e.printStackTrace();
 				}
-				distance_cache = (CacheHolder) DataSaver.charger("distance-"+code_torches_actuel+".cache");
+				distance_cache = (CacheHolder) DataSaver.charger("cache/distance-"+code_torches_actuel+".cache");
 
 			}
 			hashTableSaved[degree] = table.hashTable();
@@ -155,7 +155,6 @@ public class Pathfinding implements Service
 	 */
 	public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
-		int millimetresParCases = exponentiation(2, degree);
 		solver.setDepart(map[degree].conversionTable2Grid(depart));
 		solver.setArrivee(map[degree].conversionTable2Grid(arrivee));
 
@@ -171,7 +170,7 @@ public class Pathfinding implements Service
 		for (int i = 0; i < result.size()-1; ++i)
 			output.add(map[degree].conversionGrid2Table(result.get(i)));
 		output.add(arrivee);
-		System.out.println("Chemin : " + output);
+		log.debug("Chemin : " + output, this);
 		
 		return output;
 	}
