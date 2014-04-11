@@ -145,6 +145,7 @@ public class Container {
 														(ScriptManager)getService("ScriptManager"),
 														(Table)getService("Table"),
 														(RobotVrai)getService("RobotVrai"),
+														(Pathfinding)getService("Pathfinding"),
 														(Read_Ini)getService("Read_Ini"),
 														(Log)getService("Log")));
 		else if(nom == "threadTimer")
@@ -178,7 +179,7 @@ public class Container {
 		else if(nom == "Pathfinding")
 			services.put(nom, (Service)new Pathfinding(	(Table)getService("Table"),
 														(Read_Ini)getService("Read_Ini"),
-														(Log)getService("Log"), 2));
+														(Log)getService("Log")));
 		else if(nom == "MemoryManager")
 			services.put(nom, (Service)new MemoryManager(	(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log"),

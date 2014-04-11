@@ -49,7 +49,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		robotchrono.majRobotChrono(robotvrai);
 		table = (Table)container.getService("Table");
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
-		pathfinding = new Pathfinding(table, config, log, 1);
+		pathfinding = new Pathfinding(table, config, log);
 		robotvrai.setPosition(new Vec2(1251, 1695));
 		//On démarre avec la cale !!!!
 		robotvrai.setOrientation((float)(-Math.PI/2));

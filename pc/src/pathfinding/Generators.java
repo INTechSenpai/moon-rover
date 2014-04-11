@@ -51,7 +51,8 @@ public class Generators {
 			table.initialise();
 			generate_map();
 			// Il faut instancier le pathfinding ici, car il a besoin des map générées
-			pathfinder = new Pathfinding(table, config, log, 0);
+			pathfinder = new Pathfinding(table, config, log);
+			pathfinder.setPrecision(0);
 			generate_distance();
 			table.initialise();
 			table.torche_disparue(Cote.GAUCHE);

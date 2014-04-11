@@ -18,7 +18,7 @@ import smartMath.Vec2;
  *
  */
 @SuppressWarnings("unused")
-class HPAStar implements PathfindingAlgo
+class HPAStar
 {
 	private ArrayList<Grid2DSpace> espace;
 	private Vec2		depart,
@@ -38,39 +38,4 @@ class HPAStar implements PathfindingAlgo
 		arrivee = arriveeVoule.makeCopy();
 	}
 	
-	@Override
-	public void process()
-	{
-		
-	}
-
-	@Override
-	public void cleanup() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public ArrayList<Vec2> getChemin() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setArrivee(Vec2 arrivee) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setDepart(Vec2 depart) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean isValid() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

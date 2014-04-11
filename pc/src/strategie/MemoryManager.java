@@ -15,10 +15,9 @@ import container.Service;
 
 public class MemoryManager implements Service {
 
-	private Log log;
 	private Read_Ini config;
 	
-	private int nbmax;
+	private int nbmax = 10;
 
 	private Table[] productsTable;
 	private RobotChrono[] productsRobotChrono;
@@ -26,7 +25,6 @@ public class MemoryManager implements Service {
 
 	public MemoryManager(Read_Ini config, Log log, Table table)
 	{
-		this.log = log;
 		this.config = config;
 		maj_config();
 		
@@ -39,7 +37,7 @@ public class MemoryManager implements Service {
 		{
 			productsTable[i] = table.clone();
 			productsRobotChrono[i] = robotchrono.clone();
-			productsPathfinding[i] = new Pathfinding(productsTable[i], config, log, 2);
+			productsPathfinding[i] = new Pathfinding(productsTable[i], config, log);
 		}
 	}
 	
@@ -82,8 +80,7 @@ public class MemoryManager implements Service {
 		}
 		catch(Exception e)
 		{
-			nbmax = 10;
-			this.log.critical(e, this);
+			e.printStackTrace();
 		}
 	}
 			

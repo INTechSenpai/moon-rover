@@ -44,7 +44,7 @@ public class JUnit_Demo extends JUnit_Test {
 		robotvrai.setOrientation((float)Math.PI);
 		robotvrai.set_vitesse_rotation("entre_scripts");
 		robotvrai.set_vitesse_translation("entre_scripts");
-		pathfinding = new Pathfinding(table, config, log, 1);
+		pathfinding = new Pathfinding(table, config, log);
 		container.getService("threadPosition");
 		container.demarreThreads();
 

@@ -16,11 +16,10 @@ import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.Vec2;
 
 // Le test se trouve dans un test unitaire
-class AStar implements PathfindingAlgo
+class AStar
 {
-	private boolean 	processed,	// le chemin a-t-il �t� calcul� ou pas encore ?
-						isValid;	// indique si le chamin calcul� est valide ou non ( auquel cas une erreur a emp�ch� son calcul)
-	private Grid2DSpace espace;		// espace de travail
+	private boolean 	isValid;	// indique si le chamin calcul� est valide ou non ( auquel cas une erreur a emp�ch� son calcul)
+	public Grid2DSpace espace;		// espace de travail
 	private ArrayList<Vec2> chemin;	// r�ceptacle du calcul
 	
 	private Set<Vec2> 	closedset,	// The set of nodes already evaluated.
@@ -33,16 +32,16 @@ class AStar implements PathfindingAlgo
 						arrivee;
 	
 
-
-	public AStar( Grid2DSpace espaceVoulu, Vec2 departVoulu, Vec2 arriveeVoulue)
+	public AStar(Grid2DSpace espaceVoulu)
 	{
 		// Construit la demande d'un futur calcul
-		processed = false;
 		isValid = false;
 		chemin = new ArrayList<Vec2>();
 		
-		depart = new Vec2(departVoulu.x, departVoulu.y);
-		arrivee = new Vec2(arriveeVoulue.x, arriveeVoulue.y);
+		depart = new Vec2();
+		arrivee = new Vec2();
+//		depart = new Vec2(departVoulu.x, departVoulu.y);
+//		arrivee = new Vec2(arriveeVoulue.x, arriveeVoulue.y);
 		
 		espace = espaceVoulu.makeCopy();
 		
@@ -55,11 +54,9 @@ class AStar implements PathfindingAlgo
 		
 	}
 	
-	@Override
 	public void cleanup()
 	{
 		// Construit la demande d'un futur calcul
-		processed = false;
 		isValid = false;
 		chemin = new ArrayList<Vec2>();
 		
@@ -120,7 +117,6 @@ function reconstruct_path(came_from, current_node)
         
 	 * 
 	 */
-	@Override
 	public void process()
 	{
 		
@@ -241,20 +237,13 @@ function reconstruct_path(came_from, current_node)
 	private void processFinalisationWithSucess()
 	{
 		isValid = true;
-		processFinalisation();
 	}
 	
 	private void processFinalisationWithError()
 	{
 		isValid = false;
-		processFinalisation();
 	}
-	
-	private void processFinalisation()
-	{
-		processed = true;
-	}
-	
+		
 	// =====================================  Utilitaires ===============================
 	
 	// Calcule rapidement la distance entre A et B en nombre de cases a traverser. Pas besoin d'op�rations en
@@ -283,7 +272,6 @@ function reconstruct_path(came_from, current_node)
 	/**
 	 * @return the chemin
 	 */
-	@Override
 	public ArrayList<Vec2> getChemin() 
 	{
 		return chemin;
@@ -303,7 +291,7 @@ function reconstruct_path(came_from, current_node)
 	public void setDepart(Vec2 depart) 
 	{
 		cleanup();
-		this.depart = depart;
+		this.depart = espace.conversionTable2Grid(depart);
 	}
 	public Vec2 getArrivee() {
 		return arrivee;
@@ -311,23 +299,9 @@ function reconstruct_path(came_from, current_node)
 	public void setArrivee(Vec2 arrivee) 
 	{
 		cleanup();
-		this.arrivee = arrivee;
-	}
-	/**
-	 * @return the processed
-	 */
-	public boolean isProcessed()
-	{
-		return processed;
+		this.arrivee = espace.conversionTable2Grid(arrivee);
 	}
 
-	/**
-	 * @param processed the processed to set
-	 */
-	public void setProcessed(boolean processed)
-	{
-		this.processed = processed;
-	}
 	public boolean isValid()
 	{
 		return isValid;
