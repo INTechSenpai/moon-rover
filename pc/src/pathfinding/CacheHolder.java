@@ -22,7 +22,9 @@ class CacheHolder implements Serializable
 	private static final long serialVersionUID = 1L;
 	private int reduction;
 	private int mm_per_unit;
-	// 16 bits signés, soit une distance maximale de 32000 environ, ce qui est largement suffisant
+	/* 8 bits non signés, avec une précision par défaut de 15 mm par unité, soit une distance maximale 254*15 = 3810mm
+	 * 255 est la valeur infinie pour chemin impossible
+	 */
 	public byte[][][][] data;
 	
 	public CacheHolder(int sizeX, int sizeY, int reduction, int mm_per_unit)
