@@ -95,12 +95,7 @@ public class Pathfinding implements Service
 		// TODO vérifier concordance nb_precisions et taille map_obstacles_fixes
 		try {
 			if(map_obstacles_fixes == null)
-			{
 				map_obstacles_fixes = new Grid2DSpace[nb_precisions][4];
-				for(int i = 0; i < nb_precisions; i++)
-					for(int j = 0; j < 4; j++)
-						map_obstacles_fixes[i][j] = (Grid2DSpace)DataSaver.charger("cache/map-"+i+"-"+j+".cache");
-			}
 		}
 		catch(Exception e)
 		{
@@ -151,6 +146,9 @@ public class Pathfinding implements Service
 			hashTableSaved[degree] = table.hashTable();
 
 			// On recopie les obstacles fixes
+			if(map_obstacles_fixes[degree][code_torches_actuel] == null)
+				map_obstacles_fixes[degree][code_torches_actuel] = (Grid2DSpace)DataSaver.charger("cache/map-"+degree+"-"+code_torches_actuel+".cache");
+
 			map_obstacles_fixes[degree][code_torches_actuel].clone(solver.espace);
 
 			// Puis les obstacles temporaires

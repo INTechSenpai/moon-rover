@@ -16,7 +16,6 @@ import exception.PathfindingException;
 import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.Vec2;
 
-// TODO: coefficient de rotation
 // Le test se trouve dans un test unitaire
 class AStar
 {
@@ -102,6 +101,7 @@ function reconstruct_path(came_from, current_node)
 		
 		chemin.clear();
 		closedset.clear();		// The set of nodes already evaluated.
+		openset.clear();
 		openset.add(depart);	// The set of tentative nodes to be evaluated, initially containing the start node
 		came_from.clear(); 		// The map of navigated nodes.
 		
