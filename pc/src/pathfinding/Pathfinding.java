@@ -52,7 +52,7 @@ public class Pathfinding implements Service
 
 	private int degree;
 
-	private AStar solver;
+	private PathfindingAlgo solver;
 	private ArrayList<Vec2> result;
 	private ArrayList<Vec2> output;
 	

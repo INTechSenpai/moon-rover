@@ -16,7 +16,7 @@ import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.Vec2;
 
 // Le test se trouve dans un test unitaire
-class AStar
+class AStar implements PathfindingAlgo
 {
 	private boolean 	processed,	// le chemin a-t-il �t� calcul� ou pas encore ?
 						isValid;	// indique si le chamin calcul� est valide ou non ( auquel cas une erreur a emp�ch� son calcul)
@@ -55,6 +55,7 @@ class AStar
 		
 	}
 	
+	@Override
 	public void cleanup()
 	{
 		// Construit la demande d'un futur calcul
@@ -119,6 +120,7 @@ function reconstruct_path(came_from, current_node)
         
 	 * 
 	 */
+	@Override
 	public void process()
 	{
 		
@@ -257,13 +259,13 @@ function reconstruct_path(came_from, current_node)
 	
 	// Calcule rapidement la distance entre A et B en nombre de cases a traverser. Pas besoin d'op�rations en
 	// virgule flottante ni de multiplication
-	public int fastGridDistance( Vec2 A, Vec2 B)
+	private int fastGridDistance( Vec2 A, Vec2 B)
 	{
 		return Math.abs(A.x - B.x) + Math.abs(A.y - B.y); 
 	}
 	
 	// donne les voisins d'un node par index : 1, droite, 2, haut, 3, gauche, 4, bas
-	public Vec2 neighbor_nodes(Vec2 center, int index)
+	private Vec2 neighbor_nodes(Vec2 center, int index)
 	{
 		if( index == 1 && espace.canCross(center.x + 1, center.y))
 			return new Vec2(center.x + 1, center.y);
@@ -281,6 +283,7 @@ function reconstruct_path(came_from, current_node)
 	/**
 	 * @return the chemin
 	 */
+	@Override
 	public ArrayList<Vec2> getChemin() 
 	{
 		return chemin;
