@@ -211,7 +211,12 @@ public class Pathfinding implements Service
 		else
 		{
 			int cacheReduction = distance_cache.reduction;
-			return distance_cache.data[(depart.x+table_x/2)/cacheReduction][depart.y/cacheReduction][(arrivee.x+table_x/2)/cacheReduction][arrivee.y/cacheReduction];
+			int distance = distance_cache.data[(depart.x+table_x/2)/cacheReduction][depart.y/cacheReduction][(arrivee.x+table_x/2)/cacheReduction][arrivee.y/cacheReduction];
+
+			if(distance == -1)
+				throw new PathfindingException();
+			else
+				return distance;
 		}
 	}
 	
@@ -285,20 +290,6 @@ public class Pathfinding implements Service
 		out.add(chemin.get(chemin.size()-1));
 		
 		return out;
-	}
-	
-
-	public ArrayList<Vec2> getResult() 
-	{
-		return result;
-	}
-	public Vec2 getDepart() 
-	{
-		return solver.getDepart();
-	}
-	public Vec2 getArrivee() 
-	{
-		return solver.getArrivee();
 	}
 	
 	public void setDegree(int degree) 
