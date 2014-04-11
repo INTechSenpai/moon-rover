@@ -156,20 +156,20 @@ public class Pathfinding implements Service
 	public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
 		int millimetresParCases = exponentiation(2, degree);
-		solver.setDepart(map[millimetresParCases].conversionTable2Grid(depart));
-		solver.setArrivee(map[millimetresParCases].conversionTable2Grid(arrivee));
+		solver.setDepart(map[degree].conversionTable2Grid(depart));
+		solver.setArrivee(map[degree].conversionTable2Grid(arrivee));
 
 		// calcule le chemin
 		solver.process();
 		if (!solver.isValid())	// null si A* dit que pas possib'
 			throw new PathfindingException();
 
-		result = lissage(solver.getChemin(), map[millimetresParCases]);
+		result = lissage(solver.getChemin(), map[degree]);
 		
 		// affiche la liste des positions
 		output.clear();
 		for (int i = 0; i < result.size()-1; ++i)
-			output.add(map[millimetresParCases].conversionGrid2Table(result.get(i)));
+			output.add(map[degree].conversionGrid2Table(result.get(i)));
 		output.add(arrivee);
 		System.out.println("Chemin : " + output);
 		
@@ -190,8 +190,8 @@ public class Pathfinding implements Service
 		{
 			int millimetresParCases = exponentiation(2, degree);
 			// Change de système de coordonnées
-			solver.setDepart(new Vec2((int)Math.round(depart.x + table_x/2)/millimetresParCases, (int)Math.round(depart.y)/millimetresParCases));
-			solver.setArrivee(new Vec2((int)Math.round(arrivee.x + table_x/2)/millimetresParCases, (int)Math.round(arrivee.y)/millimetresParCases));
+			solver.setDepart(map[degree].conversionTable2Grid(depart));
+			solver.setArrivee(map[degree].conversionTable2Grid(arrivee));
 			
 			// calcule le chemin
 			System.out.println("Boucle infinie?");
@@ -200,13 +200,12 @@ public class Pathfinding implements Service
 
 			if (!solver.isValid())	// lève une exception si A* dit que pas possible
 				throw new PathfindingException();
-			result = lissage(solver.getChemin(), map[millimetresParCases]);
+			result = lissage(solver.getChemin(), map[degree]);
 			
 			// convertit la sortie de l'AStar en suite de Vec2
 			int out = 0;
 			for (int i = 1; i < result.size(); ++i)
-				out +=  Math.sqrt(	(result.get(i).x - result.get(i-1).x) * (result.get(i).x - result.get(i-1).x) +
-									(result.get(i).y - result.get(i-1).y) * (result.get(i).y - result.get(i-1).y));
+				out += result.get(i-1).distance(result.get(i));
 
 			return out*millimetresParCases;
 		}
