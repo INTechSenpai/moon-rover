@@ -235,7 +235,8 @@ public class Pathfinding implements Service
 		if(!use_cache || distance_cache == null)
 		{
 			ArrayList<Vec2> result = chemin(depart, arrivee);
-			int out = 0;
+			// Le résultat ne contient pas le point de départ
+			int out = (int) depart.distance(result.get(0));
 			for (int i = 1; i < result.size(); ++i)
 				out += result.get(i-1).distance(result.get(i));
 

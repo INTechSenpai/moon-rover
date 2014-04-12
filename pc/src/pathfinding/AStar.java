@@ -104,9 +104,11 @@ function reconstruct_path(came_from, current_node)
 		openset.clear();
 		openset.add(depart);	// The set of tentative nodes to be evaluated, initially containing the start node
 		came_from.clear(); 		// The map of navigated nodes.
+		g_score.clear();
+		f_score.clear();
 		
 		g_score.put(depart, 0);	// Cost from start along best known path.
-	    // Estimated total cost from start to goal through y.
+                           	    // Estimated total cost from start to goal through y.
 	    f_score.put(depart, g_score.get(depart) + depart.manhattan_distance(arrivee));
 	    
 	    Vec2 current = 	new Vec2(0,0),
@@ -128,7 +130,6 @@ function reconstruct_path(came_from, current_node)
 	    	
 	    	if (current.x == arrivee.x && current.y == arrivee.y)
 	    	{
-	    		
 	    		chemin.clear();
     			chemin.add( new Vec2(arrivee.x,arrivee.y));
     			if (arrivee.x != depart.x && arrivee.y != depart.y && came_from.get(current) != null)
@@ -142,7 +143,8 @@ function reconstruct_path(came_from, current_node)
 		    			
 		    		}
     			}
-    			chemin.add(0, new Vec2(depart.x,depart.y));
+    			// Le chemin final ne doit pas contenir le point de départ (plus pratique pour Script et pour le HPA*)
+//    			chemin.add(0, new Vec2(depart.x,depart.y));
     			
 	    		return chemin;	//  reconstruct path
 	    	}
@@ -193,9 +195,4 @@ function reconstruct_path(came_from, current_node)
 		return center;
 	}
 	
-	// ======================================= Getters / Setters ========================================
-	
-	public Grid2DSpace getEspace() {
-		return espace;
-	}
 }
