@@ -36,7 +36,6 @@ public class Grid2DSpace implements Serializable
 	private static int table_y = 2000;
 	private static int marge = 20;
 	
-	private int reductionFactor; // facteur de reduction par rapport à 1case/mm Exemple : 1500x1000 a un rapport de 2
 	private int num_pochoir; // 2^num_pochoir = reductionFactor
 	private static int robotRadius;
 	private static int rayon_robot_adverse = 200;
@@ -78,12 +77,8 @@ public class Grid2DSpace implements Serializable
 			}
 	
 			pochoirs = new Grid2DPochoir[10];
-			int reduction = 1;
 			for(int i = 0; i < 10; i++)
-			{
-				pochoirs[i] = new Grid2DPochoir(rayon_robot_adverse/reduction);
-				reduction <<= 1;
-			}
+				pochoirs[i] = new Grid2DPochoir(rayon_robot_adverse >> i);
 		}
 	}
 	
@@ -92,20 +87,12 @@ public class Grid2DSpace implements Serializable
 	 * Construit un Grid2DSpace vide.
 	 * @param reductionFactor
 	 */
-	public Grid2DSpace(int reductionFactor)
+	public Grid2DSpace(int num_pochoir)
 	{
 		//Création du terrain avec obstacles fixes
-		sizeX = table_x/reductionFactor;
-		sizeY = table_y/reductionFactor;
+		sizeX = table_x >> num_pochoir;
+		sizeY = table_y >> num_pochoir;
 //		surface = sizeX * sizeY;
-		this.reductionFactor = reductionFactor;
-		
-		for(num_pochoir = 0; num_pochoir < 10; num_pochoir++)
-		{
-			if(reductionFactor == 1)
-				break;
-			reductionFactor >>= 1;
-		}		
 		
 		datas = new boolean[sizeX+1][sizeY+1];
 		// construit une map de sizeX * sizeY vide
@@ -442,7 +429,6 @@ public class Grid2DSpace implements Serializable
 //		other.surface = surface;
 		other.sizeX = sizeX;
 		other.sizeY = sizeY;
-		other.reductionFactor = reductionFactor;
 		other.num_pochoir = num_pochoir;
 	}
 	
@@ -453,7 +439,7 @@ public class Grid2DSpace implements Serializable
 	 */
 	private int conversionTable2Grid(int nb)
 	{
-		return nb / reductionFactor;
+		return nb >> num_pochoir;
 	}
 
 	/**
@@ -463,7 +449,7 @@ public class Grid2DSpace implements Serializable
 	 */
 	private int conversionGrid2Table(int nb)
 	{
-		return nb * reductionFactor;
+		return nb << num_pochoir;
 	}
 
 	/**
@@ -486,9 +472,9 @@ public class Grid2DSpace implements Serializable
 						conversionGrid2Table(pos.y));
 	}
 	
-	public int getReductionFactor()
+	public int getNumPochoir()
 	{
-		return reductionFactor;
+		return num_pochoir;
 	}
 	
 }

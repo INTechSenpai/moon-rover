@@ -94,12 +94,10 @@ public class Pathfinding implements Service
 		}
 		
 		solvers = new AStar[nb_precisions];
-		int reductionFactor = 1;
 		for(int i = 0; i < nb_precisions; i++)
 		{
 			hashTableSaved[i] = -1;
-			solvers[i] = new AStar(new Grid2DSpace(reductionFactor));
-			reductionFactor <<= 1;
+			solvers[i] = new AStar(new Grid2DSpace(i));
 			setPrecision(i);
 			update(); 	// initialisation des map
 		}

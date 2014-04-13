@@ -104,10 +104,11 @@ public class Generators {
 		Vec2 	depart 	= new Vec2(0,0),
 				arrivee = new Vec2(0,0);
 		
-		int reduction = 32;
-		int mm_per_unit = 15;
-		CacheHolder output = new CacheHolder(table_x/reduction+1, table_y/reduction+1, reduction, mm_per_unit, table_x);
-		
+		int log_reduction = 5;		// soit une précision de 32mm
+		int log_mm_per_unit = 4;	// soit 16mm par unité
+		CacheHolder output = new CacheHolder((table_x >> log_reduction)+1, (table_y >> log_reduction)+1, log_reduction, log_mm_per_unit, table_x);
+		int reduction = 1 << log_reduction;
+
 		for (int i = -table_x/2; i < (table_x/2); i+=reduction)											// depart.x		== i
 		{
 			System.out.println(100*((float)(i+table_x/2))/((float)table_x));
