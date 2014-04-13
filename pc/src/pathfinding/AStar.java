@@ -99,6 +99,10 @@ function reconstruct_path(came_from, current_node)
 		arrivee = espace.conversionTable2Grid(arrivee);
 		depart = espace.conversionTable2Grid(depart);
 		
+		// Si le départ ou l'arrivée est dans un obstacle, on lève une exception
+		if(!espace.canCross(arrivee) || !espace.canCross(depart))
+			throw new PathfindingException();
+		
 		chemin.clear();
 		closedset.clear();		// The set of nodes already evaluated.
 		openset.clear();

@@ -17,6 +17,7 @@ import utils.Read_Ini;
  * @author Marsya, Krissprolls, pf
  *	La classe espace de recherche
  *  Pour le robot, ce sera concr�tement la table
+ *  Toutes les méthodes sont appelées dans les coordonnées de la grille (sauf les conversions)
  */
 
 public class Grid2DSpace implements Serializable
@@ -92,6 +93,7 @@ public class Grid2DSpace implements Serializable
 		//Création du terrain avec obstacles fixes
 		sizeX = table_x >> num_pochoir;
 		sizeY = table_y >> num_pochoir;
+		this.num_pochoir = num_pochoir;
 //		surface = sizeX * sizeY;
 		
 		datas = new boolean[sizeX+1][sizeY+1];
@@ -144,6 +146,8 @@ public class Grid2DSpace implements Serializable
 				if(i >= -table_x/2 && i < table_x/2 && j >= 0 && j < table_y && obs.getPosition().distance(new Vec2(i,j)) < radius + robotRadius + marge)
 				{
 					Vec2 posGrid = conversionTable2Grid(new Vec2(i,j));
+//					System.out.println("ij:"+ new Vec2(i,j));
+//					System.out.println("posGrid:"+ posGrid);
 					datas[posGrid.x][posGrid.y] = false;
 				}
 	}
@@ -311,6 +315,16 @@ public class Grid2DSpace implements Serializable
 			return false;
 		
 		return datas[x][y];
+	}
+	
+	/**
+	 * Implémentation user-friendly de canCross
+	 * @param pos
+	 * @return
+	 */
+	public boolean canCross(Vec2 pos)
+	{
+		return canCross(pos.x, pos.y);
 	}
 
 	

@@ -86,11 +86,9 @@ public class Generators {
 
 	public static void generate_map()
 	{
-		int reductionFactor = 1;
 		for(int i = 0; i < 10; i++)
 		{
-			Grid2DSpace map = new Grid2DSpace(reductionFactor);
-			reductionFactor <<= 1;
+			Grid2DSpace map = new Grid2DSpace(i);
 			for(Obstacle obs: table.getListObstaclesFixes())
 				map.appendObstacleFixe(obs);
 			DataSaver.sauvegarder(map, "cache/map-"+i+"-"+table.codeTorches()+".cache");
