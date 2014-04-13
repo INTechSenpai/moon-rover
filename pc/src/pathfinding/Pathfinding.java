@@ -167,7 +167,7 @@ public class Pathfinding implements Service
 		int degree_macro = 5-(degree+1)/2;
 
 		Vec2 departGrid = solver.espace.conversionTable2Grid(depart); 
-		Vec2 arriveeGrid = solver.espace.conversionTable2Grid(depart); 
+		Vec2 arriveeGrid = solver.espace.conversionTable2Grid(arrivee); 
 		
 		// Première recherche, précision faible
 		ArrayList<Vec2> chemin = solvers[degree_macro].process(departGrid, arriveeGrid);
@@ -202,7 +202,7 @@ public class Pathfinding implements Service
 	{
 		// calcule le chemin. Lève une exception en cas d'erreur.
 		Vec2 departGrid = solver.espace.conversionTable2Grid(depart); 
-		Vec2 arriveeGrid = solver.espace.conversionTable2Grid(depart); 
+		Vec2 arriveeGrid = solver.espace.conversionTable2Grid(arrivee); 
 		ArrayList<Vec2> chemin = solver.process(departGrid, arriveeGrid);
 
 		log.debug("Chemin avant lissage : " + chemin, this);

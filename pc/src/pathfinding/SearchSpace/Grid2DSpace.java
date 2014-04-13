@@ -248,7 +248,10 @@ public class Grid2DSpace implements Serializable
 					
 	}
 	*/
-	// Utilisé seulement par makecopy
+	/**
+	 * Constructeur privé de Grid2DSpace
+	 * Utilisé seulement par makecopy
+	 */
 	private Grid2DSpace()
 	{
 	}
@@ -486,6 +489,10 @@ public class Grid2DSpace implements Serializable
 						conversionGrid2Table(pos.y));
 	}
 	
+	/**
+	 * Surchage de la méthode toString de Object
+	 * Permet de faire System.out.println(map) ou log.debug(map, this) pour afficher un Grid2DSpace
+	 */
 	public String toString()
 	{
 		String s = new String();

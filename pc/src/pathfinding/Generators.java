@@ -13,7 +13,10 @@ import exception.ConfigException;
 import exception.PathfindingException;
 
 /**
- * Générateur des fichiers caches
+ * Générateur des fichiers caches.
+ * Il y a deux générations:
+ * - les maps d'obstacles fixes à différentes précisions
+ * - les distances
  * @author pf
  *
  */
@@ -63,7 +66,7 @@ public class Generators {
 			generate_map();
 
 			// Puis on calcule les distances
-/*			pathfinder = new Pathfinding(table, config, log);
+			pathfinder = new Pathfinding(table, config, log);
 			table.initialise();
 			table.torche_disparue(Cote.GAUCHE);
 			table.torche_disparue(Cote.DROIT);
@@ -76,7 +79,7 @@ public class Generators {
 			generate_distance();
 			table.initialise();
 			generate_distance();
-*/
+
 		}
 		catch(Exception e)
 		{
@@ -84,6 +87,9 @@ public class Generators {
 		}
 	}
 
+	/**
+	 * Génération des maps à différentes précisions pour une table donnée
+	 */
 	public static void generate_map()
 	{
 		for(int i = 0; i < 10; i++)
@@ -96,6 +102,9 @@ public class Generators {
 		
 	}
 	
+	/**
+	 * Génère le cache des distances pour une table donnée
+	 */
 	public static void generate_distance()
 	{		
 		log.appel_static("Generation distance...");
