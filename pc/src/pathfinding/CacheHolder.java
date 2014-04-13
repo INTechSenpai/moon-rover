@@ -47,6 +47,13 @@ class CacheHolder implements Serializable
 		data = new byte[sizeX][sizeY][sizeX][sizeY];
 	}
 
+	/**
+	 * Donne la distance mémorisée entre depart et arrivée
+	 * @param depart
+	 * @param arrivee
+	 * @return
+	 * @throws PathfindingException
+	 */
 	public int getDistance(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
 		int distance = byte2int(data[(depart.x+table_x/2) >> log_reduction][depart.y >> log_reduction][(arrivee.x+table_x/2) >> log_reduction][arrivee.y >> log_reduction]);
@@ -56,21 +63,42 @@ class CacheHolder implements Serializable
 			return distance << log_mm_per_unit;
 	}
 	
+	/**
+	 * Insère dans le CacheHolder une distance en mm
+	 * @param depart
+	 * @param arrivee
+	 * @param distance
+	 */
 	public void setDistance(Vec2 depart, Vec2 arrivee, int distance)
 	{
 		data[(depart.x+table_x/2) >> log_reduction][depart.y >> log_reduction][(arrivee.x+table_x/2) >> log_reduction][arrivee.y >> log_reduction] = int2byte(distance >> log_mm_per_unit);
 	}
 
+	/**
+	 * Insère dans le CacheHolder un chemin impossible
+	 * @param depart
+	 * @param arrivee
+	 */
 	public void setImpossible(Vec2 depart, Vec2 arrivee)
 	{
 		data[(depart.x+table_x/2) >> log_reduction][depart.y >> log_reduction][(arrivee.x+table_x/2) >> log_reduction][arrivee.y >> log_reduction] = int2byte(255);
 	}
 
+	/** 
+	 * Conversion de int à byt afin avoir des byte signés.
+	 * @param b
+	 * @return
+	 */
 	private byte int2byte(int b)
 	{
 		return (byte)(b-128);
 	}
 	
+	/**
+	 * Conversion de byte à in tafin d'avoir des byte signés.
+	 * @param b
+	 * @return
+	 */
 	private int byte2int(byte b)
 	{
 		return (int)(b+128);

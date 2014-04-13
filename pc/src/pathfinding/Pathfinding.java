@@ -65,7 +65,6 @@ public class Pathfinding implements Service
 		config = requestedConfig;
 		log = requestedLog;
 		maj_config();
-
 	}
 	
 	/**
@@ -111,7 +110,7 @@ public class Pathfinding implements Service
 	 */
 	public void update()
 	{		
-		/* La table est modifiée entre temps. Il faut donc modifier la map.
+		/* La table est modifiée. Il faut donc modifier la map.
 		 */		
 
 		synchronized(table) // Mutex sur la table, afin qu'elle ne change pas pendant qu'on met à jour le pathfinding
@@ -148,6 +147,13 @@ public class Pathfinding implements Service
 	}
 
 	// TODO: cas de l'anneau
+	/**
+	 * Calcul d'un itinéraire par HPA*
+	 * @param depart
+	 * @param arrivee
+	 * @return
+	 * @throws PathfindingException
+	 */
 	public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
 		/* Diviser pour régner!
@@ -159,6 +165,7 @@ public class Pathfinding implements Service
 		 * degré 3: 18*6
 		 * degré 4: 8*8
 		 * degré 5 et plus: pas de HPA*
+		 * Je (PF) pense qu'un HPA* sur plus d'étages serait plus une perte de performances qu'un gain.
 		 */
 		if(degree >= 5)
 			return cheminAStar(depart, arrivee);
@@ -167,23 +174,46 @@ public class Pathfinding implements Service
 		int degree_macro = 5-(degree+1)/2;
 
 		Vec2 departGrid = solver.espace.conversionTable2Grid(depart); 
-		Vec2 arriveeGrid = solver.espace.conversionTable2Grid(depart); 
+		Vec2 arriveeGrid = solver.espace.conversionTable2Grid(arrivee); 
+		
+		/* ---- A PARTIR D'ICI, TOUTES LES POSITIONS SONT DANS LES COORDONNÉES DE LA GRILLE */
 		
 		// Première recherche, précision faible
 		ArrayList<Vec2> chemin = solvers[degree_macro].process(departGrid, arriveeGrid);
-		// Lissage est conversion
+		// Lissage (très important, car diminue le nombre de recherches de chemin à l'étage inférieur)
 		chemin = lissage(chemin, solvers[degree_macro].espace);
+		
+		System.out.println("HPA* "+chemin);
 
 		// Seconde recherche
 		ArrayList<Vec2> output = new ArrayList<Vec2>();
-		// TODO vérifier si l'optimisation de canCrossLine est utile
-		for(int i = 0; i < chemin.size()-1; i++)
-			if(solver.espace.canCrossLine(chemin.get(i), chemin.get(i+1)))
-				output.add(chemin.get(i+1));
+
+		/*
+		 * Rappel: AStar(A, B) donne un itinéraire entre A et B, mais sans inclure A!
+		 * Exemple d'itinéraire entre A et B: [D, F, G, B].
+		 * C'est pratique pour le HPA*, comme ça on peut concaténer sans répétition.
+		 */
+		
+		Vec2 depart_hpa;
+		Vec2 arrivee_hpa;
+		for(int i = 0; i < chemin.size(); i++)
+		{
+			if(i == 0)
+				depart_hpa = depart;
 			else
-				output.addAll(solver.process(chemin.get(i), chemin.get(i+1)));
+				depart_hpa = chemin.get(i-1);
+			arrivee_hpa = chemin.get(i);
+			
+			// TODO vérifier si l'optimisation de canCrossLine est utile
+			if(solver.espace.canCrossLine(depart_hpa, arrivee_hpa))
+				output.add(arrivee_hpa);
+			else
+				output.addAll(solver.process(depart_hpa, arrivee_hpa));
+		}
 
 		output = lissage(chemin, solver.espace);
+
+		/* Fin des coordonnées de la grille */
 		for(Vec2 pos: output)
 			pos = solver.espace.conversionGrid2Table(pos);
 
@@ -192,17 +222,17 @@ public class Pathfinding implements Service
 	
 	/**
 	 * Retourne l'itinéraire pour aller d'un point de départ à un point d'arrivée
-	 * @param depart, exprimé en milimètres, avec comme origine le point en face du centre des mamouths
+	 * @param depart, exprimé en milimètres, avec comme origine le point en face du centre des mammouths
 	 * @param arrivee système de coords IDEM
 	 * @return l'itinéraire, exprimé comme des vecteurs de déplacement, et non des positions absolues, et en millimètres
-	 * 			Si l'itinéraire est non trouvable, une exception est est retournée.
+	 * 			Si l'itinéraire est non trouvable, une exception est retournée.
 	 * @throws PathfindingException 
 	 */
 	public ArrayList<Vec2> cheminAStar(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
 		// calcule le chemin. Lève une exception en cas d'erreur.
 		Vec2 departGrid = solver.espace.conversionTable2Grid(depart); 
-		Vec2 arriveeGrid = solver.espace.conversionTable2Grid(depart); 
+		Vec2 arriveeGrid = solver.espace.conversionTable2Grid(arrivee); 
 		ArrayList<Vec2> chemin = solver.process(departGrid, arriveeGrid);
 
 		log.debug("Chemin avant lissage : " + chemin, this);
