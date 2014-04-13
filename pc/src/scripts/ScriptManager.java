@@ -36,7 +36,7 @@ public class ScriptManager implements Service {
 		instancesScripts.put("ScriptFresque", new ScriptFresque(hookgenerator, config, log, robotvrai));
 		instancesScripts.put("ScriptDeposerFruits", new ScriptDeposerFruits(hookgenerator, config, log, robotvrai));
 		instancesScripts.put("ScriptFunnyAction", new ScriptFunnyAction(hookgenerator, config, log, robotvrai, threadtimer));
-		instancesScripts.put("ScriptFeuBord", new ScriptFeuDebout(hookgenerator,config, log,robotvrai,threadtimer));
+		instancesScripts.put("ScriptFeuBord", new ScriptFeuDebout(hookgenerator,config, log,robotvrai));
 		
 		scripts_robot = new ArrayList<String>();
 		scripts_robot.add("ScriptTree");
