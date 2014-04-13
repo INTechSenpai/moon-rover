@@ -96,14 +96,17 @@ function reconstruct_path(came_from, current_node)
 	 */
 	public ArrayList<Vec2> process(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
-		arrivee = espace.conversionTable2Grid(arrivee);
-		depart = espace.conversionTable2Grid(depart);
-		
+		chemin.clear();
+
 		// Si le départ ou l'arrivée est dans un obstacle, on lève une exception
 		if(!espace.canCross(arrivee) || !espace.canCross(depart))
 			throw new PathfindingException();
-		
-		chemin.clear();
+		else if(espace.canCrossLine(depart, arrivee))
+		{
+			chemin.add(arrivee);
+			return chemin;
+		}
+
 		closedset.clear();		// The set of nodes already evaluated.
 		openset.clear();
 		openset.add(depart);	// The set of tentative nodes to be evaluated, initially containing the start node
@@ -149,7 +152,6 @@ function reconstruct_path(came_from, current_node)
     			}
     			// Le chemin final ne doit pas contenir le point de départ (plus pratique pour Script et pour le HPA*)
 //    			chemin.add(0, new Vec2(depart.x,depart.y));
-    			
 	    		return chemin;	//  reconstruct path
 	    	}
 	    	
@@ -181,8 +183,8 @@ function reconstruct_path(came_from, current_node)
 	    }// while
 	    throw new PathfindingException();
 	}	// process
+
 	
-		
 	// =====================================  Utilitaires ===============================
 		
 	// donne les voisins d'un node par index : 1, droite, 2, haut, 3, gauche, 4, bas

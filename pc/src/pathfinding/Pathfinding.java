@@ -165,13 +165,14 @@ public class Pathfinding implements Service
 		
 		// Le degré macro est celui utilisé pour diviser
 		int degree_macro = 5-(degree+1)/2;
+
+		Vec2 departGrid = solver.espace.conversionTable2Grid(depart); 
+		Vec2 arriveeGrid = solver.espace.conversionTable2Grid(depart); 
 		
 		// Première recherche, précision faible
-		ArrayList<Vec2> chemin = solvers[degree_macro].process(depart, arrivee);
+		ArrayList<Vec2> chemin = solvers[degree_macro].process(departGrid, arriveeGrid);
 		// Lissage est conversion
 		chemin = lissage(chemin, solvers[degree_macro].espace);
-		for(Vec2 pos: chemin)
-			pos = solvers[degree_macro].espace.conversionGrid2Table(pos);
 
 		// Seconde recherche
 		ArrayList<Vec2> output = new ArrayList<Vec2>();
@@ -200,15 +201,20 @@ public class Pathfinding implements Service
 	public ArrayList<Vec2> cheminAStar(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
 		// calcule le chemin. Lève une exception en cas d'erreur.
-		ArrayList<Vec2> chemin = solver.process(depart, arrivee);
+		Vec2 departGrid = solver.espace.conversionTable2Grid(depart); 
+		Vec2 arriveeGrid = solver.espace.conversionTable2Grid(depart); 
+		ArrayList<Vec2> chemin = solver.process(departGrid, arriveeGrid);
+
+		log.debug("Chemin avant lissage : " + chemin, this);
 
 		chemin = lissage(chemin, solver.espace);
+		ArrayList<Vec2> output = new ArrayList<Vec2>();
 		for(Vec2 pos: chemin)
-			pos = solver.espace.conversionGrid2Table(pos);
+			output.add(solver.espace.conversionGrid2Table(pos));
 		
-		log.debug("Chemin : " + chemin, this);
+		log.debug("Chemin : " + output, this);
 		
-		return chemin;
+		return output;
 	}
 
 	/**

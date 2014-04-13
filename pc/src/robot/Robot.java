@@ -243,11 +243,11 @@ public abstract class Robot implements Service {
 	 */
 	public void va_au_point_pathfinding(Pathfinding pathfinding, Vec2 arrivee, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe, boolean sans_lever_exception) throws MouvementImpossibleException, PathfindingException
 	{
-		// TODO exception pathfinding
+		// TODO utilisation HPA*
 		if(couleur == "rouge" && !symetrie_effectuee)
 			arrivee.x = -arrivee.x;
 		pathfinding.update();
-		ArrayList<Vec2> chemin = pathfinding.chemin(position, arrivee);
+		ArrayList<Vec2> chemin = pathfinding.cheminAStar(position, arrivee);
 		suit_chemin(chemin, hooks, retenter_si_blocage, true, trajectoire_courbe, sans_lever_exception);
 	}
 	

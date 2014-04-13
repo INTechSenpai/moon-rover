@@ -3,8 +3,8 @@ package table;
 import smartMath.Vec2;
 
 /**
- * Convention: la "position" d'un ObstacleRectangulaire est son coin supérieur gauche
- * "largeur" est selon x, "longueur" selon y
+ * Convention: la "position" d'un ObstacleRectangulaire est son coin supérieur gauche.
+ * C'est une convention tout à fait absurde et idiote (le coin inférieur gauche aurait été bien mieux...)
  * @author pf
  *
  */
