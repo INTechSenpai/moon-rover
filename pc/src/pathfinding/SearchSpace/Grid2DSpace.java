@@ -124,8 +124,8 @@ public class Grid2DSpace implements Serializable
 	{
 		// Asumptions :  	obs.getPosition() returns the top left corner of the rectangle
 		//					also, rectangle is Axis Aligned...
-		for(int i = obs.getPosition().x - robotRadius - marge; i < obs.getPosition().x + obs.getLargeur() + robotRadius + marge; i++)
-			for(int j = obs.getPosition().y - robotRadius - marge; j < obs.getPosition().y + obs.getLongueur() + robotRadius + marge; j++)
+		for(int i = obs.getPosition().x - robotRadius - marge; i < obs.getPosition().x + obs.getLongueur_en_x() + robotRadius + marge; i++)
+			for(int j = obs.getPosition().y - robotRadius - marge - obs.getLongueur_en_y(); j < obs.getPosition().y + robotRadius + marge; j++)
 				if(i >= -table_x/2 && i < table_x/2 && j >= 0 && j < table_y && obs.distance(new Vec2(i,j)) < robotRadius + marge)
 				{
 					Vec2 posGrid = conversionTable2Grid(new Vec2(i,j));
@@ -486,9 +486,21 @@ public class Grid2DSpace implements Serializable
 						conversionGrid2Table(pos.y));
 	}
 	
-	public int getNumPochoir()
+	public String toString()
 	{
-		return num_pochoir;
+		String s = new String();
+		for(int i = sizeY-1; i >= 0; i--)
+		{
+			for(int j = 0; j < sizeX; j++)
+			{
+				if(datas[j][i])
+					s+=".";
+				else
+					s+="X";
+			}
+			s+="\n";
+		}
+		return s;
 	}
 	
 }

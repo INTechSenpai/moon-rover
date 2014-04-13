@@ -97,6 +97,12 @@ public class Table implements Service {
 		// Ajout bacs
 		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(400,2000), 700, 300));
 		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-1100,2000), 700, 300));
+		
+		// Ajout des bordures
+		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-1500,0), 3000, 1));
+		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-1500,2000), 1, 2000));
+		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-1500,2000), 3000, 1));
+		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(1500,2000), 1, 2000));
 
 		// Ajout des arbres
 		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(1500,700), 150));
@@ -503,7 +509,7 @@ public class Table implements Service {
 	 		if(obstacle instanceof ObstacleRectangulaire)
 	 		{
 	 			Vec2 position_obs = obstacle.getPosition();
-				return !(pos.x<((ObstacleRectangulaire)obstacle).getLongueur()+position_obs.x && position_obs.x < pos.x && position_obs.y <pos.y && pos.y < position_obs.y+((ObstacleRectangulaire)obstacle).getLargeur());
+				return !(pos.x<((ObstacleRectangulaire)obstacle).getLongueur_en_x()+position_obs.x && position_obs.x < pos.x && position_obs.y <pos.y && pos.y < position_obs.y+((ObstacleRectangulaire)obstacle).getLongueur_en_y());
 	
 	 		}			
 	 		// sinon, c'est qu'il est circulaire

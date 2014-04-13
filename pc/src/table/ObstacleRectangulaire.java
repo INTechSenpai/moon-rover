@@ -10,19 +10,19 @@ import smartMath.Vec2;
  */
 public class ObstacleRectangulaire extends Obstacle {
 
-	protected int longueur;
-	protected int largeur;
+	protected int longueur_en_x;
+	protected int longueur_en_y;
 	
-	public ObstacleRectangulaire(Vec2 position, int largeur, int longueur)
+	public ObstacleRectangulaire(Vec2 position, int longueur_en_x, int longueur_en_y)
 	{
 		super(position);
-		this.largeur = largeur; // en x
-		this.longueur = longueur; // en y
+		this.longueur_en_y = longueur_en_y;
+		this.longueur_en_x = longueur_en_x;
 	}
 
 	public ObstacleRectangulaire clone()
 	{
-		return new ObstacleRectangulaire(position.clone(), largeur, longueur);
+		return new ObstacleRectangulaire(position.clone(), longueur_en_x, longueur_en_y);
 	}
 	public String toString()
 	{
@@ -33,18 +33,18 @@ public class ObstacleRectangulaire extends Obstacle {
 	 * En y
 	 * @return
 	 */
-	public int getLongueur()
+	public int getLongueur_en_y()
 	{
-		return this.longueur;
+		return this.longueur_en_y;
 	}
 	
 	/**
 	 * En x
 	 * @return
 	 */
-	public int getLargeur()
+	public int getLongueur_en_x()
 	{
-		return this.largeur;
+		return this.longueur_en_x;
 	}
 	
 	public float distance(Vec2 point)
@@ -60,11 +60,11 @@ public class ObstacleRectangulaire extends Obstacle {
 	public float SquaredDistance(Vec2 point)
 	{
 		// Si le point est à un des coins
-		Vec2 coinBasGauche = position.PlusNewVector((new Vec2(0,longueur)));
+		Vec2 coinBasGauche = position.PlusNewVector((new Vec2(0,-longueur_en_y)));
 		Vec2 coinHautGauche = position.PlusNewVector((new Vec2(0,0)));
-		Vec2 coinBasDroite = position.PlusNewVector((new Vec2(largeur,longueur)));
-		Vec2 coinHautDroite = position.PlusNewVector((new Vec2(largeur,0)));
-
+		Vec2 coinBasDroite = position.PlusNewVector((new Vec2(longueur_en_x,-longueur_en_y)));
+		Vec2 coinHautDroite = position.PlusNewVector((new Vec2(longueur_en_x,0)));
+		
 		if(point.x < coinBasGauche.x && point.y < coinBasGauche.y)
 			return point.SquaredDistance(coinBasGauche);
 		
@@ -78,19 +78,19 @@ public class ObstacleRectangulaire extends Obstacle {
 			return point.SquaredDistance(coinHautDroite);
 
 		// Si le point est sur un côté
-		if(point.x > position.x)
+		if(point.x > coinHautDroite.x)
 			return (point.x - coinHautDroite.x)*(point.x - coinHautDroite.x);
 		
-		else if(point.x < position.x)
+		else if(point.x < coinBasGauche.x)
 			return (point.x - coinBasGauche.x)*(point.x - coinBasGauche.x);
 
-		else if(point.y > position.y)
+		else if(point.y > coinHautDroite.y)
 			return (point.y - coinHautDroite.y)*(point.y - coinHautDroite.y);
 		
-		else if(point.y < position.y)
+		else if(point.y < coinBasGauche.y)
 			return (point.y - coinBasGauche.y)*(point.y - coinBasGauche.y);
-		
-		// Cas impossible
+
+		// Sinon, on est dans l'obstacle
 		return 0f;
 	}
 	

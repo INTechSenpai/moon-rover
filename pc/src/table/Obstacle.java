@@ -28,10 +28,10 @@ public abstract class Obstacle {
 		if(obstacle instanceof ObstacleRectangulaire)
 		{
 			Vec2 position_obs = obstacle.getPosition();
-			return !(	pos.x < ((ObstacleRectangulaire)obstacle).getLongueur()+position_obs.x &&
+			return !(	pos.x < ((ObstacleRectangulaire)obstacle).getLongueur_en_x()+position_obs.x &&
 						position_obs.x < pos.x &&
 						position_obs.y < pos.y &&
-						pos.y < position_obs.y+((ObstacleRectangulaire)obstacle).getLargeur()
+						pos.y < position_obs.y+((ObstacleRectangulaire)obstacle).getLongueur_en_y()
 					);
 		}			
 		// sinon, c'est qu'il est circulaire

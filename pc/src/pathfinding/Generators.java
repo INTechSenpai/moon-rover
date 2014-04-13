@@ -49,7 +49,7 @@ public class Generators {
 			}
 			
 			// On créé déjà toutes les map
-/*			table.initialise();
+			table.initialise();
 			table.torche_disparue(Cote.GAUCHE);
 			table.torche_disparue(Cote.DROIT);
 			generate_map();
@@ -60,10 +60,10 @@ public class Generators {
 			table.torche_disparue(Cote.GAUCHE);
 			generate_map();
 			table.initialise();
-			generate_map();*/
+			generate_map();
 
 			// Puis on calcule les distances
-			pathfinder = new Pathfinding(table, config, log);
+/*			pathfinder = new Pathfinding(table, config, log);
 			table.initialise();
 			table.torche_disparue(Cote.GAUCHE);
 			table.torche_disparue(Cote.DROIT);
@@ -76,7 +76,7 @@ public class Generators {
 			generate_distance();
 			table.initialise();
 			generate_distance();
-
+*/
 		}
 		catch(Exception e)
 		{
