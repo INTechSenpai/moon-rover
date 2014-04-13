@@ -10,7 +10,7 @@ import smartMath.Vec2;
 class Grid2DPochoir {
 
 	public boolean[][] datas;
-	int radius;
+	public int radius;
 	
 	public Grid2DPochoir(int radius)
 	{

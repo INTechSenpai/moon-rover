@@ -28,10 +28,20 @@ public class ObstacleRectangulaire extends Obstacle {
 	{
 		return "ObstacleRectangulaire";
 	}
+	
+	/**
+	 * En y
+	 * @return
+	 */
 	public int getLongueur()
 	{
 		return this.longueur;
 	}
+	
+	/**
+	 * En x
+	 * @return
+	 */
 	public int getLargeur()
 	{
 		return this.largeur;

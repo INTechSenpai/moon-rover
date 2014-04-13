@@ -33,7 +33,6 @@ public class Pathfinding implements Service
 	private int[] hashTableSaved;	// Permet, à l'update, de ne recalculer map que si la table a effectivement changé.
 	private static Read_Ini config;
 	private static Log log;
-	private int table_x = 3000; // écrasé par la config
 	private int code_torches_actuel = -1;
 	private static int nb_precisions;
 	
@@ -53,8 +52,6 @@ public class Pathfinding implements Service
 
 	private int degree;
 
-	private ArrayList<Vec2> output;
-	
 	/**
 	 * Constructeur appelé rarement.
 	 * @param requestedtable
@@ -69,7 +66,6 @@ public class Pathfinding implements Service
 		log = requestedLog;
 		maj_config();
 
-		output = new ArrayList<Vec2>();
 	}
 	
 	/**
@@ -77,11 +73,6 @@ public class Pathfinding implements Service
 	 */
 	public void maj_config()
 	{
-		try {
-			table_x = Integer.parseInt(config.get("table_x"));
-		} catch (NumberFormatException | ConfigException e) {
-			e.printStackTrace();
-		}
 		try {
 			nb_precisions = Integer.parseInt(config.get("nb_precisions"));
 		} catch (NumberFormatException | ConfigException e) {
@@ -219,7 +210,7 @@ public class Pathfinding implements Service
 		
 		log.debug("Chemin : " + chemin, this);
 		
-		return output;
+		return chemin;
 	}
 
 	/**
@@ -245,13 +236,7 @@ public class Pathfinding implements Service
 		}
 		else
 		{
-			int cacheReduction = distance_cache.getReduction();
-			int distance = CacheHolder.byte2int(distance_cache.data[(depart.x+table_x/2)/cacheReduction][depart.y/cacheReduction][(arrivee.x+table_x/2)/cacheReduction][arrivee.y/cacheReduction]);
-
-			if(distance == 255)
-				throw new PathfindingException();
-			else
-				return distance*distance_cache.getMm_per_unit();
+			return distance_cache.getDistance(depart, arrivee);
 		}
 	}	
 
@@ -283,14 +268,14 @@ public class Pathfinding implements Service
 		chemin.add(cheminFull.get(0));
 		chemin.add(cheminFull.get(1));
 		
-		xDelta = (int)(cheminFull.get(1).x - cheminFull.get(0).x);
-		yDelta = (int)(cheminFull.get(1).y - cheminFull.get(0).y);
+		xDelta = cheminFull.get(1).x - cheminFull.get(0).x;
+		yDelta = cheminFull.get(1).y - cheminFull.get(0).y;
 		for (int i = 2; i < cheminFull.size(); ++i)	
 		{
 			lastXDelta = xDelta;
 			lastYDelta = yDelta;
-			xDelta = (int)(cheminFull.get(i).x - cheminFull.get(i-1).x);
-			yDelta = (int)(cheminFull.get(i).y - cheminFull.get(i-1).y);
+			xDelta = cheminFull.get(i).x - cheminFull.get(i-1).x;
+			yDelta = cheminFull.get(i).y - cheminFull.get(i-1).y;
 			
 			if (xDelta != lastXDelta && yDelta != lastYDelta)	// Si virage, on garde le point, sinon non.
 				chemin.add(cheminFull.get(i-1));

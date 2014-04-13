@@ -10,7 +10,7 @@ class ObstacleBalise extends ObstacleCirculaire {
 
 	private Vec2 speed;
 	
-	public ObstacleBalise (Vec2 position, float rad, Vec2 speed)
+	public ObstacleBalise (Vec2 position, int rad, Vec2 speed)
 	{
 		super(position,rad);
 		this.speed = speed;

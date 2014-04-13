@@ -106,7 +106,7 @@ public class Generators {
 		
 		int reduction = 32;
 		int mm_per_unit = 15;
-		CacheHolder output = new CacheHolder(table_x/reduction+1, table_y/reduction+1, reduction, mm_per_unit);
+		CacheHolder output = new CacheHolder(table_x/reduction+1, table_y/reduction+1, reduction, mm_per_unit, table_x);
 		
 		for (int i = -table_x/2; i < (table_x/2); i+=reduction)											// depart.x		== i
 		{
@@ -123,12 +123,14 @@ public class Generators {
 						arrivee.y = l;
 						
 						// calcul de la distance, et stockage dans output
+						int distance;
 						try {
-							output.data[(i+table_x/2)/reduction][j/reduction][(k+table_x/2)/reduction][l/reduction] = CacheHolder.int2byte(pathfinder.distance(depart, arrivee, false)/mm_per_unit);
+							distance = pathfinder.distance(depart, arrivee, false);
+							output.setDistance(depart, arrivee, distance);
 						}
 						catch(PathfindingException e)
 						{
-							output.data[(i+table_x/2)/reduction][j/reduction][(k+table_x/2)/reduction][l/reduction] = CacheHolder.int2byte(255);
+							output.setImpossible(depart, arrivee);
 						}
 						catch(Exception e)
 						{
