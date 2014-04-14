@@ -6,6 +6,7 @@ import robot.RobotVrai;
 import smartMath.Vec2;
 import strategie.MemoryManager;
 import strategie.NoteScriptVersion;
+import strategie.NoteScriptMetaversion;
 import strategie.Strategie;
 import table.Table;
 import utils.Sleep;
@@ -78,15 +79,19 @@ public class ThreadStrategie extends AbstractThread {
 		tableBlocage.creer_obstacle(centre_detection);
 		memorymanager.setModelTable(tableBlocage, profondeur_max);
 		memorymanager.setModelRobotChrono(robotchrono, profondeur_max);
-		NoteScriptVersion meilleurErreur = new NoteScriptVersion();
+		NoteScriptMetaversion meilleurErreur = new NoteScriptMetaversion();
 		try {
 			meilleurErreur = strategie.evaluation(profondeur_max, 0);
 		} catch (ScriptException e) {
 			e.printStackTrace();
 			log.critical(e, this);
 		}
-
-		strategie.setProchainScriptEnnemi(meilleurErreur);		
+		float[] a = strategie.meilleurVersion(meilleurErreur.metaversion, meilleurErreur.script, robotchrono, tableFuture, pathfinding);
+		NoteScriptVersion meilleur_version = new NoteScriptVersion();
+		meilleur_version.script = meilleurErreur.script;
+		meilleur_version.version = (int)a[0];
+		meilleur_version.note = a[1];
+		strategie.setProchainScriptEnnemi(meilleur_version);		
 	}
 
 	private void maj_prochainScript()
@@ -99,15 +104,19 @@ public class ThreadStrategie extends AbstractThread {
 //		enCours.script.calcule(enCours.version, robotchrono, tableFuture, true);
 		memorymanager.setModelTable(tableFuture, profondeur_max);
 		memorymanager.setModelRobotChrono(robotchrono, profondeur_max);
-		NoteScriptVersion meilleur = new NoteScriptVersion();
+		NoteScriptMetaversion meilleur = new NoteScriptMetaversion();
 		try {
 			meilleur = strategie.evaluation(profondeur_max, 0);
 		} catch (ScriptException e) {
 			e.printStackTrace();
 			log.critical(e, this);
 		}
-
-		strategie.setProchainScript(meilleur);		
+		float[] a = strategie.meilleurVersion(meilleur.metaversion, meilleur.script, robotchrono, tableFuture, pathfinding);
+		NoteScriptVersion meilleur_version = new NoteScriptVersion();
+		meilleur_version.script = meilleur.script;
+		meilleur_version.version = (int)a[0];
+		meilleur_version.note = a[1];
+		strategie.setProchainScript(meilleur_version);		
 	}
 
 	private boolean evalueEnnemi()
