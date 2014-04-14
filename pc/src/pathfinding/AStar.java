@@ -16,7 +16,6 @@ import exception.PathfindingException;
 import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.Vec2;
 
-// TODO: coefficient de rotation
 // Le test se trouve dans un test unitaire
 class AStar
 {
@@ -97,16 +96,26 @@ function reconstruct_path(came_from, current_node)
 	 */
 	public ArrayList<Vec2> process(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
-		arrivee = espace.conversionTable2Grid(arrivee);
-		depart = espace.conversionTable2Grid(depart);
-		
 		chemin.clear();
+
+		// Si le départ ou l'arrivée est dans un obstacle, on lève une exception
+		if(!espace.canCross(arrivee) || !espace.canCross(depart))
+			throw new PathfindingException();
+		else if(espace.canCrossLine(depart, arrivee))
+		{
+			chemin.add(arrivee);
+			return chemin;
+		}
+
 		closedset.clear();		// The set of nodes already evaluated.
+		openset.clear();
 		openset.add(depart);	// The set of tentative nodes to be evaluated, initially containing the start node
 		came_from.clear(); 		// The map of navigated nodes.
+		g_score.clear();
+		f_score.clear();
 		
 		g_score.put(depart, 0);	// Cost from start along best known path.
-	    // Estimated total cost from start to goal through y.
+                           	    // Estimated total cost from start to goal through y.
 	    f_score.put(depart, g_score.get(depart) + depart.manhattan_distance(arrivee));
 	    
 	    Vec2 current = 	new Vec2(0,0),
@@ -128,7 +137,6 @@ function reconstruct_path(came_from, current_node)
 	    	
 	    	if (current.x == arrivee.x && current.y == arrivee.y)
 	    	{
-	    		
 	    		chemin.clear();
     			chemin.add( new Vec2(arrivee.x,arrivee.y));
     			if (arrivee.x != depart.x && arrivee.y != depart.y && came_from.get(current) != null)
@@ -142,8 +150,8 @@ function reconstruct_path(came_from, current_node)
 		    			
 		    		}
     			}
-    			chemin.add(0, new Vec2(depart.x,depart.y));
-    			
+    			// Le chemin final ne doit pas contenir le point de départ (plus pratique pour Script et pour le HPA*)
+//    			chemin.add(0, new Vec2(depart.x,depart.y));
 	    		return chemin;	//  reconstruct path
 	    	}
 	    	
@@ -175,8 +183,8 @@ function reconstruct_path(came_from, current_node)
 	    }// while
 	    throw new PathfindingException();
 	}	// process
+
 	
-		
 	// =====================================  Utilitaires ===============================
 		
 	// donne les voisins d'un node par index : 1, droite, 2, haut, 3, gauche, 4, bas
@@ -193,9 +201,4 @@ function reconstruct_path(came_from, current_node)
 		return center;
 	}
 	
-	// ======================================= Getters / Setters ========================================
-	
-	public Grid2DSpace getEspace() {
-		return espace;
-	}
 }

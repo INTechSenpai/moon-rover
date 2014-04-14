@@ -22,7 +22,7 @@ public class Table implements Service {
 	// TODO Obstacles fixes (circulaires) pour support de feux en bordure
 	
 	private ArrayList<ObstacleCirculaire> listObstacles = new ArrayList<ObstacleCirculaire>();
-	private static ArrayList<Obstacle> listObstaclesFixes = new ArrayList<Obstacle>();
+	private static ArrayList<ArrayList<Obstacle>> listObstaclesFixes = new ArrayList<ArrayList<Obstacle>>();
 	private ObstacleBalise[] robots_adverses = new ObstacleBalise[2];
 	
 	private int hashFire;
@@ -84,25 +84,41 @@ public class Table implements Service {
 
 		arrayTorch[0] = new Torch(new Vec2(600,900));
 		arrayTorch[1] = new Torch(new Vec2(-600,900)); 
-
-		// Ajout des torches mobiles
-		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(600,900), 80));
-		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-600,900), 80));
+		
+		for(int i = 0; i < 4; i++)
+			listObstaclesFixes.add(new ArrayList<Obstacle>());
 		
 		// Ajout des foyers
-		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(1500,0), 250));
-		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(0,950), 150));
-		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-1500,0), 250));
+		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(1500,0), 250));
+		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(0,950), 150));
+		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(-1500,0), 250));
 
 		// Ajout bacs
-		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(400,2000), 700, 300));
-		listObstaclesFixes.add(new ObstacleRectangulaire(new Vec2(-1100,2000), 700, 300));
+		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(400,2000), 700, 300));
+		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1100,2000), 700, 300));
+		
+		// Ajout des bordures
+		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1500,0), 3000, 1));
+		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1500,2000), 1, 2000));
+		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1500,2000), 3000, 1));
+		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(1500,2000), 1, 2000));
 
 		// Ajout des arbres
-		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(1500,700), 150));
-		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(800,0), 150));
-		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-800,0), 150));
-		listObstaclesFixes.add(new ObstacleCirculaire(new Vec2(-1500,700), 150));
+		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(1500,700), 150));
+		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(800,0), 150));
+		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(-800,0), 150));
+		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(-1500,700), 150));
+
+		listObstaclesFixes.get(1).addAll(listObstaclesFixes.get(0));
+		listObstaclesFixes.get(2).addAll(listObstaclesFixes.get(0));
+		listObstaclesFixes.get(3).addAll(listObstaclesFixes.get(0));
+		
+		// Torches mobiles
+		listObstaclesFixes.get(1).add(new ObstacleCirculaire(new Vec2(-600,900), 80));
+		listObstaclesFixes.get(2).add(new ObstacleCirculaire(new Vec2(600,900), 80));
+		listObstaclesFixes.get(3).add(new ObstacleCirculaire(new Vec2(-600,900), 80));
+		listObstaclesFixes.get(3).add(new ObstacleCirculaire(new Vec2(600,900), 80));
+
 		
 		robots_adverses[0] = new ObstacleBalise(new Vec2(-1000, -1000), rayon_robot_adverse, new Vec2(0, 0));
 		robots_adverses[1] = new ObstacleBalise(new Vec2(-1000, -1000), rayon_robot_adverse, new Vec2(0, 0));
@@ -143,7 +159,7 @@ public class Table implements Service {
 	 */
 	public ArrayList<Obstacle> getListObstaclesFixes()
 	{
-		return listObstaclesFixes;
+		return listObstaclesFixes.get(codeTorches());
 	}
 	
 	/**
@@ -503,7 +519,7 @@ public class Table implements Service {
 	 		if(obstacle instanceof ObstacleRectangulaire)
 	 		{
 	 			Vec2 position_obs = obstacle.getPosition();
-				return !(pos.x<((ObstacleRectangulaire)obstacle).getLongueur()+position_obs.x && position_obs.x < pos.x && position_obs.y <pos.y && pos.y < position_obs.y+((ObstacleRectangulaire)obstacle).getLargeur());
+				return !(pos.x<((ObstacleRectangulaire)obstacle).getLongueur_en_x()+position_obs.x && position_obs.x < pos.x && position_obs.y <pos.y && pos.y < position_obs.y+((ObstacleRectangulaire)obstacle).getLongueur_en_y());
 	
 	 		}			
 	 		// sinon, c'est qu'il est circulaire
@@ -536,7 +552,7 @@ public class Table implements Service {
 		for(Obstacle o: listObstacles)
 			if(obstacle_existe(position, o))
 				return true;
-		for(Obstacle o: listObstaclesFixes)
+		for(Obstacle o: listObstaclesFixes.get(codeTorches()))
 			if(obstacle_existe(position, o))
 				return true;
 		return false;

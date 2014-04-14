@@ -10,9 +10,9 @@ import smartMath.Vec2;
 public class ObstacleCirculaire extends Obstacle
 {
 
-	protected float radius;
+	protected int radius;
 	
-	public ObstacleCirculaire(Vec2 position, float rad)
+	public ObstacleCirculaire(Vec2 position, int rad)
 	{
 		super(position);
 		this.radius = rad;
@@ -30,7 +30,7 @@ public class ObstacleCirculaire extends Obstacle
 		oc.radius = radius;
 	}
 
-	public float getRadius()
+	public int getRadius()
 	{
 		return radius;
 	}

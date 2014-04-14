@@ -13,7 +13,10 @@ import exception.ConfigException;
 import exception.PathfindingException;
 
 /**
- * Générateur des fichiers caches
+ * Générateur des fichiers caches.
+ * Il y a deux générations:
+ * - les maps d'obstacles fixes à différentes précisions
+ * - les distances
  * @author pf
  *
  */
@@ -49,7 +52,7 @@ public class Generators {
 			}
 			
 			// On créé déjà toutes les map
-/*			table.initialise();
+			table.initialise();
 			table.torche_disparue(Cote.GAUCHE);
 			table.torche_disparue(Cote.DROIT);
 			generate_map();
@@ -60,7 +63,7 @@ public class Generators {
 			table.torche_disparue(Cote.GAUCHE);
 			generate_map();
 			table.initialise();
-			generate_map();*/
+			generate_map();
 
 			// Puis on calcule les distances
 			pathfinder = new Pathfinding(table, config, log);
@@ -84,13 +87,14 @@ public class Generators {
 		}
 	}
 
+	/**
+	 * Génération des maps à différentes précisions pour une table donnée
+	 */
 	public static void generate_map()
 	{
-		int reductionFactor = 1;
 		for(int i = 0; i < 10; i++)
 		{
-			Grid2DSpace map = new Grid2DSpace(reductionFactor);
-			reductionFactor <<= 1;
+			Grid2DSpace map = new Grid2DSpace(i);
 			for(Obstacle obs: table.getListObstaclesFixes())
 				map.appendObstacleFixe(obs);
 			DataSaver.sauvegarder(map, "cache/map-"+i+"-"+table.codeTorches()+".cache");
@@ -98,16 +102,20 @@ public class Generators {
 		
 	}
 	
+	/**
+	 * Génère le cache des distances pour une table donnée
+	 */
 	public static void generate_distance()
 	{		
 		log.appel_static("Generation distance...");
 		Vec2 	depart 	= new Vec2(0,0),
 				arrivee = new Vec2(0,0);
 		
-		int reduction = 32;
-		int mm_per_unit = 15;
-		CacheHolder output = new CacheHolder(table_x/reduction+1, table_y/reduction+1, reduction, mm_per_unit);
-		
+		int log_reduction = 5;		// soit une précision de 32mm
+		int log_mm_per_unit = 4;	// soit 16mm par unité
+		CacheHolder output = new CacheHolder((table_x >> log_reduction)+1, (table_y >> log_reduction)+1, log_reduction, log_mm_per_unit, table_x);
+		int reduction = 1 << log_reduction;
+
 		for (int i = -table_x/2; i < (table_x/2); i+=reduction)											// depart.x		== i
 		{
 			System.out.println(100*((float)(i+table_x/2))/((float)table_x));
@@ -123,12 +131,14 @@ public class Generators {
 						arrivee.y = l;
 						
 						// calcul de la distance, et stockage dans output
+						int distance;
 						try {
-							output.data[(i+table_x/2)/reduction][j/reduction][(k+table_x/2)/reduction][l/reduction] = CacheHolder.int2byte(pathfinder.distance(depart, arrivee, false)/mm_per_unit);
+							distance = pathfinder.distance(depart, arrivee, false);
+							output.setDistance(depart, arrivee, distance);
 						}
 						catch(PathfindingException e)
 						{
-							output.data[(i+table_x/2)/reduction][j/reduction][(k+table_x/2)/reduction][l/reduction] = CacheHolder.int2byte(255);
+							output.setImpossible(depart, arrivee);
 						}
 						catch(Exception e)
 						{
