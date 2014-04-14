@@ -137,6 +137,12 @@ public abstract class Script implements Service {
 		return robotchrono.get_compteur();
 	}
 	/**
+	 * Renvoie les versions associées associée à une méta-version
+	 * @return le tableau des versions associée
+	 */
+	public abstract ArrayList<Integer> version_asso(int id_meta);
+	
+	/**
 	 * Renvoie le tableau des méta-verions d'un script
 	 * @return le tableau des méta-versions possibles
 	 */
