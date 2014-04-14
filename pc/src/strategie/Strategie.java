@@ -211,9 +211,10 @@ public class Strategie implements Service {
 	 * @param script
 	 * @return
 	 */
-	private float calculeNote(int score, int duree, int id, Script script)
+	private float calculeNote(int score, int duree, int meta_id, Script script)
 	{
 		// TODO
+		int id = script.version_asso(meta_id).get(0);
 		int A = 1;
 		int B = 1;
 		float prob = script.proba_reussite();
@@ -267,24 +268,25 @@ public class Strategie implements Service {
 			Table table_version = memorymanager.getCloneTable(profondeur);
 			RobotChrono robotchrono_version = memorymanager.getCloneRobotChrono(profondeur);
 			Pathfinding pathfinding_version = memorymanager.getClonePathfinding(profondeur);
-			ArrayList<Integer> versions = script.version(robotchrono_version, table_version, pathfinding_version);
-
+			//ArrayList<Integer> versions = script.version(robotchrono_version, table_version, pathfinding_version);
+			ArrayList<Integer> metaversions = script.meta_version(robotchrono_version, table_version, pathfinding_version);
 			// TODO corriger les scripts pour que ça n'arrive pas
-			if(versions == null)
+			if(metaversions == null)
 				break;
-			for(int id : versions)
+			for(int meta_id : metaversions)
 			{
 				try
 				{
 					Table cloned_table = memorymanager.getCloneTable(profondeur);
 					RobotChrono cloned_robotchrono = memorymanager.getCloneRobotChrono(profondeur);
 					Pathfinding cloned_pathfinding = memorymanager.getClonePathfinding(profondeur);
-					int score = script.score(id, cloned_robotchrono, cloned_table);
-					int duree_script = (int)script.calcule(id, cloned_robotchrono, cloned_table, cloned_pathfinding, duree_totale > duree_connaissances);
+					//int score = script.score(id, cloned_robotchrono, cloned_table);
+					int score = script.meta_score(meta_id, cloned_robotchrono, cloned_table);
+					int duree_script = (int)script.metacalcule(meta_id, cloned_robotchrono, cloned_table, cloned_pathfinding, duree_totale > duree_connaissances);
 					//log.debug("Durée de "+script+" "+id+": "+duree_script, this);
 					cloned_table.supprimer_obstacles_perimes(date+duree_script);
 					//log.debug("Score de "+script+" "+id+": "+score, this);
-					float noteScript = calculeNote(score, duree_script, id, script);
+					float noteScript = calculeNote(score, duree_script, meta_id, script);
 					//log.debug("Note de "+script+" "+id+": "+noteScript, this);
 					NoteScriptVersion out = _evaluation(date + duree_script, duree_script, profondeur-1, id_robot);
 					out.note += noteScript;
@@ -293,7 +295,7 @@ public class Strategie implements Service {
 					{
 						meilleur.note = out.note;
 						meilleur.script = script;
-						meilleur.version = id;
+						meilleur.version = meta_id;
 					}
 				}
 				catch(Exception e)
