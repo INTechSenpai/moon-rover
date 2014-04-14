@@ -2,6 +2,7 @@ package threads;
 
 import java.util.Hashtable;
 
+import pathfinding.Pathfinding;
 import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
 import robot.cartes.laser.FiltrageLaser;
@@ -73,11 +74,11 @@ public class ThreadManager {
 		return threads.get("threadCapteurs");
 	}
 
-	public AbstractThread getThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, ThreadTimer threadtimer)
+	public AbstractThread getThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, ThreadTimer threadtimer, Pathfinding pathfinding)
 	{
 		AbstractThread thread = threads.get("threadStrategie");
 		if(thread == null)
-			threads.put("threadStrategie", new ThreadStrategie(strategie, table, robotvrai, memorymanager, threadtimer));
+			threads.put("threadStrategie", new ThreadStrategie(strategie, table, robotvrai, memorymanager, threadtimer, pathfinding));
 		return threads.get("threadStrategie");
 	}
 

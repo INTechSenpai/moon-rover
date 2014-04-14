@@ -1,5 +1,6 @@
 package threads;
 
+import pathfinding.Pathfinding;
 import exception.ScriptException;
 import robot.RobotChrono;
 import robot.RobotVrai;
@@ -25,10 +26,11 @@ public class ThreadStrategie extends AbstractThread {
 	private RobotChrono robotchrono;
 	private MemoryManager memorymanager;
 	private ThreadTimer threadtimer;
+	private Pathfinding pathfinding;
 	
 	private int profondeur_max;
 
-	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, ThreadTimer threadtimer)
+	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, ThreadTimer threadtimer, Pathfinding pathfinding)
 	{
 		this.strategie = strategie;
 		this.table = table;
@@ -36,6 +38,7 @@ public class ThreadStrategie extends AbstractThread {
 		this.robotchrono = new RobotChrono(config, log);
 		this.memorymanager = memorymanager;
 		this.threadtimer = threadtimer;
+		this.pathfinding = pathfinding;
 		maj_config();
 		Thread.currentThread().setPriority(5);
 	}
