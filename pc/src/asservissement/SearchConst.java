@@ -21,6 +21,7 @@ public class SearchConst
 		Container container;
 		Deplacements deplacements = null;
 		BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+		int signe = 1;
 		try
 		{
 			container = new Container();
@@ -102,24 +103,28 @@ public class SearchConst
 			}
 			else if(asserv == 'r')
 			{
-				angle = - angle;
+				signe *= -1;
+				angle = (float) (Math.PI/2 + signe*Math.PI/2);
 				try
 				{
-					deplacements.tourner(angle);
-				}
-				catch (SerialException e2)
-				{
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				}
-				try
-				{
+					String s;
+					if (bufferRead.ready())
+					{
+						bufferRead.readLine();
+					}
 					System.out.println("kp ?");
-					kp = (float) System.in.read();
+					s = bufferRead.readLine();
+					kp = Float.parseFloat(s);
+					System.out.println(kp);
 					System.out.println("kd ?");
-					kd = (float) System.in.read();
+					s = bufferRead.readLine();
+					kd = Float.parseFloat(s);
+					System.out.println(kd);
 					System.out.println("pwm_max ?");
-					pwm_max = (int) System.in.read();
+					s = bufferRead.readLine();
+					pwm_max = Integer.parseInt(s);
+					System.out.println(pwm_max);
+
 				}
 				catch (IOException e1)
 				{
@@ -135,6 +140,17 @@ public class SearchConst
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				try
+				{
+					System.out.println(angle);
+					deplacements.tourner(angle);
+				}
+				catch (SerialException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 			}
 		}
 	}
