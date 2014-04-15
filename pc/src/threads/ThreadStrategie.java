@@ -74,6 +74,7 @@ public class ThreadStrategie extends AbstractThread {
 		}
 	}
 
+	
 	private void maj_prochainScriptErreur()
 	{
 		robotchrono.majRobotChrono(robotvrai);
