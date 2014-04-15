@@ -45,7 +45,7 @@ public class Pathfinding implements Service
 	 */
 	private static Grid2DSpace[][] map_obstacles_fixes = null;
 	
-	/* Le caches des distances
+	/* Le cache des distances
 	 * Sera rechargé en match (au plus 4 fois), car prend trop de mémoire sinon
 	 */
 	private static CacheHolder distance_cache;
@@ -62,7 +62,7 @@ public class Pathfinding implements Service
 	public Pathfinding(Table requestedtable, Read_Ini requestedConfig, Log requestedLog)
 	{
 		table = requestedtable;
-		config = requestedConfig;
+		config = requestedConfig;	
 		log = requestedLog;
 		maj_config();
 	}
@@ -156,68 +156,8 @@ public class Pathfinding implements Service
 	 */
 	public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
-		/* Diviser pour régner!
-		 * Puisqu'un chemin fait un moyenne 1000mm ou moins, en équilibrant les différentes étages on tombe sur:
-		 * degré i: (précision macroscopique) * (précision microscopique)
-		 * degré 0: 32*32
-		 * degré 1: 16*32
-		 * degré 2: 16*16
-		 * degré 3: 18*6
-		 * degré 4: 8*8
-		 * degré 5 et plus: pas de HPA*
-		 * Je (PF) pense qu'un HPA* sur plus d'étages serait plus une perte de performances qu'un gain.
-		 */
-		if(degree >= 5)
-			return cheminAStar(depart, arrivee);
-		
-		// Le degré macro est celui utilisé pour diviser
-		int degree_macro = 5-(degree+1)/2;
-
-		Vec2 departGrid = solver.espace.conversionTable2Grid(depart); 
-		Vec2 arriveeGrid = solver.espace.conversionTable2Grid(arrivee); 
-		
-		/* ---- A PARTIR D'ICI, TOUTES LES POSITIONS SONT DANS LES COORDONNÉES DE LA GRILLE */
-		
-		// Première recherche, précision faible
-		ArrayList<Vec2> chemin = solvers[degree_macro].process(departGrid, arriveeGrid);
-		// Lissage (très important, car diminue le nombre de recherches de chemin à l'étage inférieur)
-		chemin = lissage(chemin, solvers[degree_macro].espace);
-		
-		System.out.println("HPA* "+chemin);
-
-		// Seconde recherche
-		ArrayList<Vec2> output = new ArrayList<Vec2>();
-
-		/*
-		 * Rappel: AStar(A, B) donne un itinéraire entre A et B, mais sans inclure A!
-		 * Exemple d'itinéraire entre A et B: [D, F, G, B].
-		 * C'est pratique pour le HPA*, comme ça on peut concaténer sans répétition.
-		 */
-		
-		Vec2 depart_hpa;
-		Vec2 arrivee_hpa;
-		for(int i = 0; i < chemin.size(); i++)
-		{
-			if(i == 0)
-				depart_hpa = depart;
-			else
-				depart_hpa = chemin.get(i-1);
-			arrivee_hpa = chemin.get(i);
-			
-			// TODO vérifier si l'optimisation de canCrossLine est utile
-			if(solver.espace.canCrossLine(depart_hpa, arrivee_hpa))
-				output.add(arrivee_hpa);
-			else
-				output.addAll(solver.process(depart_hpa, arrivee_hpa));
-		}
-
-		output = lissage(chemin, solver.espace);
-
-		/* Fin des coordonnées de la grille */
-		for(Vec2 pos: output)
-			pos = solver.espace.conversionGrid2Table(pos);
-
-		return output;
+		// AStar simple tant que le  HPAStar est pas fonctionnel
+		return cheminAStar(depart, arrivee);
 	}
 	
 	/**
@@ -237,7 +177,7 @@ public class Pathfinding implements Service
 
 		log.debug("Chemin avant lissage : " + chemin, this);
 
-		chemin = lissage(chemin, solver.espace);
+		chemin = solver.espace.lissage(chemin);
 		ArrayList<Vec2> output = new ArrayList<Vec2>();
 		for(Vec2 pos: chemin)
 			output.add(solver.espace.conversionGrid2Table(pos));
@@ -274,76 +214,6 @@ public class Pathfinding implements Service
 		}
 	}	
 
-
-	/**
-	 * Transforme un chemin ou chaque pas est spécifié en un chemin lissé ou il ne reste que très peu de sommets
-	 * ch
-			// calcule le chemin
-			solver.setDepart(new Vec2((int)Math.round(depart.x),(int)Math.round(depart.y)));
-			solver.setArrivee(new Vec2((int)Math.round(arrivee.x),(int)Math.round(arrivee.y)));
-			solver.process();
-			result = lissage(solver.getChemin(), map);acun de ses sommets est séparé par une ligne droite sans obstacle
-	 * @param le chemin non lissé (avec tout les pas)
-	 * @return le chemin liss (avec typiquement une disaine de sommets grand maximum)
-	 */
-	public ArrayList<Vec2> lissage(ArrayList<Vec2> cheminFull, Grid2DSpace map)
-	{
-		if (cheminFull.size() < 2)
-			return cheminFull;
-		// Nettoie le chemin
-		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
-		int 	lastXDelta = 0,
-				lastYDelta = 0,
-				xDelta = 0,
-				yDelta = 0;
-		
-		// On doit rentrer les 2 premiers points du parcours
-		//chemin.add(cheminFull.get(cheminFull.size()-1)); // ajoute la fin
-		chemin.add(cheminFull.get(0));
-		chemin.add(cheminFull.get(1));
-		
-		xDelta = cheminFull.get(1).x - cheminFull.get(0).x;
-		yDelta = cheminFull.get(1).y - cheminFull.get(0).y;
-		for (int i = 2; i < cheminFull.size(); ++i)	
-		{
-			lastXDelta = xDelta;
-			lastYDelta = yDelta;
-			xDelta = cheminFull.get(i).x - cheminFull.get(i-1).x;
-			yDelta = cheminFull.get(i).y - cheminFull.get(i-1).y;
-			
-			if (xDelta != lastXDelta && yDelta != lastYDelta)	// Si virage, on garde le point, sinon non.
-				chemin.add(cheminFull.get(i-1));
-		}
-		chemin.remove(1); // retire l'intermédiare de calcul
-		chemin.add(cheminFull.get(cheminFull.size()-1)); // ajoute la fin
-		
-		
-		// supprimes les points non nécéssaire.
-		ArrayList<Vec2> out = new ArrayList<Vec2>();
-		
-		// saute les 2 derniers points, comme on ne pourra rien simplifier entre.
-		for (int i = 0; i < chemin.size(); ++i)	
-		{
-			// regardes si un point plus loin peut �tre rejoint en ligne droite
-			for (int j = chemin.size()-1; j > i; --j)
-			{
-				if (map.canCrossLine(chemin.get(i).x, chemin.get(i).y, chemin.get(j).x, chemin.get(j).y))
-				{
-					//System.out.println("Lissage loops parameters :  i = " + i + ";  j = " + j);
-					//map.drawLine(chemin.get(i).x, chemin.get(i).y, chemin.get(j).x, chemin.get(j).y);
-					// on a trouvé le point le plus loin que l'on peut rejoindre en ligne droite
-					out.add(chemin.get(i));
-					i = j-1;	// on continuras la recherche a partir de ce point.
-					break;
-				}
-			}
-		}
-		// 	on ajoute le point d'arrivée au chemin final
-		out.add(chemin.get(chemin.size()-1));
-		
-		return out;
-	}
-	
 	public void setPrecision(int precision) 
 	{
 		if(precision >= nb_precisions)

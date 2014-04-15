@@ -52,7 +52,7 @@ public class PathfindingRandomTest extends JUnit_Test
 		
 		int cmParCase = 2;
 		
-		Pathfinding finder = new Pathfinding(table, config, log, cmParCase);
+		Pathfinding finder = new Pathfinding(table, config, log);
 
 		
 		Vec2 arrivee = new Vec2(-1000,500);

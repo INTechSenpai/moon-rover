@@ -45,6 +45,7 @@ public class ThreadStrategie extends AbstractThread {
 	{
 		log.debug("Lancement du thread de stratégie", this);
 
+		// attends que le match démarre
 		while(!threadtimer.match_demarre)
 		{
 			if(stop_threads)
@@ -52,9 +53,12 @@ public class ThreadStrategie extends AbstractThread {
 				log.debug("Stoppage du thread de stratégie", this);
 				return;
 			}
-			Sleep.sleep(200);
+			
+			// vérifie tout les dixièmes de seconde si le match a démarré
+			Sleep.sleep(100);
 		}
 		
+		// boucle principale de stratégie durant le match
 		while(!stop_threads)
 		{
 			// Evaluation d'une stratégie de secours si ce script bug
@@ -64,6 +68,8 @@ public class ThreadStrategie extends AbstractThread {
 			// Evaluation du prochain coup en supposant que celui-ci se passe sans problème
 			maj_prochainScript();
 			
+			
+			// Why ??
 			Sleep.sleep(50);
 			
 		}
@@ -100,9 +106,12 @@ public class ThreadStrategie extends AbstractThread {
 		memorymanager.setModelTable(tableFuture, profondeur_max);
 		memorymanager.setModelRobotChrono(robotchrono, profondeur_max);
 		NoteScriptVersion meilleur = new NoteScriptVersion();
-		try {
+		try 
+		{
 			meilleur = strategie.evaluation(profondeur_max, 0);
-		} catch (ScriptException e) {
+		} 
+		catch (ScriptException e) 
+		{
 			e.printStackTrace();
 			log.critical(e, this);
 		}

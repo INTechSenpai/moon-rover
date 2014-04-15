@@ -259,6 +259,7 @@ public class Strategie implements Service {
 		if(profondeur == 0)
 			return new NoteScriptVersion();
 		NoteScriptVersion meilleur = new NoteScriptVersion(-1, null, -1);
+		// TODO : Give a value to TTL
 		int duree_connaissances = TTL;
 		
 		for(String nom_script : scriptmanager.getNomsScripts())
@@ -287,6 +288,9 @@ public class Strategie implements Service {
 					float noteScript = calculeNote(score, duree_script, id, script);
 					//log.debug("Note de "+script+" "+id+": "+noteScript, this);
 					NoteScriptVersion out = _evaluation(date + duree_script, duree_script, profondeur-1, id_robot);
+					
+					//vertex ==? ensemble des arguments de _evaluation ?
+					
 					out.note += noteScript;
 
 					if(out.note > meilleur.note)
