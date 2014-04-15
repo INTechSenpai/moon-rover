@@ -8,7 +8,8 @@ import scripts.Script;
  *
  */
 
-public class NoteScriptVersion {
+public class NoteScriptVersion 
+{
 
 	public float note;
 	public Script script;

@@ -4,6 +4,7 @@
 package pathfinding.SearchSpace;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import exception.ConfigException;
 import smartMath.Vec2;
@@ -102,6 +103,73 @@ public class Grid2DSpace implements Serializable
 			for(int j=0; j<sizeY;j++)
 				datas[i][j] = true;		
 	}
+	
+
+	
+	/**
+	 * Transforme un chemin ou chaque pas est spécifié en un chemin lissé ou il ne reste que très peu de sommets
+	 * @param le chemin non lissé (avec tout les pas)
+	 * @return le chemin liss (avec typiquement une disaine de sommets grand maximum)
+	 */
+	public ArrayList<Vec2> lissage(ArrayList<Vec2> cheminFull)
+	{
+		if (cheminFull.size() < 2)
+			return cheminFull;
+		// Nettoie le chemin
+		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
+		int 	lastXDelta = 0,
+				lastYDelta = 0,
+				xDelta = 0,
+				yDelta = 0;
+		
+		// On doit rentrer les 2 premiers points du parcours
+		//chemin.add(cheminFull.get(cheminFull.size()-1)); // ajoute la fin
+		chemin.add(cheminFull.get(0));
+		chemin.add(cheminFull.get(1));
+		
+		xDelta = (int)(cheminFull.get(1).x - cheminFull.get(0).x);
+		yDelta = (int)(cheminFull.get(1).y - cheminFull.get(0).y);
+		for (int i = 2; i < cheminFull.size(); ++i)	
+		{
+			lastXDelta = xDelta;
+			lastYDelta = yDelta;
+			xDelta = (int)(cheminFull.get(i).x - cheminFull.get(i-1).x);
+			yDelta = (int)(cheminFull.get(i).y - cheminFull.get(i-1).y);
+			
+			if (xDelta != lastXDelta && yDelta != lastYDelta)	// Si virage, on garde le point, sinon non.
+				chemin.add(cheminFull.get(i-1));
+		}
+		chemin.remove(1); // retire l'intermédiare de calcul
+		chemin.add(cheminFull.get(cheminFull.size()-1)); // ajoute la fin
+		
+		
+		// supprimes les points non nécéssaire.
+		ArrayList<Vec2> out = new ArrayList<Vec2>();
+		
+		// saute les 2 derniers points, comme on ne pourra rien simplifier entre.
+		for (int i = 0; i < chemin.size(); ++i)	
+		{
+			// regardes si un point plus loin peut �tre rejoint en ligne droite
+			for (int j = chemin.size()-1; j > i; --j)
+			{
+				if (canCrossLine(chemin.get(i).x, chemin.get(i).y, chemin.get(j).x, chemin.get(j).y))
+				{
+					//System.out.println("Lissage loops parameters :  i = " + i + ";  j = " + j);
+					//drawLine(chemin.get(i).x, chemin.get(i).y, chemin.get(j).x, chemin.get(j).y);
+					// on a trouvé le point le plus loin que l'on peut rejoindre en ligne droite
+					out.add(chemin.get(i));
+					i = j-1;	// on continuras la recherche a partir de ce point.
+					break;
+				}
+			}
+		}
+		// 	on ajoute le point d'arrivée au chemin final
+		out.add(chemin.get(chemin.size()-1));
+		
+		return out;
+	}
+	
+	
 
 	/**
 	 * Surcouche user-friendly d'ajout d'obstacle fixe
@@ -327,22 +395,50 @@ public class Grid2DSpace implements Serializable
 	 */
 	public boolean canCross(Vec2 pos)
 	{
-		return canCross(pos.x, pos.y);
+		// anti segfault
+		if(pos.x < 0 || pos.x >= sizeX || pos.y < 0 || pos.y >= sizeY)
+			return false;
+		
+		return datas[pos.x][pos.y];
 	}
 
 	
 	/**
-	 * Implémentation user-friendly de canCrossLine
+	 * renvois true si le terrain est franchissable � en ligne droite entre les 2 positions donn�es, faux sinon
 	 * @param a un point
 	 * @param b un autre point
 	 * @return
 	 */
 	public boolean canCrossLine(Vec2 a, Vec2 b)
 	{
-		return canCrossLine(a.x, a.y, b.x, b.y);
+		 // Bresenham's line algorithm
+		
+		  int dx = Math.abs(b.x-a.x), sx = a.x<b.x ? 1 : -1;
+		  int dy = Math.abs(b.y-a.y), sy = a.y<b.y ? 1 : -1; 
+		  int err = (dx>dy ? dx : -dy)/2;
+		  int e2;
+		 
+		  while(true)
+		  {
+			    if (!canCross(a.x,a.y))
+			    	return false;
+
+				if (a.x==b.x && a.y==b.y) break;
+				
+				e2 = err;
+				if (e2 >-dx) { err -= dy; a.x += sx; }
+				if (e2 < dy) { err += dx; a.y += sy; }
+		  }
+		 return true;
 	}
-	
-	// renvois true si le tarrain est franchissable � en ligne droite entre les 2 positions donn�es, faux sinon
+
+	/**
+	 * Implémentation user-friendly de canCrossLine
+	 * renvois true si le terrain est franchissable � en ligne droite entre les 2 positions donn�es, faux sinon
+	 * @param a un point
+	 * @param b un autre point
+	 * @return
+	 */
 	public boolean canCrossLine(int x0, int y0, int x1, int y1)
 	{
 		 // Bresenham's line algorithm
@@ -509,5 +605,7 @@ public class Grid2DSpace implements Serializable
 		}
 		return s;
 	}
+
+	
 	
 }

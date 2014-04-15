@@ -308,7 +308,9 @@ public class Strategie implements Service {
 	{
 		if(profondeur == 0)
 			return new NoteScriptMetaversion();
+		
 		NoteScriptMetaversion meilleur = new NoteScriptMetaversion(-1, null, -1);
+		// TODO : Give a value to TTL
 		int duree_connaissances = TTL;
 		
 		for(String nom_script : scriptmanager.getNomsScripts())
