@@ -9,6 +9,8 @@ import robot.RobotChrono;
 import robot.RobotVrai;
 import scripts.Script;
 import scripts.ScriptManager;
+import strategie.NoteScriptMetaversion;
+import strategie.NoteScriptVersion;
 import table.Table;
 import threads.ThreadTimer;
 import utils.Log;
@@ -201,7 +203,54 @@ public class Strategie implements Service {
 		// Plus le robot ennemi reste fixe, plus le TTL doit être grand.
 		// Le TTL est une durée en ms sur laquelle on estime que le robot demeurera immobile
 		
+	} 
+	public float[] meilleurVersion(int meta_id, Script script, RobotChrono robotchrono, Table table, Pathfinding pathfinding)
+	{
+		int id = 0;
+		float meilleurNote = 0;
+		int score;
+		int duree_script; 
+		for(int i : script.version_asso(meta_id))
+		{
+			score = script.score(id, robotchrono, table);
+			duree_script = (int)script.calcule(id, robotchrono, table, pathfinding, true);
+			if(calculeNote(score,duree_script, i,script)>meilleurNote)
+			{
+				id = i;
+				meilleurNote = calculeNote(score,duree_script, i,script);
+			}
+			
+		}
+		float[] a= {id, meilleurNote};
+		return a;
 	}
+	/**
+	 * La note d'un script est fonction de son score, de sa durée, de la distance de l'ennemi à l'action 
+	 * @param score
+	 * @param duree
+	 * @param id
+	 * @param script
+	 * @return note
+	 */
+	private float calculeNote(int score, int duree, int id, Script script)
+	{
+		// TODO
+		
+		int A = 1;
+		int B = 1;
+		float prob = script.proba_reussite();
+		
+		//abandon de prob_deja_fait
+		Vec2[] position_ennemie = table.get_positions_ennemis();
+		float pos = (float)1.0 - (float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0)));
+		// pos est une valeur qui décroît de manière exponentielle en fonction de la distance entre le robot adverse et là où on veut aller
+		float note = (score*A*prob/duree+pos*B)*prob;
+		
+//		log.debug((float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0))), this);
+		
+		return note;
+	}
+	
 
 	/**
 	 * La note d'un script est fonction de son score, de sa durée, de la distance de l'ennemi à l'action 
@@ -209,11 +258,12 @@ public class Strategie implements Service {
 	 * @param duree
 	 * @param id
 	 * @param script
-	 * @return
+	 * @return note
 	 */
-	private float calculeNote(int score, int duree, int id, Script script)
+	private float calculeMetaNote(int score, int duree, int meta_id, Script script)
 	{
 		// TODO
+		int id = script.version_asso(meta_id).get(0);
 		int A = 1;
 		int B = 1;
 		float prob = script.proba_reussite();
@@ -236,7 +286,7 @@ public class Strategie implements Service {
 	 * @return le meilleur triplet NoteScriptVersion
 	 * @throws ScriptException
 	 */
-	public NoteScriptVersion evaluation(int profondeur, int id_robot) throws ScriptException
+	public NoteScriptMetaversion evaluation(int profondeur, int id_robot) throws ScriptException
 	{
 		return _evaluation(System.currentTimeMillis(), 0, profondeur, id_robot);
 	}
@@ -249,16 +299,16 @@ public class Strategie implements Service {
 	 * @return le meilleur triplet NoteScriptVersion
 	 * @throws ScriptException
 	 */
-	public NoteScriptVersion evaluation(long date, int profondeur, int id_robot) throws ScriptException
+	public NoteScriptMetaversion evaluation(long date, int profondeur, int id_robot) throws ScriptException
 	{
 		return _evaluation(date, 0, profondeur, id_robot);
 	}
 
-	private NoteScriptVersion _evaluation(long date, int duree_totale, int profondeur, int id_robot) throws ScriptException
+	private NoteScriptMetaversion _evaluation(long date, int duree_totale, int profondeur, int id_robot) throws ScriptException
 	{
 		if(profondeur == 0)
-			return new NoteScriptVersion();
-		NoteScriptVersion meilleur = new NoteScriptVersion(-1, null, -1);
+			return new NoteScriptMetaversion();
+		NoteScriptMetaversion meilleur = new NoteScriptMetaversion(-1, null, -1);
 		int duree_connaissances = TTL;
 		
 		for(String nom_script : scriptmanager.getNomsScripts())
@@ -267,33 +317,34 @@ public class Strategie implements Service {
 			Table table_version = memorymanager.getCloneTable(profondeur);
 			RobotChrono robotchrono_version = memorymanager.getCloneRobotChrono(profondeur);
 			Pathfinding pathfinding_version = memorymanager.getClonePathfinding(profondeur);
-			ArrayList<Integer> versions = script.version(robotchrono_version, table_version, pathfinding_version);
-
+			//ArrayList<Integer> versions = script.version(robotchrono_version, table_version, pathfinding_version);
+			ArrayList<Integer> metaversions = script.meta_version(robotchrono_version, table_version, pathfinding_version);
 			// TODO corriger les scripts pour que ça n'arrive pas
-			if(versions == null)
+			if(metaversions == null)
 				break;
-			for(int id : versions)
+			for(int meta_id : metaversions)
 			{
 				try
 				{
 					Table cloned_table = memorymanager.getCloneTable(profondeur);
 					RobotChrono cloned_robotchrono = memorymanager.getCloneRobotChrono(profondeur);
 					Pathfinding cloned_pathfinding = memorymanager.getClonePathfinding(profondeur);
-					int score = script.score(id, cloned_robotchrono, cloned_table);
-					int duree_script = (int)script.calcule(id, cloned_robotchrono, cloned_table, cloned_pathfinding, duree_totale > duree_connaissances);
+					//int score = script.score(id, cloned_robotchrono, cloned_table);
+					int score = script.meta_score(meta_id, cloned_robotchrono, cloned_table);
+					int duree_script = (int)script.metacalcule(meta_id, cloned_robotchrono, cloned_table, cloned_pathfinding, duree_totale > duree_connaissances);
 					//log.debug("Durée de "+script+" "+id+": "+duree_script, this);
 					cloned_table.supprimer_obstacles_perimes(date+duree_script);
 					//log.debug("Score de "+script+" "+id+": "+score, this);
-					float noteScript = calculeNote(score, duree_script, id, script);
+					float noteScript = calculeMetaNote(score, duree_script, meta_id, script);
 					//log.debug("Note de "+script+" "+id+": "+noteScript, this);
-					NoteScriptVersion out = _evaluation(date + duree_script, duree_script, profondeur-1, id_robot);
+					NoteScriptMetaversion out = _evaluation(date + duree_script, duree_script, profondeur-1, id_robot);
 					out.note += noteScript;
 
 					if(out.note > meilleur.note)
 					{
 						meilleur.note = out.note;
 						meilleur.script = script;
-						meilleur.version = id;
+						meilleur.metaversion = meta_id;
 					}
 				}
 				catch(Exception e)
