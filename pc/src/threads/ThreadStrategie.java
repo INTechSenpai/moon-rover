@@ -9,6 +9,7 @@ import strategie.NoteScriptVersion;
 import strategie.Strategie;
 import table.Table;
 import utils.Sleep;
+import strategie.NoteScriptMetaversion;
 
 /**
  * Thread qui calculera en continu la stratégie à adopter
@@ -58,7 +59,7 @@ public class ThreadStrategie extends AbstractThread {
 			Sleep.sleep(100);
 		}
 		
-		// boucle principale de stratégie durant le match
+		// boucle principale de stratégie 
 		while(!stop_threads)
 		{
 			// Evaluation d'une stratégie de secours si ce script bug
@@ -68,8 +69,6 @@ public class ThreadStrategie extends AbstractThread {
 			// Evaluation du prochain coup en supposant que celui-ci se passe sans problème
 			maj_prochainScript();
 			
-			
-			// Why ??
 			Sleep.sleep(50);
 			
 		}
@@ -84,7 +83,7 @@ public class ThreadStrategie extends AbstractThread {
 		tableBlocage.creer_obstacle(centre_detection);
 		memorymanager.setModelTable(tableBlocage, profondeur_max);
 		memorymanager.setModelRobotChrono(robotchrono, profondeur_max);
-		NoteScriptVersion meilleurErreur = new NoteScriptVersion();
+		NoteScriptMetaversion meilleurErreur = new NoteScriptMetaversion();
 		try {
 			meilleurErreur = strategie.evaluation(profondeur_max, 0);
 		} catch (ScriptException e) {
@@ -105,13 +104,10 @@ public class ThreadStrategie extends AbstractThread {
 //		enCours.script.calcule(enCours.version, robotchrono, tableFuture, true);
 		memorymanager.setModelTable(tableFuture, profondeur_max);
 		memorymanager.setModelRobotChrono(robotchrono, profondeur_max);
-		NoteScriptVersion meilleur = new NoteScriptVersion();
-		try 
-		{
+		NoteScriptMetaversion meilleur = new NoteScriptMetaversion();
+		try {
 			meilleur = strategie.evaluation(profondeur_max, 0);
-		} 
-		catch (ScriptException e) 
-		{
+		} catch (ScriptException e) {
 			e.printStackTrace();
 			log.critical(e, this);
 		}

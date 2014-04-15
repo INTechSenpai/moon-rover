@@ -108,6 +108,11 @@ public abstract class Script implements Service {
 		
 	}
 	
+	public long metacalcule(int id_version, RobotChrono robotchrono, Table table, Pathfinding pathfinding, boolean use_cache)
+	{
+		return calcule( version_asso(id_version).get(0), robotchrono, table, pathfinding, use_cache);
+	}
+	
 	/**
 	 * Calcule le temps d'exécution de ce script (grâce à robotChrono)
 	 * @return le temps d'exécution
@@ -137,6 +142,12 @@ public abstract class Script implements Service {
 		return robotchrono.get_compteur();
 	}
 	/**
+	 * Renvoie les versions associées associée à une méta-version
+	 * @return le tableau des versions associée
+	 */
+	public abstract ArrayList<Integer> version_asso(int id_meta);
+	
+	/**
 	 * Renvoie le tableau des méta-verions d'un script
 	 * @return le tableau des méta-versions possibles
 	 */
@@ -154,9 +165,18 @@ public abstract class Script implements Service {
 	 * @return la position du point d'entrée
 	 */
 	public abstract Vec2 point_entree(int id);
-	
 	/**
-	 * Renvoie le score que peut fournir un script
+	 * Grande 
+	 * Renvoie le score que peut fournir une méta-version d'un script
+	 * @return le score
+	 */
+	public int meta_score(int id_version, Robot robot, Table table)
+	{
+		
+		return score(version_asso(id_version).get(0),robot,table);
+	}
+	/**
+	 * Renvoie le score que peut fournir une version d'un script
 	 * @return le score
 	 */
 	public abstract int score(int id_version, final Robot robot, final Table table);

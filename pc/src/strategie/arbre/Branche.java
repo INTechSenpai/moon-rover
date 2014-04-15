@@ -3,6 +3,8 @@
  */
 package strategie.arbre;
 
+import table.Table;
+
 /**
  * Classe formalisant le concept d'une branche (ou d'une sous-branche) de l'arbre des possibles.
  * En termes de graphes, l'arbre est défini commme suit :
@@ -11,7 +13,7 @@ package strategie.arbre;
  * Une branche est un arc avec une note suivit d'un sommet duquel partent à leurs tours une mutitude de sous-branches.
  * Une branche possède une note, égale a une combinaison des notes de ses sous-branches.
  * 		(ie branche = triplet note-action-table)
- * Le role de Stratégie est de faire calculer les notes toutes les branches de l'arbres en les considérants jusqu'à une certaine profondeur.
+ * Le role de Stratégie est de faire calculer les notes de toutes les branches de l'arbres en les considérants jusqu'à une certaine profondeur.
  * 
  * @author karton
  *
@@ -20,10 +22,11 @@ public class Branche
 {
 	private long date;			// date d'évaluation de cette branche
 	private int duree_totale;	// temps d'exécution de la partie de l'arbre en amont de cette branche
-	private int profondeur;		// profondeur a laquelle cettre branche sera explorée ( taille de l'arbre en aval de cette branche)
+	private int profondeur;		// profondeur a laquelle cettre branche sera explorée (taille de l'arbre en aval de cette branche)
 	private int id_robot;		// robot qui parcours la branche (?)
 	
-	public Table 
+	
+	public Table etatFinal;
 	
 	/** Constructeur de la branche
 	 * @param date

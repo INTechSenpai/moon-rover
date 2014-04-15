@@ -166,7 +166,8 @@ public class Container {
 																		(Table)getService("Table"),
 																		(RobotVrai)getService("RobotVrai"),
 																		(MemoryManager)getService("MemoryManager"),
-																		(ThreadTimer)getService("threadTimer")));
+																		(ThreadTimer)getService("threadTimer"),
+																		(Pathfinding)getService("Pathfinding")));
 		else if(nom == "threadLaser")
 			services.put(nom, (Service)threadmanager.getThreadLaser(	(Laser)getService("Laser"),
 																		(Table)getService("Table"),
