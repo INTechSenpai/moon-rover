@@ -4,16 +4,18 @@ import exception.ScriptException;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import smartMath.Vec2;
+import strategie.NoteScriptMetaversion;
 import strategie.MemoryManager;
 import strategie.NoteScriptVersion;
+import pathfinding.Pathfinding;
 import strategie.Strategie;
 import table.Table;
 import utils.Sleep;
-import strategie.NoteScriptMetaversion;
+
 
 /**
  * Thread qui calculera en continu la stratégie à adopter
- * @author pf
+ * @author pf, Krissprolls
  *
  */
 
@@ -25,17 +27,19 @@ public class ThreadStrategie extends AbstractThread {
 	private RobotVrai robotvrai;
 	private RobotChrono robotchrono;
 	private MemoryManager memorymanager;
+	private Pathfinding pathfinding;
 	private ThreadTimer threadtimer;
 	
 	private int profondeur_max;
 
-	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, ThreadTimer threadtimer)
+	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, ThreadTimer threadtimer, Pathfinding pathfinding)
 	{
 		this.strategie = strategie;
 		this.table = table;
 		this.robotvrai = robotvrai;
 		this.robotchrono = new RobotChrono(config, log);
 		this.memorymanager = memorymanager;
+		this.pathfinding = pathfinding;
 		this.threadtimer = threadtimer;
 		maj_config();
 		Thread.currentThread().setPriority(5);
@@ -117,8 +121,12 @@ public class ThreadStrategie extends AbstractThread {
 			e.printStackTrace();
 			log.critical(e, this);
 		}
-
-		strategie.setProchainScript(meilleur);		
+		float[] a = strategie.meilleurVersion(meilleur.metaversion, meilleur.script, robotchrono, tableFuture, pathfinding);
+		NoteScriptVersion meilleur_version = new NoteScriptVersion();
+		meilleur_version.script = meilleur.script;
+		meilleur_version.version = (int)a[0];
+		meilleur_version.note = a[1];
+		strategie.setProchainScript(meilleur_version);		
 	}
 
 	private boolean evalueEnnemi()
