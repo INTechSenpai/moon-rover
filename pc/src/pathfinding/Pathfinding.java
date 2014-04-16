@@ -118,6 +118,7 @@ public class Pathfinding implements Service
 			// Si le hash actuel est égal au hash du dernier update, on annule la copie car la map n'a pas changé.
 			if(table.hashTable() == hashTableSaved[degree])
 				return;
+
 //chtung merge
 
 			if(table.codeTorches() != code_torches_actuel)
@@ -128,7 +129,9 @@ public class Pathfinding implements Service
 			// also figure out if a check can be founded to skip the whole process if newtable = map
 			
 			for (int i = 0; i < table.getListObstacles().size(); ++i)
+
 // Stashed changes
+
 			{
 				code_torches_actuel = table.codeTorches();
 				try {
@@ -180,6 +183,7 @@ public class Pathfinding implements Service
 	public ArrayList<Vec2> cheminAStar(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
 //Updated upstream
+
 		// calcule le chemin. Lève une exception en cas d'erreur.
 		Vec2 departGrid = solver.espace.conversionTable2Grid(depart); 
 		Vec2 arriveeGrid = solver.espace.conversionTable2Grid(arrivee); 
@@ -195,7 +199,9 @@ public class Pathfinding implements Service
 		log.debug("Chemin : " + output, this);
 		
 		return output;
+
 //----
+
 		
 		solver.setDepart(new IntPair((int)((float)(depart.x + 1500) / millimetresParCases), (int)((float)(depart.y) / millimetresParCases)));
 		solver.setArrivee(new IntPair((int)((float)(arrivee.x + 1500) / millimetresParCases), (int)((float)(arrivee.y) / millimetresParCases)));
@@ -216,7 +222,9 @@ public class Pathfinding implements Service
 		resultUpToDate = true;
 		return output;
 		
+
 //Stashed changes
+
 	}
 
 	/**

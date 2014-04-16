@@ -4,13 +4,14 @@ import exception.ScriptException;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import smartMath.Vec2;
-import strategie.NoteScriptMetaversion;
 import strategie.MemoryManager;
+import strategie.NoteScriptMetaversion;
 import strategie.NoteScriptVersion;
 import pathfinding.Pathfinding;
 import strategie.Strategie;
 import table.Table;
 import utils.Sleep;
+
 
 
 /**
@@ -32,7 +33,7 @@ public class ThreadStrategie extends AbstractThread {
 	
 	private int profondeur_max;
 
-	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, ThreadTimer threadtimer, Pathfinding pathfinding)
+	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, ThreadTimer threadtimer)
 	{
 		this.strategie = strategie;
 		this.table = table;
@@ -95,6 +96,7 @@ public class ThreadStrategie extends AbstractThread {
 			e.printStackTrace();
 			log.critical(e, this);
 		}
+
 		float[] a = strategie.meilleurVersion(meilleurErreur.metaversion, meilleurErreur.script, robotchrono, tableBlocage, pathfinding);
 		NoteScriptVersion meilleur_version = new NoteScriptVersion();
 		meilleur_version.script = meilleurErreur.script;
