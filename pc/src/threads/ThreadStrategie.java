@@ -89,7 +89,7 @@ public class ThreadStrategie extends AbstractThread {
 			e.printStackTrace();
 			log.critical(e, this);
 		}
-		float[] a = strategie.meilleurVersion(meilleurErreur.metaversion, meilleurErreur.script, robotchrono, tableFuture, pathfinding);
+		float[] a = strategie.meilleurVersion(meilleurErreur.metaversion, meilleurErreur.script, robotchrono, tableBlocage, pathfinding);
 		NoteScriptVersion meilleur_version = new NoteScriptVersion();
 		meilleur_version.script = meilleurErreur.script;
 		meilleur_version.version = (int)a[0];
