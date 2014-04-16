@@ -33,7 +33,7 @@ public class ThreadStrategie extends AbstractThread {
 	
 	private int profondeur_max;
 
-	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, ThreadTimer threadtimer)
+	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, ThreadTimer threadtimer, Pathfinding pathfinding)
 	{
 		this.strategie = strategie;
 		this.table = table;
