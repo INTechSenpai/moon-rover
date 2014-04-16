@@ -4,6 +4,7 @@
 package strategie.arbre;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 import scripts.Script;
 import table.Table;
@@ -32,6 +33,7 @@ public class Branche
 	
 	// note attribuée a cette branche
 	public float note;
+	public boolean isNoteComputed;
 	
 	// Action a executer entre le sommet juste avant cette branche et l'état final
 	public Script script;
@@ -63,44 +65,55 @@ public class Branche
 		this.id_robot = id_robot;
 		this.script = script;
 		this.metaversion = metaversion;
+		isNoteComputed = false;
 	}
 	
-	/*
-	
-	Itterative DFS:
-	
-	Put origin in S
-	
-	while S.size
-		v = S.first
-		S.pop
-		put all childs of v at the beginning of S
-		
-		
-	REcursive DFS :
-	
-	For all origin chlidren :
-		DFS(children[i])
-	
-	
-	*/
 	
 	/* Méthode qui calcule la note de cette branche en calculant celles de ses sous branches, puis en combinant leur notes
 	 * C'est là qu'est logé le DFS
-	 * 
 	 */
 	public void evaluate()
 	{
-		// Si la profondeur est non nulle (ie s'il y a des sous-branches), on explore toutes les sous-branches
-		if (profondeur > 0)
+		/*
+		 * 	Algorithme : Itterative Modified DFS
+		 *  ( la différence entre un vrai DFS et l'algo qu'on utilise ici est que la branche parente
+		 *    doit être évalué uniquement une fois que tout ses enfants ont étés évalués. Dans un
+		 *    DFS normal, le parent est évalué d'abord, et ses enfants ensuite )
+		 *    
+		 * Psuedocode :
+		 * 
+		 * soit P une pile
+		 * mettre la racine au dessus de P
+		 * 
+		 * tant que P est non vide
+		 * 		v = l'élément du dessus de P
+		 * 		si v a des enfants, et qu'ils sont non notés
+		 * 			mettre tout les enfants de v au dessus de P
+		 * 		sinon
+		 * 			calculer la note de v
+		 * 			enlever v de P 
+		 * 
+		 * 
+		 */
+		
+		Stack<Branche> scope = new Stack<Branche>();
+		scope.add(this);
+		
+		while (scope.size() != 0)
 		{
-			// Soucis : l'algo qu'on utilise est pas stricto sensu un DFS, car un traitement est effectué au débouclage (le calcul de la note)
-			// a voir si utiliser un itterative DFS est plus performant ou non.
-			
+			Branche current = scope.lastElement();
+			if(current.profondeur > 0)
+			{
+				// TODO : mettre les sous-branches au fur et a mesure dans la branche courante
+				scope.addAll(current.sousBranches);
+			}
+			else
+			{
+				current.computeNote();
+				scope.pop();
+			}
 		}
 		
-		// Finalement, donne une note a toute cette branche
-		computeNote();
 	}
 	
 	/** Méthode qui prend les notes de chaque sous branche (en supposant qu'elles sont déjà calculés et qu'il n'y a plus qu'a
@@ -123,6 +136,9 @@ public class Branche
 				if(sousBranches.get(i).note > this.note)
 					note = sousBranches.get(i).note; 
 		}
+		
+		// marque la note comme calculée 
+		isNoteComputed = true;
 		
 	}
 
