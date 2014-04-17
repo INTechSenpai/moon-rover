@@ -22,6 +22,8 @@ import table.Table;
  * @author karton
  *
  */
+
+@SuppressWarnings("unused")
 public class Branche 
 {
 	
@@ -71,6 +73,8 @@ public class Branche
 	
 	/* Méthode qui calcule la note de cette branche en calculant celles de ses sous branches, puis en combinant leur notes
 	 * C'est là qu'est logé le DFS
+	 * 
+	 * Note : cette méthode doit elle être dans Branche ou dans Stratégie ?
 	 */
 	public void evaluate()
 	{
@@ -102,7 +106,8 @@ public class Branche
 		while (scope.size() != 0)
 		{
 			Branche current = scope.lastElement();
-			if(current.profondeur > 0)
+			// Condition d'ajout des sous-branches : ne pas dépasser le profondeur max, et ne pas les ajouter 2 fois.
+			if ( current.profondeur > 0 && (current.sousBranches.size() == 0) )
 			{
 				// TODO : mettre les sous-branches au fur et a mesure dans la branche courante
 				scope.addAll(current.sousBranches);
