@@ -3,6 +3,7 @@ package strategie;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Stack;
 
 import pathfinding.Pathfinding;
 import robot.RobotChrono;
@@ -11,6 +12,7 @@ import scripts.Script;
 import scripts.ScriptManager;
 import strategie.NoteScriptMetaversion;
 import strategie.NoteScriptVersion;
+import strategie.arbre.Branche;
 import table.Table;
 import threads.ThreadTimer;
 import utils.Log;
@@ -313,32 +315,39 @@ public class Strategie implements Service {
 		// TODO : Give a value to TTL
 		int duree_connaissances = TTL;
 		
+		// Ittération sur les scripts
 		for(String nom_script : scriptmanager.getNomsScripts())
 		{
 			Script script = scriptmanager.getScript(nom_script);
-			Table table_version = memorymanager.getCloneTable(profondeur);
-			RobotChrono robotchrono_version = memorymanager.getCloneRobotChrono(profondeur);
-			Pathfinding pathfinding_version = memorymanager.getClonePathfinding(profondeur);
-			//ArrayList<Integer> versions = script.version(robotchrono_version, table_version, pathfinding_version);
-			ArrayList<Integer> metaversions = script.meta_version(robotchrono_version, table_version, pathfinding_version);
+			ArrayList<Integer> metaversions = script.meta_version(	memorymanager.getCloneRobotChrono(profondeur),
+																	memorymanager.getCloneTable(profondeur), 
+																	memorymanager.getClonePathfinding(profondeur)	);
 			// TODO corriger les scripts pour que ça n'arrive pas
 			if(metaversions == null)
 				break;
+			
+			
+			
+			// Ittération sur les métaversions des scripts
 			for(int meta_id : metaversions)
 			{
+				
 				try
 				{
 					Table cloned_table = memorymanager.getCloneTable(profondeur);
 					RobotChrono cloned_robotchrono = memorymanager.getCloneRobotChrono(profondeur);
 					Pathfinding cloned_pathfinding = memorymanager.getClonePathfinding(profondeur);
-					//int score = script.score(id, cloned_robotchrono, cloned_table);
-					int score = script.meta_score(meta_id, cloned_robotchrono, cloned_table);
+
 					int duree_script = (int)script.metacalcule(meta_id, cloned_robotchrono, cloned_table, cloned_pathfinding, duree_totale > duree_connaissances);
-					//log.debug("Durée de "+script+" "+id+": "+duree_script, this);
+					
+					// met a jour la table après exécution du script
 					cloned_table.supprimer_obstacles_perimes(date+duree_script);
-					//log.debug("Score de "+script+" "+id+": "+score, this);
-					float noteScript = calculeMetaNote(score, duree_script, meta_id, script);
-					//log.debug("Note de "+script+" "+id+": "+noteScript, this);
+
+					float noteScript = calculeMetaNote(	script.meta_score(meta_id, cloned_robotchrono, cloned_table),
+														duree_script,
+														meta_id,
+														script	);
+
 					NoteScriptMetaversion out = _evaluation(date + duree_script, duree_script, profondeur-1, id_robot);
 					out.note += noteScript;
 
@@ -353,10 +362,155 @@ public class Strategie implements Service {
 				{
 					e.printStackTrace();
 				}
+				
+				
 			}
+			
+			
 		}
 		return meilleur;
 	}
+	
+	
+
+	
+	/* Méthode qui calcule la note de cette branche en calculant celles de ses sous branches, puis en combinant leur notes
+	 * C'est là qu'est logé le DFS
+	 * 
+	 * @param profondeur : la profondeur d'exploration de l'arbre, 1 pour n'explorer 
+	 */
+	public void evaluate(int profondeur)
+	{
+		/*
+		 * 	Algorithme : Itterative Modified DFS
+		 *  ( la différence entre un vrai DFS et l'algo qu'on utilise ici est que la branche parente
+		 *    doit être évalué uniquement une fois que tout ses enfants ont étés évalués. Dans un
+		 *    DFS normal, c'est le parent qui est évalué d'abord, et ses enfants ensuite )
+		 *    
+		 * Psuedocode :
+		 * 
+		 * soit P une pile
+		 * mettre la racine au dessus de P 		// Dans notre cas, il y a autant de racines que de prochaine action possible
+		 * 
+		 * tant que P est non vide
+		 * 		v = l'élément du dessus de P
+		 * 		si v a des enfants, et qu'ils sont non notés
+		 * 			mettre tout les enfants de v au dessus de P
+		 * 		sinon
+		 * 			calculer la note de v
+		 * 			enlever v de P 
+		 * 
+		 * 
+		 */
+		
+		// Pile des branches de l'arbre qu'il reste a explorer
+		Stack<Branche> scope = new Stack<Branche>();
+		
+		// ajoute les différentes possibiités pour la prochaine action dans la pile
+		Script mScript = null;
+		ArrayList<Integer> metaversionList;
+		Table mTable = memorymanager.getCloneTable(1);
+		RobotChrono mRobot = memorymanager.getCloneRobotChrono(1);
+		Pathfinding pathfinder = memorymanager.getClonePathfinding(1);
+		Branche current;
+		
+		
+		// ajoute tous les scrips disponibles scripts
+		mTable = memorymanager.getCloneTable(1);
+		mRobot = memorymanager.getCloneRobotChrono(1);
+		pathfinder = memorymanager.getClonePathfinding(1);
+		for(String nom_script : scriptmanager.getNomsScripts())
+		{
+			try
+			{
+				mScript = scriptmanager.getScript(nom_script);				
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			metaversionList = mScript.meta_version(	mRobot,	
+													mTable, 
+													pathfinder	);
+			// TODO corriger les scripts pour que ça n'arrive pas
+			if(metaversionList == null)
+				break;
+			
+			
+			// ajoute toutes les métaversions de tous les scipts
+			for(int metaversion : metaversionList)
+				scope.push( new Branche(	false,							// N'utilise pas le cache pour le premier niveau de profondeur 
+											profondeur,						// Profondeur a laquel déployer des sous branches
+											mScript, 						// Une branche par script et par métaversion
+											metaversion, 
+											mTable, 						// Table actuelle pour le premier niveau de profondeur 
+											mRobot, 						// Robot effectuant les actions
+											pathfinder	) );				// Instance de pathfinding
+		}
+
+		
+		
+
+
+		// Boucle principale d'exploration des branches
+		while (scope.size() != 0)
+		{
+			current = scope.lastElement();
+			// Condition d'ajout des sous-branches : ne pas dépasser le profondeur max, et ne pas les ajouter 2 fois.
+			if ( current.profondeur != 0 && (current.sousBranches.size() == 0) )
+			{
+				// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage
+				
+				mTable = memorymanager.getCloneTable(current.profondeur+1);
+				mRobot = memorymanager.getCloneRobotChrono(current.profondeur+1);
+				pathfinder = memorymanager.getClonePathfinding(current.profondeur+1);
+				// ajoute tous les scrips disponibles
+				for(String nom_script : scriptmanager.getNomsScripts())
+				{
+					try
+					{
+						mScript = scriptmanager.getScript(nom_script);				
+					}
+					catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+					
+					metaversionList = mScript.meta_version(	mRobot,	
+															mTable, 
+															pathfinder	);
+					// TODO corriger les scripts pour que ça n'arrive pas
+					if(metaversionList == null)
+						break;
+					
+					
+					// ajoute toutes les métaversions de tous les scipts
+					for(int metaversion : metaversionList)
+						scope.push( new Branche(	current.profondeur >= 2,		// Utiliser le cache dès le second niveau de profondeur
+													current.profondeur+1,			// Profondeur a laquel déployer des sous branches
+													mScript, 						// Une branche par script et par métaversion
+													metaversion, 
+													mTable, 						// Table actuelle pour le premier niveau de profondeur 
+													mRobot, 						// Robot effectuant les actions
+													pathfinder	) );				// Instance de pathfinding
+				}
+				
+				
+			}
+			else	// Soit on a atteint la profondeur maximale, soit les enfants ont étés traités donc on calcule la note de ce niveau
+			{
+				current.computeNote();
+				scope.pop();
+			}
+		}
+		
+		// TODO: le meilleur sera le max de toutes les branches 
+	}
+	
+	
+	
+	
 
 	/**
 	 * Renvoie le nombre de scripts qui peuvent encore être exécutés (indépendamment de leur nombre de version)
