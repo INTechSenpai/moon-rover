@@ -273,7 +273,15 @@ public class Table implements Service {
 		arrayFire[id].pickFire();
 		hashFire = indice++;
 	}
-
+	public int furthestUntakenFire (final Vec2 position)
+	{
+		// On ne prend pas en compte les feux dans les torches
+		int max = 0;
+		for (int i = 1; i < 6; i++)
+			if (!arrayFire[i].isTaken() && arrayFire[i].getPosition().SquaredDistance(position) > arrayFire[max].getPosition().SquaredDistance(position))
+				max = i;
+		return max;
+	}
 	public int nearestUntakenFire (final Vec2 position)
 	{
 		// On ne prend pas en compte les feux dans les torches
@@ -310,7 +318,14 @@ public class Table implements Service {
 	}
 	
 	// Arbres
-	
+	public int furthestUntakenTree (final Vec2 position)
+	{
+		int max = 0;
+		for (int i = 0; i < 4; i++)
+			if (!arrayTree[i].isTaken() && arrayTree[i].getPosition().SquaredDistance(position) > arrayTree[max].getPosition().SquaredDistance(position))
+				max = i;
+		return max;
+	}
 	public int nearestUntakenTree (final Vec2 position)
 	{
 		int min = 0;

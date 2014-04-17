@@ -75,7 +75,6 @@ public class Branche
 	public ArrayList<Branche> sousBranches;
 	
 	
-	
 	/** Méthode qui prend les notes de chaque sous branche (en supposant qu'elles sont déjà calculés et qu'il n'y a plus qu'a
 	 * les considérer) et les mélange popur produire la note de  toute cette branche
 	 * Il n'y a que cette méthode qui doit modifier this.note
