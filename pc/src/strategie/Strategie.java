@@ -535,6 +535,7 @@ public class Strategie implements Service {
 		return compteur;
 	}
 	
+	
 	/*
 	 * GETTERS AND SETTERS
 	 */
