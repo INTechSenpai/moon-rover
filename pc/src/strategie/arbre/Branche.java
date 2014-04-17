@@ -75,6 +75,7 @@ public class Branche
 	 * C'est là qu'est logé le DFS
 	 * 
 	 * Note : cette méthode doit elle être dans Branche ou dans Stratégie ?
+	 * Réponse de Krissprolls : c'est meux ici
 	 */
 	public void evaluate()
 	{
