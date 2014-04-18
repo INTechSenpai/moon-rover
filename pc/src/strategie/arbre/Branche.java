@@ -27,6 +27,7 @@ public class Branche
 	// Paramètres généraux
 	private boolean useCachedPathfinding; 	// utiliser un pathfinding en cache ou calculée spécialement pour l'occasion ?
 	public int profondeur;					// Cette branche est-elle la dernière à évaluer, ou faut-il prendre en compte des sous-branches ? 
+	public long date;						// date à laquelle cette branche est parcourue
 	
 	// Notes
 	public float note;				// note de toute la branche, prenant en comte les notes des sous-branches
@@ -34,36 +35,14 @@ public class Branche
 	public boolean isNoteComputed;	// l'attribut "note" a-t-il été calculé ?
 	
 	// Action a executer entre le sommet juste avant cette branche et l'état final
-	public Script script;		// script de l'action
-	public int metaversion;		// metaversion du script
-	long dureeScript;			// durée nécessaire pour effectuer le script
-	int scoreScript;			// durée nécessaire pour effectuer le script
+	public Script script;							// script de l'action
+	public int metaversion;							// metaversion du script
+	public long dureeScript;						// durée nécessaire pour effectuer le script
+	private int scoreScript;						// durée nécessaire pour effectuer le script
+	public boolean isActionCharacteisticsComputed;  // la durée et le score du script ont-ils étés calculés ?
 	
 	// Table avant la première action de cette branche
 	public Table etatInitial;
-	
-	
-	/**
-	 * @param useCachedPathfinding
-	 * @param isLeaf
-	 * @param script
-	 * @param metaversion
-	 * @param etatInitial
-	 * @param robot
-	 * @param pathfinder
-	 */
-	public Branche(boolean useCachedPathfinding, int profondeur, Script script, int metaversion, Table etatInitial, RobotChrono robot, Pathfinding pathfinder)
-	{
-		this.useCachedPathfinding = useCachedPathfinding;
-		this.profondeur = profondeur;
-		this.script = script;
-		this.metaversion = metaversion;
-		this.etatInitial = etatInitial;
-		this.robot = robot;
-		this.pathfinder = pathfinder;
-		isNoteComputed  = false;
-	}
-
 
 	// Robot exécutant les actions
 	private RobotChrono robot;
@@ -73,6 +52,41 @@ public class Branche
 	
 	// Sous branches contenant toutes les autres actions possibles a partir de l'état final
 	public ArrayList<Branche> sousBranches;
+
+	
+	
+	/**
+	 * @param useCachedPathfinding
+	 * @param prodondeur
+	 * @param date
+	 * @param script
+	 * @param metaversion
+	 * @param etatInitial
+	 * @param robot
+	 * @param pathfinder
+	 */
+	public Branche(boolean useCachedPathfinding, int profondeur, long date, Script script, int metaversion, Table etatInitial, RobotChrono robot, Pathfinding pathfinder)
+	{
+		this.useCachedPathfinding = useCachedPathfinding;
+		this.profondeur = profondeur;
+		this.script = script;
+		this.metaversion = metaversion;
+		this.etatInitial = etatInitial;
+		this.robot = robot;
+		this.pathfinder = pathfinder;
+		isNoteComputed  = false;
+		isActionCharacteisticsComputed = false;
+	}
+	
+	public void computeActionCharacteristics()
+	{
+		if(!isActionCharacteisticsComputed)
+		{
+			scoreScript = script.meta_score(metaversion, robot, etatInitial);
+			dureeScript = script.metacalcule(metaversion, robot, etatInitial, pathfinder, useCachedPathfinding);
+			isActionCharacteisticsComputed = true;
+		}
+	}
 	
 	
 	/** Méthode qui prend les notes de chaque sous branche (en supposant qu'elles sont déjà calculés et qu'il n'y a plus qu'a
@@ -115,9 +129,10 @@ public class Branche
 	 */
 	private void computeLocalNote()
 	{ 
+		// la note de la branche se base sur certaines caractéristiques de l'action par laquelle elle débute.
+		if(!isActionCharacteisticsComputed)
+			computeActionCharacteristics();
 		
-		scoreScript = script.meta_score(metaversion, robot, etatInitial);
-		dureeScript = script.metacalcule(metaversion, robot, etatInitial, pathfinder, useCachedPathfinding);
 		// TODO
 		int id = script.version_asso(metaversion).get(0);
 		int A = 1;

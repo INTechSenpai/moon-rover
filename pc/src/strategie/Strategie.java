@@ -341,7 +341,7 @@ public class Strategie implements Service {
 					int duree_script = (int)script.metacalcule(meta_id, cloned_robotchrono, cloned_table, cloned_pathfinding, duree_totale > duree_connaissances);
 					
 					// met a jour la table après exécution du script
-					cloned_table.supprimer_obstacles_perimes(date+duree_script);
+					cloned_table.supprimerObstaclesPerimes(date+duree_script);
 
 					float noteScript = calculeMetaNote(	script.meta_score(meta_id, cloned_robotchrono, cloned_table),
 														duree_script,
@@ -377,9 +377,10 @@ public class Strategie implements Service {
 	/* Méthode qui calcule la note de cette branche en calculant celles de ses sous branches, puis en combinant leur notes
 	 * C'est là qu'est logé le DFS
 	 * 
-	 * @param profondeur : la profondeur d'exploration de l'arbre, 1 pour n'explorer 
+	 * @param profondeur : la profondeur d'exploration de l'arbre, 1 pour n'explorer que la prochaine action
+	 * @param date :  la date a laquelle le calcul est effectué. Normalement la date actuelle
 	 */
-	public void evaluate(int profondeur)
+	public NoteScriptMetaversion evaluate(int profondeur, long date)
 	{
 		/*
 		 * 	Algorithme : Itterative Modified DFS
@@ -409,6 +410,7 @@ public class Strategie implements Service {
 		// ajoute les différentes possibiités pour la prochaine action dans la pile
 		Script mScript = null;
 		ArrayList<Integer> metaversionList;
+		ArrayList<Branche> rootList = new ArrayList<Branche>();
 		Table mTable = memorymanager.getCloneTable(1);
 		RobotChrono mRobot = memorymanager.getCloneRobotChrono(1);
 		Pathfinding pathfinder = memorymanager.getClonePathfinding(1);
@@ -440,13 +442,19 @@ public class Strategie implements Service {
 			
 			// ajoute toutes les métaversions de tous les scipts
 			for(int metaversion : metaversionList)
+			{
 				scope.push( new Branche(	false,							// N'utilise pas le cache pour le premier niveau de profondeur 
 											profondeur,						// Profondeur a laquel déployer des sous branches
+											date,							// onexécute l'action de cette branche a la deta fournie en paramètre
 											mScript, 						// Une branche par script et par métaversion
 											metaversion, 
 											mTable, 						// Table actuelle pour le premier niveau de profondeur 
 											mRobot, 						// Robot effectuant les actions
 											pathfinder	) );				// Instance de pathfinding
+				
+				// creée un raccourci vers les racines, pour calculer le max des notes qu'elles prennnent aprsè DFS
+				rootList.add(scope.lastElement());
+			}
 		}
 
 		
@@ -457,14 +465,19 @@ public class Strategie implements Service {
 		while (scope.size() != 0)
 		{
 			current = scope.lastElement();
+			
 			// Condition d'ajout des sous-branches : ne pas dépasser le profondeur max, et ne pas les ajouter 2 fois.
 			if ( current.profondeur != 0 && (current.sousBranches.size() == 0) )
 			{
 				// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage
-				
-				mTable = memorymanager.getCloneTable(current.profondeur+1);
 				mRobot = memorymanager.getCloneRobotChrono(current.profondeur+1);
 				pathfinder = memorymanager.getClonePathfinding(current.profondeur+1);
+
+				// clone la table de la branche parente et lui enlève tout ce qui n'est plus a jour
+				mTable = memorymanager.getCloneTable(current.profondeur+1);
+				scope.lastElement().computeActionCharacteristics();
+				mTable.supprimerObstaclesPerimes(current.date + scope.lastElement().dureeScript);
+				
 				// ajoute tous les scrips disponibles
 				for(String nom_script : scriptmanager.getNomsScripts())
 				{
@@ -487,13 +500,19 @@ public class Strategie implements Service {
 					
 					// ajoute toutes les métaversions de tous les scipts
 					for(int metaversion : metaversionList)
-						scope.push( new Branche(	current.profondeur >= 2,		// Utiliser le cache dès le second niveau de profondeur
-													current.profondeur+1,			// Profondeur a laquel déployer des sous branches
-													mScript, 						// Une branche par script et par métaversion
+					{
+						scope.push( new Branche(	current.profondeur >= 2,			// Utiliser le cache dès le second niveau de profondeur
+													current.profondeur+1,				// Profondeur a laquel déployer des sous branches
+													current.date + current.dureeScript,	// On exécutel l'action cette branche a la date de fin de l'action de la branche parente
+													mScript, 							// Une branche par script et par métaversion
 													metaversion, 
-													mTable, 						// Table actuelle pour le premier niveau de profondeur 
-													mRobot, 						// Robot effectuant les actions
-													pathfinder	) );				// Instance de pathfinding
+													mTable, 							// Table actuelle pour le premier niveau de profondeur 
+													mRobot, 							// Robot effectuant les actions
+													pathfinder	) );					// Instance de pathfinding
+						
+						// Enregistre cette nouvelle branche comme sous branche de la branche courrante
+						current.sousBranches.add(scope.lastElement());
+					}
 				}
 				
 				
@@ -503,9 +522,26 @@ public class Strategie implements Service {
 				current.computeNote();
 				scope.pop();
 			}
+			
+		}	// fin boucle principale d'exploration
+		
+		
+		
+		// la meilleure action a une meilleure note que les autres branches. Donc on calcule le max des notes des branches 
+		NoteScriptMetaversion DatUltimateBest = new NoteScriptMetaversion(-42, null, 0);
+		for (int i = 0; i < rootList.size(); ++i)
+		{
+			current = rootList.get(i);
+			if (current.note > DatUltimateBest.note)
+			{
+				DatUltimateBest.note = current.note;
+				DatUltimateBest.script = current.script;
+				DatUltimateBest.metaversion = current.metaversion;
+				
+			}
 		}
 		
-		// TODO: le meilleur sera le max de toutes les branches 
+		return DatUltimateBest;
 	}
 	
 	
