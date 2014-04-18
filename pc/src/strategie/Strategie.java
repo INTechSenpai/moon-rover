@@ -44,7 +44,7 @@ public class Strategie implements Service {
 
 	private NoteScriptVersion scriptEnCours;
 	
-	public int TTL; //time to live
+	public int TTL; //time toDatUltimateBest live
 
 	// TODO initialisations des variables = première action
 	// Prochain script à exécuter si on est interrompu par l'ennemi
@@ -206,6 +206,8 @@ public class Strategie implements Service {
 		// Le TTL est une durée en ms sur laquelle on estime que le robot demeurera immobile
 		
 	} 
+	
+	
 	public float[] meilleurVersion(int meta_id, Script script, RobotChrono robotchrono, Table table, Pathfinding pathfinding)
 	{
 		int id = 0;
@@ -226,6 +228,8 @@ public class Strategie implements Service {
 		float[] a= {id, meilleurNote};
 		return a;
 	}
+	
+	
 	/**
 	 * La note d'un script est fonction de son score, de sa durée, de la distance de l'ennemi à l'action 
 	 * @param score

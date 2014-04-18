@@ -21,7 +21,7 @@ import exception.PathfindingException;
  * 
  * Permet de traiter les problèmes de chemins : longueur d'un parcourt d'un point à un autre de la map,
  * 												 trajet d'un point a un autre de la map
- * Dispose de plusieurs solver A*, utilisé pour calculer un HPA*
+ * 
  *
  */
 
@@ -45,7 +45,7 @@ public class Pathfinding implements Service
 	 */
 	private static Grid2DSpace[][] map_obstacles_fixes = null;
 	
-	/* Le cache des distances
+	/* Le cache des distancesDispose de plusieurs solver A*, utilisé pour calculer un HPA*
 	 * Sera rechargé en match (au plus 4 fois), car prend trop de mémoire sinon
 	 */
 	private static CacheHolder distance_cache;
@@ -64,6 +64,7 @@ public class Pathfinding implements Service
 		table = requestedtable;
 		config = requestedConfig;	
 		log = requestedLog;
+		solver = new AStar();
 		maj_config();
 	}
 	
