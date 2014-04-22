@@ -12,11 +12,12 @@ import exception.PathfindingException;
 
 /**
  * Classe encapsulant le calcul d'un chemin par l'agorithme dit HPAStar
+ * Le développement de cette classe n'est pas prioritaire et est pour le moment
+ * mis en pause.
  * 
  * @author karton, refactoring de l'implémentaiton de pf
  *
  */
-
 
 /* Classe de calcul de chemin
  * 

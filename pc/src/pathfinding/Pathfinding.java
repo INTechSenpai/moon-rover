@@ -38,6 +38,8 @@ public class Pathfinding implements Service
 	
 	private AStar[] solvers;
 	private AStar solver;
+	private Grid2DSpace[] solvers_grid;
+	private Grid2DSpace solver_grid;
 
 	/* Quatre Grid2DSpace qui sont la base, avec les obstacles fixes. On applique des pochoirs dessus.
 	 * Quatre parce qu'il y a la table initiale, la table à laquelle il manque une torche fixe et la table sans torche fixe.
@@ -93,10 +95,12 @@ public class Pathfinding implements Service
 		}
 		
 		solvers = new AStar[nb_precisions];
+		solvers_grid = new Grid2DSpace[nb_precisions];
 		for(int i = 0; i < nb_precisions; i++)
 		{
 			hashTableSaved[i] = -1;
-			solvers[i] = new AStar(new Grid2DSpace(i));
+			solvers_grid[i] = new Grid2DSpace(i);
+			solvers[i] = new AStar(solvers_grid[i]);
 			setPrecision(i);
 			update(); 	// initialisation des map
 		}
@@ -137,12 +141,12 @@ public class Pathfinding implements Service
 			if(map_obstacles_fixes[degree][code_torches_actuel] == null)
 				map_obstacles_fixes[degree][code_torches_actuel] = (Grid2DSpace)DataSaver.charger("cache/map-"+degree+"-"+code_torches_actuel+".cache");
 
-			map_obstacles_fixes[degree][code_torches_actuel].clone(solver.espace);
+			map_obstacles_fixes[degree][code_torches_actuel].clone(solver_grid);
 
 			// Puis les obstacles temporaires
 			ArrayList<ObstacleCirculaire> obs = table.getListObstacles();
 			for(ObstacleCirculaire o: obs)
-				solver.espace.appendObstacleTemporaire(o);
+				solver_grid.appendObstacleTemporaire(o);
 		}
 	}
 
@@ -171,16 +175,16 @@ public class Pathfinding implements Service
 	public ArrayList<Vec2> cheminAStar(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
 		// calcule le chemin. Lève une exception en cas d'erreur.
-		Vec2 departGrid = solver.espace.conversionTable2Grid(depart); 
-		Vec2 arriveeGrid = solver.espace.conversionTable2Grid(arrivee); 
+		Vec2 departGrid = solver_grid.conversionTable2Grid(depart); 
+		Vec2 arriveeGrid = solver_grid.conversionTable2Grid(arrivee); 
 		ArrayList<Vec2> chemin = solver.process(departGrid, arriveeGrid);
 
 		log.debug("Chemin avant lissage : " + chemin, this);
 
-		chemin = solver.espace.lissage(chemin);
+		chemin = solver_grid.lissage(chemin);
 		ArrayList<Vec2> output = new ArrayList<Vec2>();
 		for(Vec2 pos: chemin)
-			output.add(solver.espace.conversionGrid2Table(pos));
+			output.add(solver_grid.conversionGrid2Table(pos));
 		
 		log.debug("Chemin : " + output, this);
 		
@@ -225,6 +229,7 @@ public class Pathfinding implements Service
 		else
 			degree = precision;
 		solver = solvers[degree];
+		solver_grid = solvers_grid[degree];
 	}
 	
 	/**

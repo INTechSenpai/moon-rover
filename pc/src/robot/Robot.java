@@ -102,7 +102,7 @@ public abstract class Robot implements Service {
 	protected boolean tient_feu_gauche = false;
 	protected boolean feu_tenu_gauche_rouge = false;
 	protected boolean feu_tenu_droite_rouge = false;
-	protected int nb_tentatives = 2;
+	protected static int nb_tentatives = 2;
 	private String vitesse_translation;
 	private String vitesse_rotation;
 	
