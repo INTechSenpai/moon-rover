@@ -26,6 +26,7 @@ public class Branche
 	
 	// Paramètres généraux
 	private boolean useCachedPathfinding; 	// utiliser un pathfinding en cache ou calculée spécialement pour l'occasion ?
+	// TODO : changer en profondeur restante
 	public int profondeur;					// Cette branche est-elle la dernière à évaluer, ou faut-il prendre en compte des sous-branches ? 
 	
 	// Notes
@@ -58,6 +59,8 @@ public class Branche
 		this.script = script;
 		this.metaversion = metaversion;
 		isNoteComputed  = false;
+
+        computeLocalNote();
 	}
 
 	// Sous branches contenant toutes les autres actions possibles a partir de l'état final
@@ -70,7 +73,6 @@ public class Branche
 	 */
 	public void computeNote()
 	{
-		computeLocalNote();
 		
 		if(profondeur == 0)
 			// Pas de prise en compte d'actions futures si on est déjà a profondeur maximale 

@@ -368,7 +368,7 @@ public class Strategie implements Service {
 	/* Méthode qui calcule la note de cette branche en calculant celles de ses sous branches, puis en combinant leur notes
 	 * C'est là qu'est logé le DFS
 	 * 
-	 * @param profondeur : la profondeur d'exploration de l'arbre, 1 pour n'explorer 
+	 * @param profondeur : la profondeur d'exploration de l'arbre, 1 pour n'explorer qu'un niveau
 	 */
 	public void evaluate(int profondeur)
 	{
@@ -419,7 +419,7 @@ public class Strategie implements Service {
 			metaversionList = mScript.meta_version(	mState	);
 			// TODO corriger les scripts pour que ça n'arrive pas
 			if(metaversionList == null)
-				break;
+				continue;
 			
 			
 			// ajoute toutes les métaversions de tous les scipts
@@ -443,7 +443,7 @@ public class Strategie implements Service {
 			if ( current.profondeur != 0 && (current.sousBranches.size() == 0) )
 			{
 				// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage
-				
+				// attn profondeur n'est pas la position actuelle mais la taille de l'abre en ava
 				mState = memorymanager.getClone(current.profondeur+1);
 				// ajoute tous les scrips disponibles
 				for(String nom_script : scriptmanager.getNomsScripts())
@@ -460,16 +460,21 @@ public class Strategie implements Service {
 					metaversionList = mScript.meta_version(	mState	);
 					// TODO corriger les scripts pour que ça n'arrive pas
 					if(metaversionList == null)
-						break;
+						continue;
 					
 					
 					// ajoute toutes les métaversions de tous les scipts
 					for(int metaversion : metaversionList)
+					{
+					    //Att, il faut executer le script a ce moment la sur la branche parente (via scipet::metacalcule) sinon l'état n'est pas changé
+					                                //attn, profondeur n'est pas la position bsolue mais la taille de l'abre en aval
 						scope.push( new Branche(	current.profondeur >= 2,		// Utiliser le cache dès le second niveau de profondeur
 													current.profondeur+1,			// Profondeur a laquel déployer des sous branches
 													mScript, 						// Une branche par script et par métaversion
 													metaversion, 
 													mState	) );
+						
+					}
 				}
 				
 				
