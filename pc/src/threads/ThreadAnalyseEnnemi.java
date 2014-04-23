@@ -12,18 +12,16 @@ import utils.Sleep;
  */
 public class ThreadAnalyseEnnemi extends AbstractThread  {
 
-	Table table;
-	ThreadTimer threadtimer;
-	Strategie strategie;
+	private Table table;
+	private Strategie strategie;
 	
 	private long[] date_freeze = new long[2];
 	public Vec2[] positionsfreeze = new Vec2[2];
 //	private int tolerance = 1000;
 	
-	public ThreadAnalyseEnnemi(Table table, ThreadTimer threadtimer, Strategie strategie)
+	public ThreadAnalyseEnnemi(Table table, Strategie strategie)
 	{
 		this.table = table;
-		this.threadtimer = threadtimer;
 		this.strategie = strategie;
 		positionsfreeze = table.get_positions_ennemis();
 		Thread.currentThread().setPriority(1);
@@ -33,7 +31,7 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 	public void run() {
 		log.debug("Lancement du thread d'analyse de l'ennemi", this);
 
-		while(!threadtimer.match_demarre)
+		while(!ThreadTimer.match_demarre)
 		{
 			if(stop_threads)
 			{
@@ -46,7 +44,7 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 		date_freeze[0] = System.currentTimeMillis();
 		date_freeze[1] = System.currentTimeMillis();
 		
-		while(!threadtimer.fin_match)
+		while(!ThreadTimer.fin_match)
 		{
 			if(stop_threads)
 			{

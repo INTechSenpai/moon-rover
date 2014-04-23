@@ -17,7 +17,6 @@ class ThreadCapteurs extends AbstractThread {
 	private RobotVrai robotvrai;
 	private Capteurs capteur;
 	private Table table;
-	private ThreadTimer threadTimer;
 	
 	// Valeurs par défaut s'il y a un problème de config
 	private double tempo = 0;
@@ -28,11 +27,10 @@ class ThreadCapteurs extends AbstractThread {
 	private int table_y = 2000;
 	private int capteurs_frequence = 5;
 	
-	ThreadCapteurs(RobotVrai robotvrai, ThreadTimer threadTimer, Table table, Capteurs capteur)
+	ThreadCapteurs(RobotVrai robotvrai, Table table, Capteurs capteur)
 	{
 		super(config, log);
 		this.robotvrai = robotvrai;
-		this.threadTimer = threadTimer;
 		this.table = table;
 		this.capteur = capteur;
 		Thread.currentThread().setPriority(2);
@@ -46,7 +44,7 @@ class ThreadCapteurs extends AbstractThread {
 //		boolean marche_arriere = false;
 		maj_config();
 		
-		while(!threadTimer.match_demarre)
+		while(!ThreadTimer.match_demarre)
 		{
 			if(stop_threads)
 			{
@@ -57,7 +55,7 @@ class ThreadCapteurs extends AbstractThread {
 		}
 		
 		log.debug("Activation des capteurs", this);
-		while(!threadTimer.fin_match)
+		while(!ThreadTimer.fin_match)
 		{
 			if(stop_threads)
 			{

@@ -29,11 +29,10 @@ public class ThreadStrategie extends AbstractThread {
 	private RobotChrono robotchrono;
 	private MemoryManager memorymanager;
 	private Pathfinding pathfinding;
-	private ThreadTimer threadtimer;
 	
 	private int profondeur_max;
 
-	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, ThreadTimer threadtimer, Pathfinding pathfinding)
+	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, Pathfinding pathfinding)
 	{
 		this.strategie = strategie;
 		this.table = table;
@@ -41,7 +40,6 @@ public class ThreadStrategie extends AbstractThread {
 		this.robotchrono = new RobotChrono(config, log);
 		this.memorymanager = memorymanager;
 		this.pathfinding = pathfinding;
-		this.threadtimer = threadtimer;
 		maj_config();
 		Thread.currentThread().setPriority(5);
 	}
@@ -52,7 +50,7 @@ public class ThreadStrategie extends AbstractThread {
 		log.debug("Lancement du thread de stratégie", this);
 
 		// attends que le match démarre
-		while(!threadtimer.match_demarre)
+		while(!ThreadTimer.match_demarre)
 		{
 			if(stop_threads)
 			{

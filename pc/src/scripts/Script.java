@@ -2,6 +2,7 @@ package scripts;
 
 import smartMath.Vec2;
 import strategie.GameState;
+import threads.ThreadTimer;
 import hook.Callback;
 import hook.Executable;
 import hook.Hook;
@@ -108,7 +109,9 @@ public abstract class Script implements Service {
 	
 	public long metacalcule(int id_version, GameState<RobotChrono> state, boolean use_cache)
 	{	    
-		return calcule(version_asso(id_version).get(0), state, use_cache);
+		long duree = calcule(version_asso(id_version).get(0), state, use_cache);
+		state.time += duree;
+		return duree;
 	}
 	
 	/**

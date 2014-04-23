@@ -232,16 +232,6 @@ public class Pathfinding implements Service
 		solver_grid = solvers_grid[degree];
 	}
 	
-	/**
-	 * Le pathfinding en argument deviendra la copie de this (this reste inchangé)
-	 * @param cp (cloned_pathfinding)
-	 */
-	public void copy(Pathfinding cp)
-	{
-		table.copy(cp.table);  // clone de la table
-		cp.update();		    // et update
-	}
-	
 	@Override
 	public boolean equals(Object other)
 	{

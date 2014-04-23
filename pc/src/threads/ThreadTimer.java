@@ -20,11 +20,11 @@ public class ThreadTimer extends AbstractThread {
 	private Capteurs capteur;
 	private Deplacements deplacements;
 	
-	public boolean match_demarre = false;
-	public boolean fin_match = false;
-	public long date_debut;
-	public long duree_match = 90000;
-	
+	public static boolean match_demarre = false;
+	public static boolean fin_match = false;
+	public static long date_debut;
+	public static long duree_match = 90000;
+		
 	ThreadTimer(Table table, Capteurs capteur, Deplacements deplacements)
 	{
 		this.table = table;

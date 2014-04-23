@@ -15,7 +15,11 @@ public class GameState<R extends Robot> implements Service
     public Pathfinding pathfinding;
     private Log log;
     private Read_Ini config;
-        
+
+    // time contient le temps écoulé depuis le début du match en ms
+    // utilisé uniquement dans l'arbre des possibles
+    public long time;
+
     public GameState(Read_Ini config, Log log, Table table, R robot, Pathfinding pathfinding)
     {
         this.config = config;
@@ -35,6 +39,7 @@ public class GameState<R extends Robot> implements Service
         robot.copy(new_rc);
         Pathfinding new_pf = new Pathfinding(new_table, config, log);
         GameState<RobotChrono> out = new GameState<RobotChrono>(config, log, new_table, new_rc, new_pf);
+        out.time = time;
         return out;
     }
 
@@ -46,8 +51,8 @@ public class GameState<R extends Robot> implements Service
     {
         table.copy(other.table);
         robot.copy(other.robot);
-        pathfinding.copy(other.pathfinding);
         pathfinding.update();
+        other.time = time;
     }
 
     @Override
@@ -57,5 +62,5 @@ public class GameState<R extends Robot> implements Service
         robot.maj_config();
         pathfinding.maj_config();
     }
-
+    
 }

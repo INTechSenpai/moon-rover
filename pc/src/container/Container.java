@@ -160,11 +160,9 @@ public class Container {
 																		(Capteurs)getService("Capteur"),
 																		(Deplacements)getService("Deplacements")));
 		else if(nom == "threadPosition")
-			services.put(nom, (Service)threadmanager.getThreadPosition(	(RobotVrai)getService("RobotVrai"),
-																		(ThreadTimer)getService("threadTimer")));
+			services.put(nom, (Service)threadmanager.getThreadPosition(	(RobotVrai)getService("RobotVrai")));
 		else if(nom == "threadCapteurs")
 			services.put(nom, (Service)threadmanager.getThreadCapteurs(	(RobotVrai)getService("RobotVrai"),
-																		(ThreadTimer)getService("threadTimer"),
 																		(Table)getService("Table"),
 																		(Capteurs)getService("Capteur")));
 
@@ -173,16 +171,13 @@ public class Container {
 																		(Table)getService("Table"),
 																		(RobotVrai)getService("RobotVrai"),
 																		(MemoryManager)getService("MemoryManager"),
-																		(ThreadTimer)getService("threadTimer"),
 																		(Pathfinding)getService("Pathfinding")));
 		else if(nom == "threadLaser")
 			services.put(nom, (Service)threadmanager.getThreadLaser(	(Laser)getService("Laser"),
 																		(Table)getService("Table"),
-																		(ThreadTimer)getService("threadTimer"),
 																		(FiltrageLaser)getService("FiltrageLaser")));
 		else if(nom == "threadAnalyseEnnemi")
 			services.put(nom, (Service)threadmanager.getThreadAnalyseEnnemi(	(Table)getService("Table"),
-																				(ThreadTimer)getService("threadTimer"),
 																				(Strategie)getService("Strategie")));
 		else if(nom == "Pathfinding")
 			services.put(nom, (Service)new Pathfinding(	(Table)getService("Table"),

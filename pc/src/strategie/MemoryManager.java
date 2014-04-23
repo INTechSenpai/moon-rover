@@ -5,6 +5,7 @@ import java.util.Vector;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import strategie.GameState;
+import threads.ThreadTimer;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
@@ -43,7 +44,10 @@ public class MemoryManager implements Service {
         
         // Si la profondeur vaut 0, alors l'arbre veut un clone de real_state
         if(profondeur == 0)
+        {
+            real_state.time = System.currentTimeMillis() - ThreadTimer.date_debut;
             real_state.copy(out);
+        }
         else
             products.get(profondeur-1).copy(out);
 	    return out;
