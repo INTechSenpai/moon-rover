@@ -331,7 +331,7 @@ public class Grid2DSpace implements Serializable
 	public Grid2DSpace makeCopy()
 	{
 		Grid2DSpace output = new Grid2DSpace();
-		clone(output);
+		copy(output);
 		return output;
 	}
 	
@@ -533,7 +533,7 @@ public class Grid2DSpace implements Serializable
 	 * Clone "this" into "other". "this" is not modified.
 	 * @param other
 	 */
-	public void clone(Grid2DSpace other)
+	public void copy(Grid2DSpace other)
 	{
 		other.datas = new boolean[sizeX+1][sizeY+1];
 		for (int i = 0; i < datas.length; i++) {

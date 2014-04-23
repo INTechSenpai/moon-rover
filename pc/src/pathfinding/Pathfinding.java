@@ -141,7 +141,7 @@ public class Pathfinding implements Service
 			if(map_obstacles_fixes[degree][code_torches_actuel] == null)
 				map_obstacles_fixes[degree][code_torches_actuel] = (Grid2DSpace)DataSaver.charger("cache/map-"+degree+"-"+code_torches_actuel+".cache");
 
-			map_obstacles_fixes[degree][code_torches_actuel].clone(solver_grid);
+			map_obstacles_fixes[degree][code_torches_actuel].copy(solver_grid);
 
 			// Puis les obstacles temporaires
 			ArrayList<ObstacleCirculaire> obs = table.getListObstacles();
