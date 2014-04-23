@@ -236,10 +236,20 @@ public class Pathfinding implements Service
 	 * Le pathfinding en argument deviendra la copie de this (this reste inchangé)
 	 * @param cp (cloned_pathfinding)
 	 */
-	public void clone(Pathfinding cp)
+	public void copy(Pathfinding cp)
 	{
-		table.clone(cp.table);  // clone de la table
+		table.copy(cp.table);  // clone de la table
 		cp.update();		    // et update
+	}
+	
+	@Override
+	public boolean equals(Object other)
+	{
+	    if(other == null)
+	        return false;
+	    else if(!(other instanceof Pathfinding))
+	        return false;
+	    return table.equals(((Pathfinding)other).table);
 	}
 	
 }

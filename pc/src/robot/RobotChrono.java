@@ -89,18 +89,10 @@ public class RobotChrono extends Robot {
 		return duree;
 	}
 
-	public void clone(RobotChrono rc)
-	{
-		rc.position = position.clone();
-		rc.orientation = orientation;
-		rc.vitesse_rpms = vitesse_rpms;
-		rc.vitesse_mmpms = vitesse_mmpms;
-	}
-
 	public RobotChrono clone()
 	{
 		RobotChrono cloned_robotchrono = new RobotChrono(config, log);
-		clone(cloned_robotchrono);
+		copy(cloned_robotchrono);
 		return cloned_robotchrono;
 	}
 
@@ -181,20 +173,6 @@ public class RobotChrono extends Robot {
 	@Override
 	public void takefire(Cote cote) {
 		duree += 2000; // TODO
-	}
-	
-	// TODO à compléter au fur et à mesure
-	public void majRobotChrono(RobotVrai robotvrai)
-	{
-		position = robotvrai.position;
-		orientation = robotvrai.orientation;
-		nombre_lances = robotvrai.nombre_lances;
-		fresques_posees = robotvrai.fresques_posees;
-		nombre_fruits_bac = robotvrai.nombre_fruits_bac;
-		tient_feu_droite = robotvrai.tient_feu_droite;
-		tient_feu_gauche = robotvrai.tient_feu_gauche;
-		feu_tenu_gauche_rouge = robotvrai.feu_tenu_gauche_rouge;
-		feu_tenu_droite_rouge = robotvrai.feu_tenu_droite_rouge;
 	}
 	
 	/**

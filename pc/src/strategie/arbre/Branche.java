@@ -1,11 +1,11 @@
 package strategie.arbre;
 
 import java.util.ArrayList;
-import pathfinding.Pathfinding;
+
 import robot.RobotChrono;
 import scripts.Script;
 import smartMath.Vec2;
-import table.Table;
+import strategie.GameState;
 
 /**
  * Classe formalisant le concept d'une branche (ou d'une sous-branche) de l'arbre des possibles.
@@ -39,9 +39,7 @@ public class Branche
 	long dureeScript;			// durée nécessaire pour effectuer le script
 	int scoreScript;			// durée nécessaire pour effectuer le script
 	
-	// Table avant la première action de cette branche
-	public Table etatInitial;
-	
+	GameState<RobotChrono> state;
 	
 	/**
 	 * @param useCachedPathfinding
@@ -52,25 +50,16 @@ public class Branche
 	 * @param robot
 	 * @param pathfinder
 	 */
-	public Branche(boolean useCachedPathfinding, int profondeur, Script script, int metaversion, Table etatInitial, RobotChrono robot, Pathfinding pathfinder)
+	public Branche(boolean useCachedPathfinding, int profondeur, Script script, int metaversion, GameState<RobotChrono> state)
 	{
+	    this.state = state;
 		this.useCachedPathfinding = useCachedPathfinding;
 		this.profondeur = profondeur;
 		this.script = script;
 		this.metaversion = metaversion;
-		this.etatInitial = etatInitial;
-		this.robot = robot;
-		this.pathfinder = pathfinder;
 		isNoteComputed  = false;
 	}
 
-
-	// Robot exécutant les actions
-	private RobotChrono robot;
-	
-	// Instance de pathfinding 
-	private Pathfinding pathfinder;
-	
 	// Sous branches contenant toutes les autres actions possibles a partir de l'état final
 	public ArrayList<Branche> sousBranches;
 	
@@ -116,8 +105,8 @@ public class Branche
 	private void computeLocalNote()
 	{ 
 		
-		scoreScript = script.meta_score(metaversion, robot, etatInitial);
-		dureeScript = script.metacalcule(metaversion, robot, etatInitial, pathfinder, useCachedPathfinding);
+		scoreScript = script.meta_score(metaversion, state);
+		dureeScript = script.metacalcule(metaversion, state, useCachedPathfinding);
 		// TODO
 		int id = script.version_asso(metaversion).get(0);
 		int A = 1;
@@ -125,7 +114,7 @@ public class Branche
 		float prob = script.proba_reussite();
 		
 		//abandon de prob_deja_fait
-		Vec2[] position_ennemie = etatInitial.get_positions_ennemis();
+		Vec2[] position_ennemie = state.table.get_positions_ennemis();
 		float pos = (float)1.0 - (float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0)));
 		// pos est une valeur qui décroît de manière exponentielle en fonction de la distance entre le robot adverse et là où on veut aller
 		localNote = (scoreScript*A*prob/dureeScript+pos*B)*prob;

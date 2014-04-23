@@ -11,6 +11,7 @@ import exception.SerialManagerException;
 import exception.ThreadException;
 import utils.*;
 import scripts.ScriptManager;
+import strategie.GameState;
 import strategie.MemoryManager;
 import strategie.Strategie;
 import table.Table;
@@ -44,6 +45,7 @@ import robot.serial.Serial;
  * Laser
  * FiltrageLaser
  * CheckUp
+ * GameState
  * (à compléter peut-être)
  * 
  * @author pf
@@ -97,7 +99,9 @@ public class Container {
 		threadmanager = new ThreadManager(config, log);
 	}
 
-	public Service getService(String nom) throws ContainerException, ThreadException, ConfigException, SerialManagerException
+	// TODO: supprimer correctement ce warning
+	@SuppressWarnings("unchecked")
+    public Service getService(String nom) throws ContainerException, ThreadException, ConfigException, SerialManagerException
 	{
 		if(services.containsKey(nom))
 			;
@@ -133,19 +137,22 @@ public class Container {
 														(Table)getService("Table"),
 														(Read_Ini)getService("Read_Ini"),
 														(Log)getService("Log")));		
+        else if(nom == "RealGameState")
+            services.put(nom, (Service)new GameState<RobotVrai>(  (Read_Ini)getService("Read_Ini"),
+                                                                  (Log)getService("Log"),
+                                                                  (Table)getService("Table"),
+                                                                  (RobotVrai)getService("RobotVrai"),
+                                                                  (Pathfinding)getService("Pathfinding")));
 		else if(nom == "ScriptManager")
 			services.put(nom, (Service)new ScriptManager(	(HookGenerator)getService("HookGenerator"),
 															(ThreadTimer)getService("threadTimer"),
 															(Read_Ini)getService("Read_Ini"),
-															(Log)getService("Log"),
-															(RobotVrai)getService("RobotVrai")));
+															(Log)getService("Log")));
 		else if(nom == "Strategie")
 			services.put(nom, (Service)new Strategie(	(MemoryManager)getService("MemoryManager"),
 														(ThreadTimer)getService("threadTimer"),
 														(ScriptManager)getService("ScriptManager"),
-														(Table)getService("Table"),
-														(RobotVrai)getService("RobotVrai"),
-														(Pathfinding)getService("Pathfinding"),
+														(GameState<RobotVrai>)getService("RealGameState"),
 														(Read_Ini)getService("Read_Ini"),
 														(Log)getService("Log")));
 		else if(nom == "threadTimer")
@@ -184,7 +191,7 @@ public class Container {
 		else if(nom == "MemoryManager")
 			services.put(nom, (Service)new MemoryManager(	(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log"),
-															(Table)getService("Table")));
+															(GameState<RobotVrai>)getService("RealGameState")));
 		else if(nom == "Laser")
 			services.put(nom, (Service)new Laser(	(Read_Ini)getService("Read_Ini"),
 													(Log)getService("Log"),

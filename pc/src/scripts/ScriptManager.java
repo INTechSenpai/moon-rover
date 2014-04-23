@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
-import robot.RobotVrai;
 import hook.HookGenerator;
 import threads.ThreadTimer;
 import utils.Log;
@@ -25,18 +24,18 @@ public class ScriptManager implements Service {
 
 	private ArrayList<String> scripts_robot;
 	
-	public ScriptManager(HookGenerator hookgenerator, ThreadTimer threadtimer, Read_Ini config, Log log, RobotVrai robotvrai)
+	public ScriptManager(HookGenerator hookgenerator, ThreadTimer threadtimer, Read_Ini config, Log log)
 	{
 		this.log = log;
 		
-		instancesScripts.put("ScriptTree", new ScriptTree(hookgenerator, config, log, robotvrai));
-		instancesScripts.put("ScriptLances", new ScriptLances(hookgenerator, config, log, robotvrai));
-		instancesScripts.put("ScriptDeposerFeu", new ScriptDeposerFeu(hookgenerator, config, log, robotvrai));
-		instancesScripts.put("ScriptTorche", new ScriptTorche(hookgenerator, config, log, robotvrai));
-		instancesScripts.put("ScriptFresque", new ScriptFresque(hookgenerator, config, log, robotvrai));
-		instancesScripts.put("ScriptDeposerFruits", new ScriptDeposerFruits(hookgenerator, config, log, robotvrai));
-		instancesScripts.put("ScriptFunnyAction", new ScriptFunnyAction(hookgenerator, config, log, robotvrai, threadtimer));
-		instancesScripts.put("ScriptFeuBord", new ScriptFeuDebout(hookgenerator,config, log,robotvrai));
+		instancesScripts.put("ScriptTree", new ScriptTree(hookgenerator, config, log));
+		instancesScripts.put("ScriptLances", new ScriptLances(hookgenerator, config, log));
+		instancesScripts.put("ScriptDeposerFeu", new ScriptDeposerFeu(hookgenerator, config, log));
+		instancesScripts.put("ScriptTorche", new ScriptTorche(hookgenerator, config, log));
+		instancesScripts.put("ScriptFresque", new ScriptFresque(hookgenerator, config, log));
+		instancesScripts.put("ScriptDeposerFruits", new ScriptDeposerFruits(hookgenerator, config, log));
+		instancesScripts.put("ScriptFunnyAction", new ScriptFunnyAction(hookgenerator, config, log, threadtimer));
+		instancesScripts.put("ScriptFeuBord", new ScriptFeuDebout(hookgenerator,config, log));
 		
 		scripts_robot = new ArrayList<String>();
 		scripts_robot.add("ScriptTree");

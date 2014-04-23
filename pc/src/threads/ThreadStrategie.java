@@ -80,9 +80,10 @@ public class ThreadStrategie extends AbstractThread {
 	}
 
 	
+	// TODO
 	private void maj_prochainScriptErreur()
 	{
-		robotchrono.majRobotChrono(robotvrai);
+/*		robotchrono.majRobotChrono(robotvrai);
 		Table tableBlocage = table.clone();
 		Vec2 centre_detection = new Vec2((int)(400 * Math.cos(robotvrai.getOrientation())), (int)(400 * Math.sin(robotvrai.getOrientation())));
 		centre_detection.Plus(robotvrai.getPosition());
@@ -103,12 +104,13 @@ public class ThreadStrategie extends AbstractThread {
 		meilleur_version.version = (int)a[0];
 		meilleur_version.note = a[1];
 		strategie.setProchainScriptEnnemi(meilleur_version);		
-
+*/
 	}
 
+	// TODO
 	private void maj_prochainScript()
 	{
-		robotchrono.majRobotChrono(robotvrai);
+/*		robotchrono.majRobotChrono(robotvrai);
 		Table tableFuture = table.clone();
 //		NoteScriptVersion enCours = strategie.getScriptEnCours();
 		// TODO: la durée est importante pour supprimer les obstacles périmés
@@ -128,7 +130,7 @@ public class ThreadStrategie extends AbstractThread {
 		meilleur_version.script = meilleur.script;
 		meilleur_version.version = (int)a[0];
 		meilleur_version.note = a[1];
-		strategie.setProchainScript(meilleur_version);		
+		strategie.setProchainScript(meilleur_version);*/		
 	}
 
 	private boolean evalueEnnemi()
