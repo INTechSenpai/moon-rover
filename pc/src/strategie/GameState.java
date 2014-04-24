@@ -18,7 +18,8 @@ public class GameState<R extends Robot> implements Service
 
     // time contient le temps écoulé depuis le début du match en ms
     // utilisé uniquement dans l'arbre des possibles
-    public long time;
+    public long time_depuis_debut;
+    public long time_depuis_racine;    
 
     public GameState(Read_Ini config, Log log, Table table, R robot, Pathfinding pathfinding)
     {
@@ -39,7 +40,8 @@ public class GameState<R extends Robot> implements Service
         robot.copy(new_rc);
         Pathfinding new_pf = new Pathfinding(new_table, config, log);
         GameState<RobotChrono> out = new GameState<RobotChrono>(config, log, new_table, new_rc, new_pf);
-        out.time = time;
+        out.time_depuis_debut = time_depuis_debut;
+        out.time_depuis_racine = time_depuis_racine;
         return out;
     }
 
@@ -52,7 +54,8 @@ public class GameState<R extends Robot> implements Service
         table.copy(other.table);
         robot.copy(other.robot);
         pathfinding.update();
-        other.time = time;
+        other.time_depuis_debut = time_depuis_debut;
+        other.time_depuis_racine = time_depuis_racine;
     }
 
     @Override

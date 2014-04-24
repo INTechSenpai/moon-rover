@@ -51,7 +51,7 @@ public class SerialManager
 
 		cards.add(this.carteAsservissement);
 		cards.add(this.carteCapteursActionneurs);
-		//cards.add(this.carteLaser);
+		cards.add(this.carteLaser);
 
 		Iterator<SpecificationCard> e = cards.iterator();
 		while (e.hasNext())
@@ -63,11 +63,11 @@ public class SerialManager
 
 		this.serieAsservissement = new Serial(log, this.carteAsservissement.name);
 		this.serieCapteursActionneurs = new Serial(log, this.carteCapteursActionneurs.name);
-		//this.serieLaser = new Serial(log, this.carteLaser.name);
+		this.serieLaser = new Serial(log, this.carteLaser.name);
 
 		this.series.put(this.carteAsservissement.name, this.serieAsservissement);
 		this.series.put(this.carteCapteursActionneurs.name, this.serieCapteursActionneurs);
-		//this.series.put(this.carteLaser.name, this.serieLaser);
+		this.series.put(this.carteLaser.name, this.serieLaser);
 
 		checkSerial();
 		createSerial();
