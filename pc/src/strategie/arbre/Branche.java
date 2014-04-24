@@ -28,6 +28,7 @@ public class Branche
 	private boolean useCachedPathfinding; 	// utiliser un pathfinding en cache ou calculée spécialement pour l'occasion ?
 	// TODO : changer en profondeur restante
 	public int profondeur;					// Cette branche est-elle la dernière à évaluer, ou faut-il prendre en compte des sous-branches ? 
+	public long date;						// date à laquelle cette branche est parcourue
 	
 	// Notes
 	public float note;				// note de toute la branche, prenant en comte les notes des sous-branches
@@ -35,16 +36,22 @@ public class Branche
 	public boolean isNoteComputed;	// l'attribut "note" a-t-il été calculé ?
 	
 	// Action a executer entre le sommet juste avant cette branche et l'état final
-	public Script script;		// script de l'action
-	public int metaversion;		// metaversion du script
-	long dureeScript;			// durée nécessaire pour effectuer le script
-	int scoreScript;			// durée nécessaire pour effectuer le script
+	public Script script;							// script de l'action
+	public int metaversion;							// metaversion du script
+	public long dureeScript;						// durée nécessaire pour effectuer le script
+	private int scoreScript;						// durée nécessaire pour effectuer le script
+	public boolean isActionCharacteisticsComputed;  // la durée et le score du script ont-ils étés calculés ?
 	
 	GameState<RobotChrono> state;
 	
+	// Sous branches contenant toutes les autres actions possibles a partir de l'état final
+	public ArrayList<Branche> sousBranches;
+	
+	
 	/**
 	 * @param useCachedPathfinding
-	 * @param isLeaf
+	 * @param prodondeur
+	 * @param date
 	 * @param script
 	 * @param metaversion
 	 * @param etatInitial
@@ -59,12 +66,21 @@ public class Branche
 		this.script = script;
 		this.metaversion = metaversion;
 		isNoteComputed  = false;
-
-        computeLocalNote();
+		isActionCharacteisticsComputed = false;
+		computeActionCharacteristics();
+		
 	}
 
-	// Sous branches contenant toutes les autres actions possibles a partir de l'état final
-	public ArrayList<Branche> sousBranches;
+	
+	public void computeActionCharacteristics()
+	{
+		if(!isActionCharacteisticsComputed)
+		{
+			scoreScript = script.meta_score(metaversion, state);
+			dureeScript = script.metacalcule(metaversion, state, useCachedPathfinding);
+			isActionCharacteisticsComputed = true;
+		}
+	}
 	
 	
 	/** Méthode qui prend les notes de chaque sous branche (en supposant qu'elles sont déjà calculés et qu'il n'y a plus qu'a
@@ -73,6 +89,7 @@ public class Branche
 	 */
 	public void computeNote()
 	{
+		computeLocalNote();
 		
 		if(profondeur == 0)
 			// Pas de prise en compte d'actions futures si on est déjà a profondeur maximale 
@@ -106,9 +123,9 @@ public class Branche
 	 */
 	private void computeLocalNote()
 	{ 
-		
-		scoreScript = script.meta_score(metaversion, state);
-		dureeScript = script.metacalcule(metaversion, state, useCachedPathfinding);
+		// la note de la branche se base sur certaines caractéristiques de l'action par laquelle elle débute.
+		if(!isActionCharacteisticsComputed)
+			computeActionCharacteristics();
 		// TODO
 		int id = script.version_asso(metaversion).get(0);
 		int A = 1;

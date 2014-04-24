@@ -38,7 +38,7 @@ public class Strategie implements Service {
 
 	private NoteScriptVersion scriptEnCours;
 	
-	public int TTL; //time to live
+	public int TTL; //time toDatUltimateBest live
 
 	// TODO initialisations des variables = première action
 	// Prochain script à exécuter si on est interrompu par l'ennemi
@@ -217,6 +217,8 @@ public class Strategie implements Service {
 		float[] a= {id, meilleurNote};
 		return a;
 	}
+	
+	
 	/**
 	 * La note d'un script est fonction de son score, de sa durée, de la distance de l'ennemi à l'action 
 	 * @param score
@@ -332,7 +334,7 @@ public class Strategie implements Service {
 					int duree_script = (int)script.metacalcule(meta_id, cloned_robotchrono, cloned_table, cloned_pathfinding, duree_totale > duree_connaissances);
 					
 					// met a jour la table après exécution du script
-					cloned_table.supprimer_obstacles_perimes(date+duree_script);
+					cloned_table.supprimerObstaclesPerimes(date+duree_script);
 
 					float noteScript = calculeMetaNote(	script.meta_score(meta_id, cloned_robotchrono, cloned_table),
 														duree_script,
@@ -370,7 +372,7 @@ public class Strategie implements Service {
 	 * 
 	 * @param profondeur : la profondeur d'exploration de l'arbre, 1 pour n'explorer qu'un niveau
 	 */
-	public void evaluate(int profondeur)
+	public NoteScriptMetaversion evaluate(int profondeur)
 	{
 		/*
 		 * 	Algorithme : Itterative Modified DFS
@@ -403,6 +405,9 @@ public class Strategie implements Service {
 		GameState<RobotChrono> mState = memorymanager.getClone(0);
 		Branche current;
 		
+		// racourccis pour les racines, afin du calcul du max final :
+		ArrayList<Branche> rootList = new ArrayList<Branche>();
+		
 		
 		// ajoute tous les scrips disponibles scripts
 		for(String nom_script : scriptmanager.getNomsScripts())
@@ -424,11 +429,14 @@ public class Strategie implements Service {
 			
 			// ajoute toutes les métaversions de tous les scipts
 			for(int metaversion : metaversionList)
+			{
 				scope.push( new Branche(	false,							// N'utilise pas le cache pour le premier niveau de profondeur 
 											profondeur,						// Profondeur a laquel déployer des sous branches
 											mScript, 						// Une branche par script et par métaversion
 											metaversion, 
 											mState	) );
+				rootList.add(scope.lastElement());
+			}	
 		}
 
 		
@@ -439,18 +447,19 @@ public class Strategie implements Service {
 		while (scope.size() != 0)
 		{
 			current = scope.lastElement();
+			
 			// Condition d'ajout des sous-branches : ne pas dépasser le profondeur max, et ne pas les ajouter 2 fois.
 			if ( current.profondeur != 0 && (current.sousBranches.size() == 0) )
 			{
-				// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage
+				// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage		
 				// attn profondeur n'est pas la position actuelle mais la taille de l'abre en ava
 				mState = memorymanager.getClone(current.profondeur+1);
 				// ajoute tous les scrips disponibles
-				for(String nom_script : scriptmanager.getNomsScripts())
+				for(String nomScript : scriptmanager.getNomsScripts())
 				{
 					try
 					{
-						mScript = scriptmanager.getScript(nom_script);				
+						mScript = scriptmanager.getScript(nomScript);				
 					}
 					catch(Exception e)
 					{
@@ -473,7 +482,6 @@ public class Strategie implements Service {
 													mScript, 						// Une branche par script et par métaversion
 													metaversion, 
 													mState	) );
-						
 					}
 				}
 				
@@ -484,9 +492,26 @@ public class Strategie implements Service {
 				current.computeNote();
 				scope.pop();
 			}
+			
+		}	// fin boucle principale d'exploration
+		
+		
+		
+		// la meilleure action a une meilleure note que les autres branches. Donc on calcule le max des notes des branches 
+		NoteScriptMetaversion DatUltimateBest = new NoteScriptMetaversion(-42, null, 0);
+		for (int i = 0; i < rootList.size(); ++i)
+		{
+			current = rootList.get(i);
+			if (current.note > DatUltimateBest.note)
+			{
+				DatUltimateBest.note = current.note;
+				DatUltimateBest.script = current.script;
+				DatUltimateBest.metaversion = current.metaversion;
+				
+			}
 		}
 		
-		// TODO: le meilleur sera le max de toutes les branches 
+		return DatUltimateBest;
 	}
 	
 	

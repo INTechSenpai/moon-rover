@@ -31,6 +31,7 @@ public class Generators {
 	private static int table_x;
 	private static int table_y;
 	
+	//  Attn : Une petite demi-heure de calcul vous attends
 	public static void main(String[] args)
 	{
 		try {
@@ -67,16 +68,21 @@ public class Generators {
 
 			// Puis on calcule les distances
 			pathfinder = new Pathfinding(table, config, log);
+			pathfinder.setPrecision(4);
+			
 			table.initialise();
 			table.torche_disparue(Cote.GAUCHE);
 			table.torche_disparue(Cote.DROIT);
 			generate_distance();
+			
 			table.initialise();
 			table.torche_disparue(Cote.DROIT);
 			generate_distance();
+			
 			table.initialise();
 			table.torche_disparue(Cote.GAUCHE);
 			generate_distance();
+			
 			table.initialise();
 			generate_distance();
 
@@ -108,6 +114,8 @@ public class Generators {
 	public static void generate_distance()
 	{		
 		log.appel_static("Generation distance...");
+		int 	aStarCount = 1,
+				computationTime = 0;
 		Vec2 	depart 	= new Vec2(0,0),
 				arrivee = new Vec2(0,0);
 		
@@ -115,14 +123,19 @@ public class Generators {
 		int log_mm_per_unit = 4;	// soit 16mm par unité
 		CacheHolder output = new CacheHolder((table_x >> log_reduction)+1, (table_y >> log_reduction)+1, log_reduction, log_mm_per_unit, table_x);
 		int reduction = 1 << log_reduction;
+		int distance;
 
 		for (int i = -table_x/2; i < (table_x/2); i+=reduction)											// depart.x		== i
 		{
-			System.out.println(100*((float)(i+table_x/2))/((float)table_x));
+
+			System.out.println("Progress : 	" + 100*((float)(i+table_x/2))/((float)table_x) + " - 		Average AStar duration : "+ computationTime/aStarCount + " µs 		AStar Count : " + aStarCount);
+			
 			for (int j = 0; j < table_y; j+=reduction)											// depart.y		== j
 			{
-				System.out.println("	"+100*((float)(j))/((float)table_y));
 				for (int k = -table_x/2; k < (table_x/2); k+=reduction)									// arrivee.x	== k
+				{
+
+					
 					for (int l = 0; l < table_y; l+=reduction)								// arrivee.y	== l
 					{
 						depart.x = i;
@@ -131,9 +144,14 @@ public class Generators {
 						arrivee.y = l;
 						
 						// calcul de la distance, et stockage dans output
-						int distance;
-						try {
+						try
+						{
+							long startTime = System.nanoTime();
 							distance = pathfinder.distance(depart, arrivee, false);
+							long endTime = System.nanoTime();
+							computationTime += (endTime - startTime)/1000;	// en microsecondes
+							aStarCount++;
+							
 							output.setDistance(depart, arrivee, distance);
 						}
 						catch(PathfindingException e)
@@ -144,6 +162,7 @@ public class Generators {
 						{
 							e.printStackTrace();
 						}
+					}
 				}
 			}
 		}

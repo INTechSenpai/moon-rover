@@ -195,7 +195,7 @@ public class Table implements Service {
 	 * Appel fait lors de l'anticipation, supprime les obstacles périmés à une date future
 	 * @param date
 	 */
-	public synchronized void supprimer_obstacles_perimes(long date)
+	public synchronized void supprimerObstaclesPerimes(long date)
 	{
 		Iterator<ObstacleCirculaire> iterator = listObstacles.iterator();
 		while ( iterator.hasNext() )
@@ -214,7 +214,7 @@ public class Table implements Service {
 	 */
 	public void supprimer_obstacles_perimes()
 	{
-		supprimer_obstacles_perimes(System.currentTimeMillis());
+		supprimerObstaclesPerimes(System.currentTimeMillis());
 	}
 
 	/**

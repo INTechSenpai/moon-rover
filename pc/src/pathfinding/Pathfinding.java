@@ -21,7 +21,7 @@ import exception.PathfindingException;
  * 
  * Permet de traiter les problèmes de chemins : longueur d'un parcourt d'un point à un autre de la map,
  * 												 trajet d'un point a un autre de la map
- * Dispose de plusieurs solver A*, utilisé pour calculer un HPA*
+ * 
  *
  */
 
@@ -47,7 +47,7 @@ public class Pathfinding implements Service
 	 */
 	private static Grid2DSpace[][] map_obstacles_fixes = null;
 	
-	/* Le cache des distances
+	/* Le cache des distancesDispose de plusieurs solver A*, utilisé pour calculer un HPA*
 	 * Sera rechargé en match (au plus 4 fois), car prend trop de mémoire sinon
 	 */
 	private static CacheHolder distance_cache;
@@ -66,6 +66,7 @@ public class Pathfinding implements Service
 		table = requestedtable;
 		config = requestedConfig;	
 		log = requestedLog;
+		solver = new AStar();
 		maj_config();
 	}
 	
@@ -179,14 +180,14 @@ public class Pathfinding implements Service
 		Vec2 arriveeGrid = solver_grid.conversionTable2Grid(arrivee); 
 		ArrayList<Vec2> chemin = solver.process(departGrid, arriveeGrid);
 
-		log.debug("Chemin avant lissage : " + chemin, this);
+//		log.debug("Chemin avant lissage : " + chemin, this);
 
 		chemin = solver_grid.lissage(chemin);
 		ArrayList<Vec2> output = new ArrayList<Vec2>();
 		for(Vec2 pos: chemin)
 			output.add(solver_grid.conversionGrid2Table(pos));
 		
-		log.debug("Chemin : " + output, this);
+	//	log.debug("Chemin : " + output, this);
 		
 		return output;
 
@@ -202,6 +203,10 @@ public class Pathfinding implements Service
 	 */
 	public int distance(Vec2 depart, Vec2 arrivee, boolean use_cache) throws PathfindingException
 	{
+		// On va pas se priver d'une telle optimisation
+		if(solver.espace.canCrossLine(depart, arrivee))
+			return (int)depart.distance(arrivee);
+		
 		if(!use_cache || distance_cache == null)
 		{
 			ArrayList<Vec2> result = chemin(depart, arrivee);

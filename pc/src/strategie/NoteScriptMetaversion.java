@@ -14,10 +14,10 @@ public class NoteScriptMetaversion {
 	public Script script;
 	public int metaversion;
 
-	public NoteScriptMetaversion(float note, Script script, int version) {
+	public NoteScriptMetaversion(float note, Script script, int metaversion) {
 		this.note = note;
 		this.script = script;
-		this.metaversion = version;
+		this.metaversion = metaversion;
 	}
 
 	public NoteScriptMetaversion() {

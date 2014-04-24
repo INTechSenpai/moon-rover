@@ -35,12 +35,29 @@ class AStar
 	 * La réponse est donc 150mm.
 	 */
 	// TODO intégrer coefficient_rotation
+			// Difficile a intégrer, vu l'algo 
+	
+	
 //	private int coefficient_rotation = 150;
 	
 	public AStar(Grid2DSpace espaceVoulu)
 	{
 		espace = espaceVoulu;
 
+		chemin = new ArrayList<Vec2>();
+		
+		closedset = new LinkedHashSet<Vec2>();
+		openset = new LinkedHashSet<Vec2>();
+		
+		came_from = new HashMap<Vec2, Vec2>();
+		g_score = new HashMap<Vec2, Integer>();
+		f_score = new HashMap<Vec2, Integer>();		
+	}
+	
+	// Constructeur partiel, à utiliser avec précaution.
+	public AStar()
+	{
+		
 		chemin = new ArrayList<Vec2>();
 		
 		closedset = new LinkedHashSet<Vec2>();
