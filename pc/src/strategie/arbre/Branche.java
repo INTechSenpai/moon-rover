@@ -65,6 +65,7 @@ public class Branche
 		this.profondeur = profondeur;
 		this.script = script;
 		this.metaversion = metaversion;
+		sousBranches = new ArrayList<Branche>();
 		isNoteComputed  = false;
 		isActionCharacteisticsComputed = false;
 		computeActionCharacteristics();
@@ -76,8 +77,13 @@ public class Branche
 	{
 		if(!isActionCharacteisticsComputed)
 		{
-			scoreScript = script.meta_score(metaversion, state);
-			dureeScript = script.metacalcule(metaversion, state, useCachedPathfinding);
+			//scoreScript = script.meta_score(metaversion, state);
+			//dureeScript = script.metacalcule(metaversion, state, useCachedPathfinding);
+			
+			// Substitut de test en attendant que les scipts buggent moins.
+			scoreScript = 2;
+			dureeScript = 12000;	// 12 sec !
+			
 			isActionCharacteisticsComputed = true;
 		}
 	}

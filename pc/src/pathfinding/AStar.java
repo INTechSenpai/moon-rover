@@ -199,7 +199,7 @@ class AStar
 	    		    	
 	    }// while
 	    
-	    printWorkingMap(depart, arrivee);
+	    //printWorkingMap(depart, arrivee);	// a mettre si on veut comprendre le trajet qui foire.
 	    throw new PathfindingException();	// Exeption lancée lorsque l'arrivée n'est pas atteignable à partir du point de départ.
 	}	// process
 
@@ -223,6 +223,7 @@ class AStar
 	
 	// Debug
 	// affihche l'espace de recherche 
+	@SuppressWarnings("unused")
 	private void printWorkingMap(Vec2 depart, Vec2 arrivee)
 	{
 		String out = "";

@@ -416,9 +416,9 @@ public class Strategie implements Service {
 			{
 				mScript = scriptmanager.getScript(nom_script);				
 			}
-			catch(Exception e)
+			catch(ScriptException e)
 			{
-				e.printStackTrace();
+			//	e.printStackTrace();
 			}
 			
 			metaversionList = mScript.meta_version(	mState	);
@@ -430,7 +430,7 @@ public class Strategie implements Service {
 			// ajoute toutes les métaversions de tous les scipts
 			for(int metaversion : metaversionList)
 			{
-				log.debug("Abwabwa", this);
+				log.debug("Ajout d'une racine", this);
 				scope.push( new Branche(	false,							// N'utilise pas le cache pour le premier niveau de profondeur 
 											profondeur,						// Profondeur a laquel déployer des sous branches
 											mScript, 						// Une branche par script et par métaversion
@@ -447,13 +447,16 @@ public class Strategie implements Service {
 		// Boucle principale d'exploration des branches
 		while (scope.size() != 0)
 		{
+			log.debug("Nouveau tour de boucle", this);
+			log.debug("Taille de la stack :" + scope.size(), this);
+			log.debug("stack :" + scope.toString(), this);
 			current = scope.lastElement();
 			
 			// Condition d'ajout des sous-branches : ne pas dépasser le profondeur max, et ne pas les ajouter 2 fois.
 			if ( current.profondeur != 0 && (current.sousBranches.size() == 0) )
 			{
 				// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage		
-				// attn profondeur n'est pas la position actuelle mais la taille de l'abre en ava
+				// attn profondeur n'est pas la position actuelle mais la taille de l'abre en aval
 				mState = memorymanager.getClone(current.profondeur+1);
 				// ajoute tous les scrips disponibles
 				for(String nomScript : scriptmanager.getNomsScripts())
@@ -464,7 +467,7 @@ public class Strategie implements Service {
 					}
 					catch(Exception e)
 					{
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
 					
 					metaversionList = mScript.meta_version(	mState	);
