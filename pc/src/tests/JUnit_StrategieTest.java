@@ -14,6 +14,8 @@ import org.junit.Before;
 import org.junit.Assert;
 import org.junit.Test;
 
+import pathfinding.Pathfinding;
+
 /**
  * Tests unitaires de la stratégie
  * @author pf
@@ -25,6 +27,7 @@ public class JUnit_StrategieTest extends JUnit_Test {
 	private RobotVrai robotvrai;
 	private Strategie strategie;
 	private MemoryManager memorymanager;
+	private Pathfinding pathfinder;
 	private Table table;
 	private RobotChrono robotchrono;
 	
@@ -34,6 +37,7 @@ public class JUnit_StrategieTest extends JUnit_Test {
 		robotvrai = (RobotVrai)container.getService("RobotVrai");
 		strategie = (Strategie) container.getService("Strategie");
 		memorymanager = (MemoryManager) container.getService("MemoryManager");
+		pathfinder = (Pathfinding) container.getService("Pathfinding");
 		table = (Table) container.getService("Table");
 		robotchrono = new RobotChrono(config, log);
 	}
@@ -58,9 +62,8 @@ public class JUnit_StrategieTest extends JUnit_Test {
 	public void test_evaluation() throws Exception
 	{
 		robotvrai.setPosition(new Vec2(0, 1700));
-		robotchrono.majRobotChrono(robotvrai);
-		memorymanager.setModelTable(table, 2);
-		memorymanager.setModelRobotChrono(robotchrono, 2);
-		log.debug(strategie.evaluation(2, 0), this);
+		robotchrono.setPosition(new Vec2(0, 1700));
+		log.debug("Strategie starting", this);
+		strategie.evaluate(1);
 	}
 }

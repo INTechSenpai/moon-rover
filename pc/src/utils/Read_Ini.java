@@ -24,6 +24,7 @@ public class Read_Ini implements Service {
 	public Read_Ini(String path) throws ConfigException
 	{
 		this.path = path;
+	//	log.debug("Loading config from current directory : " +  System.getProperty("user.dir"), this)
 		try
 		{
 			this.config.load(new FileInputStream(this.path+this.name_config_file));
