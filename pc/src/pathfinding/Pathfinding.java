@@ -105,7 +105,7 @@ public class Pathfinding implements Service
 			setPrecision(i);
 			update(); 	// initialisation des map
 		}
-		setPrecision(0);
+		setPrecision(4);	// Amplement suffisant pour la pluspars des usages
 
 	}
 

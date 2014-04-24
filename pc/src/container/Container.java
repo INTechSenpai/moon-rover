@@ -86,7 +86,10 @@ public class Container {
 	 */
 	public Container() throws ContainerException
 	{
-		try {
+		try
+		{
+
+			System.out.println("Loading config from current directory : " +  System.getProperty("user.dir"));
 			services.put("Read_Ini", (Service)new Read_Ini("./config/"));
 			config = (Read_Ini)services.get("Read_Ini");
 			services.put("Log", (Service)new Log(config));

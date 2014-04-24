@@ -198,7 +198,9 @@ class AStar
 	    	}
 	    		    	
 	    }// while
-	    throw new PathfindingException();
+	    
+	    printWorkingMap(depart, arrivee);
+	    throw new PathfindingException();	// Exeption lancée lorsque l'arrivée n'est pas atteignable à partir du point de départ.
 	}	// process
 
 	
@@ -217,5 +219,34 @@ class AStar
 			return new Vec2(center.x, center.y - 1);
 		return center;
 	}
+	
+	
+	// Debug
+	// affihche l'espace de recherche 
+	private void printWorkingMap(Vec2 depart, Vec2 arrivee)
+	{
+		String out = "";
+		for (int  j = 0; j < espace.getSizeX(); ++j)
+		{
+			for (int  k = espace.getSizeY() - 1; k >= 0; --k)
+			{
+				Vec2 pos = new Vec2(j,k);
+				if (depart.x ==j && depart.y ==k)
+					out += 'D';
+				else if (arrivee.x ==j && arrivee.y ==k)
+					out += 'A';
+				else if (chemin.contains(pos))
+					out += '|';
+				else if(espace.canCross(j, k))
+					out += '.';
+				else
+					out += 'X';	
+			}
+			
+			out +='\n';
+		}
+		System.out.println(out);
+	}
+	
 	
 }

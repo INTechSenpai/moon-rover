@@ -586,6 +586,21 @@ public class Grid2DSpace implements Serializable
 	}
 	
 	/**
+	 * @return the sizeX
+	 */
+	public int getSizeX() {
+		return sizeX;
+	}
+
+	/**
+	 * @return the sizeY
+	 */
+	public int getSizeY() {
+		return sizeY;
+	}
+
+	
+	/**
 	 * Surchage de la méthode toString de Object
 	 * Permet de faire System.out.println(map) ou log.debug(map, this) pour afficher un Grid2DSpace
 	 */
