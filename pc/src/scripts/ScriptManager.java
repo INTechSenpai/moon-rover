@@ -35,7 +35,8 @@ public class ScriptManager implements Service {
 		instancesScripts.put("ScriptFresque", new ScriptFresque(hookgenerator, config, log));
 		instancesScripts.put("ScriptDeposerFruits", new ScriptDeposerFruits(hookgenerator, config, log));
 		instancesScripts.put("ScriptFunnyAction", new ScriptFunnyAction(hookgenerator, config, log, threadtimer));
-		instancesScripts.put("ScriptFeuBord", new ScriptFeuDebout(hookgenerator,config, log));
+		instancesScripts.put("ScriptFeuDebout", new ScriptFeuDebout(hookgenerator,config, log));
+		instancesScripts.put("ScriptFeuBord", new ScriptFeuBord(hookgenerator,config, log));
 		
 		scripts_robot = new ArrayList<String>();
 		scripts_robot.add("ScriptTree");
@@ -46,6 +47,7 @@ public class ScriptManager implements Service {
 		scripts_robot.add("ScriptFunnyAction");
 		scripts_robot.add("ScriptDeposerFeu");
 		scripts_robot.add("ScriptFeuDebout");
+		scripts_robot.add("ScriptFeuBord");
 	}
 	
 	public ArrayList<String> getNomsScripts()
