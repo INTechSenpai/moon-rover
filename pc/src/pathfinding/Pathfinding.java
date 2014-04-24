@@ -176,14 +176,14 @@ public class Pathfinding implements Service
 		Vec2 arriveeGrid = solver.espace.conversionTable2Grid(arrivee); 
 		ArrayList<Vec2> chemin = solver.process(departGrid, arriveeGrid);
 
-		log.debug("Chemin avant lissage : " + chemin, this);
+//		log.debug("Chemin avant lissage : " + chemin, this);
 
 		chemin = solver.espace.lissage(chemin);
 		ArrayList<Vec2> output = new ArrayList<Vec2>();
 		for(Vec2 pos: chemin)
 			output.add(solver.espace.conversionGrid2Table(pos));
 		
-		log.debug("Chemin : " + output, this);
+	//	log.debug("Chemin : " + output, this);
 		
 		return output;
 
@@ -199,6 +199,10 @@ public class Pathfinding implements Service
 	 */
 	public int distance(Vec2 depart, Vec2 arrivee, boolean use_cache) throws PathfindingException
 	{
+		// On va pas se priver d'une telle optimisation
+		if(solver.espace.canCrossLine(depart, arrivee))
+			return (int)depart.distance(arrivee);
+		
 		if(!use_cache || distance_cache == null)
 		{
 			ArrayList<Vec2> result = chemin(depart, arrivee);
