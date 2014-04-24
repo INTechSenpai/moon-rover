@@ -5,15 +5,12 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Stack;
 
-import pathfinding.Pathfinding;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import scripts.Script;
 import scripts.ScriptManager;
-import strategie.NoteScriptMetaversion;
 import strategie.NoteScriptVersion;
 import strategie.arbre.Branche;
-import table.Table;
 import threads.ThreadTimer;
 import utils.Log;
 import utils.Read_Ini;
@@ -34,10 +31,7 @@ public class Strategie implements Service {
 	private MemoryManager memorymanager;
 	private ThreadTimer threadtimer;
 	private ScriptManager scriptmanager;
-	private Table table;
-	private RobotVrai robotvrai;
-	private Pathfinding pathfinding;
-	private Read_Ini config;
+	private GameState<RobotVrai> real_state;
 	private Log log;
 	
 	private Map<String,Integer> echecs = new Hashtable<String,Integer>();
@@ -53,15 +47,12 @@ public class Strategie implements Service {
 	// Prochain script à exécuter si l'actuel se passe bien
 	private volatile NoteScriptVersion prochainScript;
 	
-	public Strategie(MemoryManager memorymanager, ThreadTimer threadtimer, ScriptManager scriptmanager, Table table, RobotVrai robotvrai, Pathfinding pathfinding, Read_Ini config, Log log)
+	public Strategie(MemoryManager memorymanager, ThreadTimer threadtimer, ScriptManager scriptmanager, GameState<RobotVrai> real_state, Read_Ini config, Log log)
 	{
 		this.memorymanager = memorymanager;
 		this.threadtimer = threadtimer;
 		this.scriptmanager = scriptmanager;
-		this.table = table;
-		this.robotvrai = robotvrai;
-		this.pathfinding = pathfinding;
-		this.config = config;
+		this.real_state = real_state;
 		this.log = log;
 		maj_config();
 	}
@@ -94,7 +85,7 @@ public class Strategie implements Service {
 				log.debug("Stratégie fait: "+scriptEnCours+", dernier: "+dernier, this);
 				// le dernier argument, retenter_si_blocage, est vrai si c'est le dernier script. Sinon, on change de script sans attendre
 				try {
-					scriptEnCours.script.agit(scriptEnCours.version, robotvrai, table, pathfinding, dernier);
+					scriptEnCours.script.agit(scriptEnCours.version, real_state, dernier);
 				}
 				catch(Exception e)
 				{
@@ -150,25 +141,25 @@ public class Strategie implements Service {
 			 * on ne se prémunit pas, entre autre, contre les freezes
 			 * 			 * 
 			 */
-			i_min_fire = table.nearestUntakenFire(positionsfreeze[i]);
-			i_min_tree = table.nearestUntakenTree(positionsfreeze[i]);
-			i_min_fresco = table.nearestFreeFresco(positionsfreeze[i]);
+			i_min_fire = real_state.table.nearestUntakenFire(positionsfreeze[i]);
+			i_min_tree = real_state.table.nearestUntakenTree(positionsfreeze[i]);
+			i_min_fresco = real_state.table.nearestFreeFresco(positionsfreeze[i]);
 			
 			if (duree_freeze[i] > duree_blocage)
 			{
 				//Il y a un blocage de l'ennemi, réfléchissons un peu et agissons optimalement
 			}
-			if (table.distanceTree(positionsfreeze[i], i_min_fire) < distance_influence && duree_freeze[i] > duree_standard)
+			if (real_state.table.distanceTree(positionsfreeze[i], i_min_fire) < distance_influence && duree_freeze[i] > duree_standard)
 			{
-				table.pickTree(i_min_tree);
+			    real_state.table.pickTree(i_min_tree);
 			}
-			if(table.distanceFire(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
+			if(real_state.table.distanceFire(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
 			{
-				table.pickFire(i_min_fire);
+			    real_state.table.pickFire(i_min_fire);
 			}
-			if(table.distanceFresco(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
+			if(real_state.table.distanceFresco(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
 			{
-				table.appendFresco(i_min_fresco);
+			    real_state.table.appendFresco(i_min_fresco);
 			}
 			
 			/*
@@ -206,9 +197,7 @@ public class Strategie implements Service {
 		// Le TTL est une durée en ms sur laquelle on estime que le robot demeurera immobile
 		
 	} 
-	
-	
-	public float[] meilleurVersion(int meta_id, Script script, RobotChrono robotchrono, Table table, Pathfinding pathfinding)
+	public float[] meilleurVersion(int meta_id, Script script, GameState<RobotChrono> state)
 	{
 		int id = 0;
 		float meilleurNote = 0;
@@ -216,12 +205,12 @@ public class Strategie implements Service {
 		int duree_script; 
 		for(int i : script.version_asso(meta_id))
 		{
-			score = script.score(id, robotchrono, table);
-			duree_script = (int)script.calcule(id, robotchrono, table, pathfinding, true);
-			if(calculeNote(score,duree_script, i,script)>meilleurNote)
+			score = script.score(id, state);
+			duree_script = (int)script.calcule(id, state, true);
+			if(calculeNote(score,duree_script, i,script, state)>meilleurNote)
 			{
 				id = i;
-				meilleurNote = calculeNote(score,duree_script, i,script);
+				meilleurNote = calculeNote(score,duree_script, i,script,state);
 			}
 			
 		}
@@ -238,7 +227,7 @@ public class Strategie implements Service {
 	 * @param script
 	 * @return note
 	 */
-	private float calculeNote(int score, int duree, int id, Script script)
+	private float calculeNote(int score, int duree, int id, Script script, GameState<?> state)
 	{
 		// TODO
 		
@@ -247,7 +236,7 @@ public class Strategie implements Service {
 		float prob = script.proba_reussite();
 		
 		//abandon de prob_deja_fait
-		Vec2[] position_ennemie = table.get_positions_ennemis();
+		Vec2[] position_ennemie = state.table.get_positions_ennemis();
 		float pos = (float)1.0 - (float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0)));
 		// pos est une valeur qui décroît de manière exponentielle en fonction de la distance entre le robot adverse et là où on veut aller
 		float note = (score*A*prob/duree+pos*B)*prob;
@@ -266,7 +255,7 @@ public class Strategie implements Service {
 	 * @param script
 	 * @return note
 	 */
-	private float calculeMetaNote(int score, int duree, int meta_id, Script script)
+	private float calculeMetaNote(int score, int duree, int meta_id, Script script, GameState<?> state)
 	{
 		// TODO
 		int id = script.version_asso(meta_id).get(0);
@@ -275,7 +264,7 @@ public class Strategie implements Service {
 		float prob = script.proba_reussite();
 		
 		//abandon de prob_deja_fait
-		Vec2[] position_ennemie = table.get_positions_ennemis();
+		Vec2[] position_ennemie = state.table.get_positions_ennemis();
 		float pos = (float)1.0 - (float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0)));
 		// pos est une valeur qui décroît de manière exponentielle en fonction de la distance entre le robot adverse et là où on veut aller
 		float note = (score*A*prob/duree+pos*B)*prob;
@@ -292,11 +281,11 @@ public class Strategie implements Service {
 	 * @return le meilleur triplet NoteScriptVersion
 	 * @throws ScriptException
 	 */
-	public NoteScriptMetaversion evaluation(int profondeur, int id_robot) throws ScriptException
+/*	public NoteScriptMetaversion evaluation(int profondeur, int id_robot) throws ScriptException
 	{
 		return _evaluation(System.currentTimeMillis(), 0, profondeur, id_robot);
 	}
-
+*/
 	/**
 	 * Evaluation des scripts pour un robot et une certaine profondeur, à partir d'une date future
 	 * @param date
@@ -305,7 +294,7 @@ public class Strategie implements Service {
 	 * @return le meilleur triplet NoteScriptVersion
 	 * @throws ScriptException
 	 */
-	public NoteScriptMetaversion evaluation(long date, int profondeur, int id_robot) throws ScriptException
+/*	public NoteScriptMetaversion evaluation(long date, int profondeur, int id_robot) throws ScriptException
 	{
 		return _evaluation(date, 0, profondeur, id_robot);
 	}
@@ -375,16 +364,15 @@ public class Strategie implements Service {
 		return meilleur;
 	}
 	
-	
+	*/
 
 	
 	/* Méthode qui calcule la note de cette branche en calculant celles de ses sous branches, puis en combinant leur notes
 	 * C'est là qu'est logé le DFS
 	 * 
-	 * @param profondeur : la profondeur d'exploration de l'arbre, 1 pour n'explorer que la prochaine action
-	 * @param date :  la date a laquelle le calcul est effectué. Normalement la date actuelle
+	 * @param profondeur : la profondeur d'exploration de l'arbre, 1 pour n'explorer qu'un niveau
 	 */
-	public NoteScriptMetaversion evaluate(int profondeur, long date)
+	public NoteScriptMetaversion evaluate(int profondeur)
 	{
 		/*
 		 * 	Algorithme : Itterative Modified DFS
@@ -414,17 +402,14 @@ public class Strategie implements Service {
 		// ajoute les différentes possibiités pour la prochaine action dans la pile
 		Script mScript = null;
 		ArrayList<Integer> metaversionList;
-		ArrayList<Branche> rootList = new ArrayList<Branche>();
-		Table mTable = memorymanager.getCloneTable(1);
-		RobotChrono mRobot = memorymanager.getCloneRobotChrono(1);
-		Pathfinding pathfinder = memorymanager.getClonePathfinding(1);
+		GameState<RobotChrono> mState = memorymanager.getClone(0);
 		Branche current;
+		
+		// racourccis pour les racines, afin du calcul du max final :
+		ArrayList<Branche> rootList = new ArrayList<Branche>();
 		
 		
 		// ajoute tous les scrips disponibles scripts
-		mTable = memorymanager.getCloneTable(1);
-		mRobot = memorymanager.getCloneRobotChrono(1);
-		pathfinder = memorymanager.getClonePathfinding(1);
 		for(String nom_script : scriptmanager.getNomsScripts())
 		{
 			try
@@ -436,12 +421,10 @@ public class Strategie implements Service {
 				e.printStackTrace();
 			}
 			
-			metaversionList = mScript.meta_version(	mRobot,	
-													mTable, 
-													pathfinder	);
+			metaversionList = mScript.meta_version(	mState	);
 			// TODO corriger les scripts pour que ça n'arrive pas
 			if(metaversionList == null)
-				break;
+				continue;
 			
 			
 			// ajoute toutes les métaversions de tous les scipts
@@ -449,16 +432,11 @@ public class Strategie implements Service {
 			{
 				scope.push( new Branche(	false,							// N'utilise pas le cache pour le premier niveau de profondeur 
 											profondeur,						// Profondeur a laquel déployer des sous branches
-											date,							// onexécute l'action de cette branche a la deta fournie en paramètre
 											mScript, 						// Une branche par script et par métaversion
 											metaversion, 
-											mTable, 						// Table actuelle pour le premier niveau de profondeur 
-											mRobot, 						// Robot effectuant les actions
-											pathfinder	) );				// Instance de pathfinding
-				
-				// creée un raccourci vers les racines, pour calculer le max des notes qu'elles prennnent aprsè DFS
+											mState	) );
 				rootList.add(scope.lastElement());
-			}
+			}	
 		}
 
 		
@@ -473,49 +451,37 @@ public class Strategie implements Service {
 			// Condition d'ajout des sous-branches : ne pas dépasser le profondeur max, et ne pas les ajouter 2 fois.
 			if ( current.profondeur != 0 && (current.sousBranches.size() == 0) )
 			{
-				// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage
-				mRobot = memorymanager.getCloneRobotChrono(current.profondeur+1);
-				pathfinder = memorymanager.getClonePathfinding(current.profondeur+1);
-
-				// clone la table de la branche parente et lui enlève tout ce qui n'est plus a jour
-				mTable = memorymanager.getCloneTable(current.profondeur+1);
-				scope.lastElement().computeActionCharacteristics();
-				mTable.supprimerObstaclesPerimes(current.date + scope.lastElement().dureeScript);
-				
+				// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage		
+				// attn profondeur n'est pas la position actuelle mais la taille de l'abre en ava
+				mState = memorymanager.getClone(current.profondeur+1);
 				// ajoute tous les scrips disponibles
-				for(String nom_script : scriptmanager.getNomsScripts())
+				for(String nomScript : scriptmanager.getNomsScripts())
 				{
 					try
 					{
-						mScript = scriptmanager.getScript(nom_script);				
+						mScript = scriptmanager.getScript(nomScript);				
 					}
 					catch(Exception e)
 					{
 						e.printStackTrace();
 					}
 					
-					metaversionList = mScript.meta_version(	mRobot,	
-															mTable, 
-															pathfinder	);
+					metaversionList = mScript.meta_version(	mState	);
 					// TODO corriger les scripts pour que ça n'arrive pas
 					if(metaversionList == null)
-						break;
+						continue;
 					
 					
 					// ajoute toutes les métaversions de tous les scipts
 					for(int metaversion : metaversionList)
 					{
-						scope.push( new Branche(	current.profondeur >= 2,			// Utiliser le cache dès le second niveau de profondeur
-													current.profondeur+1,				// Profondeur a laquel déployer des sous branches
-													current.date + current.dureeScript,	// On exécutel l'action cette branche a la date de fin de l'action de la branche parente
-													mScript, 							// Une branche par script et par métaversion
+					    //Att, il faut executer le script a ce moment la sur la branche parente (via scipet::metacalcule) sinon l'état n'est pas changé
+					                                //attn, profondeur n'est pas la position bsolue mais la taille de l'abre en aval
+						scope.push( new Branche(	current.profondeur >= 2,		// Utiliser le cache dès le second niveau de profondeur
+													current.profondeur+1,			// Profondeur a laquel déployer des sous branches
+													mScript, 						// Une branche par script et par métaversion
 													metaversion, 
-													mTable, 							// Table actuelle pour le premier niveau de profondeur 
-													mRobot, 							// Robot effectuant les actions
-													pathfinder	) );					// Instance de pathfinding
-						
-						// Enregistre cette nouvelle branche comme sous branche de la branche courrante
-						current.sousBranches.add(scope.lastElement());
+													mState	) );
 					}
 				}
 				
@@ -563,10 +529,7 @@ public class Strategie implements Service {
 		{
 			try {
 				Script script = scriptmanager.getScript(nom_script);
-				RobotChrono robotchrono = new RobotChrono(config, log);
-				// TODO
-				Pathfinding pathfinding = null;
-				if(script.version(robotchrono, table, pathfinding).size() >= 1)
+				if(script.version(real_state).size() >= 1)
 					compteur++;		
 			} catch (ScriptException e) {
 				e.printStackTrace();

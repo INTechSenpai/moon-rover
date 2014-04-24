@@ -89,18 +89,10 @@ public class RobotChrono extends Robot {
 		return duree;
 	}
 
-	public void clone(RobotChrono rc)
-	{
-		rc.position = position.clone();
-		rc.orientation = orientation;
-		rc.vitesse_rpms = vitesse_rpms;
-		rc.vitesse_mmpms = vitesse_mmpms;
-	}
-
 	public RobotChrono clone()
 	{
 		RobotChrono cloned_robotchrono = new RobotChrono(config, log);
-		clone(cloned_robotchrono);
+		copy(cloned_robotchrono);
 		return cloned_robotchrono;
 	}
 
@@ -133,7 +125,7 @@ public class RobotChrono extends Robot {
 	@Override
 	public void lancerFilet()
 	{
-		duree += 1000;
+		duree += 1000; // TODO
 	}
 	@Override
 	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe, boolean sans_lever_exception) throws MouvementImpossibleException
@@ -165,13 +157,13 @@ public class RobotChrono extends Robot {
 	@Override
 	public void bac_haut()
 	{
-		duree += 1000;
+		duree += 1000; // TODO
 	}
 
 	@Override
 	public void rateau(PositionRateau position, Cote cote)
 	{
-		duree += 1000;
+		duree += 1000; // TODO
 	}
 
 	@Override
@@ -180,16 +172,7 @@ public class RobotChrono extends Robot {
 
 	@Override
 	public void takefire(Cote cote) {
-		duree += 2000;
-	}
-	
-	// TODO à compléter au fur et à mesure
-	public void majRobotChrono(RobotVrai robotvrai)
-	{
-		position = robotvrai.position;
-		orientation = robotvrai.orientation;
-		nombre_lances = robotvrai.nombre_lances;
-		fresques_posees = robotvrai.fresques_posees;
+		duree += 2000; // TODO
 	}
 	
 	/**
@@ -225,58 +208,57 @@ public class RobotChrono extends Robot {
 
 	@Override
 	public void poserFeuBonCote(Cote cote) throws SerialException {
-		duree += 1000;
+		duree += 1000; // TODO
 	}
 
 	@Override
 	public void poserFeuEnRetournant(Cote cote) throws SerialException {
-		duree += 1000;
+		duree += 1000; // TODO
 	}
 
 	@Override
 	public void lever_pince(Cote cote) throws SerialException {
-		duree += 1000;
+		duree += 1000; // TODO
 	}
 
 	@Override
 	public void baisser_pince(Cote cote) throws SerialException {
-		duree += 1000;
+		duree += 1000; // TODO
 	}
 
 	@Override
 	public void fermer_pince(Cote cote) throws SerialException {
-		duree += 1000;
+		duree += 1000; // TODO
 	}
 
 	@Override
 	public void ouvrir_pince(Cote cote) throws SerialException {
-		duree += 1000;
+		duree += 1000; // TODO
 	}
 
 	@Override
 	public void milieu_pince(Cote cote) throws SerialException {
-		duree += 1000;
+		duree += 1000; // TODO
 	}
 
 	@Override
 	public void tourner_pince(Cote cote) throws SerialException {
-		duree += 1000;
+		duree += 1000; // TODO
 	}
 
 	@Override
 	public void presque_fermer_pince(Cote cote) throws SerialException {
-		duree += 1000;
+		duree += 1000; // TODO
 	}
 
 	@Override
 	public void ouvrir_bas_pince(Cote cote) throws SerialException {
-		duree += 1000;
+		duree += 1000; // TODO
 	}
 
 	@Override
 	public void prendre_torche(Cote cote) throws SerialException {
-		// TODO Auto-generated method stub
-		
+	    duree += 1000; // TODO
 	}
 	
 }

@@ -1,16 +1,15 @@
 package scripts;
 
-import pathfinding.Pathfinding;
 import smartMath.Vec2;
+import strategie.GameState;
+import threads.ThreadTimer;
 import hook.Callback;
 import hook.Executable;
 import hook.Hook;
 import hook.HookGenerator;
 import robot.Cote;
-import robot.Robot;
 import robot.RobotChrono;
 import robot.RobotVrai;
-import table.Table;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
@@ -41,7 +40,7 @@ public abstract class Script implements Service {
 	protected String couleur; 
 	private int rayon_robot;
 	
-	public Script(HookGenerator hookgenerator, Read_Ini config, Log log, RobotVrai robotvrai)
+	public Script(HookGenerator hookgenerator, Read_Ini config, Log log)
 	{
 		Script.hookgenerator = hookgenerator;
 		Script.config = config;
@@ -63,37 +62,37 @@ public abstract class Script implements Service {
 	/**
 	 * Exécute vraiment un script
 	 */
-	public void agit(int id_version, RobotVrai robotvrai, Table table, Pathfinding pathfinding, boolean retenter_si_blocage) throws ScriptException
+	public void agit(int id_version, GameState<RobotVrai> state, boolean retenter_si_blocage) throws ScriptException
 	{
 		Vec2 point_entree = point_entree(id_version);
 
-		robotvrai.set_vitesse_translation("entre_scripts");
-		robotvrai.set_vitesse_rotation("entre_scripts");
+		state.robot.set_vitesse_translation("entre_scripts");
+		state.robot.set_vitesse_rotation("entre_scripts");
 
-		Executable takefire = new TakeFire(robotvrai, Cote.GAUCHE);
+		Executable takefire = new TakeFire(state.robot, Cote.GAUCHE);
 		Hook hook = hookgenerator.hook_feu(Cote.GAUCHE);
 		hook.ajouter_callback(new Callback(takefire, true));		
 		hooks_chemin.add(hook);
 
-		takefire = new TakeFire(robotvrai, Cote.DROIT);
+		takefire = new TakeFire(state.robot, Cote.DROIT);
 		hook = hookgenerator.hook_feu(Cote.DROIT);
 		hook.ajouter_callback(new Callback(takefire, true));
 		hooks_chemin.add(hook);
 
-		Executable torche_disparue = new DisparitionTorche(table, Cote.DROIT);
-		hook = hookgenerator.hook_position(table.getPositionTorche(Cote.DROIT), table.getRayonTorche(Cote.DROIT)+rayon_robot);
+		Executable torche_disparue = new DisparitionTorche(state.table, Cote.DROIT);
+		hook = hookgenerator.hook_position(state.table.getPositionTorche(Cote.DROIT), state.table.getRayonTorche(Cote.DROIT)+rayon_robot);
 		hook.ajouter_callback(new Callback(torche_disparue, true));
 		hooks_chemin.add(hook);
 	
-		torche_disparue = new DisparitionTorche(table, Cote.GAUCHE);
-		hook = hookgenerator.hook_position(table.getPositionTorche(Cote.GAUCHE), table.getRayonTorche(Cote.GAUCHE)+rayon_robot);
+		torche_disparue = new DisparitionTorche(state.table, Cote.GAUCHE);
+		hook = hookgenerator.hook_position(state.table.getPositionTorche(Cote.GAUCHE), state.table.getRayonTorche(Cote.GAUCHE)+rayon_robot);
 		hook.ajouter_callback(new Callback(torche_disparue, true));
 		hooks_chemin.add(hook);
 
 		try
 		{
-			robotvrai.va_au_point_pathfinding(pathfinding, point_entree, hooks_chemin, retenter_si_blocage, false, true, false);
-			execute(id_version, robotvrai, table, pathfinding);
+		    state.robot.va_au_point_pathfinding(state.pathfinding, point_entree, hooks_chemin, retenter_si_blocage, false, true, false);
+			execute(id_version, state);
 		}
 		catch (Exception e)
 		{
@@ -103,43 +102,45 @@ public abstract class Script implements Service {
 		}
 		finally
 		{
-			termine(robotvrai, table, pathfinding);
+			termine(state);
 		}
 		
 	}
 	
-	public long metacalcule(int id_version, RobotChrono robotchrono, Table table, Pathfinding pathfinding, boolean use_cache)
-	{
-		return calcule( version_asso(id_version).get(0), robotchrono, table, pathfinding, use_cache);
+	public long metacalcule(int id_version, GameState<RobotChrono> state, boolean use_cache)
+	{	    
+		long duree = calcule(version_asso(id_version).get(0), state, use_cache);
+		state.time += duree;
+		return duree;
 	}
 	
 	/**
 	 * Calcule le temps d'exécution de ce script (grâce à robotChrono)
 	 * @return le temps d'exécution
 	 */
-	public long calcule(int id_version, RobotChrono robotchrono, Table table, Pathfinding pathfinding, boolean use_cache)
+	public long calcule(int id_version, GameState<RobotChrono> state, boolean use_cache)
 	{
 		Vec2 point_entree = point_entree(id_version);
-		robotchrono.set_vitesse_translation("entre_scripts");
-		robotchrono.set_vitesse_rotation("entre_scripts");
+		state.robot.set_vitesse_translation("entre_scripts");
+		state.robot.set_vitesse_rotation("entre_scripts");
 		
 		try {
-			robotchrono.initialiser_compteur(pathfinding.distance(robotchrono.getPosition(), point_entree, use_cache));
+			state.robot.initialiser_compteur(state.pathfinding.distance(state.robot.getPosition(), point_entree, use_cache));
 		} catch (PathfindingException e1) {
 			// En cas de problème du pathfinding, on évalue la longueur du chemin
-			robotchrono.initialiser_compteur((int)(robotchrono.getPosition().distance(point_entree)*1.5));
+			state.robot.initialiser_compteur((int)(state.robot.getPosition().distance(point_entree)*1.5));
 			e1.printStackTrace();
 		}
-		robotchrono.setPosition(point_entree);
+		state.robot.setPosition(point_entree);
 
 		try {
-			execute(id_version, robotchrono, table, pathfinding);
+			execute(id_version, state);
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
-		return robotchrono.get_compteur();
+		return state.robot.get_compteur();
 	}
 	/**
 	 * Renvoie les versions associées associée à une méta-version
@@ -151,13 +152,13 @@ public abstract class Script implements Service {
 	 * Renvoie le tableau des méta-verions d'un script
 	 * @return le tableau des méta-versions possibles
 	 */
-	public abstract ArrayList<Integer> meta_version(final Robot robot, final Table table, Pathfinding pathfinding);
+	public abstract ArrayList<Integer> meta_version(final GameState<?> state);
 		
 	/**
 	 * Renvoie le tableau des versions d'un script
 	 * @return le tableau des versions possibles
 	 */
-	public abstract ArrayList<Integer> version(final Robot robot, final Table table, Pathfinding pathfinding);
+	public abstract ArrayList<Integer> version(final GameState<?> state);
 
 	/**
 	 * Retourne la position d'entrée associée à la version id
@@ -170,22 +171,21 @@ public abstract class Script implements Service {
 	 * Renvoie le score que peut fournir une méta-version d'un script
 	 * @return le score
 	 */
-	public int meta_score(int id_version, Robot robot, Table table)
+	public int meta_score(int id_version, GameState<?> state)
 	{
-		
-		return score(version_asso(id_version).get(0),robot,table);
+		return score(version_asso(id_version).get(0), state);
 	}
 	/**
 	 * Renvoie le score que peut fournir une version d'un script
 	 * @return le score
 	 */
-	public abstract int score(int id_version, final Robot robot, final Table table);
+	public abstract int score(int id_version, final GameState<?> state);
 	
 	/**
  	 * Donne le poids du script, utilisé pour calculer sa note
 	 * @return le poids
 	 */
-	public abstract int poids(final Robot robot, final Table table);
+	public abstract int poids(final GameState<?> state);
 
 	/**
  	 * Donne la probabilité que le script réussisse
@@ -194,15 +194,15 @@ public abstract class Script implements Service {
 	public abstract float proba_reussite();
 
 	/**
-	 * Exécute le script
+	 * Exécute le script, avec RobotVrai ou RobotChrono
 	 * @throws SerialException 
 	 */
-	abstract protected void execute(int id_version, Robot robot, Table table, Pathfinding pathfinding) throws MouvementImpossibleException, SerialException;
+	abstract protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException;
 
 	/**
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs.
 	 */
-	abstract protected void termine(Robot robot, Table table, Pathfinding pathfinding);
+	abstract protected void termine(GameState<?> state);
 	
 	public void maj_config()
 	{

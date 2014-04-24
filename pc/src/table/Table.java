@@ -430,7 +430,7 @@ public class Table implements Service {
 	 * La table en argument deviendra la copie de this (this reste inchangé)
 	 * @param ct
 	 */
-	public void clone(Table ct)
+	public void copy(Table ct)
 	{
 		if(!equals(ct))
 		{
@@ -474,7 +474,7 @@ public class Table implements Service {
 	public Table clone()
 	{
 		Table cloned_table = new Table(log, config);
-		clone(cloned_table);
+		copy(cloned_table);
 		return cloned_table;
 	}
 

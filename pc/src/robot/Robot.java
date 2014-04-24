@@ -58,8 +58,28 @@ public abstract class Robot implements Service {
 	
 	public abstract void setPosition(Vec2 position);
 	public abstract void setOrientation(float orientation);
-	
-	/*
+
+	/**
+	 * Copy this dans rc. this reste inchangé.
+	 * 
+	 * @param rc
+	 */
+    public void copy(Robot rc)
+    {
+        rc.position = position.clone();
+        rc.orientation = orientation;
+        rc.set_vitesse_rotation(vitesse_rotation);
+        rc.set_vitesse_translation(vitesse_translation);
+        rc.nombre_lances = nombre_lances;
+        rc.fresques_posees = fresques_posees;
+        rc.nombre_fruits_bac = nombre_fruits_bac;
+        rc.tient_feu_droite = tient_feu_droite;
+        rc.tient_feu_gauche = tient_feu_gauche;
+        rc.feu_tenu_gauche_rouge = feu_tenu_gauche_rouge;
+        rc.feu_tenu_droite_rouge = feu_tenu_droite_rouge;
+    }
+
+    /*
 	 * ACTIONNEURS
 	 */
 
@@ -102,7 +122,7 @@ public abstract class Robot implements Service {
 	protected boolean tient_feu_gauche = false;
 	protected boolean feu_tenu_gauche_rouge = false;
 	protected boolean feu_tenu_droite_rouge = false;
-	protected int nb_tentatives = 2;
+	protected static int nb_tentatives = 2;
 	private String vitesse_translation;
 	private String vitesse_rotation;
 	
@@ -112,7 +132,7 @@ public abstract class Robot implements Service {
 		this.log = log;
 		maj_config();
 	}
-	
+		
 	public void maj_config()
 	{
 		try {

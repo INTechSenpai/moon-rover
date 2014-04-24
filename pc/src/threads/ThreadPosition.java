@@ -12,14 +12,12 @@ import utils.Sleep;
 class ThreadPosition extends AbstractThread {
 
 	private RobotVrai robotvrai;
-	private ThreadTimer threadTimer;
 	
 	public boolean robot_pret = false;
 	
-	ThreadPosition(RobotVrai robotvrai, ThreadTimer threadTimer)
+	ThreadPosition(RobotVrai robotvrai)
 	{
 		this.robotvrai = robotvrai;
-		this.threadTimer = threadTimer;
 		Thread.currentThread().setPriority(6);
 	}
 	
@@ -39,7 +37,7 @@ class ThreadPosition extends AbstractThread {
 			}
 			robot_pret = true;
 			Sleep.sleep(80);
-		} while(!threadTimer.fin_match);
+		} while(!ThreadTimer.fin_match);
 
 		log.debug("Arrêt du thread de position", this);
 	

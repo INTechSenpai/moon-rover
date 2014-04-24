@@ -29,11 +29,10 @@ public class ThreadStrategie extends AbstractThread {
 	private RobotChrono robotchrono;
 	private MemoryManager memorymanager;
 	private Pathfinding pathfinding;
-	private ThreadTimer threadtimer;
 	
 	private int profondeur_max;
 
-	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, ThreadTimer threadtimer, Pathfinding pathfinding)
+	ThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, Pathfinding pathfinding)
 	{
 		this.strategie = strategie;
 		this.table = table;
@@ -41,7 +40,6 @@ public class ThreadStrategie extends AbstractThread {
 		this.robotchrono = new RobotChrono(config, log);
 		this.memorymanager = memorymanager;
 		this.pathfinding = pathfinding;
-		this.threadtimer = threadtimer;
 		maj_config();
 		Thread.currentThread().setPriority(5);
 	}
@@ -52,7 +50,7 @@ public class ThreadStrategie extends AbstractThread {
 		log.debug("Lancement du thread de stratégie", this);
 
 		// attends que le match démarre
-		while(!threadtimer.match_demarre)
+		while(!ThreadTimer.match_demarre)
 		{
 			if(stop_threads)
 			{
@@ -80,9 +78,10 @@ public class ThreadStrategie extends AbstractThread {
 	}
 
 	
+	// TODO
 	private void maj_prochainScriptErreur()
 	{
-		robotchrono.majRobotChrono(robotvrai);
+/*		robotchrono.majRobotChrono(robotvrai);
 		Table tableBlocage = table.clone();
 		Vec2 centre_detection = new Vec2((int)(400 * Math.cos(robotvrai.getOrientation())), (int)(400 * Math.sin(robotvrai.getOrientation())));
 		centre_detection.Plus(robotvrai.getPosition());
@@ -103,12 +102,13 @@ public class ThreadStrategie extends AbstractThread {
 		meilleur_version.version = (int)a[0];
 		meilleur_version.note = a[1];
 		strategie.setProchainScriptEnnemi(meilleur_version);		
-
+*/
 	}
 
+	// TODO
 	private void maj_prochainScript()
 	{
-		robotchrono.majRobotChrono(robotvrai);
+/*		robotchrono.majRobotChrono(robotvrai);
 		Table tableFuture = table.clone();
 //		NoteScriptVersion enCours = strategie.getScriptEnCours();
 		// TODO: la durée est importante pour supprimer les obstacles périmés
@@ -128,7 +128,7 @@ public class ThreadStrategie extends AbstractThread {
 		meilleur_version.script = meilleur.script;
 		meilleur_version.version = (int)a[0];
 		meilleur_version.note = a[1];
-		strategie.setProchainScript(meilleur_version);		
+		strategie.setProchainScript(meilleur_version);*/		
 	}
 
 	private boolean evalueEnnemi()

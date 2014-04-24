@@ -11,14 +11,13 @@ import hook.methodes.TakeFire;
 import org.junit.Before;
 import org.junit.Test;
 
-import pathfinding.Pathfinding;
 import robot.Cote;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import scripts.Script;
 import scripts.ScriptManager;
 import smartMath.Vec2;
-import table.Table;
+import strategie.GameState;
 
 public class JUnit_Demo extends JUnit_Test {
 
@@ -26,25 +25,23 @@ public class JUnit_Demo extends JUnit_Test {
 	private Script s;
 	private RobotVrai robotvrai;
 	private RobotChrono robotchrono;
-	private Pathfinding pathfinding;
-	private Table table;
 	private HookGenerator hookgenerator;
+	private GameState<RobotVrai> state;
 	
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 		config.set("couleur", "jaune");
 		scriptmanager = (ScriptManager)container.getService("ScriptManager");
-		robotvrai = (RobotVrai)container.getService("RobotVrai");
-		robotchrono = new RobotChrono(config, log);
-		robotchrono.majRobotChrono(robotvrai);
-		table = (Table)container.getService("Table");
- 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
+        state = (GameState<RobotVrai>)container.getService("RealGameState");
+        robotchrono = new RobotChrono(config, log);
+        robotvrai = state.robot;
+        robotvrai.copy(robotchrono);
+ 		
 		robotvrai.setPosition(new Vec2(1300, 1200));
 		robotvrai.setOrientation((float)Math.PI);
 		robotvrai.set_vitesse_rotation("entre_scripts");
 		robotvrai.set_vitesse_translation("entre_scripts");
-		pathfinding = new Pathfinding(table, config, log);
 		container.getService("threadPosition");
 		container.demarreThreads();
 
@@ -60,7 +57,7 @@ public class JUnit_Demo extends JUnit_Test {
 	@Test
 	public void arbre() throws Exception {
 		s = (Script)scriptmanager.getScript("ScriptTree");
-		s.agit(1, robotvrai, table, pathfinding, true);
+		s.agit(1, state, true);
 	}
 
 	@Test
@@ -81,7 +78,7 @@ public class JUnit_Demo extends JUnit_Test {
 	public void depose_fruits() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptDeposerFruits");
-		s.agit(0, robotvrai, table, pathfinding, false);
+		s.agit(0, state, false);
 	}
 	
 	@Test
@@ -89,7 +86,7 @@ public class JUnit_Demo extends JUnit_Test {
 	{
 		robotvrai.avancer(1000);
 		s = (Script)scriptmanager.getScript("ScriptLances");
-		s.agit(0, robotvrai, table, pathfinding, true);
+		s.agit(0, state, true);
 	}
 	
 	@Test
@@ -100,7 +97,7 @@ public class JUnit_Demo extends JUnit_Test {
 		robotvrai.lever_pince(Cote.GAUCHE);
 		robotvrai.takefire(Cote.GAUCHE);
 		s = (Script)scriptmanager.getScript("ScriptDeposerFeu");
-		s.agit(2, robotvrai, table, pathfinding, true);
+		s.agit(2, state, true);
 	}
 
 	@Test
@@ -111,7 +108,7 @@ public class JUnit_Demo extends JUnit_Test {
 		robotvrai.lever_pince(Cote.GAUCHE);
 		robotvrai.takefire(Cote.DROIT);
 		s = (Script)scriptmanager.getScript("ScriptDeposerFeu");
-		s.agit(2, robotvrai, table, pathfinding, true);
+		s.agit(2, state, true);
 	}
 	
 	@Test

@@ -5,7 +5,9 @@ import org.junit.Test;
 import org.junit.Assert;
 
 import robot.RobotChrono;
+import robot.RobotVrai;
 import smartMath.Vec2;
+import strategie.GameState;
 import strategie.MemoryManager;
 import table.Table;
 
@@ -17,86 +19,82 @@ import table.Table;
 
 public class JUnit_MemoryManagerTest extends JUnit_Test {
 
-	private Table table;
+	private GameState<RobotVrai> state;
 	private MemoryManager memorymanager;
-	private RobotChrono robotchrono;
 	
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 		log.debug("JUnit_MemoryManagerTest.setUp()", this);
-		table = (Table)container.getService("Table");
+		state = (GameState<RobotVrai>)container.getService("RealGameState");
 		memorymanager = (MemoryManager)container.getService("MemoryManager");
-		robotchrono = new RobotChrono(config, log);
 	}
 
 	@Test
-	public void test_cloneTable_1etage() throws Exception
+	public void test_clone_1etage() throws Exception
 	{
 		log.debug("JUnit_MemoryManagerTest.test_cloneTable_1etage()", this);
-		memorymanager.setModelTable(table, 1);
-		Table cloned = memorymanager.getCloneTable(1);
-		Assert.assertTrue(table.equals(cloned));
+		Table cloned = memorymanager.getClone(0).table;
+		Assert.assertTrue(state.table.equals(cloned));
 	}
 
+   @Test
+    public void test_clone_beaucoup() throws Exception
+    {
+        log.debug("JUnit_MemoryManagerTest.test_cloneTable_1etage()", this);
+        Table cloned = memorymanager.getClone(1000).table;
+        Assert.assertTrue(state.table.equals(cloned));
+    }
+
 	@Test
-	public void test_cloneTable_1etage_modification() throws Exception
+	public void test_clone_1etage_modification() throws Exception
 	{
 		log.debug("JUnit_MemoryManagerTest.test_cloneTable_1etage_modification()", this);
-		memorymanager.setModelTable(table, 1);
-		Table cloned = memorymanager.getCloneTable(1);
-		table.creer_obstacle(new Vec2(0,1000));
-		table.pickFire(0);
-		table.pickTree(0);
-		Assert.assertTrue(!table.equals(cloned));
-		memorymanager.getCloneTable(1);
+        Table cloned = memorymanager.getClone(0).table;
+		state.table.creer_obstacle(new Vec2(0,1000));
+		state.table.pickFire(0);
+		state.table.pickTree(0);
+		Assert.assertTrue(!state.table.equals(cloned));
 	}
 
 	@Test
-	public void test_cloneTable_2etages() throws Exception
+	public void test_clone_2etages() throws Exception
 	{
 		log.debug("JUnit_MemoryManagerTest.test_cloneTable_2etages()", this);
-		memorymanager.setModelTable(table, 2);
-		Table cloned = memorymanager.getCloneTable(2);
+		Table cloned = memorymanager.getClone(0).table;
 		cloned.creer_obstacle(new Vec2(0,1000));
-		Assert.assertTrue(!table.equals(cloned));
-		Table cloned2 = memorymanager.getCloneTable(1);
-		Assert.assertTrue(!cloned2.equals(table));
+		Assert.assertTrue(!state.table.equals(cloned));
+		Table cloned2 = memorymanager.getClone(1).table;
+		Assert.assertTrue(!cloned2.equals(state.table));
 		Assert.assertTrue(cloned2.equals(cloned));
 	}
 
 	@Test
-	public void test_cloneTable_encore_un_test() throws Exception
+	public void test_clone_encore_un_test() throws Exception
 	{
 		log.debug("JUnit_MemoryManagerTest.test_cloneTable_encore_un_test()", this);
-		memorymanager.setModelTable(table, 2);
-		Table cloned = memorymanager.getCloneTable(2);
+		Table cloned = memorymanager.getClone(0).table;
 		cloned.creer_obstacle(new Vec2(0,1000));
-		Assert.assertTrue(!table.equals(cloned));
-		Table cloned2 = memorymanager.getCloneTable(2);
-		Assert.assertTrue(cloned2.equals(table));
+		Assert.assertTrue(!state.table.equals(cloned));
+		Table cloned2 = memorymanager.getClone(0).table;
+		Assert.assertTrue(cloned2.equals(state.table));
 		// L'assertion suivante devrait en logique être fausse.
 		// Le fait est qu'une telle comparaison (deux éléments d'un même niveau) ne sera jamais effectuée
 		Assert.assertTrue(cloned2.equals(cloned));
 	}
 
-	@Test
-	public void test_cloneRobotChrono_1etage() throws Exception
-	{
-		log.debug("JUnit_MemoryManagerTest.test_cloneRobotChrono_1etage()", this);
-		memorymanager.setModelRobotChrono(robotchrono, 1);
-		RobotChrono cloned = memorymanager.getCloneRobotChrono(1);
-		Assert.assertTrue(robotchrono.equals(cloned));
-	}
-
-	@Test
-	public void test_cloneRobotChrono_1etage_modification() throws Exception
-	{
-		log.debug("JUnit_MemoryManagerTest.test_cloneRobotChrono_1etage_modification()", this);
-		memorymanager.setModelRobotChrono(robotchrono, 1);
-		RobotChrono cloned = memorymanager.getCloneRobotChrono(1);
-		robotchrono.setPosition(new Vec2(1234,21));
-		Assert.assertTrue(!robotchrono.equals(cloned));
-	}
+	   @Test
+	    public void test_clone_pathfinding() throws Exception
+	    {
+	        log.debug("JUnit_MemoryManagerTest.test_clone_pathfinding()", this);
+	        GameState<RobotChrono> cloned = memorymanager.getClone(0);
+            Assert.assertTrue(state.table.equals(cloned.table));
+            Assert.assertTrue(state.pathfinding.equals(cloned.pathfinding));
+	        state.table.creer_obstacle(new Vec2(0,1000));
+	        state.table.pickFire(0);
+	        state.table.pickTree(0);
+	        Assert.assertTrue(!state.table.equals(cloned.table));
+            Assert.assertTrue(!state.pathfinding.equals(cloned.pathfinding));
+	    }
 
 }

@@ -58,43 +58,43 @@ public class ThreadManager {
 		return threads.get("threadTimer");
 	}
 
-	public AbstractThread getThreadPosition(RobotVrai robotvrai, ThreadTimer threadtimer)
+	public AbstractThread getThreadPosition(RobotVrai robotvrai)
 	{
 		AbstractThread thread = threads.get("threadPosition");
 		if(thread == null)
-			threads.put("threadPosition", new ThreadPosition(robotvrai, threadtimer));
+			threads.put("threadPosition", new ThreadPosition(robotvrai));
 		return threads.get("threadPosition");
 	}
 
-	public AbstractThread getThreadCapteurs(RobotVrai robotvrai, ThreadTimer threadtimer, Table table, Capteurs capteurs)
+	public AbstractThread getThreadCapteurs(RobotVrai robotvrai, Table table, Capteurs capteurs)
 	{
 		AbstractThread thread = threads.get("threadCapteurs");
 		if(thread == null)
-			threads.put("threadCapteurs", new ThreadCapteurs(robotvrai, threadtimer, table, capteurs));
+			threads.put("threadCapteurs", new ThreadCapteurs(robotvrai, table, capteurs));
 		return threads.get("threadCapteurs");
 	}
 
-	public AbstractThread getThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, ThreadTimer threadtimer, Pathfinding pathfinding)
+	public AbstractThread getThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, Pathfinding pathfinding)
 	{
 		AbstractThread thread = threads.get("threadStrategie");
 		if(thread == null)
-			threads.put("threadStrategie", new ThreadStrategie(strategie, table, robotvrai, memorymanager, threadtimer, pathfinding));
+			threads.put("threadStrategie", new ThreadStrategie(strategie, table, robotvrai, memorymanager, pathfinding));
 		return threads.get("threadStrategie");
 	}
 
-	public AbstractThread getThreadLaser(Laser laser, Table table, ThreadTimer threadtimer, FiltrageLaser filtragelaser)
+	public AbstractThread getThreadLaser(Laser laser, Table table, FiltrageLaser filtragelaser)
 	{
 		AbstractThread thread = threads.get("threadLaser");
 		if(thread == null)
-			threads.put("threadLaser", new ThreadLaser(laser, table, threadtimer, filtragelaser));
+			threads.put("threadLaser", new ThreadLaser(laser, table, filtragelaser));
 		return threads.get("threadLaser");
 	}
 
-	public AbstractThread getThreadAnalyseEnnemi(Table table, ThreadTimer threadtimer, Strategie strategie)
+	public AbstractThread getThreadAnalyseEnnemi(Table table, Strategie strategie)
 	{
 		AbstractThread thread = threads.get("threadAnalyseEnnemi");
 		if(thread == null)
-			threads.put("threadAnalyseEnnemi", new ThreadAnalyseEnnemi(table, threadtimer, strategie));
+			threads.put("threadAnalyseEnnemi", new ThreadAnalyseEnnemi(table, strategie));
 		return threads.get("threadAnalyseEnnemi");
 	}
 
