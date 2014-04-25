@@ -29,6 +29,7 @@ public class Branche
 	// TODO : changer en profondeur restante
 	public int profondeur;					// Cette branche est-elle la dernière à évaluer, ou faut-il prendre en compte des sous-branches ? 
 	public long date;						// date à laquelle cette branche est parcourue
+	public int TTL;							// combien de temps allons-nous continuer à anticiper après la première action de cette branche
 	
 	// Notes
 	public float note;				// note de toute la branche, prenant en comte les notes des sous-branches
@@ -58,8 +59,9 @@ public class Branche
 	 * @param robot
 	 * @param pathfinder
 	 */
-	public Branche(boolean useCachedPathfinding, int profondeur, Script script, int metaversion, GameState<RobotChrono> state)
+	public Branche(int TTL, boolean useCachedPathfinding, int profondeur, Script script, int metaversion, GameState<RobotChrono> state)
 	{
+	    this.TTL = TTL;
 	    this.state = state;
 		this.useCachedPathfinding = useCachedPathfinding;
 		this.profondeur = profondeur;
@@ -77,12 +79,12 @@ public class Branche
 	{
 		if(!isActionCharacteisticsComputed)
 		{
-			//scoreScript = script.meta_score(metaversion, state);
-			//dureeScript = script.metacalcule(metaversion, state, useCachedPathfinding);
+			scoreScript = script.meta_score(metaversion, state);
+			dureeScript = script.metacalcule(metaversion, state, useCachedPathfinding);
 			
 			// Substitut de test en attendant que les scipts buggent moins.
-			scoreScript = 2;
-			dureeScript = 12000;	// 12 sec !
+			//scoreScript = 2;
+			//dureeScript = 12000;	// 12 sec !
 			
 			isActionCharacteisticsComputed = true;
 		}
@@ -96,22 +98,16 @@ public class Branche
 	public void computeNote()
 	{
 		computeLocalNote();
+
+		// On prend en compte les éventuelles sous branches
+		// TODO : mixer les notes des sous-branches avec noteLocale
+		// pour l'instant, un simple max ira bien :         note = noteLocale + max( note des sous branches ), le max valant 0 si il n'y a pas de sous branche
+		note = 0;	
+		for (int i = 0; i< sousBranches.size(); ++i)
+			if(sousBranches.get(i).note > this.note)
+				note = sousBranches.get(i).note; 
+		note += localNote;
 		
-		if(profondeur == 0)
-			// Pas de prise en compte d'actions futures si on est déjà a profondeur maximale 
-			note = localNote;
-		else
-		{
-			// Si il reste de la profondeur en aval, on prend en compte les sous branches
-			// TODO : mixer les notes des sous-branches avec noteLocale
-			
-			// pour l'instant, un simple max ira bien :         note = noteLocale + max( note des sous branches )
-			note = -1;	// Valeur incorecte pour forcer la réattribution
-			for (int i = 0; i< sousBranches.size(); ++i)
-				if(sousBranches.get(i).note > this.note)
-					note = sousBranches.get(i).note; 
-			note += localNote;
-		}
 		
 		// marque la note comme calculée 
 		isNoteComputed = true;

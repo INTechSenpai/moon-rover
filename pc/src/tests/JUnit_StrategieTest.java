@@ -64,6 +64,6 @@ public class JUnit_StrategieTest extends JUnit_Test {
 		robotvrai.setPosition(new Vec2(0, 1700));
 		robotchrono.setPosition(new Vec2(0, 1700));
 		log.debug("Strategie starting", this);
-		strategie.evaluate(1);
+		strategie.evaluate();
 	}
 }

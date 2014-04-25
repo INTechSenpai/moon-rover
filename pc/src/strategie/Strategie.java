@@ -372,7 +372,7 @@ public class Strategie implements Service {
 	 * 
 	 * @param profondeur : la profondeur d'exploration de l'arbre, 1 pour n'explorer qu'un niveau
 	 */
-	public NoteScriptMetaversion evaluate(int profondeur)
+	public NoteScriptMetaversion evaluate()	// TODO : add an argument to infuence the tree size
 	{
 		/*
 		 * 	Algorithme : Itterative Modified DFS
@@ -408,17 +408,21 @@ public class Strategie implements Service {
 		// racourccis pour les racines, afin du calcul du max final :
 		ArrayList<Branche> rootList = new ArrayList<Branche>();
 		
+		// Pour le critère d'arrèt d'exploration de l'arbre : un TTL ira bien pour l'instant :
+		// les action a anticiper doivent commencer dans les 30 prochaines secondes
+		int		TTL = 20000;	// 30 sec d'anticipation 
+		
 		
 		// ajoute tous les scrips disponibles scripts
 		for(String nom_script : scriptmanager.getNomsScripts())
 		{
 			try
 			{
-				mScript = scriptmanager.getScript(nom_script);				
+				mScript = scriptmanager.getScript(nom_script);			// ici 	getScript foire une fois sur 2
 			}
 			catch(ScriptException e)
 			{
-			//	e.printStackTrace();
+				//e.printStackTrace();
 			}
 			
 			metaversionList = mScript.meta_version(	mState	);
@@ -431,11 +435,12 @@ public class Strategie implements Service {
 			for(int metaversion : metaversionList)
 			{
 				log.debug("Ajout d'une racine", this);
-				scope.push( new Branche(	false,							// N'utilise pas le cache pour le premier niveau de profondeur 
-											profondeur,						// Profondeur a laquel déployer des sous branches
+				scope.push( new Branche(	TTL,							// Il reste tout le TTL sur chacune des racines
+											false,							// N'utilise pas le cache pour le premier niveau de profondeur 
+											0,								// différence de profondeur entre la racine et ici, donc 0 dans notre cas
 											mScript, 						// Une branche par script et par métaversion
 											metaversion, 
-											mState	) );
+											mState	) );					// état de jeu
 				rootList.add(scope.lastElement());
 			}	
 		}
@@ -447,27 +452,26 @@ public class Strategie implements Service {
 		// Boucle principale d'exploration des branches
 		while (scope.size() != 0)
 		{
-			log.debug("Nouveau tour de boucle", this);
-			log.debug("Taille de la stack :" + scope.size(), this);
-			log.debug("stack :" + scope.toString(), this);
+			//log.debug("Nouveau tour de boucle", this);
+			//log.debug("Taille de la stack :" + scope.size(), this);
 			current = scope.lastElement();
 			
-			// Condition d'ajout des sous-branches : ne pas dépasser le profondeur max, et ne pas les ajouter 2 fois.
-			if ( current.profondeur != 0 && (current.sousBranches.size() == 0) )
+			// Condition d'ajout des sous-branches : respecter le critère d'arret d'expansion, et ne pas les ajouter 2 fois.
+			if ( current.TTL - current.dureeScript > 0 && (current.sousBranches.size() == 0) )
 			{
 				// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage		
-				// attn profondeur n'est pas la position actuelle mais la taille de l'abre en aval
-				mState = memorymanager.getClone(current.profondeur+1);
+				mState = memorymanager.getClone(current.profondeur);
+				
 				// ajoute tous les scrips disponibles
-				for(String nomScript : scriptmanager.getNomsScripts())
+				for(String nomScript : scriptmanager.getNomsScripts())	// Ces scripts sont ils bien ôtés de ceux que j'ai déjà effectué dans une branche en amont ?
 				{
 					try
 					{
-						mScript = scriptmanager.getScript(nomScript);				
+						mScript = scriptmanager.getScript(nomScript);						// ici 	getScript marche correctement
 					}
 					catch(Exception e)
 					{
-						//e.printStackTrace();
+						e.printStackTrace();
 					}
 					
 					metaversionList = mScript.meta_version(	mState	);
@@ -479,13 +483,18 @@ public class Strategie implements Service {
 					// ajoute toutes les métaversions de tous les scipts
 					for(int metaversion : metaversionList)
 					{
+						// Mrrrou ?
 					    //Att, il faut executer le script a ce moment la sur la branche parente (via scipet::metacalcule) sinon l'état n'est pas changé
 					                                //attn, profondeur n'est pas la position bsolue mais la taille de l'abre en aval
-						scope.push( new Branche(	current.profondeur >= 2,		// Utiliser le cache dès le second niveau de profondeur
-													current.profondeur+1,			// Profondeur a laquel déployer des sous branches
-													mScript, 						// Une branche par script et par métaversion
+						scope.push( new Branche(	(int)(current.TTL - current.dureeScript),	// TTL restant : celui du restant moins la durée de son action	
+													current.profondeur >= 2,					// Utiliser le cache dès le second niveau de profondeur
+													current.profondeur+1,						// différence de profondeur entre la racine et ici, donc 1 + celle du parent
+													mScript, 									// Une branche par script et par métaversion
 													metaversion, 
-													mState	) );
+													mState	) );								// état de jeu
+						
+						// enregistre cette branche comme sous branche de son parent
+						current.sousBranches.add(scope.lastElement());
 					}
 				}
 				
@@ -494,6 +503,7 @@ public class Strategie implements Service {
 			else	// Soit on a atteint la profondeur maximale, soit les enfants ont étés traités donc on calcule la note de ce niveau
 			{
 				current.computeNote();
+				log.debug("note courrante :" + current.note, this);
 				scope.pop();
 			}
 			
@@ -514,6 +524,7 @@ public class Strategie implements Service {
 				
 			}
 		}
+		log.debug("Note finale : " + DatUltimateBest.note,this);
 		
 		return DatUltimateBest;
 	}
