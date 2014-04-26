@@ -431,6 +431,8 @@ public class Strategie implements Service {
 			for(int metaversion : metaversionList)
 			{
 				log.debug("Abwabwa", this);
+				//pour débug
+				System.out.println(nom_script+"  : "+metaversion);
 				scope.push( new Branche(	false,							// N'utilise pas le cache pour le premier niveau de profondeur 
 											profondeur,						// Profondeur a laquel déployer des sous branches
 											mScript, 						// Une branche par script et par métaversion

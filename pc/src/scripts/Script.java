@@ -125,6 +125,7 @@ public abstract class Script implements Service {
 		state.robot.set_vitesse_rotation("entre_scripts");
 		
 		try {
+			System.out.println("Le point d'entrée se situe en ("+point_entree.x+","+point_entree.y+")");
 			state.robot.initialiser_compteur(state.pathfinding.distance(state.robot.getPosition(), point_entree, use_cache));
 		} catch (PathfindingException e1) {
 			// En cas de problème du pathfinding, on évalue la longueur du chemin
