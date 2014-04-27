@@ -435,10 +435,7 @@ public class Strategie implements Service {
 		// ajoute tous les scrips disponibles scripts
 		for(String nom_script : scriptmanager.getNomsScripts())
 		{
-			if(nom_script == "ScriptFresque")
-				continue;
-			if(nom_script == "ScriptFeuDebout")
-				continue;
+
 			try
 			{
 				mScript = scriptmanager.getScript(nom_script);
@@ -489,12 +486,7 @@ public class Strategie implements Service {
 				// ajoute tous les scrips disponibles
 				for(String nomScript : scriptmanager.getNomsScripts())	// Ces scripts sont ils bien ôtés de ceux que j'ai déjà effectué dans une branche en amont ?
 				{
-					if(nomScript == "ScriptFresque")
-						continue;
-
-					if(nomScript == "ScriptFeuDebout")
-						continue;
-					
+				
 					try
 					{
 						mScript = scriptmanager.getScript(nomScript);						// ici 	getScript marche correctement
