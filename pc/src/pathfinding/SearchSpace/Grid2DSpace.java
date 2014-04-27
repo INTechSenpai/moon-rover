@@ -15,7 +15,7 @@ import utils.Log;
 import utils.Read_Ini;
 
 /**
- * @author Marsya, Krissprolls, pf
+ * @author Marsya, (Krissprolls), pf
  *	La classe espace de recherche
  *  Pour le robot, ce sera concr�tement la table
  *  Toutes les méthodes sont appelées dans les coordonnées de la grille (sauf les conversions)
