@@ -149,18 +149,14 @@ public class Strategie implements Service {
 			{
 				//Il y a un blocage de l'ennemi, réfléchissons un peu et agissons optimalement
 			}
-			if (real_state.table.distanceTree(positionsfreeze[i], i_min_fire) < distance_influence && duree_freeze[i] > duree_standard)
-			{
+			if (real_state.table.distanceTree(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
 			    real_state.table.pickTree(i_min_tree);
-			}
-			if(real_state.table.distanceFire(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
-			{
+
+			if(real_state.table.distanceFire(positionsfreeze[i], i_min_fire) < distance_influence && duree_freeze[i] > duree_standard)
 			    real_state.table.pickFire(i_min_fire);
-			}
-			if(real_state.table.distanceFresco(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
-			{
+
+			if(real_state.table.distanceFresco(positionsfreeze[i], i_min_fresco) < distance_influence && duree_freeze[i] > duree_standard)
 			    real_state.table.appendFresco(i_min_fresco);
-			}
 			
 			/*
 			 * 
