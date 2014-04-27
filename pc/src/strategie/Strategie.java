@@ -428,7 +428,7 @@ public class Strategie implements Service {
 		// les action a anticiper doivent commencer dans les 30 prochaines secondes
 		
 		//Config pour 1 sec d'exécution sur raspbe
-		int		TTL = 9000;	// les actions anticipés doivent débuter dans les 14 prochaines secondes   
+		int		TTL = 26000;	// les actions anticipés doivent débuter dans les 14 prochaines secondes   
 		int maxProf	= 9999;	// En moyenne, réduire ce nombre consuit a sabrer les branches les plus prometteuses
 
 		//Config pour 4 sec d'exécution sur raspbe
@@ -437,7 +437,7 @@ public class Strategie implements Service {
 		
 		
 		
-		long TrueAStarTTL = 4000;
+		long TrueAStarTTL = 8000;
 		
 		
 		int Branchcount = 0;

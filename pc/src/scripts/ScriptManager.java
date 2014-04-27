@@ -47,7 +47,6 @@ public class ScriptManager implements Service {
 		//scripts_robot.add("ScriptFunnyAction");
 		scripts_robot.add("ScriptDeposerFeu");
 		//scripts_robot.add("ScriptFeuDebout");
-//		scripts_robot.add("ScriptFeuDebout");
 		scripts_robot.add("ScriptFeuBord");
 	}
 	
