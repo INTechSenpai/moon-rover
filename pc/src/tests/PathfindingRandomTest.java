@@ -1,23 +1,23 @@
 package tests;
 
-import java.util.ArrayList;
-import java.util.Random;
+//import java.util.ArrayList;
+//import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import pathfinding.Pathfinding;
-import robot.RobotChrono;
+//import pathfinding.Pathfinding;
+//import robot.RobotChrono;
 import robot.RobotVrai;
 import smartMath.Vec2;
-import table.Table;
+//import table.Table;
 
 public class PathfindingRandomTest extends JUnit_Test
 {
 
 	private RobotVrai robotvrai;
-	private RobotChrono robotchrono;
-	private Table table;
+//	private RobotChrono robotchrono;
+//	private Table table;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -26,9 +26,9 @@ public class PathfindingRandomTest extends JUnit_Test
 		
 		//scriptmanager = (ScriptManager)container.getService("ScriptManager");
 		robotvrai = (RobotVrai)container.getService("RobotVrai");
-		robotchrono = new RobotChrono(config, log);
-		robotchrono.majRobotChrono(robotvrai);
-		table = (Table)container.getService("Table");
+//		robotchrono = new RobotChrono(config, log);
+//		robotchrono.majRobotChrono(robotvrai);
+//		table = (Table)container.getService("Table");
 		robotvrai.setPosition(new Vec2(1300, 1200));
 		robotvrai.setOrientation((float)Math.PI);
 		robotvrai.set_vitesse_rotation("entre_scripts");
@@ -45,7 +45,7 @@ public class PathfindingRandomTest extends JUnit_Test
 	@Test
 	public void test_simple() throws Exception
 	{
-		
+	/*	
 		// init
 		robotvrai.setPosition(new Vec2(1300, 1200));
 				
@@ -81,7 +81,7 @@ public class PathfindingRandomTest extends JUnit_Test
 		}
 		else
 			System.out.println("Arrivee unreachable");
-				
+		*/		
 	}
 	
 	
@@ -116,7 +116,7 @@ public class PathfindingRandomTest extends JUnit_Test
 		
 		// ============================
 
-		int compteTrajets = 0;
+/*		int compteTrajets = 0;
 		int cmParCase =2;
 		
 		Pathfinding finder = new Pathfinding(table, config, log, cmParCase);
@@ -142,7 +142,7 @@ public class PathfindingRandomTest extends JUnit_Test
 
 			if (chemin != null)
 			{
-				
+	*/			
 				
 				/*
 				// affiche la feuille de route
@@ -195,12 +195,12 @@ public class PathfindingRandomTest extends JUnit_Test
 				
 				
 				// suit le trajet
-				Vec2 newpos = new Vec2(0,0);
+//				Vec2 newpos = new Vec2(0,0);
 			/*	newpos.x = depart.x +  chemin.get(0).x;
 				newpos.y = depart.y +  chemin.get(0).y;
 				System.out.println("Goto : " + newpos);
 				robotvrai.va_au_point(newpos);*/
-				for(int j = 0; j < chemin.size(); j++)
+/*				for(int j = 0; j < chemin.size(); j++)
 				{
 					newpos.x = chemin.get(j).x;
 					newpos.y = chemin.get(j).y;
@@ -215,9 +215,9 @@ public class PathfindingRandomTest extends JUnit_Test
 
 				System.out.println("Trajets effectués : " + compteTrajets);
 				
-				
 			}
 	    }
+    */          
 
 	}
 }
