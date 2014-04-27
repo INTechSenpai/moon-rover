@@ -108,6 +108,7 @@ public abstract class Script implements Service {
 	
 	public long metacalcule(int id_version, GameState<RobotChrono> state, boolean use_cache)
 	{	    
+	    // TODO est-ce qu'elle prennent toutes le meme temps? Ou prendre le min?
 		long duree = calcule(version_asso(id_version).get(0), state, use_cache);
 		state.time_depuis_debut += duree;
         state.time_depuis_racine += duree;
