@@ -28,7 +28,8 @@ public class JUnit_Demo extends JUnit_Test {
 	private HookGenerator hookgenerator;
 	private GameState<RobotVrai> state;
 	
-	@Before
+	@SuppressWarnings("unchecked")
+    @Before
 	public void setUp() throws Exception {
 		super.setUp();
 		config.set("couleur", "jaune");
