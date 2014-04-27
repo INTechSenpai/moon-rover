@@ -2,6 +2,7 @@ package strategie.arbre;
 
 import java.util.ArrayList;
 
+import exception.PathfindingException;
 import robot.RobotChrono;
 import scripts.Script;
 import smartMath.Vec2;
@@ -84,7 +85,10 @@ public class Branche
 			{
 				dureeScript = script.metacalcule(metaversion, state, useCachedPathfinding);
 			}
-			catch (PathfindingExeption )
+			catch (PathfindingException e)
+			{
+				dureeScript = -1;
+			}
 			isActionCharacteisticsComputed = true;
 		}
 	}

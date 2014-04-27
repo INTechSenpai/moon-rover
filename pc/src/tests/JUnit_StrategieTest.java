@@ -71,7 +71,7 @@ public class JUnit_StrategieTest extends JUnit_Test {
 		
 		for (int i = 0; i < 100; i++)
 		{
-			strategie.evaluate();
+			strategie.evaluate(null);
 			
 		}
 		
@@ -80,7 +80,7 @@ public class JUnit_StrategieTest extends JUnit_Test {
 		int testCount = 100;
 		long startTime = System.nanoTime();
 		for (int i = 0; i < testCount; i++)
-			strategie.evaluate();
+			strategie.evaluate(null);
 		long endTime = System.nanoTime();
 		long duration = (endTime - startTime)/ (1000 * testCount);
 		log.debug("Processed IA in " + duration + " µs on average over " + testCount + "tests", this);

@@ -1,5 +1,8 @@
 package threads;
 
+import java.util.ArrayList;
+
+import exception.PathfindingException;
 import exception.ScriptException;
 import robot.RobotChrono;
 import robot.RobotVrai;
@@ -111,13 +114,29 @@ public class ThreadStrategie extends AbstractThread {
 	{
 
 		NoteScriptMetaversion meilleur = new NoteScriptMetaversion();
-		meilleur = strategie.evaluate();
-		float[] a = strategie.meilleurVersion(meilleur.metaversion, meilleur.script, memorymanager.getClone(0));
+		
+		ArrayList<NoteScriptMetaversion> errorList = new ArrayList<NoteScriptMetaversion>();
+		float[] a = null;
+		while(a == null)
+		{
+			meilleur = strategie.evaluate(errorList);
+			try
+			{
+				a = strategie.meilleurVersion(meilleur.metaversion, meilleur.script, memorymanager.getClone(0));
+			}
+			catch(PathfindingException e)
+			{
+				log.debug("La branche " + meilleur + " renvoyée par l'arbre n'a pas de metaversion acessible, on relace l'abre sans cette branche",this);
+				errorList.add(meilleur);
+				//e.printStackTrace();
+			}
+		}
 		NoteScriptVersion meilleur_version = new NoteScriptVersion();
 		meilleur_version.script = meilleur.script;
 		meilleur_version.version = (int)a[0];
 		meilleur_version.note = a[1];
 		strategie.setProchainScript(meilleur_version);
+		log.debug("prochain script : " + meilleur_version,this);
 	}
 
 	private boolean evalueEnnemi()

@@ -16,6 +16,7 @@ import utils.Log;
 import utils.Read_Ini;
 import utils.Sleep;
 import container.Service;
+import exception.PathfindingException;
 import exception.ScriptException;
 import smartMath.Vec2;
 
@@ -199,16 +200,23 @@ public class Strategie implements Service {
 		// Le TTL est une durée en ms sur laquelle on estime que le robot demeurera immobile
 		
 	} 
-	public float[] meilleurVersion(int meta_id, Script script, GameState<RobotChrono> state)
+	public float[] meilleurVersion(int meta_id, Script script, GameState<RobotChrono> state) throws PathfindingException
 	{
-		int id = 0;
+		int id = -1;
 		float meilleurNote = 0;
 		int score;
-		int duree_script; 
+		int duree_script;
 		for(int i : script.version_asso(meta_id))
 		{
 			score = script.score(id, state);
-			duree_script = (int)script.calcule(id, state, true);
+			try
+			{
+				duree_script = (int)script.calcule(id, state, true);
+			}
+			catch (Exception e)
+			{
+				continue;
+			}
 			if(calculeNote(score,duree_script, i,script, state)>meilleurNote)
 			{
 				id = i;
@@ -216,6 +224,9 @@ public class Strategie implements Service {
 			}
 			
 		}
+		if(id == -1)
+			throw new PathfindingException();
+		
 		float[] a= {id, meilleurNote};
 		return a;
 	}
@@ -374,7 +385,7 @@ public class Strategie implements Service {
 	 * 
 	 * @param profondeur : la profondeur d'exploration de l'arbre, 1 pour n'explorer qu'un niveau
 	 */
-	public NoteScriptMetaversion evaluate()	// TODO : add an argument to infuence the tree size
+	public NoteScriptMetaversion evaluate(ArrayList<NoteScriptMetaversion> errorList)	// TODO : add an argument to infuence the tree size
 	{
 		/*
 		 * 	Algorithme : Itterative Modified DFS
@@ -430,6 +441,7 @@ public class Strategie implements Service {
 		
 		
 		int Branchcount = 0;
+		boolean temp;
 		
 		
 		// ajoute tous les scrips disponibles scripts
@@ -454,6 +466,21 @@ public class Strategie implements Service {
 			// ajoute toutes les métaversions de tous les scipts
 			for(int metaversion : metaversionList)
 			{
+				
+				// n'ajoute pas les branches exclues par argument 
+				if (errorList != null)
+				{
+					temp = false;
+					for(NoteScriptMetaversion n : errorList)
+					{
+						if(mScript.toString() == n.script.toString() && metaversion == n.metaversion)
+							temp = true;
+					}
+					if(temp)
+						continue;
+				}
+				
+				
 				//log.debug("Ajout d'une racine", this);
 				mState = memorymanager.getClone(0);
 				mState.pathfinding.setPrecision(4);
@@ -468,6 +495,9 @@ public class Strategie implements Service {
 		}
 
 
+		// TODO ?	Ajuster le critère d'arret d'expansion ici en fonction de scope size ?
+		
+		
 		log.debug("scope.size() :" + scope.size(), this);
 		// Boucle principale d'exploration des branches
 		while (scope.size() != 0)
@@ -506,6 +536,19 @@ public class Strategie implements Service {
 					for(int metaversion : metaversionList)
 					{
 
+						// n'ajoute pas les branches exclues par argument 
+						if (errorList != null)
+						{
+							temp = false;
+							for(NoteScriptMetaversion n : errorList)
+							{
+								if(mScript.toString() == n.script.toString() && metaversion == n.metaversion)
+									temp = true;
+							}
+							if(temp)
+								continue;
+						}
+						
 						//log.debug("profondeur parente : "  + current.profondeur,this);
 						//log.debug("robot position : "  + mState.robot.getPosition(),this);
 						//log.debug("Ajout d'une branche avec script" + nomScript + " et metaversion : " + metaversion, this);
@@ -552,7 +595,7 @@ public class Strategie implements Service {
 				
 			}
 		}
-		log.debug("Note finale : " + DatUltimateBest.note,this);
+		//log.debug("Note finale : " + DatUltimateBest.note,this);
 		
 		return DatUltimateBest;
 	}
