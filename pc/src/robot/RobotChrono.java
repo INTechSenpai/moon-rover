@@ -107,7 +107,6 @@ public class RobotChrono extends Robot {
 			boolean symetrie_effectuee, boolean retenter_si_blocage)
 			throws MouvementImpossibleException
 	{
-		float deltaOrigi = angle-orientation;
 		float delta = angle-orientation;
 		if(delta < 0)
 			delta *= -1;
@@ -121,8 +120,6 @@ public class RobotChrono extends Robot {
 			try {
 				dureePositive((long)(delta/vitesse_rpms));
 			} catch (RobotChronoException e) {
-				System.out.println("deltaOrigi" + deltaOrigi);
-				System.out.println("delta" + delta);
 				e.printStackTrace();
 			}
 		}
@@ -133,6 +130,7 @@ public class RobotChrono extends Robot {
 	public void tirerBalle()
 	{
 		// durée "nulle" car appelé par un hook
+		duree += 1500; // TODO
 	}
 	@Override
 	public void lancerFilet()

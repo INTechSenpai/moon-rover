@@ -116,7 +116,9 @@ class AStar
 		chemin.clear();
 
 		// Si le départ ou l'arrivée est dans un obstacle, on lève une exception
-		if(!espace.canCross(arrivee) || !espace.canCross(depart))
+		if( !espace.canCross(depart))
+			throw new PathfindingException();	
+		else if(!espace.canCross(arrivee) )
 		{    
 		   // System.out.println("Pathfinding : Dapart (" + depart.x  + "; " + depart.y + ") or arrivee (" + arrivee.x  + "; " + arrivee.y + ") is in a obstacle");
 		 //   printWorkingMap(depart, arrivee);	// a mettre si on veut comprendre le trajet qui foire.
