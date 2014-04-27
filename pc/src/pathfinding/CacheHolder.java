@@ -38,6 +38,7 @@ class CacheHolder implements Serializable
 	 */
 	private byte[][][][] data;
 	private int table_x;
+	private int distance;
 	
 	public CacheHolder(int sizeX, int sizeY, int log_reduction, int log_mm_per_unit, int table_x)
 	{
@@ -56,13 +57,13 @@ class CacheHolder implements Serializable
 	 */
 	public int getDistance(Vec2 depart, Vec2 arrivee) throws PathfindingException
 	{
-
-		int distance = byte2int(data[(depart.x+table_x/2) >> log_reduction][depart.y >> log_reduction][(arrivee.x+table_x/2) >> log_reduction][arrivee.y >> log_reduction]);
-	//	System.out.println("CacheHolder[" + depart.x + "][" + depart.y + "]["  + arrivee.x+ "]["  + arrivee.y + "] : " + (distance << log_mm_per_unit));
-		if(distance == 255)
-			throw new PathfindingException();
-		else
-			return distance << log_mm_per_unit;
+		distance = byte2int(data[(depart.x+table_x/2) >> log_reduction][depart.y >> log_reduction][(arrivee.x+table_x/2) >> log_reduction][arrivee.y >> log_reduction]);
+		
+	//	if(distance == 255)							// WARING : Ce if ralentit considérablement la stratégie
+	//		throw new PathfindingException();
+	//	else
+		
+		return distance << log_mm_per_unit;
 	}
 	
 	/**
@@ -97,7 +98,7 @@ class CacheHolder implements Serializable
 	}
 	
 	/**
-	 * Conversion de byte à int afin d'avoir des byte signés.
+	 * Conversion de byte à in tafin d'avoir des byte signés.
 	 * @param b
 	 * @return
 	 */

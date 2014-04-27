@@ -410,8 +410,10 @@ public class Strategie implements Service {
 		
 		// Pour le critère d'arrèt d'exploration de l'arbre : un TTL ira bien pour l'instant :
 		// les action a anticiper doivent commencer dans les 30 prochaines secondes
-		int		TTL = 3000;	// 30 sec d'anticipation 
-	//	int Branchcount = 0;
+		int		TTL = 14000;	// 20 sec d'anticipation 
+		int maxProf	= 3;
+		long TrueAStarTTL = 4000;
+		int Branchcount = 0;
 		
 		
 		// ajoute tous les scrips disponibles scripts
@@ -419,7 +421,7 @@ public class Strategie implements Service {
 		{
 			try
 			{
-				mScript = scriptmanager.getScript(nom_script);	
+				mScript = scriptmanager.getScript(nom_script);
 			}
 			catch(ScriptException e)
 			{
@@ -435,11 +437,11 @@ public class Strategie implements Service {
 			// ajoute toutes les métaversions de tous les scipts
 			for(int metaversion : metaversionList)
 			{
+				//log.debug("Ajout d'une racine", this);
 				mState = memorymanager.getClone(0);
-				//log.debug("robot position : "  + mState.robot.getPosition(),this);
-				//log.debug("Ajout d'une racine avec script" + nom_script + " et metaversion : " + metaversion, this);
+				mState.pathfinding.setPrecision(4);
 				scope.push( new Branche(	TTL,							// Il reste tout le TTL sur chacune des racines
-											false,							// N'utilise pas le cache pour le premier niveau de profondeur 
+											true,							// N'utilise pas le cache pour le premier niveau de profondeur 
 											1,								// différence de profondeur entre la racine et ici, donc 0 dans notre cas
 											mScript, 						// Une branche par script et par métaversion
 											metaversion, 
@@ -447,6 +449,7 @@ public class Strategie implements Service {
 				rootList.add(scope.lastElement());
 			}	
 		}
+
 		
 		
 
@@ -459,9 +462,9 @@ public class Strategie implements Service {
 			current = scope.lastElement();
 			
 			// Condition d'ajout des sous-branches : respecter le critère d'arret d'expansion, et ne pas les ajouter 2 fois.
-			if ( current.TTL - current.dureeScript > 0 && (current.sousBranches.size() == 0) )
+			if ( current.TTL - current.dureeScript > 0 && maxProf >= current.profondeur && (current.sousBranches.size() == 0) )
 			{
-				// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage		
+				// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage				
 				mState = memorymanager.getClone(current.profondeur-1);
 				current.computeActionCharacteristics();
 				
@@ -486,12 +489,16 @@ public class Strategie implements Service {
 					// ajoute toutes les métaversions de tous les scipts
 					for(int metaversion : metaversionList)
 					{
+
 						//log.debug("profondeur parente : "  + current.profondeur,this);
-					//	log.debug("robot position : "  + mState.robot.getPosition(),this);
-					//	log.debug("Ajout d'une branche avec script" + nomScript + " et metaversion : " + metaversion, this);
-						mState = memorymanager.getClone(current.profondeur);	// VErifier que le robot bouge dans cetteconfig
+						//log.debug("robot position : "  + mState.robot.getPosition(),this);
+						//log.debug("Ajout d'une branche avec script" + nomScript + " et metaversion : " + metaversion, this);
+						
+						mState = memorymanager.getClone(current.profondeur-1);
+						mState.pathfinding.setPrecision(5);
+						current.computeActionCharacteristics();
 						scope.push( new Branche(	(int)(current.TTL - current.dureeScript),	// TTL restant : celui du restant moins la durée de son action	
-													current.profondeur >= 0,					// Utiliser le cache dès le second niveau de profondeur
+													mState.time_depuis_racine >= TrueAStarTTL || current.profondeur > 1,//true,//current.profondeur >= 2,					// Utiliser le cache dès le second niveau de profondeur
 													current.profondeur+1,						// différence de profondeur entre la racine et ici, donc 1 + celle du parent
 													mScript, 									// Une branche par script et par métaversion
 													metaversion, 
@@ -508,12 +515,12 @@ public class Strategie implements Service {
 			{
 				current.computeNote();
 			//	log.debug("note courrante :" + current.note, this);
-			//	Branchcount++;
+				Branchcount++;
 				scope.pop();
 			}
 			
 		}	// fin boucle principale d'exploration
-	//	log.debug("Explored "+ Branchcount + " branches", this);
+		//log.debug("Explored "+ Branchcount + " branches", this);
 		
 		
 		// la meilleure action a une meilleure note que les autres branches. Donc on calcule le max des notes des branches 

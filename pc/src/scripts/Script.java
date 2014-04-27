@@ -38,7 +38,6 @@ public abstract class Script implements Service {
 	
 	protected String couleur; 
 	private int rayon_robot;
-	private long duree;
 	
 	public Script(HookGenerator hookgenerator, Read_Ini config, Log log)
 	{
@@ -109,8 +108,7 @@ public abstract class Script implements Service {
 	
 	public long metacalcule(int id_version, GameState<RobotChrono> state, boolean use_cache)
 	{	    
-	    // TODO est-ce qu'elle prennent toutes le meme temps? Ou prendre le min?
-		duree = calcule(version_asso(id_version).get(0), state, use_cache);
+		long duree = calcule(version_asso(id_version).get(0), state, use_cache);
 		state.time_depuis_debut += duree;
         state.time_depuis_racine += duree;
 		return duree;
@@ -127,7 +125,6 @@ public abstract class Script implements Service {
 		state.robot.set_vitesse_rotation("entre_scripts");
 		
 		try {
-		//	System.out.println("Le point d'entrée se situe en ("+point_entree.x+","+point_entree.y+")");
 			state.robot.initialiser_compteur(state.pathfinding.distance(state.robot.getPosition(), point_entree, use_cache));
 		} catch (PathfindingException e1) {
 			// En cas de problème du pathfinding, on évalue la longueur du chemin
@@ -135,6 +132,7 @@ public abstract class Script implements Service {
 			//e1.printStackTrace();
 		}
 		state.robot.setPosition(point_entree);
+
 		try {
 			execute(id_version, state);
 		}

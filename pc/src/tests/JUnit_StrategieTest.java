@@ -66,26 +66,22 @@ public class JUnit_StrategieTest extends JUnit_Test {
 		
 		log.debug("Strategie Test starting", this);
 		//strategie.evaluate();
-	//	log.debug("Strategie Test finished", this);
+		//log.debug("Strategie Test finished", this);
 		
-		
-	
-		for (int i = 0; i < 200; i++)
+		for (int i = 0; i < 100; i++)
 		{
 			strategie.evaluate();
-			log.debug(" i = " + i, this);
+			
 		}
 		
-		
 		log.debug("Strategie Performance test starting", this);
-		int testCount = 10;
+		
+		int testCount = 100;
 		long startTime = System.nanoTime();
 		for (int i = 0; i < testCount; i++)
 			strategie.evaluate();
 		long endTime = System.nanoTime();
 		long duration = (endTime - startTime)/ (1000 * testCount);
 		log.debug("Processed IA in " + duration + " µs on average over " + testCount + "tests", this);
-		
-		
 	}
 }

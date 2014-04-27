@@ -70,7 +70,7 @@ public class Branche
 		sousBranches = new ArrayList<Branche>();
 		isNoteComputed  = false;
 		isActionCharacteisticsComputed = false;
-	//	computeActionCharacteristics();
+		computeActionCharacteristics();
 		
 	}
 
@@ -79,8 +79,8 @@ public class Branche
 	{
 		if(!isActionCharacteisticsComputed)
 		{
-			scoreScript = 10;//script.meta_score(metaversion, state);
-			dureeScript = 1000;//script.metacalcule(metaversion, state, useCachedPathfinding);	
+			scoreScript = script.meta_score(metaversion, state);
+			dureeScript = script.metacalcule(metaversion, state, useCachedPathfinding);			
 			isActionCharacteisticsComputed = true;
 		}
 	}
