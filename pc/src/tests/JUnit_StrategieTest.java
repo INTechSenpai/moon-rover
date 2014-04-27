@@ -57,13 +57,24 @@ public class JUnit_StrategieTest extends JUnit_Test {
 		Assert.assertTrue(a.script == s);
 		Assert.assertTrue(a.version == 12);
 	}
-
+ 
 	@Test
 	public void test_evaluation() throws Exception
 	{
 		robotvrai.setPosition(new Vec2(0, 1700));
 		robotchrono.setPosition(new Vec2(0, 1700));
-		log.debug("Strategie starting", this);
-		strategie.evaluate();
+		
+		log.debug("Strategie Test starting", this);
+		for (int i = 0; i < 30000; i++)
+			strategie.evaluate();
+		
+		log.debug("Strategie Performance test starting", this);
+		int testCount = 1000;
+		long startTime = System.nanoTime();
+		for (int i = 0; i < testCount; i++)
+			strategie.evaluate();
+		long endTime = System.nanoTime();
+		long duration = (endTime - startTime)/ (1000 * testCount);
+		log.debug("Processed IA in " + duration + " µs on average over " + testCount + "tests", this);
 	}
 }

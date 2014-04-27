@@ -411,6 +411,7 @@ public class Strategie implements Service {
 		// Pour le critère d'arrèt d'exploration de l'arbre : un TTL ira bien pour l'instant :
 		// les action a anticiper doivent commencer dans les 30 prochaines secondes
 		int		TTL = 20000;	// 30 sec d'anticipation 
+		int Branchcount = 0;
 		
 		
 		// ajoute tous les scrips disponibles scripts
@@ -422,7 +423,7 @@ public class Strategie implements Service {
 			}
 			catch(ScriptException e)
 			{
-				//e.printStackTrace();
+				e.printStackTrace();
 			}
 			
 			metaversionList = mScript.meta_version(	mState	);
@@ -434,7 +435,7 @@ public class Strategie implements Service {
 			// ajoute toutes les métaversions de tous les scipts
 			for(int metaversion : metaversionList)
 			{
-				log.debug("Ajout d'une racine", this);
+				//log.debug("Ajout d'une racine", this);
 				scope.push( new Branche(	TTL,							// Il reste tout le TTL sur chacune des racines
 											false,							// N'utilise pas le cache pour le premier niveau de profondeur 
 											0,								// différence de profondeur entre la racine et ici, donc 0 dans notre cas
@@ -503,12 +504,13 @@ public class Strategie implements Service {
 			else	// Soit on a atteint la profondeur maximale, soit les enfants ont étés traités donc on calcule la note de ce niveau
 			{
 				current.computeNote();
-				log.debug("note courrante :" + current.note, this);
+			//	log.debug("note courrante :" + current.note, this);
+				Branchcount++;
 				scope.pop();
 			}
 			
 		}	// fin boucle principale d'exploration
-		
+	//	log.debug("Explored "+ Branchcount + " branches", this);
 		
 		
 		// la meilleure action a une meilleure note que les autres branches. Donc on calcule le max des notes des branches 
@@ -524,7 +526,7 @@ public class Strategie implements Service {
 				
 			}
 		}
-		log.debug("Note finale : " + DatUltimateBest.note,this);
+		//log.debug("Note finale : " + DatUltimateBest.note,this);
 		
 		return DatUltimateBest;
 	}
