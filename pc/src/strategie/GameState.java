@@ -10,9 +10,9 @@ import utils.Read_Ini;
 
 public class GameState<R extends Robot> implements Service
 {    
-    public Table table;
-    public R robot;
-    public Pathfinding pathfinding;
+    public final Table table;
+    public final R robot;
+    public final Pathfinding pathfinding;
     private Log log;
     private Read_Ini config;
 

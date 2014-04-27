@@ -22,7 +22,8 @@ public class JUnit_MemoryManagerTest extends JUnit_Test {
 	private GameState<RobotVrai> state;
 	private MemoryManager memorymanager;
 	
-	@Before
+	@SuppressWarnings("unchecked")
+    @Before
 	public void setUp() throws Exception {
 		super.setUp();
 		log.debug("JUnit_MemoryManagerTest.setUp()", this);
