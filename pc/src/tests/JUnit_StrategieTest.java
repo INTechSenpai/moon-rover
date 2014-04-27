@@ -61,8 +61,9 @@ public class JUnit_StrategieTest extends JUnit_Test {
 	@Test
 	public void test_evaluation() throws Exception
 	{
-		robotvrai.setPosition(new Vec2(0, 1700));
-		robotchrono.setPosition(new Vec2(0, 1700));
+		Vec2 initpos = new Vec2(0,300);
+		robotvrai.setPosition(initpos);
+		robotchrono.setPosition(initpos);
 		
 		log.debug("Strategie Test starting", this);
 		//strategie.evaluate();

@@ -54,6 +54,7 @@ public class Strategie implements Service {
 		this.scriptmanager = scriptmanager;
 		this.real_state = real_state;
 		this.log = log;
+		prochainScript = new NoteScriptVersion();
 		maj_config();
 	}
 	
@@ -68,18 +69,19 @@ public class Strategie implements Service {
 		log.debug("Stratégie lancée", this);
 		while(!threadtimer.fin_match)
 		{
-			synchronized(prochainScript)
-			{
-				if(prochainScript != null)
+			if(prochainScript != null && prochainScript.script != null)
+				synchronized(prochainScript)
 				{
-					scriptEnCours = prochainScript.clone();
-					prochainScript = null;
+					if(prochainScript != null)
+					{
+						scriptEnCours = prochainScript.clone();
+						prochainScript = null;
+					}
+					else
+						scriptEnCours = null;
 				}
-				else
-					scriptEnCours = null;
-			}
 
-			if(scriptEnCours != null)
+			if(scriptEnCours != null && scriptEnCours.script != null)
 			{
 				boolean dernier = (nbScriptsRestants() == 1);
 				log.debug("Stratégie fait: "+scriptEnCours+", dernier: "+dernier, this);
@@ -405,14 +407,28 @@ public class Strategie implements Service {
 		GameState<RobotChrono> mState = memorymanager.getClone(0);
 		Branche current;
 		
+		
+		
+		
 		// racourccis pour les racines, afin du calcul du max final :
 		ArrayList<Branche> rootList = new ArrayList<Branche>();
 		
 		// Pour le critère d'arrèt d'exploration de l'arbre : un TTL ira bien pour l'instant :
 		// les action a anticiper doivent commencer dans les 30 prochaines secondes
-		int		TTL = 14000;	// 20 sec d'anticipation 
-		int maxProf	= 3;
+		
+		//Config pour 1 sec d'exécution sur raspbe
+		int		TTL = 9000;	// les actions anticipés doivent débuter dans les 14 prochaines secondes   
+		int maxProf	= 9999;	// En moyenne, réduire ce nombre consuit a sabrer les branches les plus prometteuses
+
+		//Config pour 4 sec d'exécution sur raspbe
+		//int		TTL = 25000;	// les actions anticipés doivent débuter dans les 14 prochaines secondes   
+		//int maxProf	= 3;
+		
+		
+		
 		long TrueAStarTTL = 4000;
+		
+		
 		int Branchcount = 0;
 		
 		
@@ -451,7 +467,8 @@ public class Strategie implements Service {
 		}
 
 		
-		
+
+		log.debug("scope.size() : " + scope.size(), this);
 
 
 		// Boucle principale d'exploration des branches
@@ -459,14 +476,14 @@ public class Strategie implements Service {
 		{
 			//log.debug("Nouveau tour de boucle", this);
 			//log.debug("Taille de la stack :" + scope.size(), this);
-			current = scope.lastElement();
+			current = scope.lastElement();			
+				mState = memorymanager.getClone(current.profondeur-1);
+				current.computeActionCharacteristics();
 			
 			// Condition d'ajout des sous-branches : respecter le critère d'arret d'expansion, et ne pas les ajouter 2 fois.
 			if ( current.TTL - current.dureeScript > 0 && maxProf >= current.profondeur && (current.sousBranches.size() == 0) )
 			{
-				// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage				
-				mState = memorymanager.getClone(current.profondeur-1);
-				current.computeActionCharacteristics();
+				// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage	
 				
 				// ajoute tous les scrips disponibles
 				for(String nomScript : scriptmanager.getNomsScripts())	// Ces scripts sont ils bien ôtés de ceux que j'ai déjà effectué dans une branche en amont ?
@@ -586,12 +603,9 @@ public class Strategie implements Service {
 	 * Permet au thread de stratégie de définir le prochain script à faire
 	 * @param prochainScript
 	 */
-	public void setProchainScript(NoteScriptVersion prochainScript)
+	public synchronized void setProchainScript(NoteScriptVersion prochainScript)
 	{
-		synchronized(this.prochainScript)
-		{
 			this.prochainScript = prochainScript;
-		}
 	}
 	
 	public boolean besoin_ProchainScript()

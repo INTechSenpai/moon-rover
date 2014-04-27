@@ -90,7 +90,7 @@ public abstract class Script implements Service {
 
 		try
 		{
-		    state.robot.va_au_point_pathfinding(state.pathfinding, point_entree, hooks_chemin, retenter_si_blocage, false, true, false);
+		    state.robot.va_au_point_pathfinding(state.pathfinding, point_entree, hooks_chemin, retenter_si_blocage, false, false, false);
 			execute(id_version, state);
 		}
 		catch (Exception e)
