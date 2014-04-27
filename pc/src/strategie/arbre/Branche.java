@@ -80,7 +80,11 @@ public class Branche
 		if(!isActionCharacteisticsComputed)
 		{
 			scoreScript = script.meta_score(metaversion, state);
-			dureeScript = script.metacalcule(metaversion, state, useCachedPathfinding);			
+			try
+			{
+				dureeScript = script.metacalcule(metaversion, state, useCachedPathfinding);
+			}
+			catch (PathfindingExeption )
 			isActionCharacteisticsComputed = true;
 		}
 	}
