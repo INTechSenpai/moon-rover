@@ -410,8 +410,8 @@ public class Strategie implements Service {
 		
 		// Pour le critère d'arrèt d'exploration de l'arbre : un TTL ira bien pour l'instant :
 		// les action a anticiper doivent commencer dans les 30 prochaines secondes
-		int		TTL = 20000;	// 30 sec d'anticipation 
-		int Branchcount = 0;
+		int		TTL = 3000;	// 30 sec d'anticipation 
+	//	int Branchcount = 0;
 		
 		
 		// ajoute tous les scrips disponibles scripts
@@ -419,7 +419,7 @@ public class Strategie implements Service {
 		{
 			try
 			{
-				mScript = scriptmanager.getScript(nom_script);			// ici 	getScript foire une fois sur 2
+				mScript = scriptmanager.getScript(nom_script);	
 			}
 			catch(ScriptException e)
 			{
@@ -435,17 +435,18 @@ public class Strategie implements Service {
 			// ajoute toutes les métaversions de tous les scipts
 			for(int metaversion : metaversionList)
 			{
-				//log.debug("Ajout d'une racine", this);
+				mState = memorymanager.getClone(0);
+				//log.debug("robot position : "  + mState.robot.getPosition(),this);
+				//log.debug("Ajout d'une racine avec script" + nom_script + " et metaversion : " + metaversion, this);
 				scope.push( new Branche(	TTL,							// Il reste tout le TTL sur chacune des racines
 											false,							// N'utilise pas le cache pour le premier niveau de profondeur 
-											0,								// différence de profondeur entre la racine et ici, donc 0 dans notre cas
+											1,								// différence de profondeur entre la racine et ici, donc 0 dans notre cas
 											mScript, 						// Une branche par script et par métaversion
 											metaversion, 
 											mState	) );					// état de jeu
 				rootList.add(scope.lastElement());
 			}	
 		}
-
 		
 		
 
@@ -461,7 +462,8 @@ public class Strategie implements Service {
 			if ( current.TTL - current.dureeScript > 0 && (current.sousBranches.size() == 0) )
 			{
 				// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage		
-				mState = memorymanager.getClone(current.profondeur);
+				mState = memorymanager.getClone(current.profondeur-1);
+				current.computeActionCharacteristics();
 				
 				// ajoute tous les scrips disponibles
 				for(String nomScript : scriptmanager.getNomsScripts())	// Ces scripts sont ils bien ôtés de ceux que j'ai déjà effectué dans une branche en amont ?
@@ -484,11 +486,12 @@ public class Strategie implements Service {
 					// ajoute toutes les métaversions de tous les scipts
 					for(int metaversion : metaversionList)
 					{
-						// Mrrrou ?
-					    //Att, il faut executer le script a ce moment la sur la branche parente (via scipet::metacalcule) sinon l'état n'est pas changé
-					                                //attn, profondeur n'est pas la position bsolue mais la taille de l'abre en aval
+						//log.debug("profondeur parente : "  + current.profondeur,this);
+					//	log.debug("robot position : "  + mState.robot.getPosition(),this);
+					//	log.debug("Ajout d'une branche avec script" + nomScript + " et metaversion : " + metaversion, this);
+						mState = memorymanager.getClone(current.profondeur);	// VErifier que le robot bouge dans cetteconfig
 						scope.push( new Branche(	(int)(current.TTL - current.dureeScript),	// TTL restant : celui du restant moins la durée de son action	
-													current.profondeur >= 2,					// Utiliser le cache dès le second niveau de profondeur
+													current.profondeur >= 0,					// Utiliser le cache dès le second niveau de profondeur
 													current.profondeur+1,						// différence de profondeur entre la racine et ici, donc 1 + celle du parent
 													mScript, 									// Une branche par script et par métaversion
 													metaversion, 
@@ -505,7 +508,7 @@ public class Strategie implements Service {
 			{
 				current.computeNote();
 			//	log.debug("note courrante :" + current.note, this);
-				Branchcount++;
+			//	Branchcount++;
 				scope.pop();
 			}
 			

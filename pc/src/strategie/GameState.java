@@ -38,7 +38,8 @@ public class GameState<R extends Robot> implements Service
         Table new_table = table.clone();
         RobotChrono new_rc = new RobotChrono(config, log); 
         robot.copy(new_rc);
-        Pathfinding new_pf = new Pathfinding(new_table, config, log);
+        Pathfinding new_pf = pathfinding.clone();	//new Pathfinding(new_table, config, log);
+        
         GameState<RobotChrono> out = new GameState<RobotChrono>(config, log, new_table, new_rc, new_pf);
         out.time_depuis_debut = time_depuis_debut;
         out.time_depuis_racine = time_depuis_racine;
