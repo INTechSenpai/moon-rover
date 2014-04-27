@@ -50,8 +50,8 @@ public class MemoryManager implements Service {
             real_state.time_depuis_racine = 0;
             real_state.copy(out);
         }
-        //else
-        //    products.get(profondeur-1).copy(out);
+        else
+            products.get(profondeur-1).copy(out);
         
 	    return out;
 	}
