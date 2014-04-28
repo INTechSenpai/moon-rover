@@ -10,6 +10,10 @@ import utils.Read_Ini;
 
 public class GameState<R extends Robot> implements Service
 {    
+    /*
+     * Les attributs public sont en "final". Cela signifie que les objets
+     * peuvent être modifiés mais pas ces références.
+     */
     public final Table table;
     public final R robot;
     public final Pathfinding pathfinding;

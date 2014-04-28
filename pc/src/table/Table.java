@@ -22,7 +22,7 @@ public class Table implements Service {
 	// TODO Obstacles fixes (circulaires) pour support de feux en bordure
 	
 	private ArrayList<ObstacleCirculaire> listObstacles = new ArrayList<ObstacleCirculaire>();
-	private static ArrayList<ArrayList<Obstacle>> listObstaclesFixes = new ArrayList<ArrayList<Obstacle>>();
+	private static ArrayList<ArrayList<Obstacle>> listObstaclesFixes = null;
 	private ObstacleBalise[] robots_adverses = new ObstacleBalise[2];
 	
 	private int hashFire;
@@ -85,40 +85,44 @@ public class Table implements Service {
 		arrayTorch[0] = new Torch(new Vec2(600,900));
 		arrayTorch[1] = new Torch(new Vec2(-600,900)); 
 		
-		for(int i = 0; i < 4; i++)
-			listObstaclesFixes.add(new ArrayList<Obstacle>());
-		
-		// Ajout des foyers
-		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(1500,0), 250));
-		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(0,950), 150));
-		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(-1500,0), 250));
-
-		// Ajout bacs
-		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(400,2000), 700, 300));
-		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1100,2000), 700, 300));
-		
-		// Ajout des bordures
-		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1500,0), 3000, 1));
-		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1500,2000), 1, 2000));
-		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1500,2000), 3000, 1));
-		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(1500,2000), 1, 2000));
-
-		// Ajout des arbres
-		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(1500,700), 150));
-		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(800,0), 150));
-		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(-800,0), 150));
-		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(-1500,700), 150));
-
-		listObstaclesFixes.get(1).addAll(listObstaclesFixes.get(0));
-		listObstaclesFixes.get(2).addAll(listObstaclesFixes.get(0));
-		listObstaclesFixes.get(3).addAll(listObstaclesFixes.get(0));
-		
-		// Torches mobiles
-		listObstaclesFixes.get(1).add(new ObstacleCirculaire(new Vec2(-600,900), 80));
-		listObstaclesFixes.get(2).add(new ObstacleCirculaire(new Vec2(600,900), 80));
-		listObstaclesFixes.get(3).add(new ObstacleCirculaire(new Vec2(-600,900), 80));
-		listObstaclesFixes.get(3).add(new ObstacleCirculaire(new Vec2(600,900), 80));
-
+		if(listObstaclesFixes == null)
+		{
+		    listObstaclesFixes = new ArrayList<ArrayList<Obstacle>>();
+    		for(int i = 0; i < 4; i++)
+    			listObstaclesFixes.add(new ArrayList<Obstacle>());
+    		
+    		// Ajout des foyers
+    		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(1500,0), 250));
+    		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(0,950), 150));
+    		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(-1500,0), 250));
+    
+    		// Ajout bacs
+    		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(400,2000), 700, 300));
+    		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1100,2000), 700, 300));
+    		
+    		// Ajout des bordures
+    		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1500,0), 3000, 1));
+    		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1500,2000), 1, 2000));
+    		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1500,2000), 3000, 1));
+    		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(1500,2000), 1, 2000));
+    
+    		// Ajout des arbres
+    		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(1500,700), 150));
+    		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(800,0), 150));
+    		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(-800,0), 150));
+    		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(-1500,700), 150));
+    
+    		// Recopie dans les autres listes d'obstacles fixes
+    		listObstaclesFixes.get(1).addAll(listObstaclesFixes.get(0));
+    		listObstaclesFixes.get(2).addAll(listObstaclesFixes.get(0));
+    		listObstaclesFixes.get(3).addAll(listObstaclesFixes.get(0));
+    		
+    		// Torches mobiles
+    		listObstaclesFixes.get(1).add(new ObstacleCirculaire(new Vec2(-600,900), 80));
+    		listObstaclesFixes.get(2).add(new ObstacleCirculaire(new Vec2(600,900), 80));
+    		listObstaclesFixes.get(3).add(new ObstacleCirculaire(new Vec2(-600,900), 80));
+    		listObstaclesFixes.get(3).add(new ObstacleCirculaire(new Vec2(600,900), 80));
+		}
 		
 		robots_adverses[0] = new ObstacleBalise(new Vec2(-1000, -1000), rayon_robot_adverse, new Vec2(0, 0));
 		robots_adverses[1] = new ObstacleBalise(new Vec2(-1000, -1000), rayon_robot_adverse, new Vec2(0, 0));
@@ -563,12 +567,14 @@ public class Table implements Service {
 	 * @param position
 	 * @return
 	 */
-	public boolean obstacle_existe(Vec2 position) {
-		for(Obstacle o: listObstacles)
-			if(obstacle_existe(position, o))
+	public synchronized boolean obstacle_existe(Vec2 position) {
+	    Iterator<ObstacleCirculaire> iterator = listObstacles.iterator();
+	    while(iterator.hasNext())
+			if(obstacle_existe(position, iterator.next()))
 				return true;
-		for(Obstacle o: listObstaclesFixes.get(codeTorches()))
-			if(obstacle_existe(position, o))
+        Iterator<Obstacle> iterator2 = listObstaclesFixes.get(codeTorches()).iterator();
+		while(iterator2.hasNext())
+			if(obstacle_existe(position, iterator2.next()))
 				return true;
 		return false;
 	}
