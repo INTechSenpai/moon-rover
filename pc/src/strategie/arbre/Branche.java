@@ -143,7 +143,13 @@ public class Branche
 		// pos est une valeur qui décroît de manière exponentielle en fonction de la distance entre le robot adverse et là où on veut aller
 	//	localNote = (scoreScript*A*prob/dureeScript+pos*B)*prob;
 		
-		localNote = (float)scoreScript*1000/(float)dureeScript;
+		if(scoreScript != 0)
+			localNote = (float)scoreScript*1000/(float)dureeScript;
+		else 
+			localNote = 1.0f/(float)dureeScript;	// les arbres ne rapportent pas de points et sont donc choisi en fonction de leur proximité. Attention a ce que ce 1/durée ne soit pas supérieur a un autre script
+		
+		
+		
 	//	System.out.println("localNote = " + localNote + "	scoreScript = " + scoreScript + "	dureeScript = " + dureeScript);
 		
 //		log.debug((float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0))), this);

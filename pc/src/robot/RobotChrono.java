@@ -173,7 +173,7 @@ public class RobotChrono extends Robot {
 	@Override
 	public void rateau(PositionRateau position, Cote cote)
 	{
-		duree += 1000; // TODO
+		duree += 200; // TODO
 	}
 
 	@Override

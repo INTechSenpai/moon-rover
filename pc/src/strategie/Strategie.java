@@ -106,11 +106,7 @@ public class Strategie implements Service {
 			else
 			{
 				log.critical("Aucun ordre n'est à disposition. Attente.", this);
-				Sleep.sleep(25);/**
-				 * Méthode qui, à partir de la durée de freeze et de l'emplacement des ennemis, tire des conclusions.
-				 * Exemples: l'ennemi vide cet arbre, il a posé sa fresque ici, ...
-				 * Modifie aussi la variable TTL Time To Live!
-				 */
+				Sleep.sleep(25);
 			}
 
 		}
@@ -203,18 +199,22 @@ public class Strategie implements Service {
 	public float[] meilleurVersion(int meta_id, Script script, GameState<RobotChrono> state) throws PathfindingException
 	{
 		int id = -1;
-		float meilleurNote = 0;
+		float meilleurNote = -1;
 		int score;
 		int duree_script;
+		if(script == null)
+			throw new PathfindingException();
+			
 		for(int i : script.version_asso(meta_id))
 		{
 			score = script.score(id, state);
 			try
 			{
-				duree_script = (int)script.calcule(id, state, true);
+				duree_script = (int)script.calcule(i, state, true);
 			}
 			catch (Exception e)
 			{
+				e.printStackTrace();
 				continue;
 			}
 			if(calculeNote(score,duree_script, i,script, state)>meilleurNote)
@@ -243,7 +243,7 @@ public class Strategie implements Service {
 	private float calculeNote(int score, int duree, int id, Script script, GameState<?> state)
 	{
 		// TODO
-		
+		/*
 		int A = 1;
 		int B = 1;
 		float prob = script.proba_reussite();
@@ -252,11 +252,13 @@ public class Strategie implements Service {
 		Vec2[] position_ennemie = state.table.get_positions_ennemis();
 		float pos = (float)1.0 - (float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0)));
 		// pos est une valeur qui décroît de manière exponentielle en fonction de la distance entre le robot adverse et là où on veut aller
-		float note = (score*A*prob/duree+pos*B)*prob;
+		float note = (score*A*prob/duree+pos*B)*prob;*/
 		
 //		log.debug((float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0))), this);
-		
-		return note;
+		if (score != 0)
+			return (float)score/(float)duree;
+		else
+			return 1.0f/(float)duree;
 	}
 	
 
@@ -426,22 +428,24 @@ public class Strategie implements Service {
 		
 		// Pour le critère d'arrèt d'exploration de l'arbre : un TTL ira bien pour l'instant :
 		// les action a anticiper doivent commencer dans les 30 prochaines secondes
-		
+
 		//Config pour 1 sec d'exécution sur raspbe
 		int		TTL = 26000;	// les actions anticipés doivent débuter dans les 14 prochaines secondes   
 		int maxProf	= 99999;	// En moyenne, réduire ce nombre consuit a sabrer les branches les plus prometteuses
-
+	
 		//Config pour 4 sec d'exécution sur raspbe
-		//int		TTL = 25000;	// les actions anticipés doivent débuter dans les 14 prochaines secondes   
-		//int maxProf	= 3;
+	//	int		TTL = 25000;	// les actions anticipés doivent débuter dans les 14 prochaines secondes   
+	//	int maxProf	= 3;
 		
 		
 		
-		long TrueAStarTTL = 8000;
+		long TrueAStarTTL = 8000;	// A partir de quand on considère qu'on ne sais plus ou est l'ennemi, et qu'on peut passer sur cache
+		int TimeBeforeGiveUp	= 3000;	// Si on reste bloqué dans l'arbre, on garde un oeil sur la montre pour être sur de pouvoir retenter sa chance
 		
-		
+		long startTime = System.currentTimeMillis();
 		int Branchcount = 0;
 		boolean temp;
+		boolean branchHasChild;
 		
 		
 		// ajoute tous les scrips disponibles scripts
@@ -473,7 +477,7 @@ public class Strategie implements Service {
 					temp = false;
 					for(NoteScriptMetaversion n : errorList)
 					{
-						if(mScript.toString() == n.script.toString() && metaversion == n.metaversion)
+						if(n != null && n.script != null && mScript.toString() == n.script.toString() && metaversion == n.metaversion)
 							temp = true;
 					}
 					if(temp)
@@ -500,86 +504,104 @@ public class Strategie implements Service {
 		
 		log.debug("scope.size() :" + scope.size(), this);
 		// Boucle principale d'exploration des branches
-		while (scope.size() != 0)
-		{
-			//log.debug("Nouveau tour de boucle", this);
-			//log.debug("Taille de la stack :" + scope.size(), this);
-			current = scope.lastElement();			
-				mState = memorymanager.getClone(current.profondeur-1);
-				current.computeActionCharacteristics();
-			
-			// Condition d'ajout des sous-branches : respecter le critère d'arret d'expansion, et ne pas les ajouter 2 fois.
-			if ( current.TTL - current.dureeScript > 0 && maxProf >= current.profondeur && (current.sousBranches.size() == 0) )
+		if(scope.size() > 1)
+			while (scope.size() != 0)
 			{
-				// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage	
 				
-				// ajoute tous les scrips disponibles
-				for(String nomScript : scriptmanager.getNomsScripts())	// Ces scripts sont ils bien ôtés de ceux que j'ai déjà effectué dans une branche en amont ?
+				// Sécurité pour être certain que le DFS ne tombe pas en boucle infinie
+				if(startTime + TimeBeforeGiveUp < System.currentTimeMillis())
 				{
-				
-					try
-					{
-						mScript = scriptmanager.getScript(nomScript);						// ici 	getScript marche correctement
-					}
-					catch(Exception e)
-					{
-						e.printStackTrace();
-					}
-					
-					metaversionList = mScript.meta_version(	mState	);
-					// TODO corriger les scripts pour que ça n'arrive pas
-					if(metaversionList == null)
-						continue;
-					
-					
-					// ajoute toutes les métaversions de tous les scipts
-					for(int metaversion : metaversionList)
-					{
-
-						// n'ajoute pas les branches exclues par argument 
-						if (errorList != null)
-						{
-							temp = false;
-							for(NoteScriptMetaversion n : errorList)
-							{
-								if(mScript.toString() == n.script.toString() && metaversion == n.metaversion)
-									temp = true;
-							}
-							if(temp)
-								continue;
-						}
-						
-						//log.debug("profondeur parente : "  + current.profondeur,this);
-						//log.debug("robot position : "  + mState.robot.getPosition(),this);
-						//log.debug("Ajout d'une branche avec script" + nomScript + " et metaversion : " + metaversion, this);
-						
-						mState = memorymanager.getClone(current.profondeur-1);
-						mState.pathfinding.setPrecision(5);
-						current.computeActionCharacteristics();
-						scope.push( new Branche(	(int)(current.TTL - current.dureeScript),	// TTL restant : celui du restant moins la durée de son action	
-													mState.time_depuis_racine >= TrueAStarTTL || current.profondeur > 1,//true,//current.profondeur >= 2,					// Utiliser le cache dès le second niveau de profondeur
-													current.profondeur+1,						// différence de profondeur entre la racine et ici, donc 1 + celle du parent
-													mScript, 									// Une branche par script et par métaversion
-													metaversion, 
-													mState	) );								// état de jeu
-						
-						// enregistre cette branche comme sous branche de son parent
-						current.sousBranches.add(scope.lastElement());
-					}
+					log.debug(TimeBeforeGiveUp + "ms since IA calculation started : Giving up", this);
+					break;
 				}
 				
 				
-			}
-			else	// Soit on a atteint la profondeur maximale, soit les enfants ont étés traités donc on calcule la note de ce niveau
-			{
-				current.computeNote();
-			//	log.debug("note courrante :" + current.note, this);
-				Branchcount++;
-				scope.pop();
-			}
-			
-		}	// fin boucle principale d'exploration
-		//log.debug("Explored "+ Branchcount + " branches", this);
+				//log.debug("Nouveau tour de boucle", this);
+				//log.debug("Taille de la stack :" + scope.size(), this);
+				current = scope.lastElement();			
+					mState = memorymanager.getClone(current.profondeur-1);
+					current.computeActionCharacteristics();
+				
+				// Condition d'ajout des sous-branches : respecter le critère d'arret d'expansion, et ne pas les ajouter 2 fois.
+				if ( current.TTL - current.dureeScript > 0 && maxProf >= current.profondeur && (current.sousBranches.size() == 0) )
+				{
+					// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage
+					
+					
+					// On vérifiera si la branche peut déployer des enfants jusqu'a son TTL
+					branchHasChild = false;
+					// ajoute tous les scrips disponibles
+					for(String nomScript : scriptmanager.getNomsScripts())
+					{
+					
+						try
+						{
+							mScript = scriptmanager.getScript(nomScript);
+						}
+						catch(Exception e)
+						{
+							e.printStackTrace();
+						}
+						
+						metaversionList = mScript.meta_version(	mState	);
+						// TODO corriger les scripts pour que ça n'arrive pas
+						if(metaversionList == null)
+							continue;
+						
+						
+						// ajoute toutes les métaversions de tous les scipts
+						for(int metaversion : metaversionList)
+						{
+	
+							// n'ajoute pas les branches exclues par argument 
+							if (errorList != null)
+							{
+								temp = false;
+								for(NoteScriptMetaversion n : errorList)
+								{
+									if(n != null && n.script != null && mScript.toString() == n.script.toString() && metaversion == n.metaversion)
+										temp = true;
+								}
+								if(temp)
+									continue;
+							}
+							
+							//log.debug("profondeur parente : "  + current.profondeur,this);
+							//log.debug("robot position : "  + mState.robot.getPosition(),this);
+							//log.debug("Ajout d'une branche avec script" + nomScript + " et metaversion : " + metaversion, this);
+							
+							mState = memorymanager.getClone(current.profondeur-1);
+							mState.pathfinding.setPrecision(5);
+							current.computeActionCharacteristics();
+							Branchcount++;
+							branchHasChild = true;
+							scope.push( new Branche(	(int)(current.TTL - current.dureeScript),	// TTL restant : celui du restant moins la durée de son action	
+														mState.time_depuis_racine >= TrueAStarTTL || current.profondeur > 1,//true,//current.profondeur >= 2,					// Utiliser le cache dès le second niveau de profondeur
+														current.profondeur+1,						// différence de profondeur entre la racine et ici, donc 1 + celle du parent
+														mScript, 									// Une branche par script et par métaversion
+														metaversion, 
+														mState	) );								// état de jeu
+							
+							// enregistre cette branche comme sous branche de son parent
+							current.sousBranches.add(scope.lastElement());
+						}
+					}
+					
+					// on tue la branche si elle n'a pas été capable de déployer d'enfants
+						// (Sinon elle reste en haut de stack avec du TTL et on bloucle infinie sur la recherche d'enfants)
+					if(branchHasChild == false)
+						current.TTL = 0;
+					
+					
+				}
+				else	// Soit on a atteint la profondeur maximale, soit les enfants ont étés traités donc on calcule la note de ce niveau
+				{
+					current.computeNote();
+					scope.pop();
+				}
+				
+			}	// fin boucle principale d'exploration
+		log.debug("Explored "+ Branchcount + " branches", this);
 		
 		
 		// la meilleure action a une meilleure note que les autres branches. Donc on calcule le max des notes des branches 
