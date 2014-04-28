@@ -273,6 +273,17 @@ public class Table implements Service {
 		arrayFire[id].pickFire();
 		hashFire = indice++;
 	}
+	public boolean isTakenFire(int id)
+	{
+		/*
+		 * Pour les feux debouts au milieu du terrain (i.e. ni au bord, ni dans une torche)
+		 */
+		return arrayFire[id].isTaken();
+	}
+	public boolean isTakenFixedFire(int id)
+	{
+		return arrayFixedFire[id].isTaken();
+	}
 	public int furthestUntakenFire (final Vec2 position)
 	{
 		// On ne prend pas en compte les feux dans les torches
