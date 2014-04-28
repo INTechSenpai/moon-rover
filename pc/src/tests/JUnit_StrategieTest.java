@@ -61,18 +61,26 @@ public class JUnit_StrategieTest extends JUnit_Test {
 	@Test
 	public void test_evaluation() throws Exception
 	{
-		robotvrai.setPosition(new Vec2(0, 1700));
-		robotchrono.setPosition(new Vec2(0, 1700));
+		Vec2 initpos = new Vec2(0,300);
+		robotvrai.setPosition(initpos);
+		robotchrono.setPosition(initpos);
 		
 		log.debug("Strategie Test starting", this);
-		for (int i = 0; i < 30000; i++)
-			strategie.evaluate();
+		//strategie.evaluate();
+		//log.debug("Strategie Test finished", this);
+		
+		for (int i = 0; i < 100; i++)
+		{
+			strategie.evaluate(null);
+			
+		}
 		
 		log.debug("Strategie Performance test starting", this);
-		int testCount = 1000;
+		
+		int testCount = 100;
 		long startTime = System.nanoTime();
 		for (int i = 0; i < testCount; i++)
-			strategie.evaluate();
+			strategie.evaluate(null);
 		long endTime = System.nanoTime();
 		long duration = (endTime - startTime)/ (1000 * testCount);
 		log.debug("Processed IA in " + duration + " µs on average over " + testCount + "tests", this);

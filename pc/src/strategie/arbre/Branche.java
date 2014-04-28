@@ -2,6 +2,7 @@ package strategie.arbre;
 
 import java.util.ArrayList;
 
+import exception.PathfindingException;
 import robot.RobotChrono;
 import scripts.Script;
 import smartMath.Vec2;
@@ -79,13 +80,15 @@ public class Branche
 	{
 		if(!isActionCharacteisticsComputed)
 		{
-			//scoreScript = script.meta_score(metaversion, state);
-			//dureeScript = script.metacalcule(metaversion, state, useCachedPathfinding);
-			
-			// Substitut de test en attendant que les scipts buggent moins.
-			scoreScript = 2;
-			dureeScript = 12000;	// 12 sec !
-			
+			scoreScript = script.meta_score(metaversion, state);
+			try
+			{
+				dureeScript = script.metacalcule(metaversion, state, useCachedPathfinding);
+			}
+			catch (PathfindingException e)
+			{
+				dureeScript = -1;
+			}
 			isActionCharacteisticsComputed = true;
 		}
 	}
@@ -138,7 +141,10 @@ public class Branche
 		Vec2[] position_ennemie = state.table.get_positions_ennemis();
 		float pos = (float)1.0 - (float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0)));
 		// pos est une valeur qui décroît de manière exponentielle en fonction de la distance entre le robot adverse et là où on veut aller
-		localNote = (scoreScript*A*prob/dureeScript+pos*B)*prob;
+	//	localNote = (scoreScript*A*prob/dureeScript+pos*B)*prob;
+		
+		localNote = (float)scoreScript*1000/(float)dureeScript;
+	//	System.out.println("localNote = " + localNote + "	scoreScript = " + scoreScript + "	dureeScript = " + dureeScript);
 		
 //		log.debug((float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0))), this);
 		

@@ -25,7 +25,7 @@ import exception.PathfindingException;
  *
  */
 
-public class Pathfinding implements Service
+public class Pathfinding implements Service, Cloneable
 {
 	// Dépendances
 	private final Table table;	// Final: protection contre le changement de référence.
@@ -246,5 +246,22 @@ public class Pathfinding implements Service
 	        return false;
 	    return table.equals(((Pathfinding)other).table);
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	public Pathfinding clone()
+	{
+		try {
+			return (Pathfinding) super.clone();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	
 }

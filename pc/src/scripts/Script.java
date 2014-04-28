@@ -90,7 +90,7 @@ public abstract class Script implements Service {
 
 		try
 		{
-		    state.robot.va_au_point_pathfinding(state.pathfinding, point_entree, hooks_chemin, retenter_si_blocage, false, true, false);
+		    state.robot.va_au_point_pathfinding(state.pathfinding, point_entree, hooks_chemin, retenter_si_blocage, false, false, false);
 			execute(id_version, state);
 		}
 		catch (Exception e)
@@ -106,9 +106,8 @@ public abstract class Script implements Service {
 		
 	}
 	
-	public long metacalcule(int id_version, GameState<RobotChrono> state, boolean use_cache)
+	public long metacalcule(int id_version, GameState<RobotChrono> state, boolean use_cache) throws PathfindingException
 	{	    
-	    // TODO est-ce qu'elle prennent toutes le meme temps? Ou prendre le min?
 		long duree = calcule(version_asso(id_version).get(0), state, use_cache);
 		state.time_depuis_debut += duree;
         state.time_depuis_racine += duree;
@@ -118,21 +117,15 @@ public abstract class Script implements Service {
 	/**
 	 * Calcule le temps d'exécution de ce script (grâce à robotChrono)
 	 * @return le temps d'exécution
+	 * @throws PathfindingException 
 	 */
-	public long calcule(int id_version, GameState<RobotChrono> state, boolean use_cache)
+	public long calcule(int id_version, GameState<RobotChrono> state, boolean use_cache) throws PathfindingException
 	{
 		Vec2 point_entree = point_entree(id_version);
 		state.robot.set_vitesse_translation("entre_scripts");
 		state.robot.set_vitesse_rotation("entre_scripts");
 		
-		try {
-			System.out.println("Le point d'entrée se situe en ("+point_entree.x+","+point_entree.y+")");
-			state.robot.initialiser_compteur(state.pathfinding.distance(state.robot.getPosition(), point_entree, use_cache));
-		} catch (PathfindingException e1) {
-			// En cas de problème du pathfinding, on évalue la longueur du chemin
-			state.robot.initialiser_compteur((int)(state.robot.getPosition().distance(point_entree)*1.5));
-			e1.printStackTrace();
-		}
+		state.robot.initialiser_compteur(state.pathfinding.distance(state.robot.getPosition(), point_entree, use_cache));
 		state.robot.setPosition(point_entree);
 
 		try {

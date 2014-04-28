@@ -1,5 +1,8 @@
 package threads;
 
+import java.util.ArrayList;
+
+import exception.PathfindingException;
 import exception.ScriptException;
 import robot.RobotChrono;
 import robot.RobotVrai;
@@ -65,10 +68,11 @@ public class ThreadStrategie extends AbstractThread {
 		// boucle principale de stratégie 
 		while(!stop_threads)
 		{
+			//TODO
 			// Evaluation d'une stratégie de secours si ce script bug
-			if(evalueEnnemi())
-				maj_prochainScriptErreur();
-			
+	//		if(evalueEnnemi())
+	//			maj_prochainScriptErreur();
+
 			// Evaluation du prochain coup en supposant que celui-ci se passe sans problème
 			maj_prochainScript();
 			
@@ -108,27 +112,31 @@ public class ThreadStrategie extends AbstractThread {
 	// TODO
 	private void maj_prochainScript()
 	{
-/*		robotchrono.majRobotChrono(robotvrai);
-		Table tableFuture = table.clone();
-//		NoteScriptVersion enCours = strategie.getScriptEnCours();
-		// TODO: la durée est importante pour supprimer les obstacles périmés
-		// La mise en cache est systématique car on ne cherche pas à récupérer le décompte mais seulement à modifier l'état de robotchrono et de table
-//		enCours.script.calcule(enCours.version, robotchrono, tableFuture, true);
-		memorymanager.setModelTable(tableFuture, profondeur_max);
-		memorymanager.setModelRobotChrono(robotchrono, profondeur_max);
+
 		NoteScriptMetaversion meilleur = new NoteScriptMetaversion();
-		try {
-			meilleur = strategie.evaluation(profondeur_max, 0);
-		} catch (ScriptException e) {
-			e.printStackTrace();
-			log.critical(e, this);
+		
+		ArrayList<NoteScriptMetaversion> errorList = new ArrayList<NoteScriptMetaversion>();
+		float[] a = null;
+		while(a == null)
+		{
+			meilleur = strategie.evaluate(errorList);
+			try
+			{
+				a = strategie.meilleurVersion(meilleur.metaversion, meilleur.script, memorymanager.getClone(0));
+			}
+			catch(PathfindingException e)
+			{
+				log.debug("La branche " + meilleur + " renvoyée par l'arbre n'a pas de metaversion acessible, on relace l'abre sans cette branche",this);
+				errorList.add(meilleur);
+				//e.printStackTrace();
+			}
 		}
-		float[] a = strategie.meilleurVersion(meilleur.metaversion, meilleur.script, robotchrono, tableFuture, pathfinding);
 		NoteScriptVersion meilleur_version = new NoteScriptVersion();
 		meilleur_version.script = meilleur.script;
 		meilleur_version.version = (int)a[0];
 		meilleur_version.note = a[1];
-		strategie.setProchainScript(meilleur_version);*/		
+		strategie.setProchainScript(meilleur_version);
+		log.debug("prochain script : " + meilleur_version,this);
 	}
 
 	private boolean evalueEnnemi()

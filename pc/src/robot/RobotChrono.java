@@ -77,12 +77,17 @@ public class RobotChrono extends Robot {
 	
 	public void initialiser_compteur(int distance_initiale)
 	{
-		try {
-			dureePositive((long)(((float)distance_initiale)/vitesse_mmpms));
-		} catch (RobotChronoException e) {
-			e.printStackTrace();
+		if(distance_initiale != 0)
+		{
+			try {
+				dureePositive((long)(((float)distance_initiale)/vitesse_mmpms));
+			} catch (RobotChronoException e) {
+				e.printStackTrace();
+			}
+			duree = (int) (((float)distance_initiale)/vitesse_mmpms);
 		}
-		duree = (int) (((float)distance_initiale)/vitesse_mmpms);
+		else 
+			distance_initiale = 0;
 	}
 	public int get_compteur()
 	{
@@ -104,15 +109,19 @@ public class RobotChrono extends Robot {
 	{
 		float delta = angle-orientation;
 		if(delta < 0)
-			delta += 2*Math.PI;
+			delta *= -1;
+		while(delta > 2*Math.PI)
+			delta -= 2*Math.PI;
 		if(delta > Math.PI)
 			delta = 2*(float)Math.PI - delta;
 		orientation = angle;
-		
-		try {
-			dureePositive((long)(delta/vitesse_rpms));
-		} catch (RobotChronoException e) {
-			e.printStackTrace();
+		if(delta != 0) 
+		{
+			try {
+				dureePositive((long)(delta/vitesse_rpms));
+			} catch (RobotChronoException e) {
+				e.printStackTrace();
+			}
 		}
 		duree += delta/vitesse_rpms;
 	}
@@ -121,6 +130,7 @@ public class RobotChrono extends Robot {
 	public void tirerBalle()
 	{
 		// durée "nulle" car appelé par un hook
+		duree += 1500; // TODO
 	}
 	@Override
 	public void lancerFilet()
@@ -202,7 +212,7 @@ public class RobotChrono extends Robot {
 	
 	private void dureePositive(long duree) throws RobotChronoException
 	{
-		if(duree < 0)
+		if(duree < -0.001)
 			throw new RobotChronoException();
 	}
 
