@@ -156,7 +156,7 @@ public class Strategie implements Service {
 			{
 			    real_state.table.pickTree(i_min_tree);
 			}
-			if(real_state.table.distanceFire(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
+			if(real_state.table.distanceFire(positionsfreeze[i], i_min_fire) < distance_influence && duree_freeze[i] > duree_standard)
 			{
 			    real_state.table.pickFire(i_min_fire);
 			}
