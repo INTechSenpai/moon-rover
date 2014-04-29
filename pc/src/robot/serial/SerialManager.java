@@ -104,10 +104,10 @@ public class SerialManager
 				{
 					//Creation d'une serie de test
 					Serial serialTest = new Serial(log, "carte de test de ping");
-
 					serialTest.initialize(this.connectedSerial.get(k), baudrate);
-
-					if (serialTest.ping() != null)
+					
+					
+					if(serialTest.ping() != null)
 						id = Integer.parseInt(serialTest.ping());
 					else 
 					{

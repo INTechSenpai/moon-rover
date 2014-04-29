@@ -42,12 +42,12 @@ public class ScriptManager implements Service {
 		scripts_robot.add("ScriptTree");
 		scripts_robot.add("ScriptLances");
 		scripts_robot.add("ScriptFresque");
-		scripts_robot.add("ScriptTorche");
+		//scripts_robot.add("ScriptTorche");
 		scripts_robot.add("ScriptDeposerFruits");
-		//scripts_robot.add("ScriptFunnyAction");
-		scripts_robot.add("ScriptDeposerFeu");
-		//scripts_robot.add("ScriptFeuDebout");
-		scripts_robot.add("ScriptFeuBord");
+		//scripts_robot.add("ScriptFunnyAction");	//pas bsoin dans l'arbre
+		//scripts_robot.add("ScriptDeposerFeu");
+		//scripts_robot.add("ScriptFeuDebout");	//machpo
+		//scripts_robot.add("ScriptFeuBord");	//machpo
 	}
 	
 	public ArrayList<String> getNomsScripts()

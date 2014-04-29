@@ -119,7 +119,7 @@ public class ThreadStrategie extends AbstractThread {
 		float[] a = null;
 		while(a == null)
 		{
-			meilleur = strategie.evaluate(errorList);
+			 meilleur = strategie.evaluate(errorList);
 			try
 			{
 				a = strategie.meilleurVersion(meilleur.metaversion, meilleur.script, memorymanager.getClone(0));

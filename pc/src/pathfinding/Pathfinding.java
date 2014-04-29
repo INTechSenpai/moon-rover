@@ -207,6 +207,9 @@ public class Pathfinding implements Service, Cloneable
 		if(solver.espace.canCrossLine(depart, arrivee))
 			return (int)depart.distance(arrivee);
 		
+		if(depart.x > 1500 || depart.x < -1500 || depart.y > 2000 || depart.y < 0 || arrivee.x > 1500 || arrivee.x < -1500 || arrivee.y > 2000 || arrivee.y < 0)
+			throw new PathfindingException();
+		
 		if(!use_cache || distance_cache == null)
 		{
 			ArrayList<Vec2> result = chemin(depart, arrivee);
