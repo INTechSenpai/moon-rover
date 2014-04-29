@@ -207,6 +207,7 @@ public class Table implements Service {
 		    Obstacle obstacle = iterator.next();
 		    if (obstacle instanceof ObstacleProximite && ((ObstacleProximite) obstacle).death_date <= date)
 		    {
+		        System.out.println("Suppression d'un obstacle de proximité: "+obstacle);
 		        iterator.remove();
 				hashObstacles = indice++;
 		    }
@@ -561,21 +562,27 @@ public class Table implements Service {
 	}
 	
 	/**
-	 * Indique si un obstacle de centre proche de la position indiquée existe.
+	 * Indique si un obstacle fixe de centre proche de la position indiquée existe.
 	 * Cela permet de ne pas détecter en obstacle mobile des obstacles fixes (comme les arbres).
 	 * De plus, ça allège le nombre d'obstacles.
 	 * @param position
 	 * @return
 	 */
 	public synchronized boolean obstacle_existe(Vec2 position) {
-	    Iterator<ObstacleCirculaire> iterator = listObstacles.iterator();
-	    while(iterator.hasNext())
-			if(obstacle_existe(position, iterator.next()))
-				return true;
+//	    Iterator<ObstacleCirculaire> iterator = listObstacles.iterator();
+//	    while(iterator.hasNext())
+//			if(obstacle_existe(position, iterator.next()))
+//				return true;
         Iterator<Obstacle> iterator2 = listObstaclesFixes.get(codeTorches()).iterator();
 		while(iterator2.hasNext())
-			if(obstacle_existe(position, iterator2.next()))
+		{
+		    Obstacle o = iterator2.next();
+			if(obstacle_existe(position, o))
+			{
+			    System.out.println("Obstacle: "+o);
 				return true;
+			}
+		}
 		return false;
 	}
 	

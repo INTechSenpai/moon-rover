@@ -253,7 +253,7 @@ public class RobotVrai extends Robot {
 	@Override
 	public void stopper(boolean avec_blocage)
 	{
-		log.debug("Arrêt du robot", this);
+		log.debug("Arrêt du robot en "+position, this);
 		if(avec_blocage)
 			blocage = true;
 		try {
@@ -304,6 +304,7 @@ public class RobotVrai extends Robot {
 		
 		try
 		{
+		    System.out.println("Ce va_au_point est appelé par avancer");
 			// Pas de trajectoire courbe parce qu'on va tout droit
 			va_au_point(consigne, hooks, false, nbTentatives, retenter_si_blocage, true, sans_lever_exception, false);
 		}
@@ -389,7 +390,7 @@ public class RobotVrai extends Robot {
 		} catch (SerialException e1) {
 			e1.printStackTrace();
 		}
-		
+ 		
 		// Si trajectoire_courbe a été donné en true, cela signifie que va_au_point prend lui-même la décision
 		// Là où on prendra plus de place, c'est devant le robot (marche avant)
 		if(autorise_trajectoire_courbe && trajectoire_courbe)
@@ -420,7 +421,7 @@ public class RobotVrai extends Robot {
 			try
 			{
 				stopper();
-				if(retenter_si_blocage)
+				if(retenter_si_blocage && nombre_tentatives > 0)
 				{
 					// TODO gérer nombre_tentatives = 0
 					// En cas de blocage, on annule les hooks
@@ -430,6 +431,7 @@ public class RobotVrai extends Robot {
 					else
 						avancer(-distance_degagement_robot, null, nombre_tentatives-1, retenter_si_blocage, sans_lever_exception);
 				}
+				// Si on ne retente pas si blocage, ou si on n'a plus de tentative, alors on remonte l'exception
 			}
 			finally
 			{
@@ -959,7 +961,7 @@ public class RobotVrai extends Robot {
 		centre_detection.Plus(position);
 		if(table.obstaclePresent(centre_detection, distance_detection))
 		{
-			log.warning("Ennemi détecté en : " + centre_detection.x + "; " + centre_detection.y, this);
+			log.warning("Ennemi détecté en : " + centre_detection, this);
 			throw new CollisionException();
 		}
 
