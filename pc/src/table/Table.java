@@ -277,6 +277,11 @@ public class Table implements Service {
 		arrayFire[id].pickFire();
 		hashFire = indice++;
 	}
+	public synchronized void pickFixedFire(int id)
+	{
+		arrayFixedFire[id].pickFire();
+		//hashFire = indice++; Coucou PF, faut le mettre ce truc là??
+	}
 	public boolean isTakenFire(int id)
 	{
 		/*
