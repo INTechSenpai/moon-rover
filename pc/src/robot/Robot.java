@@ -225,6 +225,13 @@ public abstract class Robot implements Service {
 		else
 			tient_feu_droite = true;
 	}
+	public void setTientPas_feu(Cote cote)
+	{
+		if(cote == Cote.GAUCHE)
+			tient_feu_gauche = false;
+		else
+			tient_feu_droite = false;
+	}
 	
 	public boolean isTient_feu(Cote cote)
 	{
