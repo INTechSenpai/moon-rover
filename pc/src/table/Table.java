@@ -184,7 +184,13 @@ public class Table implements Service {
 			out++;
 		return out;
 	}
-	
+
+    public synchronized void pickTorch (int id)
+    {
+        arrayTorch[id].pickTorch();
+        hashFire = indice++;
+    }
+
 	public synchronized void creer_obstacle(final Vec2 position)
 	{
 		Vec2 position_sauv = position.clone();
@@ -465,6 +471,8 @@ public class Table implements Service {
 					arrayFire[i].clone(ct.arrayFire[i]);
 				for(int i = 0; i < 4; i++)
 					arrayFixedFire[i].clone(ct.arrayFixedFire[i]);
+                for(int i = 0; i < 2; i++)
+                    arrayTorch[i].clone(ct.arrayTorch[i]);
 				ct.hashFire = hashFire;
 			}
 	
