@@ -276,6 +276,11 @@ public abstract class Robot implements Service {
 		tourner(orientation + angle, null, nb_tentatives, false, false, true);
 	}
 
+    public void va_au_point_retente_ou_pas(Vec2 point, boolean retente) throws MouvementImpossibleException
+    {
+        va_au_point(point, null, false, nb_tentatives, retente, false, false, false);
+    }
+
 	public void va_au_point(Vec2 point) throws MouvementImpossibleException
 	{
 		va_au_point(point, null, false, nb_tentatives, true, false, false, false);
