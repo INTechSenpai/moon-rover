@@ -135,7 +135,7 @@ public class Branche
 		int id = script.version_asso(metaversion).get(0);
 		int A = 1;
 		int B = 1;
-		float prob = script.proba_reussite();
+		float prob = 1;
 		
 		//abandon de prob_deja_fait
 		Vec2[] position_ennemie = state.table.get_positions_ennemis();

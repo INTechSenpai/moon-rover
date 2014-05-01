@@ -213,11 +213,10 @@ class ThreadCapteurs extends AbstractThread {
 						{
 							table.creer_obstacle(position);
 							date_dernier_ajout = (int)System.currentTimeMillis();
-							log.debug("Nouvel obstacle en "+position, this);
-							log.debug("obstacle a une distance de : "+distance, this);
+//							log.debug("Nouvel obstacle en "+position, this);
 						}
-							
-						//	log.debug("L'objet vu est un obstacle fixe.", this);
+						else	
+						    log.debug("L'objet vu est un obstacle fixe.", this);
 					}
 
 			}

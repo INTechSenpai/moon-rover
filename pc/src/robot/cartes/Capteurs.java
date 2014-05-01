@@ -97,7 +97,7 @@ public class Capteurs implements Service {
 	 * @param marche_arriere
 	 * @return la valeur la plus optimiste des capteurs
 	 */
-    public int mesurer(boolean marche_arriere)
+    public int mesurer()
     {
     	if(!capteurs_on)
     		return 3000;

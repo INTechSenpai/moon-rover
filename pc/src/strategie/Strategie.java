@@ -276,7 +276,7 @@ public class Strategie implements Service {
 		int id = script.version_asso(meta_id).get(0);
 		int A = 1;
 		int B = 1;
-		float prob = script.proba_reussite();
+		float prob = 1;
 		
 		//abandon de prob_deja_fait
 		Vec2[] position_ennemie = state.table.get_positions_ennemis();
@@ -637,7 +637,7 @@ public class Strategie implements Service {
 		{
 			try {
 				Script script = scriptmanager.getScript(nom_script);
-				if(script.version(real_state).size() >= 1)
+				if(script.meta_version(real_state).size() >= 1)
 					compteur++;		
 			} catch (ScriptException e) {
 				e.printStackTrace();

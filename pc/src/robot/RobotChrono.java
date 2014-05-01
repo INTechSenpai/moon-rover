@@ -179,11 +179,6 @@ public class RobotChrono extends Robot {
 	@Override
 	public void deposer_fresques() {
 	}
-
-	@Override
-	public void takefire(Cote cote) {
-		duree += 2000; // TODO
-	}
 	
 	/**
 	 * Utilisé par les tests
@@ -218,11 +213,13 @@ public class RobotChrono extends Robot {
 
 	@Override
 	public void poserFeuBonCote(Cote cote) throws SerialException {
+	    super.poserFeuBonCote(cote);
 		duree += 1000; // TODO
 	}
 
 	@Override
 	public void poserFeuEnRetournant(Cote cote) throws SerialException {
+        super.poserFeuEnRetournant(cote);
 		duree += 1000; // TODO
 	}
 

@@ -89,36 +89,36 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		s = (Script)scriptmanager.getScript("ScriptLances");
 		for(int i = 0; i < 6; i++)
 		{
-			Assert.assertTrue(s.version(real_state).size() == 2);
+			Assert.assertTrue(s.meta_version(real_state).size() == 2);
 			real_state.robot.tirerBalle();
 		}
-		Assert.assertTrue(s.version(real_state).size() == 0);
+		Assert.assertTrue(s.meta_version(real_state).size() == 0);
 	}
 
 	@Test
 	public void test_ScriptTree_versions() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptTree");
-		Assert.assertTrue(s.version(real_state).size() == 4);
+		Assert.assertTrue(s.meta_version(real_state).size() == 4);
 		real_state.table.pickTree(1);
-		Assert.assertTrue(s.version(real_state).size() == 3);
+		Assert.assertTrue(s.meta_version(real_state).size() == 3);
 		real_state.table.pickTree(3);
-		Assert.assertTrue(s.version(real_state).size() == 2);
+		Assert.assertTrue(s.meta_version(real_state).size() == 2);
 		real_state.table.pickTree(2);
-		Assert.assertTrue(s.version(real_state).size() == 1);
+		Assert.assertTrue(s.meta_version(real_state).size() == 1);
 		real_state.table.pickTree(1);
-		Assert.assertTrue(s.version(real_state).size() == 1);
+		Assert.assertTrue(s.meta_version(real_state).size() == 1);
 		real_state.table.pickTree(0);
-		Assert.assertTrue(s.version(real_state).size() == 0);
+		Assert.assertTrue(s.meta_version(real_state).size() == 0);
 	}
 
 	@Test
 	public void test_ScriptFresques_versions() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptFresque");
-		Assert.assertTrue(s.version(real_state).size() == 3);
+		Assert.assertTrue(s.meta_version(real_state).size() == 1);
 		real_state.robot.deposer_fresques();
-		Assert.assertTrue(s.version(real_state).size() == 0);
+		Assert.assertTrue(s.meta_version(real_state).size() == 0);
 	}
 
 	@Test
@@ -171,9 +171,9 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	public void test_ScriptDeposerFeu_versions() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptDeposerFeu");
-		Assert.assertTrue(s.version(real_state).size() == 0);
+		Assert.assertTrue(s.meta_version(real_state).size() == 0);
 		real_state.robot.takefire(Cote.GAUCHE);
-		Assert.assertTrue(s.version(real_state).size() == 5);
+		Assert.assertTrue(s.meta_version(real_state).size() == 3);
 	}
 
 	@Test

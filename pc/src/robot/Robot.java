@@ -83,15 +83,11 @@ public abstract class Robot implements Service {
 	 * ACTIONNEURS
 	 */
 
-	public abstract void takefire(Cote cote)  throws SerialException, MouvementImpossibleException;
 	public abstract void tirerBalle() throws SerialException;
 	public abstract void deposer_fresques() throws SerialException;
 	public abstract void bac_bas() throws SerialException;
-	public abstract void bac_haut() throws SerialException;
 	public abstract void rateau(PositionRateau position, Cote cote) throws SerialException;
 	public abstract void lancerFilet() throws SerialException;
-	public abstract void poserFeuBonCote(Cote cote) throws SerialException;
-	public abstract void poserFeuEnRetournant(Cote cote) throws SerialException;
 	public abstract void lever_pince(Cote cote) throws SerialException;
 	public abstract void baisser_pince(Cote cote) throws SerialException;
 	public abstract void fermer_pince(Cote cote)throws SerialException;
@@ -102,6 +98,31 @@ public abstract class Robot implements Service {
 	public abstract void ouvrir_bas_pince(Cote cote) throws SerialException;
 	public abstract void prendre_torche(Cote cote) throws SerialException;
 	public abstract void sleep(long duree);
+	
+	public void add_fruits(int n)
+	{
+	    nombre_fruits_bac += n;
+	}
+	
+    public void bac_haut() throws SerialException
+    {
+       nombre_fruits_bac = 0;
+    }
+    public void poserFeuBonCote(Cote cote) throws SerialException
+    {
+        if(cote == Cote.GAUCHE)
+            tient_feu_gauche = false;
+        else
+           tient_feu_droite = false;
+    }
+    public void poserFeuEnRetournant(Cote cote) throws SerialException
+    {
+       if(cote == Cote.GAUCHE)
+            tient_feu_gauche = false;
+        else
+           tient_feu_droite = false;
+    }
+
 	
 	// Dépendances
 	protected Read_Ini config;
@@ -225,6 +246,7 @@ public abstract class Robot implements Service {
 		else
 			tient_feu_droite = true;
 	}
+
 	public void setTientPas_feu(Cote cote)
 	{
 		if(cote == Cote.GAUCHE)

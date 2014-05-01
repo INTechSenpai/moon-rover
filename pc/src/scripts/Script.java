@@ -149,11 +149,6 @@ public abstract class Script implements Service {
 	 */
 	public abstract ArrayList<Integer> meta_version(final GameState<?> state);
 		
-	/**
-	 * Renvoie le tableau des versions d'un script
-	 * @return le tableau des versions possibles
-	 */
-	public abstract ArrayList<Integer> version(final GameState<?> state);
 
 	/**
 	 * Retourne la position d'entrée associée à la version id
@@ -162,14 +157,22 @@ public abstract class Script implements Service {
 	 */
 	public abstract Vec2 point_entree(int id);
 	/**
-	 * Grande 
 	 * Renvoie le score que peut fournir une méta-version d'un script
 	 * @return le score
 	 */
-	public int meta_score(int id_version, GameState<?> state)
+	
+	public int meta_score(int id_metaversion, GameState<?> state)
 	{
-		return score(version_asso(id_version).get(0), state);
+	    ArrayList<Integer> versions = version_asso(id_metaversion);
+        if(versions == null)
+            return -1;
+	    int max = versions.get(0);
+	    for(Integer v: versions)
+	        if(score(v, state) > score(max, state))
+	            max = v;
+		return score(max, state);
 	}
+
 	/**
 	 * Renvoie le score que peut fournir une version d'un script
 	 * @return le score
@@ -181,12 +184,6 @@ public abstract class Script implements Service {
 	 * @return le poids
 	 */
 	public abstract int poids(final GameState<?> state);
-
-	/**
- 	 * Donne la probabilité que le script réussisse
-	 * @return la proba que la script réussisse, en supposant que l'ennemi n'y soit pas
-	 */
-	public abstract float proba_reussite();
 
 	/**
 	 * Exécute le script, avec RobotVrai ou RobotChrono

@@ -521,8 +521,8 @@ public class RobotVrai extends Robot {
 		nombre_lances--;
 	}
 
-	@Override
 	public void takefire(Cote cote) throws SerialException, MouvementImpossibleException {
+        setFeu_tenu_rouge(cote, getColour(cote));
 
 		if(!isTient_feu(cote))
 		{
@@ -546,7 +546,6 @@ public class RobotVrai extends Robot {
 			lever_pince(cote);
 			sleep(500);
 			setTient_feu(cote);
-			setFeu_tenu_rouge(cote, getColour(cote));
 			// On signale à la table qu'on a prit un feu. A priori, c'est le plus proche de cette position.
 			table.pickFire(table.nearestUntakenFire(position.clone()));
 		}
@@ -677,6 +676,7 @@ public class RobotVrai extends Robot {
 	@Override	
 	public void poserFeuBonCote(Cote cote) throws SerialException
 	{
+	    super.poserFeuBonCote(cote);
 		log.debug("On pose le feu gauche sans le retourner", this);
 		//Ca remonte la pince aussi !
 		milieu_pince(cote);
@@ -687,11 +687,16 @@ public class RobotVrai extends Robot {
 		sleep(1000);
 		fermer_pince(cote);
 		sleep(1000);
+		if(cote == Cote.GAUCHE)
+		    tient_feu_gauche = false;
+		else
+            tient_feu_droite = false;
 	}
 
 	@Override	
 	public void poserFeuEnRetournant(Cote cote) throws SerialException
 	{
+	    super.poserFeuEnRetournant(cote);
 		log.debug("On pose le feu gauche en le retournant", this);
 		//Ca remonte la pince aussi !
 		baisser_pince(cote);
@@ -699,6 +704,10 @@ public class RobotVrai extends Robot {
 		ouvrir_pince(cote);
 		lever_pince(cote);
 		fermer_pince(cote);
+        if(cote == Cote.GAUCHE)
+            tient_feu_gauche = false;
+        else
+            tient_feu_droite = false;
 	}
 
 	
