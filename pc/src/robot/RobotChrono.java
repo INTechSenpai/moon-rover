@@ -128,9 +128,9 @@ public class RobotChrono extends Robot {
 	}
 
 	@Override
-	public void tirerBalle()
+	public void tirerBalle() throws SerialException
 	{
-		//nombre_lances--; pas ici apparemment car déjà fait
+	    super.tirerBalle();
 		// durée "nulle" car appelé par un hook
 		duree += 1500; // TODO
 	}

@@ -83,7 +83,10 @@ public abstract class Robot implements Service {
 	 * ACTIONNEURS
 	 */
 
-	public abstract void tirerBalle() throws SerialException;
+	public void tirerBalle() throws SerialException
+	{
+	    nombre_lances--;
+	}
 	
 	public abstract void bac_bas() throws SerialException;
 	public abstract void rateau(PositionRateau position, Cote cote) throws SerialException;

@@ -516,9 +516,9 @@ public class RobotVrai extends Robot {
 	@Override
 	public void tirerBalle() throws SerialException
 	{
+        super.tirerBalle();
 		log.debug("On lance une balle!", this);
 		actionneurs.tirerBalle();
-		nombre_lances--;
 	}
 
 	public void takefire(Cote cote) throws SerialException, MouvementImpossibleException {
