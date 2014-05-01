@@ -84,7 +84,7 @@ public abstract class Robot implements Service {
 	 */
 
 	public abstract void tirerBalle() throws SerialException;
-	public abstract void deposer_fresques() throws SerialException;
+	
 	public abstract void bac_bas() throws SerialException;
 	public abstract void rateau(PositionRateau position, Cote cote) throws SerialException;
 	public abstract void lancerFilet() throws SerialException;
@@ -96,7 +96,19 @@ public abstract class Robot implements Service {
 	public abstract void tourner_pince(Cote cote) throws SerialException;
 	public abstract void presque_fermer_pince(Cote cote) throws SerialException;
 	public abstract void ouvrir_bas_pince(Cote cote) throws SerialException;
-	public abstract void prendre_torche(Cote cote) throws SerialException;
+	
+	public  void deposer_fresques() throws SerialException
+	{
+		fresques_posees = true;
+	}
+	public void prendre_torche(Cote cote) throws SerialException
+	{
+        if(cote == Cote.GAUCHE)
+            tient_feu_gauche = true;
+        else
+           tient_feu_droite = true;
+		
+	}
 	public abstract void sleep(long duree);
 	
 	public void add_fruits(int n)

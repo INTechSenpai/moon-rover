@@ -560,6 +560,7 @@ public class RobotVrai extends Robot {
 	@Override
 	public void bac_haut() throws SerialException
 	{
+		super.bac_haut();
 		actionneurs.bac_haut();
 	}
 
@@ -585,8 +586,8 @@ public class RobotVrai extends Robot {
 	}
 
 	@Override
-	public void deposer_fresques() {
-		fresques_posees = true;
+	public void deposer_fresques() throws SerialException {
+		super.deposer_fresques();
 	}
 
 	@Override	
@@ -657,6 +658,7 @@ public class RobotVrai extends Robot {
 	@Override
 	public void prendre_torche(Cote cote) throws SerialException
 	{
+		super.prendre_torche(cote);
 		if(cote == Cote.GAUCHE)
 			actionneurs.prendre_torche_gauche();
 		else

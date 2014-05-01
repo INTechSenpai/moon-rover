@@ -12,7 +12,8 @@ import exception.SerialException;
 
 /**
  * Robot particulier qui fait pas bouger le robot réel, mais détermine la durée des actions
- * @author pf, krissprolls
+ * @author pf
+ * @author (krissprolls)
  *
  */
 
@@ -129,6 +130,7 @@ public class RobotChrono extends Robot {
 	@Override
 	public void tirerBalle()
 	{
+		//nombre_lances--; pas ici apparemment car déjà fait
 		// durée "nulle" car appelé par un hook
 		duree += 1500; // TODO
 	}
@@ -165,8 +167,9 @@ public class RobotChrono extends Robot {
 	}
 
 	@Override
-	public void bac_haut()
+	public void bac_haut() throws SerialException
 	{
+		super.bac_haut();
 		duree += 1000; // TODO
 	}
 
@@ -177,7 +180,9 @@ public class RobotChrono extends Robot {
 	}
 
 	@Override
-	public void deposer_fresques() {
+	public void deposer_fresques() throws SerialException {
+		super.deposer_fresques();
+		duree +=2000; //TODO
 	}
 	
 	/**
@@ -265,6 +270,7 @@ public class RobotChrono extends Robot {
 
 	@Override
 	public void prendre_torche(Cote cote) throws SerialException {
+		super.prendre_torche(cote);
 	    duree += 1000; // TODO
 	}
 	

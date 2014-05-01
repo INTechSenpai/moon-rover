@@ -166,30 +166,7 @@ public class Table implements Service {
 		return listObstaclesFixes.get(codeTorches());
 	}
 	
-	/**
-	 * Renvoie un code selon la présence ou non des torches mobiles
-	 * 3: les deux torches sont là
-	 * 2: la torche de gauche a disparue
-	 * 1: la torche de droite a disparue
-	 * 0: les deux torches sont absentes
-	 * @return ce code
-	 */
-	public int codeTorches()
-	{
-		int out = 0;
-		if(!arrayTorch[0].isDisparue())
-			out++;
-		out <<= 1;
-		if(!arrayTorch[1].isDisparue())
-			out++;
-		return out;
-	}
-
-    public synchronized void pickTorch (int id)
-    {
-        arrayTorch[id].pickTorch();
-        hashFire = indice++;
-    }
+	
 
 	public synchronized void creer_obstacle(final Vec2 position)
 	{
@@ -414,7 +391,34 @@ public class Table implements Service {
 		}
 	
 	//Torches
-	
+	/**
+	 * Renvoie un code selon la présence ou non des torches mobiles
+	 * 3: les deux torches sont là
+	 * 2: la torche de gauche a disparue
+	 * 1: la torche de droite a disparue
+	 * 0: les deux torches sont absentes
+	 * @return ce code
+	 */
+	public int codeTorches()
+	{
+		int out = 0;
+		if(!arrayTorch[0].isDisparue())
+			out++;
+		out <<= 1;
+		if(!arrayTorch[1].isDisparue())
+			out++;
+		return out;
+	}
+
+    public synchronized void pickTorch (int id)
+    {
+        arrayTorch[id].pickTorch();
+        hashFire = indice++;
+    }
+    public boolean isTorchTaken(int id)
+    {
+    	return arrayTorch[id].isTaken();
+    }
 	public int nearestTorch (final Vec2 position)
 	{
 		if(arrayTorch[0].getPosition().SquaredDistance(position) < arrayTorch[1].getPosition().SquaredDistance(position))
