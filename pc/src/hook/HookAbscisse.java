@@ -1,7 +1,8 @@
 package hook;
 
-import robot.Robot;
+import robot.RobotVrai;
 import smartMath.Vec2;
+import strategie.GameState;
 import utils.Log;
 import utils.Read_Ini;
 
@@ -17,18 +18,18 @@ class HookAbscisse extends Hook {
 	private float abscisse;
 	private float tolerance;
 	
-	public HookAbscisse(Read_Ini config, Log log, float abscisse, float tolerance, boolean effectuer_symetrie)
+	public HookAbscisse(Read_Ini config, Log log, GameState<RobotVrai> real_state, float abscisse, float tolerance, boolean effectuer_symetrie)
 	{
-		super(config, log);
+	    super(config, log, real_state);
 		this.abscisse = abscisse;
 		this.tolerance = tolerance;
 		if(effectuer_symetrie)
 			abscisse *= -1;
 	}
 	
-	public boolean evaluate(final Robot robot)
+	public boolean evaluate()
 	{
-		Vec2 positionRobot = robot.getPosition();
+		Vec2 positionRobot = real_state.robot.getPosition();
 		log.debug(positionRobot+" "+abscisse, this);
 		if(Math.abs(positionRobot.x-abscisse) < tolerance)
 			return declencher();

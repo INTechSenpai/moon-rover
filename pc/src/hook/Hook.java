@@ -2,7 +2,8 @@ package hook;
 
 import java.util.ArrayList;
 
-import robot.Robot;
+import robot.RobotVrai;
+import strategie.GameState;
 import utils.Log;
 import utils.Read_Ini;
 
@@ -18,11 +19,13 @@ abstract public class Hook {
 	
 	protected Read_Ini config;
 	protected Log log;
+	protected GameState<RobotVrai> real_state;
 
-	public Hook(Read_Ini config, Log log)
+	public Hook(Read_Ini config, Log log, GameState<RobotVrai> real_state)
 	{
 		this.config = config;
 		this.log = log;
+		this.real_state = real_state;
 	}
 	
 	/**
@@ -53,7 +56,7 @@ abstract public class Hook {
 	 * @param robot
 	 * @return true si ce hook modifie les déplacements du robot, false sinon
 	 */
-	public abstract boolean evaluate(final Robot robot);
+	public abstract boolean evaluate();
 
 }
 

@@ -131,6 +131,7 @@ public class Container {
 		else if(nom == "HookGenerator")
 			services.put(nom, (Service)new HookGenerator(	(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log"),
+                                                            (GameState<RobotVrai>)getService("RealGameState"),
 															(Capteurs)getService("Capteur")));		
 		else if(nom == "RobotVrai")
 			services.put(nom, (Service)new RobotVrai(	(Capteurs)getService("Capteur"),

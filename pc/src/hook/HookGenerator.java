@@ -3,8 +3,10 @@ package hook;
 import container.Service;
 import exception.ConfigException;
 import robot.Cote;
+import robot.RobotVrai;
 import robot.cartes.Capteurs;
 import smartMath.Vec2;
+import strategie.GameState;
 import utils.Log;
 import utils.Read_Ini;
 
@@ -27,15 +29,17 @@ public class HookGenerator implements Service {
 	private Read_Ini config;
 	private Log log;
 	private Capteurs capteur;
+	private GameState<RobotVrai> real_state;
 
 	private int tolerance_position = 20;
 	String couleur;
 	
-	public HookGenerator(Read_Ini config, Log log, Capteurs capteur)
+	public HookGenerator(Read_Ini config, Log log, GameState<RobotVrai> real_state, Capteurs capteur)
 	{
 		this.config = config;
 		this.log = log;
 		this.capteur = capteur;
+		this.real_state = real_state;
 		maj_config();
 	}
 
@@ -62,7 +66,7 @@ public class HookGenerator implements Service {
 	
 	public Hook hook_position(Vec2 position, int tolerance)
 	{
-		return new HookPosition(config, log, position, tolerance, couleur=="rouge");
+		return new HookPosition(config, log, real_state, position, tolerance, couleur=="rouge");
 	}
 	public Hook hook_position(Vec2 position)
 	{
@@ -75,7 +79,7 @@ public class HookGenerator implements Service {
 	
 	public Hook hook_abscisse(float abscisse, int tolerance)
 	{
-		return new HookAbscisse(config, log, abscisse, tolerance, couleur=="rouge");
+		return new HookAbscisse(config, log, real_state, abscisse, tolerance, couleur=="rouge");
 	}
 	public Hook hook_abscisse(float abscisse)
 	{
@@ -88,7 +92,7 @@ public class HookGenerator implements Service {
 
 	public Hook hook_feu(Cote cote)
 	{
-		return new HookFeu(config, log, capteur, cote);
+		return new HookFeu(config, log, real_state, capteur, cote);
 	}
 
 }

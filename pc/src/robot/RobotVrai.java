@@ -770,7 +770,7 @@ public class RobotVrai extends Robot {
 		{
 			if(hooks != null)
 				for(Hook hook : hooks)
-					relancer |= hook.evaluate(this);
+					relancer |= hook.evaluate();
 			if(relancer)
 				break;
 			sleep(sleep_boucle_acquittement);
@@ -859,7 +859,7 @@ public class RobotVrai extends Robot {
 		{
 			if(hooks != null)
 				for(Hook hook : hooks)
-					relancer |= hook.evaluate(this);
+					relancer |= hook.evaluate();
 
 			if(relancer)
 				break;
