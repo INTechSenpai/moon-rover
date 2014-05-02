@@ -45,15 +45,25 @@ public class JUnit_ScriptTest extends JUnit_Test {
         real_state = (GameState<RobotVrai>)container.getService("RealGameState");
         chrono_state = real_state.clone();
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
-		real_state.robot.setPosition(new Vec2(1251, 1695));
-		//On démarre avec la cale !!!!
-		real_state.robot.setOrientation((float)(-Math.PI/2));
+		
+		real_state.robot.setPosition(new Vec2(1300,1700));
+		real_state.robot.setOrientation((float)(Math.PI));
+		real_state.robot.recaler();
 		real_state.robot.set_vitesse_rotation("entre_scripts");
 		real_state.robot.set_vitesse_translation("entre_scripts");
+		real_state.robot.lever_pince(Cote.GAUCHE);
+		//real_state.robot.lever_pince(Cote.DROIT);
+		real_state.robot.avancer(200);
+		real_state.robot.tourner((float)(-2*Math.PI/3));
+		real_state.robot.avancer(300);
+		/*
+		real_state.robot.setPosition(new Vec2(800,500));
+		real_state.robot.setOrientation((float)(Math.PI/2));
+		*/
 		container.getService("threadPosition");
 		container.demarreThreads();
 		//robotvrai.set_vitesse_translation("30");
-		real_state.robot.avancer(100);
+		//real_state.robot.avancer(100);
 	}
 
 	@Test
@@ -158,7 +168,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	public void test_ScriptTree_agit() throws Exception
 	{
 		s = (Script)scriptmanager.getScript("ScriptTree");
-		s.agit(1, real_state, true);
+		s.agit(0, real_state, true);
 	}
 
 	@Test(expected=ScriptException.class)
@@ -198,5 +208,10 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	{
 	    real_state.robot.setTient_feu(Cote.DROIT);
 	    real_state.robot.takefire(Cote.GAUCHE);
+	}
+	@Test public void test_ScriptFeuBord() throws Exception
+	{
+		s = (Script)scriptmanager.getScript("ScriptFeuBord");
+		s.agit(1, real_state, true);
 	}
 }

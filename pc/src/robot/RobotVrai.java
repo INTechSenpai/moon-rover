@@ -228,7 +228,7 @@ public class RobotVrai extends Robot {
 				setOrientation((float)Math.PI);
 			}
 			sleep(500);
-			avancer_dans_mur(-45);	// toujours pas d'exeption, car on ne sait toujours pas ou on est sur la map
+			avancer_dans_mur(45);	// toujours pas d'exeption, car on ne sait toujours pas ou on est sur la map
 			tourner(-(float)Math.PI/2);
 			avancer_dans_mur(-600);
 			deplacements.set_vitesse_translation(80);
