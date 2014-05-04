@@ -16,8 +16,8 @@ import utils.Log;
 import utils.Read_Ini;
 import utils.Sleep;
 import container.Service;
-import exception.PathfindingException;
-import exception.ScriptException;
+import exceptions.strategie.PathfindingException;
+import exceptions.strategie.ScriptException;
 import smartMath.Vec2;
 
 /**
@@ -30,7 +30,6 @@ public class Strategie implements Service {
 
 	// Dépendances
 	private MemoryManager memorymanager;
-	private ThreadTimer threadtimer;
 	private ScriptManager scriptmanager;
 	private GameState<RobotVrai> real_state;
 	private Log log;
@@ -48,10 +47,9 @@ public class Strategie implements Service {
 	// Prochain script à exécuter si l'actuel se passe bien
 	private volatile NoteScriptVersion prochainScript;
 	
-	public Strategie(MemoryManager memorymanager, ThreadTimer threadtimer, ScriptManager scriptmanager, GameState<RobotVrai> real_state, Read_Ini config, Log log)
+	public Strategie(MemoryManager memorymanager, ScriptManager scriptmanager, GameState<RobotVrai> real_state, Read_Ini config, Log log)
 	{
 		this.memorymanager = memorymanager;
-		this.threadtimer = threadtimer;
 		this.scriptmanager = scriptmanager;
 		this.real_state = real_state;
 		this.log = log;
@@ -64,11 +62,11 @@ public class Strategie implements Service {
 	 */
 	public void boucle_strategie()
 	{
-		while(!threadtimer.match_demarre)
+		while(!ThreadTimer.match_demarre)
 			Sleep.sleep(20);
 
 		log.debug("Stratégie lancée", this);
-		while(!threadtimer.fin_match)
+		while(!ThreadTimer.fin_match)
 		{
 			if(prochainScript != null && prochainScript.script != null)
 				synchronized(prochainScript)
@@ -289,99 +287,6 @@ public class Strategie implements Service {
 		return note;
 	}
 
-	/**
-	 * Evaluation des scripts pour un robot et une certaine profondeur
-	 * @param profondeur
-	 * @param id_robot
-	 * @return le meilleur triplet NoteScriptVersion
-	 * @throws ScriptException
-	 */
-/*	public NoteScriptMetaversion evaluation(int profondeur, int id_robot) throws ScriptException
-	{
-		return _evaluation(System.currentTimeMillis(), 0, profondeur, id_robot);
-	}
-*/
-	/**
-	 * Evaluation des scripts pour un robot et une certaine profondeur, à partir d'une date future
-	 * @param date
-	 * @param profondeur
-	 * @param id_robot
-	 * @return le meilleur triplet NoteScriptVersion
-	 * @throws ScriptException
-	 */
-/*	public NoteScriptMetaversion evaluation(long date, int profondeur, int id_robot) throws ScriptException
-	{
-		return _evaluation(date, 0, profondeur, id_robot);
-	}
-
-	private NoteScriptMetaversion _evaluation(long date, int duree_totale, int profondeur, int id_robot) throws ScriptException
-	{
-		if(profondeur == 0)
-			return new NoteScriptMetaversion();
-		
-		NoteScriptMetaversion meilleur = new NoteScriptMetaversion(-1, null, -1);
-		// TODO : Give a value to TTL
-		int duree_connaissances = TTL;
-		
-		// Ittération sur les scripts
-		for(String nom_script : scriptmanager.getNomsScripts())
-		{
-			Script script = scriptmanager.getScript(nom_script);
-			ArrayList<Integer> metaversions = script.meta_version(	memorymanager.getCloneRobotChrono(profondeur),
-																	memorymanager.getCloneTable(profondeur), 
-																	memorymanager.getClonePathfinding(profondeur)	);
-			// TODO corriger les scripts pour que ça n'arrive pas
-			if(metaversions == null)
-				break;
-			
-			
-			
-			// Ittération sur les métaversions des scripts
-			for(int meta_id : metaversions)
-			{
-				
-				try
-				{
-					Table cloned_table = memorymanager.getCloneTable(profondeur);
-					RobotChrono cloned_robotchrono = memorymanager.getCloneRobotChrono(profondeur);
-					Pathfinding cloned_pathfinding = memorymanager.getClonePathfinding(profondeur);
-
-					int duree_script = (int)script.metacalcule(meta_id, cloned_robotchrono, cloned_table, cloned_pathfinding, duree_totale > duree_connaissances);
-					
-					// met a jour la table après exécution du script
-					cloned_table.supprimerObstaclesPerimes(date+duree_script);
-
-					float noteScript = calculeMetaNote(	script.meta_score(meta_id, cloned_robotchrono, cloned_table),
-														duree_script,
-														meta_id,
-														script	);
-
-					NoteScriptMetaversion out = _evaluation(date + duree_script, duree_script, profondeur-1, id_robot);
-					out.note += noteScript;
-
-					if(out.note > meilleur.note)
-					{
-						meilleur.note = out.note;
-						meilleur.script = script;
-						meilleur.metaversion = meta_id;
-					}
-				}
-				catch(Exception e)
-				{
-					e.printStackTrace();
-				}
-				
-				
-			}
-			
-			
-		}
-		return meilleur;
-	}
-	
-	*/
-
-	
 	/* Méthode qui calcule la note de cette branche en calculant celles de ses sous branches, puis en combinant leur notes
 	 * C'est là qu'est logé le DFS
 	 * 

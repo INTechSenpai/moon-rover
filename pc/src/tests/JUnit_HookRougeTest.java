@@ -3,8 +3,8 @@ package tests;
 import hook.Callback;
 import hook.Executable;
 import hook.Hook;
-import hook.HookGenerator;
 import hook.methodes.TirerBalles;
+import hook.sortes.HookGenerator;
 
 import java.util.ArrayList;
 
@@ -73,7 +73,7 @@ public class JUnit_HookRougeTest extends JUnit_Test {
 		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
 		chemin.add(new Vec2(20, 1400));
 		chemin.add(new Vec2(40, 1500));
-		robotvrai.suit_chemin_droit(chemin, hooks);
+		robotvrai.suit_chemin(chemin, hooks);
 		Assert.assertTrue(nb_balles != robotvrai.getNbrLances());
 	}
 
@@ -95,7 +95,7 @@ public class JUnit_HookRougeTest extends JUnit_Test {
 		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
 		chemin.add(new Vec2(20, 1400));
 		chemin.add(new Vec2(40, 1500));
-		robotvrai.suit_chemin_droit(chemin, hooks);
+		robotvrai.suit_chemin(chemin, hooks);
 		Assert.assertTrue(nb_balles != robotvrai.getNbrLances());
 	}
 

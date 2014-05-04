@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import hook.Callback;
 import hook.Executable;
 import hook.Hook;
-import hook.HookGenerator;
 import hook.methodes.TakeFire;
+import hook.sortes.HookGenerator;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import robot.Cote;
+import enums.Cote;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import scripts.Script;

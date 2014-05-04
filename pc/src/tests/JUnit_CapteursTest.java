@@ -14,7 +14,7 @@ public class JUnit_CapteursTest extends JUnit_Test {
 	public void setUp() throws Exception {
 		super.setUp();
 		log.debug("JUnit_ActionneursTest.setUp()", this);
-		capteurs = (Capteurs)container.getService("Capteurs");
+		capteurs = (Capteurs)container.getService("Capteur");
 		config.set("capteurs_on", true);
 		capteurs.maj_config();
 	}

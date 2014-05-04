@@ -4,12 +4,21 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
-import hook.HookGenerator;
+import hook.sortes.HookGenerator;
+import scripts.autres.ScriptFresque;
+import scripts.autres.ScriptFunnyAction;
+import scripts.autres.ScriptLances;
+import scripts.feux.ScriptDeposerFeu;
+import scripts.feux.ScriptFeuBord;
+import scripts.feux.ScriptFeuDebout;
+import scripts.feux.ScriptTorche;
+import scripts.fruits.ScriptDeposerFruits;
+import scripts.fruits.ScriptTree;
 import threads.ThreadTimer;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
-import exception.ScriptException;
+import exceptions.strategie.ScriptException;
 
  /**
   * Classe enregistrée comme service qui fournira les scripts

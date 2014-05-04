@@ -1,6 +1,6 @@
 package robot.serial;
 
-import exception.SerialException;
+import exceptions.serial.SerialException;
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;

@@ -30,7 +30,7 @@ public class JUnit_DeplacementsTest extends JUnit_Test {
 	public void test_infos_xyo() throws Exception
 	{
 		log.debug("JUnit_DeplacementsTest.test_infos_xyo()", this);
-		float[] infos_float = deplacements.get_infos_x_y_orientation();
+		double[] infos_float = deplacements.get_infos_x_y_orientation();
 		Assert.assertTrue(infos_float[0] == 0);
 		Assert.assertTrue(infos_float[1] == 1500);
 		Assert.assertTrue(infos_float[2] == 0);
@@ -42,7 +42,7 @@ public class JUnit_DeplacementsTest extends JUnit_Test {
 		log.debug("JUnit_DeplacementsTest.test_avancer()", this);
 		deplacements.avancer(100);
 		Thread.sleep(1000);
-		float[] infos_float = deplacements.get_infos_x_y_orientation();
+		double[] infos_float = deplacements.get_infos_x_y_orientation();
 		Assert.assertEquals(100, infos_float[0], 5);
 		Assert.assertEquals(1500, infos_float[1], 5);
 		Assert.assertEquals(0, infos_float[2], 50);
@@ -55,7 +55,7 @@ public class JUnit_DeplacementsTest extends JUnit_Test {
 		log.debug("JUnit_DeplacementsTest.test_tourner()", this);
 		deplacements.tourner((float)1.2);
 		Thread.sleep(2000);
-		float[] infos_float = deplacements.get_infos_x_y_orientation();
+		double[] infos_float = deplacements.get_infos_x_y_orientation();
 		Assert.assertEquals(0, infos_float[0], 5);
 		Assert.assertEquals(1500, infos_float[1], 5);
 		Assert.assertEquals(1200, infos_float[2], 50);
@@ -66,7 +66,7 @@ public class JUnit_DeplacementsTest extends JUnit_Test {
 	{
 		log.debug("JUnit_DeplacementsTest.test_set_x()", this);
 		deplacements.set_x(30);
-		float[] infos_float = deplacements.get_infos_x_y_orientation();
+		double[] infos_float = deplacements.get_infos_x_y_orientation();
 		Assert.assertTrue(infos_float[0] == 30);
 		Assert.assertTrue(infos_float[1] == 1500);
 		Assert.assertTrue(infos_float[2] == 0);
@@ -77,7 +77,7 @@ public class JUnit_DeplacementsTest extends JUnit_Test {
 	{
 		log.debug("JUnit_DeplacementsTest.test_set_y()", this);
 		deplacements.set_y(330);
-		float[] infos_float = deplacements.get_infos_x_y_orientation();
+		double[] infos_float = deplacements.get_infos_x_y_orientation();
 		Assert.assertTrue(infos_float[0] == 0);
 		Assert.assertTrue(infos_float[1] == 330);
 		Assert.assertTrue(infos_float[2] == 0);
@@ -87,11 +87,11 @@ public class JUnit_DeplacementsTest extends JUnit_Test {
 	public void test_set_orientation() throws Exception
 	{
 		log.debug("JUnit_DeplacementsTest.test_set_orientation()", this);
-		deplacements.set_orientation((float)1.234);
-		float[] infos_float = deplacements.get_infos_x_y_orientation();
+		deplacements.set_orientation(1.234f);
+		double[] infos_float = deplacements.get_infos_x_y_orientation();
 		Assert.assertTrue(infos_float[0] == 0);
 		Assert.assertTrue(infos_float[1] == 1500);
-		Assert.assertTrue(infos_float[2] == 1234);
+		Assert.assertTrue(infos_float[2] > 1233 && infos_float[2] < 1235);
 	}
 
 }

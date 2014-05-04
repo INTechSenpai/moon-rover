@@ -57,6 +57,18 @@ abstract public class Hook {
 	 * @return true si ce hook modifie les déplacements du robot, false sinon
 	 */
 	public abstract boolean evaluate();
+	
+	/**
+	 * On peut supprimer le hook s'il n'y a plus aucun callback déclenchable.
+	 * @return
+	 */
+	public boolean supprimable()
+	{
+	    for(Callback c: callbacks)
+	        if(!c.supprimable())
+	            return false;
+	    return true;
+	}
 
 }
 

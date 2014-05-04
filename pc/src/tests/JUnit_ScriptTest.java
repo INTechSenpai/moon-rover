@@ -3,8 +3,8 @@ package tests;
 import hook.Callback;
 import hook.Executable;
 import hook.Hook;
-import hook.HookGenerator;
 import hook.methodes.TirerBalles;
+import hook.sortes.HookGenerator;
 
 import java.util.ArrayList;
 
@@ -12,8 +12,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import exception.ScriptException;
-import robot.Cote;
+import enums.Cote;
+import exceptions.strategie.ScriptException;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import scripts.Script;

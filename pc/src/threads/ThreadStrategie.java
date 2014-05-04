@@ -2,8 +2,8 @@ package threads;
 
 import java.util.ArrayList;
 
-import exception.PathfindingException;
-import exception.ScriptException;
+import exceptions.strategie.PathfindingException;
+import exceptions.strategie.ScriptException;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import smartMath.Vec2;

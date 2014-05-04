@@ -74,7 +74,9 @@ public class PathfindingRandomTest extends JUnit_Test
 				newpos.x =  chemin.get(j).x;
 				newpos.y =  chemin.get(j).y;
 				
-				robotvrai.va_au_point(newpos);
+				ArrayList<Vec2> chemin_final = new ArrayList<Vec2>();
+				chemin_final.add(newpos);
+				robotvrai.suit_chemin(chemin_final, null);
 				
 			}
 			

@@ -1,6 +1,6 @@
 package smartMath;
 
-import exception.MatriceException;
+import exceptions.MatriceException;
 import Jama.Matrix;
 /**
  * Classe de calcul matriciel
@@ -195,24 +195,7 @@ public class Matrn {
 			}
 		return a;
 	}
-	/*
-	 *inutile en fait
-	public Matrn transpose_vecteur() throws MatriceException
-	{
-		if(taille[1] != 1)
-		{
-			throw new MatriceException();
-		}
-		else
-		{
-			Matrn vect_tran = new Matrn(taille[1], taille[0]);
-			for(int i = 0; i < taille[0]; i++)
-			{
-				vect_tran.matrice[i][0] = matrice[0][i];
-			}
-			return vect_tran;
-	}
-	*/
+
 	public Matrn inverser()
 	{
 		//Il faut impérativement que la matrice soit inversible !!! enfin je vais voir si je peux gérer le cas contraire
@@ -240,5 +223,5 @@ public class Matrn {
 	}
 
 	
-	}
+}
 	

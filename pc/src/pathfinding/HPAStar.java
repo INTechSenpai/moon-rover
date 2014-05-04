@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.Vec2;
 import utils.Log;
-import exception.PathfindingException;
+import exceptions.strategie.PathfindingException;
 
 /**
  * Classe encapsulant le calcul d'un chemin par l'agorithme dit HPAStar

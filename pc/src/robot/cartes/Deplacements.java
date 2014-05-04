@@ -5,7 +5,8 @@ import java.util.Hashtable;
 import robot.serial.Serial;
 import utils.*;
 import container.Service;
-import exception.SerialException;
+import exceptions.deplacements.BlocageException;
+import exceptions.serial.SerialException;
 
 /**
  *  Service de déplacements bas niveau. Méthodes non bloquantes.
@@ -52,16 +53,15 @@ public class Deplacements implements Service {
 	 * @param PWMmoteurDroit
 	 * @param derivee_erreur_rotation
 	 * @param derivee_erreur_translation
-	 * @return
+	 * @throws BlocageException 
 	 */
-	public boolean gestion_blocage(Hashtable<String, Integer> infos)
+	public void gestion_blocage(Hashtable<String, Integer> infos) throws BlocageException
 	{
 		int PWMmoteurGauche = infos.get("PWMmoteurGauche");
 		int PWMmoteurDroit = infos.get("PWMmoteurDroit");
 		int derivee_erreur_rotation = infos.get("derivee_erreur_rotation");
 		int derivee_erreur_translation = infos.get("derivee_erreur_translation");
 		
-		boolean blocage = false;
 		boolean moteur_force = Math.abs(PWMmoteurGauche) > 40 || Math.abs(PWMmoteurDroit) > 40;
 		boolean bouge_pas = derivee_erreur_rotation == 0 && derivee_erreur_translation == 0;
 
@@ -80,7 +80,7 @@ public class Deplacements implements Service {
 					{
 						e.printStackTrace();
 					}
-					blocage = true;
+					throw new BlocageException();
 				}
 			}
 			else
@@ -92,8 +92,6 @@ public class Deplacements implements Service {
 		else
 			enCoursDeBlocage = false;
 
-		return blocage;
-		
 	}
 
 	/** 
@@ -122,9 +120,9 @@ public class Deplacements implements Service {
 	 * Fait avancer le robot. Méthode non bloquante
 	 * @param distance
 	 */
-	public void avancer(float distance) throws SerialException
+	public void avancer(double distance) throws SerialException
 	{
-		String chaines[] = {"d", Float.toString(distance)};
+		String chaines[] = {"d", Double.toString(distance)};
 		serie.communiquer(chaines, 0);
 	}
 
@@ -132,9 +130,9 @@ public class Deplacements implements Service {
 	 * Fait tourner le robot. Méthode non bloquante
 	 * @param angle
 	 */
-	public void tourner(float angle) throws SerialException
+	public void tourner(double angle) throws SerialException
 	{
-		String chaines[] = {"t", Float.toString(angle)};
+		String chaines[] = {"t", Double.toString(angle)};
 		serie.communiquer(chaines, 0);		
 	}
 	
@@ -170,9 +168,9 @@ public class Deplacements implements Service {
 	 * Ecrase l'orientation du robot au niveau de la carte
 	 * @param orientation
 	 */
-	public void set_orientation(float orientation) throws SerialException
+	public void set_orientation(double orientation) throws SerialException
 	{
-		String chaines[] = {"co", Float.toString(orientation)};
+		String chaines[] = {"co", Double.toString(orientation)};
 		serie.communiquer(chaines, 0);
 	}
 	
@@ -262,13 +260,13 @@ public class Deplacements implements Service {
 		serie.communiquer(chaines, 0);
 	}
 	
-	public void change_const_translation(float kp, float kd, int pwm_max) throws SerialException
+	public void change_const_translation(double kp, double kd, int pwm_max) throws SerialException
 	{
 		String chaines[] = {"ctv", Double.toString(kp), Double.toString(kd), Integer.toString(pwm_max)};
 		serie.communiquer(chaines, 0);
 	}
 	
-	public void change_const_rotation(float kp, float kd, int pwm_max) throws SerialException
+	public void change_const_rotation(double kp, double kd, int pwm_max) throws SerialException
 	{
 		String chaines[] = {"crv", Double.toString(kp), Double.toString(kd), Integer.toString(pwm_max)};
 		serie.communiquer(chaines, 0);
@@ -302,16 +300,15 @@ public class Deplacements implements Service {
 	 * Renvoie x, y et orientation du robot
 	 * @return un tableau de 3 cases: [x, y, orientation]
 	 */
-	public float[] get_infos_x_y_orientation() throws SerialException
+	public double[] get_infos_x_y_orientation() throws SerialException
 	{
 		String[] infos_string = serie.communiquer("?xyo", 3);
-		float[] infos_float = new float[3];
+		double[] infos_double = new double[3];
 		
 		for(int i = 0; i < 3; i++)
-			infos_float[i] = Float.parseFloat(infos_string[i]);
+		    infos_double[i] = Double.parseDouble(infos_string[i]);
 
-//		log.debug(infos_float[1], this);
-		return infos_float;
+		return infos_double;
 	}
 
 	/**

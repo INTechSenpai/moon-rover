@@ -8,11 +8,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import exception.MouvementImpossibleException;
+import enums.Colour;
+import enums.Cote;
+import enums.PositionRateau;
+import exceptions.deplacements.MouvementImpossibleException;
 import robot.*;
 import robot.cartes.*;
 import smartMath.Vec2;
-import table.Colour;
 
 	/**
 	 * Tests unitaires pour RobotVrai (non, sans blague...), lorsqu'il est jaune

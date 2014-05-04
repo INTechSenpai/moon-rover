@@ -1,12 +1,14 @@
 package table;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
-import robot.Cote;
 import smartMath.Vec2;
+import table.obstacles.GestionObstacles;
+import table.obstacles.Obstacle;
+import table.obstacles.ObstacleCirculaire;
 import container.Service;
-import exception.ConfigException;
+import enums.Colour;
+import enums.Cote;
 import utils.*;
 
 public class Table implements Service {
@@ -14,27 +16,18 @@ public class Table implements Service {
 	// On met cette variable en static afin que, dans deux instances dupliquées, elle ne redonne pas les mêmes nombres
 	private static int indice = 1;
 
+	private GestionObstacles gestionobstacles;
+	
 	private Tree arrayTree[] = new Tree[4];
 	private Torch arrayTorch[] = new Torch[2];
 	private Fire arrayFire[] = new Fire[6];
 	private Fire arrayFixedFire[] = new Fire[4];
 
-	// TODO Obstacles fixes (circulaires) pour support de feux en bordure
-	
-	private ArrayList<ObstacleCirculaire> listObstacles = new ArrayList<ObstacleCirculaire>();
-	private static ArrayList<ArrayList<Obstacle>> listObstaclesFixes = null;
-	private ObstacleBalise[] robots_adverses = new ObstacleBalise[2];
-	
 	private int hashFire;
 	private int hashTree;
-	private int hashObstacles;
-	private int hashEnnemis;
 	
 	private Fresco[] list_fresco_pos = new Fresco[3];
 	private boolean[] list_fresco_hanged = new boolean[3];
-
-	private int rayon_robot_adverse = 200;
-	private long duree = 0;
 
 	// Dépendances
 	private Log log;
@@ -44,6 +37,7 @@ public class Table implements Service {
 	{
 		this.log = log;
 		this.config = config;
+		this.gestionobstacles = new GestionObstacles(log, config);
 		maj_config();
 		initialise();
 	}
@@ -69,68 +63,12 @@ public class Table implements Service {
 		arrayTree[1] = new Tree(new Vec2(800,0));
 		arrayTree[2] = new Tree(new Vec2(-800,0));
 		arrayTree[3] = new Tree(new Vec2(-1500,700));
-		
-		// Initialisation des torches
-/*		Fire feu0 = new Fire(new Vec2(600,900), 3, 1, Colour.YELLOW);
-		Fire feu1 = new Fire(new Vec2(600,900), 4, 2, Colour.RED);
-		Fire feu2 = new Fire(new Vec2(600,900), 5, 3, Colour.YELLOW);
-		arrayTorch[0] = new Torch(new Vec2(600,900), feu0, feu1, feu2);
-
-		Fire feu3 = new Fire(new Vec2(-600,900), 10, 1, Colour.RED);
-		Fire feu4 = new Fire(new Vec2(-600,900), 11, 2, Colour.YELLOW);
-		Fire feu5 = new Fire(new Vec2(-600,900), 12, 3, Colour.RED);
-		arrayTorch[1] = new Torch(new Vec2(-600,900), feu3, feu4, feu5); 
-*/
 
 		arrayTorch[0] = new Torch(new Vec2(600,900));
 		arrayTorch[1] = new Torch(new Vec2(-600,900)); 
 		
-		if(listObstaclesFixes == null)
-		{
-		    listObstaclesFixes = new ArrayList<ArrayList<Obstacle>>();
-    		for(int i = 0; i < 4; i++)
-    			listObstaclesFixes.add(new ArrayList<Obstacle>());
-    		
-    		// Ajout des foyers
-    		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(1500,0), 250));
-    		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(0,950), 150));
-    		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(-1500,0), 250));
-    
-    		// Ajout bacs
-    		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(400,2000), 700, 300));
-    		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1100,2000), 700, 300));
-    		
-    		// Ajout des bordures
-    		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1500,0), 3000, 1));
-    		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1500,2000), 1, 2000));
-    		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1500,2000), 3000, 1));
-    		listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(1500,2000), 1, 2000));
-    
-    		// Ajout des arbres
-    		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(1500,700), 150));
-    		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(800,0), 150));
-    		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(-800,0), 150));
-    		listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(-1500,700), 150));
-    
-    		// Recopie dans les autres listes d'obstacles fixes
-    		listObstaclesFixes.get(1).addAll(listObstaclesFixes.get(0));
-    		listObstaclesFixes.get(2).addAll(listObstaclesFixes.get(0));
-    		listObstaclesFixes.get(3).addAll(listObstaclesFixes.get(0));
-    		
-    		// Torches mobiles
-    		listObstaclesFixes.get(1).add(new ObstacleCirculaire(new Vec2(-600,900), 80));
-    		listObstaclesFixes.get(2).add(new ObstacleCirculaire(new Vec2(600,900), 80));
-    		listObstaclesFixes.get(3).add(new ObstacleCirculaire(new Vec2(-600,900), 80));
-    		listObstaclesFixes.get(3).add(new ObstacleCirculaire(new Vec2(600,900), 80));
-		}
-		
-		robots_adverses[0] = new ObstacleBalise(new Vec2(-1000, -1000), rayon_robot_adverse, new Vec2(0, 0));
-		robots_adverses[1] = new ObstacleBalise(new Vec2(-1000, -1000), rayon_robot_adverse, new Vec2(0, 0));
-		
 		hashFire = 0;
 		hashTree = 0;
-		hashObstacles = 0;
-		hashEnnemis = 0;
 		
 		//Gestion des fresques
 		list_fresco_pos[0] = new Fresco(new Vec2(0,0));
@@ -145,115 +83,69 @@ public class Table implements Service {
 	}
 	
 	/*
-	 * Gestions des obstacles
+	 * Obstacles
 	 */
 	
-	/**
-	 * Utilisé par le pathfinding. Retourne uniquement les obstacles temporaires.
-	 * @return
-	 */
-	public ArrayList<ObstacleCirculaire> getListObstacles()
-	{
-		return listObstacles;
-	}
-	
-	/**
-	 * Utilisé par le pathfinding. Retourne uniquement les obstacles fixes.
-	 * @return
-	 */
-	public ArrayList<Obstacle> getListObstaclesFixes()
-	{
-		return listObstaclesFixes.get(codeTorches());
-	}
-	
-	
-
-	public synchronized void creer_obstacle(final Vec2 position)
-	{
-		Vec2 position_sauv = position.clone();
-		
-		ObstacleProximite obstacle = new ObstacleProximite(position_sauv, rayon_robot_adverse, System.currentTimeMillis()+duree);
-		log.warning("Obstacle créé, rayon = "+rayon_robot_adverse+", centre = "+position, this);
-		listObstacles.add(obstacle);
-		hashObstacles = indice++;
-	}
-
-	/**
-	 * Appel fait lors de l'anticipation, supprime les obstacles périmés à une date future
-	 * @param date
-	 */
-	public synchronized void supprimerObstaclesPerimes(long date)
-	{
-		Iterator<ObstacleCirculaire> iterator = listObstacles.iterator();
-		while ( iterator.hasNext() )
-		{
-		    Obstacle obstacle = iterator.next();
-		    if (obstacle instanceof ObstacleProximite && ((ObstacleProximite) obstacle).death_date <= date)
-		    {
-		        System.out.println("Suppression d'un obstacle de proximité: "+obstacle);
-		        iterator.remove();
-				hashObstacles = indice++;
-		    }
-		}	
-	}
-	
-	/**
-	 * Appel fait par le thread timer, supprime les obstacles périmés
-	 */
-	public void supprimer_obstacles_perimes()
-	{
-		supprimerObstaclesPerimes(System.currentTimeMillis());
-	}
-
-	/**
-	 * Renvoie true si un obstacle est à une distance inférieur à "distance" du point "centre_detection"
-	 * @param centre_detection
-	 * @param distance
-	 * @return
-	 */
-	public boolean obstaclePresent(final Vec2 centre_detection, int distance)
-	{
-		for(Obstacle obstacle: listObstacles)
-		{
-			// On regarde si l'intersection des cercles est vide
-			if(obstacle instanceof ObstacleCirculaire && obstacle.position.SquaredDistance(centre_detection) < (distance+((ObstacleCirculaire)obstacle).radius)*(distance+((ObstacleCirculaire)obstacle).radius))
-				return true;
-			else if(!(obstacle instanceof ObstacleCirculaire))
-			{
-				// Normalement, les obstacles non fixes sont toujours circulaires
-				log.warning("Etrange, un obstacle non circulaire... actualiser \"obstaclePresent\" dans Table", this);
-				if(obstacle.position.SquaredDistance(centre_detection) < distance*distance)
-			    	return true;		    
-			}
-		}
-		
-		return robots_adverses[0].position.SquaredDistance(centre_detection) < distance*distance
-				|| robots_adverses[1].position.SquaredDistance(centre_detection) < distance*distance;
-	}	
-
-	/**
-	 * Utilisé par le thread de laser
-	 * @param i
-	 * @param position
-	 */
-    public synchronized void deplacer_robot_adverse(int i, final Vec2 position)
+    public ArrayList<ObstacleCirculaire> getListObstacles()
     {
-    	robots_adverses[i].position = position.clone();
-    	hashEnnemis = indice++;
+        return gestionobstacles.getListObstacles();
+    }
+
+    public ArrayList<Obstacle> getListObstaclesFixes()
+    {
+        return gestionobstacles.getListObstaclesFixes(codeTorches());
+    }
+
+    public void creer_obstacle(final Vec2 position)
+    {
+        gestionobstacles.creer_obstacle(position);
     }
     
+    // TODO: bien appelé par stratégie?
+    public void supprimerObstaclesPerimes(long date)
+    {
+        gestionobstacles.supprimerObstaclesPerimes(date);
+    }
+
     /**
-     * Utilisé par le thread de stratégie
-     * @return
+     * Appel fait par le thread timer, supprime les obstacles périmés
      */
+    public void supprimer_obstacles_perimes()
+    {
+        supprimerObstaclesPerimes(System.currentTimeMillis());
+    }
+
+    public boolean obstaclePresent(final Vec2 centre_detection, int distance)
+    {
+        return gestionobstacles.obstaclePresent(centre_detection, distance);
+    }
+    
+    public void deplacer_robot_adverse(int i, final Vec2 position)
+    {
+        gestionobstacles.deplacer_robot_adverse(i, position);
+    }
+
     public Vec2[] get_positions_ennemis()
     {
-    	Vec2[] positions =  new Vec2[2];
-    	positions[0] = robots_adverses[0].position.clone();
-    	positions[1] = robots_adverses[1].position.clone();
-    	return positions;
+        return gestionobstacles.get_positions_ennemis();
+    }
+
+    public int nb_obstacles()
+    {
+        return gestionobstacles.nb_obstacles();
+    }
+
+    public boolean obstacle_existe(Vec2 position)
+    {
+        return gestionobstacles.obstacle_existe(position, codeTorches());
     }
     
+    public boolean dans_obstacle(Vec2 pos, Obstacle obstacle)
+    {
+        return gestionobstacles.dans_obstacle(pos, obstacle);
+    }
+
+
 	// Feux
 	
 	public synchronized void pickFire (int id)
@@ -355,16 +247,6 @@ public class Table implements Service {
 		//La nomenclature des positions des fruits noirs provient de la description de la classe Tree
 		
 		arrayTree[id].getArrayFruit()[pos_fruit_noir] = new Fruit(false);
-		
-		
-		/*
-		System.out.println("On initialise l'arbre numéro "+id);
-		
-		for(Fruit f : arrayTree[id].getArrayFruit())
-		{
-			System.out.println(f.isGood());
-		}
-*/
 		
 	}
 	
@@ -487,20 +369,7 @@ public class Table implements Service {
 				ct.hashTree = hashTree;
 			}
 
-			if(ct.hashEnnemis != hashEnnemis)
-			{
-				robots_adverses[0].clone(robots_adverses[0]);
-				robots_adverses[1].clone(robots_adverses[1]);
-				ct.hashEnnemis = hashEnnemis;
-			}
-
-			if(ct.hashObstacles != hashObstacles)
-			{
-				ct.listObstacles.clear();
-				for(ObstacleCirculaire item: listObstacles)
-					ct.listObstacles.add(item.clone());
-				ct.hashObstacles = hashObstacles;
-			}
+			gestionobstacles.copy(ct.gestionobstacles);
 		}
 	}
 	
@@ -517,7 +386,7 @@ public class Table implements Service {
 	 */
 	public int hashTable()
 	{
-		return (((hashEnnemis*100 + hashFire)*100 + hashTree)*100 + hashObstacles)*4+codeTorches();
+		return (((gestionobstacles.hash()*100 + hashFire)*100 + hashTree)*100)*4+codeTorches();
 	}
 
 	/**
@@ -528,19 +397,12 @@ public class Table implements Service {
 	public boolean equals(Table other)
 	{
 		return 	other != null
+                && other instanceof Table
+		        && gestionobstacles.equals(other.gestionobstacles)
 				&& hashFire == other.hashFire
-				&& hashTree == other.hashTree
-				&& hashObstacles == other.hashObstacles;
+				&& hashTree == other.hashTree;
 	}
-	
-	/**
-	 * Utilisé pour les tests
-	 * @return le nombre ed'obstacles mobiles détectés
-	 */
-	public int nb_obstacles()
-	{
-		return listObstacles.size();
-	}
+
 	//Fresco
 	public int nearestFreeFresco(Vec2 position)
 	{
@@ -562,70 +424,11 @@ public class Table implements Service {
 	}
 	//Il faudra faire gaffe à la différence entre les distance et les squaredDistance quand on les compare avec des constantes ! Achtung !!!
 	
-	public boolean dans_obstacle(Vec2 pos, Obstacle obstacle)
-		{
-	 		if(obstacle instanceof ObstacleRectangulaire)
-	 		{
-	 			Vec2 position_obs = obstacle.getPosition();
-				return !(pos.x<((ObstacleRectangulaire)obstacle).getLongueur_en_x()+position_obs.x && position_obs.x < pos.x && position_obs.y <pos.y && pos.y < position_obs.y+((ObstacleRectangulaire)obstacle).getLongueur_en_y());
 	
-	 		}			
-	 		// sinon, c'est qu'il est circulaire
-			return   !(pos.distance(obstacle.getPosition()) < ((ObstacleCirculaire)obstacle).getRadius());
-	
-	 	}
-	
+	@Override
 	public void maj_config()
 	{
-		try {
-			rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
-		} catch (NumberFormatException | ConfigException e) {
-			e.printStackTrace();
-		}
-		try {
-			duree = Integer.parseInt(config.get("duree_peremption_obstacles"));
-		} catch (NumberFormatException | ConfigException e) {
-			e.printStackTrace();
-		}
 	}
 	
-	/**
-	 * Indique si un obstacle fixe de centre proche de la position indiquée existe.
-	 * Cela permet de ne pas détecter en obstacle mobile des obstacles fixes (comme les arbres).
-	 * De plus, ça allège le nombre d'obstacles.
-	 * @param position
-	 * @return
-	 */
-	public synchronized boolean obstacle_existe(Vec2 position) {
-//	    Iterator<ObstacleCirculaire> iterator = listObstacles.iterator();
-//	    while(iterator.hasNext())
-//			if(obstacle_existe(position, iterator.next()))
-//				return true;
-        Iterator<Obstacle> iterator2 = listObstaclesFixes.get(codeTorches()).iterator();
-		while(iterator2.hasNext())
-		{
-		    Obstacle o = iterator2.next();
-			if(obstacle_existe(position, o))
-			{
-			    System.out.println("Obstacle: "+o);
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private boolean obstacle_existe(Vec2 position, Obstacle o)
-	{
-		// Obstacle circulaire
-		if(o instanceof ObstacleCirculaire && position.SquaredDistance(o.position) <= (1.2*((ObstacleCirculaire)o).getRadius())*1.2*((ObstacleCirculaire)o).getRadius())
-			return true;
-		// Obstacle rectangulaire
-		else if(o instanceof ObstacleRectangulaire && ((ObstacleRectangulaire)o).SquaredDistance(position) <= 100*100)
-			return true;
-		// Autre obstacle
-		else if(position.SquaredDistance(o.position) <= 100)
-			return true;
-		return false;
-	}
 }
 

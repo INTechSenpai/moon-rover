@@ -6,6 +6,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import enums.Cote;
+import enums.PositionRateau;
 import robot.*;
 import smartMath.Vec2;
 	/**
@@ -77,7 +79,7 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 		ArrayList<Vec2> chemin = new ArrayList<Vec2>();
 		chemin.add(new Vec2(20, 1400));
 		chemin.add(new Vec2(40, 1500));
-		robotchrono.suit_chemin_droit(chemin);
+		robotchrono.suit_chemin(chemin, null);
 		Assert.assertTrue(robotchrono.getPosition().distance(new Vec2(40,1500)) < 2);
 		
 	}

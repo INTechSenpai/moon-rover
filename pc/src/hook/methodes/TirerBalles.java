@@ -1,6 +1,5 @@
 package hook.methodes;
 
-import exception.SerialException;
 import robot.Robot;
 import hook.Executable;
 
@@ -18,17 +17,10 @@ public class TirerBalles implements Executable {
 		this.robot = robot;
 	}
 
-	public void execute() {
-		try {
-			robot.tirerBalle();
-		} catch (SerialException e) {
-			e.printStackTrace();
-		}
-	}
-
 	@Override
-	public boolean bougeRobot() {
-		return false;
-	}	
+	public boolean execute() {
+		robot.tirerBalle();
+		return false; // le robot continue sa route
+	}
 
 }

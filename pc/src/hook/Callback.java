@@ -38,12 +38,17 @@ public class Callback {
 	 */
 	public boolean appeler()
 	{
-		if(!unique || !done)
+		if(!(supprimable()))
 		{
-			methode.execute();
-			done = true;
+            done = true;
+			return methode.execute();
 		}
-		return methode.bougeRobot();
+		return false;
+	}
+	
+	public boolean supprimable()
+	{
+	    return unique && done;
 	}
 	
 }

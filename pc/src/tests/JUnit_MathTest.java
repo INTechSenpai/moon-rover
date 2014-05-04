@@ -3,7 +3,7 @@ package tests;
 import org.junit.Test;
 import org.junit.Assert;
 
-import exception.MatriceException;
+import exceptions.MatriceException;
 import smartMath.Matrn;
 import smartMath.Vec2;
 
