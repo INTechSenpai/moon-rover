@@ -29,7 +29,7 @@ public class SerialManager
 
 	//Pour chaque carte, on connait a l'avance son nom, son ping et son baudrate
 	private SpecificationCard carteAsservissement = new SpecificationCard("serieAsservissement", 0, 57600);
-	private SpecificationCard carteCapteursActionneurs = new SpecificationCard("serieCapteursActionneurs", 3, 38400);
+	private SpecificationCard carteCapteursActionneurs = new SpecificationCard("serieCapteursActionneurs", 3, 57600);
 	private SpecificationCard carteLaser = new SpecificationCard("serieLaser", 4, 57600);
 
 	//On stock les cartes dans une liste
