@@ -56,13 +56,13 @@ public class ScriptFeuBord extends Script {
 	public Vec2 point_entree(int id) {
 		//Les coordonnées ont été prises à partir du réglement
 		if(id ==0)
-			return new Vec2(-1200,1000);
+			return new Vec2(-900,1100);
 		else if(id ==1)
-			return new Vec2(1200, 1000);		
+			return new Vec2(900, 1100);		
 		else if(id ==2)
-			return new Vec2(-200, 200);
+			return new Vec2(-300, 500);
 		else if(id ==3)
-			return new Vec2(200, 200);
+			return new Vec2(100, 500);
 		else
 			return null;		
 	}
@@ -93,54 +93,72 @@ public class ScriptFeuBord extends Script {
 			// Vec2(200, 0);
 		    state.robot.tourner((float)(-Math.PI/2));
 
-		
+		Cote cote = Cote.GAUCHE;
 		if(!state.robot.isTient_feu(Cote.GAUCHE))
 		{
-				//Pour les feux à tirer
-				try {
-				state.robot.milieu_pince(Cote.GAUCHE);
-				state.robot.ouvrir_pince(Cote.GAUCHE);
-				state.robot.avancer(10);
-				state.robot.fermer_pince(Cote.GAUCHE);
-				state.robot.avancer(-10);
-				state.robot.ouvrir_pince(Cote.GAUCHE);
-				state.robot.baisser_pince(Cote.GAUCHE);
-				state.robot.avancer(5);
-				state.robot.fermer_pince(Cote.GAUCHE);
-				state.robot.lever_pince(Cote.GAUCHE);
-		        state.robot.setTient_feu(Cote.GAUCHE);
-				} catch (SerialException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			
+			cote = Cote.GAUCHE;
 		}
 		else if(state.robot.isTient_feu(Cote.DROIT))
 		{
-				try {
-				    state.robot.milieu_pince(Cote.DROIT);
-				    state.robot.ouvrir_pince(Cote.DROIT);
-				    state.robot.avancer(10);
-				    state.robot.fermer_pince(Cote.DROIT);
-				    state.robot.avancer(-10);
-				    state.robot.ouvrir_pince(Cote.DROIT);
-				    state.robot.baisser_pince(Cote.DROIT);
-				    state.robot.avancer(5);
-				    state.robot.fermer_pince(Cote.DROIT);
-				    state.robot.lever_pince(Cote.DROIT);
-	                state.robot.setTient_feu(Cote.DROIT);
-				} catch (SerialException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			
+			int decalage = 150; //sert à passer d'une pince à l'autre
+			if(id_version ==0)
+			{
+				// Vec2(-1500,1200);
+			    state.robot.tourner((float)Math.PI/2);
+				state.robot.avancer(decalage);
+				state.robot.tourner(-(float)Math.PI);
+			}
+			else if(id_version ==1)
+			{
+				// Vec2(1500, 1200);
+			    state.robot.tourner((float)Math.PI/2);
+				state.robot.avancer(decalage);
+				state.robot.tourner(0);
+			}
+			else if(id_version ==2||id_version ==3)
+			{
+				state.robot.tourner(0);
+				state.robot.avancer(decalage);
+				 state.robot.tourner(-(float)Math.PI/2);
+			}
+			cote = Cote.DROIT;
+			/*
+			 * Ici il faudra se redéplacer pour compenser le décalage
+			 * 
+			 */
+		}
+		//Pour les feux à tirer
+		try 
+		{
+			state.robot.avancer(330);
+			state.robot.ouvrir_pince(cote);
+			state.robot.sleep(1000);
+			state.robot.milieu_pince(cote);
+			state.robot.sleep(1000);			
+			state.robot.fermer_pince(cote);
+			state.robot.sleep(1000);
+			state.robot.avancer(-200);
+			state.robot.ouvrir_pince(cote);
+			state.robot.sleep(1000);
+			state.robot.baisser_pince(cote);
+			state.robot.avancer(130);
+			state.robot.fermer_pince(cote);
+			state.robot.sleep(1000);
+			state.robot.lever_pince(cote);
+		    state.robot.setTient_feu(cote);
+		}
+		catch (SerialException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		//Et oui, il faut parler à la stratégie !!! GNNNNN
 		state.table.pickFixedFire(id_version);
 	}
 
 	@Override
-	protected void termine(GameState<?> state) {
+	protected void termine(GameState<?> state) 
+	{
 		try
 		{
 		    state.robot.lever_pince(Cote.DROIT);
