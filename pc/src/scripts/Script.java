@@ -88,10 +88,20 @@ public abstract class Script implements Service {
 		hook.ajouter_callback(new Callback(torche_disparue, true));
 		hooks_chemin.add(hook);
 
+		
+		
+		// on doit appeller score avant de faire le script (sinon, une fois le script fait, il ne reste plus de points a prendre)
+		int scorePotentiel = score(id_version, state);
+		
 		try
 		{
+			log.debug("va_au_point_pathfinding : " +point_entree.toString(), this);
 		    state.robot.va_au_point_pathfinding(state.pathfinding, point_entree, hooks_chemin, retenter_si_blocage, false, false, false);
 			execute(id_version, state);
+			
+
+			// Prends en compte le nombre de points que l'on marque par ce script
+			state.pointsObtenus += scorePotentiel;
 		}
 		catch (Exception e)
 		{
@@ -103,9 +113,15 @@ public abstract class Script implements Service {
 		{
 			termine(state);
 		}
+
 		
 	}
-	
+
+	/**
+	 * Calcule le temps d'exécution de ce script (grâce à robotChrono)
+	 * @return le temps d'exécution
+	 * @throws PathfindingException 
+	 */
 	public long metacalcule(int id_version, GameState<RobotChrono> state, boolean use_cache) throws PathfindingException
 	{	    
 		long duree = calcule(version_asso(id_version).get(0), state, use_cache);
@@ -124,7 +140,8 @@ public abstract class Script implements Service {
 		Vec2 point_entree = point_entree(id_version);
 		state.robot.set_vitesse_translation("entre_scripts");
 		state.robot.set_vitesse_rotation("entre_scripts");
-		
+
+
 		state.robot.initialiser_compteur(state.pathfinding.distance(state.robot.getPosition(), point_entree, use_cache));
 		state.robot.setPosition(point_entree);
 

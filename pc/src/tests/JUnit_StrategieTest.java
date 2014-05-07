@@ -42,26 +42,26 @@ public class JUnit_StrategieTest extends JUnit_Test {
 		robotchrono = new RobotChrono(config, log);
 	}
 
-	@Test
-	public void test_notescriptversion() throws Exception
-	{
-		NoteScriptVersion a = new NoteScriptVersion();
-		Assert.assertTrue(a.version == 0);
-		Assert.assertTrue(a.script == null);
-		Assert.assertTrue(a.note == 0);
-
-		ScriptManager scriptmanager = (ScriptManager)container.getService("ScriptManager");
-		Script s = (Script)scriptmanager.getScript("ScriptFresque");
-		a = new NoteScriptVersion(23, s, 12);
-		Assert.assertTrue(a.note == 23);
-		Assert.assertTrue(a.script == s);
-		Assert.assertTrue(a.version == 12);
-	}
+//	@Test
+//	public void test_notescriptversion() throws Exception
+//	{
+//		NoteScriptVersion a = new NoteScriptVersion();
+//		Assert.assertTrue(a.version == 0);
+//		Assert.assertTrue(a.script == null);
+//		Assert.assertTrue(a.note == 0);
+//
+//		ScriptManager scriptmanager = (ScriptManager)container.getService("ScriptManager");
+//		Script s = (Script)scriptmanager.getScript("ScriptFresque");
+//		a = new NoteScriptVersion(23, s, 12);
+//		Assert.assertTrue(a.note == 23);
+//		Assert.assertTrue(a.script == s);
+//		Assert.assertTrue(a.version == 12);
+//	}
  
 	@Test
 	public void test_evaluation() throws Exception
 	{
-		Vec2 initpos = new Vec2(0,300);
+		Vec2 initpos = new Vec2(1000,1300);
 		robotvrai.setPosition(initpos);
 		robotchrono.setPosition(initpos);
 		

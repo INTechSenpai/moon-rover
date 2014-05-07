@@ -129,8 +129,8 @@ class AStar
 		else if(!espace.canCross(arrivee) )
 		{    
 			//Affiche la map : pour debug
-		//	System.out.println("Pathfinding : arrivee (" + arrivee.x  + "; " + arrivee.y + ") is in a obstacle. depart was valid (" + depart.x  + "; " + depart.y + ")");
-		//	printWorkingMap(depart, arrivee);	// a mettre si on veut comprendre le trajet qui foire.
+			System.out.println("Pathfinding : arrivee (" + arrivee.x  + "; " + arrivee.y + ") is in a obstacle. depart was valid (" + depart.x  + "; " + depart.y + ")");
+			printWorkingMap(depart, arrivee);	// a mettre si on veut comprendre le trajet qui foire.
 			throw new PathfindingException();	
 		}
 		// Petite optimisation
@@ -224,9 +224,9 @@ class AStar
 	    //Exeption lancée lorsque l'arrivée n'est pas atteignable à partir du point de départ.
 
 		//Affiche la map : pour debug
-		System.out.println("Pathfinding : There is no traject between (" + depart.x  + "; " + depart.y + ") and (" + arrivee.x  + "; " + arrivee.y + ")");
-		printWorkingMap(depart, arrivee);
-	    throw new PathfindingException();	
+	//	System.out.println("Pathfinding : There is no traject between (" + depart.x  + "; " + depart.y + ") and (" + arrivee.x  + "; " + arrivee.y + ")");
+	//	printWorkingMap(depart, arrivee);
+	  throw new PathfindingException();	
 	    
 	    
 	}	// process
