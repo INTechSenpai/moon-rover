@@ -64,7 +64,6 @@ class ThreadCapteurs extends AbstractThread {
 			}
 
 			int distance = capteur.mesurer_ultrason();
-			
 			if (distance > 0 && distance < 70)
 				log.debug("Câlin !", this);
 			
@@ -97,7 +96,7 @@ class ThreadCapteurs extends AbstractThread {
 
 			}
 			
-			Sleep.sleep((long)1/capteurs_frequence);
+			Sleep.sleep((long)(1000./capteurs_frequence));
 			
 		}
         log.debug("Fin du thread de capteurs", this);
