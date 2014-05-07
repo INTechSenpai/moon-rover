@@ -8,7 +8,6 @@ import table.obstacles.Obstacle;
 import table.obstacles.ObstacleCirculaire;
 import container.Service;
 import enums.Colour;
-import table.obstacles.ObstacleBalise;
 import enums.Cote;
 import utils.*;
 
