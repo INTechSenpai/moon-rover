@@ -316,7 +316,7 @@ public class DeplacementsHautNiveau implements Service
                     stopper();
                     log.critical("Détection d'un ennemi! Abandon du mouvement.", this);
                     throw new MouvementImpossibleException();
-                }
+                } //TODO: vérifier fréquemment, puis attendre
                 else
                 {
                     log.warning("Détection d'un ennemi! Attente.", this);
@@ -554,8 +554,8 @@ public class DeplacementsHautNiveau implements Service
     public void setPosition(Vec2 position) {
         this.position = position.clone();
         try {
-            deplacements.set_x((int)position.x);
-            deplacements.set_y((int)position.y);
+            deplacements.set_x(position.x);
+            deplacements.set_y(position.y);
         } catch (SerialException e) {
             e.printStackTrace();
         }

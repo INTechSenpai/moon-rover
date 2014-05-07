@@ -34,7 +34,7 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
         hookgenerator = (HookGenerator) container.getService("HookGenerator");
         real_state = (GameState<RobotVrai>) container.getService("RealGameState");
         robot.setPosition(new Vec2(1000, 900));
-        robot.setOrientation((float)Math.PI/2);
+        robot.setOrientation(Math.PI/2);
         Sleep.sleep(500);
         Vec2 consigne = new Vec2(700, 1400);
         robot.setConsigne(consigne);
@@ -44,13 +44,13 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     public void test_va_au_point_courbe() throws Exception
     {
 //        robot.va_au_point_courbe((float) Math.PI, 500, false);
-        robot.va_au_point_courbe(-(float) Math.PI/2, 500, true, false);
+        robot.va_au_point_courbe((float) (Math.PI/4), 500, true, false);
     }
 
     @Test
     public void test_va_au_point_symetrie() throws Exception
     {
-        robot.va_au_point_symetrie(false, false, false);
+        robot.va_au_point_symetrie(false, true, false);
     }
 
     @Test
@@ -107,10 +107,6 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     @Test
     public void test_avancer_mur() throws Exception
     {
-        robot.setPosition(new Vec2(1000, 1500));
-        robot.setOrientation((float)Math.PI/2);
-        Sleep.sleep(500);
-
         robot.avancer(200, null, true);
     }
 
