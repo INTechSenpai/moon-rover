@@ -30,8 +30,10 @@ public class ScriptLances extends Script {
 		ArrayList<Integer> versionList = new ArrayList<Integer>();
 		if(state.robot.getNbrLances() > 0)
 		{
-			versionList.add(0);
-			versionList.add(1);
+			if(!state.table.isRightMammothHit())
+				versionList.add(0);
+			if(!state.table.isLeftMammothHit())
+				versionList.add(1);
 		}
 		return versionList;
 	}
@@ -54,23 +56,26 @@ public class ScriptLances extends Script {
 		//if(couleur == "jaune")
 		if(id == 0)
 			//return new Vec2(400,1400);
-			return new Vec2(750,1300);
+			return new Vec2(750,1400);
 		else
 			//return new Vec2(-1200,1400);
-			return new Vec2(-750,1300);
+			return new Vec2(-750,1400);
 	}
 	
 	@Override
-	public int score(int id_version, final GameState<?> state) {
-		return state.robot.getNbrLances()*2;
+	public int score(int id_version, final GameState<?> state)
+	{
+		//return state.robot.getNbrLances()*2;
+		
+		return 6;	// 3 lances valant 2points chacune
 	}
 
 	@Override
-	public int poids(final GameState<?> state) {
-		// On s'en fout pour le moment
-		// TODO Auto-generated method stub
-		return 0;
+	public int poids(final GameState<?> state)
+	{
+		return 1;
 	}
+
 
 	@Override
 	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException
@@ -126,6 +131,14 @@ public class ScriptLances extends Script {
 	    state.robot.sleep(1500);
 		//robot.set_vitesse_translation("vitesse_mammouth");
 		//robot.avancer(600, hooks);
+			
+	
+		// enregistre les points engendrés
+		if(id_version ==  0)
+			state.table.setRightMammothHit(true);
+		else
+			state.table.setLeftMammothHit(true);
+			
 		
 	}
 

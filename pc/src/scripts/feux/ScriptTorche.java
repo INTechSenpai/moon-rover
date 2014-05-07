@@ -49,15 +49,15 @@ public class ScriptTorche extends Script {
 		ArrayList<Integer> versionList = new ArrayList<Integer>();
 		if(id_meta == 0)
 		{
-			versionList.add(0);
 			versionList.add(1);
-			versionList.add(2);
+			versionList.add(3);
+			versionList.add(5);
 		}
 		if(id_meta == 1)
 		{
-			versionList.add(3);
+			versionList.add(0);
+			versionList.add(2);
 			versionList.add(4);
-			versionList.add(5);
 		}
 		return versionList;
 	}
@@ -66,25 +66,25 @@ public class ScriptTorche extends Script {
 	public Vec2 point_entree(int id) {
 		//Les coordonnées ont été prises à partir du réglement
 		if(id ==0)
-			return new Vec2(-600,750);
+			return new Vec2(-600,500);
 		else if(id ==1)
-			return new Vec2(600,750);
+			return new Vec2(600,500);
 		else if(id ==2)
-			//X = -600+150*cos(-pi/6)
-			//Y = 900+150*sin(-pi/6)
-			return new Vec2(-470,825);
+			//X = -600+600*cos(-pi/6)
+			//Y = 900+600*sin(-pi/6)
+			return new Vec2(-80,600);
 		else if(id ==3)
-			//X = 600+150*cos(-pi/6)
-			//Y = 900+150*sin(-pi/6)
-			return new Vec2(730,825);
+			//X = 600+400*cos(-pi/6)
+			//Y = 900+400*sin(-pi/6)
+			return new Vec2(946,700);
 		else if(id ==4)
-			//X = -600+150*cos(7*pi/6)
-			//Y = 900+150*sin(7*pi/6)
-			return new Vec2(-730,825);
+			//X = -600+400*cos(7*pi/6)
+			//Y = 900+400*sin(7*pi/6)
+			return new Vec2(-946,700);
 		else if(id ==5)
-			//X = 600+150*cos(7*pi/6)
-			//Y = 900+150*sin(7*pi/6)
-			return new Vec2(470,825);
+			//X = 600+600*cos(7*pi/6)
+			//Y = 900+600*sin(7*pi/6)
+			return new Vec2(80,600);
 		else
 			return null;		
 	}
@@ -94,14 +94,15 @@ public class ScriptTorche extends Script {
 	}
 
 	@Override
-	public int poids(GameState<?> state) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int poids(final GameState<?> state)
+	{
+		return 1;
 	}
 
+
 	@Override
-	protected void execute(int id_version, GameState<?> state)
-			throws MouvementImpossibleException, SerialException {
+	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException 
+	{
 		if(id_version ==0)
 			//Vec2(-600,900)
 		    state.robot.tourner(0);
@@ -158,8 +159,7 @@ public class ScriptTorche extends Script {
 		{
 			//Pour les feux à ramasser dans les torches
 			try {
-				state.robot.prendre_torche(Cote.GAUCHE);
-				state.table.pickTorch(1);
+				
 				/*
 			    state.robot.ouvrir_pince(Cote.GAUCHE);
 			    state.robot.milieu_pince(Cote.GAUCHE);
@@ -167,8 +167,7 @@ public class ScriptTorche extends Script {
 			    state.robot.lever_pince(Cote.GAUCHE);
 			    */
 				
-                // On retire la torche des obstacles.
-                state.table.torche_disparue(Cote.GAUCHE);
+				state.robot.prendre_torche(Cote.GAUCHE);
 			    
 			} catch (SerialException e) {
 				e.printStackTrace();
@@ -185,14 +184,45 @@ public class ScriptTorche extends Script {
 			    state.robot.lever_pince(Cote.DROIT);
 			    */
 				state.robot.prendre_torche(Cote.DROIT);
-				state.table.pickTorch(0);
-				// On retire la torche des obstacles.
-				state.table.torche_disparue(Cote.DROIT);
 			    // TODO mettre à jour robot, mais pas en utilisant torche disparue
 			} catch (SerialException e) {
 				e.printStackTrace();
 			}
 		}
+
+
+		// On retire la torche des obstacles.
+		if(id_version ==0)
+			//Vec2(-600,900)
+            state.table.torche_disparue(Cote.GAUCHE);
+
+		else if(id_version ==1)
+			//Vec2(600,900);
+			state.table.torche_disparue(Cote.DROIT);
+
+		else if(id_version ==2)
+			//Vec2(-600,900)
+            state.table.torche_disparue(Cote.GAUCHE);
+
+		else if(id_version ==3)
+			//Vec2(600,900)
+			state.table.torche_disparue(Cote.DROIT);
+
+		else if(id_version ==4)
+			//Vec2(-600,900)
+            state.table.torche_disparue(Cote.GAUCHE);
+
+		else if(id_version ==5)
+			//Vec2(600,900)
+			state.table.torche_disparue(Cote.DROIT);
+		
+		
+		// TEMPORAIRE :  pour debug stratégie
+
+	    state.robot.ouvrir_pince(Cote.GAUCHE);
+	    state.robot.milieu_pince(Cote.GAUCHE);
+	    state.robot.fermer_pince(Cote.GAUCHE);
+	    state.robot.lever_pince(Cote.GAUCHE);
 	}
 
 	@Override

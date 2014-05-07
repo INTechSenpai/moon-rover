@@ -32,7 +32,10 @@ public class ScriptFunnyAction extends Script {
 	public  ArrayList<Integer> meta_version(final GameState<?> state)
 	{
 		ArrayList<Integer> metaversionList = new ArrayList<Integer>();
-		metaversionList.add(0);
+
+		// 8 secondes avant la fin du match, on propose cette possibilité
+		if(threadtimer.temps_restant() < 12000)	// On fait la funny action qu'a la fin du match
+			metaversionList.add(0);
 		return metaversionList;
 	}
 	@Override
@@ -50,15 +53,16 @@ public class ScriptFunnyAction extends Script {
 	}
 	
 	@Override
-	public int score(int id_version, GameState<?> state) {
-		// Point si ça marche
+	public int score(int id_version, GameState<?> state)
+	{
 		return 6;
 	}
-
 	@Override
-	public int poids(GameState<?> state) {
-		return 0;
+	public int poids(final GameState<?> state)
+	{
+		return 1;
 	}
+
 
 	@Override
 	protected void execute(int id_version, GameState<?> state)

@@ -8,6 +8,7 @@ import table.obstacles.Obstacle;
 import table.obstacles.ObstacleCirculaire;
 import container.Service;
 import enums.Colour;
+import table.obstacles.ObstacleBalise;
 import enums.Cote;
 import utils.*;
 
@@ -23,6 +24,9 @@ public class Table implements Service {
 	private Fire arrayFire[] = new Fire[6];
 	private Fire arrayFixedFire[] = new Fire[4];
 
+	private boolean leftMammothHit = false;
+	private boolean rightMammothHit = false;
+	
 	private int hashFire;
 	private int hashTree;
 	
@@ -63,6 +67,11 @@ public class Table implements Service {
 		arrayTree[1] = new Tree(new Vec2(800,0));
 		arrayTree[2] = new Tree(new Vec2(-800,0));
 		arrayTree[3] = new Tree(new Vec2(-1500,700));
+		
+		
+		//initialisation des mamouths
+		leftMammothHit = false;
+		rightMammothHit = false;
 
 		arrayTorch[0] = new Torch(new Vec2(600,900));
 		arrayTorch[1] = new Torch(new Vec2(-600,900)); 
@@ -351,6 +360,10 @@ public class Table implements Service {
 			arrayTorch[0].clone(ct.arrayTorch[0]);
 			arrayTorch[1].clone(ct.arrayTorch[1]);
 			
+			//idem mamouths, pas de hash
+			ct.leftMammothHit = this.leftMammothHit;
+			ct.rightMammothHit = this.rightMammothHit;
+			
 			if(ct.hashFire != hashFire)
 			{
 				for(int i = 0; i < 6; i++)
@@ -365,7 +378,7 @@ public class Table implements Service {
 			if(ct.hashTree != hashTree)
 			{
 				for(int i = 0; i < 4; i++)		
-					arrayTree[i].clone(ct.arrayTree[i]);
+					ct.arrayTree[i] = arrayTree[i].clone();
 				ct.hashTree = hashTree;
 			}
 
@@ -401,7 +414,9 @@ public class Table implements Service {
 		        && gestionobstacles.equals(other.gestionobstacles)
 				&& hashFire == other.hashFire
 				&& hashTree == other.hashTree;
+		//TODO ? Check torches and mammoths
 	}
+	
 
 	//Fresco
 	public int nearestFreeFresco(Vec2 position)
@@ -430,5 +445,33 @@ public class Table implements Service {
 	{
 	}
 	
+	/**
+	 * @return the leftMammothHit
+	 */
+	public boolean isLeftMammothHit() {
+		return leftMammothHit;
+	}
+
+	/**
+	 * @param leftMammothHit the leftMammothHit to set
+	 */
+	public void setLeftMammothHit(boolean leftMammothHit) {
+		this.leftMammothHit = leftMammothHit;
+	}
+
+	/**
+	 * @return the rightMammothHit
+	 */
+	public boolean isRightMammothHit() {
+		return rightMammothHit;
+	}
+
+	/**
+	 * @param rightMammothHit the rightMammothHit to set
+	 */
+	public void setRightMammothHit(boolean rightMammothHit) {
+		this.rightMammothHit = rightMammothHit;
+	}
+
 }
 

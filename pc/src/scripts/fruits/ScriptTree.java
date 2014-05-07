@@ -70,24 +70,15 @@ public class ScriptTree extends Script{
 		return null;
 	}
 	@Override
-	public int score(int id_version, final GameState<?> state) {
-		int res = 0;
-
-		if (id_version <= 1)
-			res = state.table.nbrTotalTree(0) + state.table.nbrTotalTree(1);
-
-		else if(id_version <= 3)
-			res = state.table.nbrTotalTree(2) + state.table.nbrTotalTree(3);
-		else
-	        log.critical("Version/Métaversion inconnue", this);
-
-		return res;
+	public int score(int id_version, final GameState<?> state)
+	{
+		return 0;
 	}
 
 	@Override
-	public int poids(final GameState<?> state) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int poids(final GameState<?> state)
+	{
+		return 1;
 	}
 
 	@Override
@@ -155,10 +146,11 @@ public class ScriptTree extends Script{
 			else
 				cote = Cote.GAUCHE;
 		} while(cote == Cote.DROIT);
-		state.table.pickTree(id_version);
 		state.robot.set_vitesse_translation("arbre_avant");
-		state.robot.avancer(308-recul, hooks);		
+		state.robot.avancer(318-recul, hooks);		
+		//log.debug("adding " + state.table.nbrTree(id_version, Cote.DROIT) + state.table.nbrTree(id_version, Cote.GAUCHE) + " fruits to the bac", this);
 		state.robot.add_fruits(state.table.nbrTree(id_version, Cote.DROIT) + state.table.nbrTree(id_version, Cote.GAUCHE));
+		state.table.pickTree(id_version);
 	}
 
 	@Override

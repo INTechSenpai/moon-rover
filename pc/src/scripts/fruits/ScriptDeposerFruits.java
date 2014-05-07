@@ -49,14 +49,19 @@ public class ScriptDeposerFruits extends Script {
 		return new Vec2(-600-300*id, 1300);
 	}
 	@Override
-	public int score(int id_version, GameState<?> state) {
+	public int score(int id_version, GameState<?> state)
+	{
 		return state.robot.get_nombre_fruits_bac();
 	}
 
 	@Override
-	public int poids(GameState<?> state) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int poids(GameState<?> state)
+	{
+		// Ne pas aller déposer de fruits s'il n'y en a pas a déposer
+		if(state.robot.get_nombre_fruits_bac() == 0) 
+			return 0;
+		else
+			return 2;	// les arbres rapportent un max
 	}
 	@Override
 	protected void execute(int id_version, GameState<?> state)
@@ -67,7 +72,7 @@ public class ScriptDeposerFruits extends Script {
 	    state.robot.bac_haut();
 	    state.robot.bac_haut();
 	    state.robot.sleep(500);
-	    state.robot.avancer(50);
+	    state.robot.avancer(160);
 	    state.robot.bac_bas();
 	}
 	@Override

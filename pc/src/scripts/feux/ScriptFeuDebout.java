@@ -105,9 +105,9 @@ public class ScriptFeuDebout extends Script{
 	}
 
 
-	public int poids(GameState<?> state) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int poids(GameState<?> state) 
+	{
+		return 1;
 	}
 
 

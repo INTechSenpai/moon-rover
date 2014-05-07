@@ -60,11 +60,11 @@ public class ScriptFresque extends Script {
 	}
 
 	@Override
-	public int poids(final GameState<?> state) {
-		// TODO
-		// On s'en fout pour le moment
-		return 0;
+	public int poids(final GameState<?> state)
+	{
+		return 1;
 	}
+
 
 	@Override
 	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException

@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Stack;
 
+import enums.Cote;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import scripts.Script;
@@ -83,7 +84,17 @@ public class Strategie implements Service {
 			if(scriptEnCours != null && scriptEnCours.script != null)
 			{
 				boolean dernier = (nbScriptsRestants() == 1);
+
+				log.debug("=============== New Script =========================", this);
+				log.debug("Pince Gauche feu  : "+ real_state.robot.isTient_feu(Cote.GAUCHE), this);
+				log.debug("Pince Droite feu  : "+ real_state.robot.isTient_feu(Cote.DROIT), this);
+				log.debug("Nb fruit bac : "+ real_state.robot.get_nombre_fruits_bac(), this);
+				log.debug("Temps actuels : "+real_state.time_depuis_debut/1000 + "s", this);
+				log.debug("Points actuels : "+real_state.pointsObtenus, this);
+				log.debug("Pts/s moyen : "+(float)real_state.pointsObtenus*1000.0f/(float)real_state.time_depuis_debut, this);
+				log.debug("      ==============            ===========         ", this);
 				log.debug("Stratégie fait: "+scriptEnCours+", dernier: "+dernier, this);
+				log.debug("====================================================", this);
 				// le dernier argument, retenter_si_blocage, est vrai si c'est le dernier script. Sinon, on change de script sans attendre
 				try {
 					scriptEnCours.script.agit(scriptEnCours.version, real_state, dernier);
@@ -212,7 +223,7 @@ public class Strategie implements Service {
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				//e.printStackTrace();
 				continue;
 			}
 			if(calculeNote(score,duree_script, i,script, state)>meilleurNote)
@@ -335,9 +346,9 @@ public class Strategie implements Service {
 		// les action a anticiper doivent commencer dans les 30 prochaines secondes
 
 		//Config pour 1 sec d'exécution sur raspbe
-		int		TTL = 26000;	// les actions anticipés doivent débuter dans les 14 prochaines secondes   
+		int		TTL = 21000;	// les actions anticipés doivent débuter dans les 14 prochaines secondes   
 		int maxProf	= 99999;	// En moyenne, réduire ce nombre consuit a sabrer les branches les plus prometteuses
-	
+		
 		//Config pour 4 sec d'exécution sur raspbe
 	//	int		TTL = 25000;	// les actions anticipés doivent débuter dans les 14 prochaines secondes   
 	//	int maxProf	= 3;
@@ -353,9 +364,16 @@ public class Strategie implements Service {
 		boolean branchHasChild;
 		
 		
+
+		
+		
+		
 		// ajoute tous les scrips disponibles scripts
 		for(String nom_script : scriptmanager.getNomsScripts())
 		{
+
+			mState = memorymanager.getClone(0);
+			
 
 			try
 			{
@@ -366,10 +384,15 @@ public class Strategie implements Service {
 				e.printStackTrace();
 			}
 			
+			// On ne s'encombre pas de scripts qu'on ne doit pas faire.
+			if(mScript.poids(mState) == 0)
+				continue;
+			
+			
 			metaversionList = mScript.meta_version(	mState	);
-			// TODO corriger les scripts pour que ça n'arrive pas
 			if(metaversionList == null)
 				continue;
+			
 			
 			
 			// ajoute toutes les métaversions de tous les scipts
@@ -390,7 +413,7 @@ public class Strategie implements Service {
 				}
 				
 				
-				//log.debug("Ajout d'une racine", this);
+				//log.debug("Ajout de la racine " + mScript.toString(), this);
 				mState = memorymanager.getClone(0);
 				mState.pathfinding.setPrecision(4);
 				scope.push( new Branche(	TTL,							// Il reste tout le TTL sur chacune des racines
@@ -403,11 +426,13 @@ public class Strategie implements Service {
 			}	
 		}
 
+	
 
 		// TODO ?	Ajuster le critère d'arret d'expansion ici en fonction de scope size ?
+		TTL = (int) (16000+40000*(Math.exp(14-scope.size())/Math.exp(6)));
 		
 		
-		log.debug("scope.size() :" + scope.size(), this);
+		//log.debug("TTL = " + TTL + "   scope.size() :" + scope.size(), this);
 		// Boucle principale d'exploration des branches
 		if(scope.size() > 1)
 			while (scope.size() != 0)
@@ -428,7 +453,7 @@ public class Strategie implements Service {
 					current.computeActionCharacteristics();
 				
 				// Condition d'ajout des sous-branches : respecter le critère d'arret d'expansion, et ne pas les ajouter 2 fois.
-				if ( current.TTL - current.dureeScript > 0 && maxProf >= current.profondeur && (current.sousBranches.size() == 0) )
+				if ( current.TTL - current.dureeScript > 0 && maxProf >= current.profondeur && (current.sousBranches.size() == 0) && mState.time_depuis_debut +5000 < ThreadTimer.duree_match)
 				{
 					// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage
 					
@@ -448,8 +473,12 @@ public class Strategie implements Service {
 							e.printStackTrace();
 						}
 						
+
+						// On ne s'encombre pas de scripts qu'on ne doit pas faire.
+						if(mScript.poids(mState) == 0)
+							continue;
+						
 						metaversionList = mScript.meta_version(	mState	);
-						// TODO corriger les scripts pour que ça n'arrive pas
 						if(metaversionList == null)
 							continue;
 						
@@ -506,7 +535,11 @@ public class Strategie implements Service {
 				}
 				
 			}	// fin boucle principale d'exploration
-		log.debug("Explored "+ Branchcount + " branches", this);
+		//log.debug("Explored "+ Branchcount + " branches in " + (System.currentTimeMillis() - startTime) + " ms", this);
+		
+
+		//for (int i = 0; i < rootList.size(); ++i)
+		//	log.debug("Note of " + rootList.get(i).script.toString() + " is " + rootList.get(i).note, this);
 		
 		
 		// la meilleure action a une meilleure note que les autres branches. Donc on calcule le max des notes des branches 

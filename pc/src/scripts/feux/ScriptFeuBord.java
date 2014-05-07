@@ -30,16 +30,15 @@ public class ScriptFeuBord extends Script {
 	public  ArrayList<Integer> meta_version(final GameState<?> state)
 	{
 		ArrayList<Integer> metaversionList = new ArrayList<Integer>();
-		// TODO
-		if(!(state.robot.isTient_feu(Cote.DROIT)||state.robot.isTient_feu(Cote.GAUCHE)))
+		if(!(state.robot.isTient_feu(Cote.DROIT)&&state.robot.isTient_feu(Cote.GAUCHE)))
 		{
-			if (state.table.isTakenFixedFire(0))
-				metaversionList.add(0);
-			if (state.table.isTakenFixedFire(3))
+			if (!state.table.isTakenFixedFire(0))
 				metaversionList.add(1);
-			if (state.table.isTakenFixedFire(2))
+			if (!state.table.isTakenFixedFire(3))
+				metaversionList.add(0);
+			if (!state.table.isTakenFixedFire(2))
 				metaversionList.add(2);
-			if (state.table.isTakenFixedFire(1))
+			if (!state.table.isTakenFixedFire(1))
 				metaversionList.add(3);
 		}
 		return metaversionList;
@@ -56,9 +55,9 @@ public class ScriptFeuBord extends Script {
 	public Vec2 point_entree(int id) {
 		//Les coordonnées ont été prises à partir du réglement
 		if(id ==0)
-			return new Vec2(-900,1100);
+			return new Vec2(-1100,1100);
 		else if(id ==1)
-			return new Vec2(900, 1100);		
+			return new Vec2(1100, 1100);		
 		else if(id ==2)
 			return new Vec2(-300, 500);
 		else if(id ==3)
@@ -71,11 +70,11 @@ public class ScriptFeuBord extends Script {
 		return 0;
 	}
 
-	@Override
-	public int poids(GameState<?> state) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int poids(GameState<?> state) 
+	{
+		return 1;
 	}
+
 
 	@Override
 	protected void execute(int id_version, GameState<?> state)
@@ -130,7 +129,7 @@ public class ScriptFeuBord extends Script {
 		//Pour les feux à tirer
 		try 
 		{
-			state.robot.avancer(330);
+			state.robot.avancer(130);
 			state.robot.ouvrir_pince(cote);
 			state.robot.sleep(1000);
 			state.robot.milieu_pince(cote);
@@ -146,14 +145,25 @@ public class ScriptFeuBord extends Script {
 			state.robot.sleep(1000);
 			state.robot.lever_pince(cote);
 		    state.robot.setTient_feu(cote);
+			state.robot.avancer(-60);	// pour revenir au point d'entrée a la fin du script
 		}
 		catch (SerialException e) 
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//Et oui, il faut parler à la stratégie !!! GNNNNN
-		state.table.pickFixedFire(id_version);
+		
+		
+		//il faut parler à la stratégie
+		if(id_version ==0)
+			state.table.pickFixedFire(3);
+
+		else if(id_version ==1)
+			state.table.pickFixedFire(0);
+		else if(id_version ==2)
+			state.table.pickFixedFire(2);
+		else 
+			state.table.pickFixedFire(1);
 	}
 
 	@Override

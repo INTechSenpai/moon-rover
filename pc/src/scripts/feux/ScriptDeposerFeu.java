@@ -56,19 +56,19 @@ public class ScriptDeposerFeu extends Script {
 	@Override
 	public Vec2 point_entree(int id) {
 		if(id == 0)
-			return new Vec2(-1150,233);			
+			return new Vec2(-800,466);			
 
 		else if(id == 1)
-			return new Vec2(1150,233);
+			return new Vec2(800,466);
 
 		else if(id == 2)
-			return new Vec2(0, 1270);
+			return new Vec2(0, 1400);
 
 		else if(id == 3)
-			return new Vec2(-391, 739);
+			return new Vec2(-782, 528);
 
 		else if(id == 4)
-			return new Vec2(391, 739);
+			return new Vec2(782, 528);
 
 		return null;
 	}	
@@ -83,10 +83,11 @@ public class ScriptDeposerFeu extends Script {
 	}
 
 	@Override
-	public int poids(GameState<?> state) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int poids(final GameState<?> state)
+	{
+		return 1;
 	}
+
 
 	@Override
 	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException
@@ -100,9 +101,11 @@ public class ScriptDeposerFeu extends Script {
 		    state.robot.tourner((float)(-Math.PI/2));
 		else if(id_version == 3)
 		    state.robot.tourner((float)(Math.atan(2/3)));
-		else if(id_version == 4)
+		else															
 		    state.robot.tourner((float)(Math.PI-Math.atan(2/3)));
 
+		// TODO : si on est équipe rouge il faut inverser les if 
+		
 		if(state.robot.isTient_feu(Cote.GAUCHE))
 		{
 			if(state.robot.isFeu_tenu_rouge(Cote.GAUCHE) ^ couleur == "rouge")
@@ -110,8 +113,7 @@ public class ScriptDeposerFeu extends Script {
 			else
 			    state.robot.poserFeuBonCote(Cote.GAUCHE);			
 		}
-		
-		if(state.robot.isTient_feu(Cote.DROIT))
+		else // il faut tourner dans tout les cas, même si la version n'est pas cohérente
 		{
 			if(state.robot.isFeu_tenu_rouge(Cote.DROIT) ^ couleur == "rouge")
 			    state.robot.poserFeuEnRetournant(Cote.DROIT);

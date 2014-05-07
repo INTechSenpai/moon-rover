@@ -84,6 +84,8 @@ public class Branche
 			try
 			{
 				dureeScript = script.metacalcule(metaversion, state, useCachedPathfinding);
+				//System.out.println(script.toString() +".duree = " + dureeScript);
+				
 			}
 			catch (PathfindingException e)
 			{
@@ -144,12 +146,12 @@ public class Branche
 	//	localNote = (scoreScript*A*prob/dureeScript+pos*B)*prob;
 		
 		if(scoreScript != 0)
-			localNote = (float)scoreScript*1000/(float)dureeScript;
+			localNote = (float)scoreScript*1000.0f/(float)dureeScript;
 		else 
-			localNote = 1.0f/(float)dureeScript;	// les arbres ne rapportent pas de points et sont donc choisi en fonction de leur proximité. Attention a ce que ce 1/durée ne soit pas supérieur a un autre script
+			localNote = 0.1f/(float)dureeScript;	// les scripts qui ne rapportent pas de points sont donc choisis en fonction de leur proximité. Attention a ce que ce 1/durée ne soit pas supérieur a un autre script
 		
 		
-		
+		localNote*=script.poids(state);
 	//	System.out.println("localNote = " + localNote + "	scoreScript = " + scoreScript + "	dureeScript = " + dureeScript);
 		
 //		log.debug((float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0))), this);

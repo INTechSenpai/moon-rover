@@ -51,6 +51,7 @@ public class Pathfinding implements Service, Cloneable
 	 */
 	private static CacheHolder distance_cache;
 
+	// précision du AStar
 	private int degree;
 
 	/**
@@ -233,6 +234,12 @@ public class Pathfinding implements Service, Cloneable
 			degree = precision;
 		solver = solvers[degree];
 		solver_grid = solvers_grid[degree];
+	}
+	
+
+	public int getPrecision() 
+	{
+		return degree;
 	}
 	
 	@Override

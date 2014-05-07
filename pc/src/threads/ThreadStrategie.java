@@ -109,7 +109,7 @@ public class ThreadStrategie extends AbstractThread {
 */
 	}
 
-	// TODO
+	
 	private void maj_prochainScript()
 	{
 
@@ -119,14 +119,14 @@ public class ThreadStrategie extends AbstractThread {
 		float[] a = null;
 		while(a == null)
 		{
-			 meilleur = strategie.evaluate(errorList);
+			meilleur = strategie.evaluate(errorList);
 			try
 			{
 				a = strategie.meilleurVersion(meilleur.metaversion, meilleur.script, memorymanager.getClone(0));
 			}
 			catch(PathfindingException e)
 			{
-				log.debug("La branche " + meilleur + " renvoyée par l'arbre n'a pas de metaversion acessible, on relace l'abre sans cette branche",this);
+				log.debug("La branche " + meilleur + " renvoyée par l'arbre n'a pas de metaversion acessible, on relace l'arbre sans cette branche",this);
 				errorList.add(meilleur);
 				//e.printStackTrace();
 			}
@@ -136,7 +136,7 @@ public class ThreadStrategie extends AbstractThread {
 		meilleur_version.version = (int)a[0];
 		meilleur_version.note = a[1];
 		strategie.setProchainScript(meilleur_version);
-		log.debug("prochain script : " + meilleur_version,this);
+		//log.debug("prochain script : " + meilleur_version,this);
 	}
 
 	private boolean evalueEnnemi()
