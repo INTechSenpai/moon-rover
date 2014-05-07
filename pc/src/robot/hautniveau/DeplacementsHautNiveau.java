@@ -258,7 +258,7 @@ public class DeplacementsHautNiveau implements Service
         if(insiste)
             nb_iterations = nb_iterations_max;
         else
-            nb_iterations = 1; // c'est-à-dire qu'on ne recommence pas
+            nb_iterations = 6; // 600 ms
         boolean recommence;
         do {
             nb_iterations--;
@@ -272,10 +272,10 @@ public class DeplacementsHautNiveau implements Service
                 /*
                  * En cas de blocage, on recule (si on allait tout droit) ou on avance.
                  */
-                try
+                // Si on insiste, on se dégage. Sinon, c'est juste normal de prendre le mur.
+                if(!mur)
                 {
-                    // Si on insiste, on se dégage. Sinon, c'est juste normal de prendre le mur.
-                    if(!mur)
+                    try
                     {
                         log.warning("On n'arrive plus à avancer. On se dégage", this);
                         if(marche_arriere)
@@ -283,23 +283,22 @@ public class DeplacementsHautNiveau implements Service
                         else
                             deplacements.avancer(-distance_degagement_robot);
                         recommence = true;
+                    } catch (SerialException e1)
+                    {
+                        e1.printStackTrace();
                     }
-                } catch (SerialException e1)
-                {
-                    e1.printStackTrace();
+                    try
+                    {
+                        while(!mouvement_fini());
+                    } catch (BlocageException e1)
+                    {
+                        stopper();
+                        log.critical("On n'arrive pas à se dégager.", this);
+                        throw new MouvementImpossibleException();
+                    }
+                    if(nb_iterations == 0)
+                        throw new MouvementImpossibleException();
                 }
-                try
-                {
-                    while(!mouvement_fini());
-                } catch (BlocageException e1)
-                {
-                    stopper();
-                    log.critical("On n'arrive pas à se dégager.", this);
-                    throw new MouvementImpossibleException();
-                }
-                if(nb_iterations == 0)
-                    throw new MouvementImpossibleException();
-                    
             } catch (CollisionException e)
             {
                 /*
@@ -321,11 +320,11 @@ public class DeplacementsHautNiveau implements Service
                 {
                     log.warning("Détection d'un ennemi! Attente.", this);
                     stopper();
-                    Sleep.sleep(1000);
+                    Sleep.sleep(100);
                     recommence = true;
                 }
             }
-    } while(recommence); // on recommence tant qu'on n'a pas fait trop d'itérations.
+        } while(recommence); // on recommence tant qu'on n'a pas fait trop d'itérations.
 
     // Tout s'est bien passé
     }
@@ -531,7 +530,9 @@ public class DeplacementsHautNiveau implements Service
     {
         log.debug("Arrêt du robot en "+position, this);
         try {
+            deplacements.desactiver_asservissement_translation();
             deplacements.stopper();
+            deplacements.activer_asservissement_translation();
         } catch (SerialException e) {
             e.printStackTrace();
         }           

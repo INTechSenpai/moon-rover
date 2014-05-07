@@ -73,6 +73,14 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     }
 
     @Test
+    public void test_va_au_point_detection() throws Exception
+    {
+        container.demarreTousThreads();
+        robot.setInsiste(true);
+        robot.va_au_point_gestion_exception(null, null, false, false, false);
+    }
+
+    @Test
     public void test_va_au_point_relancer() throws Exception
     {
         ArrayList<Hook> hooks = new ArrayList<Hook>();
@@ -92,7 +100,8 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
         chemin.add(new Vec2(-1000, 1200));
         chemin.add(new Vec2(0, 500));
         chemin.add(new Vec2(1000, 1200));
-        
+        robot.setInsiste(true);
+        container.demarreTousThreads();
         robot.suit_chemin(chemin, null);
     }
 
