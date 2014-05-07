@@ -5,7 +5,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Stack;
 
-import robot.Cote;
+import enums.Cote;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import scripts.Script;
@@ -17,8 +17,8 @@ import utils.Log;
 import utils.Read_Ini;
 import utils.Sleep;
 import container.Service;
-import exception.PathfindingException;
-import exception.ScriptException;
+import exceptions.strategie.PathfindingException;
+import exceptions.strategie.ScriptException;
 import smartMath.Vec2;
 
 /**
@@ -48,7 +48,7 @@ public class Strategie implements Service {
 	// Prochain script à exécuter si l'actuel se passe bien
 	private volatile NoteScriptVersion prochainScript;
 	
-	public Strategie(MemoryManager memorymanager, ThreadTimer threadtimer, ScriptManager scriptmanager, GameState<RobotVrai> real_state, Read_Ini config, Log log)
+	public Strategie(MemoryManager memorymanager, ScriptManager scriptmanager, GameState<RobotVrai> real_state, Read_Ini config, Log log)
 	{
 		this.memorymanager = memorymanager;
 		this.scriptmanager = scriptmanager;
@@ -271,7 +271,33 @@ public class Strategie implements Service {
 	}
 	
 
-	
+	/**
+	 * La note d'un script est fonction de son score, de sa durée, de la distance de l'ennemi à l'action 
+	 * @param score
+	 * @param duree
+	 * @param id
+	 * @param script
+	 * @return note
+	 */
+	private float calculeMetaNote(int score, int duree, int meta_id, Script script, GameState<?> state)
+	{
+		// TODO
+		int id = script.version_asso(meta_id).get(0);
+		int A = 1;
+		int B = 1;
+		float prob = 1;
+		
+		//abandon de prob_deja_fait
+		Vec2[] position_ennemie = state.table.get_positions_ennemis();
+		float pos = (float)1.0 - (float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0)));
+		// pos est une valeur qui décroît de manière exponentielle en fonction de la distance entre le robot adverse et là où on veut aller
+		float note = (score*A*prob/duree+pos*B)*prob;
+		
+//		log.debug((float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0))), this);
+		
+		return note;
+	}
+
 	/* Méthode qui calcule la note de cette branche en calculant celles de ses sous branches, puis en combinant leur notes
 	 * C'est là qu'est logé le DFS
 	 * 

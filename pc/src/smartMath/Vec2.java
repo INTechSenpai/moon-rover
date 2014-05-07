@@ -149,6 +149,15 @@ public class Vec2
 		return Math.abs(x - other.x) + Math.abs(y - other.y); 
 	}
 
+	/**
+	 * Copie this dans other.
+	 * @param other
+	 */
+	public void copy(Vec2 other)
+	{
+	    other.x = x;
+	    other.y = y;
+	}
 	
 }
 

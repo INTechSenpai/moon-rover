@@ -18,23 +18,6 @@ import threads.ThreadTimer;
 public class JUnit_ThreadsTest extends JUnit_Test {
 
 	@Test
-	public void test_threadPosition() throws Exception
-	{
-		Deplacements deplacements = (Deplacements)container.getService("Deplacements");
-		deplacements.set_x(0);
-		deplacements.set_y(1500);
-		deplacements.set_orientation(0);
-		deplacements.set_vitesse_translation(80);
-		RobotVrai robotvrai = (RobotVrai) container.getService("RobotVrai");
-		container.getService("threadPosition");
-		container.demarreThreads();
-		deplacements.set_x(110);
-		deplacements.set_y(1500);
-		Thread.sleep(150);
-		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(110,1500)));	
-	}
-
-	@Test
 	public void test_arret() throws Exception
 	{
 		Deplacements deplacements = (Deplacements)container.getService("Deplacements");

@@ -1,6 +1,6 @@
 package threads;
 
-import exception.SerialException;
+import exceptions.serial.SerialException;
 import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
 import table.Table;

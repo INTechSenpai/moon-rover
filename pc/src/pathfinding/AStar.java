@@ -12,7 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Map;
 
-import exception.PathfindingException;
+import exceptions.strategie.PathfindingException;
 import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.Vec2;
 
@@ -251,7 +251,6 @@ class AStar
 	
 	// Debug
 	// affihche l'espace de recherche 
-	@SuppressWarnings("unused")
 	private void printWorkingMap(Vec2 depart, Vec2 arrivee)
 	{
 		String out = "";

@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import pathfinding.Pathfinding;
 import hook.Hook;
 import smartMath.Vec2;
-import table.Colour;
 import container.Service;
-import exception.ConfigException;
-import exception.MouvementImpossibleException;
-import exception.PathfindingException;
-import exception.SerialException;
+import enums.Colour;
+import enums.Cote;
+import enums.PositionRateau;
+import exceptions.deplacements.MouvementImpossibleException;
+import exceptions.serial.SerialException;
+import exceptions.strategie.PathfindingException;
 import utils.Log;
 import utils.Read_Ini;
 
@@ -25,39 +26,22 @@ public abstract class Robot implements Service {
 	 * DÉPLACEMENT HAUT NIVEAU
 	 */
 	
-	public abstract void stopper(boolean avec_blocage);
-	protected abstract void tourner(float angle, ArrayList<Hook> hooks, int nombre_tentatives, boolean sans_lever_exception, boolean symetrie_effectuee, boolean retenter_si_blocage)
-			 	throws MouvementImpossibleException;
-	protected abstract void avancer(int distance, ArrayList<Hook> hooks, int nbTentatives, boolean retenterSiBlocage, boolean sansLeverException)
-				throws MouvementImpossibleException;
-	public abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks,
-			boolean retenter_si_blocage, boolean symetrie_effectuee,
-			boolean trajectoire_courbe, boolean sans_lever_exception)
-			throws MouvementImpossibleException;
+	public abstract void stopper();
+    public abstract void tourner(double angle, ArrayList<Hook> hooks, boolean mur)
+            throws MouvementImpossibleException;
+    public abstract void avancer(int distance, ArrayList<Hook> hooks, boolean mur)
+            throws MouvementImpossibleException;
+    public abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks)
+            throws MouvementImpossibleException;
 	public abstract void set_vitesse_translation(String vitesse);
 	public abstract void set_vitesse_rotation(String vitesse);
 	
-	/**
-	 * Va au point donné. Différentes options possibles.
-	 * @param point
-	 * @param hooks
-	 * @param trajectoire_courbe: le robot est-il autorisé à effectuer une trajectoire courbe? Une trajectoire courbe est plus rapide mais peu contrôlée (on parle bien d'autorisation; l'utilisation effective de la trajectoire courbe dépend d'autres paramètres, comme la place disponible)
-	 * @param nombre_tentatives: le nombre de tentatives restantes
-	 * @param retenter_si_blocage: le robot doit-il retenter en cas de blocage? (détection ennemi, ...). Dans notre cas, s'il y a d'autres scripts, il ne retente pas.
-	 * @param symetrie_effectuee: la symétrie a-t-elle déjà été effectuée? (il ne faut pas l'appliquer deux fois)
-	 * @param sans_lever_exception: utilisé pour foncer dans le mur exprès, par exemple pour poser les fresques ou pour se recaler.
-	 * @param enchainer: utilisé lors d'un enchaînement de va_au_point par suit_chemin. Au lieu de s'arrêter entre chaque segment, le robot conserve sa vitesse.
-	 * @throws MouvementImpossibleException
-	 */
-	protected abstract void va_au_point(Vec2 point, ArrayList<Hook> hooks, boolean trajectoire_courbe, int nombre_tentatives, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean sans_lever_exception, boolean enchainer)
-				throws MouvementImpossibleException;
-
-	/*
-	 * Méthodes d'initialisation
-	 */
-	
 	public abstract void setPosition(Vec2 position);
-	public abstract void setOrientation(float orientation);
+	public abstract void setOrientation(double orientation);
+    public abstract Vec2 getPosition();
+    public abstract double getOrientation();
+    public abstract void sleep(long duree);
+    public abstract void setInsiste(boolean insiste);
 
 	/**
 	 * Copy this dans rc. this reste inchangé.
@@ -66,8 +50,8 @@ public abstract class Robot implements Service {
 	 */
     public void copy(Robot rc)
     {
-        rc.position = position.clone();
-        rc.orientation = orientation;
+        rc.setPosition(getPosition().clone());
+        rc.setOrientation(getOrientation());
         rc.set_vitesse_rotation(vitesse_rotation);
         rc.set_vitesse_translation(vitesse_translation);
         rc.nombre_lances = nombre_lances;
@@ -83,7 +67,10 @@ public abstract class Robot implements Service {
 	 * ACTIONNEURS
 	 */
 
-	public abstract void tirerBalle() throws SerialException;
+	public void tirerBalle()
+	{
+	    nombre_lances--;
+	}
 	
 	public abstract void bac_bas() throws SerialException;
 	public abstract void rateau(PositionRateau position, Cote cote) throws SerialException;
@@ -97,7 +84,7 @@ public abstract class Robot implements Service {
 	public abstract void presque_fermer_pince(Cote cote) throws SerialException;
 	public abstract void ouvrir_bas_pince(Cote cote) throws SerialException;
 	
-	public  void deposer_fresques() throws SerialException
+	public void deposer_fresques() throws SerialException
 	{
 		fresques_posees = true;
 	}
@@ -109,7 +96,6 @@ public abstract class Robot implements Service {
            tient_feu_droite = true;
 		
 	}
-	public abstract void sleep(long duree);
 	
 	public void add_fruits(int n)
 	{
@@ -135,7 +121,6 @@ public abstract class Robot implements Service {
            tient_feu_droite = false;
     }
 
-	
 	// Dépendances
 	protected Read_Ini config;
 	protected Log log;
@@ -143,11 +128,7 @@ public abstract class Robot implements Service {
 	/* Ces attributs sont nécessaires à robotvrai et à robotchrono, donc ils sont ici.
 	 * Cela regroupe tous les attributs ayant une conséquence dans la stratégie
 	 */
-	protected volatile Vec2 position = new Vec2(0, 0);
-	protected volatile float orientation = 0;
-	protected String couleur;
-	protected boolean effectuer_symetrie = true;
-	
+	protected boolean symetrie;	
 	protected int nombre_lances = 6;
 	protected boolean fresques_posees = false;
 	protected int nombre_fruits_bac = 0;
@@ -155,7 +136,6 @@ public abstract class Robot implements Service {
 	protected boolean tient_feu_gauche = false;
 	protected boolean feu_tenu_gauche_rouge = false;
 	protected boolean feu_tenu_droite_rouge = false;
-	protected static int nb_tentatives = 2;
 	private String vitesse_translation;
 	private String vitesse_rotation;
 	
@@ -168,16 +148,7 @@ public abstract class Robot implements Service {
 		
 	public void maj_config()
 	{
-		try {
-			couleur = config.get("couleur");
-		} catch (ConfigException e) {
-			log.critical(e, this);
-		}
-		try {
-			nb_tentatives = Integer.parseInt(config.get("nb_tentatives"));
-		} catch (ConfigException e) {
-			log.critical(e, this);
-		}
+		symetrie = config.get("couleur").equals("rouge");
 	}
 	
 	protected int conventions_vitesse_translation(String vitesse)
@@ -230,14 +201,6 @@ public abstract class Robot implements Service {
 		return vitesse_rotation;
 	}
 
-	public Vec2 getPosition() {
-		return position.clone();
-	}
-
-	public float getOrientation() {
-		return orientation;
-	}
-	
 	public int getNbrLances() {
 		return nombre_lances;
 	}
@@ -291,100 +254,65 @@ public abstract class Robot implements Service {
 			feu_tenu_droite_rouge = (colour == Colour.RED);			
 	}
 	
-	/**
-	 * Va au point en utilisant le pathfinding donné
-	 * @param pathfinding
-	 * @param arrivee
-	 * @param hooks
-	 * @param retenter_si_blocage
-	 * @param symetrie_effectuee
-	 * @param trajectoire_courbe
-	 * @throws MouvementImpossibleException
-	 * @throws PathfindingException 
-	 */
-	public void va_au_point_pathfinding(Pathfinding pathfinding, Vec2 arrivee, ArrayList<Hook> hooks, boolean retenter_si_blocage, boolean symetrie_effectuee, boolean trajectoire_courbe, boolean sans_lever_exception) throws MouvementImpossibleException, PathfindingException
-	{
-		// TODO utilisation HPA*
-		if(couleur == "rouge" && !symetrie_effectuee)
-			arrivee.x = -arrivee.x;
-		pathfinding.update();
-		ArrayList<Vec2> chemin = pathfinding.cheminAStar(position, arrivee);
-		suit_chemin(chemin, hooks, retenter_si_blocage, true, trajectoire_courbe, sans_lever_exception);
-	}
 	
 	public void tourner_relatif(float angle) throws MouvementImpossibleException
 	{
-		tourner(orientation + angle, null, nb_tentatives, false, false, true);
+		tourner(getOrientation() + angle, null, false);
 	}
 
-    public void va_au_point_retente_ou_pas(Vec2 point, boolean retente) throws MouvementImpossibleException
+    public void tourner(float angle) throws MouvementImpossibleException
     {
-        va_au_point(point, null, false, nb_tentatives, retente, false, false, false);
+        tourner(angle, null, false);
     }
 
-	public void va_au_point(Vec2 point) throws MouvementImpossibleException
-	{
-		va_au_point(point, null, false, nb_tentatives, true, false, false, false);
-	}
+    public void tourner_sans_symetrie(float angle) throws MouvementImpossibleException
+    {
+        if(symetrie)
+            tourner((float) (Math.PI-angle), null, false);
+        else
+            tourner(angle, null, false);
+    }
 
-	public void va_au_point(Vec2 point, ArrayList<Hook> hooks) throws MouvementImpossibleException
-	{
-		va_au_point(point, hooks, false, nb_tentatives, true, false, false, false);
-	}
-	
-	public void suit_chemin_droit(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws MouvementImpossibleException
-	{
-		suit_chemin(chemin, hooks, true, false, false, false);
-	}
 
-	public void suit_chemin_droit(ArrayList<Vec2> chemin) throws MouvementImpossibleException
-	{
-		suit_chemin(chemin, null, true, false, false, false);
-	}
+    public void avancer(int distance) throws MouvementImpossibleException
+    {
+        avancer(distance, null, false);
+    }
 
-	public void suit_chemin_courbe(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws MouvementImpossibleException
-	{
-		suit_chemin(chemin, hooks, true, false, true, false);
-	}
+    public void avancer(int distance, ArrayList<Hook> hooks) throws MouvementImpossibleException
+    {
+        avancer(distance, hooks, false);
+    }
 
-	public void suit_chemin_courbe(ArrayList<Vec2> chemin) throws MouvementImpossibleException
-	{
-		suit_chemin(chemin, null, true, false, true, false);
-	}
-
-	public void tourner_sans_symetrie(float angle) throws MouvementImpossibleException
-	{
-		tourner(angle, null, nb_tentatives, false, true, true);
-	}
-	
-	public void tourner(float angle) throws MouvementImpossibleException
-	{
-		tourner(angle, null, nb_tentatives, false, false, true);
-	}
-
-	public void avancer_dans_mur(int distance) throws MouvementImpossibleException
-	{
-		avancer(distance, null, nb_tentatives, false, true);		
-	}
-
-	public void avancer(int distance, ArrayList<Hook> hooks) throws MouvementImpossibleException
-	{
-		avancer(distance, hooks, nb_tentatives, true, false);
-	}
-
-	public void avancer(int distance) throws MouvementImpossibleException
-	{
-		avancer(distance, null, nb_tentatives, true, false);
-	}
-
-	public void va_au_point_pathfinding(Pathfinding pathfinding, Vec2 arrivee) throws MouvementImpossibleException, PathfindingException
-	{
-		va_au_point_pathfinding(pathfinding, arrivee, null, true, false, true, false);
-	}
-
-	public void stopper()
-	{
-		stopper(false);
-	}
+    public void avancer_dans_mur(int distance) throws MouvementImpossibleException
+    {
+        avancer(distance, null, true);
+    }
+    
+    /**
+     * Va au point "arrivée" en utilisant le pathfinding.
+     * @param arrivee
+     * @param hooks
+     * @param insiste
+     * @throws PathfindingException
+     * @throws MouvementImpossibleException
+     */
+    public void va_au_point_pathfinding(Pathfinding pathfinding, Vec2 arrivee, ArrayList<Hook> hooks) throws PathfindingException, MouvementImpossibleException
+    {
+        // S'il y a une exception du pathfinding, on remonte la remonte
+        // S'il y a une exception de mouvement (ennemi ou mur), on cherche un nouveau chemin.
+        boolean exceptionMouvementImpossible;
+        do {
+            exceptionMouvementImpossible = false;
+            ArrayList<Vec2> chemin = pathfinding.cheminAStar(getPosition(), arrivee);
+            try
+            {
+                suit_chemin(chemin, hooks);
+            } catch (MouvementImpossibleException e)
+            {
+                exceptionMouvementImpossible = true;
+            }        
+        } while(exceptionMouvementImpossible);
+    }
 
 }

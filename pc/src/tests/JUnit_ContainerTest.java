@@ -2,8 +2,8 @@ package tests;
 
 import org.junit.Test;
 
-import exception.ContainerException;
-import exception.SerialManagerException;
+import exceptions.ContainerException;
+import exceptions.serial.SerialManagerException;
 
 	/**
 	 * Tests unitaires pour le container
@@ -40,6 +40,20 @@ public class JUnit_ContainerTest extends JUnit_Test {
 		log.debug("JUnit_ContainerTest.test_table()", this);
 		container.getService("Table");
 	}
+
+    @Test
+    public void test_deplacementshautniveau() throws Exception
+    {
+        log.debug("JUnit_ContainerTest.test_deplacementshautniveau()", this);
+        container.getService("DeplacementsHautNiveau");
+    }
+
+    @Test
+    public void test_actionneurshautniveau() throws Exception
+    {
+        log.debug("JUnit_ContainerTest.test_actionneurshautniveau()", this);
+        container.getService("ActionneursHautNiveau");
+    }
 
 	@Test
 	public void test_deplacements() throws Exception
@@ -187,13 +201,6 @@ public class JUnit_ContainerTest extends JUnit_Test {
 	{
 		log.debug("JUnit_ContainerTest.test_threadStrategie()", this);
 		container.getService("threadStrategie");
-	}
-
-	@Test
-	public void test_threadPosition() throws Exception
-	{
-		log.debug("JUnit_ContainerTest.test_threadPosition()", this);
-		container.getService("threadPosition");
 	}
 	
 	@Test

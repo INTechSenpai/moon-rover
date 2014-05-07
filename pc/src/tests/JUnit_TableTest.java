@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import robot.Cote;
+import enums.Cote;
 import smartMath.Vec2;
 import table.Table;
 
@@ -89,9 +89,16 @@ public class JUnit_TableTest extends JUnit_Test {
 	
 	@Test
 	public void test_obstacle_existe() throws Exception {
-		log.debug("JUnit_TableTest.test_obstacle_existe()", this);
-		
+		log.debug("JUnit_TableTest.test_obstacle_existe()", this);		
 		Assert.assertTrue(table.obstacle_existe(new Vec2(-517, 900)));
 	}
+
+
+    @Test
+    public void test_obstacle_existe2() throws Exception {
+        log.debug("JUnit_TableTest.test_obstacle_existe2()", this);
+        table.creer_obstacle(new Vec2(100, 100));
+        Assert.assertTrue(table.obstaclePresent(new Vec2(120, 120), 100));
+    }
 
 }

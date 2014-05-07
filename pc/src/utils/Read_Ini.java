@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import exception.ConfigException;
-
 
 public class Read_Ini implements Service {
 	private String name_local_file = "local.ini";
@@ -21,7 +19,7 @@ public class Read_Ini implements Service {
     Enumeration<?> e = local.propertyNames();
 
 	
-	public Read_Ini(String path) throws ConfigException
+	public Read_Ini(String path) throws Exception
 	{
 		this.path = path;
 	//	log.debug("Loading config from current directory : " +  System.getProperty("user.dir"), this)
@@ -32,7 +30,7 @@ public class Read_Ini implements Service {
 		catch  (IOException e)
 		{
 			e.printStackTrace();
-			throw new ConfigException("Erreur ouverture de config.ini");
+			throw new Exception("Erreur ouverture de config.ini");
 		}
 		
 		try
@@ -49,9 +47,9 @@ public class Read_Ini implements Service {
 			catch (IOException e2)
 			{
 				e2.printStackTrace();
-				throw new ConfigException("Erreur création de local.ini");
+				throw new Exception("Erreur création de local.ini");
 			}	
-			throw new ConfigException("Erreur ouverture de local.ini");
+			throw new Exception("Erreur ouverture de local.ini");
 		}	
 		affiche_tout();
 	}
@@ -62,15 +60,14 @@ public class Read_Ini implements Service {
 	 * @return
 	 * @throws ConfigException
 	 */
-	public String get(String nom) throws ConfigException
+	public String get(String nom)
 	{
 		String out = null;
 		out = config.getProperty(nom);
 		if(out == null)
 		{
-			throw new ConfigException("Erreur config: "+nom+" introuvable.");
+			System.out.println("Erreur config: "+nom+" introuvable.");
 		}
-//		System.out.println("Valeur de "+nom+": "+out);
 		return out;
 	}
 

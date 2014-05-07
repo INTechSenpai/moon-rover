@@ -6,8 +6,7 @@ import robot.serial.Serial;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
-import exception.ConfigException;
-import exception.SerialException;
+import exceptions.serial.SerialException;
 
 /**
  * Classe des capteurs, qui communique avec la carte capteur
@@ -21,7 +20,7 @@ public class Capteurs implements Service {
 	private Serial serie;
 	private Read_Ini config;
 
-	private boolean capteurs_on;
+	private boolean capteurs_on = true;
 
 	private final int nb_capteurs_infrarouge_avant = 1;
 //    private final int nb_capteurs_infrarouge_arriere = 0;
@@ -38,12 +37,7 @@ public class Capteurs implements Service {
 	
 	public void maj_config()
 	{
-		try {
-			capteurs_on = Boolean.parseBoolean(config.get("capteurs_on"));
-		} catch (ConfigException e) {
-			capteurs_on = true;
-			e.printStackTrace();
-		}
+		capteurs_on = Boolean.parseBoolean(config.get("capteurs_on"));
 	}
 
 	/**
@@ -75,6 +69,7 @@ public class Capteurs implements Service {
 			try{
 				distances = new int[nb];
 				distances_string = serie.communiquer(protocole, nb);
+
 	    		for(int i = 0; i < nb; i++)
 	    			distances[i] = Integer.parseInt(distances_string[i]);
 	    		
@@ -183,4 +178,6 @@ public class Capteurs implements Service {
 		return false;
     }
 
+    
+    
 }

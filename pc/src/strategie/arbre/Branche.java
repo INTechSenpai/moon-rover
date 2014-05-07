@@ -2,7 +2,7 @@ package strategie.arbre;
 
 import java.util.ArrayList;
 
-import exception.PathfindingException;
+import exceptions.strategie.PathfindingException;
 import robot.RobotChrono;
 import scripts.Script;
 import smartMath.Vec2;

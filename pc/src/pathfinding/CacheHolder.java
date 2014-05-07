@@ -5,7 +5,7 @@ package pathfinding;
 
 import java.io.Serializable;
 
-import exception.PathfindingException;
+import exceptions.strategie.PathfindingException;
 import smartMath.Vec2;
 
 /**

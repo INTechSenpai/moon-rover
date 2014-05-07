@@ -1,7 +1,7 @@
 package hook.methodes;
 
+import enums.Cote;
 import hook.Executable;
-import robot.Cote;
 import table.Table;
 
 /**
@@ -22,14 +22,10 @@ public class DisparitionTorche implements Executable {
 		}
 		
 		@Override
-		public void execute()
+		public boolean execute()
 		{
 			table.torche_disparue(cote);
+            return false; // ça n'affecte pas les mouvements du robot
 		}
 
-		@Override
-		public boolean bougeRobot() {
-			return false;
-		}	
-		
 }

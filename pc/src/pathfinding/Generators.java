@@ -1,16 +1,15 @@
 package pathfinding;
 
 import pathfinding.SearchSpace.Grid2DSpace;
-import robot.Cote;
 import smartMath.Vec2;
-import table.Obstacle;
 import table.Table;
+import table.obstacles.Obstacle;
 import utils.DataSaver;
 import utils.Log;
 import utils.Read_Ini;
 import container.Container;
-import exception.ConfigException;
-import exception.PathfindingException;
+import enums.Cote;
+import exceptions.strategie.PathfindingException;
 
 /**
  * Générateur des fichiers caches.
@@ -41,16 +40,8 @@ public class Generators {
 			table = (Table)container.getService("Table");
 			Grid2DSpace.set_static_variables(config, log);
 			
-			try {
-				table_x = Integer.parseInt(config.get("table_x"));
-			} catch (NumberFormatException | ConfigException e) {
-				e.printStackTrace();
-			}
-			try {
-				table_y = Integer.parseInt(config.get("table_y"));
-			} catch (NumberFormatException | ConfigException e) {
-				e.printStackTrace();
-			}
+			table_x = Integer.parseInt(config.get("table_x"));
+			table_y = Integer.parseInt(config.get("table_y"));
 			
 			// On créé déjà toutes les map
 			table.initialise();

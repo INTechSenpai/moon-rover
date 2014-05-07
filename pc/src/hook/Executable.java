@@ -12,13 +12,8 @@ public interface Executable {
 
 	/**
 	 * La méthode qui sera exécutée par le hook
+     * @return un booléen qui renseignera sur la fait que la méthode fait ou non bouger le robot
 	 */
-	public void execute();
-	
-	/**
-	 * Retourne un booléen qui renseignera sur la fait que la méthode fait ou non bouger le robot
-	 * @return
-	 */
-	public boolean bougeRobot();
+	public boolean execute();
 	
 }

@@ -13,10 +13,9 @@ import strategie.MemoryManager;
 import strategie.Strategie;
 import utils.Log;
 import utils.Read_Ini;
-import exception.ConfigException;
-import exception.ContainerException;
-import exception.SerialManagerException;
-import exception.ThreadException;
+import exceptions.ContainerException;
+import exceptions.ThreadException;
+import exceptions.serial.SerialManagerException;
 
 /**
  * Service qui instancie les threads
@@ -56,14 +55,6 @@ public class ThreadManager {
 		if(thread == null)
 			threads.put("threadTimer", new ThreadTimer(table, capteur, deplacements));
 		return threads.get("threadTimer");
-	}
-
-	public AbstractThread getThreadPosition(RobotVrai robotvrai)
-	{
-		AbstractThread thread = threads.get("threadPosition");
-		if(thread == null)
-			threads.put("threadPosition", new ThreadPosition(robotvrai));
-		return threads.get("threadPosition");
 	}
 
 	public AbstractThread getThreadCapteurs(RobotVrai robotvrai, Table table, Capteurs capteurs)

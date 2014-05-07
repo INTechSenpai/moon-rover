@@ -3,12 +3,11 @@ package container;
 import java.util.Hashtable;
 import java.util.Map;
 
-import hook.HookGenerator;
+import hook.sortes.HookGenerator;
 import pathfinding.Pathfinding;
-import exception.ConfigException;
-import exception.ContainerException;
-import exception.SerialManagerException;
-import exception.ThreadException;
+import exceptions.ContainerException;
+import exceptions.ThreadException;
+import exceptions.serial.SerialManagerException;
 import utils.*;
 import scripts.ScriptManager;
 import strategie.GameState;
@@ -23,6 +22,9 @@ import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
 import robot.cartes.laser.FiltrageLaser;
 import robot.cartes.laser.Laser;
+import robot.hautniveau.ActionneursHautNiveau;
+import robot.hautniveau.CapteurSimulation;
+import robot.hautniveau.DeplacementsHautNiveau;
 import robot.serial.SerialManager;
 import robot.serial.Serial;
 
@@ -104,7 +106,7 @@ public class Container {
 
 	// TODO: supprimer correctement ce warning
 	@SuppressWarnings("unchecked")
-    public Service getService(String nom) throws ContainerException, ThreadException, ConfigException, SerialManagerException
+    public Service getService(String nom) throws ContainerException, ThreadException, SerialManagerException
 	{
 		if(services.containsKey(nom))
 			;
@@ -120,32 +122,52 @@ public class Container {
 		else if(nom == "Deplacements")
 			services.put(nom, (Service)new Deplacements((Log)getService("Log"),
 														(Serial)getService("serieAsservissement")));
-		else if(nom == "Capteur" || nom == "Capteurs")
-			services.put("Capteur", (Service)new Capteurs(	(Read_Ini)getService("Read_Ini"),
-													(Log)getService("Log"),
-													(Serial)getService("serieCapteursActionneurs")));
+		else if(nom == "Capteur")
+			services.put(nom, (Service)new Capteurs(	(Read_Ini)getService("Read_Ini"),
+			                                                (Log)getService("Log"),
+			                                                (Serial)getService("serieCapteursActionneurs")));
 		else if(nom == "Actionneurs")
 			services.put(nom, (Service)new Actionneurs(	(Read_Ini)getService("Read_Ini"),
 														(Log)getService("Log"),
 														(Serial)getService("serieCapteursActionneurs")));
 		else if(nom == "HookGenerator")
+		{
 			services.put(nom, (Service)new HookGenerator(	(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log"),
 															(Capteurs)getService("Capteur")));		
+			getService("RealGameState"); // à cause de la dépendance circulaire...
+		}
 		else if(nom == "RobotVrai")
-			services.put(nom, (Service)new RobotVrai(	(Capteurs)getService("Capteur"),
-														(Actionneurs)getService("Actionneurs"),
-														(Deplacements)getService("Deplacements"),
-														(HookGenerator)getService("HookGenerator"),
+			services.put(nom, (Service)new RobotVrai(	(CapteurSimulation)getService("CapteurSimulation"),
+														(ActionneursHautNiveau)getService("ActionneursHautNiveau"),
+                                                        (DeplacementsHautNiveau)getService("DeplacementsHautNiveau"),
 														(Table)getService("Table"),
 														(Read_Ini)getService("Read_Ini"),
 														(Log)getService("Log")));		
+        else if(nom == "DeplacementsHautNiveau")
+            services.put(nom, (Service)new DeplacementsHautNiveau(  (Log)getService("Log"),
+                                                                    (Read_Ini)getService("Read_Ini"),
+                                                                    (Table)getService("Table"),
+                                                                    (Deplacements)getService("Deplacements"),
+                                                                    (HookGenerator)getService("HookGenerator")));
+        else if(nom == "ActionneursHautNiveau")
+            services.put(nom, (Service)new ActionneursHautNiveau(   (Read_Ini)getService("Read_Ini"),
+                                                                    (Log)getService("Log"),
+                                                                    (Actionneurs)getService("Actionneurs")));
+        else if(nom == "CapteurSimulation")
+            services.put(nom, (Service)new CapteurSimulation(   (Log)getService("Log"),
+                                                                (Read_Ini)getService("Read_Ini"),  
+                                                                (Table)getService("Table")));
         else if(nom == "RealGameState")
+        {
             services.put(nom, (Service)new GameState<RobotVrai>(  (Read_Ini)getService("Read_Ini"),
                                                                   (Log)getService("Log"),
                                                                   (Table)getService("Table"),
                                                                   (RobotVrai)getService("RobotVrai"),
                                                                   (Pathfinding)getService("Pathfinding")));
+            // DÉPENDANCE CIRCULAIRE POWAAAAAH
+            ((HookGenerator)getService("HookGenerator")).setGameState((GameState<RobotVrai>)getService("RealGameState"));
+        }
 		else if(nom == "ScriptManager")
 			services.put(nom, (Service)new ScriptManager(	(HookGenerator)getService("HookGenerator"),
 															(ThreadTimer)getService("threadTimer"),
@@ -153,7 +175,6 @@ public class Container {
 															(Log)getService("Log")));
 		else if(nom == "Strategie")
 			services.put(nom, (Service)new Strategie(	(MemoryManager)getService("MemoryManager"),
-														(ThreadTimer)getService("threadTimer"),
 														(ScriptManager)getService("ScriptManager"),
 														(GameState<RobotVrai>)getService("RealGameState"),
 														(Read_Ini)getService("Read_Ini"),
@@ -162,8 +183,6 @@ public class Container {
 			services.put(nom, (Service)threadmanager.getThreadTimer(	(Table)getService("Table"),
 																		(Capteurs)getService("Capteur"),
 																		(Deplacements)getService("Deplacements")));
-		else if(nom == "threadPosition")
-			services.put(nom, (Service)threadmanager.getThreadPosition(	(RobotVrai)getService("RobotVrai")));
 		else if(nom == "threadCapteurs")
 			services.put(nom, (Service)threadmanager.getThreadCapteurs(	(RobotVrai)getService("RobotVrai"),
 																		(Table)getService("Table"),
@@ -205,7 +224,8 @@ public class Container {
 		else
 		{
 			log.critical("Erreur de getService pour le service: "+nom, this);
-			throw new ContainerException();
+			if(!nom.equals("threadPosition")) // TODO: virer proprement de tous les fichiers
+			        throw new ContainerException();
 		}
 		return services.get(nom);
 	}	
@@ -240,11 +260,6 @@ public class Container {
 		}
 		try {
 			getService("threadCapteurs");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			getService("threadPosition");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

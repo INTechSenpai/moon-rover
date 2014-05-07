@@ -5,8 +5,6 @@ import strategie.GameState;
 import hook.Callback;
 import hook.Executable;
 import hook.Hook;
-import hook.HookGenerator;
-import robot.Cote;
 import robot.RobotChrono;
 import robot.RobotVrai;
 import utils.Log;
@@ -14,14 +12,14 @@ import utils.Read_Ini;
 import container.Service;
 import hook.methodes.DisparitionTorche;
 import hook.methodes.TakeFire;
-
+import hook.sortes.HookGenerator;
 import java.util.ArrayList;
 
-import exception.ConfigException;
-import exception.MouvementImpossibleException;
-import exception.PathfindingException;
-import exception.ScriptException;
-import exception.SerialException;
+import enums.Cote;
+import exceptions.deplacements.MouvementImpossibleException;
+import exceptions.serial.SerialException;
+import exceptions.strategie.PathfindingException;
+import exceptions.strategie.ScriptException;
 /**
  * Classe abstraite dont hériteront les différents scripts. S'occupe le robotvrai et robotchrono de manière à ce que ce soit transparent pour les différents scripts
  * @author pf
@@ -45,17 +43,8 @@ public abstract class Script implements Service {
 		Script.config = config;
 		Script.log = log;
 		
-		try {
-			couleur = config.get("couleur");
-		} catch (ConfigException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			rayon_robot = Integer.parseInt(config.get("rayon_robot"));
-		} catch (NumberFormatException | ConfigException e) {
-			e.printStackTrace();
-		}
+		couleur = config.get("couleur");
+		rayon_robot = Integer.parseInt(config.get("rayon_robot"));
 }
 		
 	/**
@@ -95,8 +84,7 @@ public abstract class Script implements Service {
 		
 		try
 		{
-			log.debug("va_au_point_pathfinding : " +point_entree.toString(), this);
-		    state.robot.va_au_point_pathfinding(state.pathfinding, point_entree, hooks_chemin, retenter_si_blocage, false, false, false);
+		    state.robot.va_au_point_pathfinding(state.pathfinding, point_entree, hooks_chemin);
 			execute(id_version, state);
 			
 

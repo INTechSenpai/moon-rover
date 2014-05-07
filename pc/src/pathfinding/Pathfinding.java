@@ -4,14 +4,13 @@ import java.util.ArrayList;
 
 import pathfinding.SearchSpace.Grid2DSpace;
 import smartMath.Vec2;
-import table.ObstacleCirculaire;
 import table.Table;
+import table.obstacles.ObstacleCirculaire;
 import utils.DataSaver;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
-import exception.ConfigException;
-import exception.PathfindingException;
+import exceptions.strategie.PathfindingException;
 
 
 /**
@@ -76,11 +75,7 @@ public class Pathfinding implements Service, Cloneable
 	 */
 	public void maj_config()
 	{
-		try {
-			nb_precisions = Integer.parseInt(config.get("nb_precisions"));
-		} catch (NumberFormatException | ConfigException e) {
-			e.printStackTrace();
-		}
+		nb_precisions = Integer.parseInt(config.get("nb_precisions"));
 
 		hashTableSaved = new int[nb_precisions];
 
@@ -129,7 +124,7 @@ public class Pathfinding implements Service, Cloneable
 			{
 				code_torches_actuel = table.codeTorches();
 				try {
-					distance_cache = (CacheHolder) DataSaver.charger("cache/distance-"+code_torches_actuel+".cache");
+//					distance_cache = (CacheHolder) DataSaver.charger("cache/distance-"+code_torches_actuel+".cache");
 				}
 				catch(Exception e)
 				{
@@ -257,9 +252,6 @@ public class Pathfinding implements Service, Cloneable
 	    return table.equals(((Pathfinding)other).table);
 	}
 	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
 	@Override
 	public Pathfinding clone()
 	{

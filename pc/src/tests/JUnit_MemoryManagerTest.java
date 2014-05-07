@@ -95,7 +95,7 @@ public class JUnit_MemoryManagerTest extends JUnit_Test {
 	        state.table.pickFire(0);
 	        state.table.pickTree(0);
 	        Assert.assertTrue(!state.table.equals(cloned.table));
-            Assert.assertTrue(!state.pathfinding.equals(cloned.pathfinding));
+            Assert.assertTrue(!state.pathfinding.equals(cloned.pathfinding)); // TODO
 	    }
 
 }
