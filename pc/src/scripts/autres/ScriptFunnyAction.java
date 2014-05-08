@@ -65,7 +65,6 @@ public class ScriptFunnyAction extends Script {
 	@Override
 	protected void execute(int id_version, GameState<?> state)
 			throws MouvementImpossibleException, SerialException {
-		state.robot.sleep(1500);
 		// C'est le thread timer qui s'occupe de lancer le filet
 	}
 
