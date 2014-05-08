@@ -536,9 +536,7 @@ public class DeplacementsHautNiveau implements Service
     {
         log.debug("Arrêt du robot en "+position, this);
         try {
-            deplacements.desactiver_asservissement_translation();
             deplacements.stopper();
-            deplacements.activer_asservissement_translation();
         } catch (SerialException e) {
             e.printStackTrace();
         }           
