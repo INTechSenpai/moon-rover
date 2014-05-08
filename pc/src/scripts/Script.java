@@ -130,7 +130,7 @@ public abstract class Script implements Service {
 		state.robot.set_vitesse_rotation("entre_scripts");
 
 
-		state.robot.initialiser_compteur(state.pathfinding.distance(state.robot.getPosition(), point_entree, use_cache));
+		state.robot.initialiser_compteur(state.pathfinding.distance(state.robot.getPositionFast(), point_entree, use_cache));
 		state.robot.setPosition(point_entree);
 
 		try {

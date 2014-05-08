@@ -81,7 +81,7 @@ public class Branche
 		if(!isActionCharacteisticsComputed)
 		{
 			scoreScript = script.meta_score(metaversion, state);
-			/*try
+			try
 			{
 				dureeScript = script.metacalcule(metaversion, state, useCachedPathfinding);
 				//System.out.println(script.toString() +".duree = " + dureeScript);
@@ -90,8 +90,7 @@ public class Branche
 			catch (PathfindingException e)
 			{
 				dureeScript = -1;
-			}*/
-			dureeScript = 8000;
+			}
 			isActionCharacteisticsComputed = true;
 		}
 	}

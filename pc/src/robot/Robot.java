@@ -52,7 +52,7 @@ public abstract class Robot implements Service {
 	 */
     public void copy(Robot rc)
     {
-        rc.setPosition(getPositionFast().clone()); // pas d'appel à la série
+        rc.setPosition(getPositionFast()); // pas d'appel à la série
         rc.setOrientation(getOrientationFast());   // pas d'appel à la série
         rc.set_vitesse_rotation(vitesse_rotation);
         rc.set_vitesse_translation(vitesse_translation);

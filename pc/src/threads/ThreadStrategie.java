@@ -126,7 +126,8 @@ public class ThreadStrategie extends AbstractThread {
 			}
 			catch(PathfindingException e)
 			{
-				log.debug("La branche " + meilleur + " renvoyée par l'arbre n'a pas de metaversion acessible, on relace l'arbre sans cette branche",this);
+
+				//log.debug("La branche " + meilleur + " renvoyée par l'arbre n'a pas de metaversion acessible, on relace l'arbre sans cette branche",this);
 				errorList.add(meilleur);
 				//e.printStackTrace();
 			}
