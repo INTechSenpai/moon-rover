@@ -300,6 +300,17 @@ public class Table implements Service {
 		return out;
 	}
 
+    private int codeMammouth()
+    {
+        int out = 0;
+        if(leftMammothHit)
+            out++;
+        out <<= 1;
+        if(rightMammothHit)
+            out++;
+        return out;
+    }
+
     public synchronized void pickTorch (int id)
     {
         arrayTorch[id].pickTorch();
@@ -353,15 +364,11 @@ public class Table implements Service {
 	 */
 	public void copy(Table ct)
 	{
-		if(!equals(ct))
+        if(!equals(ct))
 		{
-			// Pour les torches, un hash ralentirait plus qu'autre chose
-			arrayTorch[0].clone(ct.arrayTorch[0]);
-			arrayTorch[1].clone(ct.arrayTorch[1]);
-			
-			//idem mamouths, pas de hash
-			ct.leftMammothHit = this.leftMammothHit;
-			ct.rightMammothHit = this.rightMammothHit;
+            // pas de hash
+            ct.leftMammothHit = this.leftMammothHit;
+            ct.rightMammothHit = this.rightMammothHit;
 			
 			if(ct.hashFire != hashFire)
 			{
@@ -398,7 +405,8 @@ public class Table implements Service {
 	 */
 	public int hashTable()
 	{
-		return (((gestionobstacles.hash()*100 + hashFire)*100 + hashTree)*100)*4+codeTorches();
+	    
+		return (((((gestionobstacles.hash()*100 + hashFire)*100 + hashTree)*100))*4+codeMammouth())*4+codeTorches();
 	}
 
 	/**
@@ -410,10 +418,7 @@ public class Table implements Service {
 	{
 		return 	other != null
                 && other instanceof Table
-		        && gestionobstacles.equals(other.gestionobstacles)
-				&& hashFire == other.hashFire
-				&& hashTree == other.hashTree;
-		//TODO ? Check torches and mammoths
+                && hashTable() == other.hashTable();
 	}
 	
 
