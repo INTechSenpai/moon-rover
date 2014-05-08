@@ -61,7 +61,6 @@ public class GameState<R extends Robot> implements Service
     {
         table.copy(other.table);
         robot.copy(other.robot);
-        pathfinding.update();
         other.time_depuis_debut = time_depuis_debut;
         other.time_depuis_racine = time_depuis_racine;
         other.pointsObtenus = this.pointsObtenus;

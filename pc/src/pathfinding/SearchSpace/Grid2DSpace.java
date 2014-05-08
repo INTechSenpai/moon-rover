@@ -35,7 +35,8 @@ public class Grid2DSpace implements Serializable
 	// Taille "normale" de la table
 	private static int table_x = 3000;
 	private static int table_y = 2000;
-	private static int marge = 20;
+	private int marge = 20;
+	private static int margeStatique = 20;
 	
 	private int num_pochoir; // 2^num_pochoir = reductionFactor
 	private static int robotRadius;
@@ -55,7 +56,7 @@ public class Grid2DSpace implements Serializable
 			table_y = Integer.parseInt(config.get("table_y"));
 			rayon_robot_adverse = Integer.parseInt(config.get("rayon_robot_adverse"));
 			robotRadius = Integer.parseInt(config.get("rayon_robot"));
-			marge = Integer.parseInt(config.get("marge"));
+			margeStatique = Integer.parseInt(config.get("marge"));
 
 			pochoirs = new Grid2DPochoir[10];
 			for(int i = 0; i < 10; i++)
@@ -75,7 +76,7 @@ public class Grid2DSpace implements Serializable
 		sizeY = table_y >> num_pochoir;
 		this.num_pochoir = num_pochoir;
 //		surface = sizeX * sizeY;
-		
+		marge = margeStatique;
 		datas = new boolean[sizeX+1][sizeY+1];
 		// construit une map de sizeX * sizeY vide
 		for(int i=0; i<sizeX; i++)
@@ -420,6 +421,9 @@ public class Grid2DSpace implements Serializable
 		return s;
 	}
 
-	
+	public void setMarge(int marge)
+	{
+	    this.marge = marge;
+	}
 	
 }

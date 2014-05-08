@@ -306,18 +306,18 @@ public abstract class Robot implements Service {
     {
         // S'il y a une exception du pathfinding, on remonte la remonte
         // S'il y a une exception de mouvement (ennemi ou mur), on cherche un nouveau chemin.
-        boolean exceptionMouvementImpossible;
-        do {
-            exceptionMouvementImpossible = false;
-            ArrayList<Vec2> chemin = pathfinding.cheminAStar(getPosition(), arrivee);
-            try
-            {
-                suit_chemin(chemin, hooks);
-            } catch (MouvementImpossibleException e)
-            {
-                exceptionMouvementImpossible = true;
-            }        
-        } while(exceptionMouvementImpossible);
+        pathfinding.update_simple_pathfinding();
+        ArrayList<Vec2> chemin = pathfinding.chemin(getPosition(), arrivee);
+        try
+        {
+            suit_chemin(chemin, hooks);
+        } catch (MouvementImpossibleException e)
+        {
+            log.warning("On cherche un itinéraire de secours", this);
+            pathfinding.update_astar();
+            ArrayList<Vec2> chemin2 = pathfinding.chemin(getPosition(), arrivee);
+            suit_chemin(chemin2, hooks);       
+        }        
     }
 
 }
