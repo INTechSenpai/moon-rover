@@ -2,8 +2,6 @@ package scripts.autres;
 
 import java.util.ArrayList;
 
-import enums.Cote;
-import enums.PositionRateau;
 import exceptions.deplacements.MouvementImpossibleException;
 import exceptions.serial.SerialException;
 import hook.sortes.HookGenerator;
@@ -67,12 +65,7 @@ public class ScriptFunnyAction extends Script {
 	@Override
 	protected void execute(int id_version, GameState<?> state)
 			throws MouvementImpossibleException, SerialException {
-		state.robot.tourner_sans_symetrie((float)(-1 * Math.PI/2));	// pas de symétrie
-		state.robot.rateau(PositionRateau.BAS, Cote.DROIT);
-		if(threadtimer.temps_restant() > 0)
-			state.robot.sleep(threadtimer.temps_restant());
-		state.robot.sleep(1500);
-		state.robot.lancerFilet();
+		// C'est le thread timer qui s'occupe de lancer le filet
 	}
 
 	@Override

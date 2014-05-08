@@ -176,7 +176,8 @@ public class Container {
 		else if(nom == "threadTimer")
 			services.put(nom, (Service)threadmanager.getThreadTimer(	(Table)getService("Table"),
 																		(Capteurs)getService("Capteur"),
-																		(Deplacements)getService("Deplacements")));
+																		(Deplacements)getService("Deplacements"),
+		                                                                (Actionneurs)getService("Actionneurs")));
 		else if(nom == "threadCapteurs")
 			services.put(nom, (Service)threadmanager.getThreadCapteurs(	(RobotVrai)getService("RobotVrai"),
 																		(Table)getService("Table"),
