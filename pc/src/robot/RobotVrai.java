@@ -187,7 +187,7 @@ public class RobotVrai extends Robot {
 	@Override
 	public void baisser_pince(Cote cote) throws SerialException
 	{
-	    baisser_pince(cote);
+	    actionneurs.baisser_pince(cote);
 	}	
 
 	@Override	
