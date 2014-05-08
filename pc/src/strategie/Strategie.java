@@ -394,7 +394,7 @@ public class Strategie implements Service {
 				mState = memorymanager.getClone(0);
 				mState.pathfinding.setPrecision(4);
 				scope.push( new Branche(	TTL,							// Il reste tout le TTL sur chacune des racines
-											true,							// N'utilise pas le cache pour le premier niveau de profondeur 
+											false,							// N'utilise pas le cache pour le premier niveau de profondeur 
 											1,								// différence de profondeur entre la racine et ici, donc 0 dans notre cas
 											mScript, 						// Une branche par script et par métaversion
 											metaversion, 
@@ -519,7 +519,7 @@ public class Strategie implements Service {
 							Branchcount++;
 							branchHasChild = true;
 							scope.push( new Branche(	(int)(current.TTL - current.dureeScript),	// TTL restant : celui du restant moins la durée de son action	
-														mState.time_depuis_racine >= TrueAStarTTL || current.profondeur > 0,//true,//current.profondeur >= 2,					// Utiliser le cache dès le second niveau de profondeur
+														mState.time_depuis_racine >= TrueAStarTTL || current.profondeur > 1,//true,//current.profondeur >= 2,					// Utiliser le cache dès le second niveau de profondeur
 														current.profondeur+1,						// différence de profondeur entre la racine et ici, donc 1 + celle du parent
 														mScript, 									// Une branche par script et par métaversion
 														metaversion, 
