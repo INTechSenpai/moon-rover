@@ -3,6 +3,7 @@ package threads;
 import java.util.Hashtable;
 
 import pathfinding.Pathfinding;
+import robot.cartes.Actionneurs;
 import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
 import robot.cartes.laser.FiltrageLaser;
@@ -49,11 +50,11 @@ public class ThreadManager {
 	 * @throws ConfigException
 	 * @throws SerialManagerException
 	 */
-	public AbstractThread getThreadTimer(Table table, Capteurs capteur, Deplacements deplacements)
+	public AbstractThread getThreadTimer(Table table, Capteurs capteur, Deplacements deplacements, Actionneurs actionneurs)
 	{
 		AbstractThread thread = threads.get("threadTimer");
 		if(thread == null)
-			threads.put("threadTimer", new ThreadTimer(table, capteur, deplacements));
+			threads.put("threadTimer", new ThreadTimer(table, capteur, deplacements, actionneurs));
 		return threads.get("threadTimer");
 	}
 
