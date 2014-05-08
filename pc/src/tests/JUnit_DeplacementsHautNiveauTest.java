@@ -34,7 +34,7 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
         hookgenerator = (HookGenerator) container.getService("HookGenerator");
         real_state = (GameState<RobotVrai>) container.getService("RealGameState");
         robot.setPosition(new Vec2(1000, 900));
-        robot.setOrientation((float)Math.PI/2);
+        robot.setOrientation(Math.PI/2);
         Sleep.sleep(500);
         Vec2 consigne = new Vec2(700, 1400);
         robot.setConsigne(consigne);
@@ -44,15 +44,16 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     public void test_va_au_point_courbe() throws Exception
     {
 //        robot.va_au_point_courbe((float) Math.PI, 500, false);
-        robot.va_au_point_courbe(-(float) Math.PI/2, 500, true, false);
+        robot.va_au_point_courbe((float) (Math.PI/4), 500, true, false);
     }
 
     @Test
     public void test_va_au_point_symetrie() throws Exception
     {
-        robot.va_au_point_symetrie(false, false, false);
+        robot.va_au_point_symetrie(false, true, false);
     }
 
+    
     @Test
     public void test_va_au_point_hook() throws Exception
     {
@@ -70,6 +71,14 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     public void test_va_au_point_correction() throws Exception
     {
         robot.va_au_point_hook_correction_detection(null, null, false, false);
+    }
+
+    @Test
+    public void test_va_au_point_detection() throws Exception
+    {
+        container.demarreTousThreads();
+        robot.setInsiste(true);
+        robot.va_au_point_gestion_exception(null, null, true, false, false);
     }
 
     @Test
@@ -92,7 +101,8 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
         chemin.add(new Vec2(-1000, 1200));
         chemin.add(new Vec2(0, 500));
         chemin.add(new Vec2(1000, 1200));
-        
+        robot.setInsiste(true);
+        container.demarreTousThreads();
         robot.suit_chemin(chemin, null);
     }
 
@@ -107,11 +117,23 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     @Test
     public void test_avancer_mur() throws Exception
     {
-        robot.setPosition(new Vec2(1000, 1500));
-        robot.setOrientation((float)Math.PI/2);
-        Sleep.sleep(500);
+        container.demarreTousThreads();
+//        robot.avancer(1500, null, true);
+        real_state.robot.avancer_dans_mur(1500);
+    }
 
-        robot.avancer(200, null, true);
+    @Test
+    public void test_vitesse_avancer() throws Exception
+    {
+        real_state.robot.avancer(200);
+        Sleep.sleep(1000);
+        real_state.robot.avancer_dans_mur(200);
+        Sleep.sleep(1000);
+        real_state.robot.avancer(200);
+        Sleep.sleep(1000);
+        real_state.robot.avancer_dans_mur(200);
+        Sleep.sleep(1000);
+        real_state.robot.avancer(200);
     }
 
 }
