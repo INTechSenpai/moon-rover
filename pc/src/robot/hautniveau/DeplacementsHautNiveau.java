@@ -67,12 +67,10 @@ public class DeplacementsHautNiveau implements Service
     {
         try {
             // TODO: vitesses normalisées
-            deplacements.set_vitesse_translation(50);
-            deplacements.set_vitesse_rotation(80);
+            deplacements.set_vitesse_translation(100);
+            deplacements.set_vitesse_rotation(100);
             avancer(-200, null, true);
-            deplacements.set_vitesse_translation(80);
             avancer(-200, null, true);
-            deplacements.set_vitesse_translation(50);
             position.x = 1500 - 165;
             if(symetrie)
             {
@@ -86,15 +84,13 @@ public class DeplacementsHautNiveau implements Service
             }
 
             Sleep.sleep(500);
-            avancer(-45, null, true);  // toujours pas d'exeption, car on ne sait toujours pas ou on est sur la map
+            avancer(50, null, true);
             tourner(-(float)Math.PI/2, null, false);
             avancer(-600, null, true);
-            deplacements.set_vitesse_translation(80);
             avancer(-200, null, true);
             position.y = 2000 - 165;
             deplacements.set_y(2000 - 165);
             Sleep.sleep(500);
-            deplacements.set_vitesse_translation(50);
             avancer(100, null, false);
             setOrientation((float)(-Math.PI)/2);
             //Normalement on se trouve à (1500 - 170 - 70 = 1260 ; 2000 - 170 - 100 = 1730)
