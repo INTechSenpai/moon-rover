@@ -121,16 +121,16 @@ class AStar
 		if( !espace.canCross(depart))
 		{
 			//Affiche la map : pour debug
-			System.out.println("Pathfinding : Depart (" + depart.x  + "; " + depart.y + ") is in a obstacle.  arrivee was valid (" + arrivee.x  + "; " + arrivee.y + ")");
-			printWorkingMap(depart, arrivee);	// a mettre si on veut comprendre le trajet qui foire.
+	//		System.out.println("Pathfinding : Depart (" + depart.x  + "; " + depart.y + ") is in a obstacle.  arrivee was valid (" + arrivee.x  + "; " + arrivee.y + ")");
+	//		printWorkingMap(depart, arrivee);	// a mettre si on veut comprendre le trajet qui foire.
 			throw new PathfindingException();
 		}
 		// Exeption levée si l'arrivée est dans un obstacle
 		else if(!espace.canCross(arrivee) )
 		{    
 			//Affiche la map : pour debug
-			System.out.println("Pathfinding : arrivee (" + arrivee.x  + "; " + arrivee.y + ") is in a obstacle. depart was valid (" + depart.x  + "; " + depart.y + ")");
-			printWorkingMap(depart, arrivee);	// a mettre si on veut comprendre le trajet qui foire.
+	//		System.out.println("Pathfinding : arrivee (" + arrivee.x  + "; " + arrivee.y + ") is in a obstacle. depart was valid (" + depart.x  + "; " + depart.y + ")");
+	//		printWorkingMap(depart, arrivee);	// a mettre si on veut comprendre le trajet qui foire.
 			throw new PathfindingException();	
 		}
 		// Petite optimisation
@@ -184,6 +184,9 @@ class AStar
 		    			
 		    		}
     			}
+    			else if(came_from.get(current) == null)
+    			    throw new PathfindingException();	// bug interne au A*, complexe a debug
+    			
     			// Le chemin final ne doit pas contenir le point de départ (plus pratique pour Script et pour le HPA*)
 //    			chemin.add(0, new Vec2(depart.x,depart.y));
 
@@ -226,7 +229,7 @@ class AStar
 		//Affiche la map : pour debug
 	//	System.out.println("Pathfinding : There is no traject between (" + depart.x  + "; " + depart.y + ") and (" + arrivee.x  + "; " + arrivee.y + ")");
 	//	printWorkingMap(depart, arrivee);
-	  throw new PathfindingException();	
+	    throw new PathfindingException();	
 	    
 	    
 	}	// process

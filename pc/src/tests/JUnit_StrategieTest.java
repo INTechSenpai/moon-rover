@@ -80,14 +80,14 @@ public class JUnit_StrategieTest extends JUnit_Test {
 		//strategie.evaluate();
 		//log.debug("Strategie Test finished", this);
 		
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 100; i++)
 		{
 			strategie.evaluate(null);
 			
 		}
 		log.debug("Strategie Performance test starting", this);
 		
-		int testCount = 10;
+		int testCount = 100;
 		long startTime = System.nanoTime();
 		for (int i = 0; i < testCount; i++)
 			strategie.evaluate(null);

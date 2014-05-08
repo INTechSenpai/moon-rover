@@ -147,10 +147,10 @@ public class ScriptTree extends Script{
 				cote = Cote.GAUCHE;
 		} while(cote == Cote.DROIT);
 		state.robot.set_vitesse_translation("arbre_avant");
-		state.robot.avancer(318-recul, hooks);		
 		//log.debug("adding " + state.table.nbrTree(id_version, Cote.DROIT) + state.table.nbrTree(id_version, Cote.GAUCHE) + " fruits to the bac", this);
 		state.robot.add_fruits(state.table.nbrTree(id_version, Cote.DROIT) + state.table.nbrTree(id_version, Cote.GAUCHE));
 		state.table.pickTree(id_version);
+		state.robot.avancer(318-recul, hooks);		
 	}
 
 	@Override

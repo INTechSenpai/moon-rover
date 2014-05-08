@@ -131,12 +131,10 @@ public class Container {
 														(Log)getService("Log"),
 														(Serial)getService("serieCapteursActionneurs")));
 		else if(nom == "HookGenerator")
-		{
 			services.put(nom, (Service)new HookGenerator(	(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log"),
-															(Capteurs)getService("Capteur")));		
-			getService("RealGameState"); // à cause de la dépendance circulaire...
-		}
+															(Capteurs)getService("Capteur"),
+															(GameState<RobotVrai>)getService("RealGameState")));
 		else if(nom == "RobotVrai")
 			services.put(nom, (Service)new RobotVrai(	(CapteurSimulation)getService("CapteurSimulation"),
 														(ActionneursHautNiveau)getService("ActionneursHautNiveau"),
@@ -148,8 +146,7 @@ public class Container {
             services.put(nom, (Service)new DeplacementsHautNiveau(  (Log)getService("Log"),
                                                                     (Read_Ini)getService("Read_Ini"),
                                                                     (Table)getService("Table"),
-                                                                    (Deplacements)getService("Deplacements"),
-                                                                    (HookGenerator)getService("HookGenerator")));
+                                                                    (Deplacements)getService("Deplacements")));
         else if(nom == "ActionneursHautNiveau")
             services.put(nom, (Service)new ActionneursHautNiveau(   (Read_Ini)getService("Read_Ini"),
                                                                     (Log)getService("Log"),
@@ -159,15 +156,12 @@ public class Container {
                                                                 (Read_Ini)getService("Read_Ini"),  
                                                                 (Table)getService("Table")));
         else if(nom == "RealGameState")
-        {
             services.put(nom, (Service)new GameState<RobotVrai>(  (Read_Ini)getService("Read_Ini"),
                                                                   (Log)getService("Log"),
                                                                   (Table)getService("Table"),
                                                                   (RobotVrai)getService("RobotVrai"),
                                                                   (Pathfinding)getService("Pathfinding")));
-            // DÉPENDANCE CIRCULAIRE POWAAAAAH
-            ((HookGenerator)getService("HookGenerator")).setGameState((GameState<RobotVrai>)getService("RealGameState"));
-        }
+ 
 		else if(nom == "ScriptManager")
 			services.put(nom, (Service)new ScriptManager(	(HookGenerator)getService("HookGenerator"),
 															(ThreadTimer)getService("threadTimer"),

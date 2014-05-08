@@ -34,23 +34,15 @@ public class HookGenerator implements Service {
 	private int tolerance_position = 20;
 	String couleur;
 	
-	public HookGenerator(Read_Ini config, Log log, Capteurs capteur)
+	public HookGenerator(Read_Ini config, Log log, Capteurs capteur, GameState<RobotVrai> real_state)
 	{
 		this.config = config;
 		this.log = log;
 		this.capteur = capteur;
+		this.real_state = real_state;
 		maj_config();
 	}
 
-	/**
-	 * Permet d'outrepasser une dépendance circulaire...
-	 * @param real_state
-	 */
-	public void setGameState(GameState<RobotVrai> real_state)
-	{
-       this.real_state = real_state;
-	}
-	
 	public void maj_config()
 	{
 		couleur = config.get("couleur");

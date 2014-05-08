@@ -86,6 +86,9 @@ public class Strategie implements Service {
 				boolean dernier = (nbScriptsRestants() == 1);
 
 				log.debug("=============== New Script =========================", this);
+				log.debug("Position Robot : "+ real_state.robot.getPosition(), this);
+				log.debug("Mammouth Gauche feu  : "+ real_state.table.isLeftMammothHit(), this);
+				log.debug("Mammouth Right feu  : "+ real_state.table.isRightMammothHit(), this);
 				log.debug("Pince Gauche feu  : "+ real_state.robot.isTient_feu(Cote.GAUCHE), this);
 				log.debug("Pince Droite feu  : "+ real_state.robot.isTient_feu(Cote.DROIT), this);
 				log.debug("Nb fruit bac : "+ real_state.robot.get_nombre_fruits_bac(), this);
@@ -214,6 +217,8 @@ public class Strategie implements Service {
 		if(script == null)
 			throw new PathfindingException();
 			
+
+		
 		for(int i : script.version_asso(meta_id))
 		{
 			score = script.score(id, state);
@@ -318,7 +323,7 @@ public class Strategie implements Service {
 		// les action a anticiper doivent commencer dans les 30 prochaines secondes
 
 		//Config pour 1 sec d'exécution sur raspbe
-		int		TTL = 21000;	// les actions anticipés doivent débuter dans les 14 prochaines secondes   
+		int		TTL = 24000;	// les actions anticipés doivent débuter dans les 24 prochaines secondes   
 		int maxProf	= 99999;	// En moyenne, réduire ce nombre consuit a sabrer les branches les plus prometteuses
 		
 		//Config pour 4 sec d'exécution sur raspbe
@@ -336,7 +341,7 @@ public class Strategie implements Service {
 		boolean branchHasChild;
 		
 		
-
+		//TODO: mettre tout en une seule racine
 		
 		
 		
@@ -385,11 +390,11 @@ public class Strategie implements Service {
 				}
 				
 				
-				//log.debug("Ajout de la racine " + mScript.toString(), this);
+				//log.debug("Ajout de la racine " + mScript.toString() + " metaversion : " + metaversion, this);
 				mState = memorymanager.getClone(0);
 				mState.pathfinding.setPrecision(4);
 				scope.push( new Branche(	TTL,							// Il reste tout le TTL sur chacune des racines
-											true,							// N'utilise pas le cache pour le premier niveau de profondeur 
+											false,							// N'utilise pas le cache pour le premier niveau de profondeur 
 											1,								// différence de profondeur entre la racine et ici, donc 0 dans notre cas
 											mScript, 						// Une branche par script et par métaversion
 											metaversion, 
@@ -400,21 +405,53 @@ public class Strategie implements Service {
 
 	
 		// ajuste le critère d'arret d'expansion de l'arbre en fonction du nombre de racines de l'arbre (indiquant grosso modo le nombre de branches qu'il y aura au total)
-	//	TTL = (int) (16000+40000*(Math.exp(14-scope.size())/Math.exp(6)));
+		//TTL = (int) (10000+55000000*(Math.exp(14-scope.size())/Math.exp(14)));
+		if(scope.size() == 14)
+			TTL = 26000; 
+		else if(scope.size() == 13)
+			TTL = 11000; 
+		else if(scope.size() == 12)
+			TTL = 12000; 
+		else if(scope.size() == 11)
+			TTL = 13000; 
+		else if(scope.size() == 10)
+			TTL = 14000; 
+		else if(scope.size() == 9)
+			TTL = 16000; 
+		else if(scope.size() == 8)
+			TTL = 18000; 
+		else if(scope.size() == 7)
+			TTL = 20000; 
+		else if(scope.size() == 6)
+			TTL = 24000; 
+		else if(scope.size() == 5)
+			TTL = 28000; 
+		else if(scope.size() == 4)
+			TTL = 35000; 
+		else if(scope.size() == 3)
+			TTL = 45000; 
+		else if(scope.size() == 2)
+			TTL = 50000; 
+		else if(scope.size() == 1)
+			TTL = 60000; 
 		
 		
-		log.debug("TTL = " + TTL + "   scope.size() :" + scope.size(), this);
+		for (int i = 0; i < rootList.size(); ++i)
+			rootList.get(i).TTL = TTL;
+		
+		
+		//log.debug("TTL = " + TTL + "   scope.size() :" + scope.size(), this);
 		// Boucle principale d'exploration des branches
 		if(scope.size() > 1)
 			while (scope.size() != 0)
 			{
 				
 				// Sécurité pour être certain que le DFS ne tombe pas en boucle infinie
-				/*if(startTime + TimeBeforeGiveUp < System.currentTimeMillis())
+				if(startTime + TimeBeforeGiveUp < System.currentTimeMillis())
 				{
 					log.debug(TimeBeforeGiveUp + "ms since IA calculation started : Giving up", this);
 					break;
-				}*/
+				}
 				
 				
 				//log.debug("Nouveau tour de boucle", this);
@@ -424,7 +461,7 @@ public class Strategie implements Service {
 					current.computeActionCharacteristics();
 				
 				// Condition d'ajout des sous-branches : respecter le critère d'arret d'expansion, et ne pas les ajouter 2 fois.
-				if ( current.TTL - current.dureeScript > 0 //&& maxProf >= current.profondeur && mState.time_depuis_debut +5000 < ThreadTimer.duree_match	// critère d'arret d'expansion
+				if ( current.TTL - current.dureeScript > 0 && maxProf >= current.profondeur //&& mState.time_depuis_debut +5000 < ThreadTimer.duree_match	// critère d'arret d'expansion
 						&& (current.sousBranches.size() == 0))	// ne pas ajouter créer 2 fois les fils (si on a déja des fils, c'est qu'ils ont déja tous été créés)
 				{
 					// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage
@@ -507,8 +544,8 @@ public class Strategie implements Service {
 				}
 				
 			}	// fin boucle principale d'exploration
-		log.debug("Explored "+ Branchcount + " branches in " + (System.currentTimeMillis() - startTime) + " ms", this);
-		
+		//log.debug("Explored "+ Branchcount + " branches in " + (System.currentTimeMillis() - startTime) + " ms", this);
+		log.debug("IA completed in " + (System.currentTimeMillis() - startTime) + " ms with TTL = " + TTL + "ms   rootList.size() :" + rootList.size() + "	Explored "+ Branchcount + " branches", this);
 
 		//for (int i = 0; i < rootList.size(); ++i)
 		//	log.debug("Note of " + rootList.get(i).script.toString() + " is " + rootList.get(i).note, this);

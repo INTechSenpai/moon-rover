@@ -144,7 +144,7 @@ public class Pathfinding implements Service, Cloneable
 			{
 				code_torches_actuel = table.codeTorches();
 				try {
-//					distance_cache = (CacheHolder) DataSaver.charger("cache/distance-"+code_torches_actuel+".cache");
+					distance_cache = (CacheHolder) DataSaver.charger("cache/distance-"+code_torches_actuel+".cache");
 				}
 				catch(Exception e)
 				{

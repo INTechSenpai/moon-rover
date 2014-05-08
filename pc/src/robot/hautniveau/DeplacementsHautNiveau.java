@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import container.Service;
-import hook.Callback;
-import hook.Executable;
+//import hook.Callback;
+//import hook.Executable;
 import hook.Hook;
-import hook.methodes.ChangeConsigne;
-import hook.sortes.HookGenerator;
+//import hook.methodes.ChangeConsigne;
+//import hook.sortes.HookGenerator;
 import exceptions.deplacements.BlocageException;
 import exceptions.deplacements.CollisionException;
 import exceptions.deplacements.MouvementImpossibleException;
@@ -44,21 +44,21 @@ public class DeplacementsHautNiveau implements Service
     
     private double orientation; // l'orientation tient compte de la symétrie
     private Deplacements deplacements;
-    private HookGenerator hookgenerator;
+//    private HookGenerator hookgenerator;
     private boolean symetrie;
     private int sleep_boucle_acquittement = 10;
     private int nb_iterations_max = 30;
     private int distance_degagement_robot = 50;
-    private int anticipation_trajectoire_courbe = 200;
+//    private int anticipation_trajectoire_courbe = 200;
     private float angle_degagement_robot;
     private boolean insiste = false;
     
-    public DeplacementsHautNiveau(Log log, Read_Ini config, Table table, Deplacements deplacements, HookGenerator hookgenerator)
+    public DeplacementsHautNiveau(Log log, Read_Ini config, Table table, Deplacements deplacements)
     {
         this.log = log;
         this.config = config;
         this.deplacements = deplacements;
-        this.hookgenerator = hookgenerator;
+//        this.hookgenerator = hookgenerator;
         this.table = table;
         maj_config();
     }
@@ -156,9 +156,7 @@ public class DeplacementsHautNiveau implements Service
         consigne.x = (int) (position.x + distance*Math.cos(orientation));
         consigne.y = (int) (position.y + distance*Math.sin(orientation));
 
-        System.out.println("Début va_au_point_gestion_exception");
         va_au_point_gestion_exception(hooks, null, false, distance < 0, mur);
-        System.out.println("Fin va_au_point_gestion_exception");
     }
         
     /**
@@ -172,7 +170,8 @@ public class DeplacementsHautNiveau implements Service
     {
         if(trajectoire_courbe)
         {
-            consigne = chemin.get(0).clone();
+        	log.critical("Désactive la trajectoire courbe,  pauvre fou!", this);
+/*            consigne = chemin.get(0).clone();
             ArrayList<Hook> hooks_trajectoire = new ArrayList<Hook>();
             for(int i = 0; i < chemin.size()-2; i++)
             {
@@ -199,7 +198,7 @@ public class DeplacementsHautNiveau implements Service
             // Le dernier trajet est exact (sans trajectoire courbe)
             // afin d'arriver exactement au bon endroit.
             consigne = chemin.get(chemin.size()-1).clone();
-            va_au_point_marche_arriere(hooks, null, false, false);            
+            va_au_point_marche_arriere(hooks, null, false, false);         */   
         }
         else
             for(Vec2 point: chemin)
@@ -520,7 +519,7 @@ public class DeplacementsHautNiveau implements Service
         distance_degagement_robot = Integer.parseInt(config.get("distance_degagement_robot"));
         sleep_boucle_acquittement = Integer.parseInt(config.get("sleep_boucle_acquittement"));
         angle_degagement_robot = Float.parseFloat(config.get("angle_degagement_robot"));
-        anticipation_trajectoire_courbe = Integer.parseInt(config.get("anticipation_trajectoire_courbe"));
+//        anticipation_trajectoire_courbe = Integer.parseInt(config.get("anticipation_trajectoire_courbe"));
         trajectoire_courbe = Boolean.parseBoolean(config.get("trajectoire_courbe"));
         symetrie = config.get("couleur").equals("rouge");
     }

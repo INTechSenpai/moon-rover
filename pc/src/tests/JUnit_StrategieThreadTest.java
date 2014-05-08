@@ -44,19 +44,26 @@ public class JUnit_StrategieThreadTest extends JUnit_Test {
 		config.set("couleur", "jaune");
 		
 		table = (Table)container.getService("Table");
-		Vec2 initpos = new Vec2(1100,1300);
+		Vec2 initpos = new Vec2(1000,1400);
 		robotvrai.setPosition(initpos);
 		robotchrono.setPosition(initpos);
 		Sleep.sleep(100);
+		
 		robotvrai.setOrientation((float)Math.PI);
 		robotvrai.set_vitesse_rotation("entre_scripts");
 		robotvrai.set_vitesse_translation("entre_scripts");
-		container.getService("threadPosition");
 		container.getService("threadStrategie");
+		
 		robotvrai.setPosition(initpos);
 		robotchrono.setPosition(initpos);
 		Sleep.sleep(100);
+		
+
+		for (int i = 0; i < 100; i++)
+			strategie.evaluate(null);
+		
 		container.demarreThreads();
+		
 		robotvrai.setPosition(initpos);
 		robotchrono.setPosition(initpos);
 		Sleep.sleep(100);
@@ -66,7 +73,8 @@ public class JUnit_StrategieThreadTest extends JUnit_Test {
 	public void test_Thread() throws Exception
 	{
 
-		log.debug("Strategie Test Thread : *Start", this);
+		
+		log.debug("Strategie Test Thread : Start", this);
 		
 		while(true)
 			strategie.boucle_strategie();
