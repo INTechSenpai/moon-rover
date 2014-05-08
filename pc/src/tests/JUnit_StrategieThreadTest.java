@@ -58,6 +58,10 @@ public class JUnit_StrategieThreadTest extends JUnit_Test {
 		robotchrono.setPosition(initpos);
 		Sleep.sleep(100);
 		
+
+		for (int i = 0; i < 100; i++)
+			strategie.evaluate(null);
+		
 		container.demarreThreads();
 		
 		robotvrai.setPosition(initpos);
@@ -68,7 +72,7 @@ public class JUnit_StrategieThreadTest extends JUnit_Test {
 	@Test
 	public void test_Thread() throws Exception
 	{
-		
+
 		
 		log.debug("Strategie Test Thread : Start", this);
 		
