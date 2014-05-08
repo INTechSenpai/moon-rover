@@ -262,6 +262,12 @@ public class RobotVrai extends Robot {
 	    return deplacements.getPosition();
 	}
 
+    @Override
+    public Vec2 getPositionFast()
+    {
+        return deplacements.getPositionFast();
+    }
+
 	@Override
 	public void setOrientation(double orientation)
 	{
@@ -272,6 +278,12 @@ public class RobotVrai extends Robot {
     public double getOrientation()
     {
         return deplacements.getOrientation();
+    }
+
+    @Override
+    public double getOrientationFast()
+    {
+        return deplacements.getOrientationFast();
     }
 
 	/**

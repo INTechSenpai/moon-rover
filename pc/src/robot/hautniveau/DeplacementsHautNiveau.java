@@ -586,9 +586,19 @@ public class DeplacementsHautNiveau implements Service
         return position.clone();
     }
 
+    public Vec2 getPositionFast()
+    {
+        return position.clone();
+    }
+
     public double getOrientation()
     {
         update_x_y_orientation();
+        return orientation;
+    }
+
+    public double getOrientationFast()
+    {
         return orientation;
     }
 

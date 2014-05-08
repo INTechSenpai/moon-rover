@@ -290,6 +290,18 @@ public class RobotChrono extends Robot {
     }
     
     @Override
+    public Vec2 getPositionFast()
+    {
+        return position.clone();
+    }
+
+    @Override
+    public double getOrientationFast()
+    {
+        return orientation;
+    }
+
+    @Override
     public void setInsiste(boolean insiste)
     {}
 

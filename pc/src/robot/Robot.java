@@ -40,6 +40,8 @@ public abstract class Robot implements Service {
 	public abstract void setOrientation(double orientation);
     public abstract Vec2 getPosition();
     public abstract double getOrientation();
+    public abstract Vec2 getPositionFast();
+    public abstract double getOrientationFast();
     public abstract void sleep(long duree);
     public abstract void setInsiste(boolean insiste);
 
@@ -50,8 +52,8 @@ public abstract class Robot implements Service {
 	 */
     public void copy(Robot rc)
     {
-        rc.setPosition(getPosition().clone());
-        rc.setOrientation(getOrientation());
+        rc.setPosition(getPositionFast().clone()); // pas d'appel à la série
+        rc.setOrientation(getOrientationFast());   // pas d'appel à la série
         rc.set_vitesse_rotation(vitesse_rotation);
         rc.set_vitesse_translation(vitesse_translation);
         rc.nombre_lances = nombre_lances;
