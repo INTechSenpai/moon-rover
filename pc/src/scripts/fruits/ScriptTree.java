@@ -64,8 +64,8 @@ public class ScriptTree extends Script{
 			return new Vec2(-800, 500);
 			//-800,500
 		else if (id_version == 3)
-			return new Vec2(-1000, 700);
 			//-1000, 700
+			return new Vec2(-1000, 700);
 		log.critical("Version/Métaversion inconnue", this);
 		return null;
 	}

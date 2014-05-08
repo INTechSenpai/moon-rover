@@ -121,8 +121,8 @@ class AStar
 		if( !espace.canCross(depart))
 		{
 			//Affiche la map : pour debug
-		//	System.out.println("Pathfinding : Depart (" + depart.x  + "; " + depart.y + ") is in a obstacle.  arrivee was valid (" + arrivee.x  + "; " + arrivee.y + ")");
-		//	printWorkingMap(depart, arrivee);	// a mettre si on veut comprendre le trajet qui foire.
+			System.out.println("Pathfinding : Depart (" + depart.x  + "; " + depart.y + ") is in a obstacle.  arrivee was valid (" + arrivee.x  + "; " + arrivee.y + ")");
+			printWorkingMap(depart, arrivee);	// a mettre si on veut comprendre le trajet qui foire.
 			throw new PathfindingException();
 		}
 		// Exeption levée si l'arrivée est dans un obstacle
