@@ -217,20 +217,35 @@ public class Deplacements implements Service {
 	public void set_vitesse_translation(int pwm_max) throws SerialException
 	{
 		double kp, kd;
-		if(pwm_max > 120)
+		if(pwm_max >= 170)
 		{
-			kp = 2;
-			kd = 70;
+			kp = 0.45;
+			kd = 12.5;
 		}
-		else if(pwm_max > 55)
+		else if(pwm_max >= 150)
 		{
-			kp = 2;
-			kd = 30;
+			kp = 0.45;
+			kd = 11.5;
+		}
+		else if(pwm_max >= 120)
+		{
+			kp = 0.45;
+			kd = 9.0;
+		}
+		else if(pwm_max >= 90)
+		{
+			kp = 0.45;
+			kd = 12.5;
+		}
+		else if(pwm_max >= 60)
+		{
+			kp = 0.5;
+			kd = 4.0;
 		}
 		else
 		{
-			kp = 0.6;
-			kd = 10.0;
+			kp = 1.15;
+			kd = 3.0;
 		}
 		
 		String chaines[] = {"ctv", Double.toString(kp), Double.toString(kd), Integer.toString(pwm_max)};
@@ -247,16 +262,16 @@ public class Deplacements implements Service {
 		if(pwm_max > 155)
 		{
 			kp = 1.0;
-			kd = 23.0;
+			kd = 35.0;
 		}
 		else if(pwm_max > 90)
 		{
-			kp = 1.0;
-			kd = 19.0;
+			kp = 0.8;
+			kd = 15.0;
 		}
 		else
 		{
-			kp = 0.8;
+			kp = 0.6;
 			kd = 15.0;
 		}
 		
