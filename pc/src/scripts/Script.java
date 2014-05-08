@@ -84,9 +84,9 @@ public abstract class Script implements Service {
 		
 		try
 		{
-		    state.robot.va_au_point_pathfinding(state.pathfinding, point_entree, hooks_chemin);
+		    state.robot.setInsiste(retenter_si_blocage);
+		    state.robot.va_au_point_pathfinding(state.pathfinding, point_entree, hooks_chemin, retenter_si_blocage);
 			execute(id_version, state);
-			
 
 			// Prends en compte le nombre de points que l'on marque par ce script
 			state.pointsObtenus += scorePotentiel;

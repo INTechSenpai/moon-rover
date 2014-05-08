@@ -302,22 +302,49 @@ public abstract class Robot implements Service {
      * @throws PathfindingException
      * @throws MouvementImpossibleException
      */
-    public void va_au_point_pathfinding(Pathfinding pathfinding, Vec2 arrivee, ArrayList<Hook> hooks) throws PathfindingException, MouvementImpossibleException
+    public void va_au_point_pathfinding(Pathfinding pathfinding, Vec2 arrivee, ArrayList<Hook> hooks, boolean insiste) throws PathfindingException, MouvementImpossibleException
     {
-        // S'il y a une exception du pathfinding, on remonte la remonte
-        // S'il y a une exception de mouvement (ennemi ou mur), on cherche un nouveau chemin.
-        pathfinding.update_simple_pathfinding();
-        ArrayList<Vec2> chemin = pathfinding.chemin(getPosition(), arrivee);
-        try
+        /* On demande au pathfinding simple un itinéraire
+         * - si on a une exception de Pathfinding (chemin non trouvé), on utilise le A*
+         * - si on a une exception de MouvementImpossible:
+         *      - si on insiste, on reprend ça (nouveau chemin avec pathfinding simple, A* si pas de chemin trouvé)
+         *      - si on n'insiste pas, on lève une exception
+         */
+        
+        ArrayList<Vec2> chemin;
+        try {
+            try
+            {
+                pathfinding.update_simple_pathfinding();
+                chemin = pathfinding.chemin(getPosition(), arrivee);
+                suit_chemin(chemin, hooks);
+            } catch (PathfindingException e)
+            {
+                log.warning("Simple pathfinding a échoué: au tour de A*", this);
+                pathfinding.update_astar();
+                ArrayList<Vec2> chemin2 = pathfinding.chemin(getPosition(), arrivee);
+                suit_chemin(chemin2, hooks);       
+            }
+        }
+        catch (MouvementImpossibleException e)
         {
-            suit_chemin(chemin, hooks);
-        } catch (MouvementImpossibleException e)
-        {
-            log.warning("On cherche un itinéraire de secours", this);
-            pathfinding.update_astar();
-            ArrayList<Vec2> chemin2 = pathfinding.chemin(getPosition(), arrivee);
-            suit_chemin(chemin2, hooks);       
-        }        
+            if(insiste)
+            {
+                log.warning("Problème dans va_au_point. On insiste en cherchant un autre chemin.", this);
+                try
+                {
+                    pathfinding.update_simple_pathfinding();
+                    chemin = pathfinding.chemin(getPosition(), arrivee);
+                    suit_chemin(chemin, hooks);
+                } catch (PathfindingException e2)
+                {
+                    log.warning("Simple pathfinding a échoué: au tour de A*", this);
+                    pathfinding.update_astar();
+                    ArrayList<Vec2> chemin2 = pathfinding.chemin(getPosition(), arrivee);
+                    suit_chemin(chemin2, hooks);       
+                }
+            }
+        }
     }
 
 }
