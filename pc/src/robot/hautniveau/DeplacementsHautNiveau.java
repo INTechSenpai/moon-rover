@@ -40,16 +40,16 @@ public class DeplacementsHautNiveau implements Service
     private int distance_detection;
     private Vec2 position = new Vec2();  // la position tient compte de la symétrie
     private Vec2 consigne = new Vec2(); // La consigne est un attribut car elle peut être modifiée au sein d'un même mouvement.
-    private boolean trajectoire_courbe;
+    private boolean trajectoire_courbe = false;
     
     private double orientation; // l'orientation tient compte de la symétrie
     private Deplacements deplacements;
     private HookGenerator hookgenerator;
     private boolean symetrie;
     private int sleep_boucle_acquittement = 10;
-    private int nb_iterations_max = 3;
+    private int nb_iterations_max = 30;
     private int distance_degagement_robot = 50;
-    private int anticipation_trajectoire_courbe = 500;
+    private int anticipation_trajectoire_courbe = 200;
     private float angle_degagement_robot;
     private boolean insiste = false;
     
@@ -159,8 +159,10 @@ public class DeplacementsHautNiveau implements Service
 
         consigne.x = (int) (position.x + distance*Math.cos(orientation));
         consigne.y = (int) (position.y + distance*Math.sin(orientation));
-        
+
+        System.out.println("Début va_au_point_gestion_exception");
         va_au_point_gestion_exception(hooks, null, false, distance < 0, mur);
+        System.out.println("Fin va_au_point_gestion_exception");
     }
         
     /**
@@ -359,7 +361,11 @@ public class DeplacementsHautNiveau implements Service
             {
                 relancer |= hooks_trajectoire.get(0).evaluate();
                 if(hooks_trajectoire.get(0).supprimable())
-                    hooks.remove(0);
+                {
+                    hooks_trajectoire.remove(0);
+                    if(hooks_trajectoire.size() == 0)
+                        hooks_trajectoire = null;
+                }
             }
 
             // Correction de la trajectoire ou reprise du mouvement

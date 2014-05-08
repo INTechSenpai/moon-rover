@@ -155,13 +155,13 @@ public abstract class Robot implements Service {
 	{
 		vitesse_translation = vitesse;
         if(vitesse == "entre_scripts")
-        	return 150;
+        	return 170;
+        else if(vitesse == "dans_mur")
+            return 90;        
         else if(vitesse == "recal_faible")
             return 90;
         else if(vitesse == "recal_forte")
             return 120;
-        else if(vitesse == "vitesse_mammouth")
-        	return 50; // TODO
         else if(vitesse == "arbre_arriere")
         	return 50; // TODO
         else if(vitesse == "arbre_avant")
@@ -286,7 +286,10 @@ public abstract class Robot implements Service {
 
     public void avancer_dans_mur(int distance) throws MouvementImpossibleException
     {
+        String sauv_vitesse = vitesse_translation; 
+        set_vitesse_translation("dans_mur");
         avancer(distance, null, true);
+        set_vitesse_translation(sauv_vitesse);
     }
     
     /**
