@@ -65,24 +65,35 @@ public class JUnit_StrategieTest extends JUnit_Test {
 		robotvrai.setPosition(initpos);
 		robotchrono.setPosition(initpos);
 		
+/*
+		int testCount = 1000;
+		long startTime = System.nanoTime();
+		for (int i = 0; i < testCount; i++)
+			memorymanager.getClone(1);
+		long endTime = System.nanoTime();
+		long duration = (endTime - startTime)/ (1000 * testCount);
+		log.debug("Processed IA in " + duration + " µs on average over " + testCount + "tests", this);
+		*/
+		
+		
 		log.debug("Strategie Test starting", this);
 		//strategie.evaluate();
 		//log.debug("Strategie Test finished", this);
 		
-		for (int i = 0; i < 100; i++)
+		for (int i = 0; i < 10; i++)
 		{
 			strategie.evaluate(null);
 			
 		}
-		
 		log.debug("Strategie Performance test starting", this);
 		
-		int testCount = 100;
+		int testCount = 10;
 		long startTime = System.nanoTime();
 		for (int i = 0; i < testCount; i++)
 			strategie.evaluate(null);
 		long endTime = System.nanoTime();
 		long duration = (endTime - startTime)/ (1000 * testCount);
 		log.debug("Processed IA in " + duration + " µs on average over " + testCount + "tests", this);
+		
 	}
 }

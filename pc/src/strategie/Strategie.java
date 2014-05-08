@@ -270,34 +270,6 @@ public class Strategie implements Service {
 			return 1.0f/(float)duree;
 	}
 	
-
-	/**
-	 * La note d'un script est fonction de son score, de sa durée, de la distance de l'ennemi à l'action 
-	 * @param score
-	 * @param duree
-	 * @param id
-	 * @param script
-	 * @return note
-	 */
-	private float calculeMetaNote(int score, int duree, int meta_id, Script script, GameState<?> state)
-	{
-		// TODO
-		int id = script.version_asso(meta_id).get(0);
-		int A = 1;
-		int B = 1;
-		float prob = 1;
-		
-		//abandon de prob_deja_fait
-		Vec2[] position_ennemie = state.table.get_positions_ennemis();
-		float pos = (float)1.0 - (float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0)));
-		// pos est une valeur qui décroît de manière exponentielle en fonction de la distance entre le robot adverse et là où on veut aller
-		float note = (score*A*prob/duree+pos*B)*prob;
-		
-//		log.debug((float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0))), this);
-		
-		return note;
-	}
-
 	/* Méthode qui calcule la note de cette branche en calculant celles de ses sous branches, puis en combinant leur notes
 	 * C'est là qu'est logé le DFS
 	 * 
@@ -427,23 +399,22 @@ public class Strategie implements Service {
 		}
 
 	
-
-		// TODO ?	Ajuster le critère d'arret d'expansion ici en fonction de scope size ?
-		TTL = (int) (16000+40000*(Math.exp(14-scope.size())/Math.exp(6)));
+		// ajuste le critère d'arret d'expansion de l'arbre en fonction du nombre de racines de l'arbre (indiquant grosso modo le nombre de branches qu'il y aura au total)
+	//	TTL = (int) (16000+40000*(Math.exp(14-scope.size())/Math.exp(6)));
 		
 		
-		//log.debug("TTL = " + TTL + "   scope.size() :" + scope.size(), this);
+		log.debug("TTL = " + TTL + "   scope.size() :" + scope.size(), this);
 		// Boucle principale d'exploration des branches
 		if(scope.size() > 1)
 			while (scope.size() != 0)
 			{
 				
 				// Sécurité pour être certain que le DFS ne tombe pas en boucle infinie
-				if(startTime + TimeBeforeGiveUp < System.currentTimeMillis())
+				/*if(startTime + TimeBeforeGiveUp < System.currentTimeMillis())
 				{
 					log.debug(TimeBeforeGiveUp + "ms since IA calculation started : Giving up", this);
 					break;
-				}
+				}*/
 				
 				
 				//log.debug("Nouveau tour de boucle", this);
@@ -453,7 +424,8 @@ public class Strategie implements Service {
 					current.computeActionCharacteristics();
 				
 				// Condition d'ajout des sous-branches : respecter le critère d'arret d'expansion, et ne pas les ajouter 2 fois.
-				if ( current.TTL - current.dureeScript > 0 && maxProf >= current.profondeur && (current.sousBranches.size() == 0) && mState.time_depuis_debut +5000 < ThreadTimer.duree_match)
+				if ( current.TTL - current.dureeScript > 0 //&& maxProf >= current.profondeur && mState.time_depuis_debut +5000 < ThreadTimer.duree_match	// critère d'arret d'expansion
+						&& (current.sousBranches.size() == 0))	// ne pas ajouter créer 2 fois les fils (si on a déja des fils, c'est qu'ils ont déja tous été créés)
 				{
 					// ajoute a la pile a explorer l'ensemble des scripts disponibles pour cet étage
 					
@@ -535,7 +507,7 @@ public class Strategie implements Service {
 				}
 				
 			}	// fin boucle principale d'exploration
-		//log.debug("Explored "+ Branchcount + " branches in " + (System.currentTimeMillis() - startTime) + " ms", this);
+		log.debug("Explored "+ Branchcount + " branches in " + (System.currentTimeMillis() - startTime) + " ms", this);
 		
 
 		//for (int i = 0; i < rootList.size(); ++i)
