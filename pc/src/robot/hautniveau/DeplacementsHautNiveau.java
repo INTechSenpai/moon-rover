@@ -1,7 +1,6 @@
 package robot.hautniveau;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import container.Service;
 //import hook.Callback;
@@ -452,15 +451,14 @@ public class DeplacementsHautNiveau implements Service
     private boolean mouvement_fini() throws BlocageException
     {
         // récupérations des informations d'acquittement
-        Hashtable<String, Integer> infos;
         try {
-            infos = deplacements.maj_infos_stoppage_enMouvement();
+            deplacements.maj_infos_stoppage_enMouvement();
             
             //robot bloqué ?
-            deplacements.gestion_blocage(infos);
+            deplacements.gestion_blocage();
             
             // robot arrivé?
-            if(!deplacements.update_enMouvement(infos))
+            if(!deplacements.update_enMouvement())
                 return true;
 
         } catch (SerialException e) {
