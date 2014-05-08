@@ -130,6 +130,10 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
         real_state.robot.avancer_dans_mur(200);
         Sleep.sleep(1000);
         real_state.robot.avancer(200);
+        Sleep.sleep(1000);
+        real_state.robot.avancer_dans_mur(200);
+        Sleep.sleep(1000);
+        real_state.robot.avancer(200);
     }
 
 }
