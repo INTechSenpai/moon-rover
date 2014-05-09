@@ -35,10 +35,12 @@ public class ScriptTree extends Script{
 	public  ArrayList<Integer> meta_version(final GameState<?> state)
 	{
 		ArrayList<Integer> metaversionList = new ArrayList<Integer>();
-		
-		for (int i = 0; i < 4; i++)
-			if (!state.table.isTreeTaken(i))
-				metaversionList.add(i);
+		if (state.robot.isFresquesPosees())
+		{
+			for (int i = 0; i < 4; i++)
+				if (!state.table.isTreeTaken(i))
+					metaversionList.add(i);
+		}
 		return metaversionList;
 	}
 
@@ -72,7 +74,15 @@ public class ScriptTree extends Script{
 	@Override
 	public int score(int id_version, final GameState<?> state)
 	{
-		return 0;
+		int res = 0;
+		
+		if (id_version <= 1)
+			res = state.table.nbrTotalTree(0) + state.table.nbrTotalTree(1);
+		else if(id_version <= 3)
+			res = state.table.nbrTotalTree(2) + state.table.nbrTotalTree(3);
+		else
+			log.critical("Version/Métaversion inconnue", this);
+		return res;
 	}
 
 	@Override
@@ -148,9 +158,10 @@ public class ScriptTree extends Script{
 		} while(cote == Cote.DROIT);
 		state.robot.set_vitesse_translation("arbre_avant");
 		//log.debug("adding " + state.table.nbrTree(id_version, Cote.DROIT) + state.table.nbrTree(id_version, Cote.GAUCHE) + " fruits to the bac", this);
+		//l'ordre  est très important !!!
 		state.robot.add_fruits(state.table.nbrTree(id_version, Cote.DROIT) + state.table.nbrTree(id_version, Cote.GAUCHE));
 		state.table.pickTree(id_version);
-		state.robot.avancer(318-recul, hooks);		
+		state.robot.avancer(318-recul, hooks);
 	}
 
 	@Override
