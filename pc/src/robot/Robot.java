@@ -159,11 +159,9 @@ public abstract class Robot implements Service {
         if(vitesse == "entre_scripts")
         	return 170;
         else if(vitesse == "dans_mur")
-            return 90;        
-        else if(vitesse == "recal_faible")
             return 90;
-        else if(vitesse == "recal_forte")
-            return 120;
+        else if(vitesse == "recaler")
+            return 90;
         else if(vitesse == "arbre_arriere")
         	return 50; // TODO
         else if(vitesse == "arbre_avant")
@@ -182,6 +180,8 @@ public abstract class Robot implements Service {
 		vitesse_rotation = vitesse;
         if(vitesse == "entre_scripts")
         	return 160;
+        else if(vitesse == "recaler")
+            return 60;
         else if(vitesse == "recal_faible")
             return 120;
         else if(vitesse == "prise_feu")

@@ -1,7 +1,6 @@
 package robot.hautniveau;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import container.Service;
 //import hook.Callback;
@@ -66,9 +65,6 @@ public class DeplacementsHautNiveau implements Service
     public void recaler()
     {
         try {
-            // TODO: vitesses normalisées
-            deplacements.set_vitesse_translation(100);
-            deplacements.set_vitesse_rotation(100);
             avancer(-200, null, true);
             avancer(-200, null, true);
             position.x = 1500 - 165;
@@ -92,7 +88,8 @@ public class DeplacementsHautNiveau implements Service
             deplacements.set_y(2000 - 165);
             Sleep.sleep(500);
             avancer(100, null, false);
-            setOrientation((float)(-Math.PI)/2);
+            orientation = -Math.PI/2;
+            setOrientation(-Math.PI/2);
             //Normalement on se trouve à (1500 - 170 - 70 = 1260 ; 2000 - 170 - 100 = 1730)
         } catch (Exception e) {
             e.printStackTrace();
@@ -452,15 +449,14 @@ public class DeplacementsHautNiveau implements Service
     private boolean mouvement_fini() throws BlocageException
     {
         // récupérations des informations d'acquittement
-        Hashtable<String, Integer> infos;
         try {
-            infos = deplacements.maj_infos_stoppage_enMouvement();
+            deplacements.maj_infos_stoppage_enMouvement();
             
             //robot bloqué ?
-            deplacements.gestion_blocage(infos);
+            deplacements.gestion_blocage();
             
             // robot arrivé?
-            if(!deplacements.update_enMouvement(infos))
+            if(!deplacements.update_enMouvement())
                 return true;
 
         } catch (SerialException e) {

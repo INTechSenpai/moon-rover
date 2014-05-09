@@ -136,7 +136,6 @@ public class Capteurs implements Service {
     	}
     }
  
-    // TODO protocoles
     public boolean isThereFireGauche()
     {
 		try {
@@ -147,19 +146,30 @@ public class Capteurs implements Service {
 		return false;
     }
 
+    public boolean isThereFireMilieu()
+    {
+            try {
+                return Integer.parseInt(serie.communiquer("cm", 1)[0]) != 0;
+            } catch (NumberFormatException | SerialException e) {
+                e.printStackTrace();
+            }
+            return false;
+    }
+
     public boolean isThereFireDroit()
     {
 			try {
 				return Integer.parseInt(serie.communiquer("cd", 1)[0]) != 0;
 			} catch (NumberFormatException | SerialException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return false;
     }
 
+    // TODO protocoles
     public boolean isFireRedGauche()
     {
+        // TODO
 /*		try {
 			return Integer.parseInt(serie.communiquer("ifr", 1)[0]) == 1;
 		} catch (NumberFormatException | SerialException e) {
@@ -170,6 +180,7 @@ public class Capteurs implements Service {
 
     public boolean isFireRedDroit()
     {
+        // TODO
 /*		try {
 			return Integer.parseInt(serie.communiquer("ifr", 1)[0]) == 1;
 		} catch (NumberFormatException | SerialException e) {

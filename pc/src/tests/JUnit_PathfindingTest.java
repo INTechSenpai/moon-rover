@@ -61,13 +61,51 @@ public class JUnit_PathfindingTest extends JUnit_Test
 			arrivee = new Vec2((Math.abs(randomgenerator.nextInt())%3000)-1500, Math.abs(randomgenerator.nextInt())%2000);
 			log.debug("Depart: "+robotvrai.getPosition()+", arrivée: "+arrivee, this);
 			try {
-				robotvrai.va_au_point_pathfinding(pathfinding, arrivee, null);
+				robotvrai.va_au_point_pathfinding(pathfinding, arrivee, null, false);
 			}
 			catch(Exception e)
 			{
 				log.critical(e, this);
 			}
 		}
+	}
+	
+
+	@Test
+	public void performanceTest() throws Exception
+	{
+		Random randomgenerator = new Random();
+		Vec2 arrivee, depart;
+		robotvrai.setPosition(new Vec2(0, 1400));
+        pathfinding.update_simple_pathfinding();
+        
+
+		log.debug("Simple pathfinding Performance test starting", this);
+		int testCount = 1000;
+		long duration = 0;
+		for (int i = 0; i < testCount; i++)
+		{
+			arrivee = new Vec2((Math.abs(randomgenerator.nextInt())%3000)-1500, Math.abs(randomgenerator.nextInt())%2000);
+			depart = robotvrai.getPosition();
+			//log.debug("Depart: "+robotvrai.getPosition()+", arrivée: "+arrivee, this);
+			long startTime = System.nanoTime();
+			try {
+				pathfinding.chemin(depart, arrivee);
+			}
+			catch(Exception e)
+			{
+				log.critical(e, this);
+			}
+			long endTime = System.nanoTime();
+			duration += (endTime - startTime);
+
+			
+		}
+		log.debug("Processed simple pathfinding in " + duration / (1000* testCount) + " µs on average over " + testCount + "tests", this);
+		
+		
+		
+		
 	}
 
 }

@@ -192,6 +192,13 @@ public class Actionneurs implements Service {
 		log.debug("Balle tirée", this);
 		serie.communiquer("tourne", 0);		
 	}
+	
+    public void recharger() throws SerialException
+    {
+        log.debug("Barillet rechargé", this);
+        serie.communiquer("reload", 0);     
+    }
+    
 	public void lancerFilet() throws SerialException
 	{
 		log.debug("Filet lancé", this);

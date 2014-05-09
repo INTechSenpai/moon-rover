@@ -52,7 +52,12 @@ public class ActionneursHautNiveau implements Service
         try {
             actionneurs.rateau_ranger_droit();
             actionneurs.rateau_ranger_gauche();     
+            actionneurs.fermer_pince_droite();
+            actionneurs.fermer_pince_gauche();
+            actionneurs.lever_pince_droite();
+            actionneurs.lever_pince_gauche();
             actionneurs.bac_bas();
+            actionneurs.recharger();
         } catch (SerialException e) {
             e.printStackTrace();
         }

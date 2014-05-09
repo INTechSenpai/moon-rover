@@ -134,14 +134,14 @@ public class Branche
 		if(!isActionCharacteisticsComputed)
 			computeActionCharacteristics();
 		// TODO
-		int id = script.version_asso(metaversion).get(0);
-		int A = 1;
-		int B = 1;
-		float prob = 1;
+	//	int id = script.version_asso(metaversion).get(0);
+	//	int A = 1;
+	//	int B = 1;
+	//	float prob = 1;
 		
 		//abandon de prob_deja_fait
-		Vec2[] position_ennemie = state.table.get_positions_ennemis();
-		float pos = (float)1.0 - (float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0)));
+	//	Vec2[] position_ennemie = state.table.get_positions_ennemis();
+	//	float pos = (float)1.0 - (float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0)));
 		// pos est une valeur qui décroît de manière exponentielle en fonction de la distance entre le robot adverse et là où on veut aller
 	//	localNote = (scoreScript*A*prob/dureeScript+pos*B)*prob;
 		

@@ -99,7 +99,7 @@ public class ScriptTree extends Script{
 		if (id_version == 0)
 			state.robot.tourner((float)Math.PI);
 		else if (id_version == 1 || id_version == 2)
-			state.robot.tourner((float) (Math.PI / 2));
+			state.robot.tourner((float)Math.PI/2);
 		else if (id_version == 3)
 			state.robot.tourner(0) ;
 		//Les reculs servent à calibrer l'avancement du robot lors de la prise des fruits
@@ -118,23 +118,20 @@ public class ScriptTree extends Script{
 		state.robot.avancer(-318+recul);
 		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
 		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
-		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
-		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
-		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
-		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
-		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
-		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
 		state.robot.sleep(500);
-		//pour être sûr
 		//On remonte juste un peu pour éviter que les rateaux cognent sur le rebord de la table
 		state.robot.rateau(PositionRateau.BAS, Cote.DROIT);
 		state.robot.rateau(PositionRateau.BAS, Cote.GAUCHE);
 		// on remonte les bras à mi-hauteur en fonction de la position du fruit pourri, tout en reculant
 		
-		ArrayList<Hook> hooks = new ArrayList<Hook>();
 		
+		// What ???
+		// Ce code est un immense bootleneck dans la stratégie. Voir avec martial avant de remttre
+		/*
+		ArrayList<Hook> hooks = new ArrayList<Hook>();
 		Cote cote = Cote.GAUCHE;
-		do {
+		do 
+		{
 			int nbFruits = state.table.nbrTree(id_version, cote) ;
 			Executable remonte = new LeverRateau(state.robot, cote);
 			double distance = 0;
@@ -155,13 +152,21 @@ public class ScriptTree extends Script{
 				cote = Cote.DROIT;
 			else
 				cote = Cote.GAUCHE;
-		} while(cote == Cote.DROIT);
+		}
+		while(cote == Cote.DROIT);*/
+		
+		
 		state.robot.set_vitesse_translation("arbre_avant");
 		//log.debug("adding " + state.table.nbrTree(id_version, Cote.DROIT) + state.table.nbrTree(id_version, Cote.GAUCHE) + " fruits to the bac", this);
 		//l'ordre  est très important !!!
 		state.robot.add_fruits(state.table.nbrTree(id_version, Cote.DROIT) + state.table.nbrTree(id_version, Cote.GAUCHE));
 		state.table.pickTree(id_version);
+<<<<<<< HEAD
 		state.robot.avancer(318-recul, hooks);
+=======
+		//state.robot.avancer(318-recul, hooks);		
+		state.robot.avancer(318-recul, null);		
+>>>>>>> beb5abeebd8dd318e32cb7e5276221c60d1d10b4
 	}
 
 	@Override

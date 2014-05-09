@@ -55,12 +55,12 @@ public class Deplacements implements Service {
 	 * @param derivee_erreur_translation
 	 * @throws BlocageException 
 	 */
-	public void gestion_blocage(Hashtable<String, Integer> infos) throws BlocageException
+	public void gestion_blocage() throws BlocageException
 	{
-		int PWMmoteurGauche = infos.get("PWMmoteurGauche");
-		int PWMmoteurDroit = infos.get("PWMmoteurDroit");
-		int derivee_erreur_rotation = infos.get("derivee_erreur_rotation");
-		int derivee_erreur_translation = infos.get("derivee_erreur_translation");
+		int PWMmoteurGauche = infos_stoppage_enMouvement.get("PWMmoteurGauche");
+		int PWMmoteurDroit = infos_stoppage_enMouvement.get("PWMmoteurDroit");
+		int derivee_erreur_rotation = infos_stoppage_enMouvement.get("derivee_erreur_rotation");
+		int derivee_erreur_translation = infos_stoppage_enMouvement.get("derivee_erreur_translation");
 		
 		boolean moteur_force = Math.abs(PWMmoteurGauche) > 40 || Math.abs(PWMmoteurDroit) > 40;
 		boolean bouge_pas = derivee_erreur_rotation == 0 && derivee_erreur_translation == 0;
@@ -102,12 +102,12 @@ public class Deplacements implements Service {
 	 * @param derivee_erreur_translation
 	 * @return
 	 */
-	public boolean update_enMouvement(Hashtable<String, Integer> infos)
+	public boolean update_enMouvement()
 	{
-		int erreur_rotation = infos.get("erreur_rotation");
-		int erreur_translation = infos.get("erreur_translation");
-		int derivee_erreur_rotation = infos.get("derivee_erreur_rotation");
-		int derivee_erreur_translation = infos.get("derivee_erreur_translation");
+		int erreur_rotation = infos_stoppage_enMouvement.get("erreur_rotation");
+		int erreur_translation = infos_stoppage_enMouvement.get("erreur_translation");
+		int derivee_erreur_rotation = infos_stoppage_enMouvement.get("derivee_erreur_rotation");
+		int derivee_erreur_translation = infos_stoppage_enMouvement.get("derivee_erreur_translation");
 		
 		boolean rotation_stoppe = Math.abs(erreur_rotation) < 105;
 		boolean translation_stoppe = Math.abs(erreur_translation) < 100;
@@ -264,6 +264,11 @@ public class Deplacements implements Service {
 			kp = 1.0;
 			kd = 35.0;
 		}
+		else if(pwm_max > 115)
+		{
+			kp = 0.85;
+			kd = 20.0;
+		}
 		else if(pwm_max > 90)
 		{
 			kp = 0.8;
@@ -272,7 +277,7 @@ public class Deplacements implements Service {
 		else
 		{
 			kp = 0.6;
-			kd = 15.0;
+			kd = 14.0;
 		}
 		
 		String chaines[] = {"crv", Double.toString(kp), Double.toString(kd), Integer.toString(pwm_max)};
@@ -294,7 +299,7 @@ public class Deplacements implements Service {
 	/**
 	 * Met à jour PWMmoteurGauche, PWMmoteurDroit, erreur_rotation, erreur_translation, derivee_erreur_rotation, derivee_erreur_translation
 	 */
-	public Hashtable<String, Integer> maj_infos_stoppage_enMouvement() throws SerialException
+	public void maj_infos_stoppage_enMouvement() throws SerialException
 	{
 		String[] infos_string = serie.communiquer("?infos", 4);
 		int[] infos_int = new int[4];
@@ -312,7 +317,6 @@ public class Deplacements implements Service {
         infos_stoppage_enMouvement.put("derivee_erreur_rotation", deriv_erreur_rot);
         infos_stoppage_enMouvement.put("derivee_erreur_translation", deriv_erreur_tra);
 
-	return infos_stoppage_enMouvement;
 	}
 
 	/**

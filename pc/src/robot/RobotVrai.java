@@ -60,12 +60,12 @@ public class RobotVrai extends Robot {
 	    return capteur_simulation.getColour(deplacements.getPosition(), deplacements.getOrientation());
 	}
 	
-	// Un début, on va voir si ça marche
 	public void recaler()
 	{
+	    set_vitesse_translation("recaler");
+        set_vitesse_rotation("recaler");
 	    deplacements.recaler();
 	}
-
 	
 	/**
 	 * Avance d'une certaine distance (méthode bloquante), gestion des hooks
@@ -107,7 +107,6 @@ public class RobotVrai extends Robot {
 	 * ACTIONNEURS
 	 */
 
-	// TODO
 	public void initialiser_actionneurs_deplacements()
 	{
 	    actionneurs.initialiser_actionneurs();

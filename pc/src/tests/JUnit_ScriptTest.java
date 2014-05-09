@@ -18,8 +18,8 @@ import robot.RobotChrono;
 import robot.RobotVrai;
 import scripts.Script;
 import scripts.ScriptManager;
-import smartMath.Vec2;
 import strategie.GameState;
+import utils.Sleep;
 
 /**
  * Tests unitaires des scripts
@@ -45,25 +45,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
         real_state = (GameState<RobotVrai>)container.getService("RealGameState");
         chrono_state = real_state.clone();
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
-		
-		real_state.robot.setPosition(new Vec2(1300,1700));
-		real_state.robot.setOrientation((float)(Math.PI));
-		real_state.robot.recaler();
-		real_state.robot.set_vitesse_rotation("entre_scripts");
-		real_state.robot.set_vitesse_translation("entre_scripts");
-		real_state.robot.lever_pince(Cote.GAUCHE);
-		//real_state.robot.lever_pince(Cote.DROIT);
-		real_state.robot.avancer(200);
-		real_state.robot.tourner((float)(-2*Math.PI/3));
-		real_state.robot.avancer(300);
-		/*
-		real_state.robot.setPosition(new Vec2(800,500));
-		real_state.robot.setOrientation((float)(Math.PI/2));
-		*/
-		container.getService("threadPosition");
-		container.demarreThreads();
-		//robotvrai.set_vitesse_translation("30");
-		//real_state.robot.avancer(100);
+		container.demarreTousThreads();
 	}
 
 	@Test
@@ -81,12 +63,6 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		real_state.robot.avancer(50, hooks);
 		Assert.assertTrue(s.score(0, real_state) == 8);
 
-	}
-	@Test
-	public void test_ScriptLances_agit() throws Exception
-	{
-		s = (Script)scriptmanager.getScript("ScriptLances");
-		s.agit(0, real_state, false);
 	}
 
 	/*
@@ -134,8 +110,12 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	@Test
 	public void test_ScriptFresques_agit() throws Exception
 	{
+        real_state.robot.initialiser_actionneurs_deplacements();
+        real_state.robot.recaler();
+        Sleep.sleep(3000);
+        real_state.robot.avancer(300);
 		s = (Script)scriptmanager.getScript("ScriptFresque");
-		s.agit(0, real_state, false);
+		s.agit(2, real_state, false);
 	}
 
 	@Test
@@ -167,6 +147,9 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	@Test
 	public void test_ScriptTree_agit() throws Exception
 	{
+	    real_state.robot.initialiser_actionneurs_deplacements();
+        real_state.robot.recaler();
+        real_state.robot.avancer(200);
 		s = (Script)scriptmanager.getScript("ScriptTree");
 		s.agit(0, real_state, true);
 	}
@@ -202,6 +185,18 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		s = (Script)scriptmanager.getScript("ScriptTorche");
 		s.agit(1, real_state, true);
 	}
+
+    @Test
+    public void test_ScriptLances_agit() throws Exception
+    {
+        real_state.robot.initialiser_actionneurs_deplacements();
+        real_state.robot.recaler();
+        Sleep.sleep(8000);
+        real_state.robot.avancer(400);
+        s = (Script)scriptmanager.getScript("ScriptLances");
+        s.agit(1, real_state, true);
+    }
+
 	
 	@Test
 	public void test_takefire() throws Exception
