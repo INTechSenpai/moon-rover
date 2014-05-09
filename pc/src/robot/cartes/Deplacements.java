@@ -264,6 +264,11 @@ public class Deplacements implements Service {
 			kp = 1.0;
 			kd = 35.0;
 		}
+		else if(pwm_max > 115)
+		{
+			kp = 0.85;
+			kd = 20.0;
+		}
 		else if(pwm_max > 90)
 		{
 			kp = 0.8;
@@ -272,7 +277,7 @@ public class Deplacements implements Service {
 		else
 		{
 			kp = 0.6;
-			kd = 15.0;
+			kd = 14.0;
 		}
 		
 		String chaines[] = {"crv", Double.toString(kp), Double.toString(kd), Integer.toString(pwm_max)};
