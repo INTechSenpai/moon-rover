@@ -333,7 +333,7 @@ public class Strategie implements Service {
 		
 		
 		long TrueAStarTTL = 8000;	// A partir de quand on considère qu'on ne sais plus ou est l'ennemi, et qu'on peut passer sur cache
-		int TimeBeforeGiveUp	= 3000;	// Si on reste bloqué dans l'arbre, on garde un oeil sur la montre pour être sur de pouvoir retenter sa chance
+		int TimeBeforeGiveUp	= 30000;	// Si on reste bloqué dans l'arbre, on garde un oeil sur la montre pour être sur de pouvoir retenter sa chance
 		
 		long startTime = System.currentTimeMillis();
 		int Branchcount = 0;
@@ -407,31 +407,31 @@ public class Strategie implements Service {
 		// ajuste le critère d'arret d'expansion de l'arbre en fonction du nombre de racines de l'arbre (indiquant grosso modo le nombre de branches qu'il y aura au total)
 		//TTL = (int) (10000+55000000*(Math.exp(14-scope.size())/Math.exp(14)));
 		if(scope.size() == 14)
-			TTL = 26000; 
+			TTL = 15500; 
 		else if(scope.size() == 13)
-			TTL = 11000; 
-		else if(scope.size() == 12)
-			TTL = 12000; 
-		else if(scope.size() == 11)
-			TTL = 13000; 
-		else if(scope.size() == 10)
-			TTL = 14000; 
-		else if(scope.size() == 9)
 			TTL = 16000; 
-		else if(scope.size() == 8)
+		else if(scope.size() == 12)
+			TTL = 17000; 
+		else if(scope.size() == 11)
 			TTL = 18000; 
-		else if(scope.size() == 7)
-			TTL = 20000; 
-		else if(scope.size() == 6)
+		else if(scope.size() == 10)
+			TTL = 22000; 
+		else if(scope.size() == 9)
+			TTL = 23000; 
+		else if(scope.size() == 8)
 			TTL = 24000; 
+		else if(scope.size() == 7)
+			TTL = 30000; 
+		else if(scope.size() == 6)
+			TTL = 34000; 
 		else if(scope.size() == 5)
-			TTL = 28000; 
+			TTL = 38000; 
 		else if(scope.size() == 4)
-			TTL = 35000; 
-		else if(scope.size() == 3)
 			TTL = 45000; 
-		else if(scope.size() == 2)
+		else if(scope.size() == 3)
 			TTL = 50000; 
+		else if(scope.size() == 2)
+			TTL = 55000; 
 		else if(scope.size() == 1)
 			TTL = 60000; 
 		
@@ -440,7 +440,7 @@ public class Strategie implements Service {
 			rootList.get(i).TTL = TTL;
 		
 		
-		//log.debug("TTL = " + TTL + "   scope.size() :" + scope.size(), this);
+	//	log.debug("TTL = " + TTL + "   scope.size() :" + scope.size(), this);
 		// Boucle principale d'exploration des branches
 		if(scope.size() > 1)
 			while (scope.size() != 0)
@@ -546,6 +546,9 @@ public class Strategie implements Service {
 			}	// fin boucle principale d'exploration
 		//log.debug("Explored "+ Branchcount + " branches in " + (System.currentTimeMillis() - startTime) + " ms", this);
 		log.debug("IA completed in " + (System.currentTimeMillis() - startTime) + " ms with TTL = " + TTL + "ms   rootList.size() :" + rootList.size() + "	Explored "+ Branchcount + " branches", this);
+		
+		// simu raspbe
+		Sleep.sleep(1000);
 
 		//for (int i = 0; i < rootList.size(); ++i)
 		//	log.debug("Note of " + rootList.get(i).script.toString() + " is " + rootList.get(i).note, this);

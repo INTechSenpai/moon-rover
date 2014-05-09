@@ -130,7 +130,7 @@ public abstract class Script implements Service {
 		state.robot.set_vitesse_rotation("entre_scripts");
 
 
-		state.robot.initialiser_compteur(state.pathfinding.distance(state.robot.getPositionFast(), point_entree, use_cache));
+		state.robot.initialiser_compteur(1000);
 		state.robot.setPosition(point_entree);
 
 		try {
@@ -172,9 +172,10 @@ public abstract class Script implements Service {
         if(versions == null)
             return -1;
 	    int max = versions.get(0);
-	    for(Integer v: versions)
+	    // max non calculé pour dex raisons de perf
+	/*    for(Integer v: versions)
 	        if(score(v, state) > score(max, state))
-	            max = v;
+	            max = v;*/
 		return score(max, state);
 	}
 

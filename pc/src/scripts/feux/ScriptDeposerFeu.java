@@ -94,15 +94,15 @@ public class ScriptDeposerFeu extends Script {
 	{
 		//Suivant là où on va poser, on doit se positionner différemment
 		if (id_version == 0)
-		    state.robot.tourner((float)(Math.PI+Math.atan(2/3)));
+		    state.robot.tourner(3.729f);	//(float)(Math.PI+Math.atan(2/3)));
 		else if(id_version == 1)
-		    state.robot.tourner((float)(-Math.atan(2/3)));
+		    state.robot.tourner(-0.588f);	//(float)(-Math.atan(2/3)));
 		else if(id_version == 2)
-		    state.robot.tourner((float)(-Math.PI/2));
+		    state.robot.tourner(1.57f);		//(float)(-Math.PI/2));
 		else if(id_version == 3)
-		    state.robot.tourner((float)(Math.atan(2/3)));
+		    state.robot.tourner(0.588f);	//(float)(Math.atan(2/3)));
 		else															
-		    state.robot.tourner((float)(Math.PI-Math.atan(2/3)));
+		    state.robot.tourner(2.553f);		//(float)(Math.PI-Math.atan(2/3)));
 
 		// TODO : si on est équipe rouge il faut inverser les if 
 		

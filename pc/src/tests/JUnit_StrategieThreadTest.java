@@ -59,9 +59,9 @@ public class JUnit_StrategieThreadTest extends JUnit_Test {
 		Sleep.sleep(100);
 		
 
-		for (int i = 0; i < 100; i++)
+		/*for (int i = 0; i < 100; i++)
 			strategie.evaluate(null);
-		
+		*/
 		container.demarreThreads();
 		
 		robotvrai.setPosition(initpos);
