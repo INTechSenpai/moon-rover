@@ -35,7 +35,6 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
         real_state = (GameState<RobotVrai>) container.getService("RealGameState");
         robot.setPosition(new Vec2(1000, 900));
         robot.setOrientation(Math.PI/2);
-        Sleep.sleep(500);
         Vec2 consigne = new Vec2(700, 1400);
         robot.setConsigne(consigne);
     }
@@ -90,6 +89,12 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
         hook.ajouter_callback(new Callback(takefire, true));
         hooks.add(hook);
         robot.va_au_point_hook_correction_detection(hooks, null, false, false);
+    }
+
+    @Test
+    public void test_recaler() throws Exception
+    {
+        robot.recaler();
     }
     
     @Test

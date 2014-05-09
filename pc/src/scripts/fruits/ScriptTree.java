@@ -87,9 +87,9 @@ public class ScriptTree extends Script{
 		// Orientation du robot, le rateau étant à l'arrière
 		int recul = 0;
 		if (id_version == 0)
-			state.robot.tourner(3.141f);
+			state.robot.tourner((float)Math.PI);
 		else if (id_version == 1 || id_version == 2)
-			state.robot.tourner(1.57f);
+			state.robot.tourner((float)Math.PI/2);
 		else if (id_version == 3)
 			state.robot.tourner(0) ;
 		//Les reculs servent à calibrer l'avancement du robot lors de la prise des fruits

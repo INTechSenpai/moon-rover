@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.Assert;
 
 import robot.cartes.Capteurs;
+import utils.Sleep;
 
 public class JUnit_CapteursTest extends JUnit_Test {
 
@@ -54,5 +55,14 @@ public class JUnit_CapteursTest extends JUnit_Test {
 
 	}
 
-
+    @Test
+    public void faux_test() throws Exception
+    {
+        config.set("capteurs_on", true);
+        for(int i = 0; i < 10000; i++)
+        {
+            System.out.println(capteurs.mesurer_ultrason());
+            Sleep.sleep(100);
+        }
+    }
 }

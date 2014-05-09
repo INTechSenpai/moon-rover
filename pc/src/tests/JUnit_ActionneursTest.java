@@ -74,6 +74,6 @@ public class JUnit_ActionneursTest extends JUnit_Test {
 		Thread.sleep(500);
 		actionneurs.rateau_ranger_gauche();
 		Thread.sleep(500);
-	}
+	}	
 
 }

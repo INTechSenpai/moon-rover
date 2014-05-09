@@ -47,12 +47,10 @@ public class ScriptFresque extends Script {
 		return versionList;
 	}
 
+	// Points d'entrées vérifiés. Ne pas modifier sans prévenir PF (oui, Martial, c'est à toi que je parle!)
 	@Override
 	public Vec2 point_entree(int id) {
-	    if(id == 1)
-	        return new Vec2(0, 1700);
-	    else
-            return new Vec2(-50+id*50, 1600);
+        return new Vec2(-200+id*200, 1500);
 	}
 	@Override
 	public int score(int id_version, final GameState<?> state) {
@@ -65,15 +63,14 @@ public class ScriptFresque extends Script {
 		return 1;
 	}
 
-
 	@Override
 	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException
 	{
 	    state.robot.tourner((float)-Math.PI/2);
 	    state.robot.bac_bas();
-	    state.robot.avancer_dans_mur(-250);
+	    state.robot.avancer_dans_mur(-750);
 	    state.robot.deposer_fresques();
-	    state.robot.avancer(450);
+	    state.robot.avancer(300);
 	    state.table.appendFresco(id_version);
 	}
 

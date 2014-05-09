@@ -61,7 +61,7 @@ public class JUnit_PathfindingTest extends JUnit_Test
 			arrivee = new Vec2((Math.abs(randomgenerator.nextInt())%3000)-1500, Math.abs(randomgenerator.nextInt())%2000);
 			log.debug("Depart: "+robotvrai.getPosition()+", arrivée: "+arrivee, this);
 			try {
-				robotvrai.va_au_point_pathfinding(pathfinding, arrivee, null);
+				robotvrai.va_au_point_pathfinding(pathfinding, arrivee, null, false);
 			}
 			catch(Exception e)
 			{
