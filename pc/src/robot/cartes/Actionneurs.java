@@ -197,5 +197,16 @@ public class Actionneurs implements Service {
 		log.debug("Filet lancé", this);
 		serie.communiquer("tf", 0);
 	}
-
+	public void renverserFeuGauche() throws SerialException
+	{
+		log.debug("Renverser feu gauche", this);
+		serie.communiquer("ag", 0);
+		serie.communiquer("0", 0);
+	}
+	public void renverserFeuDoite() throws SerialException
+	{
+		log.debug("Renverser feu droit",this);
+		serie.communiquer("ad", 0);
+		serie.communiquer("300", 0);
+	}
 }
