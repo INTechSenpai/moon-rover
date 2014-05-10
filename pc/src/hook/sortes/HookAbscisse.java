@@ -8,8 +8,7 @@ import utils.Log;
 import utils.Read_Ini;
 
 /**
- * Classe des hook de position, qui hérite de la classe hook
- * Utilisée pour lancer les balles
+ * Classe des hook d'abscisse, qui hérite de la classe hook
  * @author pf
  *
  */
@@ -31,9 +30,10 @@ class HookAbscisse extends Hook {
 	public boolean evaluate()
 	{
 		Vec2 positionRobot = real_state.robot.getPosition();
-		log.debug(positionRobot+" "+abscisse, this);
+
 		if(Math.abs(positionRobot.x-abscisse) < tolerance)
 			return declencher();
+
 		return false;
 	}
 	

@@ -165,7 +165,7 @@ public abstract class Robot implements Service {
         else if(vitesse == "arbre_arriere")
         	return 50; // TODO
         else if(vitesse == "arbre_avant")
-        	return 60; // TODO
+        	return 40; // TODO
         else if(vitesse == "torche")
         	return 40; //TODO
         else
@@ -257,20 +257,20 @@ public abstract class Robot implements Service {
 	}
 	
 	
-	public void tourner_relatif(float angle) throws MouvementImpossibleException
+	public void tourner_relatif(double angle) throws MouvementImpossibleException
 	{
 		tourner(getOrientation() + angle, null, false);
 	}
 
-    public void tourner(float angle) throws MouvementImpossibleException
+    public void tourner(double angle) throws MouvementImpossibleException
     {
         tourner(angle, null, false);
     }
 
-    public void tourner_sans_symetrie(float angle) throws MouvementImpossibleException
+    public void tourner_sans_symetrie(double angle) throws MouvementImpossibleException
     {
         if(symetrie)
-            tourner((float) (Math.PI-angle), null, false);
+            tourner(Math.PI-angle, null, false);
         else
             tourner(angle, null, false);
     }

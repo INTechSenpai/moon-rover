@@ -49,7 +49,7 @@ public class DeplacementsHautNiveau implements Service
     private int nb_iterations_max = 30;
     private int distance_degagement_robot = 50;
 //    private int anticipation_trajectoire_courbe = 200;
-    private float angle_degagement_robot;
+    private double angle_degagement_robot;
     private boolean insiste = false;
     
     public DeplacementsHautNiveau(Log log, Read_Ini config, Table table, Deplacements deplacements)
@@ -76,12 +76,12 @@ public class DeplacementsHautNiveau implements Service
             else
             {
                 deplacements.set_x(1500-165);
-                setOrientation((float)Math.PI);
+                setOrientation(Math.PI);
             }
 
             Sleep.sleep(500);
             avancer(50, null, true);
-            tourner(-(float)Math.PI/2, null, false);
+            tourner(-Math.PI/2, null, false);
             avancer(-600, null, true);
             avancer(-200, null, true);
             position.y = 2000 - 165;
@@ -394,12 +394,12 @@ public class DeplacementsHautNiveau implements Service
         long t2 = System.currentTimeMillis();
 
         delta.Minus(position);
-        float distance = delta.Length();
+        double distance = delta.Length();
         if(correction)
             distance -= (t2-t1);
         
         //gestion de la marche arrière du déplacement (peut aller à l'encontre de marche_arriere)
-        float angle = (float) Math.atan2(delta.y, delta.x);
+        double angle =  Math.atan2(delta.y, delta.x);
         if(marche_arriere)
         {
             distance *= -1;
@@ -417,7 +417,7 @@ public class DeplacementsHautNiveau implements Service
      * @param trajectoire_courbe
      * @throws BlocageException 
      */
-    public void va_au_point_courbe(float angle, float distance, boolean trajectoire_courbe, boolean correction) throws BlocageException
+    public void va_au_point_courbe(double angle, double distance, boolean trajectoire_courbe, boolean correction) throws BlocageException
     {
         // On interdit la trajectoire courbe si on doit faire un virage trop grand.
         if(Math.abs(angle - orientation) > Math.PI/2)
@@ -514,7 +514,7 @@ public class DeplacementsHautNiveau implements Service
         distance_detection = Integer.parseInt(config.get("distance_detection"));
         distance_degagement_robot = Integer.parseInt(config.get("distance_degagement_robot"));
         sleep_boucle_acquittement = Integer.parseInt(config.get("sleep_boucle_acquittement"));
-        angle_degagement_robot = Float.parseFloat(config.get("angle_degagement_robot"));
+        angle_degagement_robot = Double.parseDouble(config.get("angle_degagement_robot"));
 //        anticipation_trajectoire_courbe = Integer.parseInt(config.get("anticipation_trajectoire_courbe"));
         trajectoire_courbe = Boolean.parseBoolean(config.get("trajectoire_courbe"));
         symetrie = config.get("couleur").equals("rouge");

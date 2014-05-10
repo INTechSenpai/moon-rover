@@ -63,6 +63,7 @@ public class RobotChrono extends Robot {
 	@Override
 	public void set_vitesse_translation(String vitesse)
 	{
+	    // TODO retirer la formule
         int pwm_max = conventions_vitesse_translation(vitesse);
         vitesse_mmpms = ((float)2500)/((float)613.52 * (float)(Math.pow((double)pwm_max,(double)(-1.034))))/1000;
 	}
@@ -70,6 +71,7 @@ public class RobotChrono extends Robot {
 	@Override
 	public void set_vitesse_rotation(String vitesse)
 	{
+	    // TODO retirer la formule
         int pwm_max = conventions_vitesse_rotation(vitesse);
         vitesse_rpms = ((float)Math.PI)/((float)277.85 * (float)Math.pow(pwm_max,(-1.222)))/1000;
 	}

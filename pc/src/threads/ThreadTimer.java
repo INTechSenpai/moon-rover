@@ -68,7 +68,6 @@ public class ThreadTimer extends AbstractThread {
 		// Le match à démarré. Tous les 500ms, on retire les obstacles périmés
 		while(System.currentTimeMillis() - date_debut < duree_match - temps_reserve_funny_action)
 		{
-		    System.out.println(System.currentTimeMillis() - date_debut);
 			if(stop_threads)
 			{
 				log.debug("Arrêt du thread timer avant la fin du match", this);

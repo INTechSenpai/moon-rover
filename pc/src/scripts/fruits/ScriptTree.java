@@ -1,5 +1,6 @@
 package scripts.fruits;
 
+import robot.RobotVrai;
 import scripts.Script;
 import smartMath.Vec2;
 import strategie.GameState;
@@ -26,6 +27,8 @@ import exceptions.serial.SerialException;
  */
 public class ScriptTree extends Script{
 
+    private ArrayList<ArrayList<Hook>> hooks = null;
+    
 	public ScriptTree(HookGenerator hookgenerator, Read_Ini config, Log log)
 	{
 		super(hookgenerator, config, log);
@@ -58,16 +61,16 @@ public class ScriptTree extends Script{
 		//Quand tout marchera correctement, ça sera ces points qui faudra retenir
 		if (id_version == 0)
 			return new Vec2(1000, 700);
-			//1000,700
+
 		else if (id_version == 1)
 			return new Vec2(800, 500);
-			//800,500
+
 		else if (id_version == 2)
 			return new Vec2(-800, 500);
-			//-800,500
+
 		else if (id_version == 3)
-			//-1000, 700
 			return new Vec2(-1000, 700);
+		
 		log.critical("Version/Métaversion inconnue", this);
 		return null;
 	}
@@ -91,23 +94,28 @@ public class ScriptTree extends Script{
 		return 1;
 	}
 
-	@Override
+    @SuppressWarnings("unchecked")
+    @Override
 	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException
 	{
+	    if(hooks == null && state.robot instanceof RobotVrai)
+	    {
+	        hooks = new ArrayList<ArrayList<Hook>>();
+	        for(int i = 0; i < 4; i++)
+	        {
+	            hooks.add(new ArrayList<Hook>());
+                initialise_hooks(Cote.DROIT, (GameState<RobotVrai>)state, i);
+                initialise_hooks(Cote.GAUCHE, (GameState<RobotVrai>)state, i);
+	        }
+        }
+	    
 		// Orientation du robot, le rateau étant à l'arrière
-		int recul = 0;
 		if (id_version == 0)
-			state.robot.tourner((float)Math.PI);
+			state.robot.tourner(Math.PI);
 		else if (id_version == 1 || id_version == 2)
-			state.robot.tourner((float)Math.PI/2);
+			state.robot.tourner(Math.PI/2);
 		else if (id_version == 3)
 			state.robot.tourner(0) ;
-		//Les reculs servent à calibrer l'avancement du robot lors de la prise des fruits
-		//50 est plutôt trop prudent
-		//30 est ce qui est à retenir pour id_version valant 0 et 3
-		//et 0 pour id_version 1 et 2
-		//résultats obtenus une semaine avant la pré-coupe
-		recul = 50;
 
 		// on déploie les bras 
 		state.robot.rateau(PositionRateau.BAS, Cote.DROIT);
@@ -115,7 +123,7 @@ public class ScriptTree extends Script{
 		
 		// on avance et on rebaisse les rateaux au min
 		state.robot.set_vitesse_translation("arbre_arriere");
-		state.robot.avancer(-318+recul);
+		state.robot.avancer_dans_mur(-400);
 		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
 		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
 		state.robot.sleep(500);
@@ -124,49 +132,12 @@ public class ScriptTree extends Script{
 		state.robot.rateau(PositionRateau.BAS, Cote.GAUCHE);
 		// on remonte les bras à mi-hauteur en fonction de la position du fruit pourri, tout en reculant
 		
-		
-		// What ???
-		// Ce code est un immense bootleneck dans la stratégie. Voir avec martial avant de remttre
-		/*
-		ArrayList<Hook> hooks = new ArrayList<Hook>();
-		Cote cote = Cote.GAUCHE;
-		do 
-		{
-			int nbFruits = state.table.nbrTree(id_version, cote) ;
-			Executable remonte = new LeverRateau(state.robot, cote);
-			double distance = 0;
-			if(nbFruits == 3)
-				distance = 0;
-			else if(nbFruits == 2)
-				distance = 75;
-			else if(nbFruits == 1)
-				distance = 200;
-			else if(nbFruits == 0)
-				distance = 310;
-			Vec2 diff = new Vec2((int)(distance*Math.cos((double)state.robot.getOrientation())),(int)(distance*Math.sin((double)state.robot.getOrientation())));
-			Hook hook = hookgenerator.hook_position(state.robot.getPosition().PlusNewVector(diff));
-			hook.ajouter_callback(new Callback(remonte, true));
-			hooks.add(hook);
-
-			if(cote == Cote.GAUCHE)
-				cote = Cote.DROIT;
-			else
-				cote = Cote.GAUCHE;
-		}
-		while(cote == Cote.DROIT);*/
-		
-		
 		state.robot.set_vitesse_translation("arbre_avant");
-		//log.debug("adding " + state.table.nbrTree(id_version, Cote.DROIT) + state.table.nbrTree(id_version, Cote.GAUCHE) + " fruits to the bac", this);
-		//l'ordre  est très important !!!
+		
 		state.robot.add_fruits(state.table.nbrTree(id_version, Cote.DROIT) + state.table.nbrTree(id_version, Cote.GAUCHE));
 		state.table.pickTree(id_version);
-<<<<<<< HEAD
-		state.robot.avancer(318-recul, hooks);
-=======
-		//state.robot.avancer(318-recul, hooks);		
-		state.robot.avancer(318-recul, null);		
->>>>>>> beb5abeebd8dd318e32cb7e5276221c60d1d10b4
+		state.robot.avancer(350, hooks.get(id_version));
+		state.robot.sleep(1000);
 	}
 
 	@Override
@@ -182,6 +153,41 @@ public class ScriptTree extends Script{
 	public String toString()
 	{
 		return "ScriptTree";
+	}
+	
+	/**
+	 * Initialise les hooks une fois pour toutes
+	 * @param cote
+	 * @param state
+	 * @param version
+	 */
+	private void initialise_hooks(Cote cote, GameState<RobotVrai> state, int version)
+	{
+            int nbFruits = state.table.nbrTree(version, cote) ;
+            Executable remonte = new LeverRateau(state.robot, cote);
+            Hook hook;
+
+            if(nbFruits == 0)
+                return; // pas de hook
+            
+            int distance = 0;
+            
+            if(nbFruits == 3)
+                distance = 150;
+            else if(nbFruits == 2)
+                distance = 250;
+            else if(nbFruits == 1)
+                distance = 350;
+
+            if(version == 0)
+                hook = hookgenerator.hook_abscisse(1500-distance, 35);
+            else if(version == 1 || version == 2)
+                hook = hookgenerator.hook_ordonnee(distance, 35);
+            else // version == 3
+                hook = hookgenerator.hook_abscisse(-1500+distance, 35);
+                
+            hook.ajouter_callback(new Callback(remonte, true));
+            hooks.get(version).add(hook);
 	}
 	
 }

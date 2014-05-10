@@ -45,8 +45,25 @@ public class Table implements Service {
 		initialise();
 	}
 	
+	/**
+	 * Permet de signaler à la table où sont les fruits noirs. Par défaut, la table
+	 * considère que tous les fruits sont bons.
+	 * @param fruitsNoirs
+	 */
+	public void setFruitsNoirs(int[] fruitsNoirs)
+	{
+        arrayTree[0] = new Tree(new Vec2(1500,700), fruitsNoirs[0]);
+        arrayTree[1] = new Tree(new Vec2(800,0), fruitsNoirs[1]);
+        arrayTree[2] = new Tree(new Vec2(-800,0), fruitsNoirs[2]);
+        arrayTree[3] = new Tree(new Vec2(-1500,700), fruitsNoirs[3]);
+	}
+	
 	public void initialise()
 	{
+	    /**
+	     * Demander la position des fruits noirs
+	     */
+	    
 		// Initialisation des feux
 		// TODO vérifier couleur. Torche fixe?
 		arrayFire[0] = new Fire(new Vec2(1100,900), 1, 0, Colour.RED);	// ok
@@ -62,12 +79,11 @@ public class Table implements Service {
 		arrayFixedFire[3] = new Fire(new Vec2(-1485,1200), 15, 0, Colour.YELLOW);
 		
 		// Initialisation des arbres
-		arrayTree[0] = new Tree(new Vec2(1500,700));
-		arrayTree[1] = new Tree(new Vec2(800,0));
-		arrayTree[2] = new Tree(new Vec2(-800,0));
-		arrayTree[3] = new Tree(new Vec2(-1500,700));
-		
-		
+		arrayTree[0] = new Tree(new Vec2(1500,700), -1);
+		arrayTree[1] = new Tree(new Vec2(800,0), -1);
+		arrayTree[2] = new Tree(new Vec2(-800,0), -1);
+		arrayTree[3] = new Tree(new Vec2(-1500,700), -1);
+				
 		//initialisation des mamouths
 		leftMammothHit = false;
 		rightMammothHit = false;
@@ -249,15 +265,7 @@ public class Table implements Service {
 		arrayTree[id].setTaken();
 		hashTree = indice++;
 	}
-	
-	public void setFruitNoir(int id, int pos_fruit_noir)
-	{
-		//La nomenclature des positions des fruits noirs provient de la description de la classe Tree
 		
-		arrayTree[id].getArrayFruit()[pos_fruit_noir] = new Fruit(false);
-		
-	}
-	
 	public int nbrTree(int id, Cote cote)
 	{
 		if(cote == Cote.DROIT)
@@ -383,8 +391,8 @@ public class Table implements Service {
 	
 			if(ct.hashTree != hashTree)
 			{
-				for(int i = 0; i < 4; i++)		
-					ct.arrayTree[i] = arrayTree[i].clone();
+				for(int i = 0; i < 4; i++)	
+				    arrayTree[i].clone(ct.arrayTree[i]);
 				ct.hashTree = hashTree;
 			}
 

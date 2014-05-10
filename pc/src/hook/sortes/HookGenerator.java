@@ -75,6 +75,19 @@ public class HookGenerator implements Service {
 		return hook_abscisse(abscisse, tolerance_position);
 	}
 	
+    /*
+     * Hook d'ordonnée
+     */
+    
+    public Hook hook_ordonnee(float ordonnee, int tolerance)
+    {
+        return new HookOrdonnee(config, log, real_state, ordonnee, tolerance, couleur=="rouge");
+    }
+    public Hook hook_ordonnee(float ordonnee)
+    {
+        return hook_ordonnee(ordonnee, tolerance_position);
+    }
+    
 	/*
 	 * Hook de feu
 	 */
