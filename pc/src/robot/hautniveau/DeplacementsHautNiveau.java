@@ -269,6 +269,7 @@ public class DeplacementsHautNiveau implements Service
                 // Si on insiste, on se dégage. Sinon, c'est juste normal de prendre le mur.
                 if(!mur)
                 {
+                    nb_iterations -= 5;
                     try
                     {
                         log.warning("On n'arrive plus à avancer. On se dégage", this);
@@ -290,7 +291,7 @@ public class DeplacementsHautNiveau implements Service
                         log.critical("On n'arrive pas à se dégager.", this);
                         throw new MouvementImpossibleException();
                     }
-                    if(nb_iterations == 0)
+                    if(nb_iterations <= 0)
                         throw new MouvementImpossibleException();
                 }
             } catch (CollisionException e)
@@ -298,7 +299,7 @@ public class DeplacementsHautNiveau implements Service
                 /*
                  * En cas d'ennemi, on attend (si on demande d'insiste) ou on abandonne.
                  */
-                if(nb_iterations == 0)
+                if(nb_iterations <= 0)
                 {
                     /* TODO: si on veut pouvoir enchaîner avec un autre chemin, il
                      * ne faut pas arrêter le robot.
