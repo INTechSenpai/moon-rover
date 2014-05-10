@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import exceptions.strategie.PathfindingException;
 import robot.RobotChrono;
 import scripts.Script;
-import smartMath.Vec2;
 import strategie.GameState;
 
 /**
