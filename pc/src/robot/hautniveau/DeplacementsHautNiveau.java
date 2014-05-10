@@ -107,7 +107,7 @@ public class DeplacementsHautNiveau implements Service
             angle = Math.PI-angle;
 
         // Tourne-t-on dans le sens trigonométrique?
-        // C'es important de savoir pour se dégager.
+        // C'est important de savoir pour se dégager.
         boolean trigo = angle > orientation;
         
         try {
