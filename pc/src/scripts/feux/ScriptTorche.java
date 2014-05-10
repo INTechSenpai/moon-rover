@@ -50,13 +50,13 @@ public class ScriptTorche extends Script {
 		if(id_meta == 0)
 		{
 			versionList.add(1);
-			versionList.add(3);
+			//versionList.add(3); Inaccessible
 			versionList.add(5);
 		}
 		if(id_meta == 1)
 		{
 			versionList.add(0);
-			versionList.add(2);
+			//versionList.add(2); Inaccessible
 			versionList.add(4);
 		}
 		return versionList;
@@ -69,22 +69,26 @@ public class ScriptTorche extends Script {
 			return new Vec2(-600,500);
 		else if(id ==1)
 			return new Vec2(600,500);
+		
 		else if(id ==2)
-			//X = -600+600*cos(-pi/6)
-			//Y = 900+600*sin(-pi/6)
-			return new Vec2(-80,600);
-		else if(id ==3)
-			//X = 600+400*cos(-pi/6)
+			//X = -600+400*cos(-pi/6)
 			//Y = 900+400*sin(-pi/6)
-			return new Vec2(946,700);
+			return new Vec2(-946,1100);
+		/*
+		else if(id ==3)
+			//X = 600-400*cos(-pi/6)
+			//Y = 900-400*sin(-pi/6)
+			return new Vec2(253,1100);
+			
 		else if(id ==4)
-			//X = -600+400*cos(7*pi/6)
+			//X = -600-400*cos(7*pi/6)
 			//Y = 900+400*sin(7*pi/6)
-			return new Vec2(-946,700);
+			return new Vec2(-253,1100);
+		*/
 		else if(id ==5)
-			//X = 600+600*cos(7*pi/6)
-			//Y = 900+600*sin(7*pi/6)
-			return new Vec2(80,600);
+			//X = 600-400*cos(7*pi/6)
+			//Y = 900+400*sin(7*pi/6)
+			return new Vec2(946,1100);
 		else
 			return null;		
 	}
@@ -103,94 +107,75 @@ public class ScriptTorche extends Script {
 	@Override
 	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException 
 	{
+		float angle  = 0;
+		int decalage = -130;
+		int avancement = 120;
 		if(id_version ==0)
 			//Vec2(-600,900)
-		    state.robot.tourner(0);
-
+			angle = (float)Math.PI/2;
 		else if(id_version ==1)
 			//Vec2(600,900);
-		    state.robot.tourner(0);
-
-		else if(id_version ==2)
-			//Vec2(-600,900)
-		    state.robot.tourner((float)-Math.PI/6);
-
-		else if(id_version ==3)
-			//Vec2(600,900)
-		    state.robot.tourner((float)-Math.PI/6);
-
-		else if(id_version ==4)
-			//Vec2(-600,900)
-		    state.robot.tourner((float)(7*Math.PI/6));
-
-		else if(id_version ==5)
-			//Vec2(600,900)
-		    state.robot.tourner((float)(7*Math.PI/6));
-		state.robot.set_vitesse_translation("torche");
-		/*
+			angle = (float)Math.PI/2;
 		
-		robot.prendre_torche(Cote.GAUCHE);
-		robot.set_vitesse_translation("torche");
-		robot.avancer(100);
-		robot.sleep(500);
-		robot.fermer_pince(Cote.GAUCHE);
-		robot.sleep(200);
-		robot.lever_pince(Cote.GAUCHE);
-		robot.sleep(300);
-		robot.ouvrir_pince(Cote.GAUCHE);
-		robot.sleep(50);
-		robot.fermer_pince(Cote.GAUCHE);
-		*/
+		else if(id_version ==2)
+			//X = -600+600*cos(-pi/6)
+			//Y = 900+600*sin(-pi/6)
+			//Vec2(-80,600);
+			angle = (float)-Math.PI/6;
 		/*
-		 * robot.tourner((float)Math.PI);
-			robot.prendre_torche(Cote.DROIT);
-			robot.set_vitesse_translation("torche");
-			robot.avancer(100);
-			robot.sleep(500);
-			robot.fermer_pince(Cote.DROIT);
-			robot.sleep(200);
-			robot.lever_pince(Cote.DROIT);
-			robot.sleep(300);
-			robot.ouvrir_pince(Cote.DROIT);
-			robot.sleep(50);
-			robot.fermer_pince(Cote.DROIT);
-		 */
+		else if(id_version ==3)
+			//X = 600+400*cos(-pi/6)
+			//Y = 900+400*sin(-pi/6)
+			//Vec2(946,700);
+		    angle = (float)-Math.PI/6;
+	
+		else if(id_version ==4)
+			//X = -600+400*cos(7*pi/6)
+			//Y = 900+400*sin(7*pi/6)
+			//Vec2(-946,700);
+		    angle = (float)(7*Math.PI/6);
+		*/
+		else if(id_version ==5)
+			//X = 600+600*cos(7*pi/6)
+			//Y = 900+600*sin(7*pi/6)
+			//Vec2(80,600);
+		    angle = (float)(7*Math.PI/6);
+		
+		Cote cote = Cote.GAUCHE;
+		
 		if(!state.robot.isTient_feu(Cote.GAUCHE))
 		{
+			cote = Cote.GAUCHE;
+			decalage = -130;
+			avancement = 120;
+		}
+		else if(!state.robot.isTient_feu(Cote.DROIT))
+		{	
+			cote = Cote.DROIT;
+			decalage = 110;
+			avancement = 110;
+		}
+		state.robot.set_vitesse_translation("torche");
+		try {
+			state.robot.tourner(angle+(float)Math.PI/2);
+			state.robot.avancer(decalage);
+			state.robot.tourner(angle);
+			state.robot.avancer(avancement);
+			state.robot.prendre_torche(cote);
+			state.robot.sleep(500);
+			state.robot.fermer_pince(cote);
+			state.robot.sleep(500);
+			state.robot.avancer(-200);
+		} catch (SerialException e) {
+			e.printStackTrace();
+		}
 			//Pour les feux à ramasser dans les torches
-			try {
-				
 				/*
 			    state.robot.ouvrir_pince(Cote.GAUCHE);
 			    state.robot.milieu_pince(Cote.GAUCHE);
 			    state.robot.fermer_pince(Cote.GAUCHE);
 			    state.robot.lever_pince(Cote.GAUCHE);
 			    */
-				
-				state.robot.prendre_torche(Cote.GAUCHE);
-			    
-			} catch (SerialException e) {
-				e.printStackTrace();
-			}
-		}
-		else if(!state.robot.isTient_feu(Cote.DROIT))
-		{		
-			//Pour les feux à ramasser dans les torches
-			try {
-				/*
-			    state.robot.ouvrir_pince(Cote.DROIT);
-			    state.robot.milieu_pince(Cote.DROIT);
-			    state.robot.fermer_pince(Cote.DROIT);
-			    state.robot.lever_pince(Cote.DROIT);
-			    */
-				state.robot.prendre_torche(Cote.DROIT);
-			    // TODO mettre à jour robot, mais pas en utilisant torche disparue
-			} catch (SerialException e) {
-				e.printStackTrace();
-			}
-		}
-
-
 		// On retire la torche des obstacles.
 		if(id_version ==0)
 			//Vec2(-600,900)
@@ -199,30 +184,39 @@ public class ScriptTorche extends Script {
 		else if(id_version ==1)
 			//Vec2(600,900);
 			state.table.torche_disparue(Cote.DROIT);
-
+		
 		else if(id_version ==2)
-			//Vec2(-600,900)
+			//X = -600+600*cos(-pi/6)
+			//Y = 900+600*sin(-pi/6)
+			//Vec2(-80,600);
             state.table.torche_disparue(Cote.GAUCHE);
-
+		/*
 		else if(id_version ==3)
-			//Vec2(600,900)
+			//X = 600+400*cos(-pi/6)
+			//Y = 900+400*sin(-pi/6)
+			//Vec2(946,700);
 			state.table.torche_disparue(Cote.DROIT);
-
+		
 		else if(id_version ==4)
-			//Vec2(-600,900)
+			//X = -600+400*cos(7*pi/6)
+			//Y = 900+400*sin(7*pi/6)
+			//Vec2(-946,700);
             state.table.torche_disparue(Cote.GAUCHE);
-
+		*/
 		else if(id_version ==5)
-			//Vec2(600,900)
+			//X = 600+600*cos(7*pi/6)
+			//Y = 900+600*sin(7*pi/6)
+			//Vec2(80,600);
 			state.table.torche_disparue(Cote.DROIT);
 		
 		
 		// TEMPORAIRE :  pour debug stratégie
-
+		/*
 	    state.robot.ouvrir_pince(Cote.GAUCHE);
 	    state.robot.milieu_pince(Cote.GAUCHE);
 	    state.robot.fermer_pince(Cote.GAUCHE);
 	    state.robot.lever_pince(Cote.GAUCHE);
+	    */
 	}
 
 	@Override
