@@ -182,8 +182,13 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	@Test
 	public void test_ScriptTorche_agit() throws Exception
 	{
+		real_state.robot.initialiser_actionneurs_deplacements();
+        real_state.robot.recaler();
+        //Sleep.sleep(3000);
+        real_state.robot.avancer(300);
+        real_state.robot.setTient_feu(Cote.GAUCHE);
 		s = (Script)scriptmanager.getScript("ScriptTorche");
-		s.agit(1, real_state, true);
+		s.agit(0, real_state, true);
 	}
 
     @Test
@@ -206,6 +211,10 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	}
 	@Test public void test_ScriptFeuBord() throws Exception
 	{
+		real_state.robot.initialiser_actionneurs_deplacements();
+        real_state.robot.recaler();
+        Sleep.sleep(3000);
+        real_state.robot.avancer(300);
 		s = (Script)scriptmanager.getScript("ScriptFeuBord");
 		s.agit(1, real_state, true);
 	}
