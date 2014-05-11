@@ -23,7 +23,12 @@ public class ScriptFresque extends Script {
 
 	public ScriptFresque(HookGenerator hookgenerator, Read_Ini config, Log log)
 	{
-		super(hookgenerator, config, log);
+        super(hookgenerator, config, log);
+        ArrayList<Integer> versionList = new ArrayList<Integer>();
+        versionList.add(0);
+        versionList.add(1);
+        versionList.add(2);
+        versions.add(versionList);
 	}
 	@Override 
 	public  ArrayList<Integer> meta_version(final GameState<?> state)
@@ -33,18 +38,6 @@ public class ScriptFresque extends Script {
 			return metaversionList;
 		metaversionList.add(0);
 		return metaversionList;
-	}
-	@Override
-	public  ArrayList<Integer> version_asso(int id_meta)
-	{
-		ArrayList<Integer> versionList = new ArrayList<Integer>();
-		if(id_meta == 0)
-		{
-			versionList.add(0);
-			versionList.add(1);
-			versionList.add(2);
-		}
-		return versionList;
 	}
 
 	// Points d'entrées vérifiés. Ne pas modifier sans prévenir PF (oui, Martial, c'est à toi que je parle!)

@@ -2,6 +2,7 @@ package tests;
 
 import robot.RobotChrono;
 import robot.RobotVrai;
+import robot.Vitesse;
 import scripts.Script;
 import scripts.ScriptManager;
 import smartMath.Vec2;
@@ -50,8 +51,7 @@ public class JUnit_StrategieThreadTest extends JUnit_Test {
 		Sleep.sleep(100);
 		
 		robotvrai.setOrientation((float)Math.PI);
-		robotvrai.set_vitesse_rotation("entre_scripts");
-		robotvrai.set_vitesse_translation("entre_scripts");
+        robotvrai.set_vitesse(Vitesse.ENTRE_SCRIPTS);
 		container.getService("threadStrategie");
 		
 		robotvrai.setPosition(initpos);

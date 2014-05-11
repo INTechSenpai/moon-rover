@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import enums.Cote;
 import robot.RobotVrai;
+import robot.Vitesse;
 import smartMath.Vec2;
 
 /**
@@ -37,8 +38,7 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 		robotvrai = (RobotVrai) container.getService("RobotVrai");
 		robotvrai.setPosition(new Vec2(0, 1500));
 		robotvrai.setOrientation(0);
-		robotvrai.set_vitesse_rotation("entre_scripts");
-		robotvrai.set_vitesse_translation("entre_scripts");
+		robotvrai.set_vitesse(Vitesse.ENTRE_SCRIPTS);
 		container.getService("threadPosition");
 //		container.demarreThreads();
 	}
@@ -126,7 +126,6 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 	public void test_hookAbscisse_takeFire() throws Exception
 	{
 		log.debug("JUnit_HookJauneTest.test_hookAbscisse_takeFire()", this);
-		robotvrai.set_vitesse_translation("vitesse_mammouth");
 		Assert.assertTrue(!robotvrai.isTient_feu(Cote.GAUCHE));
 		Assert.assertTrue(!robotvrai.isTient_feu(Cote.DROIT));
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
@@ -143,7 +142,6 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 	public void test_hookAbscisse_takeFire_suit_chemin() throws Exception
 	{
 		log.debug("JUnit_HookJauneTest.test_hookAbscisse_takeFire_suit_chemin()", this);
-		robotvrai.set_vitesse_translation("vitesse_mammouth");
 		Assert.assertTrue(!robotvrai.isTient_feu(Cote.GAUCHE));
 		Assert.assertTrue(!robotvrai.isTient_feu(Cote.DROIT));
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");

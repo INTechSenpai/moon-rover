@@ -272,16 +272,13 @@ public class GestionObstacles
     
     public int hash()
     {
-        return hashObstacles*100 + hashEnnemis;
+        return hashObstacles<<8 + hashEnnemis;
     }
 
-    @Override
-    public boolean equals(Object other)
+    public boolean equals(GestionObstacles other)
     {
-        return other != null
-                && other instanceof GestionObstacles
-                && hashObstacles == ((GestionObstacles)other).hashObstacles
-                && hashEnnemis == ((GestionObstacles)other).hashEnnemis;
+        return hashObstacles == other.hashObstacles
+               && hashEnnemis == other.hashEnnemis;
     }
     
 

@@ -7,12 +7,14 @@ import hook.Executable;
 import hook.Hook;
 import robot.RobotChrono;
 import robot.RobotVrai;
+import robot.Vitesse;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
 import hook.methodes.DisparitionTorche;
 import hook.methodes.TakeFire;
 import hook.sortes.HookGenerator;
+
 import java.util.ArrayList;
 
 import enums.Cote;
@@ -31,6 +33,11 @@ public abstract class Script implements Service {
 	protected static HookGenerator hookgenerator;
 	protected static Read_Ini config;
 	protected static Log log;
+
+	/*
+	 * versions.get(meta_id) donne la liste des versions associées aux meta_id
+	 */
+	protected ArrayList<ArrayList<Integer>> versions = new ArrayList<ArrayList<Integer>>();
 	
 	private ArrayList<Hook> hooks_chemin = new ArrayList<Hook>();
 	
@@ -45,7 +52,7 @@ public abstract class Script implements Service {
 		
 		couleur = config.get("couleur");
 		rayon_robot = Integer.parseInt(config.get("rayon_robot"));
-}
+	}
 		
 	/**
 	 * Exécute vraiment un script
@@ -54,8 +61,7 @@ public abstract class Script implements Service {
 	{
 		Vec2 point_entree = point_entree(id_version);
 
-		state.robot.set_vitesse_translation("entre_scripts");
-		state.robot.set_vitesse_rotation("entre_scripts");
+		state.robot.set_vitesse(Vitesse.ENTRE_SCRIPTS);
 
 		Executable takefire = new TakeFire(state.robot, Cote.GAUCHE);
 		Hook hook = hookgenerator.hook_feu(Cote.GAUCHE);
@@ -112,7 +118,7 @@ public abstract class Script implements Service {
 	 */
 	public long metacalcule(int id_version, GameState<RobotChrono> state, boolean use_cache) throws PathfindingException
 	{	    
-		long duree = calcule(version_asso(id_version).get(0), state, use_cache);
+		long duree = calcule(versions.get(id_version).get(0), state, use_cache);
 		state.time_depuis_debut += duree;
         state.time_depuis_racine += duree;
 		return duree;
@@ -126,11 +132,9 @@ public abstract class Script implements Service {
 	public long calcule(int id_version, GameState<RobotChrono> state, boolean use_cache) throws PathfindingException
 	{
 		Vec2 point_entree = point_entree(id_version);
-		state.robot.set_vitesse_translation("entre_scripts");
-		state.robot.set_vitesse_rotation("entre_scripts");
+		state.robot.set_vitesse(Vitesse.ENTRE_SCRIPTS);
 
-
-		state.robot.initialiser_compteur(1000);
+		state.robot.initialiser_compteur(state.pathfinding.distance(state.robot.getPositionFast(), point_entree, use_cache));
 		state.robot.setPosition(point_entree);
 
 		try {
@@ -142,11 +146,6 @@ public abstract class Script implements Service {
 		}
 		return state.robot.get_compteur();
 	}
-	/**
-	 * Renvoie les versions associées associée à une méta-version
-	 * @return le tableau des versions associée
-	 */
-	public abstract ArrayList<Integer> version_asso(int id_meta);
 	
 	/**
 	 * Renvoie le tableau des méta-verions d'un script
@@ -161,14 +160,24 @@ public abstract class Script implements Service {
 	 * @return la position du point d'entrée
 	 */
 	public abstract Vec2 point_entree(int id);
-	/**
-	 * Renvoie le score que peut fournir une méta-version d'un script
-	 * @return le score
-	 */
 	
+	/**
+	 * Renvoie le tableau des versions associées à une métaversion
+	 * @param meta_version
+	 * @return
+	 */
+	public ArrayList<Integer> version_asso(int meta_version)
+	{
+	    return versions.get(meta_version);
+	}
+	
+    /**
+     * Renvoie le score que peut fournir une méta-version d'un script
+     * @return le score
+     */
 	public int meta_score(int id_metaversion, GameState<?> state)
 	{
-	    ArrayList<Integer> versions = version_asso(id_metaversion);
+	    ArrayList<Integer> versions = this.versions.get(id_metaversion);
         if(versions == null)
             return -1;
 	    int max = versions.get(0);

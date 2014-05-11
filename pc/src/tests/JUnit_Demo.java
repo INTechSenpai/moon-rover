@@ -14,6 +14,7 @@ import org.junit.Test;
 import enums.Cote;
 import robot.RobotChrono;
 import robot.RobotVrai;
+import robot.Vitesse;
 import scripts.Script;
 import scripts.ScriptManager;
 import smartMath.Vec2;
@@ -41,8 +42,7 @@ public class JUnit_Demo extends JUnit_Test {
  		
 		robotvrai.setPosition(new Vec2(1300, 1200));
 		robotvrai.setOrientation((float)Math.PI);
-		robotvrai.set_vitesse_rotation("entre_scripts");
-		robotvrai.set_vitesse_translation("entre_scripts");
+		robotvrai.set_vitesse(Vitesse.ENTRE_SCRIPTS);
 		container.getService("threadPosition");
 		container.demarreThreads();
 

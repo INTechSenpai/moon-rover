@@ -40,9 +40,7 @@ public class RobotVrai extends Robot {
 		this.deplacements = deplacements;
 		this.table = table;
 		maj_config();
-		this.set_vitesse_rotation("entre_scripts");
-		this.set_vitesse_translation("entre_scripts");
-		
+		vitesse = Vitesse.ENTRE_SCRIPTS;		
 	}
 	
 	/*
@@ -62,8 +60,7 @@ public class RobotVrai extends Robot {
 	
 	public void recaler()
 	{
-	    set_vitesse_translation("recaler");
-        set_vitesse_rotation("recaler");
+	    set_vitesse(Vitesse.RECALER);
 	    deplacements.recaler();
 	}
 	
@@ -81,20 +78,11 @@ public class RobotVrai extends Robot {
 	 * Modifie la vitesse de translation
 	 */
 	@Override
-	public void set_vitesse_translation(String vitesse)
+	public void set_vitesse(Vitesse vitesse)
 	{
-        deplacements.set_vitesse_translation(conventions_vitesse_translation(vitesse));
-		log.debug("Modification de la vitesse de translation: "+vitesse, this);
-	}
-
-	/**
-	 * Modifie la vitesse de rotation
-	 */
-	@Override
-	public void set_vitesse_rotation(String vitesse)
-	{
-		deplacements.set_vitesse_rotation(conventions_vitesse_rotation(vitesse));
-		log.debug("Modification de la vitesse de rotation: "+vitesse, this);
+        deplacements.set_vitesse_translation(vitesse.PWM_translation);
+        deplacements.set_vitesse_rotation(vitesse.PWM_rotation);
+		log.debug("Modification de la vitesse: "+vitesse, this);
 	}
 	
 	@Override
@@ -129,7 +117,7 @@ public class RobotVrai extends Robot {
 			int signe = 1;
 			if(cote == Cote.GAUCHE)
 				signe = -1;
-			String vitesse_rotation = get_vitesse_rotation();
+			Vitesse vitesse_sauv = vitesse;
 			stopper();
 			avancer(-150);
 			ouvrir_bas_pince(cote);
@@ -137,9 +125,9 @@ public class RobotVrai extends Robot {
 			sleep(600);
 			avancer(120);
 			presque_fermer_pince(cote);
-			set_vitesse_rotation("prise_feu");
+			set_vitesse(Vitesse.PRISE_FEU);
 			tourner_relatif(-signe*0.3f);
-			set_vitesse_rotation(vitesse_rotation);
+			set_vitesse(vitesse_sauv);
 			avancer(30);
 			fermer_pince(cote);
 			sleep(500);
@@ -319,5 +307,12 @@ public class RobotVrai extends Robot {
         actionneurs.rateau(position, cote);
     }
 
-	
+    @Override
+    public void copy(RobotChrono rc)
+    {
+        super.copy(rc);
+        getPositionFast().copy(rc.position);
+        rc.orientation = getOrientationFast();
+    }
+
 }

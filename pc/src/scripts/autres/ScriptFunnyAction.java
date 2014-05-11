@@ -25,6 +25,11 @@ public class ScriptFunnyAction extends Script {
 	public ScriptFunnyAction(HookGenerator hookgenerator, Read_Ini config, Log log, ThreadTimer threadtimer) {
 		super(hookgenerator, config, log);
 		this.threadtimer = threadtimer;
+
+        versions = new ArrayList<ArrayList<Integer>>();
+		ArrayList<Integer> versionList = new ArrayList<Integer>();
+        versionList.add(0);
+        versions.add(versionList);
 	}
 	@Override 
 	public  ArrayList<Integer> meta_version(final GameState<?> state)
@@ -35,14 +40,6 @@ public class ScriptFunnyAction extends Script {
 		if(threadtimer.temps_restant() < 12000)	// On fait la funny action qu'a la fin du match
 			metaversionList.add(0);
 		return metaversionList;
-	}
-	@Override
-	public  ArrayList<Integer> version_asso(int id_meta)
-	{
-		ArrayList<Integer> versionList = new ArrayList<Integer>();
-		if(id_meta == 0)
-			versionList.add(0);
-		return versionList;
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import enums.Cote;
 import exceptions.deplacements.MouvementImpossibleException;
 import exceptions.serial.SerialException;
 import hook.sortes.HookGenerator;
+import robot.Vitesse;
 import scripts.Script;
 import smartMath.Vec2;
 import strategie.GameState;
@@ -23,6 +24,14 @@ public class ScriptTorche extends Script {
 	public ScriptTorche(HookGenerator hookgenerator, Read_Ini config, Log log)
 	{
 		super(hookgenerator, config, log);
+        ArrayList<Integer> versionList = new ArrayList<Integer>();
+        versionList.add(1);
+        versionList.add(5);
+        versions.add(versionList);
+        versionList.clear();
+        versionList.add(0);
+        versionList.add(4);
+        versions.add(versionList);
 	}
 
 	@Override 
@@ -43,25 +52,7 @@ public class ScriptTorche extends Script {
 		}
 		return metaversionList;
 	}
-	@Override
-	public  ArrayList<Integer> version_asso(int id_meta)
-	{
-		ArrayList<Integer> versionList = new ArrayList<Integer>();
-		if(id_meta == 0)
-		{
-			versionList.add(1);
-			//versionList.add(3); Inaccessible
-			versionList.add(5);
-		}
-		if(id_meta == 1)
-		{
-			versionList.add(0);
-			//versionList.add(2); Inaccessible
-			versionList.add(4);
-		}
-		return versionList;
-	}
-	
+
 	@Override
 	public Vec2 point_entree(int id) {
 		//Les coordonnées ont été prises à partir du réglement
@@ -155,7 +146,7 @@ public class ScriptTorche extends Script {
 			decalage = 110;
 			avancement = 110;
 		}
-		state.robot.set_vitesse_translation("torche");
+		state.robot.set_vitesse(Vitesse.PRISE_FEU);
 		try {
 			state.robot.tourner(angle+(float)Math.PI/2);
 			state.robot.avancer(decalage);

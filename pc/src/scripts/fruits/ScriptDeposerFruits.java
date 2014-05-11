@@ -23,6 +23,10 @@ public class ScriptDeposerFruits extends Script {
 
 	public ScriptDeposerFruits(HookGenerator hookgenerator, Read_Ini config, Log log) {
 		super(hookgenerator, config, log);
+        ArrayList<Integer> versionList = new ArrayList<Integer>();
+        versionList.add(0);
+        versionList.add(1);
+        versions.add(versionList);
 	}
 	@Override 
 	public  ArrayList<Integer> meta_version(final GameState<?> state)
@@ -31,17 +35,6 @@ public class ScriptDeposerFruits extends Script {
 		if(state.robot.get_nombre_fruits_bac() > 0)
 			metaversionList.add(0);
 		return metaversionList;
-	}
-	@Override
-	public  ArrayList<Integer> version_asso(int id_meta)
-	{
-		ArrayList<Integer> versionList = new ArrayList<Integer>();
-		if(id_meta == 0)
-		{
-			versionList.add(0);
-			versionList.add(1);
-		}
-		return versionList;
 	}
 
 	@Override

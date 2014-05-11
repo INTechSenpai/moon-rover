@@ -1,6 +1,7 @@
 package scripts.fruits;
 
 import robot.RobotVrai;
+import robot.Vitesse;
 import scripts.Script;
 import smartMath.Vec2;
 import strategie.GameState;
@@ -32,6 +33,18 @@ public class ScriptTree extends Script{
 	public ScriptTree(HookGenerator hookgenerator, Read_Ini config, Log log)
 	{
 		super(hookgenerator, config, log);
+        ArrayList<Integer> versionList = new ArrayList<Integer>();
+        versionList.add(0);
+        versions.add(versionList);
+        versionList.clear();
+        versionList.add(1);
+        versions.add(versionList);
+        versionList.clear();
+        versionList.add(2);
+        versions.add(versionList);
+        versionList.clear();
+        versionList.add(3);
+        versions.add(versionList);
 	}
 
 	@Override 
@@ -45,14 +58,6 @@ public class ScriptTree extends Script{
 					metaversionList.add(i);
 		}
 		return metaversionList;
-	}
-
-	@Override
-	public ArrayList<Integer> version_asso(int id_meta)
-	{
-		ArrayList<Integer> versionList = new ArrayList<Integer>();
-		versionList.add(id_meta);
-		return versionList;
 	}
 
 	@Override
@@ -122,7 +127,6 @@ public class ScriptTree extends Script{
 		state.robot.rateau(PositionRateau.BAS, Cote.GAUCHE);
 		
 		// on avance et on rebaisse les rateaux au min
-		state.robot.set_vitesse_translation("arbre_arriere");
 		state.robot.avancer_dans_mur(-400);
 		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
 		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
@@ -132,7 +136,7 @@ public class ScriptTree extends Script{
 		state.robot.rateau(PositionRateau.BAS, Cote.GAUCHE);
 		// on remonte les bras à mi-hauteur en fonction de la position du fruit pourri, tout en reculant
 		
-		state.robot.set_vitesse_translation("arbre_avant");
+		state.robot.set_vitesse(Vitesse.ARBRE_AVANT);
 		
 		state.robot.add_fruits(state.table.nbrTree(id_version, Cote.DROIT) + state.table.nbrTree(id_version, Cote.GAUCHE));
 		state.table.pickTree(id_version);

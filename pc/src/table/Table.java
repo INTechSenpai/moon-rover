@@ -380,12 +380,21 @@ public class Table implements Service {
 			
 			if(ct.hashFire != hashFire)
 			{
-				for(int i = 0; i < 6; i++)
+				for(int i = 0; i < 2; i++)
+				{
 					arrayFire[i].clone(ct.arrayFire[i]);
-				for(int i = 0; i < 4; i++)
-					arrayFixedFire[i].clone(ct.arrayFixedFire[i]);
-                for(int i = 0; i < 2; i++)
                     arrayTorch[i].clone(ct.arrayTorch[i]);
+                    arrayFixedFire[i].clone(ct.arrayFixedFire[i]);
+				}
+				for(int i = 2; i < 4; i++)
+				{
+                    arrayFire[i].clone(ct.arrayFire[i]);
+					arrayFixedFire[i].clone(ct.arrayFixedFire[i]);
+				}
+                for(int i = 4; i < 6; i++)
+                {
+                    arrayFire[i].clone(ct.arrayFire[i]);
+                }
 				ct.hashFire = hashFire;
 			}
 	
@@ -396,7 +405,8 @@ public class Table implements Service {
 				ct.hashTree = hashTree;
 			}
 
-			gestionobstacles.copy(ct.gestionobstacles);
+			if(!gestionobstacles.equals(ct.gestionobstacles))
+			    gestionobstacles.copy(ct.gestionobstacles);
 		}
 	}
 	
@@ -412,9 +422,8 @@ public class Table implements Service {
 	 * @return
 	 */
 	public int hashTable()
-	{
-	    
-		return (((((gestionobstacles.hash()*100 + hashFire)*100 + hashTree)*100))*4+codeMammouth())*4+codeTorches();
+	{	    
+		return (((((gestionobstacles.hash()<<8 + hashFire)<<8 + hashTree)<<8))<<2+codeMammouth())<<2+codeTorches();
 	}
 
 	/**
@@ -424,9 +433,13 @@ public class Table implements Service {
 	 */
 	public boolean equals(Table other)
 	{
-		return 	other != null
-                && other instanceof Table
-                && hashTable() == other.hashTable();
+		return 	hashFire == other.hashFire
+                && hashTree == other.hashTree
+                && leftMammothHit == other.leftMammothHit
+                && rightMammothHit == other.rightMammothHit
+                && arrayTorch[0].isDisparue() == other.arrayTorch[0].isDisparue()
+                && arrayTorch[1].isDisparue() == other.arrayTorch[1].isDisparue()
+                && gestionobstacles == other.gestionobstacles;
 	}
 	
 

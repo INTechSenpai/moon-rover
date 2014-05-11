@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import robot.RobotVrai;
+import robot.Vitesse;
 import smartMath.Vec2;
 
 /**
@@ -34,8 +35,7 @@ public class JUnit_HookRougeTest extends JUnit_Test {
 		robotvrai = (RobotVrai) container.getService("RobotVrai");
 		robotvrai.setPosition(new Vec2(0, 1500));
 		robotvrai.setOrientation(0);
-		robotvrai.set_vitesse_rotation("entre_scripts");
-		robotvrai.set_vitesse_translation("entre_scripts");
+        robotvrai.set_vitesse(Vitesse.ENTRE_SCRIPTS);
 	}
 
 	@Test

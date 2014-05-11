@@ -12,6 +12,7 @@ import pathfinding.Pathfinding;
 //import pathfinding.Pathfinding;
 //import robot.RobotChrono;
 import robot.RobotVrai;
+import robot.Vitesse;
 import smartMath.Vec2;
 //import table.Table;
 import utils.Sleep;
@@ -39,12 +40,10 @@ public class PathfindingRandomTest extends JUnit_Test
 		Sleep.sleep(100);
 		robotvrai.setPosition(initpos);
 		robotvrai.setOrientation((float)Math.PI);
-		robotvrai.set_vitesse_rotation("entre_scripts");
-		robotvrai.set_vitesse_translation("entre_scripts");
+        robotvrai.set_vitesse(Vitesse.ENTRE_SCRIPTS);
 		container.getService("threadPosition");
 		finder = (Pathfinding) container.getService("Pathfinding");
 		container.demarreThreads();
-		robotvrai.set_vitesse_translation("30");
 		// init
 		robotvrai.setPosition(initpos);
 		Sleep.sleep(100);

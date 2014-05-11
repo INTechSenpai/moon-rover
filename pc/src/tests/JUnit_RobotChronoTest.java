@@ -83,23 +83,6 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 		Assert.assertTrue(robotchrono.getPosition().distance(new Vec2(40,1500)) < 2);
 		
 	}
-
-	@Test
-	public void test_conventions_vitesse() throws Exception
-	{
-		robotchrono.set_vitesse_rotation("entre_scripts");
-		robotchrono.set_vitesse_rotation("recal_faible");
-		robotchrono.set_vitesse_rotation("recal_forte");
-		robotchrono.set_vitesse_rotation("vitesse_mammouth");
-		robotchrono.set_vitesse_rotation("ABWABWA");
-
-		robotchrono.set_vitesse_translation("entre_scripts");
-		robotchrono.set_vitesse_translation("recal_faible");
-		robotchrono.set_vitesse_translation("recal_forte");
-		robotchrono.set_vitesse_translation("vitesse_mammouth");
-		robotchrono.set_vitesse_translation("ABWABWA");
-
-	}
 	
 	@Test
 	public void test_actionneurs() throws Exception

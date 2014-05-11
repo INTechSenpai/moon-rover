@@ -23,6 +23,13 @@ public class ScriptLances extends Script {
 	public ScriptLances(HookGenerator hookgenerator, Read_Ini config, Log log)
 	{
 		super(hookgenerator, config, log);
+        versions = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> versionList = new ArrayList<Integer>();
+        versionList.add(0);
+        versions.add(versionList);
+        versionList.clear();
+        versionList.add(1);
+        versions.add(versionList);
 	}
 	@Override 
 	public  ArrayList<Integer> meta_version(final GameState<?> state)
@@ -35,18 +42,6 @@ public class ScriptLances extends Script {
 			if(!state.table.isLeftMammothHit())
 				versionList.add(1);
 		}
-		return versionList;
-	}
-
-	/*
-	 * Le script lance 3 balles sur le c��t�� droit
-	 * Le script donne un point d'entr��e
-	 */
-	@Override
-	public  ArrayList<Integer> version_asso(int id_meta)
-	{
-		ArrayList<Integer> versionList = new ArrayList<Integer>();
-		versionList.add(id_meta);
 		return versionList;
 	}
 

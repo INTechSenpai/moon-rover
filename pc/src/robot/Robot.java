@@ -33,8 +33,7 @@ public abstract class Robot implements Service {
             throws MouvementImpossibleException;
     public abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks)
             throws MouvementImpossibleException;
-	public abstract void set_vitesse_translation(String vitesse);
-	public abstract void set_vitesse_rotation(String vitesse);
+	public abstract void set_vitesse(Vitesse vitesse);
 	
 	public abstract void setPosition(Vec2 position);
 	public abstract void setOrientation(double orientation);
@@ -50,12 +49,9 @@ public abstract class Robot implements Service {
 	 * 
 	 * @param rc
 	 */
-    public void copy(Robot rc)
+    public void copy(RobotChrono rc) // 15,3%
     {
-        rc.setPosition(getPositionFast()); // pas d'appel à la série
-        rc.setOrientation(getOrientationFast());   // pas d'appel à la série
-        rc.set_vitesse_rotation(vitesse_rotation);
-        rc.set_vitesse_translation(vitesse_translation);
+        rc.set_vitesse(vitesse);
         rc.nombre_lances = nombre_lances;
         rc.fresques_posees = fresques_posees;
         rc.nombre_fruits_bac = nombre_fruits_bac;
@@ -138,8 +134,7 @@ public abstract class Robot implements Service {
 	protected boolean tient_feu_gauche = false;
 	protected boolean feu_tenu_gauche_rouge = false;
 	protected boolean feu_tenu_droite_rouge = false;
-	private String vitesse_translation;
-	private String vitesse_rotation;
+	protected Vitesse vitesse;
 	
 	public Robot(Read_Ini config, Log log)
 	{
@@ -153,54 +148,8 @@ public abstract class Robot implements Service {
 		symetrie = config.get("couleur").equals("rouge");
 	}
 	
-	protected int conventions_vitesse_translation(String vitesse)
-	{
-		vitesse_translation = vitesse;
-        if(vitesse == "entre_scripts")
-        	return 170;
-        else if(vitesse == "dans_mur")
-            return 90;
-        else if(vitesse == "recaler")
-            return 90;
-        else if(vitesse == "arbre_arriere")
-        	return 50; // TODO
-        else if(vitesse == "arbre_avant")
-        	return 40; // TODO
-        else if(vitesse == "torche")
-        	return 40; //TODO
-        else
-        {
-        	log.warning("Erreur vitesse translation: "+vitesse, this);
-        	return 150;
-        }
-	}
-
-	protected int conventions_vitesse_rotation(String vitesse)
-	{
-		vitesse_rotation = vitesse;
-        if(vitesse == "entre_scripts")
-        	return 160;
-        else if(vitesse == "recaler")
-            return 60;
-        else if(vitesse == "recal_faible")
-            return 120;
-        else if(vitesse == "prise_feu")
-            return 60;
-        else if(vitesse == "recal_forte")
-            return 130;
-        else
-        {
-        	log.warning("Erreur vitesse rotation: "+vitesse, this);
-        	return 160;
-        }
-	}
-	
-	public String get_vitesse_translation() {
-		return vitesse_translation;
-	}
-
-	public String get_vitesse_rotation() {
-		return vitesse_rotation;
+	public Vitesse get_vitesse_() {
+		return vitesse;
 	}
 
 	public int getNbrLances() {
@@ -288,10 +237,10 @@ public abstract class Robot implements Service {
 
     public void avancer_dans_mur(int distance) throws MouvementImpossibleException
     {
-        String sauv_vitesse = vitesse_translation; 
-        set_vitesse_translation("dans_mur");
+        Vitesse sauv_vitesse = vitesse; 
+        set_vitesse(Vitesse.DANS_MUR);
         avancer(distance, null, true);
-        set_vitesse_translation(sauv_vitesse);
+        set_vitesse(sauv_vitesse);
     }
     
     /**

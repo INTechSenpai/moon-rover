@@ -248,11 +248,7 @@ public class Grid2DSpace implements Serializable
 	// x est de droite a gauche et y de bas en haut
 	public boolean canCross(int x, int y)
 	{
-		// anti segfault
-		if(x < 0 || x >= sizeX || y < 0 || y >= sizeY)
-			return false;
-		
-		return datas[x][y];
+		return x >= 0 && x < sizeX && y >= 0 && y < sizeY && datas[x][y];
 	}
 	
 	/**

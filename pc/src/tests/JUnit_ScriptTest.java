@@ -18,6 +18,7 @@ import robot.RobotChrono;
 import robot.RobotVrai;
 import scripts.Script;
 import scripts.ScriptManager;
+import smartMath.Vec2;
 import strategie.GameState;
 import utils.Sleep;
 
@@ -149,9 +150,14 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	{
 	    real_state.robot.initialiser_actionneurs_deplacements();
         real_state.robot.recaler();
+        Sleep.sleep(2000);
         real_state.robot.avancer(200);
+//	    real_state.robot.setPosition(new Vec2(-1000, 300));
 		s = (Script)scriptmanager.getScript("ScriptTree");
-		s.agit(0, real_state, true);
+        s.agit(0, real_state, true);
+        s.agit(1, real_state, true);
+        s.agit(2, real_state, true);
+        s.agit(3, real_state, true);
 	}
 
 	@Test(expected=ScriptException.class)

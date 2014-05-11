@@ -23,6 +23,17 @@ public class ScriptDeposerFeu extends Script {
 	public ScriptDeposerFeu(HookGenerator hookgenerator, Read_Ini config, Log log)
 	{
 		super(hookgenerator, config, log);
+        ArrayList<Integer> versionList = new ArrayList<Integer>();
+        versionList.add(0);
+        versions.add(versionList);
+        versionList.clear();
+        versionList.add(1);
+        versions.add(versionList);
+        versionList.clear();
+        versionList.add(2);
+        versionList.add(3);
+        versionList.add(4);
+        versions.add(versionList);
 	}
 	@Override 
 	public  ArrayList<Integer> meta_version(final GameState<?> state)
@@ -35,22 +46,6 @@ public class ScriptDeposerFeu extends Script {
 			metaversionList.add(2);
 		}
 		return metaversionList;
-	}
-	@Override
-	public  ArrayList<Integer> version_asso(int id_meta)
-	{
-		ArrayList<Integer> versionList = new ArrayList<Integer>();
-		if(id_meta == 0)
-			versionList.add(0);
-		else if(id_meta == 1)
-			versionList.add(1);
-		else if(id_meta == 2)
-		{
-			versionList.add(2);
-			versionList.add(3);
-			versionList.add(4);
-		}
-		return versionList;
 	}
 
 	@Override

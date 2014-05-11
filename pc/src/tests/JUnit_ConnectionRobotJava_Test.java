@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import robot.RobotVrai;
+import robot.Vitesse;
 import smartMath.Vec2;
 
 /**
@@ -26,8 +27,7 @@ public class JUnit_ConnectionRobotJava_Test  extends JUnit_Test {
 		robotvrai.setPosition(new Vec2(1251, 1695));
 		//On démarre avec la cale !!!!
 		robotvrai.setOrientation((float)(-Math.PI/2));
-		robotvrai.set_vitesse_rotation("entre_scripts");
-		robotvrai.set_vitesse_translation("entre_scripts");
+		robotvrai.set_vitesse(Vitesse.ENTRE_SCRIPTS);
 		container.getService("threadPosition");
 		container.demarreThreads();
 		

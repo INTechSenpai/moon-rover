@@ -10,7 +10,6 @@ import enums.Cote;
 import enums.PositionRateau;
 import exceptions.deplacements.MouvementImpossibleException;
 import exceptions.serial.SerialException;
-import exceptions.strategie.RobotChronoException;
 
 /**
  * Robot particulier qui fait pas bouger le robot réel, mais détermine la durée des actions
@@ -21,10 +20,8 @@ import exceptions.strategie.RobotChronoException;
 
 public class RobotChrono extends Robot {
 
-	private double vitesse_mmpms;
-	private double vitesse_rpms;
-	private Vec2 position;
-	private double orientation;
+	protected Vec2 position = new Vec2();
+	protected double orientation;
 	
 	// Durée en millisecondes
 	private int duree = 0;
@@ -50,30 +47,31 @@ public class RobotChrono extends Robot {
     public void avancer(int distance, ArrayList<Hook> hooks, boolean mur)
             throws MouvementImpossibleException
 	{
-		try {
+/*		try {
 			dureePositive((long)(((float)Math.abs(distance))/vitesse_mmpms));
 		} catch (RobotChronoException e) {
 			e.printStackTrace();
-		}
-		duree += ((float)Math.abs(distance))/vitesse_mmpms;
-		Vec2 ecart = new Vec2((int)(distance*Math.cos(orientation)), (int)(distance*Math.sin(orientation)));
+		}*/
+		duree += Math.abs(distance)*vitesse.inverse_vitesse_mmpms;
+		Vec2 ecart;
+		if(orientation == 0)
+		    ecart = new Vec2(distance, 0);
+		else if(orientation == Math.PI/2)
+            ecart = new Vec2(0, distance);
+        else if(orientation == Math.PI)
+            ecart = new Vec2(-distance, 0);
+        else if(orientation == -Math.PI/2)
+            ecart = new Vec2(0, -distance);
+        else
+            ecart = new Vec2((int)(distance*Math.cos(orientation)), (int)(distance*Math.sin(orientation)));
+
 		position.Plus(ecart);
 	}
 	
 	@Override
-	public void set_vitesse_translation(String vitesse)
+	public void set_vitesse(Vitesse vitesse)
 	{
-	    // TODO retirer la formule
-        int pwm_max = conventions_vitesse_translation(vitesse);
-        vitesse_mmpms = ((float)2500)/((float)613.52 * (float)(Math.pow((double)pwm_max,(double)(-1.034))))/1000;
-	}
-
-	@Override
-	public void set_vitesse_rotation(String vitesse)
-	{
-	    // TODO retirer la formule
-        int pwm_max = conventions_vitesse_rotation(vitesse);
-        vitesse_rpms = ((float)Math.PI)/((float)277.85 * (float)Math.pow(pwm_max,(-1.222)))/1000;
+	    this.vitesse = vitesse;
 	}
 
 	// Méthodes propres à RobotChrono
@@ -82,12 +80,12 @@ public class RobotChrono extends Robot {
 	{
 		if(distance_initiale != 0)
 		{
-			try {
+/*			try {
 				dureePositive((long)(((float)distance_initiale)/vitesse_mmpms));
 			} catch (RobotChronoException e) {
 				e.printStackTrace();
-			}
-			duree = (int) (((float)distance_initiale)/vitesse_mmpms);
+			}*/
+			duree = distance_initiale*vitesse.inverse_vitesse_mmpms;
 		}
 		else 
 			distance_initiale = 0;
@@ -116,15 +114,15 @@ public class RobotChrono extends Robot {
 		if(delta > Math.PI)
 			delta = 2*(float)Math.PI - delta;
 		orientation = angle;
-		if(delta != 0) 
+/*		if(delta != 0) 
 		{
 			try {
 				dureePositive((long)(delta/vitesse_rpms));
 			} catch (RobotChronoException e) {
 				e.printStackTrace();
 			}
-		}
-		duree += delta/vitesse_rpms;
+		}*/
+		duree += delta*vitesse.inverse_vitesse_rpms;
 	}
 
 	@Override
@@ -151,12 +149,12 @@ public class RobotChrono extends Robot {
 	{
 		if(symetrie)
 			point.x *= -1;
-		try {
+/*		try {
 			dureePositive((long)(position.distance(point)/vitesse_mmpms));
 		} catch (RobotChronoException e) {
 			e.printStackTrace();
-		}
-		duree += position.distance(point)/vitesse_mmpms;
+		}*/
+		duree += position.distance(point)*vitesse.inverse_vitesse_mmpms;
 		position = point.clone();
 	}
 
@@ -202,19 +200,19 @@ public class RobotChrono extends Robot {
 
 	@Override
 	public void sleep(long duree) {
-		try {
+/*		try {
 			dureePositive(duree);
 		} catch (RobotChronoException e) {
 			e.printStackTrace();
-		}
+		}*/
 		this.duree += duree;
 	}
 	
-	private void dureePositive(long duree) throws RobotChronoException
+/*	private void dureePositive(long duree) throws RobotChronoException
 	{
 		if(duree < -0.001)
 			throw new RobotChronoException();
-	}
+	}*/
 
 	@Override
 	public void poserFeuBonCote(Cote cote) throws SerialException {
@@ -306,5 +304,13 @@ public class RobotChrono extends Robot {
     @Override
     public void setInsiste(boolean insiste)
     {}
+
+    @Override
+    public void copy(RobotChrono rc)
+    {
+        super.copy(rc);
+        position.copy(rc.position);
+        rc.orientation = orientation;
+    }
 
 }

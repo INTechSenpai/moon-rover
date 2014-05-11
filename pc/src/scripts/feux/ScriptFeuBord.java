@@ -25,6 +25,18 @@ public class ScriptFeuBord extends Script {
 	public ScriptFeuBord(HookGenerator hookgenerator, Read_Ini config, Log log)
 	{
 		super(hookgenerator, config, log);
+        ArrayList<Integer> versionList = new ArrayList<Integer>();
+        versionList.add(0);
+        versions.add(versionList);
+        versionList.clear();
+        versionList.add(1);
+        versions.add(versionList);
+        versionList.clear();
+        versionList.add(2);
+        versions.add(versionList);
+        versionList.clear();
+        versionList.add(3);
+        versions.add(versionList);
 	}
 	@Override 
 	public  ArrayList<Integer> meta_version(final GameState<?> state)
@@ -42,13 +54,6 @@ public class ScriptFeuBord extends Script {
 				metaversionList.add(3);
 		}
 		return metaversionList;
-	}
-	@Override
-	public  ArrayList<Integer> version_asso(int id_meta)
-	{
-		ArrayList<Integer> versionList = new ArrayList<Integer>();
-		versionList.add(id_meta);
-		return versionList;
 	}
 	
 	@Override
