@@ -221,7 +221,12 @@ public class Matrn {
 		taille = m.taille.clone();
 		matrice = m.matrice.clone();		
 	}
-
+	public void multiplier_scalaire(double a)
+	{
+		for(int i = 0; i < taille[0]; i++)
+			for(int j = 0; j < taille[1]; j++)
+				 matrice[j][i]= a*matrice[j][i];
+	}
 	
 }
 	
