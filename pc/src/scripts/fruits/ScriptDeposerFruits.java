@@ -60,12 +60,12 @@ public class ScriptDeposerFruits extends Script {
 	protected void execute(int id_version, GameState<?> state)
 			throws MouvementImpossibleException, SerialException {
 	    state.robot.tourner((float)-Math.PI/2);
-	    state.robot.avancer(-160);
+	    state.robot.avancer(-220);
 	    state.robot.bac_haut();	// histoire d'être sûr qu'il y arrive bien
 	    state.robot.bac_haut();
 	    state.robot.bac_haut();
 	    state.robot.sleep(500);
-	    state.robot.avancer(160);
+	    state.robot.avancer(220);
 	    state.robot.bac_bas();
 	}
 	@Override

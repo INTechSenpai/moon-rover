@@ -87,22 +87,25 @@ public class ScriptDeposerFeu extends Script {
 	@Override
 	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException
 	{
+		float angle;
 		//Suivant là où on va poser, on doit se positionner différemment
+		
 		if (id_version == 0)
-		    state.robot.tourner(3.729f);	//(float)(Math.PI+Math.atan(2/3)));
+			angle = 3.729f;		//(float)(Math.PI+Math.atan(2/3)));
 		else if(id_version == 1)
-		    state.robot.tourner(-0.588f);	//(float)(-Math.atan(2/3)));
+			angle = -0.588f;	//(float)(-Math.atan(2/3)));
 		else if(id_version == 2)
-		    state.robot.tourner(1.57f);		//(float)(-Math.PI/2));
+			angle = -1.57f;		//(float)(-Math.PI/2));
 		else if(id_version == 3)
-		    state.robot.tourner(0.588f);	//(float)(Math.atan(2/3)));
-		else															
-		    state.robot.tourner(2.553f);		//(float)(Math.PI-Math.atan(2/3)));
+			angle = 0.588f;		//(float)(Math.atan(2/3)));
+		else
+			angle = 2.553f;		//(float)(Math.PI-Math.atan(2/3)));
 
 		// TODO : si on est équipe rouge il faut inverser les if 
 		
 		if(state.robot.isTient_feu(Cote.GAUCHE))
 		{
+			state.robot.tourner(angle-0.523f);
 			if(state.robot.isFeu_tenu_rouge(Cote.GAUCHE) ^ couleur == "rouge")
 			    state.robot.poserFeuEnRetournant(Cote.GAUCHE);
 			else
@@ -110,6 +113,7 @@ public class ScriptDeposerFeu extends Script {
 		}
 		else // il faut tourner dans tout les cas, même si la version n'est pas cohérente
 		{
+			state.robot.tourner(angle+0.523f);
 			if(state.robot.isFeu_tenu_rouge(Cote.DROIT) ^ couleur == "rouge")
 			    state.robot.poserFeuEnRetournant(Cote.DROIT);
 			else

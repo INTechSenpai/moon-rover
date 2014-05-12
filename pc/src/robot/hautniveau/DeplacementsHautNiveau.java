@@ -65,8 +65,10 @@ public class DeplacementsHautNiveau implements Service
     public void recaler()
     {
         try {
+        	deplacements.desactiver_asservissement_rotation();
             avancer(-200, null, true);
             avancer(-200, null, true);
+           
             position.x = 1500 - 165;
             if(symetrie)
             {
@@ -82,6 +84,7 @@ public class DeplacementsHautNiveau implements Service
             Sleep.sleep(500);
             avancer(50, null, true);
             tourner(-Math.PI/2, null, false);
+
             avancer(-600, null, true);
             avancer(-200, null, true);
             position.y = 2000 - 165;
@@ -90,7 +93,7 @@ public class DeplacementsHautNiveau implements Service
             avancer(100, null, false);
             orientation = -Math.PI/2;
             setOrientation(-Math.PI/2);
-            //Normalement on se trouve à (1500 - 170 - 70 = 1260 ; 2000 - 170 - 100 = 1730)
+            //Normalement on se trouve à (1500 - 165 - 100 = 1225 ; 2000 - 165 - 100 = 1725)
         } catch (Exception e) {
             e.printStackTrace();
         }

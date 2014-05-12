@@ -150,14 +150,16 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	{
 	    real_state.robot.initialiser_actionneurs_deplacements();
         real_state.robot.recaler();
-        Sleep.sleep(2000);
+        Sleep.sleep(3000);
         real_state.robot.avancer(200);
 //	    real_state.robot.setPosition(new Vec2(-1000, 300));
 		s = (Script)scriptmanager.getScript("ScriptTree");
-        s.agit(0, real_state, true);
+        //s.agit(0, real_state, true);
         s.agit(1, real_state, true);
-        s.agit(2, real_state, true);
-        s.agit(3, real_state, true);
+        //s.agit(2, real_state, true);
+        //s.agit(3, real_state, true);
+        s = (Script)scriptmanager.getScript("ScriptDeposerFruits");
+		s.agit(0, real_state, false);
 	}
 
 	@Test(expected=ScriptException.class)
@@ -180,7 +182,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	{
 	    real_state.robot.lever_pince(Cote.DROIT);
 	    real_state.robot.lever_pince(Cote.GAUCHE);
-	    real_state.robot.takefire(Cote.GAUCHE);
+	    //real_state.robot.takefire(Cote.GAUCHE);
 		s = (Script)scriptmanager.getScript("ScriptDeposerFeu");
 		s.agit(2, real_state, true);
 	}
@@ -192,9 +194,11 @@ public class JUnit_ScriptTest extends JUnit_Test {
         real_state.robot.recaler();
         //Sleep.sleep(3000);
         real_state.robot.avancer(300);
-        real_state.robot.setTient_feu(Cote.GAUCHE);
+        //real_state.robot.setTient_feu(Cote.GAUCHE);
 		s = (Script)scriptmanager.getScript("ScriptTorche");
-		s.agit(0, real_state, true);
+		s.agit(1, real_state, true);
+		//Script s1 = (Script)scriptmanager.getScript("ScriptDeposerFeu");
+		//s1.agit(2, real_state, true);
 	}
 
     @Test
