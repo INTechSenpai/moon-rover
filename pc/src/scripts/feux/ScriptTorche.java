@@ -3,10 +3,10 @@ package scripts.feux;
 import java.util.ArrayList;
 
 import enums.Cote;
+import enums.Vitesse;
 import exceptions.deplacements.MouvementImpossibleException;
 import exceptions.serial.SerialException;
 import hook.sortes.HookGenerator;
-import robot.Vitesse;
 import scripts.Script;
 import smartMath.Vec2;
 import strategie.GameState;

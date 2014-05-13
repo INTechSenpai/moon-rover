@@ -12,9 +12,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import enums.Cote;
+import enums.Vitesse;
 import robot.RobotChrono;
 import robot.RobotVrai;
-import robot.Vitesse;
 import scripts.Script;
 import scripts.ScriptManager;
 import smartMath.Vec2;

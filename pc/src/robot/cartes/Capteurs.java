@@ -138,32 +138,34 @@ public class Capteurs implements Service {
  
     public boolean isThereFireGauche()
     {
-		try {
+/*		try {
 			return Integer.parseInt(serie.communiquer("cg", 1)[0]) != 0;
 		} catch (NumberFormatException | SerialException e) {
 			e.printStackTrace();
-		}
+		}*/
 		return false;
     }
 
     public boolean isThereFireMilieu()
     {
-            try {
-                return Integer.parseInt(serie.communiquer("cm", 1)[0]) != 0;
-            } catch (NumberFormatException | SerialException e) {
-                e.printStackTrace();
-            }
-            return false;
+        /*
+        try {
+            return Integer.parseInt(serie.communiquer("cm", 1)[0]) != 0;
+        } catch (NumberFormatException | SerialException e) {
+            e.printStackTrace();
+        }*/
+        return false;
     }
 
     public boolean isThereFireDroit()
     {
-			try {
-				return Integer.parseInt(serie.communiquer("cd", 1)[0]) != 0;
-			} catch (NumberFormatException | SerialException e) {
-				e.printStackTrace();
-			}
-			return false;
+        /*
+		try {
+			return Integer.parseInt(serie.communiquer("cd", 1)[0]) != 0;
+		} catch (NumberFormatException | SerialException e) {
+			e.printStackTrace();
+		}*/
+		return false;
     }
 
     // TODO protocoles

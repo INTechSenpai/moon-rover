@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
+import enums.Vitesse;
 import pathfinding.Pathfinding;
 //import pathfinding.Pathfinding;
 //import robot.RobotChrono;
 import robot.RobotVrai;
-import robot.Vitesse;
 import smartMath.Vec2;
 //import table.Table;
 import utils.Sleep;

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import enums.Colour;
 import enums.Cote;
 import enums.PositionRateau;
+import enums.Vitesse;
 import exceptions.deplacements.MouvementImpossibleException;
 import exceptions.serial.SerialException;
 

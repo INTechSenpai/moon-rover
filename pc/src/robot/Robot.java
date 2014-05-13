@@ -9,6 +9,7 @@ import container.Service;
 import enums.Colour;
 import enums.Cote;
 import enums.PositionRateau;
+import enums.Vitesse;
 import exceptions.deplacements.MouvementImpossibleException;
 import exceptions.serial.SerialException;
 import exceptions.strategie.PathfindingException;

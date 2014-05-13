@@ -2,7 +2,6 @@ package tests;
 
 import robot.RobotChrono;
 import robot.RobotVrai;
-import robot.Vitesse;
 import scripts.Script;
 import scripts.ScriptManager;
 import smartMath.Vec2;
@@ -16,6 +15,7 @@ import org.junit.Before;
 import org.junit.Assert;
 import org.junit.Test;
 
+import enums.Vitesse;
 import pathfinding.Pathfinding;
 
 /**

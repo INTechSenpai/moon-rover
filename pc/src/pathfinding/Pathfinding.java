@@ -75,7 +75,7 @@ public class Pathfinding implements Service, Cloneable
 		// Construction des maps d'obstacles fixes simples
 		map_obstacles_fixes_simple = new Grid2DSpace[4];
         for(int i = 0; i < 4; i++)
-            map_obstacles_fixes_simple[i] = new Grid2DSpace(3);
+            map_obstacles_fixes_simple[i] = new Grid2DSpace(5);
         ObstacleCirculaire obstacleCentral = new ObstacleCirculaire(new Vec2(0,950), 150);
         map_obstacles_fixes_simple[0].appendObstacleFixe(obstacleCentral);
         map_obstacles_fixes_simple[1].appendObstacleFixe(obstacleCentral);
@@ -87,7 +87,7 @@ public class Pathfinding implements Service, Cloneable
         map_obstacles_fixes_simple[3].appendObstacleFixe(new ObstacleCirculaire(new Vec2(600,900), 80));
 
 		hashTableSimplePathfinding = -1;
-		simplepathfinding = new SimplePathfinding( new Grid2DSpace(3), new Grid2DSpace(3));
+		simplepathfinding = new SimplePathfinding(new Grid2DSpace(5));
 	}
 	
 	/**
@@ -144,7 +144,7 @@ public class Pathfinding implements Service, Cloneable
 			{
 				code_torches_actuel = table.codeTorches();
 				try {
-					distance_cache = (CacheHolder) DataSaver.charger("cache/distance-"+code_torches_actuel+".cache");
+//					distance_cache = (CacheHolder) DataSaver.charger("cache/distance-"+code_torches_actuel+".cache");
 				}
 				catch(Exception e)
 				{
@@ -187,16 +187,15 @@ public class Pathfinding implements Service, Cloneable
                 {
                     e.printStackTrace();
                 }
+                map_obstacles_fixes_simple[code_torches_actuel].copy(simplepathfinding.mapObstacles);
             }
             
             hashTableSimplePathfinding = table.hashTable();
 
-            map_obstacles_fixes_simple[code_torches_actuel].copy(simplepathfinding.mapObstaclesFixes);
-
             // Puis les obstacles temporaires
             ArrayList<ObstacleCirculaire> obs = table.getListObstacles();
             for(ObstacleCirculaire o: obs)
-                simplepathfinding.mapObstaclesTemporaires.appendObstacleTemporaire(o);
+                simplepathfinding.mapObstacles.appendObstacleTemporaire(o);
             simplepathfinding.updateCanCross(code_torches_actuel);
         }
 	

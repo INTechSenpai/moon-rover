@@ -8,6 +8,7 @@ import utils.Log;
 import utils.Read_Ini;
 import enums.Cote;
 import enums.PositionRateau;
+import enums.Vitesse;
 import exceptions.deplacements.MouvementImpossibleException;
 import exceptions.serial.SerialException;
 

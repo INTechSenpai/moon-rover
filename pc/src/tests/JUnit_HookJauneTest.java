@@ -15,8 +15,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import enums.Cote;
+import enums.Vitesse;
 import robot.RobotVrai;
-import robot.Vitesse;
 import smartMath.Vec2;
 
 /**

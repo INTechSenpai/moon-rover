@@ -1,4 +1,4 @@
-package robot;
+package enums;
 
 /**
  * Enumération des vitesses disponibles.

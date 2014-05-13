@@ -15,8 +15,7 @@ import smartMath.Vec2;
 public class SimplePathfinding
 {
 
-    public final Grid2DSpace mapObstaclesTemporaires;
-    public final Grid2DSpace mapObstaclesFixes;
+    public final Grid2DSpace mapObstacles;
     private static Vec2[] points;
     private Vec2[] points_convertis;
     private boolean[][] canCross = new boolean[6][6];
@@ -67,14 +66,12 @@ public class SimplePathfinding
 
     }
     
-    public SimplePathfinding(Grid2DSpace mapObstaclesFixes, Grid2DSpace mapObstaclesTemporaires)
+    public SimplePathfinding(Grid2DSpace mapObstaclesTemporaires)
     {
-        this.mapObstaclesFixes = mapObstaclesFixes;
-        this.mapObstaclesTemporaires = mapObstaclesTemporaires;
+        this.mapObstacles = mapObstaclesTemporaires;
         points_convertis = new Vec2[6];
         for(int i = 0; i < 6; i++)
-            points_convertis[i] = mapObstaclesFixes.conversionTable2Grid(points[i]);
-        mapObstaclesFixes.setMarge(0);
+            points_convertis[i] = mapObstaclesTemporaires.conversionTable2Grid(points[i]);
     }
     
     public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee) throws PathfindingException
@@ -90,9 +87,9 @@ public class SimplePathfinding
             // Pouvoir un canCross et pas un canCrossLine? Pour deux raisons
             // - c'est plus rapide à exécuter
             // - si on est dans un obstacle, canCrossLine va pleurer
-            if(depart.SquaredDistance(points[i]) < depart.SquaredDistance(points[procheDepart]) && mapObstaclesTemporaires.canCross(points_convertis[i]))
+            if(depart.SquaredDistance(points[i]) < depart.SquaredDistance(points[procheDepart]) && mapObstacles.canCross(points_convertis[i]))
                 procheDepart = i;
-            if(arrivee.SquaredDistance(points[i]) < arrivee.SquaredDistance(points[procheArrivee]) && mapObstaclesTemporaires.canCross(points_convertis[i]))
+            if(arrivee.SquaredDistance(points[i]) < arrivee.SquaredDistance(points[procheArrivee]) && mapObstacles.canCross(points_convertis[i]))
                 procheArrivee = i;
         }
         
@@ -166,7 +163,7 @@ public class SimplePathfinding
             for(int j = 0; j < 6; j++)
                 if(i != j)
                     // évaluation paresseuse
-                    canCross[i][j] &= mapObstaclesTemporaires.canCrossLine(points_convertis[i].clone(), points_convertis[j].clone()); // les clones sont nécessaires
+                    canCross[i][j] &= mapObstacles.canCrossLine(points_convertis[i].clone(), points_convertis[j].clone()); // les clones sont nécessaires
         
 /*        for(int i = 0; i < 6; i++)
             for(int j = 0; j < 6; j++)
@@ -184,13 +181,11 @@ public class SimplePathfinding
         for(Vec2 point: chemin)
             System.out.println(point);*/
             
-        while(chemin.size() >= 3 && mapObstaclesFixes.canCrossLine(mapObstaclesFixes.conversionTable2Grid(chemin.get(0)), mapObstaclesFixes.conversionTable2Grid(chemin.get(2)))
-                    && mapObstaclesTemporaires.canCrossLine(mapObstaclesTemporaires.conversionTable2Grid(chemin.get(0)), mapObstaclesTemporaires.conversionTable2Grid(chemin.get(2))))
+        while(chemin.size() >= 3 && mapObstacles.canCrossLine(mapObstacles.conversionTable2Grid(chemin.get(0)), mapObstacles.conversionTable2Grid(chemin.get(2))))
                 chemin.remove(1);
         
         int max = chemin.size();
-        while(max >= 3 && mapObstaclesFixes.canCrossLine(mapObstaclesFixes.conversionTable2Grid(chemin.get(max-1)), mapObstaclesFixes.conversionTable2Grid(chemin.get(max-3)))
-                    && mapObstaclesTemporaires.canCrossLine(mapObstaclesTemporaires.conversionTable2Grid(chemin.get(max-1)), mapObstaclesTemporaires.conversionTable2Grid(chemin.get(max-3))))
+        while(max >= 3 && mapObstacles.canCrossLine(mapObstacles.conversionTable2Grid(chemin.get(max-1)), mapObstacles.conversionTable2Grid(chemin.get(max-3))))
         {
                 chemin.remove(max-2);
                 max = chemin.size();

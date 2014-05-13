@@ -248,7 +248,13 @@ public class Grid2DSpace implements Serializable
 	// x est de droite a gauche et y de bas en haut
 	public boolean canCross(int x, int y)
 	{
-		return x >= 0 && x < sizeX && y >= 0 && y < sizeY && datas[x][y];
+	    try {
+	        return datas[x][y];
+	    }
+	    catch(Exception e)
+	    {
+	        return false;
+	    }
 	}
 	
 	/**
@@ -258,15 +264,12 @@ public class Grid2DSpace implements Serializable
 	 */
 	public boolean canCross(Vec2 pos)
 	{
-		// anti segfault
-		if(pos.x < 0 || pos.x >= sizeX || pos.y < 0 || pos.y >= sizeY)
-			return false;
-		
-		return datas[pos.x][pos.y];
+	    return canCross(pos.x, pos.y);
 	}
 
 	
 	/**
+     * Implémentation user-friendly de canCrossLine
 	 * renvois true si le terrain est franchissable � en ligne droite entre les 2 positions donn�es, faux sinon
 	 * @param a un point
 	 * @param b un autre point
@@ -274,29 +277,10 @@ public class Grid2DSpace implements Serializable
 	 */
 	public boolean canCrossLine(Vec2 a, Vec2 b)
 	{
-		 // Bresenham's line algorithm
-		
-		  int dx = Math.abs(b.x-a.x), sx = a.x<b.x ? 1 : -1;
-		  int dy = Math.abs(b.y-a.y), sy = a.y<b.y ? 1 : -1; 
-		  int err = (dx>dy ? dx : -dy)/2;
-		  int e2;
-		 
-		  while(true)
-		  {
-			    if (!canCross(a.x,a.y))
-			    	return false;
-
-				if (a.x==b.x && a.y==b.y) break;
-				
-				e2 = err;
-				if (e2 >-dx) { err -= dy; a.x += sx; }
-				if (e2 < dy) { err += dx; a.y += sy; }
-		  }
-		 return true;
+	    return canCrossLine(a.x, a.y, b.x, b.y);
 	}
 
 	/**
-	 * Implémentation user-friendly de canCrossLine
 	 * renvois true si le terrain est franchissable � en ligne droite entre les 2 positions donn�es, faux sinon
 	 * @param a un point
 	 * @param b un autre point
@@ -311,12 +295,10 @@ public class Grid2DSpace implements Serializable
 		  int err = (dx>dy ? dx : -dy)/2;
 		  int e2;
 		 
-		  while(true)
+		  while(x0!=x1 || y0!=y1)
 		  {
 			    if (!canCross(x0,y0))
 			    	return false;
-
-				if (x0==x1 && y0==y1) break;
 				
 				e2 = err;
 				if (e2 >-dx) { err -= dy; x0 += sx; }

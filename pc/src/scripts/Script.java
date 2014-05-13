@@ -7,7 +7,6 @@ import hook.Executable;
 import hook.Hook;
 import robot.RobotChrono;
 import robot.RobotVrai;
-import robot.Vitesse;
 import utils.Log;
 import utils.Read_Ini;
 import container.Service;
@@ -18,6 +17,7 @@ import hook.sortes.HookGenerator;
 import java.util.ArrayList;
 
 import enums.Cote;
+import enums.Vitesse;
 import exceptions.deplacements.MouvementImpossibleException;
 import exceptions.serial.SerialException;
 import exceptions.strategie.PathfindingException;

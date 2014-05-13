@@ -1,7 +1,6 @@
 package scripts.fruits;
 
 import robot.RobotVrai;
-import robot.Vitesse;
 import scripts.Script;
 import smartMath.Vec2;
 import strategie.GameState;
@@ -17,6 +16,7 @@ import java.util.ArrayList;
 
 import enums.Cote;
 import enums.PositionRateau;
+import enums.Vitesse;
 import exceptions.deplacements.MouvementImpossibleException;
 import exceptions.serial.SerialException;
 
