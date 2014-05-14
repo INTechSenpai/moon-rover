@@ -75,7 +75,7 @@ public class Pathfinding implements Service, Cloneable
 		// Construction des maps d'obstacles fixes simples
 		map_obstacles_fixes_simple = new Grid2DSpace[4];
         for(int i = 0; i < 4; i++)
-            map_obstacles_fixes_simple[i] = new Grid2DSpace(5);
+            map_obstacles_fixes_simple[i] = new Grid2DSpace(3);
         ObstacleCirculaire obstacleCentral = new ObstacleCirculaire(new Vec2(0,950), 150);
         map_obstacles_fixes_simple[0].appendObstacleFixe(obstacleCentral);
         map_obstacles_fixes_simple[1].appendObstacleFixe(obstacleCentral);
@@ -87,7 +87,7 @@ public class Pathfinding implements Service, Cloneable
         map_obstacles_fixes_simple[3].appendObstacleFixe(new ObstacleCirculaire(new Vec2(600,900), 80));
 
 		hashTableSimplePathfinding = -1;
-		simplepathfinding = new SimplePathfinding(new Grid2DSpace(5));
+		simplepathfinding = new SimplePathfinding( new Grid2DSpace(3), new Grid2DSpace(3));
 	}
 	
 	/**
@@ -129,7 +129,7 @@ public class Pathfinding implements Service, Cloneable
 	 * Méthode appelée par le thread de capteur. Met à jour les obstacles de la recherche de chemin en les demandant à table
 	 * On consulte pour cela l'attribut table qui a été modifié de l'extérieur.
 	 */
-	public void update_astar()
+	private void update_astar()
 	{		
 		/* La table est modifiée. Il faut donc modifier la map.
 		 */		
@@ -168,7 +168,7 @@ public class Pathfinding implements Service, Cloneable
 		
 	}
 	
-    public void update_simple_pathfinding()
+    private void update_simple_pathfinding()
     {
         synchronized(table) // Mutex sur la table, afin qu'elle ne change pas pendant qu'on met à jour le pathfinding
         {
@@ -187,15 +187,16 @@ public class Pathfinding implements Service, Cloneable
                 {
                     e.printStackTrace();
                 }
-                map_obstacles_fixes_simple[code_torches_actuel].copy(simplepathfinding.mapObstacles);
             }
             
             hashTableSimplePathfinding = table.hashTable();
 
+            map_obstacles_fixes_simple[code_torches_actuel].copy(simplepathfinding.mapObstaclesFixes);
+
             // Puis les obstacles temporaires
             ArrayList<ObstacleCirculaire> obs = table.getListObstacles();
             for(ObstacleCirculaire o: obs)
-                simplepathfinding.mapObstacles.appendObstacleTemporaire(o);
+                simplepathfinding.mapObstaclesTemporaires.appendObstacleTemporaire(o);
             simplepathfinding.updateCanCross(code_torches_actuel);
         }
 	
@@ -212,16 +213,24 @@ public class Pathfinding implements Service, Cloneable
 	{
 	    try {
 	        // De base, on utilise le simple pathfinding
+	        update_simple_pathfinding();
 	        return simplepathfinding.chemin(depart, arrivee);
 	    }
 	    catch(PathfindingException e)
 	    {
-	    //    log.warning("Pathfinding simple a échoué,  utilisation du A*", this);
-	    //    log.warning("Depart : "+ depart + " arrivee : " + arrivee, this);
-	    	
-	    	//TODO ; On catch tout le temps 
-	        // En cas de problème, on utilise le A*
-	        return cheminAStar(depart, arrivee);
+	        try {
+    	        log.warning("Pathfinding simple a échoué,  utilisation du A*", this);
+    	        // En cas de problème, on utilise le A*
+                update_astar();
+    	        return cheminAStar(depart, arrivee);
+	        }
+	        catch(PathfindingException e2)
+	        {
+	            log.critical("Echec de tous les pathfindings. Ligne droite.", this);
+	            ArrayList<Vec2> chemin = new ArrayList<Vec2>();
+	            chemin.add(arrivee);
+	            return chemin;
+	        }
 	    }
 	}
 	

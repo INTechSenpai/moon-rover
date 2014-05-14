@@ -40,7 +40,6 @@ public class JUnit_StrategieTest extends JUnit_Test {
 		pathfinder = (Pathfinding) container.getService("Pathfinding");
 		table = (Table) container.getService("Table");
 		robotchrono = new RobotChrono(config, log);
-		pathfinder.update_simple_pathfinding();
 	}
 
 //	@Test

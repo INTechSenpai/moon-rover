@@ -44,9 +44,10 @@ public class JUnit_PathfindingTest extends JUnit_Test
     @Test
     public void pathfinding_test() throws Exception
     {
-        pathfinding.update_simple_pathfinding();
-        robotvrai.setPosition(new Vec2(1100, 600));
-        ArrayList<Vec2> chemin = pathfinding.chemin(robotvrai.getPosition(), new Vec2(-1100, 300));
+        robotvrai.setPosition(new Vec2(250, 500));
+        ArrayList<Vec2> chemin = pathfinding.chemin(robotvrai.getPosition(), new Vec2(-700, 1450));
+        for(Vec2 point: chemin)
+            System.out.println(point);
         robotvrai.suit_chemin(chemin, null);
     }
 
@@ -77,8 +78,6 @@ public class JUnit_PathfindingTest extends JUnit_Test
 		Random randomgenerator = new Random();
 		Vec2 arrivee, depart;
 		robotvrai.setPosition(new Vec2(0, 1400));
-        pathfinding.update_simple_pathfinding();
-        
 
 		log.debug("Simple pathfinding Performance test starting", this);
 		int testCount = 1000;
