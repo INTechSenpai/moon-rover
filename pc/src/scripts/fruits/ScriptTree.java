@@ -140,7 +140,11 @@ public class ScriptTree extends Script{
 		
 		state.robot.add_fruits(state.table.nbrTree(id_version, Cote.DROIT) + state.table.nbrTree(id_version, Cote.GAUCHE));
 		state.table.pickTree(id_version);
-		state.robot.avancer(350, hooks.get(id_version));
+		if(hooks != null)
+		    state.robot.avancer(350, hooks.get(id_version));
+		else
+            state.robot.avancer(350, null);
+		    
 		state.robot.sleep(1000);
 	}
 
