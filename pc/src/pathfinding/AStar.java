@@ -254,6 +254,7 @@ class AStar
 	
 	// Debug
 	// affihche l'espace de recherche 
+	@SuppressWarnings("unused")
 	private void printWorkingMap(Vec2 depart, Vec2 arrivee)
 	{
 		String out = "";

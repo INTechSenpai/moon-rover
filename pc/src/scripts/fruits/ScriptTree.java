@@ -145,6 +145,7 @@ public class ScriptTree extends Script{
 		else
             state.robot.avancer(350, null);
 		    
+		// TODO ? utilité ?
 		state.robot.sleep(1000);
 	}
 

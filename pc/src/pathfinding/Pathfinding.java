@@ -216,7 +216,10 @@ public class Pathfinding implements Service, Cloneable
 	    }
 	    catch(PathfindingException e)
 	    {
-	        log.warning("Pathfinding simple a échoué,  utilisation du A*", this);
+	    //    log.warning("Pathfinding simple a échoué,  utilisation du A*", this);
+	    //    log.warning("Depart : "+ depart + " arrivee : " + arrivee, this);
+	    	
+	    	//TODO ; On catch tout le temps 
 	        // En cas de problème, on utilise le A*
 	        return cheminAStar(depart, arrivee);
 	    }
@@ -264,7 +267,7 @@ public class Pathfinding implements Service, Cloneable
 		if(solver.espace.canCrossLine(depart, arrivee))
 			return (int)depart.distance(arrivee);
 		
-		if(depart.x > 1500 || depart.x < -1500 || depart.y > 2000 || depart.y < 0 || arrivee.x > 1500 || arrivee.x < -1500 || arrivee.y > 2000 || arrivee.y < 0)
+		if(depart == null || arrivee == null || depart.x > 1500 || depart.x < -1500 || depart.y > 2000 || depart.y < 0 || arrivee.x > 1500 || arrivee.x < -1500 || arrivee.y > 2000 || arrivee.y < 0)
 			throw new PathfindingException();
 		
 		if(!use_cache || distance_cache == null)

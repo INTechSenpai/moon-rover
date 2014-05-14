@@ -277,6 +277,8 @@ public class Grid2DSpace implements Serializable
 	 */
 	public boolean canCrossLine(Vec2 a, Vec2 b)
 	{
+		if(a==null || b==null)
+			return false;
 	    return canCrossLine(a.x, a.y, b.x, b.y);
 	}
 

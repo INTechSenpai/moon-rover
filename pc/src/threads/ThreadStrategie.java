@@ -74,20 +74,26 @@ public class ThreadStrategie extends AbstractThread {
 
 		NoteScriptMetaversion meilleur = new NoteScriptMetaversion();
 		
-		ArrayList<NoteScriptMetaversion> errorList = new ArrayList<NoteScriptMetaversion>();
+		ArrayList<NoteScriptMetaversion> exclusionList = new ArrayList<NoteScriptMetaversion>();
+		
+		// n'essaye pas de réfléchir sur la version du script que l'on est en train de faire
+	//	exclusionList.add(strategie.getMetaScriptEnCours());
+		
+		
 		float[] a = null;
 		while(a == null)
 		{
-			meilleur = strategie.evaluate(errorList);
+			meilleur = strategie.evaluate(exclusionList);
 			try
 			{
 				a = strategie.meilleurVersion(meilleur.metaversion, meilleur.script, memorymanager.getClone(0));
+				log.debug("la meilleure version est : " + a[0],this);
 			}
 			catch(PathfindingException e)
 			{
 
 				//log.debug("La branche " + meilleur + " renvoyée par l'arbre n'a pas de metaversion acessible, on relace l'arbre sans cette branche",this);
-				errorList.add(meilleur);
+				exclusionList.add(meilleur);
 				//e.printStackTrace();
 			}
 		}
@@ -96,7 +102,8 @@ public class ThreadStrategie extends AbstractThread {
 		meilleur_version.version = (int)a[0];
 		meilleur_version.note = a[1];
 		strategie.setProchainScript(meilleur_version);
-		//log.debug("prochain script : " + meilleur_version,this);
+		strategie.setMetaScriptEnCours(meilleur);
+		log.debug("prochain script : " + meilleur_version,this);
 	}
 	
 	public void maj_config()

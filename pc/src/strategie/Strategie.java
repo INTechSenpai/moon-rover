@@ -23,7 +23,7 @@ import smartMath.Vec2;
 
 /**
  * Classe qui prend les décisions et exécute les scripts
- * @author pf, krissprolls
+ * @author pf, krissprolls, marsu
  *
  */
 
@@ -38,6 +38,7 @@ public class Strategie implements Service {
 	private Map<String,Integer> echecs = new Hashtable<String,Integer>();
 
 	private NoteScriptVersion scriptEnCours;
+	private NoteScriptMetaversion MetaScriptEnCours;
 	
 	public int TTL; //time toDatUltimateBest live
 
@@ -57,7 +58,7 @@ public class Strategie implements Service {
 		prochainScript = new NoteScriptVersion();
 		maj_config();
 	}
-	
+
 	/**
 	 * Méthode appelée à la fin du lanceur et qui exécute la meilleure stratégie (calculée dans threadStrategie)
 	 */
@@ -91,6 +92,10 @@ public class Strategie implements Service {
 				log.debug("Mammouth Right feu  : "+ real_state.table.isRightMammothHit(), this);
 				log.debug("Pince Gauche feu  : "+ real_state.robot.isTient_feu(Cote.GAUCHE), this);
 				log.debug("Pince Droite feu  : "+ real_state.robot.isTient_feu(Cote.DROIT), this);
+				log.debug("Tree 0 : "+ real_state.table.isTreeTaken(0), this);
+				log.debug("Tree 1 : "+ real_state.table.isTreeTaken(1), this);
+				log.debug("Tree 2 : "+ real_state.table.isTreeTaken(2), this);
+				log.debug("Tree 3 : "+ real_state.table.isTreeTaken(3), this);
 				log.debug("Nb fruit bac : "+ real_state.robot.get_nombre_fruits_bac(), this);
 				log.debug("Temps actuels : "+real_state.time_depuis_debut/1000 + "s", this);
 				log.debug("Points actuels : "+real_state.pointsObtenus, this);
@@ -118,7 +123,7 @@ public class Strategie implements Service {
 			else
 			{
 				log.critical("Aucun ordre n'est à disposition. Attente.", this);
-				Sleep.sleep(25);
+				Sleep.sleep(100);
 			}
 
 		}
@@ -228,9 +233,12 @@ public class Strategie implements Service {
 			}
 			catch (Exception e)
 			{
-				//e.printStackTrace();
-				continue;
+				e.printStackTrace();
+				duree_script = 9999;
+				//continue;
 			}
+			
+			log.debug("version " + i + " a pour note " + calculeNote(score,duree_script, i,script, state), this);
 			if(calculeNote(score,duree_script, i,script, state)>meilleurNote)
 			{
 				id = i;
@@ -270,9 +278,9 @@ public class Strategie implements Service {
 		
 //		log.debug((float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0))), this);
 		if (score != 0)
-			return (float)score/(float)duree;
+			return 1000.0f*(float)score*script.poids(state)/(float)duree;
 		else
-			return 1.0f/(float)duree;
+			return 0.1f*script.poids(state)/(float)duree;
 	}
 	
 	/* Méthode qui calcule la note de cette branche en calculant celles de ses sous branches, puis en combinant leur notes
@@ -313,8 +321,16 @@ public class Strategie implements Service {
 		GameState<RobotChrono> mState = memorymanager.getClone(0);
 		Branche current;
 		
-		
-		
+		// se place déjà dans le futur : le script actuel est déjà exécuté.
+		if(getScriptEnCours() != null)
+		{
+			try {
+				getScriptEnCours().script.calcule(getScriptEnCours().version, mState, false);
+			} catch (PathfindingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 		
 		// racourccis pour les racines, afin du calcul du max final :
 		ArrayList<Branche> rootList = new ArrayList<Branche>();
@@ -333,7 +349,7 @@ public class Strategie implements Service {
 		
 		
 		long TrueAStarTTL = 8000;	// A partir de quand on considère qu'on ne sais plus ou est l'ennemi, et qu'on peut passer sur cache
-		int TimeBeforeGiveUp	= 30000;	// Si on reste bloqué dans l'arbre, on garde un oeil sur la montre pour être sur de pouvoir retenter sa chance
+		int TimeBeforeGiveUp	= 3000;	// Si on reste bloqué dans l'arbre, on garde un oeil sur la montre pour être sur de pouvoir retenter sa chance
 		
 		long startTime = System.currentTimeMillis();
 		int Branchcount = 0;
@@ -349,7 +365,7 @@ public class Strategie implements Service {
 		for(String nom_script : scriptmanager.getNomsScripts())
 		{
 
-			mState = memorymanager.getClone(0);
+			mState = memorymanager.getClone(1);
 			
 
 			try
@@ -390,12 +406,12 @@ public class Strategie implements Service {
 				}
 				
 				
-				//log.debug("Ajout de la racine " + mScript.toString() + " metaversion : " + metaversion, this);
-				mState = memorymanager.getClone(0);
+				log.debug("Ajout de la racine " + mScript.toString() + " metaversion : " + metaversion, this);
+				mState = memorymanager.getClone(1);
 				mState.pathfinding.setPrecision(4);
 				scope.push( new Branche(	TTL,							// Il reste tout le TTL sur chacune des racines
 											false,							// N'utilise pas le cache pour le premier niveau de profondeur 
-											1,								// différence de profondeur entre la racine et ici, donc 0 dans notre cas
+											2,								// Profondeur de la raine: 2 (1 pour le présent, et 2 pour un cran dans le futur) Ici 2 car on est dans le futur (on n'anticipe pas e script en cours)
 											mScript, 						// Une branche par script et par métaversion
 											metaversion, 
 											mState	) );					// état de jeu
@@ -434,6 +450,8 @@ public class Strategie implements Service {
 			TTL = 55000; 
 		else if(scope.size() == 1)
 			TTL = 60000; 
+		
+		TTL /=2;
 		
 		
 		for (int i = 0; i < rootList.size(); ++i)
@@ -545,7 +563,7 @@ public class Strategie implements Service {
 				
 			}	// fin boucle principale d'exploration
 		//log.debug("Explored "+ Branchcount + " branches in " + (System.currentTimeMillis() - startTime) + " ms", this);
-		log.debug("IA completed in " + (System.currentTimeMillis() - startTime) + " ms with TTL = " + TTL + "ms   rootList.size() :" + rootList.size() + "	Explored "+ Branchcount + " branches", this);
+	//	log.debug("IA completed in " + (System.currentTimeMillis() - startTime) + " ms with TTL = " + TTL + "ms   rootList.size() :" + rootList.size() + "	Explored "+ Branchcount + " branches", this);
 		
 		// simu raspbe
 		Sleep.sleep(1000);
@@ -567,7 +585,9 @@ public class Strategie implements Service {
 				
 			}
 		}
-		//log.debug("Note finale : " + DatUltimateBest.note,this);
+		
+		
+		log.debug("Décision finale :" + DatUltimateBest.script + " metaversion : " + DatUltimateBest.metaversion + " Note : " + DatUltimateBest.note,this);
 		
 		return DatUltimateBest;
 	}
@@ -621,6 +641,24 @@ public class Strategie implements Service {
 	{
 			this.prochainScript = prochainScript;
 	}
+
+	
+	/**
+	 * @return the metaScriptEnCours
+	 */
+	public NoteScriptMetaversion getMetaScriptEnCours() 
+	{
+		return MetaScriptEnCours;
+	}
+
+	/**
+	 * @param metaScriptEnCours the metaScriptEnCours to set
+	 */
+	public void setMetaScriptEnCours(NoteScriptMetaversion metaScriptEnCours) 
+	{
+		MetaScriptEnCours = metaScriptEnCours;
+	}
+	
 	
 	public boolean besoin_ProchainScript()
 	{
@@ -630,8 +668,10 @@ public class Strategie implements Service {
 		}
 	}
 	
-	public NoteScriptVersion getScriptEnCours()
+	private NoteScriptVersion getScriptEnCours()
 	{
+		if(scriptEnCours == null)
+			return null;
 		synchronized(scriptEnCours)
 		{
 			return scriptEnCours.clone();

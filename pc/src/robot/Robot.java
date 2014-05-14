@@ -265,8 +265,7 @@ public abstract class Robot implements Service {
         try {
             try
             {
-            	Exception e = new Exception();
-            	e.printStackTrace();
+            //	new Exception().printStackTrace();
                 pathfinding.update_simple_pathfinding();
                 chemin = pathfinding.chemin(getPosition(), arrivee);
                 suit_chemin(chemin, hooks);
