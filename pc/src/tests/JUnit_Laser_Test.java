@@ -4,10 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
 
+import exceptions.serial.SerialException;
 import robot.cartes.laser.FiltrageLaser;
 import robot.cartes.laser.Laser;
 import robot.RobotVrai;
 import smartMath.Vec2;
+import table.Table;
 import utils.Sleep;
 
 
@@ -16,7 +18,8 @@ public class JUnit_Laser_Test extends JUnit_Test {
 	Laser laser;
 	FiltrageLaser filtragelaser;
 	RobotVrai robotvrai;
-	
+	Table table;
+
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
@@ -24,8 +27,9 @@ public class JUnit_Laser_Test extends JUnit_Test {
 		filtragelaser = (FiltrageLaser) container.getService("FiltrageLaser");
 		laser = (Laser) container.getService("Laser");
 		robotvrai = (RobotVrai) container.getService("RobotVrai");
+		table = (Table) container.getService("Table");
 	}
-	
+
 	@Test
 	public void test_avant_verification() throws Exception
 	{
@@ -44,10 +48,10 @@ public class JUnit_Laser_Test extends JUnit_Test {
 		laser.allumer();
 		Sleep.sleep(3000);
 		laser.verifier_balises_connectes();
-		//Assert.assertTrue(laser.balises_actives().size() == 1);
-		//Assert.assertTrue(laser.balises_ignorees().size() == 1);
+		Assert.assertTrue(laser.balises_actives().size() == 2);
+		Assert.assertTrue(laser.balises_ignorees().size() == 0);
 		laser.eteindre();
-		
+
 	}
 
 	@Test
@@ -58,7 +62,20 @@ public class JUnit_Laser_Test extends JUnit_Test {
 		log.debug("Ca raconte quoi sur la cohérence des mesures?", this);
 		laser.verifier_coherence_balise();
 	}
-	
+
+	@Test
+	public void test_pour_kayou() throws Exception
+	{
+		container.getService("threadLaser");
+		container.demarreThreads();
+		laser.allumer();
+		while(true)
+		{
+			Sleep.sleep(100);
+		}
+
+	}
+
 	@Test
 	public void test_on_off() throws Exception
 	{
@@ -90,7 +107,7 @@ public class JUnit_Laser_Test extends JUnit_Test {
 		//La pile de la seconde balise est vide, il faut la remplacer
 		//Assert.assertTrue(laser.position_balise(1).distance(new Vec2(600,)) < 500);
 	}
-	
+
 	@Test
 	public void test_vitesse() throws Exception
 	{
@@ -123,5 +140,5 @@ public class JUnit_Laser_Test extends JUnit_Test {
 		//La pile de la seconde balise est vide, il faut la remplacer
 		//Assert.assertTrue(laser.position_balise(1).distance(new Vec2(600,)) < 500);
 	}
-	
+
 }
