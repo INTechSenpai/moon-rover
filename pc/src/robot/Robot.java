@@ -264,6 +264,10 @@ public abstract class Robot implements Service {
         ArrayList<Vec2> chemin;
         try 
         {
+<<<<<<< HEAD
+            chemin = pathfinding.chemin(getPosition(), arrivee);
+            suit_chemin(chemin, hooks);
+=======
             try
             {
             //	new Exception().printStackTrace();
@@ -275,6 +279,7 @@ public abstract class Robot implements Service {
                 ArrayList<Vec2> chemin2 = pathfinding.chemin(getPosition(), arrivee);
                 suit_chemin(chemin2, hooks);       
             }
+>>>>>>> fbd6c04d1303598ec3cef94964ace8026299b82c
         }
         catch (MouvementImpossibleException e)
         {
