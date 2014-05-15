@@ -132,6 +132,9 @@ public abstract class Script implements Service {
 	public long calcule(int id_version, GameState<RobotChrono> state, boolean use_cache) throws PathfindingException
 	{
 		Vec2 point_entree = point_entree(id_version);
+		
+		//TODO : si la version est incoreccte, point d'entrée est nulle. Du coup pathfinding
+		
 		state.robot.set_vitesse(Vitesse.ENTRE_SCRIPTS);
 
 		state.robot.initialiser_compteur(state.pathfinding.distance(state.robot.getPositionFast(), point_entree, use_cache));
