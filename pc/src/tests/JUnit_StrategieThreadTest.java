@@ -46,9 +46,9 @@ public class JUnit_StrategieThreadTest extends JUnit_Test {
 		
 		table = (Table)container.getService("Table");
 		Vec2 initpos = new Vec2(1000,1400);
-		robotvrai.setPosition(initpos);
-		robotchrono.setPosition(initpos);
-		Sleep.sleep(100);
+//		robotvrai.setPosition(initpos);
+//		robotchrono.setPosition(initpos);
+//		Sleep.sleep(100);
 		
 		robotvrai.setOrientation((float)Math.PI);
         robotvrai.set_vitesse(Vitesse.ENTRE_SCRIPTS);
@@ -67,13 +67,21 @@ public class JUnit_StrategieThreadTest extends JUnit_Test {
 		robotvrai.setPosition(initpos);
 		robotchrono.setPosition(initpos);
 		Sleep.sleep(100);
+	
+
+		/*
+		robotvrai.initialiser_actionneurs_deplacements();
+		robotvrai.recaler();
+      //  Sleep.sleep(3000);
+        robotvrai.avancer(200);
+        robotvrai.va_au_point_pathfinding(pathfinder, initpos, null, false);
+        */
 	}
  
+	
 	@Test
 	public void test_Thread() throws Exception
 	{
-
-		
 		log.debug("Strategie Test Thread : Start", this);
 		
 		while(true)

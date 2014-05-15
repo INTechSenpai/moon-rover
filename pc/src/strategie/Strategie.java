@@ -221,7 +221,7 @@ public class Strategie implements Service {
 		int duree_script;
 		if(script == null)
 			throw new PathfindingException();
-			
+	//	log.debug("meilleurVersion started, analyse " + script + " metaversion " + meta_id + " through versions : " + script.version_asso(meta_id),this);
 
 		
 		for(int i : script.version_asso(meta_id))
@@ -238,7 +238,7 @@ public class Strategie implements Service {
 				//continue;
 			}
 			
-			log.debug("version " + i + " a pour note " + calculeNote(score,duree_script, i,script, state), this);
+			//log.debug("meilleurVersion analyse " + script + "version " + i + " note " + calculeNote(score,duree_script, i,script, state), this);
 			if(calculeNote(score,duree_script, i,script, state)>meilleurNote)
 			{
 				id = i;
@@ -374,7 +374,7 @@ public class Strategie implements Service {
 			}
 			catch(ScriptException e)
 			{
-				e.printStackTrace();
+				e.printStackTrace(); 
 			}
 			
 			// On ne s'encombre pas de scripts qu'on ne doit pas faire.
@@ -406,7 +406,7 @@ public class Strategie implements Service {
 				}
 				
 				
-				log.debug("Ajout de la racine " + mScript.toString() + " metaversion : " + metaversion, this);
+				//log.debug("Ajout de la racine " + mScript.toString() + " metaversion : " + metaversion, this);
 				mState = memorymanager.getClone(1);
 				mState.pathfinding.setPrecision(4);
 				scope.push( new Branche(	TTL,							// Il reste tout le TTL sur chacune des racines
@@ -587,7 +587,7 @@ public class Strategie implements Service {
 		}
 		
 		
-		log.debug("Décision finale :" + DatUltimateBest.script + " metaversion : " + DatUltimateBest.metaversion + " Note : " + DatUltimateBest.note,this);
+		//log.debug("Décision finale :" + DatUltimateBest.script + " metaversion : " + DatUltimateBest.metaversion + " Note : " + DatUltimateBest.note,this);
 		
 		return DatUltimateBest;
 	}
