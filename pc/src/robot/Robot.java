@@ -264,14 +264,14 @@ public abstract class Robot implements Service {
         ArrayList<Vec2> chemin;
         try 
         {
-            chemin = pathfinding.chemin(getPosition(), arrivee);
+            chemin = pathfinding.chemin(getPosition(), arrivee, insiste);
             suit_chemin(chemin, hooks);
         }
         catch (MouvementImpossibleException e)
         {
             if(insiste)
             {
-                chemin = pathfinding.chemin(getPosition(), arrivee);
+                chemin = pathfinding.chemin(getPosition(), arrivee, insiste);
                 suit_chemin(chemin, hooks);
             }
         }
