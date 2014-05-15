@@ -224,21 +224,22 @@ import utils.Read_Ini;
 
 public class ScriptFeuBord extends Script {
 
-	public ScriptFeuBord(HookGenerator hookgenerator, Read_Ini config, Log log)
+	@SuppressWarnings("unchecked")
+    public ScriptFeuBord(HookGenerator hookgenerator, Read_Ini config, Log log)
 	{
 		super(hookgenerator, config, log);
 		ArrayList<Integer> versionList = new ArrayList<Integer>();
         versionList.add(0);
-        versions.add(versionList);
+        versions.add((ArrayList<Integer>) versionList.clone());
         versionList.clear();
         versionList.add(1);
-        versions.add(versionList);
+        versions.add((ArrayList<Integer>) versionList.clone());
         versionList.clear();
         versionList.add(2);
-        versions.add(versionList);
+        versions.add((ArrayList<Integer>) versionList.clone());
         versionList.clear();
         versionList.add(3);
-        versions.add(versionList);
+        versions.add((ArrayList<Integer>) versionList.clone());
 	}
 	@Override 
 	public  ArrayList<Integer> meta_version(final GameState<?> state)

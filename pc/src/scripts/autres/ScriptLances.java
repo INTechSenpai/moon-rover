@@ -20,16 +20,17 @@ import exceptions.deplacements.MouvementImpossibleException;
 public class ScriptLances extends Script {
 	
 
-	public ScriptLances(HookGenerator hookgenerator, Read_Ini config, Log log)
+	@SuppressWarnings("unchecked")
+    public ScriptLances(HookGenerator hookgenerator, Read_Ini config, Log log)
 	{
 		super(hookgenerator, config, log);
         versions = new ArrayList<ArrayList<Integer>>();
         ArrayList<Integer> versionList = new ArrayList<Integer>();
         versionList.add(0);
-        versions.add(versionList);
+        versions.add((ArrayList<Integer>) versionList.clone());
         versionList.clear();
         versionList.add(1);
-        versions.add(versionList);
+        versions.add((ArrayList<Integer>) versionList.clone());
 	}
 	@Override 
 	public  ArrayList<Integer> meta_version(final GameState<?> state)
