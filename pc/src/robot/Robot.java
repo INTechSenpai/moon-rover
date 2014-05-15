@@ -264,19 +264,8 @@ public abstract class Robot implements Service {
         ArrayList<Vec2> chemin;
         try 
         {
-            try
-            {
-            //	new Exception().printStackTrace();
-                pathfinding.update_simple_pathfinding();
-                chemin = pathfinding.chemin(getPosition(), arrivee);
-                suit_chemin(chemin, hooks);
-            } catch (PathfindingException e)
-            {
-                log.warning("Simple pathfinding a échoué: au tour de A*", this);
-                pathfinding.update_astar();
-                ArrayList<Vec2> chemin2 = pathfinding.chemin(getPosition(), arrivee);
-                suit_chemin(chemin2, hooks);       
-            }
+            chemin = pathfinding.chemin(getPosition(), arrivee);
+            suit_chemin(chemin, hooks);
         }
         catch (MouvementImpossibleException e)
         {
