@@ -55,16 +55,7 @@ public class RobotChrono extends Robot {
 		}*/
 		duree += Math.abs(distance)*vitesse.inverse_vitesse_mmpms;
 		Vec2 ecart;
-		if(orientation == 0)
-		    ecart = new Vec2(distance, 0);
-		else if(orientation == Math.PI/2)
-            ecart = new Vec2(0, distance);
-        else if(orientation == Math.PI)
-            ecart = new Vec2(-distance, 0);
-        else if(orientation == -Math.PI/2)
-            ecart = new Vec2(0, -distance);
-        else
-            ecart = new Vec2((int)(distance*Math.cos(orientation)), (int)(distance*Math.sin(orientation)));
+        ecart = new Vec2((int)(distance*Math.cos(orientation)), (int)(distance*Math.sin(orientation)));
 
 		position.Plus(ecart);
 	}
@@ -107,6 +98,9 @@ public class RobotChrono extends Robot {
     public void tourner(double angle, ArrayList<Hook> hooks, boolean mur)
             throws MouvementImpossibleException
 	{
+        if(symetrie)
+            angle = Math.PI-angle;
+	    
 		double delta = angle-orientation;
 		if(delta < 0)
 			delta *= -1;
@@ -130,7 +124,6 @@ public class RobotChrono extends Robot {
 	public void tirerBalle()
 	{
 	    super.tirerBalle();
-		// durée "nulle" car appelé par un hook
 		duree += 1500; // TODO
 	}
 	@Override
