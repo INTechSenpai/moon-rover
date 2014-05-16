@@ -55,9 +55,23 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 			Vec2[] positionsEnnemi = table.get_positions_ennemis();
 			for(int i = 0; i < 2; i++)
 			{
+				
 				// défreeze
 				// TODO
-				if(positionsfreeze[i].SquaredDistance(positionsEnnemi[i]) > 30)
+				if(positionsfreeze[i].SquaredDistance(positionsEnnemi[i]) > 60)
+				{
+					//C'est le cas du défreeze
+					date_freeze[i] = 0;
+					/*
+					 * 
+					 * Attention, dans le cas du défreeze, il n'y a pas de changement de positionsfreeze
+					 * En effet, que faudrait-il attribuer? null? pas malin.
+					 * 
+					 */
+					
+					
+				}
+				if(positionsfreeze[i].SquaredDistance(positionsEnnemi[i]) < 60)
 				{
 					date_freeze[i] = System.currentTimeMillis();
 					positionsfreeze[i] = positionsEnnemi[i];
@@ -75,7 +89,7 @@ public class ThreadAnalyseEnnemi extends AbstractThread  {
 
 	/**
 	 * Donne à la stratégie les durées de freeze de chaque robot
-	 * @return
+	 * @return duree_freeze
 	 */
 	public int[] duree_freeze()
 	{

@@ -148,6 +148,7 @@ public class Strategie implements Service {
 		int i_min_fire;
 		int i_min_tree ;
 		int i_min_fresco;
+		int i_min_fixed_fire;
 		for(int i = 0; i <2; i++)
 		{
 			/*
@@ -160,23 +161,43 @@ public class Strategie implements Service {
 			i_min_fire = real_state.table.nearestUntakenFire(positionsfreeze[i]);
 			i_min_tree = real_state.table.nearestUntakenTree(positionsfreeze[i]);
 			i_min_fresco = real_state.table.nearestFreeFresco(positionsfreeze[i]);
+			i_min_fixed_fire = real_state.table.nearestUntakenFixedFire(positionsfreeze[i]);
+			for(int p = 0; i <2; i++)
+			{
+				if(duree_freeze[p] > 5000)
+			
+				{
+					log.debug("La position du freeze est : "+positionsfreeze[p]+"pour le robot : "+p, this);
+					log.debug("L'indice du plus proche arbre non pris est : "+ i_min_tree,this);
+					log.debug("L'indice du plus proche feu non pris est : "+i_min_fire,this);
+					log.debug("L'indice de la place libre la plus proche pour les fresques  : "+i_min_fresco, this);
+					log.debug("L'indice du plus proche feu fixe non pris est : "+i_min_fixed_fire, this);
+					
+				}
+			}
 			
 			if (duree_freeze[i] > duree_blocage)
 			{
 				//Il y a un blocage de l'ennemi, réfléchissons un peu et agissons optimalement
+				//Pour l'instant  la stratégie est trop bonne pour qu'on en ait à faire quelque chose
 			}
 			if (real_state.table.distanceTree(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
 			{
-			    real_state.table.pickTree(i_min_tree);
+			    real_state.table.modifierProbaTree(i_min_tree, 0.9f);
 			}
 			if(real_state.table.distanceFire(positionsfreeze[i], i_min_fire) < distance_influence && duree_freeze[i] > duree_standard)
 			{
-			    real_state.table.pickFire(i_min_fire);
+			    real_state.table.modifierProbaFire(i_min_fire,0.9f);
 			}
 			if(real_state.table.distanceFresco(positionsfreeze[i], i_min_fresco) < distance_influence && duree_freeze[i] > duree_standard)
 			{
-			    real_state.table.appendFresco(i_min_fresco);
+			    real_state.table.modifierProbaFresco(i_min_fresco,0.9f);
 			}
+			if(real_state.table.distanceFixedFire(positionsfreeze[i], i_min_fresco) < distance_influence && duree_freeze[i] > duree_standard)
+			{
+			    real_state.table.modifierProbaFixedFire(i_min_fixed_fire,0.9f);
+			}
+			
 			
 			/*
 			 * 
