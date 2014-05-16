@@ -222,7 +222,9 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	@Test public void test_ScriptFeuBord() throws Exception
 	{
 		real_state.robot.initialiser_actionneurs_deplacements();
-        real_state.robot.recaler();
+        //real_state.robot.recaler();
+		real_state.robot.setOrientation(-(float)Math.PI/2);
+		real_state.robot.setPosition(new Vec2(1270,1700));
         Sleep.sleep(3000);
         real_state.robot.avancer(300);
 		s = (Script)scriptmanager.getScript("ScriptFeuBord");
