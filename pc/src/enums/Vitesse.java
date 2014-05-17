@@ -11,7 +11,7 @@ public enum Vitesse
     ENTRE_SCRIPTS(170, 160),
     DANS_MUR(90, 160),
     RECALER(90, 60),
-    ARBRE_AVANT(40, 160),
+    ARBRE_AVANT(50, 160),
     PRISE_FEU(90, 140);
     
     public int PWM_translation;

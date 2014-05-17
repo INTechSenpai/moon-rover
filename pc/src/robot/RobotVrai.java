@@ -233,6 +233,14 @@ public class RobotVrai extends Robot {
 	    actionneurs.poserFeuEnRetournant(cote);
 		log.debug("On pose le feu gauche en le retournant", this);
 	}
+	public void renverserFeu(Cote cote) throws SerialException
+	{
+		if(cote == Cote.GAUCHE)
+			actionneurs.renverserFeuGauche();
+		else
+			actionneurs.renverserFeuDoite();
+	}
+	
 
 	
 	/* 

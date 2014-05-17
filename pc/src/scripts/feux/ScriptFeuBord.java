@@ -261,9 +261,9 @@ public class ScriptFeuBord extends Script {
 	public Vec2 point_entree(int id) {
 		//Les coordonnées ont été prises à partir du réglement
 		if(id ==0)
-			return new Vec2(-1100,1350);
+			return new Vec2(-1100,1470);
 		else if(id ==1)
-			return new Vec2(1100, 1350);		
+			return new Vec2(1100, 1470);		
 		else if(id ==2)
 			return new Vec2(-250, 500);
 		else if(id ==3)
@@ -286,10 +286,16 @@ public class ScriptFeuBord extends Script {
 	protected void execute(int id_version, GameState<?> state)
 			throws MouvementImpossibleException, SerialException {
 		Cote cote = Cote.GAUCHE;
+		int decalage = 180;
+		float angle = 0f;
+		int maniere = 1;
+		int avancement = 200;
 		if(id_version ==0)
 			{
 			// Vec2(-1500,1200);
-		    state.robot.tourner((float)Math.PI);
+			angle = 1.5707f;
+			angle = 3.1415f;
+		    
 			cote = Cote.GAUCHE;
 			}
 		else if(id_version ==1)
@@ -311,11 +317,12 @@ public class ScriptFeuBord extends Script {
 			state.robot.tourner((float)(-Math.PI/2));
 			cote = Cote.DROIT;
 		}
-		
+		/*
 		if(!state.robot.isTient_feu(Cote.GAUCHE))
 		{
 			cote = Cote.GAUCHE;
 		}
+		*/
 	/*
 		else if(state.robot.isTient_feu(Cote.DROIT))
 		{
@@ -350,9 +357,14 @@ public class ScriptFeuBord extends Script {
 		// renverser à droite : "ad" puis "300"
 		
 		//Pour les feux à tirer
-		
+		if(maniere == 0)
+		{
 		try 
 		{
+			if(cote == Cote.GAUCHE)
+			{
+				decalage = 150;
+			}
 			state.robot.avancer(130);
 			state.robot.ouvrir_pince(cote);
 			state.robot.sleep(1000);
@@ -376,8 +388,38 @@ public class ScriptFeuBord extends Script {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+		}
+		else
+		{
+			state.robot.tourner(angle);
+			try{
+			if(cote == Cote.GAUCHE)
+			{
+				decalage = 150;
+			}
+			else if(cote == Cote.DROIT)
+			{
+				decalage = -150;
+			}
+			state.robot.avancer(avancement);
+			state.robot.sleep(200);
+			state.robot.milieu_pince(cote);
+			state.robot.sleep(200);
+			state.robot.renverserFeu(cote);
+			state.robot.sleep(500);
+			state.robot.avancer(-avancement+50);
+			state.robot.tourner(angle+1.5707f);
+			state.robot.avancer(decalage);
+			state.robot.tourner(angle);
+			state.robot.takefire(cote);
+			state.robot.sleep(500);
+			state.robot.avancer(-avancement-50);
+			}catch (SerialException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		//il faut parler à la stratégie
 		if(id_version ==0)
 			state.table.pickFixedFire(3);
