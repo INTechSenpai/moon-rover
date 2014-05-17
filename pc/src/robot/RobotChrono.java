@@ -231,6 +231,11 @@ public class RobotChrono extends Robot {
 	public void lever_pince(Cote cote) throws SerialException {
 		duree += 1000; // TODO
 	}
+	@Override
+	public void renverserFeu(Cote cote) throws SerialException
+	{
+		duree += 1000;
+	}
 
 	@Override
 	public void baisser_pince(Cote cote) throws SerialException {

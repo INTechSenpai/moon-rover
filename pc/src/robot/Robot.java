@@ -82,6 +82,8 @@ public abstract class Robot implements Service {
 	public abstract void tourner_pince(Cote cote) throws SerialException;
 	public abstract void presque_fermer_pince(Cote cote) throws SerialException;
 	public abstract void ouvrir_bas_pince(Cote cote) throws SerialException;
+	public abstract void takefire(Cote cote) throws SerialException, MouvementImpossibleException;
+	public abstract void renverserFeu(Cote cote) throws SerialException;
 	
 	public void deposer_fresques() throws SerialException
 	{

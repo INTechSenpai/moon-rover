@@ -162,6 +162,7 @@ public class Strategie implements Service {
 			i_min_tree = real_state.table.nearestUntakenTree(positionsfreeze[i]);
 			i_min_fresco = real_state.table.nearestFreeFresco(positionsfreeze[i]);
 			i_min_fixed_fire = real_state.table.nearestUntakenFixedFire(positionsfreeze[i]);
+			//Pour déboguer
 			for(int p = 0; i <2; i++)
 			{
 				if(duree_freeze[p] > 5000)

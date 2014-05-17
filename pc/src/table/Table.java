@@ -215,7 +215,7 @@ public class Table implements Service {
 	{
 		// On ne prend pas en compte les feux dans les torches
 		int min = 0;
-		for (int i = 1; i < 6; i++)
+		for (int i = 1; i < 4; i++)
 			if (!arrayFixedFire[i].isTaken() && arrayFixedFire[i].getPosition().SquaredDistance(position) < arrayFixedFire[min].getPosition().SquaredDistance(position))
 				min = i;
 		return min;

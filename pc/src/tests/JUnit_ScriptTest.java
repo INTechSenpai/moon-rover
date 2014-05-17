@@ -197,8 +197,10 @@ public class JUnit_ScriptTest extends JUnit_Test {
         //real_state.robot.setTient_feu(Cote.GAUCHE);
 		s = (Script)scriptmanager.getScript("ScriptTorche");
 		s.agit(1, real_state, true);
-		//Script s1 = (Script)scriptmanager.getScript("ScriptDeposerFeu");
-		//s1.agit(2, real_state, true);
+		s.agit(5, real_state, true);
+		Script s1 = (Script)scriptmanager.getScript("ScriptDeposerFeu");
+		s1.agit(2, real_state, true);
+		s1.agit(3, real_state, true);
 	}
 
     @Test
@@ -222,12 +224,12 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	@Test public void test_ScriptFeuBord() throws Exception
 	{
 		real_state.robot.initialiser_actionneurs_deplacements();
-        //real_state.robot.recaler();
-		real_state.robot.setOrientation(-(float)Math.PI/2);
-		real_state.robot.setPosition(new Vec2(1270,1700));
+        real_state.robot.recaler();
+		//real_state.robot.setOrientation(-(float)Math.PI/2);
+		//real_state.robot.setPosition(new Vec2(1270,1700));
         Sleep.sleep(3000);
         real_state.robot.avancer(300);
 		s = (Script)scriptmanager.getScript("ScriptFeuBord");
-		s.agit(1, real_state, true);
+		s.agit(0, real_state, true);
 	}
 }
