@@ -249,13 +249,25 @@ public class Table implements Service {
 	{
 		return arrayFire;
 	}
+	public Fire[] getListFixedFire()
+	{
+		return arrayFixedFire;
+	}
 	public void modifierProbaFire(int i, float proba )
 	{
 		arrayFire[i].setProbaFaitParEnnemi(proba);
 	}
+	public float prendreProbaFire(int i)
+	{
+		return arrayFire[i].getProbaFaitParEnnemi();
+	}
 	public void modifierProbaFixedFire(int i, float proba )
 	{
 		arrayFixedFire[i].setProbaFaitParEnnemi(proba);
+	}
+	public float prendreProbaFixedFire(int i)
+	{
+		return arrayFixedFire[i].getProbaFaitParEnnemi();
 	}
 	
 	// Arbres
@@ -311,6 +323,10 @@ public class Table implements Service {
 	public void modifierProbaTree(int i, float proba )
 	{
 		arrayTree[i].setProbaFaitParEnnemi(proba);
+	}
+	public float prendreProbaTree(int i)
+	{
+		return arrayTree[i].getProbaFaitParEnnemi();
 	}
 	//Torches
 	/**
@@ -391,6 +407,14 @@ public class Table implements Service {
 	public void modifierProbaTorch(int i, float proba )
 	{
 		arrayTorch[i].setProbaFaitParEnnemi(proba);
+	}
+	public float prendreProbaTorch(int i)
+	{
+		return arrayTorch[i].getProbaFaitParEnnemi();
+	}
+	public Torch[] getListTorch()
+	{
+		return arrayTorch;
 	}
 
 	//La table
@@ -497,6 +521,10 @@ public class Table implements Service {
 		list_fresco_pos[i].setProbaFaitParEnnemi(proba);
 	}
 	
+	public float prendreProbaFresco(int i)
+	{
+		return list_fresco_pos[i].getProbaFaitParEnnemi();
+	}
 	@Override
 	public void maj_config()
 	{
