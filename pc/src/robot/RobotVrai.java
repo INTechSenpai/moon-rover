@@ -134,7 +134,7 @@ public class RobotVrai extends Robot {
 			sleep(500);
 			lever_pince(cote);
 			sleep(500);
-			setTient_feu(cote);
+			super.takefire(cote);
 			// On signale à la table qu'on a prit un feu. A priori, c'est le plus proche de cette position.
 			table.pickFire(table.nearestUntakenFire(deplacements.getPosition().clone()));
 		}

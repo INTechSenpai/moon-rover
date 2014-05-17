@@ -277,6 +277,12 @@ public class RobotChrono extends Robot {
 		super.prendre_torche(cote);
 	    duree += 1000; // TODO
 	}
+	@Override
+	public void takefire(Cote cote) throws SerialException, MouvementImpossibleException
+	{
+		super.takefire(cote);
+		duree += 1000; //TODO
+	}
 
     @Override
     public void stopper()
