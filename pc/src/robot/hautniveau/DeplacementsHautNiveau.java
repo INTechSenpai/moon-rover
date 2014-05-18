@@ -6,6 +6,7 @@ import container.Service;
 //import hook.Callback;
 //import hook.Executable;
 import hook.Hook;
+import enums.Vitesse;
 //import hook.methodes.ChangeConsigne;
 //import hook.sortes.HookGenerator;
 import exceptions.deplacements.BlocageException;
@@ -66,9 +67,12 @@ public class DeplacementsHautNiveau implements Service
     {
         try {
             avancer(-200, null, true);
+            deplacements.set_vitesse_translation(200);
             deplacements.desactiver_asservissement_rotation();
             avancer(-200, null, true);
             deplacements.activer_asservissement_rotation();
+            deplacements.set_vitesse_translation(Vitesse.RECALER.PWM_translation);
+
 
             position.x = 1500 - 165;
             if(symetrie)
@@ -87,9 +91,11 @@ public class DeplacementsHautNiveau implements Service
             tourner(-Math.PI/2, null, false);
 
             avancer(-600, null, true);
+            deplacements.set_vitesse_translation(200);
             deplacements.desactiver_asservissement_rotation();
             avancer(-200, null, true);
             deplacements.activer_asservissement_rotation();
+            deplacements.set_vitesse_translation(Vitesse.RECALER.PWM_translation);
             position.y = 2000 - 165;
             deplacements.set_y(2000 - 165);
             Sleep.sleep(500);
