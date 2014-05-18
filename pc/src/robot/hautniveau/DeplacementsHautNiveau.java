@@ -65,10 +65,11 @@ public class DeplacementsHautNiveau implements Service
     public void recaler()
     {
         try {
-        	deplacements.desactiver_asservissement_rotation();
             avancer(-200, null, true);
+            deplacements.desactiver_asservissement_rotation();
             avancer(-200, null, true);
-           
+            deplacements.activer_asservissement_rotation();
+
             position.x = 1500 - 165;
             if(symetrie)
             {
@@ -86,7 +87,9 @@ public class DeplacementsHautNiveau implements Service
             tourner(-Math.PI/2, null, false);
 
             avancer(-600, null, true);
+            deplacements.desactiver_asservissement_rotation();
             avancer(-200, null, true);
+            deplacements.activer_asservissement_rotation();
             position.y = 2000 - 165;
             deplacements.set_y(2000 - 165);
             Sleep.sleep(500);
