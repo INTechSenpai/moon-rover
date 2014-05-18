@@ -277,11 +277,13 @@ public abstract class Robot implements Service {
         }
         catch (MouvementImpossibleException e)
         {
+            e.printStackTrace();
             if(insiste)
             {
                 chemin = pathfinding.chemin(getPosition(), arrivee, insiste);
                 suit_chemin(chemin, hooks);
             }
+            else throw e;
         }
     }
 
