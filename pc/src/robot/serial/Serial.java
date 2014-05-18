@@ -124,15 +124,8 @@ public class Serial implements SerialPortEventListener, Service
 	 */
 	public String[] communiquer(String[] messages, int nb_lignes_reponse) throws SerialException
 	{
-		long t1 = System.currentTimeMillis();
 		synchronized(output)
 		{
-			long t2 = System.currentTimeMillis();
-			if(t2-t1 > 1000)
-				log.critical("Temps accès mutex "+name+": "+(t2-t1), this);
-			else if(t2-t1 > 100)
-				log.warning("Temps accès mutex "+name+": "+(t2-t1), this);
-
 			String inputLines[] = new String[nb_lignes_reponse];
 			try
 			{
@@ -178,11 +171,6 @@ public class Serial implements SerialPortEventListener, Service
 				log.critical("Ne peut pas parler à la carte " + this.name, this);
 				throw new SerialException();
 			}
-			
-		if(t2-t1 > 1000)
-			log.critical("Temps communiquer "+name+": "+(t2-t1), this);
-		else if(t2-t1 > 700)
-			log.warning("Temps communiquer "+name+": "+(t2-t1), this);
 			
 		return inputLines;
 		
