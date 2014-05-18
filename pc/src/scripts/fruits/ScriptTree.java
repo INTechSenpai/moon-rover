@@ -193,11 +193,11 @@ public class ScriptTree extends Script{
                 distance = 350;
 
             if(version == 0)
-                hook = hookgenerator.hook_abscisse(1500-distance, 35);
+                hook = hookgenerator.hook_abscisse_gauche(1500-distance);
             else if(version == 1 || version == 2)
-                hook = hookgenerator.hook_ordonnee(distance, 35);
+                hook = hookgenerator.hook_ordonnee_haut(distance);
             else // version == 3
-                hook = hookgenerator.hook_abscisse(-1500+distance, 35);
+                hook = hookgenerator.hook_abscisse_droite(-1500+distance);
                 
             hook.ajouter_callback(new Callback(remonte, true));
             hooks.get(version).add(hook);

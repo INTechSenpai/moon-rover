@@ -12,7 +12,8 @@ public enum Vitesse
     DANS_MUR(90, 160),
     RECALER(90, 60),
     ARBRE_AVANT(50, 160),
-    PRISE_FEU(90, 140);
+    PRISE_FEU(90, 140),
+    DEBUT(250, 70);
     
     public int PWM_translation;
     public int PWM_rotation;

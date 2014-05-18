@@ -94,6 +94,7 @@ public class DeplacementsHautNiveau implements Service
             orientation = -Math.PI/2;
             setOrientation(-Math.PI/2);
             //Normalement on se trouve à (1500 - 165 - 100 = 1225 ; 2000 - 165 - 100 = 1725)
+            deplacements.activer_asservissement_rotation();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -366,12 +367,12 @@ public class DeplacementsHautNiveau implements Service
 
             // Correction de la trajectoire ou reprise du mouvement
             // Si on ne fait que relancer et qu'on a interdit la trajectoire courbe, on attend à la rotation.
-            if(relancer || trajectoire_courbe)
+/*            if(relancer || trajectoire_courbe)
             {
                 log.debug("On relance", this);
                 va_au_point_symetrie(!relancer || trajectoire_courbe, marche_arriere, trajectoire_courbe);
             }
-            else
+            else*/
                 update_x_y_orientation();
 
         } while(!mouvement_fini());

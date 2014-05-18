@@ -127,7 +127,7 @@ public class Capteurs implements Service {
     {
 //    	log.debug(serie.communiquer("j", 1)[0], this);
     	try {
-    		return Integer.parseInt(serie.communiquer("j", 1)[0]) == 0;
+    		return Integer.parseInt(serie.communiquer("j", 1)[0]) != 0;
     	}
     	catch(Exception e)
     	{
@@ -138,22 +138,22 @@ public class Capteurs implements Service {
  
     public boolean isThereFireGauche()
     {
-/*		try {
+		try {
 			return Integer.parseInt(serie.communiquer("cg", 1)[0]) != 0;
 		} catch (NumberFormatException | SerialException e) {
 			e.printStackTrace();
-		}*/
+		}
 		return false;
     }
 
     public boolean isThereFireMilieu()
     {
-        /*
+        
         try {
             return Integer.parseInt(serie.communiquer("cm", 1)[0]) != 0;
         } catch (NumberFormatException | SerialException e) {
             e.printStackTrace();
-        }*/
+        }
         return false;
     }
 

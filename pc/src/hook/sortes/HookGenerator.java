@@ -70,11 +70,26 @@ public class HookGenerator implements Service {
 	{
 		return new HookAbscisse(config, log, real_state, abscisse, tolerance, couleur=="rouge");
 	}
+	
 	public Hook hook_abscisse(float abscisse)
 	{
 		return hook_abscisse(abscisse, tolerance_position);
 	}
 	
+    public Hook hook_abscisse_droite(float abscisse)
+    {
+        if(couleur=="rouge")
+            return new HookAbscisseGauche(config, log, real_state, abscisse, couleur=="rouge");
+        return new HookAbscisseDroite(config, log, real_state, abscisse, couleur=="rouge");
+    }
+
+    public Hook hook_abscisse_gauche(float abscisse)
+    {
+        if(couleur=="rouge")
+            return new HookAbscisseDroite(config, log, real_state, abscisse, couleur=="rouge");
+        return new HookAbscisseGauche(config, log, real_state, abscisse, couleur=="rouge");
+    }
+
     /*
      * Hook d'ordonnée
      */
@@ -86,6 +101,10 @@ public class HookGenerator implements Service {
     public Hook hook_ordonnee(float ordonnee)
     {
         return hook_ordonnee(ordonnee, tolerance_position);
+    }
+    public Hook hook_ordonnee_haut(float ordonnee)
+    {
+        return new HookOrdonneeHaut(config, log, real_state, ordonnee, couleur=="rouge");
     }
     
 	/*
