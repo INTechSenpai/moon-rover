@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import robot.cartes.*;
+import utils.Sleep;
 
 	/**
 	 * Tests unitaires pour Deplacements
@@ -94,4 +95,13 @@ public class JUnit_DeplacementsTest extends JUnit_Test {
 		Assert.assertTrue(infos_float[2] > 1233 && infos_float[2] < 1235);
 	}
 
+	@Test
+	public void test_equilibrage() throws Exception
+	{
+	    deplacements.set_vitesse_translation(170);
+	    deplacements.desactiver_asservissement_rotation();
+	    deplacements.avancer(1500);
+	    Sleep.sleep(1000);
+	}
+	
 }
