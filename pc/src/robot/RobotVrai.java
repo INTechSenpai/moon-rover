@@ -146,6 +146,12 @@ public class RobotVrai extends Robot {
 		actionneurs.bac_bas();
 	}
 
+    @Override
+    public void bac_tres_bas() throws SerialException
+    {
+        actionneurs.bac_tres_bas();
+    }
+
 	@Override
 	public void bac_haut() throws SerialException
 	{

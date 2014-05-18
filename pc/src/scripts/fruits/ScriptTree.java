@@ -123,6 +123,9 @@ public class ScriptTree extends Script{
 		else if (id_version == 3)
 			state.robot.tourner(0) ;
 
+		// baisse les fresques
+		state.robot.bac_tres_bas();
+		
 		// on déploie les bras 
 		state.robot.rateau(PositionRateau.BAS, Cote.DROIT);
 		state.robot.rateau(PositionRateau.BAS, Cote.GAUCHE);
@@ -158,6 +161,7 @@ public class ScriptTree extends Script{
 		try {
 			state.robot.rateau(PositionRateau.RANGER, Cote.DROIT);
 			state.robot.rateau(PositionRateau.RANGER, Cote.GAUCHE);
+			state.robot.bac_bas();
 		} catch (SerialException e) {
 			e.printStackTrace();
 		}

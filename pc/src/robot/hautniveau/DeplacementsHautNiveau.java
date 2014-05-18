@@ -367,12 +367,12 @@ public class DeplacementsHautNiveau implements Service
 
             // Correction de la trajectoire ou reprise du mouvement
             // Si on ne fait que relancer et qu'on a interdit la trajectoire courbe, on attend à la rotation.
-/*            if(relancer || trajectoire_courbe)
+            if(relancer)
             {
                 log.debug("On relance", this);
-                va_au_point_symetrie(!relancer || trajectoire_courbe, marche_arriere, trajectoire_courbe);
+                va_au_point_symetrie(false, marche_arriere, trajectoire_courbe);
             }
-            else*/
+            else
                 update_x_y_orientation();
 
         } while(!mouvement_fini());

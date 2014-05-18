@@ -127,11 +127,18 @@ public class Actionneurs implements Service {
 		log.debug("Prendre la torche gauche", this);
 		serie.communiquer("torched",0);
 	}
+
 	public void bac_bas() throws SerialException
 	{
 		log.debug("Bac baissé", this);
 		serie.communiquer("bb", 0);
 	}
+
+    public void bac_tres_bas() throws SerialException
+    {
+        log.debug("Bac vraiment baissé", this);
+        serie.communiquer("btb", 0);
+    }
 
 	public void bac_haut() throws SerialException
 	{

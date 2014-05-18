@@ -84,6 +84,18 @@ public class ActionneursHautNiveau implements Service
             e.printStackTrace();
         }
     }
+    
+    public void bac_tres_bas()
+    {
+        try
+        {
+            actionneurs.bac_tres_bas();
+        } catch (SerialException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
 
     public void bac_haut()
     {

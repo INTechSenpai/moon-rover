@@ -70,7 +70,8 @@ public abstract class Robot implements Service {
 	{
 	    nombre_lances--;
 	}
-	
+		
+    public abstract void bac_tres_bas() throws SerialException;
 	public abstract void bac_bas() throws SerialException;
 	public abstract void rateau(PositionRateau position, Cote cote) throws SerialException;
 	public abstract void lancerFilet() throws SerialException;

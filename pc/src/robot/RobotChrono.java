@@ -318,4 +318,11 @@ public class RobotChrono extends Robot {
         rc.orientation = orientation;
     }
 
+    @Override
+    public void bac_tres_bas() throws SerialException
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
 }
