@@ -21,17 +21,18 @@ import utils.Read_Ini;
  */
 public class ScriptTorche extends Script {
 
-	public ScriptTorche(HookGenerator hookgenerator, Read_Ini config, Log log)
+	@SuppressWarnings("unchecked")
+    public ScriptTorche(HookGenerator hookgenerator, Read_Ini config, Log log)
 	{
 		super(hookgenerator, config, log);
         ArrayList<Integer> versionList = new ArrayList<Integer>();
         versionList.add(1);
         versionList.add(5);
-        versions.add(versionList);
+        versions.add((ArrayList<Integer>) versionList.clone());
         versionList.clear();
         versionList.add(0);
         versionList.add(4);
-        versions.add(versionList);
+        versions.add((ArrayList<Integer>) versionList.clone());
 	}
 
 	@Override 

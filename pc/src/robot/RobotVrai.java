@@ -134,7 +134,7 @@ public class RobotVrai extends Robot {
 			sleep(500);
 			lever_pince(cote);
 			sleep(500);
-			setTient_feu(cote);
+			super.takefire(cote);
 			// On signale à la table qu'on a prit un feu. A priori, c'est le plus proche de cette position.
 			table.pickFire(table.nearestUntakenFire(deplacements.getPosition().clone()));
 		}
@@ -233,6 +233,14 @@ public class RobotVrai extends Robot {
 	    actionneurs.poserFeuEnRetournant(cote);
 		log.debug("On pose le feu gauche en le retournant", this);
 	}
+	public void renverserFeu(Cote cote) throws SerialException
+	{
+		if(cote == Cote.GAUCHE)
+			actionneurs.renverserFeuGauche();
+		else
+			actionneurs.renverserFeuDoite();
+	}
+	
 
 	
 	/* 

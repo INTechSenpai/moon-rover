@@ -211,6 +211,15 @@ public class Table implements Service {
 				min = i;
 		return min;
 	}
+	public int nearestUntakenFixedFire (final Vec2 position)
+	{
+		// On ne prend pas en compte les feux dans les torches
+		int min = 0;
+		for (int i = 1; i < 4; i++)
+			if (!arrayFixedFire[i].isTaken() && arrayFixedFire[i].getPosition().SquaredDistance(position) < arrayFixedFire[min].getPosition().SquaredDistance(position))
+				min = i;
+		return min;
+	}
 	
 	public synchronized void putFire (int id)
 	{
@@ -221,6 +230,10 @@ public class Table implements Service {
 	public float distanceFire(final Vec2 position, int i)
 	{
 		return position.distance(arrayFire[i].position);
+	}
+	public float distanceFixedFire(final Vec2 position, int i)
+	{
+		return position.distance(arrayFixedFire[i].position);
 	}
 	
 	public float angleFire(final Vec2 position, int i)
@@ -235,6 +248,26 @@ public class Table implements Service {
 	public Fire[] getListFire()
 	{
 		return arrayFire;
+	}
+	public Fire[] getListFixedFire()
+	{
+		return arrayFixedFire;
+	}
+	public void modifierProbaFire(int i, float proba )
+	{
+		arrayFire[i].setProbaFaitParEnnemi(proba);
+	}
+	public float prendreProbaFire(int i)
+	{
+		return arrayFire[i].getProbaFaitParEnnemi();
+	}
+	public void modifierProbaFixedFire(int i, float proba )
+	{
+		arrayFixedFire[i].setProbaFaitParEnnemi(proba);
+	}
+	public float prendreProbaFixedFire(int i)
+	{
+		return arrayFixedFire[i].getProbaFaitParEnnemi();
 	}
 	
 	// Arbres
@@ -287,7 +320,14 @@ public class Table implements Service {
 		{
 			return arrayTree;
 		}
-	
+	public void modifierProbaTree(int i, float proba )
+	{
+		arrayTree[i].setProbaFaitParEnnemi(proba);
+	}
+	public float prendreProbaTree(int i)
+	{
+		return arrayTree[i].getProbaFaitParEnnemi();
+	}
 	//Torches
 	/**
 	 * Renvoie un code selon la présence ou non des torches mobiles
@@ -363,6 +403,18 @@ public class Table implements Service {
 			return arrayTorch[0].rayon;
 		else
 			return arrayTorch[1].rayon;
+	}
+	public void modifierProbaTorch(int i, float proba )
+	{
+		arrayTorch[i].setProbaFaitParEnnemi(proba);
+	}
+	public float prendreProbaTorch(int i)
+	{
+		return arrayTorch[i].getProbaFaitParEnnemi();
+	}
+	public Torch[] getListTorch()
+	{
+		return arrayTorch;
 	}
 
 	//La table
@@ -464,7 +516,15 @@ public class Table implements Service {
 	}
 	//Il faudra faire gaffe à la différence entre les distance et les squaredDistance quand on les compare avec des constantes ! Achtung !!!
 	
+	public void modifierProbaFresco(int i, float proba )
+	{
+		list_fresco_pos[i].setProbaFaitParEnnemi(proba);
+	}
 	
+	public float prendreProbaFresco(int i)
+	{
+		return list_fresco_pos[i].getProbaFaitParEnnemi();
+	}
 	@Override
 	public void maj_config()
 	{
@@ -497,6 +557,7 @@ public class Table implements Service {
 	public void setRightMammothHit(boolean rightMammothHit) {
 		this.rightMammothHit = rightMammothHit;
 	}
+	
 
 }
 

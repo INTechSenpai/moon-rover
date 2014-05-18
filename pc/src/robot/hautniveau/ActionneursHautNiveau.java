@@ -195,7 +195,15 @@ public class ActionneursHautNiveau implements Service
         Sleep.sleep(1000);
     }
 
-
+    
+	public void renverserFeuGauche() throws SerialException
+	{
+		actionneurs.renverserFeuGauche();
+	}
+	public void renverserFeuDoite() throws SerialException
+	{
+		actionneurs.renverserFeuDoite();
+	}
     @Override
     public void maj_config()
     {}

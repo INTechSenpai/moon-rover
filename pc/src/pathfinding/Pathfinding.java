@@ -202,14 +202,26 @@ public class Pathfinding implements Service, Cloneable
 	
 	}
 
-	/**
+    /**
+     * Valeur par défaut d'insiste: false.
+     * @param depart
+     * @param arrivee
+     * @return
+     * @throws PathfindingException
+     */
+    public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee) throws PathfindingException
+    {
+        return chemin(depart, arrivee, false);
+    }
+
+    /**
 	 * Calcul d'un itinéraire
 	 * @param depart
 	 * @param arrivee
 	 * @return
 	 * @throws PathfindingException
 	 */
-	public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee) throws PathfindingException
+	public ArrayList<Vec2> chemin(Vec2 depart, Vec2 arrivee, boolean insiste) throws PathfindingException
 	{
 	    try {
 	        // De base, on utilise le simple pathfinding
@@ -226,10 +238,14 @@ public class Pathfinding implements Service, Cloneable
 	        }
 	        catch(PathfindingException e2)
 	        {
-	            log.critical("Echec de tous les pathfindings. Ligne droite.", this);
-	            ArrayList<Vec2> chemin = new ArrayList<Vec2>();
-	            chemin.add(arrivee);
-	            return chemin;
+	            if(insiste)
+	            {
+    	            log.critical("Echec de tous les pathfindings. On insiste. On va en ligne droite.", this);
+    	            ArrayList<Vec2> chemin = new ArrayList<Vec2>();
+    	            chemin.add(arrivee);
+    	            return chemin;
+	            }
+	            else throw e2;
 	        }
 	    }
 	}
@@ -281,7 +297,7 @@ public class Pathfinding implements Service, Cloneable
 		
 		if(!use_cache || distance_cache == null)
 		{
-			ArrayList<Vec2> result = chemin(depart, arrivee);
+			ArrayList<Vec2> result = chemin(depart, arrivee, false);
 			// Le résultat ne contient pas le point de départ
 			int out = (int) depart.distance(result.get(0));
 			for (int i = 1; i < result.size(); ++i)
