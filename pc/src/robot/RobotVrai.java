@@ -111,7 +111,7 @@ public class RobotVrai extends Robot {
 	}
 
 	public void takefire(Cote cote) throws SerialException, MouvementImpossibleException {
-        setFeu_tenu_rouge(cote, getColour());
+        
 
 		if(!isTient_feu(cote))
 		{
@@ -137,6 +137,7 @@ public class RobotVrai extends Robot {
 			super.takefire(cote);
 			// On signale à la table qu'on a prit un feu. A priori, c'est le plus proche de cette position.
 			table.pickFire(table.nearestUntakenFire(deplacements.getPosition().clone()));
+			setFeu_tenu_rouge(cote, getColour());
 		}
 	}
 

@@ -205,6 +205,7 @@ package scripts.feux;
 
 import java.util.ArrayList;
 
+import enums.Colour;
 import enums.Cote;
 import exceptions.deplacements.MouvementImpossibleException;
 import exceptions.serial.SerialException;
@@ -422,14 +423,25 @@ public class ScriptFeuBord extends Script {
 		}
 		//il faut parler à la stratégie
 		if(id_version ==0)
+		{
 			state.table.pickFixedFire(3);
-
+			state.robot.setFeu_tenu_rouge(cote, Colour.RED);
+		}
 		else if(id_version ==1)
+		{
 			state.table.pickFixedFire(0);
+			state.robot.setFeu_tenu_rouge(cote, Colour.YELLOW);
+		}
 		else if(id_version ==2)
+		{
 			state.table.pickFixedFire(2);
-		else 
+			state.robot.setFeu_tenu_rouge(cote, Colour.YELLOW);
+		}
+		else
+		{
 			state.table.pickFixedFire(1);
+			state.robot.setFeu_tenu_rouge(cote, Colour.RED);
+		}
 	}
 
 	@Override
