@@ -292,6 +292,13 @@ public class Table implements Service {
 	{
 		return position.distance(arrayTree[i].position);
 	}
+	public void setFruitNoir(int id, int pos_fruit_noir)
+	{
+		//La nomenclature des positions des fruits noirs provient de la description de la classe Tree
+		
+		arrayTree[id].getArrayFruit()[pos_fruit_noir] = new Fruit(false);
+			
+	}
 
 	public synchronized void pickTree (int id)
 	{
