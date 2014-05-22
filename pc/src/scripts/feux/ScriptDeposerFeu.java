@@ -67,6 +67,7 @@ public class ScriptDeposerFeu extends Script {
 			return new Vec2(782, 528);
 
 		return null;
+		
 	}	
 	@Override
 	public int score(int id_version, GameState<?> state) 
@@ -92,13 +93,13 @@ public class ScriptDeposerFeu extends Script {
 		//Suivant là où on va poser, on doit se positionner différemment
 		
 		if (id_version == 0)
-			angle = 3.729f;		//(float)(Math.PI+Math.atan(2/3)));
+			angle = 3.92f;		//(float)(Math.PI+Math.atan(2/3)));
 		else if(id_version == 1)
-			angle = -0.588f;	//(float)(-Math.atan(2/3)));
+			angle = -0.78f;	//(float)(-Math.atan(2/3)));
 		else if(id_version == 2)
 			angle = -1.57f;		//(float)(-Math.PI/2));
 		else if(id_version == 3)
-			angle = 0.588f;		//(float)(Math.atan(2/3)));
+			angle = 0.78f;		//(float)(Math.atan(2/3)));
 		else
 			angle = 2.553f;		//(float)(Math.PI-Math.atan(2/3)));
 

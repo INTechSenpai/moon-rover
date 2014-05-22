@@ -2,6 +2,7 @@ package scripts.feux;
 
 import java.util.ArrayList;
 
+import enums.Colour;
 import enums.Cote;
 import enums.Vitesse;
 import exceptions.deplacements.MouvementImpossibleException;
@@ -171,17 +172,24 @@ public class ScriptTorche extends Script {
 		// On retire la torche des obstacles.
 		if(id_version ==0)
 			//Vec2(-600,900)
+		{
             state.table.torche_disparue(Cote.GAUCHE);
-
+			state.robot.setFeu_tenu_rouge(cote, Colour.RED);
+		}
 		else if(id_version ==1)
 			//Vec2(600,900);
+		{
 			state.table.torche_disparue(Cote.DROIT);
-		
+			state.robot.setFeu_tenu_rouge(cote, Colour.YELLOW);
+		}
 		else if(id_version ==2)
 			//X = -600+600*cos(-pi/6)
 			//Y = 900+600*sin(-pi/6)
 			//Vec2(-80,600);
+		{
             state.table.torche_disparue(Cote.GAUCHE);
+			state.robot.setFeu_tenu_rouge(cote, Colour.RED);
+		}
 		/*
 		else if(id_version ==3)
 			//X = 600+400*cos(-pi/6)
@@ -199,7 +207,10 @@ public class ScriptTorche extends Script {
 			//X = 600+600*cos(7*pi/6)
 			//Y = 900+600*sin(7*pi/6)
 			//Vec2(80,600);
+		{
 			state.table.torche_disparue(Cote.DROIT);
+			state.robot.setFeu_tenu_rouge(cote, Colour.YELLOW);
+		}
 		
 		
 		// TEMPORAIRE :  pour debug stratégie
