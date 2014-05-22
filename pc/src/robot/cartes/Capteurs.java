@@ -159,12 +159,11 @@ public class Capteurs implements Service {
 
     public boolean isThereFireDroit()
     {
-        /*
 		try {
 			return Integer.parseInt(serie.communiquer("cd", 1)[0]) != 0;
 		} catch (NumberFormatException | SerialException e) {
 			e.printStackTrace();
-		}*/
+		}
 		return false;
     }
 

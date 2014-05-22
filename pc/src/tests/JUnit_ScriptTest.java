@@ -18,7 +18,6 @@ import robot.RobotChrono;
 import robot.RobotVrai;
 import scripts.Script;
 import scripts.ScriptManager;
-import smartMath.Vec2;
 import strategie.GameState;
 import utils.Sleep;
 
@@ -122,6 +121,10 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	@Test
 	public void test_ScriptDeposerFruits_agit() throws Exception
 	{
+        real_state.robot.initialiser_actionneurs_deplacements();
+        real_state.robot.recaler();
+        Sleep.sleep(3000);
+        real_state.robot.avancer(300);
 		s = (Script)scriptmanager.getScript("ScriptDeposerFruits");
 		s.agit(0, real_state, false);
 	}
@@ -152,14 +155,14 @@ public class JUnit_ScriptTest extends JUnit_Test {
         real_state.robot.recaler();
         Sleep.sleep(3000);
         real_state.robot.avancer(200);
-//	    real_state.robot.setPosition(new Vec2(-1000, 300));
+        real_state.table.setFruitsNoirs(new int[] {4, 4, 2, 4});
+        // 0-2 : partie gauche de l'arbre
+        // 3-5 : partie droite de l'arbre
+        // De plus, 0 et 3 sont les fruits les plus proches du robot.
+
+        //	    real_state.robot.setPosition(new Vec2(-1000, 300));
 		s = (Script)scriptmanager.getScript("ScriptTree");
-        //s.agit(0, real_state, true);
-        s.agit(1, real_state, true);
-        //s.agit(2, real_state, true);
-        //s.agit(3, real_state, true);
-        s = (Script)scriptmanager.getScript("ScriptDeposerFruits");
-		s.agit(0, real_state, false);
+	    s.agit(1, real_state, true);
 	}
 
 	@Test(expected=ScriptException.class)

@@ -18,6 +18,7 @@ import enums.Cote;
 import enums.Vitesse;
 import robot.RobotVrai;
 import smartMath.Vec2;
+import utils.Sleep;
 
 /**
  * Tests unitaires des hooks (en jaune: sans symétrie)
@@ -130,7 +131,7 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 		Assert.assertTrue(!robotvrai.isTient_feu(Cote.DROIT));
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
-		Executable takefire = new TakeFire(robotvrai, Cote.GAUCHE);
+		Executable takefire = new TakeFire(robotvrai);
 		Hook hook = hookgenerator.hook_abscisse(100);
 		hook.ajouter_callback(new Callback(takefire, false));
 		hooks.add(hook);		
@@ -146,7 +147,7 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 		Assert.assertTrue(!robotvrai.isTient_feu(Cote.DROIT));
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
-		Executable takefire = new TakeFire(robotvrai, Cote.GAUCHE);
+		Executable takefire = new TakeFire(robotvrai);
 		Hook hook = hookgenerator.hook_position(new Vec2(20, 1400));
 		hook.ajouter_callback(new Callback(takefire, true));
 		hooks.add(hook);
@@ -164,11 +165,13 @@ public class JUnit_HookJauneTest extends JUnit_Test {
 		log.debug("JUnit_HookJauneTest.test_hookAbscisse_takeFire()", this);
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
-		Executable takefire = new TakeFire(robotvrai, Cote.DROIT);
-		Hook hook = hookgenerator.hook_feu(Cote.GAUCHE);
+		robotvrai.initialiser_actionneurs_deplacements();
+		Sleep.sleep(2000);
+		Executable takefire = new TakeFire(robotvrai);
+		Hook hook = hookgenerator.hook_feu();
 		hook.ajouter_callback(new Callback(takefire, false));
 		hooks.add(hook);
-		robotvrai.avancer(2000, hooks);
+		robotvrai.avancer(1000, hooks);
 	}
 
 	@Test

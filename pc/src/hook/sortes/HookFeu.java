@@ -1,6 +1,8 @@
 package hook.sortes;
 
+import hook.Executable;
 import hook.Hook;
+import hook.methodes.TakeFire;
 import enums.Cote;
 import robot.RobotVrai;
 import robot.cartes.Capteurs;
@@ -19,27 +21,43 @@ class HookFeu extends Hook {
 	private Capteurs capteur;
 	Cote cote;
 	
-	public HookFeu(Read_Ini config, Log log, GameState<RobotVrai> real_state, Capteurs capteur, Cote cote)
+	public HookFeu(Read_Ini config, Log log, GameState<RobotVrai> real_state, Capteurs capteur)
 	{
 		super(config, log, real_state);
 		this.capteur = capteur;
-		this.cote = cote;
 	}
 	
 	public boolean evaluate()
 	{
 	    // TODO: si le robot détecte un feu à gauche et que sa pince gauche est prise, alors il prend le feu à droite...
 		// si on tient déjà un feu de ce côté...
-		if(real_state.robot.isTient_feu(cote))
+		if(real_state.robot.isTient_feu(Cote.DROIT) && real_state.robot.isTient_feu(Cote.GAUCHE))
 			return false;
-		
-		// on regarde à gauche ou à droite selon la valeur de "gauche"
-		if(cote == Cote.GAUCHE && capteur.isThereFireGauche() || cote == Cote.DROIT && capteur.isThereFireDroit())
+		boolean gauche = capteur.isThereFireGauche();
+		boolean milieu = capteur.isThereFireMilieu();
+		boolean droit = capteur.isThereFireDroit();
+		if(droit || milieu || gauche)
 		{
-			if(cote == Cote.GAUCHE)
-				log.warning("Un feu a été détecté à gauche! Il est pris.", this);
-			else
-				log.warning("Un feu a été détecté à droite! Il est pris.", this);
+		    log.warning("On a détecté un feu!", this);
+		    Executable takefire = callbacks.get(0).methode;
+		    if(takefire instanceof TakeFire)
+		    {
+		        if(gauche)
+		            if(!real_state.robot.isTient_feu(Cote.GAUCHE))
+		                ((TakeFire)takefire).setColour(Cote.GAUCHE, Cote.GAUCHE);
+		            else
+                        ((TakeFire)takefire).setColour(Cote.DROIT, Cote.GAUCHE);
+		        else if(droit)
+                    if(!real_state.robot.isTient_feu(Cote.DROIT))
+                        ((TakeFire)takefire).setColour(Cote.DROIT, Cote.DROIT);
+                    else
+                        ((TakeFire)takefire).setColour(Cote.GAUCHE, Cote.DROIT);
+		        else if(milieu)
+                    if(!real_state.robot.isTient_feu(Cote.GAUCHE))
+                        ((TakeFire)takefire).setColour(Cote.GAUCHE, Cote.MILIEU);
+                    else
+                        ((TakeFire)takefire).setColour(Cote.DROIT, Cote.MILIEU);
+		    }
 			return declencher();
 		}
 		return false;

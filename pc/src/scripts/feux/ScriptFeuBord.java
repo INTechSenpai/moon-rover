@@ -411,7 +411,7 @@ public class ScriptFeuBord extends Script {
 			state.robot.tourner(angle+1.5707f);
 			state.robot.avancer(decalage);
 			state.robot.tourner(angle);
-			state.robot.takefire(cote);
+			state.robot.takefire(cote, cote); // TODO
 			state.robot.sleep(500);
 			state.robot.avancer(-avancement-50);
 			}catch (SerialException e) 

@@ -84,7 +84,7 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     public void test_va_au_point_relancer() throws Exception
     {
         ArrayList<Hook> hooks = new ArrayList<Hook>();
-        Executable takefire = new TakeFire(real_state.robot, Cote.DROIT);
+        Executable takefire = new TakeFire(real_state.robot);
         Hook hook = hookgenerator.hook_position(new Vec2(850, 1150), 100);
         hook.ajouter_callback(new Callback(takefire, true));
         hooks.add(hook);
@@ -100,15 +100,17 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     @Test
     public void test_suit_chemin() throws Exception
     {
-        ArrayList<Vec2> chemin = new ArrayList<Vec2>();
-        chemin.add(new Vec2(1000, 1200));
-        chemin.add(new Vec2(0, 1300));
-        chemin.add(new Vec2(-1000, 1200));
-        chemin.add(new Vec2(0, 500));
-        chemin.add(new Vec2(1000, 1200));
         robot.setInsiste(true);
-        container.demarreTousThreads();
-        robot.suit_chemin(chemin, null);
+        for(int i = 0; i < 10; i++)
+        {
+            ArrayList<Vec2> chemin = new ArrayList<Vec2>();
+            chemin.add(new Vec2(1000, 1200));
+            chemin.add(new Vec2(0, 1300));
+            chemin.add(new Vec2(-1000, 1200));
+            chemin.add(new Vec2(0, 500));
+            chemin.add(new Vec2(1000, 1200));
+            robot.suit_chemin(chemin, null);
+        }
     }
 
     @Test

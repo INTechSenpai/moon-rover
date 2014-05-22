@@ -110,33 +110,37 @@ public class RobotVrai extends Robot {
 		actionneurs.tirerBalle();
 	}
 
-	public void takefire(Cote cote) throws SerialException, MouvementImpossibleException {
-        setFeu_tenu_rouge(cote, getColour());
+	@Override
+	public void takefire(Cote cotePrise, Cote coteReel) throws SerialException, MouvementImpossibleException {
 
-		if(!isTient_feu(cote))
+//	    if(coteReel == Cote.MILIEU)
+	        
+	    if(!isTient_feu(cotePrise))
 		{
 			int signe = 1;
-			if(cote == Cote.GAUCHE)
+			if(cotePrise == Cote.GAUCHE)
 				signe = -1;
 			Vitesse vitesse_sauv = vitesse;
 			stopper();
 			avancer(-150);
-			ouvrir_bas_pince(cote);
+            tourner_relatif(-signe*0.4f);
+			ouvrir_bas_pince(cotePrise);
 			tourner_relatif(signe*0.2f);
 			sleep(600);
-			avancer(120);
-			presque_fermer_pince(cote);
+			avancer(250);
+			presque_fermer_pince(cotePrise);
 			set_vitesse(Vitesse.PRISE_FEU);
 			tourner_relatif(-signe*0.3f);
 			set_vitesse(vitesse_sauv);
 			avancer(30);
-			fermer_pince(cote);
+			fermer_pince(cotePrise);
 			sleep(500);
-			lever_pince(cote);
+			lever_pince(cotePrise);
 			sleep(500);
-			super.takefire(cote);
+			super.takefire(cotePrise, coteReel);
 			// On signale à la table qu'on a prit un feu. A priori, c'est le plus proche de cette position.
 			table.pickFire(table.nearestUntakenFire(deplacements.getPosition().clone()));
+	        setFeu_tenu_rouge(cotePrise, getColour());
 		}
 	}
 

@@ -15,7 +15,7 @@ import utils.Read_Ini;
 
 abstract public class Hook {
 
-	private ArrayList<Callback> callbacks = new ArrayList<Callback>();
+	protected ArrayList<Callback> callbacks = new ArrayList<Callback>();
 	
 	protected Read_Ini config;
 	protected Log log;

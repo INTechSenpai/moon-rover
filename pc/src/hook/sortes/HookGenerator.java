@@ -111,9 +111,9 @@ public class HookGenerator implements Service {
 	 * Hook de feu
 	 */
 
-	public Hook hook_feu(Cote cote)
+	public Hook hook_feu()
 	{
-		return new HookFeu(config, log, real_state, capteur, cote);
+		return new HookFeu(config, log, real_state, capteur);
 	}
 
 }

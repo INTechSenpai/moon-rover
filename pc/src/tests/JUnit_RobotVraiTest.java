@@ -3,7 +3,9 @@ package tests;
 import org.junit.Before;
 import org.junit.Test;
 
+import enums.Cote;
 import robot.RobotVrai;
+import utils.Sleep;
 
 public class JUnit_RobotVraiTest extends JUnit_Test
 {
@@ -22,4 +24,12 @@ public class JUnit_RobotVraiTest extends JUnit_Test
         robotvrai.recaler();
     }
     
+    @Test
+    public void test_takefire() throws Exception
+    {
+        robotvrai.initialiser_actionneurs_deplacements();
+        Sleep.sleep(2000);
+        robotvrai.takefire(Cote.GAUCHE, Cote.GAUCHE);
+    }
+
 }

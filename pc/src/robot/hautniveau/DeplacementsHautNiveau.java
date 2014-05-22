@@ -166,7 +166,7 @@ public class DeplacementsHautNiveau implements Service
         consigne.x = (int) (position.x + distance*Math.cos(orientation));
         consigne.y = (int) (position.y + distance*Math.sin(orientation));
 
-        va_au_point_gestion_exception(hooks, null, false, distance < 0, mur);
+        va_au_point_gestion_exception(hooks, false, distance < 0, mur);
     }
         
     /**
@@ -180,7 +180,7 @@ public class DeplacementsHautNiveau implements Service
     {
         if(trajectoire_courbe)
         {
-        	log.critical("Désactive la trajectoire courbe,  pauvre fou!", this);
+        	log.critical("Désactive la trajectoire courbe, pauvre fou!", this);
 /*            consigne = chemin.get(0).clone();
             ArrayList<Hook> hooks_trajectoire = new ArrayList<Hook>();
             for(int i = 0; i < chemin.size()-2; i++)
@@ -214,7 +214,7 @@ public class DeplacementsHautNiveau implements Service
             for(Vec2 point: chemin)
             {
                 consigne = point.clone();
-                va_au_point_marche_arriere(hooks, null, false, false);
+                va_au_point_marche_arriere(hooks, false, false);
             }
     }
 
@@ -224,7 +224,7 @@ public class DeplacementsHautNiveau implements Service
      * @param insiste
      * @throws MouvementImpossibleException
      */
-    private void va_au_point_marche_arriere(ArrayList<Hook> hooks, ArrayList<Hook> hooks_trajectoire, boolean trajectoire_courbe, boolean mur) throws MouvementImpossibleException
+    private void va_au_point_marche_arriere(ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean mur) throws MouvementImpossibleException
     {
         // choisit de manière intelligente la marche arrière ou non
         // mais cette année, on ne peut aller, de manière automatique, que tout droit.
@@ -248,7 +248,7 @@ public class DeplacementsHautNiveau implements Service
         boolean marche_arriere = delta.dot(orientationVec) > 0;
         */
         
-        va_au_point_gestion_exception(hooks, hooks_trajectoire, trajectoire_courbe, false, mur);
+        va_au_point_gestion_exception(hooks, trajectoire_courbe, false, mur);
     }
     
     /**
@@ -259,7 +259,7 @@ public class DeplacementsHautNiveau implements Service
      * @param insiste
      * @throws MouvementImpossibleException 
      */
-    public void va_au_point_gestion_exception(ArrayList<Hook> hooks, ArrayList<Hook> hooks_trajectoire, boolean trajectoire_courbe, boolean marche_arriere, boolean mur) throws MouvementImpossibleException
+    public void va_au_point_gestion_exception(ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean marche_arriere, boolean mur) throws MouvementImpossibleException
     {
         int nb_iterations;
         if(insiste)
@@ -272,7 +272,7 @@ public class DeplacementsHautNiveau implements Service
             recommence = false;
             try
             {
-                va_au_point_hook_correction_detection(hooks, hooks_trajectoire, trajectoire_courbe, marche_arriere);
+                va_au_point_hook_correction_detection(hooks, trajectoire_courbe, marche_arriere);
             } catch (BlocageException e)
             {
                 stopper();
@@ -345,8 +345,10 @@ public class DeplacementsHautNiveau implements Service
      * @throws BlocageException 
      * @throws CollisionException 
      */
-    public void va_au_point_hook_correction_detection(ArrayList<Hook> hooks, ArrayList<Hook> hooks_trajectoire, boolean trajectoire_courbe, boolean marche_arriere) throws BlocageException, CollisionException
+    public void va_au_point_hook_correction_detection(ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean marche_arriere) throws BlocageException, CollisionException
     {
+        System.out.println("Consigne: "+consigne);
+        System.out.println("Position: "+position);
         boolean relancer;
         va_au_point_symetrie(trajectoire_courbe, marche_arriere, false);
         do
@@ -356,30 +358,20 @@ public class DeplacementsHautNiveau implements Service
 
             if(hooks != null)
                 for(Hook hook : hooks)
-                    relancer |= hook.evaluate();
-
-            /*
-             * L'utilité de ne consulter que le premier hook n'est pas
-             * tellement d'optimiser le temps, mais plutôt de forcer
-             * la trajectoire à suivre les points dans le bon ordre.
-             */
-            if(hooks_trajectoire != null)
-            {
-                relancer |= hooks_trajectoire.get(0).evaluate();
-                if(hooks_trajectoire.get(0).supprimable())
                 {
-                    hooks_trajectoire.remove(0);
-                    if(hooks_trajectoire.size() == 0)
-                        hooks_trajectoire = null;
+                    Vec2 sauv_consigne = consigne.clone();
+                    relancer |= hook.evaluate();
+                    consigne = sauv_consigne;
                 }
-            }
 
             // Correction de la trajectoire ou reprise du mouvement
             // Si on ne fait que relancer et qu'on a interdit la trajectoire courbe, on attend à la rotation.
             if(relancer)
             {
                 log.debug("On relance", this);
+                System.out.println("marche_arriere: "+marche_arriere+", trajectoire_courbe: "+trajectoire_courbe);
                 va_au_point_symetrie(false, marche_arriere, trajectoire_courbe);
+                System.out.println("fin");
             }
             else
                 update_x_y_orientation();
@@ -399,13 +391,14 @@ public class DeplacementsHautNiveau implements Service
     public void va_au_point_symetrie(boolean trajectoire_courbe, boolean marche_arriere, boolean correction) throws BlocageException
     {
         Vec2 delta = consigne.clone();
-
+        System.out.println("Consigne: "+consigne);
         if(symetrie)
             delta.x = -delta.x;
         
         long t1 = System.currentTimeMillis();
         update_x_y_orientation();
         long t2 = System.currentTimeMillis();
+        System.out.println("position: "+position);
 
         delta.Minus(position);
         double distance = delta.Length();
@@ -420,6 +413,8 @@ public class DeplacementsHautNiveau implements Service
             angle += Math.PI;
         }        
         
+        System.out.println("Avance de "+distance+", angle: "+angle);
+
         va_au_point_courbe(angle, distance, trajectoire_courbe, correction);
         
     }

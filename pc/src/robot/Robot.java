@@ -97,9 +97,9 @@ public abstract class Robot implements Service {
            tient_feu_droite = true;
 		
 	}
-	public void takefire(Cote cote) throws SerialException, MouvementImpossibleException
+    public void takefire(Cote cotePrise, Cote coteReel) throws SerialException, MouvementImpossibleException
 	{
-		if(cote == Cote.GAUCHE)
+		if(cotePrise == Cote.GAUCHE)
             tient_feu_gauche = true;
         else
            tient_feu_droite = true;

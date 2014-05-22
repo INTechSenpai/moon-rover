@@ -63,14 +63,9 @@ public abstract class Script implements Service {
 
 		state.robot.set_vitesse(Vitesse.ENTRE_SCRIPTS);
 
-		Executable takefire = new TakeFire(state.robot, Cote.GAUCHE);
-		Hook hook = hookgenerator.hook_feu(Cote.GAUCHE);
+		Executable takefire = new TakeFire(state.robot);
+		Hook hook = hookgenerator.hook_feu();
 		hook.ajouter_callback(new Callback(takefire, true));		
-		hooks_chemin.add(hook);
-
-		takefire = new TakeFire(state.robot, Cote.DROIT);
-		hook = hookgenerator.hook_feu(Cote.DROIT);
-		hook.ajouter_callback(new Callback(takefire, true));
 		hooks_chemin.add(hook);
 
 		Executable torche_disparue = new DisparitionTorche(state.table, Cote.DROIT);

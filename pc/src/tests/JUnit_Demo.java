@@ -117,8 +117,8 @@ public class JUnit_Demo extends JUnit_Test {
 	{
 		hookgenerator = (HookGenerator)container.getService("HookGenerator");
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
-		Executable takefire = new TakeFire(robotvrai, Cote.DROIT);
-		Hook hook = hookgenerator.hook_feu(Cote.GAUCHE);
+		Executable takefire = new TakeFire(robotvrai);
+		Hook hook = hookgenerator.hook_feu();
 		hook.ajouter_callback(new Callback(takefire, false));
 		hooks.add(hook);
 		robotvrai.avancer(1000,hooks);

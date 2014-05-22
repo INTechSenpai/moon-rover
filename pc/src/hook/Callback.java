@@ -9,7 +9,7 @@ public class Callback {
 
 	private boolean done = false;
 	private boolean unique;
-	private Executable methode;
+	public Executable methode;
 	
 	/**
 	 * Constructeur d'un callback avec 2 paramètres: la méthode et si elle doit être exécutée une seule fois
