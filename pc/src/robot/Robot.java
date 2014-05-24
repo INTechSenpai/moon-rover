@@ -84,6 +84,8 @@ public abstract class Robot implements Service {
 	public abstract void presque_fermer_pince(Cote cote) throws SerialException;
 	public abstract void ouvrir_bas_pince(Cote cote) throws SerialException;
 	public abstract void renverserFeu(Cote cote) throws SerialException;
+    public abstract void allume_ventilo() throws SerialException;
+    public abstract void eteint_ventilo() throws SerialException;
 	
 	public void deposer_fresques() throws SerialException
 	{

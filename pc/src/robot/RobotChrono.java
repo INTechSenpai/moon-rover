@@ -325,4 +325,14 @@ public class RobotChrono extends Robot {
         
     }
 
+    @Override
+    public void allume_ventilo() throws SerialException
+    {
+    }
+
+    @Override
+    public void eteint_ventilo() throws SerialException
+    {
+    }
+
 }

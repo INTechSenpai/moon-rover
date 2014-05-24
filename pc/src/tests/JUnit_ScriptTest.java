@@ -176,7 +176,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	{
 		s = (Script)scriptmanager.getScript("ScriptDeposerFeu");
 		Assert.assertTrue(s.meta_version(real_state).size() == 0);
-		real_state.robot.takefire(Cote.GAUCHE);
+		real_state.robot.takefire(Cote.GAUCHE, Cote.GAUCHE);
 		Assert.assertTrue(s.meta_version(real_state).size() == 3);
 	}
 
@@ -211,10 +211,10 @@ public class JUnit_ScriptTest extends JUnit_Test {
     {
         real_state.robot.initialiser_actionneurs_deplacements();
         real_state.robot.recaler();
-        Sleep.sleep(8000);
+        Sleep.sleep(2000);
         real_state.robot.avancer(400);
         s = (Script)scriptmanager.getScript("ScriptLances");
-        s.agit(1, real_state, true);
+        s.agit(0, real_state, true);
     }
 
 	
@@ -222,7 +222,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 	public void test_takefire() throws Exception
 	{
 	    real_state.robot.setTient_feu(Cote.DROIT);
-	    real_state.robot.takefire(Cote.GAUCHE);
+	    real_state.robot.takefire(Cote.GAUCHE, Cote.GAUCHE);
 	}
 	@Test public void test_ScriptFeuBord() throws Exception
 	{

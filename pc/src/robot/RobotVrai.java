@@ -334,4 +334,16 @@ public class RobotVrai extends Robot {
         rc.orientation = getOrientationFast();
     }
 
+    @Override
+    public void allume_ventilo() throws SerialException
+    {
+        actionneurs.allume_ventilo();
+    }
+
+    @Override
+    public void eteint_ventilo() throws SerialException
+    {
+        actionneurs.eteint_ventilo();
+    }
+
 }

@@ -207,7 +207,16 @@ public class ActionneursHautNiveau implements Service
         Sleep.sleep(1000);
     }
 
-    
+    public void allume_ventilo() throws SerialException
+    {
+        actionneurs.allume_ventilo();
+    }
+
+    public void eteint_ventilo() throws SerialException
+    {
+        actionneurs.eteint_ventilo();
+    }
+
 	public void renverserFeuGauche() throws SerialException
 	{
 		actionneurs.renverserFeuGauche();
