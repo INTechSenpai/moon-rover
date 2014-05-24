@@ -52,6 +52,7 @@ public class Table implements Service {
 	 */
 	public void setFruitsNoirs(int[] fruitsNoirs)
 	{
+		//Pas bien car ça ne prend pas en compte la symétrie
         arrayTree[0] = new Tree(new Vec2(1500,700), fruitsNoirs[0]);
         arrayTree[1] = new Tree(new Vec2(800,0), fruitsNoirs[1]);
         arrayTree[2] = new Tree(new Vec2(-800,0), fruitsNoirs[2]);

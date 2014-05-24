@@ -52,12 +52,11 @@ public class ScriptTree extends Script{
 	public  ArrayList<Integer> meta_version(final GameState<?> state)
 	{
 		ArrayList<Integer> metaversionList = new ArrayList<Integer>();
-		if (state.robot.isFresquesPosees())
-		{
-			for (int i = 0; i < 4; i++)
-				if (!state.table.isTreeTaken(i))
-					metaversionList.add(i);
-		}
+		//Tout a été fait pour qu'on puisse prendre des fruits sans avoir posé les fresques
+		for (int i = 0; i < 4; i++)
+			if (!state.table.isTreeTaken(i))
+				metaversionList.add(i);
+		
 		return metaversionList;
 	}
 
@@ -117,12 +116,12 @@ public class ScriptTree extends Script{
 	    
 		// Orientation du robot, le rateau étant à l'arrière
 		if (id_version == 0)
-			state.robot.tourner(Math.PI);
+			state.robot.tourner(3.1415f);
 		else if (id_version == 1 || id_version == 2)
-			state.robot.tourner(Math.PI/2);
+			state.robot.tourner(1.5707f);
 		else if (id_version == 3)
-			state.robot.tourner(0) ;
-
+			state.robot.tourner(0f) ;
+			
 		// baisse les fresques
 		state.robot.bac_tres_bas();
 		
@@ -162,6 +161,8 @@ public class ScriptTree extends Script{
 			state.robot.rateau(PositionRateau.RANGER, Cote.DROIT);
 			state.robot.rateau(PositionRateau.RANGER, Cote.GAUCHE);
 			state.robot.bac_bas();
+			state.robot.lever_pince(Cote.GAUCHE); //Ca ne devrait pas être là d'un point de vue pratique, il faut
+			state.robot.lever_pince(Cote.DROIT);
 		} catch (SerialException e) {
 			e.printStackTrace();
 		}
