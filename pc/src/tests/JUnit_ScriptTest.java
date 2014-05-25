@@ -215,6 +215,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
 		real_state.robot.setTient_feu(Cote.GAUCHE);
 		s.agit(3, real_state, true);
 		real_state.robot.setTient_feu(Cote.GAUCHE);
+		real_state.robot.setTient_feu(Cote.DROIT);
 		s.agit(4, real_state, true);
 	}
 
@@ -239,7 +240,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
     {
         real_state.robot.initialiser_actionneurs_deplacements();
         real_state.robot.recaler();
-        Sleep.sleep(2000);
+        Sleep.sleep(20000);
         real_state.robot.avancer(400);
         s = (Script)scriptmanager.getScript("ScriptLances");
         s.agit(0, real_state, true);
@@ -261,6 +262,6 @@ public class JUnit_ScriptTest extends JUnit_Test {
         Sleep.sleep(3000);
         real_state.robot.avancer(300);
 		s = (Script)scriptmanager.getScript("ScriptFeuBord");
-		s.agit(0, real_state, true);
+		s.agit(1, real_state, true);
 	}
 }
