@@ -41,6 +41,7 @@ public class Strategie implements Service {
 	private NoteScriptMetaversion MetaScriptEnCours;
 	
 	public int TTL; //time toDatUltimateBest live
+	public ArrayList<NoteScriptMetaversion> decisionHistory;	// l'historique des décisions faites par la stratégie
 
 	// TODO initialisations des variables = première action
 	// Prochain script à exécuter si on est interrompu par l'ennemi
@@ -56,6 +57,7 @@ public class Strategie implements Service {
 		this.real_state = real_state;
 		this.log = log;
 		prochainScript = new NoteScriptVersion();
+		decisionHistory = new ArrayList<NoteScriptMetaversion>();
 		maj_config();
 	}
 
@@ -64,8 +66,13 @@ public class Strategie implements Service {
 	 */
 	public void boucle_strategie()
 	{
+		// attends le début du match
+		log.debug("Boucle Stratégie: Attente du début du match", this);
 		while(!ThreadTimer.match_demarre)
 			Sleep.sleep(20);
+
+		// l'historique des décisions doit être vide lors du lancement de la boucle.
+		decisionHistory.clear();
 
 		log.debug("Stratégie lancée", this);
 		while(!ThreadTimer.fin_match)
@@ -82,10 +89,12 @@ public class Strategie implements Service {
 						scriptEnCours = null;
 				}
 
+			// le script a écécuter ne doit pas être ul pour pouvoir l'éxécuter
 			if(scriptEnCours != null && scriptEnCours.script != null)
 			{
 				boolean dernier = (nbScriptsRestants() == 1);
 
+				// imprime l'état du jeu
 				log.debug("=============== New Script =========================", this);
 				log.debug("Position Robot : "+ real_state.robot.getPosition(), this);
 				log.debug("Mammouth Gauche feu  : "+ real_state.table.isLeftMammothHit(), this);
@@ -103,13 +112,18 @@ public class Strategie implements Service {
 				log.debug("      ==============            ===========         ", this);
 				log.debug("Stratégie fait: "+scriptEnCours+", dernier: "+dernier, this);
 				log.debug("====================================================", this);
-				// le dernier argument, retenter_si_blocage, est vrai si c'est le dernier script. Sinon, on change de script sans attendre
-				try {
+				
+				// ajoute l'action que l'on fait a l'historique de ce que l'on a déjà fait
+				decisionHistory.add(getMetaScriptEnCours());
+				
+				try 
+				{
+					// le dernier argument, retenter_si_blocage, est vrai si c'est le dernier script. Sinon, on change de script sans attendre
 					scriptEnCours.script.agit(scriptEnCours.version, real_state, dernier);
 				}
 				catch(Exception e)
 				{
-					// enregistrement de l'erreur
+					// enregistrement de l'erreur pour ne pas la refaire (ajout a la liste d'exclusion de l'arbre)
 					String nom = scriptEnCours.script.toString();
 					if(echecs.containsKey(nom))
 					{
@@ -154,16 +168,20 @@ public class Strategie implements Service {
 			/*
 			 * Je mets en garde contre la façon dont peut être utilisé positionsfreeze
 			 * en effet, une fois que le robot adverse a été considéré commme preneur
-			 * de feu ou de fruit, alors il faut remettre à 0 le compteurmais si on fait ça, 
+			 * de feu ou de fruit, alors il faut remettre à 0 le compteur mais si on fait ça, 
 			 * on ne se prémunit pas, entre autre, contre les freezes
 			 * 			 * 
 			 */
+			
+			// détermine les plus proches actions du robot ennemi 
 			i_min_fire = real_state.table.nearestUntakenFire(positionsfreeze[i]);
 			i_min_tree = real_state.table.nearestUntakenTree(positionsfreeze[i]);
 			i_min_fresco = real_state.table.nearestFreeFresco(positionsfreeze[i]);
 			i_min_fixed_fire = real_state.table.nearestUntakenFixedFire(positionsfreeze[i]);
+			
+			
 			//Pour déboguer
-			for(int p = 0; i <2; i++)
+			for(int p = 0; p <2; p++)
 			{
 				if(duree_freeze[p] > 5000)
 			
@@ -177,28 +195,32 @@ public class Strategie implements Service {
 				}
 			}
 			
+			
 			if (duree_freeze[i] > duree_blocage)
 			{
 				//Il y a un blocage de l'ennemi, réfléchissons un peu et agissons optimalement
 				//Pour l'instant  la stratégie est trop bonne pour qu'on en ait à faire quelque chose
 			}
-			if (real_state.table.distanceTree(positionsfreeze[i], i_min_tree) < distance_influence && duree_freeze[i] > duree_standard)
-			{
-			    real_state.table.modifierProbaTree(i_min_tree, 0.9f);
-			}
-			if(real_state.table.distanceFire(positionsfreeze[i], i_min_fire) < distance_influence && duree_freeze[i] > duree_standard)
-			{
-			    real_state.table.modifierProbaFire(i_min_fire,0.9f);
-			}
-			if(real_state.table.distanceFresco(positionsfreeze[i], i_min_fresco) < distance_influence && duree_freeze[i] > duree_standard)
-			{
-			    real_state.table.modifierProbaFresco(i_min_fresco,0.9f);
-			}
-			if(real_state.table.distanceFixedFire(positionsfreeze[i], i_min_fresco) < distance_influence && duree_freeze[i] > duree_standard)
-			{
-			    real_state.table.modifierProbaFixedFire(i_min_fixed_fire,0.9f);
-			}
 			
+			
+			if (duree_freeze[i] > duree_standard)
+			{
+				// si l'ennemi a pris un arbre
+				if (real_state.table.distanceTree(positionsfreeze[i], i_min_tree) < distance_influence)
+				    real_state.table.modifierProbaTree(i_min_tree, 0.9f);
+
+				// si l'ennemi a pris un feu
+				if(real_state.table.distanceFire(positionsfreeze[i], i_min_fire) < distance_influence)
+				    real_state.table.modifierProbaFire(i_min_fire,0.9f);
+				
+				// si l'ennmei prose les fresques
+				if(real_state.table.distanceFresco(positionsfreeze[i], i_min_fresco) < distance_influence)
+				    real_state.table.modifierProbaFresco(i_min_fresco,0.9f);
+				
+				// si l'ennemi prend un feu fixe 
+				if(real_state.table.distanceFixedFire(positionsfreeze[i], i_min_fresco) < distance_influence)
+				    real_state.table.modifierProbaFixedFire(i_min_fixed_fire,0.9f);
+			}
 			
 			/*
 			 * 
@@ -210,15 +232,13 @@ public class Strategie implements Service {
 			 * 
 			 * 
 			 */
-			 
-			
 		}
+		
 		/*
 		 *On prend pas en compte le lancer de balles
 		 *car on aura pas d'information sur le lancer potentiel qu'un adversaire a fait
-		 *Et pour la funny action, il n'y a pas de stratédie nécessaire
-		 * 
-		 *  
+		 * (et pis en plus ca nous arrange bien qu'il tire ses balles) 
+		 *Et pour la funny action, il n'y a pas de stratégie nécessaire
 		 */
 		
 		
@@ -235,6 +255,9 @@ public class Strategie implements Service {
 		// Le TTL est une durée en ms sur laquelle on estime que le robot demeurera immobile
 		
 	} 
+	
+	
+	
 	public float[] meilleurVersion(int meta_id, Script script, GameState<RobotChrono> state) throws PathfindingException
 	{
 		int id = -1;
@@ -588,8 +611,13 @@ public class Strategie implements Service {
 	//	log.debug("IA completed in " + (System.currentTimeMillis() - startTime) + " ms with TTL = " + TTL + "ms   rootList.size() :" + rootList.size() + "	Explored "+ Branchcount + " branches", this);
 		
 		// simu raspbe
+		
+		log.debug("WARING : Simu rapsbe active, trategy evaluation pausing for 1s", this);
 		Sleep.sleep(1000);
+		 
 
+
+		// Affihcage des notes des racines
 		//for (int i = 0; i < rootList.size(); ++i)
 		//	log.debug("Note of " + rootList.get(i).script.toString() + " is " + rootList.get(i).note, this);
 		

@@ -63,6 +63,8 @@ public class JUnit_StrategieThreadTest extends JUnit_Test {
 			strategie.evaluate(null);
 		*/
 		container.demarreThreads();
+		//container.demarreTousThreads();
+		
 		
 		robotvrai.setPosition(initpos);
 		robotchrono.setPosition(initpos);
@@ -72,13 +74,13 @@ public class JUnit_StrategieThreadTest extends JUnit_Test {
 		/*
 		robotvrai.initialiser_actionneurs_deplacements();
 		robotvrai.recaler();
-      //  Sleep.sleep(3000);
+      //  Sleep.sleep(3000);edrfghjkolp
         robotvrai.avancer(200);
         robotvrai.va_au_point_pathfinding(pathfinder, initpos, null, false);
         */
 	}
  
-	
+
 	@Test
 	public void test_Thread() throws Exception
 	{

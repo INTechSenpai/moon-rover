@@ -15,7 +15,7 @@ import utils.Sleep;
 
 /**
  * Thread qui calculera en continu la stratégie à adopter
- * @author pf, Krissprolls
+ * @author pf, Krissprolls, marsu
  *
  */
 
@@ -37,6 +37,7 @@ public class ThreadStrategie extends AbstractThread {
 	public void run()
 	{
 		log.debug("Lancement du thread de stratégie", this);
+		
 
 		// attends que le match démarre
 		while(!ThreadTimer.match_demarre)
@@ -54,11 +55,6 @@ public class ThreadStrategie extends AbstractThread {
 		// boucle principale de stratégie 
 		while(!stop_threads)
 		{
-			//TODO
-			// Evaluation d'une stratégie de secours si ce script bug
-	//		if(evalueEnnemi())
-	//			maj_prochainScriptErreur();
-
 			// Evaluation du prochain coup en supposant que celui-ci se passe sans problème
 			maj_prochainScript();
 			
@@ -79,28 +75,47 @@ public class ThreadStrategie extends AbstractThread {
 		// n'essaye pas de réfléchir sur la version du script que l'on est en train de faire
 	//	exclusionList.add(strategie.getMetaScriptEnCours());
 		
+
+		for (NoteScriptMetaversion previous : strategie.decisionHistory)
+			exclusionList.add(previous);
 		
-		float[] a = null;
-		while(a == null)
+		
+		// meilleurVersion rends un floart[] = {id, meilleurenotre}
+		float[] meilleurVersion = null;
+		boolean stupidDecision = false;
+		while(	meilleurVersion == null ||	// recommance tant que meilleurversion ne revois rien
+				stupidDecision )			// vérifie que la décision n'a pas déjà été faite a l'identique par le passé.
 		{
 			meilleur = strategie.evaluate(exclusionList);
 			try
 			{
-				a = strategie.meilleurVersion(meilleur.metaversion, meilleur.script, memorymanager.getClone(0));
-				log.debug("la meilleure version est : " + a[0],this);
+				meilleurVersion = strategie.meilleurVersion(meilleur.metaversion, meilleur.script, memorymanager.getClone(0));
+				log.debug("la meilleure version est : " + meilleurVersion[0],this);
 			}
 			catch(PathfindingException e)
 			{
 
-				log.debug("La branche " + meilleur + " renvoyée par l'arbre n'a pas de metaversion acessible, on relace l'arbre sans cette branche",this);
+				log.debug("La branche " + meilleur + " renvoyée par l'arbre n'a pas de metaversion acessible, on relance l'arbre sans cette branche",this);
 				exclusionList.add(meilleur);
 				//e.printStackTrace();
 			}
+			stupidDecision = isStupidDecision(meilleur);
+			if(stupidDecision)
+			{
+				log.warning("La branche " + meilleur + " renvoyée par l'arbre a déjà été faite, nouvelle tentative",this);
+				
+				// en attendant qu'une décision moins stupide soit prise, on fait comme si on allait faire la funny action (ya pas moins con commme décision)
+				NoteScriptVersion actionDefault = new NoteScriptVersion();
+				log.warning("TODO : thread a un scriptmanager et donne funnyaction dans ce cas",this);
+				strategie.setProchainScript(actionDefault);
+			}
+				
+			
 		}
 		NoteScriptVersion meilleur_version = new NoteScriptVersion();
 		meilleur_version.script = meilleur.script;
-		meilleur_version.version = (int)a[0];
-		meilleur_version.note = a[1];
+		meilleur_version.version = (int)meilleurVersion[0];
+		meilleur_version.note = meilleurVersion[1];
 		strategie.setProchainScript(meilleur_version);
 		strategie.setMetaScriptEnCours(meilleur);
 		log.debug("prochain script : " + meilleur_version,this);
@@ -108,5 +123,18 @@ public class ThreadStrategie extends AbstractThread {
 	
 	public void maj_config()
 	{
+	}
+	private boolean isStupidDecision(NoteScriptMetaversion action)
+	{
+		// une action invalide est stupide
+		if(action == null || action.script == null)
+			return true;
+		
+		// rechercher dans l'historique si on déjà 
+		for (NoteScriptMetaversion previous : strategie.decisionHistory)
+			if(	action.script.toString() == previous.script.toString() && 
+				action.metaversion == previous.metaversion )
+				return true;
+		return false;
 	}
 }

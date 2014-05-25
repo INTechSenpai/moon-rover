@@ -83,7 +83,7 @@ public class JUnit_StrategieTest extends JUnit_Test {
 		for (int i = 0; i < 100; i++)
 		{
 			strategie.evaluate(null);
-			
+				
 		}
 		log.debug("Strategie Performance test starting", this);
 		
