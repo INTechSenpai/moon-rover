@@ -53,6 +53,8 @@ public class DeplacementsHautNiveau implements Service
 //    private int anticipation_trajectoire_courbe = 200;
     private double angle_degagement_robot;
     private boolean insiste = false;
+    private long debut_mouvement_fini;
+    private boolean fini = true;
     
     public DeplacementsHautNiveau(Log log, Read_Ini config, Table table, Deplacements deplacements)
     {
@@ -441,6 +443,24 @@ public class DeplacementsHautNiveau implements Service
     }
 
     /**
+     * Surcouche de mouvement_fini afin de ne pas freezer
+     * @return
+     * @throws BlocageException
+     */
+    private boolean mouvement_fini() throws BlocageException
+    {
+        if(fini)
+            debut_mouvement_fini = System.currentTimeMillis();
+        fini = mouvement_fini_routine();
+        if(!fini && (System.currentTimeMillis() - debut_mouvement_fini) > 5000)
+        {
+            log.critical("Erreur d'acquittement. On arrête l'attente du robot.", this);
+            fini = true;
+        }
+        return fini;
+    }
+    
+    /**
      * Boucle d'acquittement générique. Retourne des valeurs spécifiques en cas d'arrêt anormal (blocage, capteur)
      * @param detection_collision
      * @param sans_lever_exception
@@ -448,7 +468,7 @@ public class DeplacementsHautNiveau implements Service
      * @throws BlocageException
      * @throws CollisionException
      */
-    private boolean mouvement_fini() throws BlocageException
+    private boolean mouvement_fini_routine() throws BlocageException
     {
         // récupérations des informations d'acquittement
         try {
