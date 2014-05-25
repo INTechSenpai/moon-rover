@@ -152,7 +152,7 @@ public class ScriptFeuBord extends Script {
 			state.robot.tourner(angle);
 			//state.robot.takefire(cote, cote); // TODO
 			
-			
+			//Ca remplace le takefire
 			int signe = 1;
 			if(cote == Cote.GAUCHE)
 				signe = -1;
@@ -162,9 +162,11 @@ public class ScriptFeuBord extends Script {
 	        state.robot.ouvrir_bas_pince(cote);
 			state.robot.tourner_relatif(signe*0.2f);
 			state.robot.sleep(600);
-			state.robot.avancer(160);
+			state.robot.avancer(120);
 			state.robot.set_vitesse(Vitesse.PRISE_FEU);
 			state.robot.fermer_pince(cote);
+			state.robot.sleep(500);
+			state.robot.avancer(-120);
 			state.robot.sleep(500);
 			state.robot.lever_pince(cote);
 			state.robot.sleep(500);
