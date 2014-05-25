@@ -499,7 +499,7 @@ public class Table implements Service {
                 && rightMammothHit == other.rightMammothHit
                 && arrayTorch[0].isDisparue() == other.arrayTorch[0].isDisparue()
                 && arrayTorch[1].isDisparue() == other.arrayTorch[1].isDisparue()
-                && gestionobstacles == other.gestionobstacles;
+                && gestionobstacles.hash() == other.gestionobstacles.hash();
 	}
 	
 

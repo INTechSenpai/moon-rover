@@ -36,6 +36,8 @@ public class JUnit_MemoryManagerTest extends JUnit_Test {
 	{
 		log.debug("JUnit_MemoryManagerTest.test_cloneTable_1etage()", this);
 		Table cloned = memorymanager.getClone(0).table;
+		System.out.println(state.table.hashCode());
+        System.out.println(cloned.hashCode());
 		Assert.assertTrue(state.table.equals(cloned));
 	}
 
@@ -84,18 +86,17 @@ public class JUnit_MemoryManagerTest extends JUnit_Test {
 		Assert.assertTrue(cloned2.equals(cloned));
 	}
 
-	   @Test
-	    public void test_clone_pathfinding() throws Exception
-	    {
-	        log.debug("JUnit_MemoryManagerTest.test_clone_pathfinding()", this);
-	        GameState<RobotChrono> cloned = memorymanager.getClone(0);
-            Assert.assertTrue(state.table.equals(cloned.table));
-            Assert.assertTrue(state.pathfinding.equals(cloned.pathfinding));
-	        state.table.creer_obstacle(new Vec2(0,1000));
-	        state.table.pickFire(0);
-	        state.table.pickTree(0);
-	        Assert.assertTrue(!state.table.equals(cloned.table));
-            Assert.assertTrue(!state.pathfinding.equals(cloned.pathfinding)); // TODO
-	    }
+    @Test
+    public void test_clone_pathfinding() throws Exception
+    {
+        log.debug("JUnit_MemoryManagerTest.test_clone_pathfinding()", this);
+        GameState<RobotChrono> cloned = memorymanager.getClone(0);
+        Assert.assertTrue(state.table.equals(cloned.table));
+        Assert.assertTrue(state.pathfinding.equals(cloned.pathfinding));
+        state.table.creer_obstacle(new Vec2(0,1000));
+        state.table.pickFire(0);
+        state.table.pickTree(0);
+        Assert.assertTrue(!state.table.equals(cloned.table));
+    }
 
 }

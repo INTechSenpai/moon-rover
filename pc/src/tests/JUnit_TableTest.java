@@ -94,5 +94,25 @@ public class JUnit_TableTest extends JUnit_Test {
         table.creer_obstacle(new Vec2(100, 100));
         Assert.assertTrue(table.obstaclePresent(new Vec2(120, 120), 100));
     }
+    
+    @Test
+    public void test_clone() throws Exception {
+        log.debug("JUnit_TableTest.clone()", this);
+        table.pickFire(2);
+        table.pickTree(0);
+        table.creer_obstacle(new Vec2(100, 100));
+        table.putFire(3);
+        Table cloned = table.clone();
+        Assert.assertEquals(cloned.hashTable(), table.hashTable());        
+    }
 
+    @Test
+    public void test_equals() throws Exception {
+        table.pickFire(2);
+        table.pickTree(0);
+        table.creer_obstacle(new Vec2(100, 100));
+        table.putFire(3);
+        Table cloned = table.clone();
+        Assert.assertTrue(cloned.equals(table));        
+    }
 }
