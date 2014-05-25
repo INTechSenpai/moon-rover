@@ -2,6 +2,7 @@ package scripts.fruits;
 
 import java.util.ArrayList;
 
+import enums.Cote;
 import exceptions.deplacements.MouvementImpossibleException;
 import exceptions.serial.SerialException;
 import hook.sortes.HookGenerator;
@@ -62,6 +63,10 @@ public class ScriptDeposerFruits extends Script {
 			throws MouvementImpossibleException, SerialException {
 	    state.robot.tourner((float)-Math.PI/2);
 	    state.robot.avancer_dans_mur(-300);
+	    state.robot.avancer(100);
+	    state.robot.tourner((float)Math.PI/2);
+	    state.robot.tourner((float)-Math.PI/2);
+	    state.robot.avancer(-70);
         state.robot.avancer(30);
 	    state.robot.bac_haut();	// histoire d'être sûr qu'il y arrive bien
 	    state.robot.bac_haut();
@@ -75,6 +80,8 @@ public class ScriptDeposerFruits extends Script {
 	protected void termine(GameState<?> state) {
 		try {
 		    state.robot.bac_bas();
+		    state.robot.lever_pince(Cote.GAUCHE);
+			state.robot.lever_pince(Cote.DROIT);
 		} catch (SerialException e) {
 			e.printStackTrace();
 		}

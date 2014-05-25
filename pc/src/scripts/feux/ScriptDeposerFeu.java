@@ -52,19 +52,19 @@ public class ScriptDeposerFeu extends Script {
 	@Override
 	public Vec2 point_entree(int id) {
 		if(id == 0)
-			return new Vec2(-800,466);			
+			return new Vec2(-1150,350);			
 
 		else if(id == 1)
-			return new Vec2(800,466);
+			return new Vec2(-1150 ,350);
 
 		else if(id == 2)
 			return new Vec2(0, 1400);
 
 		else if(id == 3)
-			return new Vec2(-782, 528);
+			return new Vec2(-310, 660);
 
 		else if(id == 4)
-			return new Vec2(782, 528);
+			return new Vec2(+310, 660);
 
 		return null;
 		
@@ -93,21 +93,26 @@ public class ScriptDeposerFeu extends Script {
 		//Suivant là où on va poser, on doit se positionner différemment
 		
 		if (id_version == 0)
-			angle = 3.92f;		//(float)(Math.PI+Math.atan(2/3)));
+			angle = 3.92f;		//pi+pi/3
+		//(float)(Math.PI+Math.atan(2/3)));
 		else if(id_version == 1)
-			angle = -0.78f;	//(float)(-Math.atan(2/3)));
+			angle = -0.78f;	//-pi/3
+		//(float)(-Math.atan(2/3)));
 		else if(id_version == 2)
-			angle = -1.57f;		//(float)(-Math.PI/2));
+			angle = -1.57f;		
+		//(float)(-Math.PI/2));
 		else if(id_version == 3)
-			angle = 0.78f;		//(float)(Math.atan(2/3)));
+			angle = 0.78f;		//pi/3
+		//(float)(Math.atan(2/3)));
 		else
-			angle = 2.553f;		//(float)(Math.PI-Math.atan(2/3)));
+			angle = 2.0943f;		
+		//(float)(Math.PI-Math.atan(2/3)));
 
-		// TODO : si on est équipe rouge il faut inverser les if 
+		// TODO : si on est équipe rouge il faut inverser les if (je ne suis pas d'accord)
 		
 		if(state.robot.isTient_feu(Cote.GAUCHE))
 		{
-			state.robot.tourner(angle-0.523f);
+			state.robot.tourner(angle-0.450f);
 			if(state.robot.isFeu_tenu_rouge(Cote.GAUCHE) ^ couleur == "rouge")
 			    state.robot.poserFeuEnRetournant(Cote.GAUCHE);
 			else
@@ -115,7 +120,7 @@ public class ScriptDeposerFeu extends Script {
 		}
 		else // il faut tourner dans tout les cas, même si la version n'est pas cohérente
 		{
-			state.robot.tourner(angle+0.523f);
+			state.robot.tourner(angle+0.50f);
 			if(state.robot.isFeu_tenu_rouge(Cote.DROIT) ^ couleur == "rouge")
 			    state.robot.poserFeuEnRetournant(Cote.DROIT);
 			else
