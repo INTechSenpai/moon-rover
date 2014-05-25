@@ -71,4 +71,9 @@ public class ScriptFunnyAction extends Script {
 		
 	}
 
+	@Override
+	public float probaDejaFait(int id_metaversion, GameState<?> state)
+	{
+		return 0;
+	}
 }

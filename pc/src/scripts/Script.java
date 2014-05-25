@@ -213,5 +213,9 @@ public abstract class Script implements Service {
 	{
 	}
 
-	
+	/**
+	 * Renvoie la probabilité que l'ennemi ait déjà effectué l'action fournie {action étant le couple Script, metaversion} )
+	 * @return le score
+	 */
+	public abstract float probaDejaFait(int id_metaversion, final GameState<?> state);
 }

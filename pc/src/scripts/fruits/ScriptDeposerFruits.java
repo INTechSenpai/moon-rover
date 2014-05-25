@@ -91,5 +91,11 @@ public class ScriptDeposerFruits extends Script {
 	{
 		return "ScriptDeposerFruits";
 	}
+	
+	@Override
+	public float probaDejaFait(int id_metaversion, GameState<?> state)
+	{
+		return 0.5f;	// non surveillé
+	}
 
 }

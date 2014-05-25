@@ -163,4 +163,9 @@ public class ScriptLances extends Script {
 		return "ScriptLances";
 	}
 
+	@Override
+	public float probaDejaFait(int id_metaversion, GameState<?> state)
+	{
+		return 0.5f;	// on n'en sait rien (le thread analyse ennemi est pas assez développé) 
+	}
 }

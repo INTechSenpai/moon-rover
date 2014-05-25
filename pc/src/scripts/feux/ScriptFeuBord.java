@@ -202,5 +202,11 @@ public class ScriptFeuBord extends Script {
 	public void maj_config()
 	{
 	}
+	
+	@Override
+	public float probaDejaFait(int id_metaversion, GameState<?> state)
+	{
+		return state.table.getProbaFixedFire(id_metaversion);
+	}
 }
 
