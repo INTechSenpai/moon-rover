@@ -137,7 +137,7 @@ public class ActionneursHautNiveau implements Service
         if(cote == Cote.GAUCHE)
             actionneurs.ouvrir_pince_gauche();
         else
-            actionneurs.ouvrir_bas_pince_droite();
+            actionneurs.ouvrir_pince_droite();
     }
 
     public void fermer_pince(Cote cote) throws SerialException
@@ -188,23 +188,28 @@ public class ActionneursHautNiveau implements Service
     public void poserFeuEnRetournant(Cote cote) throws SerialException
     {
         //Ca remonte la pince aussi !
-        baisser_pince(cote);
+    	milieu_pince(cote);
+    	Sleep.sleep(700);
         tourner_pince(cote);
+        Sleep.sleep(700);
         ouvrir_pince(cote);
+        Sleep.sleep(700);
         lever_pince(cote);
+        Sleep.sleep(700);
         fermer_pince(cote);
+        Sleep.sleep(700);
     }
 
     public void poserFeuBonCote(Cote cote) throws SerialException
     {
         milieu_pince(cote);
-        Sleep.sleep(1000);
+        Sleep.sleep(700);
         ouvrir_pince(cote);
-        Sleep.sleep(1000);
+        Sleep.sleep(700);
         lever_pince(cote);
-        Sleep.sleep(1000);
+        Sleep.sleep(700);
         fermer_pince(cote);
-        Sleep.sleep(1000);
+        Sleep.sleep(700);
     }
 
     public void allume_ventilo() throws SerialException

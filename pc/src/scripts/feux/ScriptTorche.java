@@ -178,12 +178,14 @@ public class ScriptTorche extends Script {
 			//Vec2(-600,900)
 		{
             state.table.torche_disparue(Cote.GAUCHE);
+            state.robot.setTient_feu(cote);
 			state.robot.setFeu_tenu_rouge(cote, Colour.RED);
 		}
 		else if(id_version ==1)
 			//Vec2(600,900);
 		{
 			state.table.torche_disparue(Cote.DROIT);
+			state.robot.setTient_feu(cote);
 			state.robot.setFeu_tenu_rouge(cote, Colour.YELLOW);
 		}
 		else if(id_version ==2)
@@ -192,6 +194,7 @@ public class ScriptTorche extends Script {
 			//Vec2(-80,600);
 		{
             state.table.torche_disparue(Cote.GAUCHE);
+            state.robot.setTient_feu(cote);
 			state.robot.setFeu_tenu_rouge(cote, Colour.RED);
 		}
 		/*
@@ -213,6 +216,7 @@ public class ScriptTorche extends Script {
 			//Vec2(80,600);
 		{
 			state.table.torche_disparue(Cote.DROIT);
+			state.robot.setTient_feu(cote);
 			state.robot.setFeu_tenu_rouge(cote, Colour.YELLOW);
 		}
 		
