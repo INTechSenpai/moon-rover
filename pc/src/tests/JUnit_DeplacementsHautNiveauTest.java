@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import enums.Cote;
 import robot.RobotVrai;
 import robot.hautniveau.DeplacementsHautNiveau;
 import smartMath.Vec2;
@@ -62,14 +61,14 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
         Hook hook = hookgenerator.hook_position(new Vec2(850, 1150), 200);
         hook.ajouter_callback(new Callback(tirerballes, true));
         hooks.add(hook);
-        robot.va_au_point_hook_correction_detection(hooks, null, false, false);
+        robot.va_au_point_hook_correction_detection(hooks, false, false);
         Assert.assertTrue(nb_balles != real_state.robot.getNbrLances());
     }
 
     @Test
     public void test_va_au_point_correction() throws Exception
     {
-        robot.va_au_point_hook_correction_detection(null, null, false, false);
+        robot.va_au_point_hook_correction_detection(null, false, false);
     }
 
     @Test
@@ -77,7 +76,7 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     {
         container.demarreTousThreads();
         robot.setInsiste(true);
-        robot.va_au_point_gestion_exception(null, null, true, false, false);
+        robot.va_au_point_gestion_exception(null, true, false, false);
     }
 
     @Test
@@ -88,7 +87,7 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
         Hook hook = hookgenerator.hook_position(new Vec2(850, 1150), 100);
         hook.ajouter_callback(new Callback(takefire, true));
         hooks.add(hook);
-        robot.va_au_point_hook_correction_detection(hooks, null, false, false);
+        robot.va_au_point_hook_correction_detection(hooks, false, false);
     }
 
     @Test

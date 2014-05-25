@@ -397,7 +397,7 @@ public class Strategie implements Service {
 		int TimeBeforeGiveUp	= 3000;	// Si on reste bloqué dans l'arbre, on garde un oeil sur la montre pour être sur de pouvoir retenter sa chance
 		
 		long startTime = System.currentTimeMillis();
-		int Branchcount = 0;
+//		int Branchcount = 0;
 		boolean temp;
 		boolean branchHasChild;
 		
@@ -579,7 +579,7 @@ public class Strategie implements Service {
 							mState = memorymanager.getClone(current.profondeur-1);
 							mState.pathfinding.setPrecision(5);
 							current.computeActionCharacteristics();
-							Branchcount++;
+//							Branchcount++; // Remarque: non utilisé
 							branchHasChild = true;
 							scope.push( new Branche(	(int)(current.TTL - current.dureeScript),	// TTL restant : celui du restant moins la durée de son action	
 														mState.time_depuis_racine >= TrueAStarTTL || current.profondeur > 1,//true,//current.profondeur >= 2,					// Utiliser le cache dès le second niveau de profondeur

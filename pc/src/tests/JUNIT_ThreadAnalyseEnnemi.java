@@ -2,22 +2,15 @@ package tests;
 
 import robot.RobotChrono;
 import robot.RobotVrai;
-import scripts.Script;
-import scripts.ScriptManager;
 import smartMath.Vec2;
 import strategie.MemoryManager;
-import strategie.NoteScriptVersion;
-import strategie.Strategie;
-import threads.ThreadAnalyseEnnemi;
 import table.Table;
 import utils.Sleep;
 
 import org.junit.Before;
-import org.junit.Assert;
 import org.junit.Test;
 
 import enums.Vitesse;
-import pathfinding.Pathfinding; 
 
 /**
  * Tests unitaires de la stratégie

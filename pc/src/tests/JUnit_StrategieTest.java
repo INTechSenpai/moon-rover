@@ -2,19 +2,11 @@ package tests;
 
 import robot.RobotChrono;
 import robot.RobotVrai;
-import scripts.Script;
-import scripts.ScriptManager;
 import smartMath.Vec2;
-import strategie.MemoryManager;
-import strategie.NoteScriptVersion;
 import strategie.Strategie;
-import table.Table;
 
 import org.junit.Before;
-import org.junit.Assert;
 import org.junit.Test;
-
-import pathfinding.Pathfinding;
 
 /**
  * Tests unitaires de la stratégie
@@ -26,9 +18,9 @@ public class JUnit_StrategieTest extends JUnit_Test {
 
 	private RobotVrai robotvrai;
 	private Strategie strategie;
-	private MemoryManager memorymanager;
-	private Pathfinding pathfinder;
-	private Table table;
+//	private MemoryManager memorymanager;
+//	private Pathfinding pathfinder;
+//	private Table table;
 	private RobotChrono robotchrono;
 	
 	@Before
@@ -36,9 +28,9 @@ public class JUnit_StrategieTest extends JUnit_Test {
 		super.setUp();
 		robotvrai = (RobotVrai)container.getService("RobotVrai");
 		strategie = (Strategie) container.getService("Strategie");
-		memorymanager = (MemoryManager) container.getService("MemoryManager");
-		pathfinder = (Pathfinding) container.getService("Pathfinding");
-		table = (Table) container.getService("Table");
+//		memorymanager = (MemoryManager) container.getService("MemoryManager");
+//		pathfinder = (Pathfinding) container.getService("Pathfinding");
+//		table = (Table) container.getService("Table");
 		robotchrono = new RobotChrono(config, log);
 	}
 
