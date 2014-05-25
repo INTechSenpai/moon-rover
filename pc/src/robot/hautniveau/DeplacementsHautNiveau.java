@@ -30,6 +30,7 @@ import utils.Sleep;
  * @author pf
  *
  */
+
 public class DeplacementsHautNiveau implements Service
 {
 
@@ -347,8 +348,6 @@ public class DeplacementsHautNiveau implements Service
      */
     public void va_au_point_hook_correction_detection(ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean marche_arriere) throws BlocageException, CollisionException
     {
-        System.out.println("Consigne: "+consigne);
-        System.out.println("Position: "+position);
         boolean relancer;
         va_au_point_symetrie(trajectoire_courbe, marche_arriere, false);
         do
@@ -369,9 +368,7 @@ public class DeplacementsHautNiveau implements Service
             if(relancer)
             {
                 log.debug("On relance", this);
-                System.out.println("marche_arriere: "+marche_arriere+", trajectoire_courbe: "+trajectoire_courbe);
                 va_au_point_symetrie(false, marche_arriere, trajectoire_courbe);
-                System.out.println("fin");
             }
             else
                 update_x_y_orientation();
@@ -391,14 +388,12 @@ public class DeplacementsHautNiveau implements Service
     public void va_au_point_symetrie(boolean trajectoire_courbe, boolean marche_arriere, boolean correction) throws BlocageException
     {
         Vec2 delta = consigne.clone();
-        System.out.println("Consigne: "+consigne);
         if(symetrie)
             delta.x = -delta.x;
         
         long t1 = System.currentTimeMillis();
         update_x_y_orientation();
         long t2 = System.currentTimeMillis();
-        System.out.println("position: "+position);
 
         delta.Minus(position);
         double distance = delta.Length();
@@ -413,8 +408,6 @@ public class DeplacementsHautNiveau implements Service
             angle += Math.PI;
         }        
         
-        System.out.println("Avance de "+distance+", angle: "+angle);
-
         va_au_point_courbe(angle, distance, trajectoire_courbe, correction);
         
     }

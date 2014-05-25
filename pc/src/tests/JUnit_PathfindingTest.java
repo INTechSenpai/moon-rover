@@ -1,7 +1,6 @@
 package tests;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -49,9 +48,10 @@ public class JUnit_PathfindingTest extends JUnit_Test
         for(Vec2 point: chemin)
             System.out.println(point);
         robotvrai.suit_chemin(chemin, null);
+        Assert.assertTrue(robotvrai.getPosition().distance(new Vec2(-700, 1450)) < 10);
     }
 
-	@Test
+/*	@Test
 	public void long_itineraire_test() throws Exception
 	{
 		Random randomgenerator = new Random();
@@ -71,8 +71,8 @@ public class JUnit_PathfindingTest extends JUnit_Test
 		}
 	}
 	
-
-	@Test
+*/
+/*	@Test
 	public void performanceTest() throws Exception
 	{
 		Random randomgenerator = new Random();
@@ -106,5 +106,5 @@ public class JUnit_PathfindingTest extends JUnit_Test
 		
 		
 	}
-
+*/
 }
