@@ -33,7 +33,9 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 	{
 		log.debug("JUnit_RobotChronoTest.test_avancer()", this);
 		robotchrono.avancer(10);
+		System.out.println("Avant: "+robotchrono.getPosition());
 		Assert.assertTrue(robotchrono.getPosition().equals(new Vec2(10,1500)));
+        System.out.println("Après: "+robotchrono.getPosition());
 	}
 
 	@Test
