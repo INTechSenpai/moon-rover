@@ -481,9 +481,9 @@ public class Table implements Service {
 	 * Utilisé par les tests unitaires uniquement. Vérifie que les hash sont bien mis à jour
 	 * @return
 	 */
-	public int hashTable()
+	public long hashTable()
 	{	    
-		return (((((gestionobstacles.hash()<<8 + hashFire)<<8 + hashTree)<<8))<<2+codeMammouth())<<2+codeTorches();
+		return ((((((((((gestionobstacles.hash()<<6) + hashFire)<<6) + hashTree)<<6)))<<2)+codeMammouth())<<2)+codeTorches();
 	}
 
 	/**
@@ -499,7 +499,7 @@ public class Table implements Service {
                 && rightMammothHit == other.rightMammothHit
                 && arrayTorch[0].isDisparue() == other.arrayTorch[0].isDisparue()
                 && arrayTorch[1].isDisparue() == other.arrayTorch[1].isDisparue()
-                && gestionobstacles == other.gestionobstacles;
+                && gestionobstacles.hash() == other.gestionobstacles.hash();
 	}
 	
 

@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
 
-import exceptions.serial.SerialException;
 import robot.cartes.laser.FiltrageLaser;
 import robot.cartes.laser.Laser;
 import robot.RobotVrai;

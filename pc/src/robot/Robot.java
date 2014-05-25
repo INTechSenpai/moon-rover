@@ -145,7 +145,7 @@ public abstract class Robot implements Service {
 	protected boolean tient_feu_gauche = false;
 	protected boolean feu_tenu_gauche_rouge = false;
 	protected boolean feu_tenu_droite_rouge = false;
-	protected Vitesse vitesse;
+	protected Vitesse vitesse = Vitesse.ENTRE_SCRIPTS;
 	
 	public Robot(Read_Ini config, Log log)
 	{

@@ -48,43 +48,37 @@ public class JUnit_TableTest extends JUnit_Test {
 	}
 
 	@Test
-	public void test_nearestFire() throws Exception {
-		log.debug("JUnit_TableTest.test_nearestFire()", this);
-		// TODO
-	}
-
-	@Test
 	public void test_creer_obstacle() throws Exception {
 		log.debug("JUnit_TableTest.test_creer_obstacle()", this);
-		int ancien_hash = table.hashTable();
+		long ancien_hash = table.hashTable();
 		table.creer_obstacle(new Vec2(100, 100));
-		Assert.assertTrue(ancien_hash != table.hashTable());
+        Assert.assertNotEquals(ancien_hash, table.hashTable());
 	}
 
 	@Test
 	public void test_pickFire() throws Exception {
 		log.debug("JUnit_TableTest.test_pickFire()", this);
-		int ancien_hash = table.hashTable();
+		long ancien_hash = table.hashTable();
 		table.pickFire(2);
-		Assert.assertTrue(ancien_hash != table.hashTable());
+        Assert.assertNotEquals(ancien_hash, table.hashTable());
 	}
 
 	@Test
 	public void test_pickTree() throws Exception {
 		log.debug("JUnit_TableTest.test_pickTree()", this);
-		int ancien_hash = table.hashTable();
+		long ancien_hash = table.hashTable();
 		Assert.assertTrue(!table.isTreeTaken(2));
 		table.pickTree(2);
-		Assert.assertTrue(ancien_hash != table.hashTable());
+        Assert.assertNotEquals(ancien_hash, table.hashTable());
 		Assert.assertTrue(table.isTreeTaken(2));
 	}
 
 	@Test
 	public void test_putFire() throws Exception {
 		log.debug("JUnit_TableTest.test_putFire()", this);
-		int ancien_hash = table.hashTable();
+		long ancien_hash = table.hashTable();
 		table.putFire(2);
-		Assert.assertTrue(ancien_hash != table.hashTable());
+        Assert.assertNotEquals(ancien_hash, table.hashTable());
 	}
 	
 	@Test
@@ -100,5 +94,25 @@ public class JUnit_TableTest extends JUnit_Test {
         table.creer_obstacle(new Vec2(100, 100));
         Assert.assertTrue(table.obstaclePresent(new Vec2(120, 120), 100));
     }
+    
+    @Test
+    public void test_clone() throws Exception {
+        log.debug("JUnit_TableTest.clone()", this);
+        table.pickFire(2);
+        table.pickTree(0);
+        table.creer_obstacle(new Vec2(100, 100));
+        table.putFire(3);
+        Table cloned = table.clone();
+        Assert.assertEquals(cloned.hashTable(), table.hashTable());        
+    }
 
+    @Test
+    public void test_equals() throws Exception {
+        table.pickFire(2);
+        table.pickTree(0);
+        table.creer_obstacle(new Vec2(100, 100));
+        table.putFire(3);
+        Table cloned = table.clone();
+        Assert.assertTrue(cloned.equals(table));        
+    }
 }

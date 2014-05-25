@@ -2,7 +2,6 @@ package hook.sortes;
 
 import hook.Hook;
 import container.Service;
-import enums.Cote;
 import robot.RobotVrai;
 import robot.cartes.Capteurs;
 import smartMath.Vec2;

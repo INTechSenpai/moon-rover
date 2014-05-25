@@ -272,7 +272,7 @@ public class GestionObstacles
     
     public int hash()
     {
-        return hashObstacles<<8 + hashEnnemis;
+        return (hashObstacles<<6) + hashEnnemis;
     }
 
     public boolean equals(GestionObstacles other)

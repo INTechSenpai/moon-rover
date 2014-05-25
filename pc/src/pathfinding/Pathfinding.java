@@ -29,8 +29,8 @@ public class Pathfinding implements Service, Cloneable
 	// Dépendances
 	private final Table table;	// Final: protection contre le changement de référence.
 								// Si la référence change, tout le memorymanager foire.
-	private int[] hashTableSaved;	// Permet, à l'update, de ne recalculer map que si la table a effectivement changé.
-    private int hashTableSimplePathfinding;
+	private long[] hashTableSaved;	// Permet, à l'update, de ne recalculer map que si la table a effectivement changé.
+    private long hashTableSimplePathfinding;
 	private static Read_Ini config;
 	private static Log log;
 	private int code_torches_actuel = -1;
@@ -97,7 +97,7 @@ public class Pathfinding implements Service, Cloneable
 	{
 		nb_precisions = Integer.parseInt(config.get("nb_precisions"));
 
-		hashTableSaved = new int[nb_precisions];
+		hashTableSaved = new long[nb_precisions];
 
 		Grid2DSpace.set_static_variables(config, log);
 		// On ne recharge les maps que si elles n'ont jamais été créées, ou avec une précision différente

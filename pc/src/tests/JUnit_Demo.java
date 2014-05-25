@@ -65,14 +65,14 @@ public class JUnit_Demo extends JUnit_Test {
 	public void ramasse_feu_droit() throws Exception
 	{
 		robotvrai.avancer(100);
-		robotvrai.takefire(Cote.DROIT);
+		robotvrai.takefire(Cote.DROIT, Cote.DROIT);
 	}
 	
 	@Test
 	public void ramasse_feu_gauche() throws Exception
 	{
 		robotvrai.avancer(100);
-		robotvrai.takefire(Cote.GAUCHE);
+		robotvrai.takefire(Cote.GAUCHE, Cote.DROIT);
 	}
 	
 	@Test
@@ -96,7 +96,7 @@ public class JUnit_Demo extends JUnit_Test {
 		robotvrai.avancer(100);
 		robotvrai.lever_pince(Cote.DROIT);
 		robotvrai.lever_pince(Cote.GAUCHE);
-		robotvrai.takefire(Cote.GAUCHE);
+		robotvrai.takefire(Cote.GAUCHE, Cote.GAUCHE);
 		s = (Script)scriptmanager.getScript("ScriptDeposerFeu");
 		s.agit(2, state, true);
 	}
@@ -107,7 +107,7 @@ public class JUnit_Demo extends JUnit_Test {
 		robotvrai.avancer(100);
 		robotvrai.lever_pince(Cote.DROIT);
 		robotvrai.lever_pince(Cote.GAUCHE);
-		robotvrai.takefire(Cote.DROIT);
+		robotvrai.takefire(Cote.DROIT, Cote.DROIT);
 		s = (Script)scriptmanager.getScript("ScriptDeposerFeu");
 		s.agit(2, state, true);
 	}
