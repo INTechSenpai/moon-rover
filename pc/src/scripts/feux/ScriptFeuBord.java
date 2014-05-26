@@ -207,8 +207,9 @@ public class ScriptFeuBord extends Script {
 		}
 		else if(id_version ==1)
 		{
-			state.table.pickFixedFire(0);
-			state.robot.setFeu_tenu_rouge(cote, Colour.YELLOW);
+			//On laisse juste tomber le feu
+			//state.table.pickFixedFire(0);
+			//state.robot.setFeu_tenu_rouge(cote, Colour.YELLOW);
 		}
 		else if(id_version ==2)
 		{
@@ -217,8 +218,9 @@ public class ScriptFeuBord extends Script {
 		}
 		else
 		{
-			state.table.pickFixedFire(1);
-			state.robot.setFeu_tenu_rouge(cote, Colour.RED);
+			//On laisse juste tomber le feu
+			//state.table.pickFixedFire(1);
+			//state.robot.setFeu_tenu_rouge(cote, Colour.RED);
 		}
 		state.robot.setTient_feu(cote);
 	}
