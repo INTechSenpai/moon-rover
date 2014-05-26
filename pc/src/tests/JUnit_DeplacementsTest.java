@@ -100,7 +100,7 @@ public class JUnit_DeplacementsTest extends JUnit_Test {
 	{
 	    deplacements.set_vitesse_translation(170);
 	    deplacements.desactiver_asservissement_rotation();
-	    deplacements.avancer(1500);
+	    deplacements.avancer(500);
 	    Sleep.sleep(1000);
 	}
 	

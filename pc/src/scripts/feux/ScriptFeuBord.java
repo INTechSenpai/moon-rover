@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import enums.Colour;
 import enums.Cote;
+import enums.Vitesse;
 import exceptions.deplacements.MouvementImpossibleException;
 import exceptions.serial.SerialException;
 import hook.sortes.HookGenerator;
@@ -126,8 +127,8 @@ public class ScriptFeuBord extends Script {
 			{
 				decalage = -150;
 			}
-			/* pOUR GÉRER LA couleur 
-			 * if(couleur.contains("rouge") && cote == Cote.DROIT)
+			//OUR GÉRER LA couleur 
+			 if(couleur.contains("rouge") && cote == Cote.DROIT)
 			{
 				cote = Cote.GAUCHE;
 			}
@@ -135,7 +136,7 @@ public class ScriptFeuBord extends Script {
 			{
 				cote = Cote.DROIT;
 			}
-			 */
+			
 			state.robot.tourner(angle);
 			state.robot.avancer(avancement);
 			state.robot.sleep(200);
@@ -143,11 +144,38 @@ public class ScriptFeuBord extends Script {
 			state.robot.sleep(200);
 			state.robot.renverserFeu(cote);
 			state.robot.sleep(500);
+			state.robot.fermer_pince(cote);
+			state.robot.lever_pince(cote);
 			state.robot.avancer(-avancement+50);
 			state.robot.tourner(angle+1.5707f);
 			state.robot.avancer(decalage);
 			state.robot.tourner(angle);
-			state.robot.takefire(cote, cote); // TODO
+			//state.robot.takefire(cote, cote); // TODO
+			
+			//Ca remplace le takefire
+			int signe = 1;
+			if(cote == Cote.GAUCHE)
+				signe = -1;
+			state.robot.stopper();
+			state.robot.avancer(-150);
+			//state.robot.tourner_relatif(-signe*0.4f);
+	        state.robot.ouvrir_bas_pince(cote);
+			state.robot.tourner_relatif(signe*0.2f);
+			state.robot.sleep(600);
+			state.robot.avancer(120);
+			state.robot.set_vitesse(Vitesse.PRISE_FEU);
+			state.robot.fermer_pince(cote);
+			state.robot.sleep(500);
+			state.robot.avancer(-120);
+			state.robot.sleep(500);
+			state.robot.lever_pince(cote);
+			state.robot.sleep(500);
+			
+			// On signale à la table qu'on a prit un feu. A priori, c'est le plus proche de cette position.
+			    
+		        
+		        
+		        
 			state.robot.sleep(500);
 			state.robot.avancer(-avancement-50);
 		}catch (SerialException e) 
@@ -177,6 +205,7 @@ public class ScriptFeuBord extends Script {
 			state.table.pickFixedFire(1);
 			state.robot.setFeu_tenu_rouge(cote, Colour.RED);
 		}
+		state.robot.setTient_feu(cote);
 	}
 
 	@Override
