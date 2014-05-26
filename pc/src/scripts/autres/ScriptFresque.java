@@ -78,5 +78,11 @@ public class ScriptFresque extends Script {
 	{
 		return "ScriptFresque";
 	}
+	
+	@Override
+	public float probaDejaFait(int id_metaversion, GameState<?> state)
+	{
+		return state.table.getProbaFresco(id_metaversion);
+	}
 
 }

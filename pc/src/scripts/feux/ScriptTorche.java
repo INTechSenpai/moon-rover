@@ -252,4 +252,10 @@ public class ScriptTorche extends Script {
 	public void maj_config()
 	{
 	}
+	
+	@Override
+	public float probaDejaFait(int id_metaversion, GameState<?> state)
+	{
+		return 0.5f;	// non surveilllé
+	}
 }

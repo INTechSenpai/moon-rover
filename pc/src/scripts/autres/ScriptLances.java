@@ -123,20 +123,20 @@ public class ScriptLances extends Script {
 	    try
         {
             state.robot.allume_ventilo();
-            state.robot.sleep(1500);
+            state.robot.sleep(2000);
         } catch (SerialException e)
         {
             e.printStackTrace();
         }
 	    //state.robot.sleep(1500);
 	    state.robot.tirerBalle();
-	    state.robot.sleep(1000);
+	    //state.robot.sleep(2000);
 	    state.robot.tirerBalle();
-	    state.robot.sleep(500);
+	    state.robot.sleep(2000);
         try
         {
             state.robot.eteint_ventilo();
-            state.robot.sleep(1500);
+            state.robot.sleep(2000);
             state.robot.tirerBalle();
         } catch (SerialException e)
         {
@@ -165,4 +165,9 @@ public class ScriptLances extends Script {
 		return "ScriptLances";
 	}
 
+	@Override
+	public float probaDejaFait(int id_metaversion, GameState<?> state)
+	{
+		return 0.5f;	// on n'en sait rien (le thread analyse ennemi est pas assez développé) 
+	}
 }

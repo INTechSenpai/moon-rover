@@ -77,22 +77,22 @@ public class JUNIT_ThreadAnalyseEnnemi extends JUnit_Test {
 			log.debug("pour les arbres : ",this);
 			for(int a = 0; a<table.getListTree().length; a++)
 			{
-				log.debug(a+" : "+table.prendreProbaTree(a),this);
+				log.debug(a+" : "+table.getProbaTree(a),this);
 			}
 			log.debug("pour les feux : ", this);
 			for(int b = 0; b <table.getListFire().length;b++)
 			{
-				log.debug(b+" : "+table.prendreProbaFire(b),this);
+				log.debug(b+" : "+table.setProbaFire(b),this);
 			}
 			log.debug("pour les fresques : ", this);
 			for(int c = 0 ; c<3; c++)
 			{
-				log.debug(c+" : "+table.prendreProbaFresco(c), this);
+				log.debug(c+" : "+table.getProbaFresco(c), this);
 			}
 			log.debug("pour les feux fixes (feu au bord)",this);
 			for(int d = 0; d < table.getListFixedFire().length;d++)
 			{
-				log.debug(d+" : "+table.prendreProbaFixedFire(d), this);
+				log.debug(d+" : "+table.getProbaFixedFire(d), this);
 			}
 			log.debug("pout les torches : ", this);
 			for(int e = 0; e < table.getListTorch().length ;e++)

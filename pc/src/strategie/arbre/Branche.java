@@ -120,11 +120,7 @@ public class Branche
 
 
 	/** Méthode qui calcule la note d'une action. La note calculée ici prend en compte une unique action, pas un enchainement
-	 * La note d'un script est fonction de son score, de sa durée, de la distance de l'ennemi à l'action 
-	 * @param score
-	 * @param duree
-	 * @param id
-	 * @param script
+	 * La note d'un script est fonction de son score, de sa durée, du poids donné au script (donnant une facon de personaliser le comportement de l'IA), et de la probabilité que l'ennemi ait déjà fait l'action
 	 * @return note
 	 */
 	private void computeLocalNote()
@@ -132,28 +128,21 @@ public class Branche
 		// la note de la branche se base sur certaines caractéristiques de l'action par laquelle elle débute.
 		if(!isActionCharacteisticsComputed)
 			computeActionCharacteristics();
-		// TODO
-	//	int id = script.version_asso(metaversion).get(0);
-	//	int A = 1;
-	//	int B = 1;
-	//	float prob = 1;
 		
-		//abandon de prob_deja_fait
-	//	Vec2[] position_ennemie = state.table.get_positions_ennemis();
-	//	float pos = (float)1.0 - (float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0)));
-		// pos est une valeur qui décroît de manière exponentielle en fonction de la distance entre le robot adverse et là où on veut aller
-	//	localNote = (scoreScript*A*prob/dureeScript+pos*B)*prob;
-		
+		// si le script ne rapporte pas en lui même des points, on lui donne une note en fonction de la duréée qu'il prend.
 		if(scoreScript != 0)
 			localNote = (float)scoreScript*1000.0f/(float)dureeScript;
 		else 
 			localNote = 0.1f/(float)dureeScript;	// les scripts qui ne rapportent pas de points sont donc choisis en fonction de leur proximité. Attention a ce que ce 1/durée ne soit pas supérieur a un autre script
 		
-		
+		// le poids du script est facteur de la note
 		localNote*=script.poids(state);
-	//	System.out.println("localNote = " + localNote + "	scoreScript = " + scoreScript + "	dureeScript = " + dureeScript);
 		
-//		log.debug((float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0))), this);
+		// prise en compte de la probabilité que l'ennemi ait déjà fait l'action
+		if(script.toString() == "ScriptFeuBord" || script.toString() == "ScriptTree")
+			localNote*= (1 - script.probaDejaFait(metaversion, state));
+			
+			
 		
 	}
 	

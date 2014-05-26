@@ -191,7 +191,7 @@ public class ScriptTree extends Script{
             int distance = 0;
             
             if(nbFruits == 3)
-                distance = 150;
+                distance = 100;
             else if(nbFruits == 2)
                 distance = 250;
             else if(nbFruits == 1)
@@ -206,6 +206,13 @@ public class ScriptTree extends Script{
                 
             hook.ajouter_callback(new Callback(remonte, true));
             hooks.get(version).add(hook);
+	}
+
+	
+	@Override
+	public float probaDejaFait(int id_metaversion, GameState<?> state)
+	{
+		return state.table.getProbaTree(id_metaversion);
 	}
 	
 }

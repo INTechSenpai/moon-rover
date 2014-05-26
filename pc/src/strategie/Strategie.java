@@ -207,19 +207,19 @@ public class Strategie implements Service {
 			{
 				// si l'ennemi a pris un arbre
 				if (real_state.table.distanceTree(positionsfreeze[i], i_min_tree) < distance_influence)
-				    real_state.table.modifierProbaTree(i_min_tree, 0.9f);
+				    real_state.table.setProbaTree(i_min_tree, 0.9f);
 
 				// si l'ennemi a pris un feu
 				if(real_state.table.distanceFire(positionsfreeze[i], i_min_fire) < distance_influence)
-				    real_state.table.modifierProbaFire(i_min_fire,0.9f);
+				    real_state.table.setProbaFire(i_min_fire,0.9f);
 				
 				// si l'ennmei prose les fresques
 				if(real_state.table.distanceFresco(positionsfreeze[i], i_min_fresco) < distance_influence)
-				    real_state.table.modifierProbaFresco(i_min_fresco,0.9f);
+				    real_state.table.setProbaFresco(i_min_fresco,0.9f);
 				
 				// si l'ennemi prend un feu fixe 
 				if(real_state.table.distanceFixedFire(positionsfreeze[i], i_min_fresco) < distance_influence)
-				    real_state.table.modifierProbaFixedFire(i_min_fixed_fire,0.9f);
+				    real_state.table.setProbaFixedFire(i_min_fixed_fire,0.9f);
 			}
 			
 			/*
