@@ -71,7 +71,17 @@ public class ScriptFeuBord extends Script {
 			return null;		
 	}
 	@Override
-	public int score(int id_version, GameState<?> state) {
+	public int score(int id_version, GameState<?> state)
+	{
+		if(id_version ==0)
+			return 0;
+		else if(id_version ==1)
+			return 1;		
+		else if(id_version ==2)
+			return 0;
+		else if(id_version ==3)
+			return 1; 
+		
 		return 0;
 	}
 
@@ -127,7 +137,7 @@ public class ScriptFeuBord extends Script {
 			{
 				decalage = -150;
 			}
-			//OUR GÉRER LA couleur 
+			//POUR GÉRER LA couleur 
 			 if(couleur.contains("rouge") && cote == Cote.DROIT)
 			{
 				cote = Cote.GAUCHE;
@@ -152,29 +162,34 @@ public class ScriptFeuBord extends Script {
 			state.robot.tourner(angle);
 			//state.robot.takefire(cote, cote); // TODO
 			
-			//Ca remplace le takefire
-			int signe = 1;
-			if(cote == Cote.GAUCHE)
-				signe = -1;
-			state.robot.stopper();
-			state.robot.avancer(-150);
-			//state.robot.tourner_relatif(-signe*0.4f);
-	        state.robot.ouvrir_bas_pince(cote);
-			state.robot.tourner_relatif(signe*0.2f);
-			state.robot.sleep(600);
-			state.robot.avancer(120);
-			state.robot.set_vitesse(Vitesse.PRISE_FEU);
-			state.robot.fermer_pince(cote);
-			state.robot.sleep(500);
-			state.robot.avancer(-120);
-			state.robot.sleep(500);
-			state.robot.lever_pince(cote);
-			state.robot.sleep(500);
+			// ces 2 versions
+			if(id_version == 0 || id_version == 2)
+			{
+				
 			
-			// On signale à la table qu'on a prit un feu. A priori, c'est le plus proche de cette position.
+				//Ca remplace le takefire
+				int signe = 1;
+				if(cote == Cote.GAUCHE)
+					signe = -1;
+				state.robot.stopper();
+				state.robot.avancer(-150);
+				//state.robot.tourner_relatif(-signe*0.4f);
+		        state.robot.ouvrir_bas_pince(cote);
+				state.robot.tourner_relatif(signe*0.2f);
+				state.robot.sleep(600);
+				state.robot.avancer(120);
+				state.robot.set_vitesse(Vitesse.PRISE_FEU);
+				state.robot.fermer_pince(cote);
+				state.robot.sleep(500);
+				state.robot.avancer(-120);
+				state.robot.sleep(500);
+				state.robot.lever_pince(cote);
+				state.robot.sleep(500);
+				
+				// On signale à la table qu'on a prit un feu. A priori, c'est le plus proche de cette position.
 			    
 		        
-		        
+			}
 		        
 			state.robot.sleep(500);
 			state.robot.avancer(-avancement-50);

@@ -79,7 +79,7 @@ public class JUnit_StrategieTest extends JUnit_Test {
 		}
 		log.debug("Strategie Performance test starting", this);
 		
-		int testCount = 100;
+		int testCount = 100000;
 		long startTime = System.nanoTime();
 		for (int i = 0; i < testCount; i++)
 			strategie.evaluate(null);
