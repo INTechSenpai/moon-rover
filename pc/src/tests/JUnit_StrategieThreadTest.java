@@ -13,11 +13,12 @@ import enums.Vitesse;
 
 /**
  * Tests unitaires de la stratégie
- * @author pf
+ * @author pf, marsu
  *
  */
 
-public class JUnit_StrategieThreadTest extends JUnit_Test {
+public class JUnit_StrategieThreadTest extends JUnit_Test
+{
 
 	private RobotVrai robotvrai;
 	private Strategie strategie;

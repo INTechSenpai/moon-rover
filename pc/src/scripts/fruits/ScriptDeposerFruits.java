@@ -15,12 +15,13 @@ import utils.Read_Ini;
 /**
  * Script de dépose de fruits
  * @author pf
- * @author raspbeguy
+ * @author marsu
  * @author krissprolls 
  *
  */
 
-public class ScriptDeposerFruits extends Script {
+public class ScriptDeposerFruits extends Script
+{
 
 	public ScriptDeposerFruits(HookGenerator hookgenerator, Read_Ini config, Log log) {
 		super(hookgenerator, config, log);

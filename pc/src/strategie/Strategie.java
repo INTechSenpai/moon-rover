@@ -145,17 +145,16 @@ public class Strategie implements Service {
 	}
 
 	/**
-	 * Méthode qui, à partir de la durée de freeze et de l'emplacement des ennemis, tire des conclusions.
-	 * Exemples: l'ennemi vide cet arbre, il a posé sa fresque ici, ...
-	 * Modifie aussi la variable TTL!long
+	 * Méthode qui, à partir de l'emplacement des ennemis, 
+	 * essaye de trouver ce qu'ils font
 	 */
 	public void analyse_ennemi(Vec2[] positionsfreeze, int[] duree_freeze)
 	//en fait on n'a pas besoin de la date des freezes mais de la durée des freeze
 	{
-		//
+		
 		int distance_influence = 500; //50 cm
-		int duree_standard = 3000; //3 secondes
-		int duree_blocage = 10000; //10 secondes
+		int duree_standard = 5000;
+		int duree_blocage = 15000;
 		//int larg_max = 100; //10 cm est la largeur maximale de la fresque
 		//valeur amenée à être modifiée
 		//inutile en fait
@@ -163,6 +162,18 @@ public class Strategie implements Service {
 		int i_min_tree ;
 		int i_min_fresco;
 		int i_min_fixed_fire;
+		
+		
+		// ractangle ou un freeze ennemi empèche la dépose de fruits 
+		int bacCriticalmaxX = -500;
+		int bacCriticalminX = -1000;
+		int bacCriticalminY = 1300;
+		int bacCriticalmaxY = 1700;
+		
+		
+		
+		
+		
 		for(int i = 0; i <2; i++)
 		{
 			/*
@@ -200,6 +211,11 @@ public class Strategie implements Service {
 			{
 				//Il y a un blocage de l'ennemi, réfléchissons un peu et agissons optimalement
 				//Pour l'instant  la stratégie est trop bonne pour qu'on en ait à faire quelque chose
+				
+				
+				if(positionsfreeze[i].x < bacCriticalmaxX && positionsfreeze[i].x > bacCriticalminX && positionsfreeze[i].y > bacCriticalminY && positionsfreeze[i].y < bacCriticalmaxY)
+				    real_state.table.setProbaFire(i_min_fire,0.9f);
+				
 			}
 			
 			
@@ -309,19 +325,6 @@ public class Strategie implements Service {
 	 */
 	private float calculeNote(int score, int duree, int id, Script script, GameState<?> state)
 	{
-		// TODO
-		/*
-		int A = 1;
-		int B = 1;
-		float prob = script.proba_reussite();
-		
-		//abandon de prob_deja_fait
-		Vec2[] position_ennemie = state.table.get_positions_ennemis();
-		float pos = (float)1.0 - (float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0)));
-		// pos est une valeur qui décroît de manière exponentielle en fonction de la distance entre le robot adverse et là où on veut aller
-		float note = (score*A*prob/duree+pos*B)*prob;*/
-		
-//		log.debug((float)(Math.exp(-Math.pow((double)(script.point_entree(id).distance(position_ennemie[0])),(double)2.0))), this);
 		if (score != 0)
 			return 1000.0f*(float)score*script.poids(state)/(float)duree;
 		else
@@ -333,7 +336,7 @@ public class Strategie implements Service {
 	 * 
 	 * @param profondeur : la profondeur d'exploration de l'arbre, 1 pour n'explorer qu'un niveau
 	 */
-	public NoteScriptMetaversion evaluate(ArrayList<NoteScriptMetaversion> errorList)	// TODO : add an argument to infuence the tree size
+	public NoteScriptMetaversion evaluate(ArrayList<NoteScriptMetaversion> errorList)
 	{
 		/*
 		 * 	Algorithme : Itterative Modified DFS
@@ -496,7 +499,7 @@ public class Strategie implements Service {
 		else if(scope.size() == 1)
 			TTL = 60000; 
 		
-		TTL /=2;
+		//TTL /=2;
 		
 		
 		for (int i = 0; i < rootList.size(); ++i)
@@ -577,6 +580,7 @@ public class Strategie implements Service {
 							//log.debug("Ajout d'une branche avec script" + nomScript + " et metaversion : " + metaversion, this);
 							
 							mState = memorymanager.getClone(current.profondeur-1);
+							mState.table.supprimerObstaclesPerimes(mState.time_depuis_racine);
 							mState.pathfinding.setPrecision(5);
 							current.computeActionCharacteristics();
 //							Branchcount++; // Remarque: non utilisé
@@ -608,12 +612,13 @@ public class Strategie implements Service {
 				
 			}	// fin boucle principale d'exploration
 		//log.debug("Explored "+ Branchcount + " branches in " + (System.currentTimeMillis() - startTime) + " ms", this);
-	//	log.debug("IA completed in " + (System.currentTimeMillis() - startTime) + " ms with TTL = " + TTL + "ms   rootList.size() :" + rootList.size() + "	Explored "+ Branchcount + " branches", this);
+		//log.debug("IA completed in " + (System.currentTimeMillis() - startTime) + " ms with TTL = " + TTL + "ms   rootList.size() :" + rootList.size(), this);// + "	Explored "+ Branchcount + " branches", this);
 		
 		// simu raspbe
-		
-		log.debug("WARING : Simu rapsbe active, trategy evaluation pausing for 1s", this);
+		/*
+		log.debug("WARING : Simu rapsbe active, strategy evaluation pausing for 1s", this);
 		Sleep.sleep(1000);
+		*/
 		 
 
 

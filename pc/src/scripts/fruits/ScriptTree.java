@@ -24,9 +24,11 @@ import exceptions.serial.SerialException;
  * Script de prise de fruits
  * @author pf
  * @author krissprolls
+ * @author marsu
  *
  */
-public class ScriptTree extends Script{
+public class ScriptTree extends Script
+{
 
     private ArrayList<ArrayList<Hook>> hooks = null;
     
