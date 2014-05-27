@@ -211,13 +211,13 @@ public class RobotChrono extends Robot {
 	@Override
 	public void poserFeuBonCote(Cote cote) throws SerialException {
 	    super.poserFeuBonCote(cote);
-		duree += 2000; // TODO
+		duree += 3000; // TODO
 	}
 
 	@Override
 	public void poserFeuEnRetournant(Cote cote) throws SerialException {
         super.poserFeuEnRetournant(cote);
-		duree += 3000; // TODO
+		duree += 5000; // TODO
 	}
 
 	@Override
@@ -226,23 +226,23 @@ public class RobotChrono extends Robot {
 	}
 	@Override
 	public void renverserFeu(Cote cote) throws SerialException
-	{
-		duree += 1000;
+	{		
+		duree += 800;
 	}
 
 	@Override
 	public void baisser_pince(Cote cote) throws SerialException {
-		duree += 1000; // TODO
+		duree += 500; // TODO
 	}
 
 	@Override
 	public void fermer_pince(Cote cote) throws SerialException {
-		duree += 1000; // TODO
+		duree += 600; // TODO
 	}
 
 	@Override
 	public void ouvrir_pince(Cote cote) throws SerialException {
-		duree += 1000; // TODO
+		duree += 800; // TODO
 	}
 
 	@Override
@@ -252,7 +252,7 @@ public class RobotChrono extends Robot {
 
 	@Override
 	public void tourner_pince(Cote cote) throws SerialException {
-		duree += 1000; // TODO
+		duree += 1500; // TODO
 	}
 
 	@Override
@@ -268,7 +268,7 @@ public class RobotChrono extends Robot {
 	@Override
 	public void prendre_torche(Cote cote) throws SerialException {
 		super.prendre_torche(cote);
-	    duree += 1000; // TODO
+	    duree += 5000; // TODO
 	}
 	@Override
     public void takefire(Cote cotePrise, Cote coteReel) throws SerialException, MouvementImpossibleException
@@ -328,6 +328,7 @@ public class RobotChrono extends Robot {
     @Override
     public void allume_ventilo() throws SerialException
     {
+    	
     }
 
     @Override
