@@ -66,6 +66,7 @@ public class DeplacementsHautNiveau implements Service
     public void recaler()
     {
         try {
+        	log.debug("recale X",this);
             avancer(-200, null, true);
             deplacements.set_vitesse_translation(200);
             deplacements.desactiver_asservissement_rotation();
@@ -86,10 +87,14 @@ public class DeplacementsHautNiveau implements Service
                 setOrientation(Math.PI);
             }
 
+        	log.debug("Done !",this);
+
             Sleep.sleep(500);
             avancer(50, null, true);
             tourner(-Math.PI/2, null, false);
-
+            
+            
+        	log.debug("recale Y",this);
             avancer(-600, null, true);
             deplacements.set_vitesse_translation(200);
             deplacements.desactiver_asservissement_rotation();
@@ -98,6 +103,9 @@ public class DeplacementsHautNiveau implements Service
             deplacements.set_vitesse_translation(Vitesse.RECALER.PWM_translation);
             position.y = 2000 - 165;
             deplacements.set_y(2000 - 165);
+            
+
+        	log.debug("Done !",this);
             Sleep.sleep(500);
             avancer(100, null, false);
             orientation = -Math.PI/2;

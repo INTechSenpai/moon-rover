@@ -49,6 +49,7 @@ public class ThreadTimer extends AbstractThread {
 		// Attente du démarrage du match
 		while(!capteur.demarrage_match() && !match_demarre)
 		{
+			System.out.println("Abwabwa "+capteur.demarrage_match());
 			if(stop_threads)
 			{
 				log.debug("Arrêt du thread timer avant le début du match", this);
