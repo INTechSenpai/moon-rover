@@ -65,27 +65,21 @@ public class Strategie implements Service {
 	 * Méthode appelée à la fin du lanceur et qui exécute la meilleure stratégie (calculée dans threadStrategie)
 	 */
 	public void boucle_strategie()
-	{
-		// attends le début du match
-		log.debug("Boucle Stratégie: Attente du début du match", this);
-		while(!ThreadTimer.match_demarre)
-			Sleep.sleep(20);
-
-		
+	{		
 		
 		// demande au robot de faire l'arbre n°2 en premier dans la match
 		log.debug("debut du match : action scriptée", this);
 		NoteScriptMetaversion meilleur = new NoteScriptMetaversion();
 		NoteScriptVersion meilleur_version = new NoteScriptVersion();
 		try {
-			meilleur_version.script = scriptmanager.getScript("ScriptTree");
-			meilleur.script = scriptmanager.getScript("ScriptTree");
+			meilleur_version.script = scriptmanager.getScript("ScriptLances");
+			meilleur.script = scriptmanager.getScript("ScriptLances");
 		} catch (ScriptException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		meilleur.metaversion = 2;
-		meilleur_version.version = 2;
+		meilleur.metaversion = 0;
+		meilleur_version.version = 0;
 		meilleur_version.note = 42.0f;
 		setProchainScript(meilleur_version);
 		setMetaScriptEnCours(meilleur);
