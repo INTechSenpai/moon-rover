@@ -391,6 +391,7 @@ public class Table implements Service {
 
 	public void torche_disparue(Cote cote)
 	{
+		log.warning("La torche "+cote+" a disparu!", this);
 		if(cote == Cote.DROIT)
 			arrayTorch[0].setDisparue();
 		else

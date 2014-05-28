@@ -123,26 +123,25 @@ public class ScriptLances extends Script {
 	    try
         {
             state.robot.allume_ventilo();
-            state.robot.sleep(2000);
+            state.robot.sleep(1000);
         } catch (SerialException e)
         {
             e.printStackTrace();
         }
-	    //state.robot.sleep(1500);
 	    state.robot.tirerBalle();
-	    //state.robot.sleep(2000);
+	    state.robot.sleep(1000);
 	    state.robot.tirerBalle();
-	    state.robot.sleep(2000);
+	    state.robot.sleep(1000);
         try
         {
             state.robot.eteint_ventilo();
-            state.robot.sleep(2000);
-            state.robot.tirerBalle();
+            state.robot.sleep(1000);
         } catch (SerialException e)
         {
             e.printStackTrace();
         }
-		//robot.set_vitesse_translation("vitesse_mammouth");
+        state.robot.tirerBalle();
+        //robot.set_vitesse_translation("vitesse_mammouth");
 		//robot.avancer(600, hooks);
 			
 	

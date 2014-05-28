@@ -78,14 +78,14 @@ public class Strategie implements Service {
 		NoteScriptMetaversion meilleur = new NoteScriptMetaversion();
 		NoteScriptVersion meilleur_version = new NoteScriptVersion();
 		try {
-			meilleur_version.script = scriptmanager.getScript("ScriptTree");
-			meilleur.script = scriptmanager.getScript("ScriptTree");
+			meilleur_version.script = scriptmanager.getScript("ScriptLances");
+			meilleur.script = scriptmanager.getScript("ScriptLances");
 		} catch (ScriptException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		meilleur.metaversion = 2;
-		meilleur_version.version = 2;
+		meilleur.metaversion = 0;
+		meilleur_version.version = 0;
 		meilleur_version.note = 42.0f;
 		setProchainScript(meilleur_version);
 		setMetaScriptEnCours(meilleur);

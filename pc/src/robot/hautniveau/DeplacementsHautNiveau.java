@@ -66,35 +66,47 @@ public class DeplacementsHautNiveau implements Service
     public void recaler()
     {
         try {
-        	log.debug("recale X",this);
+            if(symetrie)
+                setOrientation(0f);
+            else
+                setOrientation(Math.PI);
+
+            log.debug("recale X",this);
             avancer(-200, null, true);
             deplacements.set_vitesse_translation(200);
             deplacements.desactiver_asservissement_rotation();
             avancer(-200, null, true);
             deplacements.activer_asservissement_rotation();
             deplacements.set_vitesse_translation(Vitesse.RECALER.PWM_translation);
-
+            log.debug("I", this);
 
             position.x = 1500 - 165;
             if(symetrie)
             {
-                deplacements.set_x(-1500+165);
+                log.debug("II", this);
                 setOrientation(0f);
+                deplacements.set_x(-1500+165);
             }
             else
             {
+                log.debug("II'", this);
                 deplacements.set_x(1500-165);
                 setOrientation(Math.PI);
             }
 
         	log.debug("Done !",this);
+            log.debug("III", this);
 
             Sleep.sleep(500);
             avancer(50, null, true);
+            log.debug("IV", this);
             tourner(-Math.PI/2, null, false);
+
+            log.debug("V", this);
             
             
         	log.debug("recale Y",this);
+            log.debug("VI", this);
             avancer(-600, null, true);
             deplacements.set_vitesse_translation(200);
             deplacements.desactiver_asservissement_rotation();
@@ -124,24 +136,34 @@ public class DeplacementsHautNiveau implements Service
      */
     public void tourner(double angle, ArrayList<Hook> hooks, boolean mur) throws MouvementImpossibleException
     {
+        log.debug("Symétrie: "+symetrie, this);
+
         if(symetrie)
             angle = Math.PI-angle;
 
         // Tourne-t-on dans le sens trigonométrique?
         // C'est important de savoir pour se dégager.
         boolean trigo = angle > orientation;
-        
+        log.debug("WO", this);
+
         try {
+            log.debug("WOLO", this);
             deplacements.tourner(angle);
+            log.debug("WOLOLO", this);
             while(!mouvement_fini()) // on attend la fin du mouvement
+            {
                 Sleep.sleep(sleep_boucle_acquittement);
+                log.debug("abwa?", this);
+            }
         } catch(BlocageException e)
         {
             try
             {
+                log.debug("De l'or, merci", this);
                 update_x_y_orientation();
                 if(!mur)
                 {
+                    log.debug("De la nourriture, merci", this);
                     if(trigo ^ symetrie)
                         deplacements.tourner(orientation+angle_degagement_robot);
                     else
@@ -151,6 +173,7 @@ public class DeplacementsHautNiveau implements Service
             {
                 e1.printStackTrace();
             }
+            log.debug("Du bois, merci", this);
             throw new MouvementImpossibleException();
         } catch (SerialException e)
         {
