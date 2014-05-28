@@ -44,7 +44,10 @@ public class ScriptFunnyAction extends Script {
 
 	@Override
 	public Vec2 point_entree(int id) {
-		return new Vec2(800,1300); 
+		if(id == 0)
+			return new Vec2(750,1250);
+		else
+			return new Vec2(-750,1250);
 	}
 	
 	@Override
