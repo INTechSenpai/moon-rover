@@ -83,18 +83,15 @@ public class DeplacementsHautNiveau implements Service
             position.x = 1500 - 165;
             if(symetrie)
             {
-                log.debug("II", this);
                 setOrientation(0f);
                 deplacements.set_x(-1500+165);
             }
             else
             {
-                log.debug("II'", this);
                 deplacements.set_x(1500-165);
                 setOrientation(Math.PI);
             }
 
-        	log.debug("Done !",this);
             log.debug("III", this);
 
             Sleep.sleep(500);
@@ -102,11 +99,8 @@ public class DeplacementsHautNiveau implements Service
             log.debug("IV", this);
             tourner(-Math.PI/2, null, false);
 
-            log.debug("V", this);
-            
             
         	log.debug("recale Y",this);
-            log.debug("VI", this);
             avancer(-600, null, true);
             deplacements.set_vitesse_translation(200);
             deplacements.desactiver_asservissement_rotation();
@@ -144,26 +138,21 @@ public class DeplacementsHautNiveau implements Service
         // Tourne-t-on dans le sens trigonométrique?
         // C'est important de savoir pour se dégager.
         boolean trigo = angle > orientation;
-        log.debug("WO", this);
 
         try {
-            log.debug("WOLO", this);
             deplacements.tourner(angle);
-            log.debug("WOLOLO", this);
             while(!mouvement_fini()) // on attend la fin du mouvement
             {
                 Sleep.sleep(sleep_boucle_acquittement);
-                log.debug("abwa?", this);
+             //   log.debug("abwa?", this);
             }
         } catch(BlocageException e)
         {
             try
             {
-                log.debug("De l'or, merci", this);
                 update_x_y_orientation();
                 if(!mur)
                 {
-                    log.debug("De la nourriture, merci", this);
                     if(trigo ^ symetrie)
                         deplacements.tourner(orientation+angle_degagement_robot);
                     else
@@ -173,7 +162,6 @@ public class DeplacementsHautNiveau implements Service
             {
                 e1.printStackTrace();
             }
-            log.debug("Du bois, merci", this);
             throw new MouvementImpossibleException();
         } catch (SerialException e)
         {
@@ -378,8 +366,8 @@ public class DeplacementsHautNiveau implements Service
      */
     public void va_au_point_hook_correction_detection(ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean marche_arriere) throws BlocageException, CollisionException
     {
-        System.out.println("Consigne: "+consigne);
-        System.out.println("Position: "+position);
+     //   System.out.println("Consigne: "+consigne);
+     //  System.out.println("Position: "+position);
         boolean relancer;
         va_au_point_symetrie(trajectoire_courbe, marche_arriere, false);
         do
@@ -422,7 +410,7 @@ public class DeplacementsHautNiveau implements Service
     public void va_au_point_symetrie(boolean trajectoire_courbe, boolean marche_arriere, boolean correction) throws BlocageException
     {
         Vec2 delta = consigne.clone();
-        System.out.println("Consigne: "+consigne);
+     //   System.out.println("Consigne: "+consigne);
         if(symetrie)
             delta.x = -delta.x;
         

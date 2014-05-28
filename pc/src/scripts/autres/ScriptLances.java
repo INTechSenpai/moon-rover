@@ -129,9 +129,9 @@ public class ScriptLances extends Script {
             e.printStackTrace();
         }
 	    state.robot.tirerBalle();
-	    state.robot.sleep(1000);
+	    state.robot.sleep(2000);
 	    state.robot.tirerBalle();
-	    state.robot.sleep(1000);
+	    state.robot.sleep(2000);
         try
         {
             state.robot.eteint_ventilo();

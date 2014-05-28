@@ -65,13 +65,7 @@ public class Strategie implements Service {
 	 * Méthode appelée à la fin du lanceur et qui exécute la meilleure stratégie (calculée dans threadStrategie)
 	 */
 	public void boucle_strategie()
-	{
-		// attends le début du match
-		log.debug("Boucle Stratégie: Attente du début du match", this);
-		while(!ThreadTimer.match_demarre)
-			Sleep.sleep(20);
-
-		
+	{		
 		
 		// demande au robot de faire l'arbre n°2 en premier dans la match
 		log.debug("debut du match : action scriptée", this);

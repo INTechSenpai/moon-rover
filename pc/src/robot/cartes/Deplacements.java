@@ -272,16 +272,16 @@ public class Deplacements implements Service {
 		else if(pwm_max > 115)
 		{
 			kp = 0.85;
-			kd = 23.0;
+			kd = 25.0;
 		}
-		else if(pwm_max > 90)
+		else if(pwm_max > 85)
 		{
 			kp = 1.0;
 			kd = 15.0;
 		}
 		else
 		{
-			kp = 1.0;
+			kp = 2.0;
 			kd = 14.0;
 		}
 		
@@ -308,7 +308,7 @@ public class Deplacements implements Service {
 	{
 		String[] infos_string = serie.communiquer("?infos", 4);
 		int[] infos_int = new int[4];
-
+		
 		for(int i = 0; i < 4; i++)
 			infos_int[i] = Integer.parseInt(infos_string[i]);
 		
