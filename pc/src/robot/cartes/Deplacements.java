@@ -217,27 +217,32 @@ public class Deplacements implements Service {
 	public void set_vitesse_translation(int pwm_max) throws SerialException
 	{
 		double kp, kd;
-		if(pwm_max >= 170)
+		if(pwm_max >= 195)
+		{
+			kp = 0.55;
+			kd = 27.0;
+		}
+		else if(pwm_max >= 165)
+		{
+			kp = 0.52;
+			kd = 17.0;
+		}
+		else if(pwm_max >= 145)
+		{
+			kp = 0.52;
+			kd = 17.0;
+		}
+		else if(pwm_max >= 115)
+		{
+			kp = 0.45;
+			kd = 12.0;
+		}
+		else if(pwm_max >= 85)
 		{
 			kp = 0.45;
 			kd = 12.5;
 		}
-		else if(pwm_max >= 150)
-		{
-			kp = 0.45;
-			kd = 11.5;
-		}
-		else if(pwm_max >= 120)
-		{
-			kp = 0.45;
-			kd = 9.0;
-		}
-		else if(pwm_max >= 90)
-		{
-			kp = 0.45;
-			kd = 12.5;
-		}
-		else if(pwm_max >= 60)
+		else if(pwm_max >= 55)
 		{
 			kp = 0.5;
 			kd = 4.0;
@@ -261,22 +266,22 @@ public class Deplacements implements Service {
 		double kp, kd;
 		if(pwm_max > 155)
 		{
-			kp = 1.0;
-			kd = 35.0;
+			kp = 2.0;
+			kd = 50.0;
 		}
 		else if(pwm_max > 115)
 		{
 			kp = 0.85;
-			kd = 20.0;
+			kd = 23.0;
 		}
 		else if(pwm_max > 90)
 		{
-			kp = 0.8;
+			kp = 1.0;
 			kd = 15.0;
 		}
 		else
 		{
-			kp = 0.6;
+			kp = 1.0;
 			kd = 14.0;
 		}
 		
