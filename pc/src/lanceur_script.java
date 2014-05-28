@@ -5,6 +5,7 @@ import robot.RobotVrai;
 import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
 import robot.hautniveau.DeplacementsHautNiveau;
+import scripts.Script;
 import scripts.ScriptManager;
 import smartMath.Vec2;
 import strategie.GameState;
@@ -47,17 +48,17 @@ public class lanceur_script
 
 		//recalerRobot();
 
-		initialiserDepartStandard();
 
 		// attends que le jumper soit retiré
 		attendreDebutMatch();
 
-		faireDepartStandard();
-
 
 		System.out.println("Le robot commence le match");
 		
-		real_state.robot.va_au_point_pathfinding(real_state.pathfinding, new Vec2(0,1643), null, false);
+
+        real_state.robot.avancer(300);
+        Script s = (Script)scriptmanager.getScript("ScriptFresque");
+		s.agit(2, real_state, true);
 		
 		
 	}
@@ -127,13 +128,15 @@ public class lanceur_script
 	 */
 	static void initialiserDepartStandard()  throws Exception
 	{
-		real_state.robot.avancer(150);
+		real_state.robot.avancer(50);
+		real_state.robot.tourner(-1.8);
+		real_state.robot.avancer(100);
 	}
 
 	
 
 	/**
-	 * effectue le départ non Rapide
+	 * effectue le jépart non Rapide
 	 * @throws Exception
 	 */
 	static void faireDepartStandard()  throws Exception
