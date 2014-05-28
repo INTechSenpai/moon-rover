@@ -50,7 +50,6 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     {
         robot.va_au_point_symetrie(false, true, false);
     }
-
     
     @Test
     public void test_va_au_point_hook() throws Exception
@@ -75,6 +74,7 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     public void test_va_au_point_detection() throws Exception
     {
         container.demarreTousThreads();
+        real_state.robot.initialiser_actionneurs_deplacements();
         robot.setInsiste(true);
         robot.va_au_point_gestion_exception(null, true, false, false);
     }

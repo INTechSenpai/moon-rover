@@ -75,6 +75,7 @@ public class DeplacementsHautNiveau implements Service
                 setOrientation(Math.PI);
 
             log.debug("recale X",this);
+            Sleep.sleep(2000);
             avancer(-200, null, true);
             deplacements.set_vitesse_translation(200);
             deplacements.desactiver_asservissement_rotation();
@@ -183,10 +184,15 @@ public class DeplacementsHautNiveau implements Service
     {
         log.debug("Avancer de "+Integer.toString(distance), this);
 
+        System.out.println(position);
         update_x_y_orientation();
+        System.out.println(position);
 
         consigne.x = (int) (position.x + distance*Math.cos(orientation));
         consigne.y = (int) (position.y + distance*Math.sin(orientation));
+        System.out.println(consigne);        
+        if(symetrie)
+            consigne.x = -consigne.x;
 
         va_au_point_gestion_exception(hooks, false, distance < 0, mur);
     }
@@ -283,20 +289,21 @@ public class DeplacementsHautNiveau implements Service
      */
     public void va_au_point_gestion_exception(ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean marche_arriere, boolean mur) throws MouvementImpossibleException
     {
-        int nb_iterations;
+        int nb_iterations_ennemi;
+        int nb_iterations_deblocage = 2;
         if(insiste)
-            nb_iterations = nb_iterations_max;
+            nb_iterations_ennemi = nb_iterations_max;
         else
-            nb_iterations = 6; // 600 ms
+            nb_iterations_ennemi = 6; // 600 ms
         boolean recommence;
         do {
-            nb_iterations--;
             recommence = false;
             try
             {
                 va_au_point_hook_correction_detection(hooks, trajectoire_courbe, marche_arriere);
             } catch (BlocageException e)
             {
+                nb_iterations_deblocage--;
                 stopper();
                 /*
                  * En cas de blocage, on recule (si on allait tout droit) ou on avance.
@@ -304,7 +311,6 @@ public class DeplacementsHautNiveau implements Service
                 // Si on insiste, on se dégage. Sinon, c'est juste normal de prendre le mur.
                 if(!mur)
                 {
-                    nb_iterations -= 5;
                     try
                     {
                         log.warning("On n'arrive plus à avancer. On se dégage", this);
@@ -326,15 +332,16 @@ public class DeplacementsHautNiveau implements Service
                         log.critical("On n'arrive pas à se dégager.", this);
                         throw new MouvementImpossibleException();
                     }
-                    if(nb_iterations <= 0)
+                    if(nb_iterations_deblocage <= 0)
                         throw new MouvementImpossibleException();
                 }
             } catch (CollisionException e)
             {
+                nb_iterations_ennemi--;
                 /*
                  * En cas d'ennemi, on attend (si on demande d'insiste) ou on abandonne.
                  */
-                if(nb_iterations <= 0)
+                if(nb_iterations_ennemi <= 0)
                 {
                     /* TODO: si on veut pouvoir enchaîner avec un autre chemin, il
                      * ne faut pas arrêter le robot.

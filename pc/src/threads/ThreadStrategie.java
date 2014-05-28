@@ -90,7 +90,7 @@ public class ThreadStrategie extends AbstractThread {
 			try
 			{
 				meilleurVersion = strategie.meilleurVersion(meilleur.metaversion, meilleur.script, memorymanager.getClone(0));
-				log.debug("la meilleure version est : " + meilleurVersion[0],this);
+//				log.debug("la meilleure version est : " + meilleurVersion[0],this);
 			}
 			catch(PathfindingException e)
 			{
@@ -118,7 +118,7 @@ public class ThreadStrategie extends AbstractThread {
 		meilleur_version.note = meilleurVersion[1];
 		strategie.setProchainScript(meilleur_version);
 		strategie.setMetaScriptEnCours(meilleur);
-		log.debug("prochain script : " + meilleur_version,this);
+//		log.debug("prochain script : " + meilleur_version,this);
 	}
 	
 	public void maj_config()

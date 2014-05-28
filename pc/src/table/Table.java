@@ -391,10 +391,6 @@ public class Table implements Service {
 
 	public void torche_disparue(Cote cote)
 	{
-
-		if((cote == Cote.DROIT && !arrayTorch[0].isDisparue()) || (cote == Cote.GAUCHE && !arrayTorch[1].isDisparue() ))
-			log.warning("La torche "+cote+" a disparu!", this);
-		
 		if(cote == Cote.DROIT)
 			arrayTorch[0].setDisparue();
 		else
