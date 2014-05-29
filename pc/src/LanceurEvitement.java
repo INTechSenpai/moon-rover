@@ -12,9 +12,10 @@ import strategie.GameState;
 import utils.Read_Ini;
 import utils.Sleep;
 import container.Container;
+import enums.Vitesse;
 
 
-public class lanceur_script
+public class LanceurEvitement
 {
 	static Container container;
 	static Read_Ini config;
@@ -35,7 +36,7 @@ public class lanceur_script
 
 
 		// initialise les singletons
-		//real_state = (GameState<RobotVrai>) container.getService("RealGameState");
+		real_state = (GameState<RobotVrai>) container.getService("RealGameState");
 		scriptmanager = (ScriptManager) container.getService("ScriptManager");
 		deplacements = (DeplacementsHautNiveau)container.getService("DeplacementsHautNiveau");
 		dep = (Deplacements)container.getService("Deplacements");
@@ -44,16 +45,17 @@ public class lanceur_script
 		real_state.robot.initialiser_actionneurs_deplacements();
 
 		// Threads
-		container.demarreTousThreads();
+		//container.demarreTousThreads();
 
 
-		System.out.println("LANCEUR HOMOLO SCRIPT");
+		System.out.println("LANCEUR HOMOLO EVITEMENT");
 		
 		
-		recalerRobot();
+		//recalerRobot();
 		
-		
-		//real_state.robot.setPosition(new Vec2(1225,1725));
+
+		real_state.robot.set_vitesse(Vitesse.ENTRE_SCRIPTS);
+		real_state.robot.setPosition(new Vec2(1225,1725));
 
 		// attends que le jumper soit retiré
 		attendreDebutMatch();
@@ -63,8 +65,14 @@ public class lanceur_script
 		
 
         real_state.robot.avancer(300);
-        Script s = (Script)scriptmanager.getScript("ScriptFresque");
-		s.agit(2, real_state, true);
+        real_state.robot.tourner(-3.14/2 - 0.15);
+        real_state.robot.avancer(700);
+        real_state.robot.tourner(-3.14/2);
+        real_state.robot.avancer(300);
+        real_state.robot.tourner(-3.14);
+        real_state.robot.avancer(1300);
+        
+        
 		
 		
 	}
@@ -153,3 +161,4 @@ public class lanceur_script
 	
 	
 }
+
