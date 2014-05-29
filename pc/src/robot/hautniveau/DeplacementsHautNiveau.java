@@ -488,6 +488,12 @@ public class DeplacementsHautNiveau implements Service
     
     /**
      * Boucle d'acquittement générique. Retourne des valeurs spécifiques en cas d'arrêt anormal (blocage, capteur)
+     *  	
+     *  	false : si on roule
+     *  	true : si arrivé a destination
+     *  	exeption : si patinage
+     * 
+     * 
      * @param detection_collision
      * @param sans_lever_exception
      * @return oui si le robot est arrivé à destination, non si encore en mouvement
@@ -498,21 +504,24 @@ public class DeplacementsHautNiveau implements Service
     {
         // récupérations des informations d'acquittement
         try {
+        	
+        	// met a jour: 	l'écart entre la position actuelle et la position sur laquelle on est asservi
+        	//				la variation de l'écart a la position sur laquelle on est asservi
+        	//				la puissance demandée par les moteurs 	
             deplacements.maj_infos_stoppage_enMouvement();
             
-            //robot bloqué ?
-            deplacements.gestion_blocage();
+            // lève une exeption de blocage si le robot patine (ie force sur ses moteurs sans bouger) 
+            deplacements.leverExeptionSiPatinage();
             
             // robot arrivé?
-            if(!deplacements.update_enMouvement())
-                return true;
+            return !deplacements.update_enMouvement();
 
-        } catch (SerialException e) {
+        } 
+        catch (SerialException e) 
+        {
             e.printStackTrace();
+            return false;
         }
-
-        // robot encore en mouvement
-        return false;
     }
     
     /**
