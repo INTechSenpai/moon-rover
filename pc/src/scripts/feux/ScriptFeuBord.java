@@ -94,6 +94,7 @@ public class ScriptFeuBord extends Script {
 	@Override
 	protected void execute(int id_version, GameState<?> state)
 			throws MouvementImpossibleException, SerialException {
+        super.execute(id_version, state);
 		Cote cote = Cote.GAUCHE;
 		int decalage = 180;
 		float angle = 0f;

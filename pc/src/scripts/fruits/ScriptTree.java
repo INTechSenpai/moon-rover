@@ -105,6 +105,7 @@ public class ScriptTree extends Script
     @Override
 	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException
 	{
+        super.execute(id_version, state);
 	    if(hooks == null && state.robot instanceof RobotVrai)
 	    {
 	        hooks = new ArrayList<ArrayList<Hook>>();

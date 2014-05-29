@@ -75,8 +75,9 @@ public class ScriptLances extends Script {
 
 
 	@Override
-	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException
+	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException
 	{
+        super.execute(id_version, state);
 		// TODO: tester!
 		/*
 		int a1,a2,a3;
