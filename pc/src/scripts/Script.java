@@ -204,7 +204,7 @@ public abstract class Script implements Service {
 	 */
 	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException
 	{
-	    if(state.robot.getPosition().distance(this.point_entree(id_version)) > 20)
+	    if(state.robot.getPosition().distance(this.point_entree(id_version)) > 50)
 	    {
 	        log.critical("Script appelé alors que le robot n'est pas au point d'entrée. Annulation.", this);
 	        throw new MouvementImpossibleException();
