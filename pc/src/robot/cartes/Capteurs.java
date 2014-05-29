@@ -51,15 +51,11 @@ public class Capteurs implements Service {
 			
 			try{
 				distances = new int[1];
-				distances_string = serie.communiquer("us", 2);
+				distances_string = serie.communiquer("us", 1);
 
-	    		for(int i = 0; i < 2; i++)
-	    			distances[i] = Integer.parseInt(distances_string[i]);
+    			distances[0] = Integer.parseInt(distances_string[0]);
 	    		
-	    		if(distances[0] < distances[1])
-	    		    return distances[0];
-	    		else
-                    return distances[1];
+    		    return distances[0];
 	    		
 /*		    	Arrays.sort(distances); // le dernier élément d'un tableau trié par ordre croissant est le plus grand
 		    	int distance = distances[distances.length-1];
