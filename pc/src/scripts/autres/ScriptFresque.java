@@ -59,6 +59,7 @@ public class ScriptFresque extends Script {
 	@Override
 	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException
 	{
+	    super.execute(id_version, state);
         state.robot.tourner(Math.PI/2);
         state.robot.avancer(250);
         state.robot.tourner(-Math.PI/2);
