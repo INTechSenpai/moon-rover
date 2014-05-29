@@ -40,7 +40,7 @@ public class lanceur_sans_strategie {
 
 		//Début des paramétrages
 		configCouleur();
-
+		setFruitNoirPositions();
 
 		// initialise les singletons
 		//real_state = (GameState<RobotVrai>) container.getService("RealGameState");
@@ -210,5 +210,109 @@ public class lanceur_sans_strategie {
 		real_state.robot.avancer(150);
 	}
 	
-	
+	static void setFruitNoirPositions()  throws Exception
+	{
+
+		/*
+		 * On a 2 inputs 
+		 * Le deuxième pour les arbres 0 et 3 (on donne pour 0 et pour le 3 ça sera calculé facilement)
+		 * Le troisième pour les arbres 1 et 2 (one donne pour 1 et pour les 2 ça sera calculé facilement) 
+		 * La position des fruits dans un arbre est expliqué dans la classe Tree
+		*/		
+		//Pour les fruits noirs
+		String pos_noir1 = "";
+		String pos_noir2 = "";
+		
+		while(!(pos_noir1.contains("-1")||pos_noir1.contains("0")|| pos_noir1.contains("1")|| pos_noir1.contains("2")||pos_noir1.contains("3")||pos_noir1.contains("4")||pos_noir1.contains("5")))
+		{
+			System.out.println("Donnez la position des fruits noirs pour les arbres 0 et 3 : (la référence est l'arbre 0. -1 corrrespond à la position des fruits noirs inconnue");
+			BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in)); 
+			pos_noir1 = keyboard.readLine();
+			if(pos_noir1.contains("-1"))
+			{
+				//Les fruits sont considérés comme tous violets
+			}
+			else if(pos_noir1.contains("0"))
+			{
+				real_state.table.setFruitNoir(0, 0);
+				real_state.table.setFruitNoir(3, 3);
+			}
+			else if(pos_noir1.contains("1"))
+			{
+				real_state.table.setFruitNoir(0, 1);
+				real_state.table.setFruitNoir(3, 4);
+			}
+			else if (pos_noir1.contains("2"))
+			{
+				real_state.table.setFruitNoir(0, 2);
+				real_state.table.setFruitNoir(3, 5);
+			}
+			else if (pos_noir1.contains("3"))
+			{
+				real_state.table.setFruitNoir(0, 3);
+				real_state.table.setFruitNoir(3, 0);
+			}
+			else if (pos_noir1.contains("4"))
+			{
+				real_state.table.setFruitNoir(0, 4);
+				real_state.table.setFruitNoir(3, 1);
+			}
+			else if (pos_noir1.contains("5"))
+			{
+				real_state.table.setFruitNoir(0, 5);
+				real_state.table.setFruitNoir(3, 2);
+			}
+		}		
+		while(!(pos_noir2.contains("-1")||pos_noir2.contains("0")|| pos_noir2.contains("1")|| pos_noir2.contains("2")||pos_noir2.contains("3")||pos_noir2.contains("4")||pos_noir2.contains("5")))
+		{
+			System.out.println("Donnez la position des fruits noirs pour les arbres 1 et 2 : (la référence est l'arbre 0. : -1 corrrespond à la position des fruits noirs inconnue");
+			BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in)); 
+			pos_noir2 = keyboard.readLine(); 
+			if(pos_noir2.contains("-1"))
+			{
+				//Les fruits sont considérés comme tous violets
+			}
+			else if(pos_noir2.contains("0"))
+			{
+				real_state.table.setFruitNoir(1, 0);
+				real_state.table.setFruitNoir(2, 3);
+			}
+			else if(pos_noir2.contains("1"))
+			{
+				real_state.table.setFruitNoir(1, 1);
+				real_state.table.setFruitNoir(2, 4);
+			}
+			else if (pos_noir2.contains("2"))
+			{
+				real_state.table.setFruitNoir(1, 2);
+				real_state.table.setFruitNoir(2, 5);
+			}
+			else if (pos_noir2.contains("3"))
+			{
+				real_state.table.setFruitNoir(1, 3);
+				real_state.table.setFruitNoir(2, 0);
+			}
+			else if (pos_noir2.contains("4"))
+			{
+				real_state.table.setFruitNoir(1, 4);
+				real_state.table.setFruitNoir(2, 1);
+			}
+			else if (pos_noir2.contains("5"))
+			{
+				real_state.table.setFruitNoir(1, 5);
+				real_state.table.setFruitNoir(2, 2);
+			}
+				
+		}
+		/*
+		System.out.println("L'arbre 0 et 3 sont ");
+		for(int i= 0; i< 4; i++)
+		{
+			System.out.println("L'arbre 0 et 3 sont ");
+			System.out.println(real_state.table.getListTree()[i].nbrLeft());
+			System.out.println(real_state.table.getListTree()[i].nbrRight());
+		}
+		*/
+	}
+
 }

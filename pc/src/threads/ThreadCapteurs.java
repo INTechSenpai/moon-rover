@@ -64,7 +64,6 @@ class ThreadCapteurs extends AbstractThread {
 			}
 
 			int distance = capteur.mesurer();
-			System.out.println(distance);
 			if (distance > 0 && distance < 70)
 				log.debug("Câlin !", this);
 			
