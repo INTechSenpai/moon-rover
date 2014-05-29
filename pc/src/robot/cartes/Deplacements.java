@@ -66,7 +66,7 @@ public class Deplacements implements Service {
 		boolean moteur_force = Math.abs(PWMmoteurGauche) > 40 || Math.abs(PWMmoteurDroit) > 40;
 		
 		// on décrète que le robot est immobile si l'écart entre la position demandée et la position actuelle est constant
-		boolean bouge_pas = Math.abs(derivee_erreur_rotation) <= 20 && Math.abs(derivee_erreur_translation) <= 20;
+		boolean bouge_pas = Math.abs(derivee_erreur_rotation) <= 10 && Math.abs(derivee_erreur_translation) <= 10;
 
 		// si on patine
 		if(bouge_pas && moteur_force)
@@ -77,7 +77,7 @@ public class Deplacements implements Service {
                 // la durée de tolérance au patinage est fixée ici (200ms)
 				// mais cette fonction n'étant appellée qu'a une fréquance de l'ordre du Hertz ( la faute a une saturation de la série)
 				// le robot mettera plus de temps a réagir ( le temps de réaction est égal au temps qui sépare 2 appels successifs de cette fonction)
-				if(System.currentTimeMillis() - debut_timer_blocage > 200)
+				if((System.currentTimeMillis() - debut_timer_blocage) > 200)
 				{
 					log.warning("le robot a dû s'arrêter suite à un patinage.", this);
 					try {
@@ -112,7 +112,7 @@ public class Deplacements implements Service {
 	 * @param derivee_erreur_translation
 	 * @return
 	 */
-	public boolean update_enMouvement()
+	public boolean isRobotMoving()
 	{
 		// obtient les infos de l'asservissement
 		int erreur_rotation = infos_stoppage_enMouvement.get("erreur_rotation");
@@ -120,22 +120,21 @@ public class Deplacements implements Service {
 		int derivee_erreur_rotation = infos_stoppage_enMouvement.get("derivee_erreur_rotation");
 		int derivee_erreur_translation = infos_stoppage_enMouvement.get("derivee_erreur_translation");
 		
-		
-		System.out.println("er_rot " + Math.abs(erreur_rotation));
-		System.out.println("er_tr " + Math.abs(erreur_translation));
-		System.out.println("d_er_rot " + Math.abs(derivee_erreur_rotation) + " d_er_tr " +Math.abs(derivee_erreur_translation));
-		
 		// ces 2 booléens checkent la précision de l'asser. Ce n'est pas le rôle de cette fonction, 
 		// et peut causer des bugs (erreurs d'aquitement) de java si l'asser est mla fait
+		/*
+		System.out.println("erreur_rotation : "+erreur_rotation);
+		System.out.println("erreur_translation : "+erreur_translation);
+		System.out.println("derivee_erreur_rotation': "+derivee_erreur_rotation);
+		System.out.println("derivee_erreur_translation': "+derivee_erreur_translation);
+		*/
 		
 		//donc, on vire !
-	//	boolean rotation_stoppe = Math.abs(erreur_rotation) < 105;
-	//	boolean translation_stoppe = Math.abs(erreur_translation) < 100;
-		boolean bouge_pas = Math.abs(derivee_erreur_rotation) <= 20 && Math.abs(derivee_erreur_translation) <= 20;
-
-	//	return (rotation_stoppe || translation_stoppe || bouge_pas);
-		
-		return bouge_pas;
+		// VALEURS A REVOIR
+		boolean rotation_stoppe = Math.abs(erreur_rotation) <= 100;
+		boolean translation_stoppe = Math.abs(erreur_translation) <= 100;
+		boolean bouge_pas = Math.abs(derivee_erreur_rotation) <= 10 && Math.abs(derivee_erreur_translation) <= 10;
+		return !(rotation_stoppe && translation_stoppe && bouge_pas);
 	}
 	
 	/** 

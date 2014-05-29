@@ -50,7 +50,7 @@ public class Capteurs implements Service {
 			int[] distances;
 			
 			try{
-				distances = new int[1];
+				distances = new int[2];
 				distances_string = serie.communiquer("us", 2);
 
 	    		for(int i = 0; i < 2; i++)

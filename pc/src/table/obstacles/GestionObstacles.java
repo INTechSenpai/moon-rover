@@ -48,7 +48,11 @@ public class GestionObstacles
             listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(1500,0), 250));
             listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(0,950), 150));
             listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(-1500,0), 250));
-    
+
+            // Ajout des supports de balise
+            listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(1500,1000), 50));
+            listObstaclesFixes.get(0).add(new ObstacleCirculaire(new Vec2(-1500,1000), 50));
+
             // Ajout bacs
             listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(400,2000), 700, 300));
             listObstaclesFixes.get(0).add(new ObstacleRectangulaire(new Vec2(-1100,2000), 700, 300));

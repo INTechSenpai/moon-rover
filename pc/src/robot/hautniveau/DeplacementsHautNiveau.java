@@ -55,6 +55,7 @@ public class DeplacementsHautNiveau implements Service
     private boolean insiste = false;
     private long debut_mouvement_fini;
     private boolean fini = true;
+    private boolean nouveau_mouvement;
     
     public DeplacementsHautNiveau(Log log, Read_Ini config, Table table, Deplacements deplacements)
     {
@@ -144,7 +145,8 @@ public class DeplacementsHautNiveau implements Service
         boolean trigo = angle > orientation;
 
         try {
-            deplacements.tourner(angle);
+        	nouveau_mouvement = true;
+        	deplacements.tourner(angle);
             while(!mouvement_fini()) // on attend la fin du mouvement
             {
                 Sleep.sleep(sleep_boucle_acquittement);
@@ -325,6 +327,7 @@ public class DeplacementsHautNiveau implements Service
                     }
                     try
                     {
+                    	nouveau_mouvement = true;
                         while(!mouvement_fini());
                     } catch (BlocageException e1)
                     {
@@ -378,6 +381,7 @@ public class DeplacementsHautNiveau implements Service
     {
         boolean relancer;
         va_au_point_symetrie(trajectoire_courbe, marche_arriere, false);
+        nouveau_mouvement = true;
         do
         {
             relancer = false;
@@ -457,7 +461,7 @@ public class DeplacementsHautNiveau implements Service
                 trajectoire_courbe = false;
         try {
             deplacements.tourner(angle);
-
+            nouveau_mouvement = true;
             if(!trajectoire_courbe) // sans virage : la première rotation est bloquante
                 while(!mouvement_fini()) // on attend la fin du mouvement
                     Sleep.sleep(sleep_boucle_acquittement);
@@ -475,10 +479,11 @@ public class DeplacementsHautNiveau implements Service
      */
     private boolean mouvement_fini() throws BlocageException
     {
-        if(fini)
+        if(nouveau_mouvement)
             debut_mouvement_fini = System.currentTimeMillis();
+        nouveau_mouvement = false;
         fini = mouvement_fini_routine();
-        if(!fini && (System.currentTimeMillis() - debut_mouvement_fini) > 5000)
+        if(!fini && ((System.currentTimeMillis() - debut_mouvement_fini) > 5000))
         {
             log.critical("Erreur d'acquittement. On arrête l'attente du robot.", this);
             fini = true;
@@ -514,7 +519,8 @@ public class DeplacementsHautNiveau implements Service
             deplacements.leverExeptionSiPatinage();
             
             // robot arrivé?
-            return !deplacements.update_enMouvement();
+//            System.out.println("deplacements.update_enMouvement() : " + deplacements.isRobotMoving());
+            return !deplacements.isRobotMoving();
 
         } 
         catch (SerialException e) 
