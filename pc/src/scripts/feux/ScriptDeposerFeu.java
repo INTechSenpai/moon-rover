@@ -52,10 +52,10 @@ public class ScriptDeposerFeu extends Script {
 	@Override
 	public Vec2 point_entree(int id) {
 		if(id == 0)
-			return new Vec2(-1190, 350);			
+			return new Vec2(-1130, 350);			
 
 		else if(id == 1)
-			return new Vec2(1190, 350);
+			return new Vec2(1130, 350);
 
 		else if(id == 2)
 			return new Vec2(0, 1370);
@@ -93,10 +93,10 @@ public class ScriptDeposerFeu extends Script {
 		//Suivant là où on va poser, on doit se positionner différemment
 		
 		if (id_version == 0)
-			angle = 4.1f;		//pi+pi/3
+			angle = 3.92f;		//pi+pi/3
 		//(float)(Math.PI+Math.atan(2/3)));
 		else if(id_version == 1)
-			angle = -0.85f;	//-pi/3
+			angle = -1.04f;	//-pi/3
 		//(float)(-Math.atan(2/3)));
 		else if(id_version == 2)
 			angle = -1.57f;		
