@@ -55,6 +55,7 @@ public class DeplacementsHautNiveau implements Service
     private boolean insiste = false;
     private long debut_mouvement_fini;
     private boolean fini = true;
+    private double[] old_infos;
     
     public DeplacementsHautNiveau(Log log, Read_Ini config, Table table, Deplacements deplacements)
     {
@@ -144,6 +145,7 @@ public class DeplacementsHautNiveau implements Service
         boolean trigo = angle > orientation;
 
         try {
+            old_infos = deplacements.get_infos_x_y_orientation();
             deplacements.tourner(angle);
             while(!mouvement_fini()) // on attend la fin du mouvement
             {
@@ -325,6 +327,13 @@ public class DeplacementsHautNiveau implements Service
                     }
                     try
                     {
+                        try
+                        {
+                            old_infos = deplacements.get_infos_x_y_orientation();
+                        } catch (SerialException e1)
+                        {
+                            e1.printStackTrace();
+                        }
                         while(!mouvement_fini());
                     } catch (BlocageException e1)
                     {
@@ -378,6 +387,13 @@ public class DeplacementsHautNiveau implements Service
     {
         boolean relancer;
         va_au_point_symetrie(trajectoire_courbe, marche_arriere, false);
+        try
+        {
+            old_infos = deplacements.get_infos_x_y_orientation();
+        } catch (SerialException e)
+        {
+            e.printStackTrace();
+        }
         do
         {
             relancer = false;
@@ -457,6 +473,7 @@ public class DeplacementsHautNiveau implements Service
                 trajectoire_courbe = false;
         try {
             deplacements.tourner(angle);
+            old_infos = deplacements.get_infos_x_y_orientation();
 
             if(!trajectoire_courbe) // sans virage : la première rotation est bloquante
                 while(!mouvement_fini()) // on attend la fin du mouvement
@@ -468,6 +485,39 @@ public class DeplacementsHautNiveau implements Service
         }
     }
 
+    /**
+     * Faux si le robot bouge encore, vrai si arrivée au bon point, exception si blocage
+     * @return
+     * @throws BlocageException
+     */
+/*    private boolean mouvement_fini() throws BlocageException
+    {
+        boolean out = false;
+        try
+        {
+            double[] new_infos = deplacements.get_infos_x_y_orientation();
+            System.out.println("x: "+new_infos[0]);
+            System.out.println("y: "+new_infos[1]);
+            System.out.println("o: "+new_infos[2]);
+            System.out.println("distance² diff: "+new Vec2((int)old_infos[0], (int)old_infos[1]).SquaredDistance(new Vec2((int)new_infos[0], (int)new_infos[1])));
+            System.out.println("angle diff: "+Math.abs(new_infos[2] - old_infos[2]));
+
+//            if(new Vec2((int)old_infos[0], (int)old_infos[1]).SquaredDistance(new Vec2((int)new_infos[0], (int)new_infos[1])) > 20 || Math.abs(new_infos[2] - old_infos[2]) > 20)
+//                out = false;
+//            else if(new Vec2((int)new_infos[0], (int)new_infos[1]).SquaredDistance(consigne) < 10)
+//                out = true;
+//            else
+//                throw new BlocageException();
+   
+            old_infos = new_infos;
+        } catch (SerialException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return out;
+    }
+*/
     /**
      * Surcouche de mouvement_fini afin de ne pas freezer
      * @return
