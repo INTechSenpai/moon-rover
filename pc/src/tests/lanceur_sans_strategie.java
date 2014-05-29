@@ -44,101 +44,72 @@ public class lanceur_sans_strategie {
 		real_state.robot.initialiser_actionneurs_deplacements();
 
 		// Threads
-		container.demarreTousThreads();
+		try {
+			container.getService("threadCapteurs");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			container.getService("threadTimer");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		threadmanager.demarreThreads();
 
-
-		System.out.println("LANCEUR HOMOLO SCRIPT");
-		
+		System.out.println("LANCEUR SANS STRATEGIE");
 		
 		recalerRobot();
-		
 		
 		//real_state.robot.setPosition(new Vec2(1225,1725));
 
 		// attends que le jumper soit retiré
 		attendreDebutMatch();
 
-
 		System.out.println("Le robot commence le match");
 		
-
         real_state.robot.avancer(300);
-        while(!ThreadTimer.fin_match)
+        real_state.robot.tourner(Math.PI);
+        real_state.robot.avancer(200);
+        
+        Script tree = (Script)scriptmanager.getScript("ScriptTree");
+		Script deposer_fruits = (Script)scriptmanager.getScript("ScriptDeposerFruits");
+		Script lances = (Script)scriptmanager.getScript("ScriptLances");
+        
+        while(true)
         {
-        	try
+        	for(int version_arbre = 0; version_arbre < 4; version_arbre++)
         	{
-		        Script s0 = (Script)scriptmanager.getScript("ScriptTree");
-				s0.agit(0, real_state, true);
+	        	try
+	        	{
+			        tree.agit(version_arbre, real_state, false);
+	        	}
+				catch(Exception e)
+				{
+				}
+	        	for(int version_depose = 0; version_depose < 2; version_depose++)
+	        	{
+		        	try
+		        	{
+		        		deposer_fruits.agit(1, real_state, false);
+					}
+		        	catch(Exception e)
+					{
+					}
+	        	}
         	}
-			catch(Exception e)
-			{
-			}
-        	try
+/*        	try
         	{
-				Script s1 = (Script)scriptmanager.getScript("ScriptTree");
-				s1.agit(1, real_state, true);
-        	}
-        	catch(Exception e)
-			{}
-        	try
-        	{
-				Script s2 = (Script)scriptmanager.getScript("ScriptDeposerFruits");
-				s2.agit(1, real_state, true);
-			}
-        	catch(Exception e)
-			{
-			}
-        	try
-        	{
-				Script s3 = (Script)scriptmanager.getScript("ScriptTree");
-				s3.agit(2, real_state, true);
+				lances.agit(0, real_state, true);
         	}
         	catch(Exception e)
 			{}
         	try
         	{
-				Script s4 = (Script)scriptmanager.getScript("ScriptTree");
-				s4.agit(3, real_state, true);
-        	}
-        	catch(Exception e)
-			{}
-        	try
-        	{
-				Script s5 = (Script)scriptmanager.getScript("ScriptDeposerFruits");
-				s5.agit(0, real_state, true);			
-        	}
-        	catch(Exception e)
-			{}
-        	try
-        	{
-				Script s6 = (Script)scriptmanager.getScript("ScriptLances");
-				s6.agit(0, real_state, true);
-        	}
-        	catch(Exception e)
-			{}
-        	try
-        	{
-				Script s7 = (Script)scriptmanager.getScript("ScriptFresque");
-				s7.agit(0, real_state, true);
-        	}
-        	catch(Exception e)
-			{}
-        	try
-        	{
-				Script s8 = (Script)scriptmanager.getScript("ScriptLances");
-				s8.agit(1, real_state, true);
+				lances.agit(1, real_state, true);
         	}
         	catch(Exception e)
 			{
-			}
-        	try
-        	{
-				Script s9 = (Script)scriptmanager.getScript("ScriptFresque");
-				s9.agit(0, real_state, true);
-        	}
-        	catch(Exception e)
-			{
-			}
+			}*/
         }
 		
 		
