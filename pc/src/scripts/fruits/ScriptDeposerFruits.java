@@ -62,6 +62,7 @@ public class ScriptDeposerFruits extends Script
 	@Override
 	protected void execute(int id_version, GameState<?> state)
 			throws MouvementImpossibleException, SerialException {
+        super.execute(id_version, state);
 	    state.robot.tourner(-1.5707);
 	    state.robot.avancer_dans_mur(-300);
 	    state.robot.bac_haut();	// histoire d'être sûr qu'il y arrive bien

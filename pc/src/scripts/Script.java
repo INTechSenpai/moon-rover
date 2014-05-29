@@ -202,7 +202,14 @@ public abstract class Script implements Service {
 	 * Exécute le script, avec RobotVrai ou RobotChrono
 	 * @throws SerialException 
 	 */
-	abstract protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException;
+	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException
+	{
+	    if(state.robot.getPosition().distance(this.point_entree(id_version)) > 20)
+	    {
+	        log.critical("Script appelé alors que le robot n'est pas au point d'entrée. Annulation.", this);
+	        throw new MouvementImpossibleException();
+	    }
+	}
 
 	/**
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs.
