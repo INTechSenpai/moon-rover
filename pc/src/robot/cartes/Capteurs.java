@@ -1,7 +1,5 @@
 package robot.cartes;
 
-import java.util.Arrays;
-
 import robot.serial.Serial;
 import utils.Log;
 import utils.Read_Ini;
@@ -22,11 +20,6 @@ public class Capteurs implements Service {
 
 	private boolean capteurs_on = true;
 
-	private final int nb_capteurs_infrarouge_avant = 1;
-//    private final int nb_capteurs_infrarouge_arriere = 0;
-    private final int nb_capteurs_ultrason_avant = 1;
-//    private final int nb_capteurs_ultrason_arriere = 0;
-    
 	public Capteurs(Read_Ini config, Log log, Serial serie)
 	{
 		this.log = log;
@@ -48,17 +41,7 @@ public class Capteurs implements Service {
 	-	 * @param capteur (soit "ir", soit "us")
 	-	 * @return la valeur la plus optimiste des capteurs
 	-	 */
-		public int mesurer_ultrason()
-		{
-			return mesurer("us_av", nb_capteurs_ultrason_avant);
-		}
-
-		public int mesurer_infrarouge()
-		{
-			return mesurer("ir_av", nb_capteurs_infrarouge_avant);
-		}
-
-		private int mesurer(String protocole, int nb)
+		public int mesurer()
 		{
 			if(!capteurs_on)
 	    		return 3000;
@@ -67,18 +50,23 @@ public class Capteurs implements Service {
 			int[] distances;
 			
 			try{
-				distances = new int[nb];
-				distances_string = serie.communiquer(protocole, nb);
+				distances = new int[1];
+				distances_string = serie.communiquer("us", 2);
 
-	    		for(int i = 0; i < nb; i++)
+	    		for(int i = 0; i < 2; i++)
 	    			distances[i] = Integer.parseInt(distances_string[i]);
 	    		
-		    	Arrays.sort(distances); // le dernier élément d'un tableau trié par ordre croissant est le plus grand
+	    		if(distances[0] < distances[1])
+	    		    return distances[0];
+	    		else
+                    return distances[1];
+	    		
+/*		    	Arrays.sort(distances); // le dernier élément d'un tableau trié par ordre croissant est le plus grand
 		    	int distance = distances[distances.length-1];
 		    	
 		    	if(distance < 0)
 		    		return 3000;
-		    	return distance;
+		    	return distance;*/
 			}
 			catch(Exception e)
 			{
@@ -86,42 +74,6 @@ public class Capteurs implements Service {
 				return 3000; // valeur considérée comme infinie
 			}
 		}
-    
-	/**
-	 * Retourne la valeur la plus optimiste des capteurs dans la direction voulue
-	 * @param marche_arriere
-	 * @return la valeur la plus optimiste des capteurs
-	 */
-    public int mesurer()
-    {
-    	if(!capteurs_on)
-    		return 3000;
-		String[] ultrasons;
-		String[] infrarouges;
-		int[] distances;
-		
-		try{
-    		distances = new int[nb_capteurs_ultrason_avant+nb_capteurs_infrarouge_avant];
-    		ultrasons = serie.communiquer("us_av", nb_capteurs_ultrason_avant);
-    		infrarouges  = serie.communiquer("ir_av", nb_capteurs_infrarouge_avant);
-    		for(int i = 0; i < nb_capteurs_ultrason_avant; i++)
-    			distances[i] = Integer.parseInt(ultrasons[i]);
-    		for(int i = 0; i < nb_capteurs_infrarouge_avant; i++)
-    			distances[nb_capteurs_ultrason_avant+i] = Integer.parseInt(infrarouges[i]);
-	    	
-	    	Arrays.sort(distances); // le dernier élément d'un tableau trié par ordre croissant est le plus grand
-	    	int distance = distances[distances.length-1];
-	    	
-	    	if(distance < 0)
-	    		return 3000;
-	    	return distance;
-		}
-		catch(Exception e)
-		{
-			log.critical(e.toString(), this);
-			return 3000; // valeur considérée comme infinie
-		}
-    }
 	
     public boolean demarrage_match()
     {
