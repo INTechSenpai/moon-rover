@@ -22,7 +22,7 @@ class HookAbscisseGauche extends Hook {
         super(config, log, real_state);
         this.abscisse = abscisse;
         if(effectuer_symetrie)
-            abscisse *= -1;
+            this.abscisse *= -1;
     }
     
     public boolean evaluate()

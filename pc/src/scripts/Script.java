@@ -63,7 +63,7 @@ public abstract class Script implements Service {
 
 		state.robot.set_vitesse(Vitesse.ENTRE_SCRIPTS);
 
-		Executable takefire = new TakeFire(state.robot);
+/*		Executable takefire = new TakeFire(state.robot);
 		Hook hook = hookgenerator.hook_feu();
 		hook.ajouter_callback(new Callback(takefire, true));		
 		hooks_chemin.add(hook);
@@ -77,7 +77,7 @@ public abstract class Script implements Service {
 		hook = hookgenerator.hook_position(state.table.getPositionTorche(Cote.GAUCHE), state.table.getRayonTorche(Cote.GAUCHE)+rayon_robot);
 		hook.ajouter_callback(new Callback(torche_disparue, true));
 		hooks_chemin.add(hook);
-
+*/
 		
 		
 		// on doit appeller score avant de faire le script (sinon, une fois le script fait, il ne reste plus de points a prendre)
@@ -86,6 +86,8 @@ public abstract class Script implements Service {
 		try
 		{
 		    state.robot.setInsiste(retenter_si_blocage);
+		    log.debug("Depart pathfinding: "+state.robot.getPosition(), this);
+		    log.debug("Arrivée pathfinding: "+point_entree, this);
 		    state.robot.va_au_point_pathfinding(state.pathfinding, point_entree, hooks_chemin, retenter_si_blocage);
 			execute(id_version, state);
 
@@ -204,9 +206,15 @@ public abstract class Script implements Service {
 	 */
 	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException
 	{
-	    if(state.robot.getPosition().distance(this.point_entree(id_version)) > 50)
+		Vec2 position_symetrie = state.robot.getPosition();
+		if(couleur == "rouge")
+			position_symetrie.x *= -1;
+			
+		int distanceAuPointEntree = (int) position_symetrie.distance(this.point_entree(id_version));
+	    if( distanceAuPointEntree > 50)
 	    {
-	        log.critical("Script appelé alors que le robot n'est pas au point d'entrée. Annulation.", this);
+	        log.critical("Script appelé alors que le robot n'est pas au point d'entrée ( distanceAuPointEntree = " + distanceAuPointEntree + "). Annulation.", this);
+	        log.critical("Position erronée : " + state.robot.getPosition(),this);
 	        throw new MouvementImpossibleException();
 	    }
 	}

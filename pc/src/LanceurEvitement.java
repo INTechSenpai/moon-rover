@@ -45,34 +45,34 @@ public class LanceurEvitement
 		real_state.robot.initialiser_actionneurs_deplacements();
 
 		// Threads
-		//container.demarreTousThreads();
-
+		container.demarreTousThreads();
 
 		System.out.println("LANCEUR HOMOLO EVITEMENT");
 		
 		
-		//recalerRobot();
+		recalerRobot();
 		
 
 		real_state.robot.set_vitesse(Vitesse.ENTRE_SCRIPTS);
 		real_state.robot.setPosition(new Vec2(1225,1725));
 
+		
 		// attends que le jumper soit retiré
+		real_state.robot.tourner(-3*Math.PI/8);
+		real_state.robot.avancer(50);
+		real_state.robot.tourner(-Math.PI/2);
+		real_state.robot.avancer(90);
+		real_state.robot.tourner(-5*Math.PI/6);
+		real_state.robot.avancer(-20);
+		
 		attendreDebutMatch();
 
 
 		System.out.println("Le robot commence le match");
 		
-
-        real_state.robot.avancer(300);
-        real_state.robot.tourner(-3.14/2 - 0.15);
-        real_state.robot.avancer(700);
-        real_state.robot.tourner(-3.14/2);
-        real_state.robot.avancer(300);
-        real_state.robot.tourner(-3.14);
-        real_state.robot.avancer(1300);
-        
-        
+        real_state.robot.avancer(500);
+        real_state.robot.tourner(Math.PI);
+        real_state.robot.avancer(1800);
 		
 		
 	}

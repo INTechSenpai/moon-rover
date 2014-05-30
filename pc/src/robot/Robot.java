@@ -275,9 +275,16 @@ public abstract class Robot implements Service {
         ArrayList<Vec2> chemin;
         try 
         {
+        	Vec2 position_robot = getPosition();
+		    if(symetrie)
+		    	position_robot.x *= -1;
+
             log.debug("B", this);
-            chemin = pathfinding.chemin(getPosition(), arrivee, insiste);
+            chemin = pathfinding.chemin(position_robot, arrivee, insiste);
+            for(Vec2 point: chemin)
+            	log.debug(point, this);
             suit_chemin(chemin, hooks);
+            log.debug("Robot en "+getPosition(), this);
             out = true;
         }
         catch (MouvementImpossibleException e)
@@ -286,8 +293,11 @@ public abstract class Robot implements Service {
             e.printStackTrace();
             if(insiste)
             {
+            	Vec2 position_robot = getPosition();
+    		    if(symetrie)
+    		    	position_robot.x *= -1;
                 log.debug("D", this);
-                chemin = pathfinding.chemin(getPosition(), arrivee, insiste);
+                chemin = pathfinding.chemin(position_robot, arrivee, insiste);
                 log.debug("E", this);
                 tourner(getOrientation()+Math.PI);
                 suit_chemin(chemin, hooks);
@@ -299,4 +309,7 @@ public abstract class Robot implements Service {
         return out;
     }
 
+    public abstract void desactiver_asservissement_rotation();
+    public abstract void activer_asservissement_rotation();
+    
 }

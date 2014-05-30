@@ -336,4 +336,10 @@ public class RobotChrono extends Robot {
     {
     }
 
+    public void desactiver_asservissement_rotation()
+    {}
+
+    public void activer_asservissement_rotation()
+    {}
+
 }

@@ -80,6 +80,7 @@ public class DeplacementsHautNiveau implements Service
             avancer(-200, null, true);
             deplacements.set_vitesse_translation(200);
             deplacements.desactiver_asservissement_rotation();
+            Sleep.sleep(1000);
             avancer(-200, null, true);
             deplacements.activer_asservissement_rotation();
             deplacements.set_vitesse_translation(Vitesse.RECALER.PWM_translation);
@@ -100,7 +101,7 @@ public class DeplacementsHautNiveau implements Service
             log.debug("III", this);
 
             Sleep.sleep(500);
-            avancer(50, null, true);
+            avancer(40, null, true);
             log.debug("IV", this);
             tourner(-Math.PI/2, null, false);
 
@@ -109,6 +110,7 @@ public class DeplacementsHautNiveau implements Service
             avancer(-600, null, true);
             deplacements.set_vitesse_translation(200);
             deplacements.desactiver_asservissement_rotation();
+            Sleep.sleep(1000);
             avancer(-200, null, true);
             deplacements.activer_asservissement_rotation();
             deplacements.set_vitesse_translation(Vitesse.RECALER.PWM_translation);
@@ -474,7 +476,6 @@ public class DeplacementsHautNiveau implements Service
         try {
             deplacements.tourner(angle);
             old_infos = deplacements.get_infos_x_y_orientation();
-
             if(!trajectoire_courbe) // sans virage : la première rotation est bloquante
                 while(!mouvement_fini()) // on attend la fin du mouvement
                     Sleep.sleep(sleep_boucle_acquittement);
@@ -490,7 +491,7 @@ public class DeplacementsHautNiveau implements Service
      * @return
      * @throws BlocageException
      */
-/*    private boolean mouvement_fini() throws BlocageException
+    private boolean mouvement_fini() throws BlocageException
     {
         boolean out = false;
         try
@@ -517,24 +518,25 @@ public class DeplacementsHautNiveau implements Service
         }
         return out;
     }
-*/
+
     /**
      * Surcouche de mouvement_fini afin de ne pas freezer
      * @return
      * @throws BlocageException
      */
-    private boolean mouvement_fini() throws BlocageException
+/*    private boolean mouvement_fini() throws BlocageException
     {
-        if(fini)
+        if(nouveau_mouvement)
             debut_mouvement_fini = System.currentTimeMillis();
+        nouveau_mouvement = false;
         fini = mouvement_fini_routine();
-        if(!fini && (System.currentTimeMillis() - debut_mouvement_fini) > 5000)
+        if(!fini && ((System.currentTimeMillis() - debut_mouvement_fini) > 2000))
         {
             log.critical("Erreur d'acquittement. On arrête l'attente du robot.", this);
             fini = true;
         }
         return fini;
-    }
+    }*/
     
     /**
      * Boucle d'acquittement générique. Retourne des valeurs spécifiques en cas d'arrêt anormal (blocage, capteur)
@@ -564,7 +566,8 @@ public class DeplacementsHautNiveau implements Service
             deplacements.leverExeptionSiPatinage();
             
             // robot arrivé?
-            return !deplacements.update_enMouvement();
+//            System.out.println("deplacements.update_enMouvement() : " + deplacements.isRobotMoving());
+            return !deplacements.isRobotMoving();
 
         } 
         catch (SerialException e) 
@@ -753,6 +756,32 @@ public class DeplacementsHautNiveau implements Service
     public void setInsiste(boolean insiste)
     {
         this.insiste = insiste;
+    }
+
+    public void desactiver_asservissement_rotation()
+    {
+    	try
+		{
+			deplacements.desactiver_asservissement_rotation();
+		}
+		catch (SerialException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+
+    public void activer_asservissement_rotation()
+    {
+    	try
+		{
+			deplacements.activer_asservissement_rotation();
+		}
+		catch (SerialException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
 }

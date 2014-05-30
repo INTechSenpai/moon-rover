@@ -10,8 +10,8 @@ public enum Vitesse
 {
     ENTRE_SCRIPTS(170, 160),
     DANS_MUR(90, 160),
-    RECALER(130, 90),
-    ARBRE_AVANT(50, 160),
+    RECALER(90, 90),
+    ARBRE_AVANT(100, 160),
     PRISE_FEU(90, 140),
     DEBUT(250, 70);
     

@@ -28,6 +28,7 @@ public class ScriptDeposerFruits extends Script
         ArrayList<Integer> versionList = new ArrayList<Integer>();
         versionList.add(0);
         versionList.add(1);
+        versionList.add(2);
         versions.add(versionList);
 	}
 	@Override 
@@ -41,7 +42,14 @@ public class ScriptDeposerFruits extends Script
 
 	@Override
 	public Vec2 point_entree(int id) {
-		return new Vec2(-600-300*id, 1400);
+		if(id == 0)
+			return new Vec2(-600,1400);
+		else if(id == 1)
+			return new Vec2(-900,1400);
+		else if (id == 2)
+			return new Vec2(-200,1400);
+		else //if (id == 2)
+			return new Vec2(-1350,1400);
 	}
 	@Override
 	public int score(int id_version, GameState<?> state)
@@ -60,17 +68,71 @@ public class ScriptDeposerFruits extends Script
 	}
 
 	@Override
-	protected void execute(int id_version, GameState<?> state)
-			throws MouvementImpossibleException, SerialException {
+	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException
+	{
         super.execute(id_version, state);
-	    state.robot.tourner(-1.5707);
-	    state.robot.avancer_dans_mur(-300);
-	    state.robot.bac_haut();	// histoire d'être sûr qu'il y arrive bien
-	    state.robot.bac_haut();
-	    state.robot.bac_haut();
-	    state.robot.sleep(2000);
-	    state.robot.avancer(200);
-	    state.robot.bac_bas();
+        if(id_version == 2) // si on dépose les fruits par le coté central, on met  aussi les fresques !
+        {
+        	//dépose les fresques
+            state.robot.tourner(Math.PI/2);
+            state.robot.avancer(250);
+            state.robot.tourner(-Math.PI/2);
+    	    state.robot.bac_bas();
+    	    state.robot.avancer_dans_mur(-300);
+    	    state.robot.deposer_fresques();
+    	    state.robot.avancer(150);
+    	    state.table.appendFresco(id_version);
+    	    
+
+    	    // dépose les fruits
+		    state.robot.tourner(0);
+		    state.robot.bac_haut();	// histoire d'être sûr qu'il y arrive bien
+		    state.robot.bac_haut();
+		    state.robot.bac_haut();
+		    state.robot.avancer_dans_mur(-300);
+		    state.robot.sleep(2000);
+		    state.robot.avancer(50);
+		    state.robot.bac_bas();
+		    
+		    // retourne a portée des autoroutes
+            state.robot.tourner(-Math.PI/2);
+            state.robot.avancer(250);
+        	
+        }
+        else if(id_version == 3) // dépose des fruits par la grotte ennemie
+        {
+
+        	//avance dans la grotte
+            state.robot.tourner(Math.PI/2);
+            state.robot.avancer(250);
+    	    
+
+    	    // dépose les fruits
+		    state.robot.tourner(3.141);
+		    state.robot.bac_haut();	// histoire d'être sûr qu'il y arrive bien
+		    state.robot.bac_haut();
+		    state.robot.bac_haut();
+		    state.robot.avancer_dans_mur(-300);
+		    state.robot.sleep(2000);
+		    state.robot.avancer(50);
+		    state.robot.bac_bas();
+		    
+		    // retourne a portée des autoroutes
+            state.robot.tourner(-Math.PI/2);
+            state.robot.avancer(250);
+        	
+        }
+        else
+        {
+		    state.robot.tourner(-1.5707f);
+		    state.robot.avancer_dans_mur(-300);
+		    state.robot.bac_haut();	// histoire d'être sûr qu'il y arrive bien
+		    state.robot.bac_haut();
+		    state.robot.bac_haut();
+		    state.robot.sleep(2000);
+		    state.robot.avancer(200);
+		    state.robot.bac_bas();
+        }
 	}
 	@Override
 	protected void termine(GameState<?> state) {
