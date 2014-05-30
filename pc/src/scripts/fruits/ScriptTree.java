@@ -122,9 +122,9 @@ public class ScriptTree extends Script
 	    
 		// Orientation du robot, le rateau étant à l'arrière
 		if (id_version == 0)
-			state.robot.tourner(3.1415f);
+			state.robot.tourner(Math.PI);
 		else if (id_version == 1 || id_version == 2)
-			state.robot.tourner(1.5707f);
+			state.robot.tourner(Math.PI/2);
 		else if (id_version == 3)
 			state.robot.tourner(0f) ;
 			

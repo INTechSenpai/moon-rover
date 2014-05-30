@@ -28,6 +28,7 @@ public class ScriptDeposerFruits extends Script
         ArrayList<Integer> versionList = new ArrayList<Integer>();
         versionList.add(0);
         versionList.add(1);
+        versionList.add(2);
         versions.add(versionList);
 	}
 	@Override 
@@ -41,7 +42,12 @@ public class ScriptDeposerFruits extends Script
 
 	@Override
 	public Vec2 point_entree(int id) {
-		return new Vec2(-600-300*id, 1400);
+		if(id == 0)
+			return new Vec2(-600,1400);
+		else if(id == 1)
+			return new Vec2(-900,1400);
+		else //if (id == 2)
+			return new Vec2(-100,1810);
 	}
 	@Override
 	public int score(int id_version, GameState<?> state)
@@ -62,8 +68,13 @@ public class ScriptDeposerFruits extends Script
 	@Override
 	protected void execute(int id_version, GameState<?> state)
 			throws MouvementImpossibleException, SerialException {
+		float angle = -1.5707f;
         super.execute(id_version, state);
-	    state.robot.tourner(-1.5707);
+        if(id_version == 2)
+        {
+        	angle = 0;
+        }
+	    state.robot.tourner(angle);
 	    state.robot.avancer_dans_mur(-300);
 	    state.robot.bac_haut();	// histoire d'être sûr qu'il y arrive bien
 	    state.robot.bac_haut();
