@@ -105,7 +105,9 @@ public class ScriptTree extends Script
     @Override
 	protected void execute(int id_version, GameState<?> state) throws MouvementImpossibleException, SerialException
 	{
+    	
         super.execute(id_version, state);
+        log.warning("Debuit de script tree a al position : " + state.robot.getPosition(), this);
 	    if(hooks == null && state.robot instanceof RobotVrai)
 	    {
 	        hooks = new ArrayList<ArrayList<Hook>>();
@@ -116,6 +118,7 @@ public class ScriptTree extends Script
                 initialise_hooks(Cote.GAUCHE, (GameState<RobotVrai>)state, i);
 	        }
         }
+	    state.robot.set_vitesse(Vitesse.PRISE_FEU);//Vitesse avec un nom incohérent mais c'est une vitesse inférieure à cellle de Arbre_Avant
 	    
 		// Orientation du robot, le rateau étant à l'arrière
 		if (id_version == 0)
@@ -128,16 +131,38 @@ public class ScriptTree extends Script
 		// baisse les fresques
 		state.robot.bac_tres_bas();
 		
+		 
 		// on déploie les bras 
+		state.robot.rateau(PositionRateau.BAS, Cote.DROIT);
+		state.robot.rateau(PositionRateau.BAS, Cote.GAUCHE);
+		state.robot.rateau(PositionRateau.BAS, Cote.DROIT);
+		state.robot.rateau(PositionRateau.BAS, Cote.GAUCHE);
 		state.robot.rateau(PositionRateau.BAS, Cote.DROIT);
 		state.robot.rateau(PositionRateau.BAS, Cote.GAUCHE);
 		
 		// on avance et on rebaisse les rateaux au min
 		state.robot.avancer_dans_mur(-400);
+		state.robot.desactiver_asservissement_rotation();		
+		state.robot.avancer_dans_mur(-400);
+		state.robot.avancer_dans_mur(-400);
+		state.robot.avancer_dans_mur(-400);
+		state.robot.avancer_dans_mur(-400);
+		state.robot.avancer_dans_mur(-400);
+		state.robot.avancer_dans_mur(-400);
+		state.robot.activer_asservissement_rotation();
+		
+		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
+		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
+		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
+		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
 		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
 		state.robot.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
 		state.robot.sleep(500);
 		//On remonte juste un peu pour éviter que les rateaux cognent sur le rebord de la table
+		state.robot.rateau(PositionRateau.BAS, Cote.DROIT);
+		state.robot.rateau(PositionRateau.BAS, Cote.GAUCHE);
+		state.robot.rateau(PositionRateau.BAS, Cote.DROIT);
+		state.robot.rateau(PositionRateau.BAS, Cote.GAUCHE);
 		state.robot.rateau(PositionRateau.BAS, Cote.DROIT);
 		state.robot.rateau(PositionRateau.BAS, Cote.GAUCHE);
 		// on remonte les bras à mi-hauteur en fonction de la position du fruit pourri, tout en reculant
@@ -199,7 +224,7 @@ public class ScriptTree extends Script
                 distance = 250;
             else if(nbFruits == 1)
                 distance = 350;
-
+            
             if(version == 0)
                 hook = hookgenerator.hook_abscisse_gauche(1500-distance);
             else if(version == 1 || version == 2)

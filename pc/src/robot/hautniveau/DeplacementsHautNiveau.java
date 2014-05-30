@@ -80,6 +80,7 @@ public class DeplacementsHautNiveau implements Service
             avancer(-200, null, true);
             deplacements.set_vitesse_translation(200);
             deplacements.desactiver_asservissement_rotation();
+            Sleep.sleep(1000);
             avancer(-200, null, true);
             deplacements.activer_asservissement_rotation();
             deplacements.set_vitesse_translation(Vitesse.RECALER.PWM_translation);
@@ -100,7 +101,7 @@ public class DeplacementsHautNiveau implements Service
             log.debug("III", this);
 
             Sleep.sleep(500);
-            avancer(50, null, true);
+            avancer(40, null, true);
             log.debug("IV", this);
             tourner(-Math.PI/2, null, false);
 
@@ -109,6 +110,7 @@ public class DeplacementsHautNiveau implements Service
             avancer(-600, null, true);
             deplacements.set_vitesse_translation(200);
             deplacements.desactiver_asservissement_rotation();
+            Sleep.sleep(1000);
             avancer(-200, null, true);
             deplacements.activer_asservissement_rotation();
             deplacements.set_vitesse_translation(Vitesse.RECALER.PWM_translation);
@@ -483,7 +485,7 @@ public class DeplacementsHautNiveau implements Service
             debut_mouvement_fini = System.currentTimeMillis();
         nouveau_mouvement = false;
         fini = mouvement_fini_routine();
-        if(!fini && ((System.currentTimeMillis() - debut_mouvement_fini) > 5000))
+        if(!fini && ((System.currentTimeMillis() - debut_mouvement_fini) > 2000))
         {
             log.critical("Erreur d'acquittement. On arrête l'attente du robot.", this);
             fini = true;
@@ -709,6 +711,32 @@ public class DeplacementsHautNiveau implements Service
     public void setInsiste(boolean insiste)
     {
         this.insiste = insiste;
+    }
+
+    public void desactiver_asservissement_rotation()
+    {
+    	try
+		{
+			deplacements.desactiver_asservissement_rotation();
+		}
+		catch (SerialException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+
+    public void activer_asservissement_rotation()
+    {
+    	try
+		{
+			deplacements.activer_asservissement_rotation();
+		}
+		catch (SerialException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
 }

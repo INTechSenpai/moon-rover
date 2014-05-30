@@ -102,7 +102,7 @@ public class lanceur_sans_strategie {
 	        	{
 		        	try
 		        	{
-		        		deposer_fruits.agit(1, real_state, false);
+		        		deposer_fruits.agit(version_depose, real_state, false);
 					}
 		        	catch(Exception e)
 					{

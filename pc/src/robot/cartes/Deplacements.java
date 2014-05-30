@@ -131,9 +131,9 @@ public class Deplacements implements Service {
 		
 		//donc, on vire !
 		// VALEURS A REVOIR
-		boolean rotation_stoppe = Math.abs(erreur_rotation) <= 100;
-		boolean translation_stoppe = Math.abs(erreur_translation) <= 100;
-		boolean bouge_pas = Math.abs(derivee_erreur_rotation) <= 10 && Math.abs(derivee_erreur_translation) <= 10;
+		boolean rotation_stoppe = Math.abs(erreur_rotation) <= 60;
+		boolean translation_stoppe = Math.abs(erreur_translation) <= 60;
+		boolean bouge_pas = Math.abs(derivee_erreur_rotation) <= 20 && Math.abs(derivee_erreur_translation) <= 20;
 		return !(rotation_stoppe && translation_stoppe && bouge_pas);
 	}
 	

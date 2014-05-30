@@ -52,6 +52,16 @@ public class RobotVrai extends Robot {
 	{
 		super.maj_config();
 	}
+	
+	public void desactiver_asservissement_rotation()
+	{
+		deplacements.desactiver_asservissement_rotation();
+	}
+
+	public void activer_asservissement_rotation()
+	{
+		deplacements.activer_asservissement_rotation();
+	}
 
 	// La couleur est simulée. Normalement, vu la disposition des couleurs, cela devrait se faire assez bien.
 	public Colour getColour()
