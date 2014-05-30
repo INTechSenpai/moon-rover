@@ -136,7 +136,7 @@ public class ScriptLances extends Script {
         try
         {
             state.robot.eteint_ventilo();
-            state.robot.sleep(1000);
+            state.robot.sleep(2000);
         } catch (SerialException e)
         {
             e.printStackTrace();

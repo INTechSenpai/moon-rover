@@ -120,7 +120,7 @@ public class DeplacementsHautNiveau implements Service
 
         	log.debug("Done !",this);
             Sleep.sleep(500);
-            avancer(100, null, false);
+            avancer(130, null, false);
             orientation = -Math.PI/2;
             setOrientation(-Math.PI/2);
             //Normalement on se trouve à (1500 - 165 - 100 = 1225 ; 2000 - 165 - 100 = 1725)
