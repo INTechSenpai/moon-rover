@@ -162,11 +162,11 @@ public class Deplacements implements Service {
 	 */
 	public void stopper() throws SerialException
 	{
-        desactiver_asservissement_translation();
-        desactiver_asservissement_rotation();
+//        desactiver_asservissement_translation();
+//        desactiver_asservissement_rotation();
 		serie.communiquer("stop", 0);
-        activer_asservissement_translation();
-        activer_asservissement_rotation();
+//        activer_asservissement_translation();
+//        activer_asservissement_rotation();
 	}
 	
 	/**

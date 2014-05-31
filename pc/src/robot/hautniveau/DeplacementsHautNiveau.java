@@ -42,6 +42,7 @@ public class DeplacementsHautNiveau implements Service
     private Vec2 position = new Vec2();  // la position tient compte de la symétrie
     private Vec2 consigne = new Vec2(); // La consigne est un attribut car elle peut être modifiée au sein d'un même mouvement.
     private boolean trajectoire_courbe = false;
+    private int abwabwa;
     
     private double orientation; // l'orientation tient compte de la symétrie
     private Deplacements deplacements;
@@ -148,6 +149,7 @@ public class DeplacementsHautNiveau implements Service
 
         try {
             old_infos = deplacements.get_infos_x_y_orientation();
+            abwabwa = 5;
             deplacements.tourner(angle);
             while(!mouvement_fini()) // on attend la fin du mouvement
             {
@@ -247,6 +249,8 @@ public class DeplacementsHautNiveau implements Service
             {
                 consigne = point.clone();
                 va_au_point_marche_arriere(hooks, false, false);
+                va_au_point_marche_arriere(hooks, false, false);
+                va_au_point_marche_arriere(hooks, false, false);
             }
     }
 
@@ -332,6 +336,7 @@ public class DeplacementsHautNiveau implements Service
                         try
                         {
                             old_infos = deplacements.get_infos_x_y_orientation();
+                            abwabwa = 5;
                         } catch (SerialException e1)
                         {
                             e1.printStackTrace();
@@ -392,6 +397,7 @@ public class DeplacementsHautNiveau implements Service
         try
         {
             old_infos = deplacements.get_infos_x_y_orientation();
+            abwabwa = 5;
         } catch (SerialException e)
         {
             e.printStackTrace();
@@ -476,6 +482,7 @@ public class DeplacementsHautNiveau implements Service
         try {
             deplacements.tourner(angle);
             old_infos = deplacements.get_infos_x_y_orientation();
+            abwabwa = 5;
             if(!trajectoire_courbe) // sans virage : la première rotation est bloquante
                 while(!mouvement_fini()) // on attend la fin du mouvement
                     Sleep.sleep(sleep_boucle_acquittement);
@@ -493,22 +500,45 @@ public class DeplacementsHautNiveau implements Service
      */
     private boolean mouvement_fini() throws BlocageException
     {
+    	if(true)
+    		return false;
         boolean out = false;
         try
         {
+        	abwabwa--;
             double[] new_infos = deplacements.get_infos_x_y_orientation();
+            System.out.println("mouvement_fini");
+            System.out.println("Abwabwa: "+abwabwa);
             System.out.println("x: "+new_infos[0]);
             System.out.println("y: "+new_infos[1]);
             System.out.println("o: "+new_infos[2]);
+            System.out.println("consigne: "+consigne);
             System.out.println("distance² diff: "+new Vec2((int)old_infos[0], (int)old_infos[1]).SquaredDistance(new Vec2((int)new_infos[0], (int)new_infos[1])));
             System.out.println("angle diff: "+Math.abs(new_infos[2] - old_infos[2]));
 
-//            if(new Vec2((int)old_infos[0], (int)old_infos[1]).SquaredDistance(new Vec2((int)new_infos[0], (int)new_infos[1])) > 20 || Math.abs(new_infos[2] - old_infos[2]) > 20)
-//                out = false;
-//            else if(new Vec2((int)new_infos[0], (int)new_infos[1]).SquaredDistance(consigne) < 10)
-//                out = true;
-//            else
-//                throw new BlocageException();
+            // si les codeuses bougent
+            if(new Vec2((int)old_infos[0], (int)old_infos[1]).SquaredDistance(new Vec2((int)new_infos[0], (int)new_infos[1])) > 20)
+            {
+                out = false;
+                System.out.println("false");
+            }
+            else // si le robot est immobile
+            {
+            	// si de plus on a demandé le départ ya un ptis bout de temps
+	            if(abwabwa == 0)
+	            	// soit on est arrivé
+	            	if(new Vec2((int)new_infos[0], (int)new_infos[1]).SquaredDistance(consigne) < 10)
+		            {
+		                out = true;
+		                System.out.println("true");
+		            }
+	            	// soit on est pas arrivé (on est immobile loin de la consigne, ie on est bloqué)
+		            else
+		            {
+		                System.out.println("exception");
+		                throw new BlocageException();
+		            }
+            }
    
             old_infos = new_infos;
         } catch (SerialException e)
