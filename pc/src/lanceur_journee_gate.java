@@ -11,6 +11,7 @@ public class lanceur_journee_gate
 	public static boolean avance = false, recule = false;
 	public static int codetourne;
 	public static int codeactionneurs;
+	public static int orientation_actuelle = 0;
 	public static void main(String[] args) throws Exception
 	{
 		Container container = new Container();
@@ -21,8 +22,12 @@ public class lanceur_journee_gate
 		deplacements.set_y(1000);
 		deplacements.stopper();
 		arcade demo = new arcade();
+
 		
-		JFrame fenetre = new JFrame();
+		deplacements.set_vitesse_rotation(60);
+        deplacements.set_vitesse_translation(50);
+
+        JFrame fenetre = new JFrame();
         
 	    //Définit un titre pour notre fenêtre
 	    fenetre.setTitle("INTech - Journée GATE");
@@ -37,47 +42,44 @@ public class lanceur_journee_gate
 		
 	    fenetre.addKeyListener(demo);
 	    
+	    actionneurs.bac_bas();
+	    actionneurs.recharger();
+
 	    while(true)
 	    {
-			while(!avance)
-			{
-			    
-				System.out.println("ça avance pas");
-				codeactionneurs = -1 ;
 				if(codeactionneurs == 0)
-					actionneurs.bac_haut();
-				else if(codeactionneurs == 1)
-					actionneurs.bac_bas();
-				else if(codeactionneurs == 2)
 				{
 					actionneurs.rateau_ranger_gauche();
 					actionneurs.rateau_ranger_droit();
+					codeactionneurs = -1 ;
 				}
-				else if(codeactionneurs == 3)
+				else if(codeactionneurs == 1)
 				{
 					actionneurs.rateau_bas_gauche();
 					actionneurs.rateau_bas_droit();
+					codeactionneurs = -1 ;
 				}
-				else if(codeactionneurs == 4)
+				else if(codeactionneurs == 2)
 				{
 					actionneurs.tirerBalle();
 					actionneurs.allume_ventilo();
 					Sleep.sleep(500);
 					actionneurs.eteint_ventilo();
+					codeactionneurs = -1 ;
 				}
-				Sleep.sleep(200);
-			}
 	
-			if(codetourne >= 0)
-				deplacements.tourner(codetourne*Math.PI/2);
-			codetourne = -1;
-			
-			while(avance)
+			if(codetourne >= 0 && codetourne != orientation_actuelle)
 			{
-				System.out.println("Ca avance");
-				deplacements.avancer(10);
-				Sleep.sleep(100);
+			    orientation_actuelle = codetourne;
+				deplacements.tourner(codetourne*Math.PI/2);
+				Sleep.sleep(1500);
+                codetourne = -1;
 			}
+				
+			if(avance)
+                deplacements.avancer(20);
+
+            Sleep.sleep(20);
 	    }
 	}
 }
