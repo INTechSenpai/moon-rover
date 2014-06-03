@@ -39,7 +39,7 @@ public class JUnit_ScriptTest extends JUnit_Test {
     @Before
 	public void setUp() throws Exception {
 		super.setUp();
-		config.set("couleur", "jaune");
+		config.set("couleur", "rouge");
 		
 		scriptmanager = (ScriptManager)container.getService("ScriptManager");
         real_state = (GameState<RobotVrai>)container.getService("RealGameState");
@@ -114,8 +114,8 @@ public class JUnit_ScriptTest extends JUnit_Test {
         real_state.robot.recaler();
         Sleep.sleep(3000);
         real_state.robot.avancer(300);
-		s = (Script)scriptmanager.getScript("ScriptFresque");
-		s.agit(2, real_state, false);
+        s = (Script)scriptmanager.getScript("ScriptFresque");
+		s.agit(2, real_state, true);
 	}
 
 	@Test
@@ -240,10 +240,10 @@ public class JUnit_ScriptTest extends JUnit_Test {
     {
         real_state.robot.initialiser_actionneurs_deplacements();
         real_state.robot.recaler();
-        Sleep.sleep(20000);
+        Sleep.sleep(2000);
         real_state.robot.avancer(400);
         s = (Script)scriptmanager.getScript("ScriptLances");
-        s.agit(1, real_state, true);
+        s.agit(0, real_state, true);
     }
 
 	

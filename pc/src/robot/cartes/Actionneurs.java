@@ -16,7 +16,6 @@ public class Actionneurs implements Service {
 	// Dépendances
 	private Log log;
 	private Serial serie;
-	private boolean premier_coup = true;
 
 	public Actionneurs(Read_Ini config, Log log, Serial serie)
 	{
@@ -212,16 +211,13 @@ public class Actionneurs implements Service {
 		log.debug("Balle tirée", this);
 		
 		// si pas premier coup, on tourne le barillet
-		if(!premier_coup)
-		    serie.communiquer("tourne", 0);
-		
-		premier_coup = false;
+	    serie.communiquer("to", 0);
 	}
 	
     public void recharger() throws SerialException
     {
         log.debug("Barillet rechargé", this);
-        serie.communiquer("reload", 0);     
+        serie.communiquer("re", 0);     
     }
     
 	public void lancerFilet() throws SerialException

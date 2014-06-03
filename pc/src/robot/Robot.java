@@ -262,7 +262,7 @@ public abstract class Robot implements Service {
      * @throws PathfindingException
      * @throws MouvementImpossibleException
      */
-    public void va_au_point_pathfinding(Pathfinding pathfinding, Vec2 arrivee, ArrayList<Hook> hooks, boolean insiste) throws PathfindingException, MouvementImpossibleException
+    public boolean va_au_point_pathfinding(Pathfinding pathfinding, Vec2 arrivee, ArrayList<Hook> hooks, boolean insiste) throws PathfindingException, MouvementImpossibleException
     {
         /* On demande au pathfinding simple un itinéraire
          * - si on a une exception de Pathfinding (chemin non trouvé), on utilise le A*
@@ -270,23 +270,33 @@ public abstract class Robot implements Service {
          *      - si on insiste, on reprend ça (nouveau chemin avec pathfinding simple, A* si pas de chemin trouvé)
          *      - si on n'insiste pas, on lève une exception
          */
-        
+        boolean out = false;
+        log.debug("A", this);
         ArrayList<Vec2> chemin;
         try 
         {
+            log.debug("B", this);
             chemin = pathfinding.chemin(getPosition(), arrivee, insiste);
             suit_chemin(chemin, hooks);
+            out = true;
         }
         catch (MouvementImpossibleException e)
         {
+            log.debug("C", this);
             e.printStackTrace();
             if(insiste)
             {
+                log.debug("D", this);
                 chemin = pathfinding.chemin(getPosition(), arrivee, insiste);
+                log.debug("E", this);
+                tourner(getOrientation()+Math.PI);
                 suit_chemin(chemin, hooks);
+                log.debug("F", this);
+                out = true;
             }
             else throw e;
         }
+        return out;
     }
 
 }

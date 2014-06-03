@@ -231,7 +231,7 @@ public class Pathfinding implements Service, Cloneable
 	    catch(PathfindingException e)
 	    {
 	        try {
-    	        log.warning("Pathfinding simple a échoué,  utilisation du A*", this);
+    	        log.warning("Pathfinding simple a échoué,  utilisation du A* (arrivee : " + arrivee + ", depart : " + depart + ")", this);
     	        // En cas de problème, on utilise le A*
                 update_astar();
     	        return cheminAStar(depart, arrivee);

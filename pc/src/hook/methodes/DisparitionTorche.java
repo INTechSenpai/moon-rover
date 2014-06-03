@@ -24,6 +24,7 @@ public class DisparitionTorche implements Executable {
 		@Override
 		public boolean execute()
 		{
+            System.out.println("La torche "+cote+" a disparu pour de vrai!");
 			table.torche_disparue(cote);
             return false; // ça n'affecte pas les mouvements du robot
 		}

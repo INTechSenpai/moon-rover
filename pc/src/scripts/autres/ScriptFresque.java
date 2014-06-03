@@ -63,7 +63,7 @@ public class ScriptFresque extends Script {
         state.robot.avancer(250);
         state.robot.tourner(-Math.PI/2);
 	    state.robot.bac_bas();
-	    state.robot.avancer_dans_mur(-200);
+	    state.robot.avancer_dans_mur(-300);
 	    state.robot.deposer_fresques();
 	    state.robot.avancer(300);
 	    state.table.appendFresco(id_version);

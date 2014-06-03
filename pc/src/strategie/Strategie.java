@@ -65,12 +65,30 @@ public class Strategie implements Service {
 	 * Méthode appelée à la fin du lanceur et qui exécute la meilleure stratégie (calculée dans threadStrategie)
 	 */
 	public void boucle_strategie()
-	{
-		// attends le début du match
-		log.debug("Boucle Stratégie: Attente du début du match", this);
-		while(!ThreadTimer.match_demarre)
-			Sleep.sleep(20);
+	{		
+		
+		// demande au robot de faire l'arbre n°2 en premier dans la match
+		log.debug("debut du match : action scriptée", this);
+		NoteScriptMetaversion meilleur = new NoteScriptMetaversion();
+		NoteScriptVersion meilleur_version = new NoteScriptVersion();
+		try {
+			meilleur_version.script = scriptmanager.getScript("ScriptLances");
+			meilleur.script = scriptmanager.getScript("ScriptLances");
+		} catch (ScriptException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		meilleur.metaversion = 0;
+		meilleur_version.version = 0;
+		meilleur_version.note = 42.0f;
+		setProchainScript(meilleur_version);
+		setMetaScriptEnCours(meilleur);
 
+		log.debug("prochain script : " + meilleur_version,this);
+		
+		
+		
+		
 		// l'historique des décisions doit être vide lors du lancement de la boucle.
 		decisionHistory.clear();
 
@@ -197,11 +215,13 @@ public class Strategie implements Service {
 				if(duree_freeze[p] > 5000)
 			
 				{
+					/*
 					log.debug("La position du freeze est : "+positionsfreeze[p]+"pour le robot : "+p, this);
 					log.debug("L'indice du plus proche arbre non pris est : "+ i_min_tree,this);
 					log.debug("L'indice du plus proche feu non pris est : "+i_min_fire,this);
 					log.debug("L'indice de la place libre la plus proche pour les fresques  : "+i_min_fresco, this);
 					log.debug("L'indice du plus proche feu fixe non pris est : "+i_min_fixed_fire, this);
+					*/
 					
 				}
 			}
@@ -499,7 +519,7 @@ public class Strategie implements Service {
 		else if(scope.size() == 1)
 			TTL = 60000; 
 		
-		//TTL /=2;
+		TTL /=1.3;
 		
 		
 		for (int i = 0; i < rootList.size(); ++i)
