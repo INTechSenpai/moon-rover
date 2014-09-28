@@ -3,7 +3,6 @@ package hook.sortes;
 import hook.Hook;
 import container.Service;
 import robot.RobotVrai;
-import robot.cartes.Capteurs;
 import smartMath.Vec2;
 import strategie.GameState;
 import utils.Log;
@@ -15,7 +14,8 @@ import utils.Read_Ini;
  *
  */
 
-public class HookGenerator implements Service {
+public class HookGenerator implements Service
+{
 
 	/**
 	 * Retourne un hook de position suivant les paramètres donnés
@@ -27,22 +27,20 @@ public class HookGenerator implements Service {
 	
 	private Read_Ini config;
 	private Log log;
-	private Capteurs capteur;
 	private GameState<RobotVrai> real_state;
 
 	private int tolerance_position = 20;
 	String couleur;
 	
-	public HookGenerator(Read_Ini config, Log log, Capteurs capteur, GameState<RobotVrai> real_state)
+	public HookGenerator(Read_Ini config, Log log, GameState<RobotVrai> real_state)
 	{
 		this.config = config;
 		this.log = log;
-		this.capteur = capteur;
 		this.real_state = real_state;
-		maj_config();
+		updateConfig();
 	}
 
-	public void maj_config()
+	public void updateConfig()
 	{
 		couleur = config.get("couleur");
 		tolerance_position = Integer.parseInt(this.config.get("hooks_tolerance_mm"));		
@@ -105,14 +103,6 @@ public class HookGenerator implements Service {
     {
         return new HookOrdonneeHaut(config, log, real_state, ordonnee, couleur=="rouge");
     }
-    
-	/*
-	 * Hook de feu
-	 */
 
-	public Hook hook_feu()
-	{
-		return new HookFeu(config, log, real_state, capteur);
-	}
 
 }

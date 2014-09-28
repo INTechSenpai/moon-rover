@@ -2,7 +2,6 @@ package robot.hautniveau;
 
 import container.Service;
 import enums.Cote;
-import enums.PositionRateau;
 import exceptions.serial.SerialException;
 import robot.cartes.Actionneurs;
 import utils.Log;
@@ -23,29 +22,9 @@ public class ActionneursHautNiveau implements Service
     public ActionneursHautNiveau(Read_Ini config, Log log, Actionneurs actionneurs)
     {
         this.actionneurs = actionneurs;
-        maj_config();
+        updateConfig();
     }
 
-
-    public void rateau(PositionRateau position, Cote cote) throws SerialException
-    {
-        if(position == PositionRateau.BAS && cote == Cote.DROIT)
-            actionneurs.rateau_bas_droit();
-        else if(position == PositionRateau.BAS && cote == Cote.GAUCHE)
-            actionneurs.rateau_bas_gauche();
-        else if(position == PositionRateau.HAUT && cote == Cote.DROIT)
-            actionneurs.rateau_haut_droit();
-        else if(position == PositionRateau.HAUT && cote == Cote.GAUCHE)
-            actionneurs.rateau_haut_gauche();
-        else if(position == PositionRateau.RANGER && cote == Cote.DROIT)
-            actionneurs.rateau_ranger_droit();
-        else if(position == PositionRateau.RANGER && cote == Cote.GAUCHE)
-            actionneurs.rateau_ranger_gauche();
-        else if(position == PositionRateau.SUPER_BAS && cote == Cote.DROIT)
-            actionneurs.rateau_super_bas_droit();
-        else if(position == PositionRateau.SUPER_BAS && cote == Cote.GAUCHE)
-            actionneurs.rateau_super_bas_gauche();
-    }
 
     public void initialiser_actionneurs()
     {
@@ -231,7 +210,7 @@ public class ActionneursHautNiveau implements Service
 		actionneurs.renverserFeuDoite();
 	}
     @Override
-    public void maj_config()
+    public void updateConfig()
     {}
 
 }

@@ -5,12 +5,11 @@ import org.junit.Test;
 import exceptions.ContainerException;
 import exceptions.serial.SerialManagerException;
 
-	/**
-	 * Tests unitaires pour le container
-	 * Sert surtout à vérifier l'absence de cycle de dépendances, et d'éventuelles fautes de frappe...
-	 * @author pf
-	 *
-	 */
+/**
+ * Tests unitaires pour le container
+ * Sert surtout à vérifier l'absence de dépendances circulaires, et d'éventuelles fautes de frappe...
+ * @author pf
+ */
 public class JUnit_ContainerTest extends JUnit_Test {
 	
 	@Test(expected=ContainerException.class)
@@ -132,6 +131,10 @@ public class JUnit_ContainerTest extends JUnit_Test {
 		container.getService("FiltrageLaser");
 	}
 
+	/**
+	 * Test vérifiant que le système de containers se comporte bien si on appelle deux fois  le meme service 
+	 * @throws Exception
+	 */
 	@Test
 	public void test_doublon() throws Exception
 	{
@@ -203,6 +206,7 @@ public class JUnit_ContainerTest extends JUnit_Test {
 		container.getService("threadStrategie");
 	}
 	
+	// TODO : delate ?
 	@Test
 	public void test_threadAnalyseEnnemi() throws Exception
 	{

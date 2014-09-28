@@ -12,7 +12,7 @@ public interface Executable {
 
 	/**
 	 * La méthode qui sera exécutée par le hook
-     * @return un booléen qui renseignera sur la fait que la méthode fait ou non bouger le robot
+     * @return un booléen qui renseignera sur le fait que la méthode fait ou non bouger le robot
 	 */
 	public boolean execute();
 	

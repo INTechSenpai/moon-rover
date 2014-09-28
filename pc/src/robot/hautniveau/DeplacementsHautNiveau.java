@@ -64,7 +64,7 @@ public class DeplacementsHautNiveau implements Service
         this.deplacements = deplacements;
 //        this.hookgenerator = hookgenerator;
         this.table = table;
-        maj_config();
+        updateConfig();
     }
     
     public void recaler()
@@ -84,7 +84,6 @@ public class DeplacementsHautNiveau implements Service
             avancer(-200, null, true);
             deplacements.activer_asservissement_rotation();
             deplacements.set_vitesse_translation(Vitesse.RECALER.PWM_translation);
-            log.debug("I", this);
 
             position.x = 1500 - 165;
             if(symetrie)
@@ -98,11 +97,9 @@ public class DeplacementsHautNiveau implements Service
                 setOrientation(Math.PI);
             }
 
-            log.debug("III", this);
 
             Sleep.sleep(500);
             avancer(40, null, true);
-            log.debug("IV", this);
             tourner(-Math.PI/2, null, false);
 
             
@@ -473,7 +470,8 @@ public class DeplacementsHautNiveau implements Service
  //               return;
  //           else
                 trajectoire_courbe = false;
-        try {
+        try
+        {
             deplacements.tourner(angle);
             old_infos = deplacements.get_infos_x_y_orientation();
             if(!trajectoire_courbe) // sans virage : la première rotation est bloquante
@@ -491,24 +489,27 @@ public class DeplacementsHautNiveau implements Service
      * @return
      * @throws BlocageException
      */
+    
+    // TODO: wut ?
     private boolean mouvement_fini() throws BlocageException
     {
         boolean out = false;
         try
         {
             double[] new_infos = deplacements.get_infos_x_y_orientation();
+            /*
             System.out.println("x: "+new_infos[0]);
             System.out.println("y: "+new_infos[1]);
             System.out.println("o: "+new_infos[2]);
             System.out.println("distance² diff: "+new Vec2((int)old_infos[0], (int)old_infos[1]).SquaredDistance(new Vec2((int)new_infos[0], (int)new_infos[1])));
             System.out.println("angle diff: "+Math.abs(new_infos[2] - old_infos[2]));
-
-//            if(new Vec2((int)old_infos[0], (int)old_infos[1]).SquaredDistance(new Vec2((int)new_infos[0], (int)new_infos[1])) > 20 || Math.abs(new_infos[2] - old_infos[2]) > 20)
-//                out = false;
-//            else if(new Vec2((int)new_infos[0], (int)new_infos[1]).SquaredDistance(consigne) < 10)
-//                out = true;
-//            else
-//                throw new BlocageException();
+*/
+            if(new Vec2((int)old_infos[0], (int)old_infos[1]).SquaredDistance(new Vec2((int)new_infos[0], (int)new_infos[1])) > 20 || Math.abs(new_infos[2] - old_infos[2]) > 20)
+                out = false;
+            else if(new Vec2((int)new_infos[0], (int)new_infos[1]).SquaredDistance(consigne) < 10)
+                out = true;
+            else
+                throw new BlocageException();
    
             old_infos = new_infos;
         } catch (SerialException e)
@@ -591,7 +592,7 @@ public class DeplacementsHautNiveau implements Service
         int rayon_detection = largeur_robot/2 + distance_detection;
         Vec2 centre_detection = new Vec2((int)(signe * rayon_detection * Math.cos(orientation)), (int)(signe * rayon_detection * Math.sin(orientation)));
         centre_detection.Plus(position);
-        if(table.obstaclePresent(centre_detection, distance_detection))
+        if(table.gestionobstacles.obstaclePresent(centre_detection, distance_detection))
         {
             log.warning("Ennemi détecté en : " + centre_detection, this);
             throw new CollisionException();
@@ -618,7 +619,7 @@ public class DeplacementsHautNiveau implements Service
     }
 
     @Override
-    public void maj_config()
+    public void updateConfig()
     {
         nb_iterations_max = Integer.parseInt(config.get("nb_tentatives"));
         distance_detection = Integer.parseInt(config.get("distance_detection"));

@@ -3,26 +3,30 @@ package table.obstacles;
 import smartMath.Vec2;
 
 /**
- * Convention: la "position" d'un ObstacleRectangulaire est son coin supérieur gauche.
- * C'est une convention tout à fait absurde et idiote (le coin inférieur gauche aurait été bien mieux...)
- * @author pf
- *
+ * Obstacle rectangulaire sont les bords sont alignés avec les axes X et Y (pas de possibilité de faire un rectangle en biais)
+ * @author pf, marsu
  */
-public class ObstacleRectangulaire extends Obstacle {
+public class ObstacleRectangulaire extends Obstacle
+{
 
-	protected int longueur_en_x;
-	protected int longueur_en_y;
+	// Convention: la "position" d'un ObstacleRectangulaire est celle de son centre (intersection des 2 diagonales)
 	
-	public ObstacleRectangulaire(Vec2 position, int longueur_en_x, int longueur_en_y)
+	// taille selon l'axe X
+	protected int sizeX;
+	
+	// taille selon l'axe Y
+	protected int sizeY;
+	
+	public ObstacleRectangulaire(Vec2 position, int sizeX, int sizeY)
 	{
 		super(position);
-		this.longueur_en_y = longueur_en_y;
-		this.longueur_en_x = longueur_en_x;
+		this.sizeY = sizeY;
+		this.sizeX = sizeX;
 	}
 
 	public ObstacleRectangulaire clone()
 	{
-		return new ObstacleRectangulaire(position.clone(), longueur_en_x, longueur_en_y);
+		return new ObstacleRectangulaire(position.clone(), sizeX, sizeY);
 	}
 	public String toString()
 	{
@@ -30,21 +34,21 @@ public class ObstacleRectangulaire extends Obstacle {
 	}
 	
 	/**
-	 * En y
+	 * Taille selon l'axe Y
 	 * @return
 	 */
-	public int getLongueur_en_y()
+	public int getSizeY()
 	{
-		return this.longueur_en_y;
+		return this.sizeY;
 	}
 	
 	/**
-	 * En x
+	 * Taille selon l'axe X
 	 * @return
 	 */
-	public int getLongueur_en_x()
+	public int getSizeX()
 	{
-		return this.longueur_en_x;
+		return this.sizeX;
 	}
 	
 	public float distance(Vec2 point)
@@ -53,42 +57,61 @@ public class ObstacleRectangulaire extends Obstacle {
 	}
 	
 	/**
-	 * Fourni la distance au carré d'un point à l'obstacle
-	 * @param point
-	 * @return
+	 * Fourni la plus petite distance au carré entre le point fourni et l'obstacle
+	 * @param in
+	 * @return la plus petite distance au carré entre le point fourni et l'obstacle
 	 */
-	public float SquaredDistance(Vec2 point)
+	public float SquaredDistance(Vec2 in)
 	{
-		// Si le point est à un des coins
-		Vec2 coinBasGauche = position.PlusNewVector((new Vec2(0,-longueur_en_y)));
+		
+		/*		
+		 *  Shéma de la situation :
+		 *
+		 * 		 												  y
+		 * 			4	|		3		|		2					    ^
+		 * 				|				|								|
+		 * 		____________________________________				    |
+		 * 				|				|								-----> x
+		 * 				|				|
+		 * 			5	|	obstacle	|		1
+		 * 		
+		 * 		____________________________________
+		 * 		
+		 * 			6	|		7		|		8
+		 * 				|				|
+		 */		
+		
+		// calcul des positions des coins
+		Vec2 coinBasGauche = position.PlusNewVector((new Vec2(0,-sizeY)));
 		Vec2 coinHautGauche = position.PlusNewVector((new Vec2(0,0)));
-		Vec2 coinBasDroite = position.PlusNewVector((new Vec2(longueur_en_x,-longueur_en_y)));
-		Vec2 coinHautDroite = position.PlusNewVector((new Vec2(longueur_en_x,0)));
+		Vec2 coinBasDroite = position.PlusNewVector((new Vec2(sizeX,-sizeY)));
+		Vec2 coinHautDroite = position.PlusNewVector((new Vec2(sizeX,0)));
 		
-		if(point.x < coinBasGauche.x && point.y < coinBasGauche.y)
-			return point.SquaredDistance(coinBasGauche);
+		// si le point fourni est dans lesquarts-de-plans n°2,4,6 ou 8
+		if(in.x < coinBasGauche.x && in.y < coinBasGauche.y)
+			return in.SquaredDistance(coinBasGauche);
 		
-		else if(point.x < coinHautGauche.x && point.y > coinHautGauche.y)
-			return point.SquaredDistance(coinHautGauche);
+		else if(in.x < coinHautGauche.x && in.y > coinHautGauche.y)
+			return in.SquaredDistance(coinHautGauche);
 		
-		else if(point.x > coinBasDroite.x && point.y < coinBasDroite.y)
-			return point.SquaredDistance(coinBasDroite);
+		else if(in.x > coinBasDroite.x && in.y < coinBasDroite.y)
+			return in.SquaredDistance(coinBasDroite);
 
-		else if(point.x > coinHautDroite.x && point.y > coinHautDroite.y)
-			return point.SquaredDistance(coinHautDroite);
+		else if(in.x > coinHautDroite.x && in.y > coinHautDroite.y)
+			return in.SquaredDistance(coinHautDroite);
 
-		// Si le point est sur un côté
-		if(point.x > coinHautDroite.x)
-			return (point.x - coinHautDroite.x)*(point.x - coinHautDroite.x);
+		// Si le point fourni est dans les demi-bandes n°1,3,5,ou 7
+		if(in.x > coinHautDroite.x)
+			return (in.x - coinHautDroite.x)*(in.x - coinHautDroite.x);
 		
-		else if(point.x < coinBasGauche.x)
-			return (point.x - coinBasGauche.x)*(point.x - coinBasGauche.x);
+		else if(in.x < coinBasGauche.x)
+			return (in.x - coinBasGauche.x)*(in.x - coinBasGauche.x);
 
-		else if(point.y > coinHautDroite.y)
-			return (point.y - coinHautDroite.y)*(point.y - coinHautDroite.y);
+		else if(in.y > coinHautDroite.y)
+			return (in.y - coinHautDroite.y)*(in.y - coinHautDroite.y);
 		
-		else if(point.y < coinBasGauche.y)
-			return (point.y - coinBasGauche.y)*(point.y - coinBasGauche.y);
+		else if(in.y < coinBasGauche.y)
+			return (in.y - coinBasGauche.y)*(in.y - coinBasGauche.y);
 
 		// Sinon, on est dans l'obstacle
 		return 0f;

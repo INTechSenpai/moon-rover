@@ -19,6 +19,14 @@ import smartMath.Vec2;
 import strategie.GameState;
 import utils.Sleep;
 
+/**
+ * Teste les fonctions de déplacement de haut niveau
+ * @author pf
+ *
+ */
+
+// TODO : comprendre ce système
+
 public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
 {
     private DeplacementsHautNiveau robot;
@@ -54,14 +62,7 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     @Test
     public void test_va_au_point_hook() throws Exception
     {
-        int nb_balles = real_state.robot.getNbrLances();
-        ArrayList<Hook> hooks = new ArrayList<Hook>();
-        Executable tirerballes = new TirerBalles(real_state.robot);
-        Hook hook = hookgenerator.hook_position(new Vec2(850, 1150), 200);
-        hook.ajouter_callback(new Callback(tirerballes, true));
-        hooks.add(hook);
-        robot.va_au_point_hook_correction_detection(hooks, false, false);
-        Assert.assertTrue(nb_balles != real_state.robot.getNbrLances());
+    	// TODO
     }
 
     @Test
@@ -82,6 +83,8 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     @Test
     public void test_va_au_point_relancer() throws Exception
     {
+    	// TODO : une classe de type Executable
+    	
         ArrayList<Hook> hooks = new ArrayList<Hook>();
         Executable takefire = new TakeFire(real_state.robot);
         Hook hook = hookgenerator.hook_position(new Vec2(850, 1150), 100);

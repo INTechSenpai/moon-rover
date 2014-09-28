@@ -14,7 +14,8 @@ public abstract class JUnit_Test {
 	protected Log log;
 	
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 		container = new Container();
 		config = (Read_Ini) container.getService("Read_Ini");
 		log = (Log) container.getService("Log");
@@ -24,7 +25,7 @@ public abstract class JUnit_Test {
 	public void tearDown() throws Exception {
 		container.destructeur();
 		try {
-			Thread.sleep(200);
+			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

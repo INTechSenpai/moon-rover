@@ -13,7 +13,8 @@ import utils.Read_Ini;
  *
  */
 
-class HookAbscisseDroite extends Hook {
+class HookAbscisseDroite extends Hook
+{
 
     private float abscisse;
     

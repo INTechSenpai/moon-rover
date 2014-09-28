@@ -7,17 +7,19 @@ import org.junit.Test;
 import robot.cartes.*;
 import utils.Sleep;
 
-	/**
-	 * Tests unitaires pour Deplacements
-	 * @author pf
-	 *
-	 */
-public class JUnit_DeplacementsTest extends JUnit_Test {
+/**
+ * Tests unitaires pour Deplacements
+ * @author pf
+ *
+ */
+public class JUnit_DeplacementsTest extends JUnit_Test
+{
 
 	private Deplacements deplacements;
 	
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 		super.setUp();
 		log.debug("JUnit_DeplacementsTest.setUp()", this);
 		deplacements = (Deplacements)container.getService("Deplacements");
@@ -104,7 +106,7 @@ public class JUnit_DeplacementsTest extends JUnit_Test {
 	{
 	    deplacements.set_vitesse_translation(170);
 	    deplacements.desactiver_asservissement_rotation();
-//	    deplacements.avancer(500);
+	    deplacements.avancer(500);
         deplacements.activer_asservissement_rotation();
 	    Sleep.sleep(1000);
 	}

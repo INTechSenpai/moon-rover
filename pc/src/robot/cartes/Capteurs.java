@@ -25,10 +25,10 @@ public class Capteurs implements Service {
 		this.log = log;
 		this.config = config;
 		this.serie = serie;
-		maj_config();
+		updateConfig();
 	}
 	
-	public void maj_config()
+	public void updateConfig()
 	{
 		capteurs_on = Boolean.parseBoolean(config.get("capteurs_on"));
 	}

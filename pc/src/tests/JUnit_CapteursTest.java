@@ -6,7 +6,14 @@ import org.junit.Assert;
 
 import robot.cartes.Capteurs;
 
-public class JUnit_CapteursTest extends JUnit_Test {
+/**
+ * Test des capteurs : les obstacles doivent être détectés
+ * TODO : comprendre l'utilité du test desactivation_capteur et faux_test
+ * @author marsu
+ *
+ */
+public class JUnit_CapteursTest extends JUnit_Test
+{
 
 	Capteurs capteurs;
 	
@@ -16,16 +23,7 @@ public class JUnit_CapteursTest extends JUnit_Test {
 		log.debug("JUnit_ActionneursTest.setUp()", this);
 		capteurs = (Capteurs)container.getService("Capteur");
 		config.set("capteurs_on", true);
-		capteurs.maj_config();
-	}
-	
-	@Test
-	public void test_feu() throws Exception
-	{
-		// TODO
-		log.debug("JUnit_CapteursTest.test_feu()", this);
-		Assert.assertTrue(!capteurs.isThereFireDroit());
-		Assert.assertTrue(!capteurs.isFireRedDroit());
+		capteurs.updateConfig();
 	}
 
 	@Test
@@ -40,14 +38,14 @@ public class JUnit_CapteursTest extends JUnit_Test {
 
 		// Sans capteurs
 		config.set("capteurs_on", false);
-		capteurs.maj_config();
+		capteurs.updateConfig();
 		log.debug(capteurs.mesurer(), this);
 	//	Assert.assertTrue(capteurs.mesurer_infrarouge() == 3000);
 		Assert.assertTrue(capteurs.mesurer() == 3000);
 
 		// Et re avec
 		config.set("capteurs_on", true);
-		capteurs.maj_config();
+		capteurs.updateConfig();
 		log.debug(capteurs.mesurer(), this);
 	//	Assert.assertTrue(capteurs.mesurer_infrarouge() != 3000);
 		Assert.assertTrue(capteurs.mesurer() != 3000);

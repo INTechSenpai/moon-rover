@@ -2,7 +2,6 @@ package threads;
 
 import java.util.Hashtable;
 
-import pathfinding.Pathfinding;
 import robot.cartes.Actionneurs;
 import robot.cartes.Capteurs;
 import robot.cartes.Deplacements;
@@ -10,8 +9,6 @@ import robot.cartes.laser.FiltrageLaser;
 import robot.cartes.laser.Laser;
 import table.Table;
 import robot.RobotVrai;
-import strategie.MemoryManager;
-import strategie.Strategie;
 import utils.Log;
 import utils.Read_Ini;
 import exceptions.ContainerException;
@@ -38,7 +35,7 @@ public class ThreadManager {
 
 		AbstractThread.log = log;
 		AbstractThread.config = config;
-		AbstractThread.stop_threads = false;
+		AbstractThread.stopThreads = false;
 	}
 
 	/**
@@ -66,28 +63,12 @@ public class ThreadManager {
 		return threads.get("threadCapteurs");
 	}
 
-	public AbstractThread getThreadStrategie(Strategie strategie, Table table, RobotVrai robotvrai, MemoryManager memorymanager, Pathfinding pathfinding)
-	{
-		AbstractThread thread = threads.get("threadStrategie");
-		if(thread == null)
-			threads.put("threadStrategie", new ThreadStrategie(strategie, table, robotvrai, memorymanager, pathfinding));
-		return threads.get("threadStrategie");
-	}
-
 	public AbstractThread getThreadLaser(Laser laser, Table table, FiltrageLaser filtragelaser)
 	{
 		AbstractThread thread = threads.get("threadLaser");
 		if(thread == null)
 			threads.put("threadLaser", new ThreadLaser(laser, table, filtragelaser));
 		return threads.get("threadLaser");
-	}
-
-	public AbstractThread getThreadAnalyseEnnemi(Table table, Strategie strategie)
-	{
-		AbstractThread thread = threads.get("threadAnalyseEnnemi");
-		if(thread == null)
-			threads.put("threadAnalyseEnnemi", new ThreadAnalyseEnnemi(table, strategie));
-		return threads.get("threadAnalyseEnnemi");
 	}
 
 	public void demarreThreads()
@@ -104,6 +85,6 @@ public class ThreadManager {
 	
 	public void arreteThreads()
 	{
-		AbstractThread.stop_threads = true;
+		AbstractThread.stopThreads = true;
 	}
 }

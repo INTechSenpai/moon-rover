@@ -43,7 +43,7 @@ public class Deplacements implements Service {
 		infos_stoppage_enMouvement.put("derivee_erreur_translation", 0);
 	}
 	
-	public void maj_config()
+	public void updateConfig()
 	{
 	}	
 	

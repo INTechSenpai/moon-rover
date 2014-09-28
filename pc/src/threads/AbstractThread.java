@@ -6,7 +6,7 @@ import container.Service;
 
 /**
  * Classe abstraite des threads
- * @author pf
+ * @author pf,marsu
  *
  */
 
@@ -15,7 +15,7 @@ public abstract class AbstractThread extends Thread implements Service {
 	protected static Read_Ini config;
 	protected static Log log;
 
-	protected static boolean stop_threads = false;
+	protected static boolean stopThreads = false;
 	
 	public AbstractThread(Service config, Service log)
 	{
@@ -27,7 +27,7 @@ public abstract class AbstractThread extends Thread implements Service {
 	{		
 	}
 
-	public void maj_config()
+	public void updateConfig()
 	{
 	}
 	

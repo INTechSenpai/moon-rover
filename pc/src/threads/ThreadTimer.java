@@ -36,7 +36,7 @@ public class ThreadTimer extends AbstractThread {
 		this.deplacements = deplacements;
 		this.actionneurs = actionneurs;
 		
-		maj_config();
+		updateConfig();
 		Thread.currentThread().setPriority(1);
 	}
 
@@ -44,12 +44,12 @@ public class ThreadTimer extends AbstractThread {
 	public void run()
 	{
 		config.set("capteurs_on", false);
-		capteur.maj_config();
+		capteur.updateConfig();
 		log.debug("Lancement du thread timer", this);
 		// Attente du démarrage du match
 		while(!capteur.demarrage_match() && !match_demarre)
 		{
-			if(stop_threads)
+			if(stopThreads)
 			{
 				log.debug("Arrêt du thread timer avant le début du match", this);
 				return;
@@ -60,7 +60,7 @@ public class ThreadTimer extends AbstractThread {
 		match_demarre = true;
 
 		config.set("capteurs_on", true);
-		capteur.maj_config();
+		capteur.updateConfig();
 
 		log.debug("LE MATCH COMMENCE !", this);
 
@@ -68,12 +68,12 @@ public class ThreadTimer extends AbstractThread {
 		// Le match à démarré. Tous les 500ms, on retire les obstacles périmés
 		while(System.currentTimeMillis() - date_debut < duree_match - temps_reserve_funny_action)
 		{
-			if(stop_threads)
+			if(stopThreads)
 			{
 				log.debug("Arrêt du thread timer avant la fin du match", this);
 				return;
 			}
-			table.supprimer_obstacles_perimes();
+			table.gestionobstacles.supprimerObstaclesPerimes(System.currentTimeMillis());
 			
 			try {
 				Thread.sleep(500);
@@ -141,7 +141,7 @@ public class ThreadTimer extends AbstractThread {
 		return date_debut + duree_match - System.currentTimeMillis();
 	}
 	
-	public void maj_config()
+	public void updateConfig()
 	{
 		// facteur 1000 car temps_match est en secondes et duree_match en ms
 		try {

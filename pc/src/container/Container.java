@@ -4,17 +4,13 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import hook.sortes.HookGenerator;
-import pathfinding.Pathfinding;
 import exceptions.ContainerException;
 import exceptions.ThreadException;
 import exceptions.serial.SerialManagerException;
 import utils.*;
 import scripts.ScriptManager;
 import strategie.GameState;
-import strategie.MemoryManager;
-import strategie.Strategie;
 import table.Table;
-import threads.ThreadTimer;
 import threads.ThreadManager;
 import robot.RobotVrai;
 import robot.cartes.Actionneurs;
@@ -54,7 +50,10 @@ import robot.serial.Serial;
  *
  */
 
-public class Container {
+// penser a mettre a jour le test unitaire en fonction de l'ajout de services
+
+public class Container
+{
 
 	private Map<String,Service> services = new Hashtable<String,Service>();
 	private SerialManager serialmanager = null;
@@ -90,9 +89,8 @@ public class Container {
 	{
 		try
 		{
-
 			System.out.println("Loading config from current directory : " +  System.getProperty("user.dir"));
-			services.put("Read_Ini", (Service)new Read_Ini("../config/"));
+			services.put("Read_Ini", (Service)new Read_Ini("./config/"));
 			config = (Read_Ini)services.get("Read_Ini");
 			services.put("Log", (Service)new Log(config));
 			log = (Log)services.get("Log");
@@ -104,9 +102,8 @@ public class Container {
 		threadmanager = new ThreadManager(config, log);
 	}
 
-	// TODO: supprimer correctement ce warning
-	@SuppressWarnings("unchecked")
-    public Service getService(String nom) throws ContainerException, ThreadException, SerialManagerException
+    @SuppressWarnings("unchecked")
+	public Service getService(String nom) throws ContainerException, ThreadException, SerialManagerException
 	{
 		if(services.containsKey(nom))
 			;
@@ -133,7 +130,6 @@ public class Container {
 		else if(nom == "HookGenerator")
 			services.put(nom, (Service)new HookGenerator(	(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log"),
-															(Capteurs)getService("Capteur"),
 															(GameState<RobotVrai>)getService("RealGameState")));
 		else if(nom == "RobotVrai")
 			services.put(nom, (Service)new RobotVrai(	(CapteurSimulation)getService("CapteurSimulation"),
@@ -152,27 +148,16 @@ public class Container {
                                                                     (Log)getService("Log"),
                                                                     (Actionneurs)getService("Actionneurs")));
         else if(nom == "CapteurSimulation")
-            services.put(nom, (Service)new CapteurSimulation(   (Log)getService("Log"),
-                                                                (Read_Ini)getService("Read_Ini"),  
-                                                                (Table)getService("Table")));
+            services.put(nom, (Service)new CapteurSimulation());
         else if(nom == "RealGameState")
             services.put(nom, (Service)new GameState<RobotVrai>(  (Read_Ini)getService("Read_Ini"),
                                                                   (Log)getService("Log"),
                                                                   (Table)getService("Table"),
-                                                                  (RobotVrai)getService("RobotVrai"),
-                                                                  (Pathfinding)getService("Pathfinding")));
+                                                                  (RobotVrai)getService("RobotVrai")));
  
 		else if(nom == "ScriptManager")
-			services.put(nom, (Service)new ScriptManager(	(HookGenerator)getService("HookGenerator"),
-															(ThreadTimer)getService("threadTimer"),
-															(Read_Ini)getService("Read_Ini"),
+			services.put(nom, (Service)new ScriptManager(	(Read_Ini)getService("Read_Ini"),
 															(Log)getService("Log")));
-		else if(nom == "Strategie")
-			services.put(nom, (Service)new Strategie(	(MemoryManager)getService("MemoryManager"),
-														(ScriptManager)getService("ScriptManager"),
-														(GameState<RobotVrai>)getService("RealGameState"),
-														(Read_Ini)getService("Read_Ini"),
-														(Log)getService("Log")));
 		else if(nom == "threadTimer")
 			services.put(nom, (Service)threadmanager.getThreadTimer(	(Table)getService("Table"),
 																		(Capteurs)getService("Capteur"),
@@ -182,28 +167,10 @@ public class Container {
 			services.put(nom, (Service)threadmanager.getThreadCapteurs(	(RobotVrai)getService("RobotVrai"),
 																		(Table)getService("Table"),
 																		(Capteurs)getService("Capteur")));
-
-		else if(nom == "threadStrategie")
-			services.put(nom, (Service)threadmanager.getThreadStrategie((Strategie)getService("Strategie"),
-																		(Table)getService("Table"),
-																		(RobotVrai)getService("RobotVrai"),
-																		(MemoryManager)getService("MemoryManager"),
-																		(Pathfinding)getService("Pathfinding")));
 		else if(nom == "threadLaser")
 			services.put(nom, (Service)threadmanager.getThreadLaser(	(Laser)getService("Laser"),
 																		(Table)getService("Table"),
 																		(FiltrageLaser)getService("FiltrageLaser")));
-		else if(nom == "threadAnalyseEnnemi")
-			services.put(nom, (Service)threadmanager.getThreadAnalyseEnnemi(	(Table)getService("Table"),
-																				(Strategie)getService("Strategie")));
-		else if(nom == "Pathfinding")
-			services.put(nom, (Service)new Pathfinding(	(Table)getService("Table"),
-														(Read_Ini)getService("Read_Ini"),
-														(Log)getService("Log")));
-		else if(nom == "MemoryManager")
-			services.put(nom, (Service)new MemoryManager(	(Read_Ini)getService("Read_Ini"),
-															(Log)getService("Log"),
-															(GameState<RobotVrai>)getService("RealGameState")));
 		else if(nom == "Laser")
 			services.put(nom, (Service)new Laser(	(Read_Ini)getService("Read_Ini"),
 													(Log)getService("Log"),
@@ -236,20 +203,11 @@ public class Container {
 	/**
 	 * Demande au thread manager de démarrer tous les threads
 	 */
+	//TODO: gestion propre des exeptions
 	public void demarreTousThreads()
 	{
 		try {
-			getService("threadAnalyseEnnemi");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
 			getService("threadLaser");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			getService("threadStrategie");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

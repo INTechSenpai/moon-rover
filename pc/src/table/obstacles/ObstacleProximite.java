@@ -4,27 +4,17 @@ import smartMath.Vec2;
 
 /**
  * Obstacles détectés par capteurs de proximité (ultrasons et infrarouges)
- * @author pf
- *
+ * @author pf, marsu
  */
-class ObstacleProximite extends ObstacleCirculaire {
-
-	public long death_date;
-	
-	public ObstacleProximite (Vec2 position, int rad, long death_date)
+class ObstacleProximite extends ObstacleCirculaire
+{
+	public ObstacleProximite (Vec2 position, int rad)
 	{
 		super(position,rad);
-		this.death_date = death_date;
 	}
 	
 	public ObstacleProximite clone()
 	{
-		return new ObstacleProximite(position.clone(), radius, death_date);
+		return new ObstacleProximite(position.clone(), getRadius());
 	}
-	
-	public String toString()
-	{
-		return super.toString()+", meurt dans "+(death_date-System.currentTimeMillis())+" ms";
-	}
-	
 }

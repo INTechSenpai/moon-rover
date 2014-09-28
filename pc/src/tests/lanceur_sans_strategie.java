@@ -160,7 +160,7 @@ public class lanceur_sans_strategie {
 
 		System.out.println("Pret au recalage, appuyez sur entrée pour continuer");
 		config.set("capteurs_on", false);	// pas de capteurs durant le recalage
-		capteurs.maj_config();
+		capteurs.updateConfig();
 
 		// attends la pression sur entrée
 		new BufferedReader(new InputStreamReader(System.in)).readLine();

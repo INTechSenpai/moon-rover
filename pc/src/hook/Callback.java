@@ -5,7 +5,8 @@ package hook;
  * @author pf
  */
 
-public class Callback {
+public class Callback
+{
 
 	private boolean done = false;
 	private boolean unique;
