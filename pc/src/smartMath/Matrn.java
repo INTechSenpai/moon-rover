@@ -1,6 +1,6 @@
 package smartMath;
 
-import exceptions.MatriceException;
+import exceptions.MatrixException;
 import Jama.Matrix;
 /**
  * Classe de calcul matriciel
@@ -94,46 +94,46 @@ public class Matrn {
 		return taille[0];
 	}
 
-	public void additionner_egal (Matrn A) throws MatriceException
+	public void additionner_egal (Matrn A) throws MatrixException
 	{	
 		if(taille[0] != A.taille[0] || taille[1] != A.taille[1])
-			throw new MatriceException();
+			throw new MatrixException();
 		for(int i = 0; i < taille[0]; i++)
 			for(int j = 0; j < taille[1]; j++)
 				 matrice[j][i]= matrice[j][i]+A.matrice[j][i];
 	}
-	public Matrn additionner (Matrn A) throws MatriceException
+	public Matrn additionner (Matrn A) throws MatrixException
 	{
 		Matrn a = new Matrn(taille[0],taille[1]);
 		if(taille[0] != A.taille[0] || taille[1] != A.taille[1])
-			throw new MatriceException();
+			throw new MatrixException();
 		for(int i = 0; i < taille[0]; i++)
 			for(int j = 0; j < taille[1]; j++)
 				 a.matrice[j][i]= matrice[j][i]+A.matrice[j][i];
 		return a;
 	}
-	public Matrn soustraire (Matrn A) throws MatriceException
+	public Matrn soustraire (Matrn A) throws MatrixException
 	{	
 		Matrn a = new Matrn(taille[0],taille[1]);
 		if(taille[0] != A.taille[0] || taille[1] != A.taille[1])
-			throw new MatriceException();
+			throw new MatrixException();
 		for(int i = 0; i < taille[0]; i++)
 			for(int j = 0; j < taille[1]; j++)
 				 a.matrice[j][i]= matrice[j][i] - A.matrice[j][i];
 		return a;
 	}
-	public void soustraire_egal (Matrn A) throws MatriceException
+	public void soustraire_egal (Matrn A) throws MatrixException
 	{	
 		if(taille[0] != A.taille[0] || taille[1] != A.taille[1])
-			throw new MatriceException();
+			throw new MatrixException();
 		for(int i = 0; i < taille[0]; i++)
 			for(int j = 0; j < taille[1]; j++)
 				 matrice[j][i]= matrice[j][i] - A.matrice[j][i];
 	}
-	public void multiplier_egal(Matrn A) throws MatriceException
+	public void multiplier_egal(Matrn A) throws MatrixException
 	{//multiplier this. avec A
 		if( this.taille[0] != A.taille[1])
-			throw new MatriceException();
+			throw new MatrixException();
 		Matrn m = new Matrn(taille[0], A.taille[1]);
 		for(int i = 0; i< taille[0]; i++)
 		{
@@ -148,10 +148,10 @@ public class Matrn {
 		}
 		this.matrice = m.matrice;
 	}
-	public Matrn multiplier(Matrn A) throws MatriceException
+	public Matrn multiplier(Matrn A) throws MatrixException
 	{//multiplier this. avec A
 		if( this.taille[0] != A.taille[1])
-			throw new MatriceException();
+			throw new MatrixException();
 		Matrn m = new Matrn(taille[0], A.taille[1]);
 		for(int i = 0; i< taille[0]; i++)
 		{
@@ -169,10 +169,10 @@ public class Matrn {
 	
 	
 	
-	public void transpose_egal() throws MatriceException
+	public void transpose_egal() throws MatrixException
 	{
 		if(taille[0] != taille[1])
-			throw new MatriceException();
+			throw new MatrixException();
 		for(int i = 0; i < taille[0]; i++)
 			for(int j = 0; j < i; j++)
 			{
@@ -182,10 +182,10 @@ public class Matrn {
 			}
 	}
 
-	public Matrn transpose() throws MatriceException
+	public Matrn transpose() throws MatrixException
 	{		
 		if(taille[0] != taille[1])
-			throw new MatriceException();
+			throw new MatrixException();
 		Matrn a = new Matrn(taille[0], taille[1]);
 		for(int i = 0; i < taille[0]; i++)
 			for(int j = 0; j <= i; j++)
@@ -198,6 +198,7 @@ public class Matrn {
 
 	public Matrn inverser()
 	{
+		// TODO : check
 		//Il faut impérativement que la matrice soit inversible !!! enfin je vais voir si je peux gérer le cas contraire
 		Matrix a = new Matrix(matrice);
 		a.inverse();
@@ -206,6 +207,7 @@ public class Matrn {
 	}
 	static public Matrn identiter(int n)
 	{
+		// TODO : doc
 		//nom de la méthode on français, mais ça explique qu'on construit une matice identité de taille n
 		
 		Matrn ident= new Matrn(n,n,0);

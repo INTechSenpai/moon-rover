@@ -1,7 +1,7 @@
 package threads;
 
 import utils.Log;
-import utils.Read_Ini;
+import utils.Config;
 import container.Service;
 
 /**
@@ -12,14 +12,14 @@ import container.Service;
 
 public abstract class AbstractThread extends Thread implements Service {
 
-	protected static Read_Ini config;
+	protected static Config config;
 	protected static Log log;
 
 	protected static boolean stop_threads = false;
 	
 	public AbstractThread(Service config, Service log)
 	{
-		AbstractThread.config = (Read_Ini) config;
+		AbstractThread.config = (Config) config;
 		AbstractThread.log = (Log) log;
 	}
 

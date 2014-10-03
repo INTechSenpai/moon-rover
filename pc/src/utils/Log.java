@@ -16,7 +16,7 @@ import container.Service;
 public class Log implements Service
 {
 	// Dépendances
-	private Read_Ini config;
+	private Config config;
 
 	FileWriter writer = null;
 
@@ -30,7 +30,7 @@ public class Log implements Service
 	// Sauvegarder les logs dans un fichier
 	private boolean sauvegarde_fichier = false;
 	
-	public Log(Read_Ini config)
+	public Log(Config config)
 	{
 		this.config = config;
 		

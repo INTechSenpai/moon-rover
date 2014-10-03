@@ -1,6 +1,6 @@
 package utils;
 
-import robot.RobotVrai;
+import robot.RobotReal;
 import container.Service;
 
 /**
@@ -13,9 +13,9 @@ public class CheckUp implements Service
 {
 
 	private Log log;
-	private RobotVrai robotvrai;
+	private RobotReal robotvrai;
 	
-	public CheckUp(Log log, RobotVrai robotvrai)
+	public CheckUp(Log log, RobotReal robotvrai)
 	{
 		this.robotvrai = robotvrai;
 		this.log = log;

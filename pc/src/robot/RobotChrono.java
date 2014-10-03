@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import hook.Hook;
 import smartMath.Vec2;
 import utils.Log;
-import utils.Read_Ini;
-import enums.Vitesse;
-import exceptions.deplacements.MouvementImpossibleException;
+import utils.Config;
+import enums.Speed;
+import exceptions.Locomotion.UnableToMoveException;
 
 /**
  * Robot particulier qui fait pas bouger le robot réel, mais détermine la durée des actions
@@ -23,7 +23,7 @@ public class RobotChrono extends Robot
 	// Durée en millisecondes
 	private int duree = 0;
 	
-	public RobotChrono(Read_Ini config, Log log)
+	public RobotChrono(Config config, Log log)
 	{
 		super(config, log);
 	}
@@ -42,9 +42,9 @@ public class RobotChrono extends Robot
 
 	@Override
     public void avancer(int distance, ArrayList<Hook> hooks, boolean mur)
-            throws MouvementImpossibleException
+            throws UnableToMoveException
 	{
-		duree += Math.abs(distance)*vitesse.inverse_vitesse_mmpms;
+		duree += Math.abs(distance)*vitesse.invertedTranslationnalSpeed;
 		Vec2 ecart;
         ecart = new Vec2((int)(distance*Math.cos(orientation)), (int)(distance*Math.sin(orientation)));
 
@@ -52,7 +52,7 @@ public class RobotChrono extends Robot
 	}
 	
 	@Override
-	public void set_vitesse(Vitesse vitesse)
+	public void set_vitesse(Speed vitesse)
 	{
 	    this.vitesse = vitesse;
 	}
@@ -77,7 +77,7 @@ public class RobotChrono extends Robot
 
 	@Override
     public void tourner(double angle, ArrayList<Hook> hooks, boolean mur)
-            throws MouvementImpossibleException
+            throws UnableToMoveException
 	{
         if(symetrie)
             angle = Math.PI-angle;
@@ -98,12 +98,12 @@ public class RobotChrono extends Robot
 				e.printStackTrace();
 			}
 		}*/
-		duree += delta*vitesse.inverse_vitesse_rpms;
+		duree += delta*vitesse.invertedRotationnalSpeed;
 	}
 
 	@Override
     public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks)
-            throws MouvementImpossibleException
+            throws UnableToMoveException
 	{
 		for(Vec2 point: chemin)
 			va_au_point(point);
@@ -118,7 +118,7 @@ public class RobotChrono extends Robot
 		} catch (RobotChronoException e) {
 			e.printStackTrace();
 		}*/
-		duree += position.distance(point)*vitesse.inverse_vitesse_mmpms;
+		duree += position.distance(point)*vitesse.invertedTranslationnalSpeed;
 		position = point.clone();
 	}
 

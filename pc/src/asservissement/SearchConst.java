@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import container.Container;
-import robot.cartes.Deplacements;
+import robot.cards.Locomotion;
 
 /**
  * Application permettant de trouver les constantes d'asservissement en rotation
@@ -24,12 +24,12 @@ public class SearchConst
     public static void main(String[] args)
     {
         Container container;
-        Deplacements deplacements = null;
+        Locomotion deplacements = null;
         int signe = 1;
         try
         {
             container = new Container();
-            deplacements = (Deplacements) container.getService("Deplacements");
+            deplacements = (Locomotion) container.getService("Deplacements");
 
             System.out.println("r ou t?");
             char asserv = (char) System.in.read();

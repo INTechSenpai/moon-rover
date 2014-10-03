@@ -6,7 +6,8 @@ package exceptions;
  *
  */
 
-public class ContainerException extends Exception {
+public class ContainerException extends Exception
+{
 
 	private static final long serialVersionUID = -960091158805232282L;
 

@@ -1,6 +1,6 @@
 package table;
 
-import table.obstacles.GestionObstacles;
+import table.obstacles.ObstacleManager;
 import container.Service;
 import utils.*;
 
@@ -10,17 +10,17 @@ public class Table implements Service
 {
 
 
-	public GestionObstacles gestionobstacles;
+	public ObstacleManager gestionobstacles;
 
 	// Dépendances
 	private Log log;
-	private Read_Ini config;
+	private Config config;
 	
-	public Table(Log log, Read_Ini config)
+	public Table(Log log, Config config)
 	{
 		this.log = log;
 		this.config = config;
-		this.gestionobstacles = new GestionObstacles(log, config);
+		this.gestionobstacles = new ObstacleManager(log, config);
 		initialise();
 	}
 	

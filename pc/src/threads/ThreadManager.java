@@ -2,15 +2,15 @@ package threads;
 
 import java.util.Hashtable;
 
-import robot.cartes.Actionneurs;
-import robot.cartes.Capteurs;
-import robot.cartes.Deplacements;
-import robot.cartes.laser.FiltrageLaser;
-import robot.cartes.laser.Laser;
+import robot.cards.ActuatorsManager;
+import robot.cards.Sensors;
+import robot.cards.Locomotion;
+import robot.cards.laser.LaserFiltration;
+import robot.cards.laser.Laser;
 import table.Table;
-import robot.RobotVrai;
+import robot.RobotReal;
 import utils.Log;
-import utils.Read_Ini;
+import utils.Config;
 import exceptions.ContainerException;
 import exceptions.ThreadException;
 import exceptions.serial.SerialManagerException;
@@ -27,7 +27,7 @@ public class ThreadManager {
 	
 	private Hashtable<String, AbstractThread> threads;
 	
-	public ThreadManager(Read_Ini config, Log log)
+	public ThreadManager(Config config, Log log)
 	{
 		this.log = log;
 		
@@ -47,7 +47,7 @@ public class ThreadManager {
 	 * @throws ConfigException
 	 * @throws SerialManagerException
 	 */
-	public AbstractThread getThreadTimer(Table table, Capteurs capteur, Deplacements deplacements, Actionneurs actionneurs)
+	public AbstractThread getThreadTimer(Table table, Sensors capteur, Locomotion deplacements, ActuatorsManager actionneurs)
 	{
 		AbstractThread thread = threads.get("threadTimer");
 		if(thread == null)
@@ -55,15 +55,15 @@ public class ThreadManager {
 		return threads.get("threadTimer");
 	}
 
-	public AbstractThread getThreadCapteurs(RobotVrai robotvrai, Table table, Capteurs capteurs)
+	public AbstractThread getThreadCapteurs(RobotReal robotvrai, Table table, Sensors capteurs)
 	{
 		AbstractThread thread = threads.get("threadCapteurs");
 		if(thread == null)
-			threads.put("threadCapteurs", new ThreadCapteurs(robotvrai, table, capteurs));
+			threads.put("threadCapteurs", new ThreadSensor(robotvrai, table, capteurs));
 		return threads.get("threadCapteurs");
 	}
 
-	public AbstractThread getThreadLaser(Laser laser, Table table, FiltrageLaser filtragelaser)
+	public AbstractThread getThreadLaser(Laser laser, Table table, LaserFiltration filtragelaser)
 	{
 		AbstractThread thread = threads.get("threadLaser");
 		if(thread == null)

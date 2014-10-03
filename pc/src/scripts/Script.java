@@ -2,15 +2,15 @@ package scripts;
 
 import smartMath.Vec2;
 import strategie.GameState;
-import robot.RobotVrai;
+import robot.RobotReal;
 import utils.Log;
-import utils.Read_Ini;
+import utils.Config;
 import container.Service;
-import hook.sortes.HookGenerator;
+import hook.types.HookGenerator;
 
 import java.util.ArrayList;
 
-import exceptions.deplacements.MouvementImpossibleException;
+import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialException;
 import exceptions.ScriptException;
 /**
@@ -24,7 +24,7 @@ public abstract class Script implements Service
 
 	// Ces services resteront toujours les mêmes, on les factorise avec un static
 	protected static HookGenerator hookgenerator;
-	protected static Read_Ini config;
+	protected static Config config;
 	protected static Log log;
 
 	/*
@@ -32,7 +32,7 @@ public abstract class Script implements Service
 	 */
 	protected ArrayList<ArrayList<Integer>> versions = new ArrayList<ArrayList<Integer>>();	
 	
-	public Script(HookGenerator hookgenerator, Read_Ini config, Log log)
+	public Script(HookGenerator hookgenerator, Config config, Log log)
 	{
 		Script.hookgenerator = hookgenerator;
 		Script.config = config;
@@ -42,7 +42,7 @@ public abstract class Script implements Service
 	/**
 	 * Exécute vraiment un script
 	 */
-	public void agit(int id_version, GameState<RobotVrai> state, boolean retenter_si_blocage) throws ScriptException
+	public void agit(int id_version, GameState<RobotReal> state, boolean retenter_si_blocage) throws ScriptException
 	{
 	}
 	
@@ -73,7 +73,7 @@ public abstract class Script implements Service
 	 * Exécute le script, avec RobotVrai ou RobotChrono
 	 * @throws SerialException 
 	 */
-	protected void execute() throws MouvementImpossibleException, SerialException
+	protected void execute() throws UnableToMoveException, SerialException
 	{
 	}
 

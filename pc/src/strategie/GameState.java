@@ -5,7 +5,7 @@ import robot.Robot;
 import robot.RobotChrono;
 import table.Table;
 import utils.Log;
-import utils.Read_Ini;
+import utils.Config;
 
 public class GameState<R extends Robot> implements Service
 {    
@@ -16,7 +16,7 @@ public class GameState<R extends Robot> implements Service
     public final Table table;
     public final R robot;
     private Log log;
-    private Read_Ini config;
+    private Config config;
 
     // time contient le temps écoulé depuis le début du match en ms
     // utilisé uniquement dans l'arbre des possibles
@@ -24,7 +24,7 @@ public class GameState<R extends Robot> implements Service
     public long time_depuis_racine;  
     public int pointsObtenus;	// points marqués depus le debut du match
 
-    public GameState(Read_Ini config, Log log, Table table, R robot)
+    public GameState(Config config, Log log, Table table, R robot)
     {
         this.config = config;
         this.log = log;

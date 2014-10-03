@@ -5,7 +5,8 @@ package exceptions;
  * @author pf
  *
  */
-public class ThreadException extends Exception {
+public class ThreadException extends Exception
+{
 
 	private static final long serialVersionUID = 3551305502065045527L;
 	

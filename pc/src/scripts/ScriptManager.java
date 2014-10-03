@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 import utils.Log;
-import utils.Read_Ini;
+import utils.Config;
 import container.Service;
 import exceptions.ScriptException;
 
@@ -24,7 +24,7 @@ public class ScriptManager implements Service
 	// TODO : effacer ?
 	private ArrayList<String> scripts_robot;
 	
-	public ScriptManager(Read_Ini config, Log log)
+	public ScriptManager(Config config, Log log)
 	{
 		this.log = log;
 		scripts_robot = new ArrayList<String>();

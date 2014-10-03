@@ -2,10 +2,10 @@ package hook;
 
 import java.util.ArrayList;
 
-import robot.RobotVrai;
+import robot.RobotReal;
 import strategie.GameState;
 import utils.Log;
-import utils.Read_Ini;
+import utils.Config;
 
 /**
  * Classe-mère abstraite des hooks, utilisés pour la programmation évènementielle
@@ -18,11 +18,11 @@ abstract public class Hook
 
 	protected ArrayList<Callback> callbacks = new ArrayList<Callback>();
 	
-	protected Read_Ini config;
+	protected Config config;
 	protected Log log;
-	protected GameState<RobotVrai> real_state;
+	protected GameState<RobotReal> real_state;
 
-	public Hook(Read_Ini config, Log log, GameState<RobotVrai> real_state)
+	public Hook(Config config, Log log, GameState<RobotReal> real_state)
 	{
 		this.config = config;
 		this.log = log;
@@ -40,7 +40,8 @@ abstract public class Hook
 	}
 	
 	/**
-	 * Quand un hook est déclenché, tous ses callbacks sont exécutés
+	 * Déclenche le hook.
+	 * Tous ses callbacks sont exécutés
 	 * @return true si ce hook modifie les déplacements du robot
 	 */
 	protected boolean declencher()
@@ -48,7 +49,7 @@ abstract public class Hook
 		boolean retour = false;
 		
 		for(Callback callback : callbacks)
-			retour |= callback.appeler();
+			retour |= callback.call();
 		return retour;
 	}
 
@@ -67,7 +68,7 @@ abstract public class Hook
 	public boolean supprimable()
 	{
 	    for(Callback c: callbacks)
-	        if(!c.supprimable())
+	        if(!c.shouldBeDeleted())
 	            return false;
 	    return true;
 	}

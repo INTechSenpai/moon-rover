@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import hook.Hook;
 import smartMath.Vec2;
 import container.Service;
-import enums.Vitesse;
-import exceptions.deplacements.MouvementImpossibleException;
+import enums.Speed;
+import exceptions.Locomotion.UnableToMoveException;
 import utils.Log;
-import utils.Read_Ini;
+import utils.Config;
 
 /**
  *  Classe abstraite du robot, dont héritent RobotVrai et RobotChrono
@@ -24,12 +24,12 @@ public abstract class Robot implements Service
 	
 	public abstract void stopper();
     public abstract void tourner(double angle, ArrayList<Hook> hooks, boolean mur)
-            throws MouvementImpossibleException;
+            throws UnableToMoveException;
     public abstract void avancer(int distance, ArrayList<Hook> hooks, boolean mur)
-            throws MouvementImpossibleException;
+            throws UnableToMoveException;
     public abstract void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks)
-            throws MouvementImpossibleException;
-	public abstract void set_vitesse(Vitesse vitesse);
+            throws UnableToMoveException;
+	public abstract void set_vitesse(Speed vitesse);
 	
 	public abstract void setPosition(Vec2 position);
 	public abstract void setOrientation(double orientation);
@@ -50,12 +50,12 @@ public abstract class Robot implements Service
     }
 
 	// Dépendances
-	protected Read_Ini config;
+	protected Config config;
 	protected Log log;
 	protected boolean symetrie;
-	protected Vitesse vitesse;
+	protected Speed vitesse;
 
-	public Robot(Read_Ini config, Log log)
+	public Robot(Config config, Log log)
 	{
 		this.config = config;
 		this.log = log;
@@ -67,22 +67,22 @@ public abstract class Robot implements Service
 		symetrie = config.get("couleur").equals("rouge");
 	}
 	
-	public Vitesse get_vitesse_() {
+	public Speed get_vitesse_() {
 		return vitesse;
 	}
 	
 	
-	public void tourner_relatif(double angle) throws MouvementImpossibleException
+	public void tourner_relatif(double angle) throws UnableToMoveException
 	{
 		tourner(getOrientation() + angle, null, false);
 	}
 
-    public void tourner(double angle) throws MouvementImpossibleException
+    public void tourner(double angle) throws UnableToMoveException
     {
         tourner(angle, null, false);
     }
 
-    public void tourner_sans_symetrie(double angle) throws MouvementImpossibleException
+    public void tourner_sans_symetrie(double angle) throws UnableToMoveException
     {
         if(symetrie)
             tourner(Math.PI-angle, null, false);
@@ -91,20 +91,20 @@ public abstract class Robot implements Service
     }
 
 
-    public void avancer(int distance) throws MouvementImpossibleException
+    public void avancer(int distance) throws UnableToMoveException
     {
         avancer(distance, null, false);
     }
 
-    public void avancer(int distance, ArrayList<Hook> hooks) throws MouvementImpossibleException
+    public void avancer(int distance, ArrayList<Hook> hooks) throws UnableToMoveException
     {
         avancer(distance, hooks, false);
     }
 
-    public void avancer_dans_mur(int distance) throws MouvementImpossibleException
+    public void avancer_dans_mur(int distance) throws UnableToMoveException
     {
-        Vitesse sauv_vitesse = vitesse; 
-        set_vitesse(Vitesse.DANS_MUR);
+        Speed sauv_vitesse = vitesse; 
+        set_vitesse(Speed.INTO_WALL);
         avancer(distance, null, true);
         set_vitesse(sauv_vitesse);
     }
@@ -113,9 +113,9 @@ public abstract class Robot implements Service
      * Va au point "arrivée" en utilisant le pathfinding.
      * @param arrivee
      * @throws PathfindingException
-     * @throws MouvementImpossibleException
+     * @throws UnableToMoveException
      */
-    public boolean va_au_point_pathfinding(Vec2 arrivee) throws MouvementImpossibleException
+    public boolean va_au_point_pathfinding(Vec2 arrivee) throws UnableToMoveException
     {
     	// TODO
     	

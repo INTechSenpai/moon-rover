@@ -1,9 +1,9 @@
 package threads;
 
 import exceptions.serial.SerialException;
-import robot.cartes.Actionneurs;
-import robot.cartes.Capteurs;
-import robot.cartes.Deplacements;
+import robot.cards.ActuatorsManager;
+import robot.cards.Sensors;
+import robot.cards.Locomotion;
 import smartMath.Vec2;
 import table.Table;
 import utils.Sleep;
@@ -19,9 +19,9 @@ public class ThreadTimer extends AbstractThread {
 
 	// Dépendance
 	private Table table;
-	private Capteurs capteur;
-	private Deplacements deplacements;
-	private Actionneurs actionneurs;
+	private Sensors capteur;
+	private Locomotion deplacements;
+	private ActuatorsManager actionneurs;
 	
 	public static boolean match_demarre = false;
 	public static boolean fin_match = false;
@@ -29,7 +29,7 @@ public class ThreadTimer extends AbstractThread {
 	public static long duree_match = 90000;
 	public static long temps_reserve_funny_action = 1000;
 		
-	ThreadTimer(Table table, Capteurs capteur, Deplacements deplacements, Actionneurs actionneurs)
+	ThreadTimer(Table table, Sensors capteur, Locomotion deplacements, ActuatorsManager actionneurs)
 	{
 		this.table = table;
 		this.capteur = capteur;

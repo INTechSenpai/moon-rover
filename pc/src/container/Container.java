@@ -3,7 +3,7 @@ package container;
 import java.util.Hashtable;
 import java.util.Map;
 
-import hook.sortes.HookGenerator;
+import hook.types.HookGenerator;
 import exceptions.ContainerException;
 import exceptions.ThreadException;
 import exceptions.serial.SerialManagerException;
@@ -12,15 +12,13 @@ import scripts.ScriptManager;
 import strategie.GameState;
 import table.Table;
 import threads.ThreadManager;
-import robot.RobotVrai;
-import robot.cartes.Actionneurs;
-import robot.cartes.Capteurs;
-import robot.cartes.Deplacements;
-import robot.cartes.laser.FiltrageLaser;
-import robot.cartes.laser.Laser;
-import robot.hautniveau.ActionneursHautNiveau;
-import robot.hautniveau.CapteurSimulation;
-import robot.hautniveau.DeplacementsHautNiveau;
+import robot.RobotReal;
+import robot.cards.ActuatorsManager;
+import robot.cards.Sensors;
+import robot.cards.Locomotion;
+import robot.cards.laser.LaserFiltration;
+import robot.cards.laser.Laser;
+import robot.highlevel.LocomotionHiLevel;
 import robot.serial.SerialManager;
 import robot.serial.Serial;
 
@@ -59,7 +57,7 @@ public class Container
 	private SerialManager serialmanager = null;
 	private ThreadManager threadmanager;
 	private Log log;
-	private Read_Ini config;
+	private Config config;
 
 	/**
 	 * Fonction à appeler à la fin du programme.
@@ -90,8 +88,8 @@ public class Container
 		try
 		{
 			System.out.println("Loading config from current directory : " +  System.getProperty("user.dir"));
-			services.put("Read_Ini", (Service)new Read_Ini("./config/"));
-			config = (Read_Ini)services.get("Read_Ini");
+			services.put("Read_Ini", (Service)new Config("./config/"));
+			config = (Config)services.get("Read_Ini");
 			services.put("Log", (Service)new Log(config));
 			log = (Log)services.get("Log");
 		}
@@ -109,7 +107,7 @@ public class Container
 			;
 		else if(nom == "Table")
 			services.put(nom, (Service)new Table(	(Log)getService("Log"),
-													(Read_Ini)getService("Read_Ini")));
+													(Config)getService("Read_Ini")));
 		else if(nom.length() > 4 && nom.substring(0,5).equals("serie"))
 		{
 			if(serialmanager == null)
@@ -117,72 +115,64 @@ public class Container
 			services.put(nom, (Service)serialmanager.getSerial(nom));
 		}
 		else if(nom == "Deplacements")
-			services.put(nom, (Service)new Deplacements((Log)getService("Log"),
+			services.put(nom, (Service)new Locomotion((Log)getService("Log"),
 														(Serial)getService("serieAsservissement")));
 		else if(nom == "Capteur")
-			services.put(nom, (Service)new Capteurs(	(Read_Ini)getService("Read_Ini"),
+			services.put(nom, (Service)new Sensors(	(Config)getService("Read_Ini"),
 			                                                (Log)getService("Log"),
 			                                                (Serial)getService("serieCapteursActionneurs")));
 		else if(nom == "Actionneurs")
-			services.put(nom, (Service)new Actionneurs(	(Read_Ini)getService("Read_Ini"),
+			services.put(nom, (Service)new ActuatorsManager(	(Config)getService("Read_Ini"),
 														(Log)getService("Log"),
 														(Serial)getService("serieCapteursActionneurs")));
 		else if(nom == "HookGenerator")
-			services.put(nom, (Service)new HookGenerator(	(Read_Ini)getService("Read_Ini"),
+			services.put(nom, (Service)new HookGenerator(	(Config)getService("Read_Ini"),
 															(Log)getService("Log"),
-															(GameState<RobotVrai>)getService("RealGameState")));
+															(GameState<RobotReal>)getService("RealGameState")));
 		else if(nom == "RobotVrai")
-			services.put(nom, (Service)new RobotVrai(	(CapteurSimulation)getService("CapteurSimulation"),
-														(ActionneursHautNiveau)getService("ActionneursHautNiveau"),
-                                                        (DeplacementsHautNiveau)getService("DeplacementsHautNiveau"),
+			services.put(nom, (Service)new RobotReal(	(LocomotionHiLevel)getService("DeplacementsHautNiveau"),
 														(Table)getService("Table"),
-														(Read_Ini)getService("Read_Ini"),
+														(Config)getService("Read_Ini"),
 														(Log)getService("Log")));		
         else if(nom == "DeplacementsHautNiveau")
-            services.put(nom, (Service)new DeplacementsHautNiveau(  (Log)getService("Log"),
-                                                                    (Read_Ini)getService("Read_Ini"),
+            services.put(nom, (Service)new LocomotionHiLevel(  (Log)getService("Log"),
+                                                                    (Config)getService("Read_Ini"),
                                                                     (Table)getService("Table"),
-                                                                    (Deplacements)getService("Deplacements")));
-        else if(nom == "ActionneursHautNiveau")
-            services.put(nom, (Service)new ActionneursHautNiveau(   (Read_Ini)getService("Read_Ini"),
-                                                                    (Log)getService("Log"),
-                                                                    (Actionneurs)getService("Actionneurs")));
-        else if(nom == "CapteurSimulation")
-            services.put(nom, (Service)new CapteurSimulation());
+                                                                    (Locomotion)getService("Deplacements")));
         else if(nom == "RealGameState")
-            services.put(nom, (Service)new GameState<RobotVrai>(  (Read_Ini)getService("Read_Ini"),
+            services.put(nom, (Service)new GameState<RobotReal>(  (Config)getService("Read_Ini"),
                                                                   (Log)getService("Log"),
                                                                   (Table)getService("Table"),
-                                                                  (RobotVrai)getService("RobotVrai")));
+                                                                  (RobotReal)getService("RobotVrai")));
  
 		else if(nom == "ScriptManager")
-			services.put(nom, (Service)new ScriptManager(	(Read_Ini)getService("Read_Ini"),
+			services.put(nom, (Service)new ScriptManager(	(Config)getService("Read_Ini"),
 															(Log)getService("Log")));
 		else if(nom == "threadTimer")
 			services.put(nom, (Service)threadmanager.getThreadTimer(	(Table)getService("Table"),
-																		(Capteurs)getService("Capteur"),
-																		(Deplacements)getService("Deplacements"),
-		                                                                (Actionneurs)getService("Actionneurs")));
+																		(Sensors)getService("Capteur"),
+																		(Locomotion)getService("Deplacements"),
+		                                                                (ActuatorsManager)getService("Actionneurs")));
 		else if(nom == "threadCapteurs")
-			services.put(nom, (Service)threadmanager.getThreadCapteurs(	(RobotVrai)getService("RobotVrai"),
+			services.put(nom, (Service)threadmanager.getThreadCapteurs(	(RobotReal)getService("RobotVrai"),
 																		(Table)getService("Table"),
-																		(Capteurs)getService("Capteur")));
+																		(Sensors)getService("Capteur")));
 		else if(nom == "threadLaser")
 			services.put(nom, (Service)threadmanager.getThreadLaser(	(Laser)getService("Laser"),
 																		(Table)getService("Table"),
-																		(FiltrageLaser)getService("FiltrageLaser")));
+																		(LaserFiltration)getService("FiltrageLaser")));
 		else if(nom == "Laser")
-			services.put(nom, (Service)new Laser(	(Read_Ini)getService("Read_Ini"),
+			services.put(nom, (Service)new Laser(	(Config)getService("Read_Ini"),
 													(Log)getService("Log"),
 													(Serial)getService("serieLaser"),
-													(RobotVrai)getService("RobotVrai")));
+													(RobotReal)getService("RobotVrai")));
 		else if(nom == "FiltrageLaser")
-			services.put(nom, (Service)new FiltrageLaser(	(Read_Ini)getService("Read_Ini"),
+			services.put(nom, (Service)new LaserFiltration(	(Config)getService("Read_Ini"),
 															(Log)getService("Log")));
 
 		else if(nom == "CheckUp")
 			services.put(nom, (Service)new CheckUp(	(Log)getService("Log"),
-													(RobotVrai)getService("RobotVrai")));
+													(RobotReal)getService("RobotVrai")));
 		else
 		{
 			log.critical("Erreur de getService pour le service: "+nom, this);

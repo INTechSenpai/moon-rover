@@ -3,9 +3,7 @@ package tests;
 import hook.Callback;
 import hook.Executable;
 import hook.Hook;
-import hook.methodes.TakeFire;
-import hook.methodes.TirerBalles;
-import hook.sortes.HookGenerator;
+import hook.types.HookGenerator;
 
 import java.util.ArrayList;
 
@@ -13,8 +11,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import robot.RobotVrai;
-import robot.hautniveau.DeplacementsHautNiveau;
+import robot.RobotReal;
+import robot.highlevel.LocomotionHiLevel;
 import smartMath.Vec2;
 import strategie.GameState;
 import utils.Sleep;
@@ -29,17 +27,17 @@ import utils.Sleep;
 
 public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
 {
-    private DeplacementsHautNiveau robot;
+    private LocomotionHiLevel robot;
     private HookGenerator hookgenerator;
-    private GameState<RobotVrai> real_state;
+    private GameState<RobotReal> real_state;
     
     @SuppressWarnings("unchecked")
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        robot = (DeplacementsHautNiveau) container.getService("DeplacementsHautNiveau");
+        robot = (LocomotionHiLevel) container.getService("DeplacementsHautNiveau");
         hookgenerator = (HookGenerator) container.getService("HookGenerator");
-        real_state = (GameState<RobotVrai>) container.getService("RealGameState");
+        real_state = (GameState<RobotReal>) container.getService("RealGameState");
         robot.setPosition(new Vec2(1000, 900));
         robot.setOrientation(Math.PI/2);
         Vec2 consigne = new Vec2(700, 1400);
@@ -84,13 +82,14 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     public void test_va_au_point_relancer() throws Exception
     {
     	// TODO : une classe de type Executable
-    	
+    	/*
         ArrayList<Hook> hooks = new ArrayList<Hook>();
         Executable takefire = new TakeFire(real_state.robot);
         Hook hook = hookgenerator.hook_position(new Vec2(850, 1150), 100);
         hook.ajouter_callback(new Callback(takefire, true));
         hooks.add(hook);
         robot.va_au_point_hook_correction_detection(hooks, false, false);
+        */
     }
 
     @Test

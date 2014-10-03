@@ -8,9 +8,14 @@ package hook;
 public class Callback
 {
 
-	private boolean done = false;
-	private boolean unique;
-	public Executable methode;
+	// L'évènement a-t-il été réalisé ?
+	private boolean isDone = false;
+	
+	// L'évènement ne doit-t-il survenir qu'une unique fois ?
+	private boolean isUnique;
+	
+	// le code à éxecuter lors de l'évènement
+	public Executable method;
 	
 	/**
 	 * Constructeur d'un callback avec 2 paramètres: la méthode et si elle doit être exécutée une seule fois
@@ -19,8 +24,8 @@ public class Callback
 	 */
 	public Callback(Executable methode, boolean unique)
 	{
-		this.methode = methode;
-		this.unique = unique;
+		this.method = methode;
+		this.isUnique = unique;
 	}
 	
 	/**
@@ -29,27 +34,27 @@ public class Callback
 	 */
 	public Callback(Executable methode)
 	{
-		this.methode = methode;
-		unique = true;
+		this.method = methode;
+		isUnique = true;
 	}
 	
 	/**
 	 * Le callback appelle la méthode, si elle n'est pas unique ou si elle n'est pas déjà faite
 	 * @return
 	 */
-	public boolean appeler()
+	public boolean call()
 	{
-		if(!(supprimable()))
+		if(!(shouldBeDeleted()))
 		{
-            done = true;
-			return methode.execute();
+            isDone = true;
+			return method.execute();
 		}
 		return false;
 	}
 	
-	public boolean supprimable()
+	public boolean shouldBeDeleted()
 	{
-	    return unique && done;
+	    return isUnique && isDone;
 	}
 	
 }
