@@ -78,7 +78,7 @@ public class Main
 	    deplacements = (LocomotionHiLevel)container.getService("DeplacementsHautNiveau");
 	    capteurs = (Sensors) container.getService("Capteur");
 	    
-		real_state.robot.initialiser_actionneurs_deplacements();
+
 		
 
 		// Threads

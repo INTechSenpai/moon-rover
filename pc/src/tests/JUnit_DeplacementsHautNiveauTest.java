@@ -73,8 +73,6 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     public void test_va_au_point_detection() throws Exception
     {
         container.demarreTousThreads();
-        real_state.robot.initialiser_actionneurs_deplacements();
-        robot.setInsiste(true);
         robot.va_au_point_gestion_exception(null, true, false, false);
     }
 
@@ -101,7 +99,6 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     @Test
     public void test_suit_chemin() throws Exception
     {
-        robot.setInsiste(true);
         for(int i = 0; i < 10; i++)
         {
             ArrayList<Vec2> chemin = new ArrayList<Vec2>();
