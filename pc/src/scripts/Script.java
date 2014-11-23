@@ -6,7 +6,7 @@ import robot.RobotReal;
 import utils.Log;
 import utils.Config;
 import container.Service;
-import hook.types.HookGenerator;
+import hook.types.HookFactory;
 
 import java.util.ArrayList;
 
@@ -23,7 +23,7 @@ public abstract class Script implements Service
 {
 
 	// Ces services resteront toujours les mêmes, on les factorise avec un static
-	protected static HookGenerator hookgenerator;
+	protected static HookFactory hookgenerator;
 	protected static Config config;
 	protected static Log log;
 
@@ -32,7 +32,7 @@ public abstract class Script implements Service
 	 */
 	protected ArrayList<ArrayList<Integer>> versions = new ArrayList<ArrayList<Integer>>();	
 	
-	public Script(HookGenerator hookgenerator, Config config, Log log)
+	public Script(HookFactory hookgenerator, Config config, Log log)
 	{
 		Script.hookgenerator = hookgenerator;
 		Script.config = config;

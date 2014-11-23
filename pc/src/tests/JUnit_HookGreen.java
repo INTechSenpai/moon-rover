@@ -1,6 +1,6 @@
 package tests;
 
-import hook.types.HookGenerator;
+import hook.types.HookFactory;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,7 +20,7 @@ public class JUnit_HookGreen extends JUnit_Test {
 
 	private RobotReal robotvrai;
 	@SuppressWarnings("unused")
-	private HookGenerator hookgenerator;
+	private HookFactory hookgenerator;
 	
 	@Before
 	public void setUp() throws Exception {

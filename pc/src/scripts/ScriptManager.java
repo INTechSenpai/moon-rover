@@ -3,6 +3,7 @@ package scripts;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
+
 import utils.Log;
 import utils.Config;
 import container.Service;
@@ -22,6 +23,7 @@ public class ScriptManager implements Service
 	private Map<String,Script> instancesScripts = new Hashtable<String,Script>(); // ce commentaire est inutile
 
 	// TODO : effacer ?
+	@SuppressWarnings("unused")
 	private ArrayList<String> scripts_robot;
 	
 	public ScriptManager(Config config, Log log)

@@ -1,18 +1,14 @@
 package tests;
 
-import hook.Callback;
-import hook.Executable;
-import hook.Hook;
-import hook.types.HookGenerator;
+import hook.types.HookFactory;
 
 import java.util.ArrayList;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import robot.Locomotion;
 import robot.RobotReal;
-import robot.highlevel.LocomotionHiLevel;
 import smartMath.Vec2;
 import strategie.GameState;
 import utils.Sleep;
@@ -27,16 +23,19 @@ import utils.Sleep;
 
 public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
 {
-    private LocomotionHiLevel robot;
-    private HookGenerator hookgenerator;
+    private Locomotion robot;
+    
+    // TODO: pourquoi ce n'est pas utilisé ?
+    @SuppressWarnings("unused")
+	private HookFactory hookgenerator;
     private GameState<RobotReal> real_state;
     
     @SuppressWarnings("unchecked")
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        robot = (LocomotionHiLevel) container.getService("DeplacementsHautNiveau");
-        hookgenerator = (HookGenerator) container.getService("HookGenerator");
+        robot = (Locomotion) container.getService("DeplacementsHautNiveau");
+        hookgenerator = (HookFactory) container.getService("HookGenerator");
         real_state = (GameState<RobotReal>) container.getService("RealGameState");
         robot.setPosition(new Vec2(1000, 900));
         robot.setOrientation(Math.PI/2);

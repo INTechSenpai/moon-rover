@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import robot.RobotReal;
-import robot.cards.Locomotion;
+import robot.cards.LocomotionCardWrapper;
 import smartMath.Vec2;
 import table.Table;
 import threads.ThreadTimer;
@@ -20,7 +20,7 @@ public class JUnit_Threads extends JUnit_Test {
 	@Test
 	public void test_arret() throws Exception
 	{
-		Locomotion deplacements = (Locomotion)container.getService("Deplacements");
+		LocomotionCardWrapper deplacements = (LocomotionCardWrapper)container.getService("Deplacements");
 		deplacements.set_x(0);
 		deplacements.set_y(1500);
 		deplacements.set_orientation(0);

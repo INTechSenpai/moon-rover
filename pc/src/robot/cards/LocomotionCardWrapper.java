@@ -9,12 +9,12 @@ import exceptions.Locomotion.BlockedException;
 import exceptions.serial.SerialConnexionException;
 
 /**
- *  Service de déplacements bas niveau. Méthodes non bloquantes.
- *  Pour les déplacements intelligents, voir RobotVrai
- * @author PF
+ *  Dialogue avec la carte d'asservissement en position du robot.
+ *  Pour les déplacements intelligents, voir Locomotion
+ * @author PF, marsu
  */
 
-public class Locomotion implements Service
+public class LocomotionCardWrapper implements Service
 {
 
 	// Dépendances
@@ -23,14 +23,14 @@ public class Locomotion implements Service
 
 	private Hashtable<String, Integer> infos_stoppage_enMouvement;
 		
-	private long debut_timer_blocage;
+	private long blockageStartTimestamp;
 	
-    private boolean enCoursDeBlocage = false;
+    private boolean wasBlockedAtPreviousCall = false;
 
     /**
 	 * Constructeur
 	 */
-	public Locomotion(Log log, SerialConnexion serie)
+	public LocomotionCardWrapper(Log log, SerialConnexion serie)
 	{
 		this.log = log;
 		this.serie = serie;
@@ -49,59 +49,62 @@ public class Locomotion implements Service
 	}	
 	
 	/**
-	 * Renvoie vrai si le robot bloque (c'est-à-dire que les moteurs forcent mais que le robot ne bouge pas). Blocage automatique au bout de 500ms
+	 * lève BlockedException si le robot bloque (c'est-à-dire que les moteurs forcent mais que le robot ne bouge pas). Blocage automatique au bout de 500ms
 	 * @param PWMmoteurGauche
 	 * @param PWMmoteurDroit
 	 * @param derivee_erreur_rotation
 	 * @param derivee_erreur_translation
 	 * @throws BlockedException 
 	 */
-	public void leverExeptionSiPatinage() throws BlockedException
+	public void raiseExeptionIfBlocked() throws BlockedException, SerialConnexionException
 	{
-		int PWMmoteurGauche = infos_stoppage_enMouvement.get("PWMmoteurGauche");
-		int PWMmoteurDroit = infos_stoppage_enMouvement.get("PWMmoteurDroit");
-		int derivee_erreur_rotation = infos_stoppage_enMouvement.get("derivee_erreur_rotation");
-		int derivee_erreur_translation = infos_stoppage_enMouvement.get("derivee_erreur_translation");
+		// nombre de miliseconde de tolérance entre la détection d'un patinage et la levée de l'exeption.
+		//  trop basse il y a des faux positifs, trop haute on va forcer dans les murs pendant longtemps
+		int blockedTolerancy = 200;//TODO: mettre dans le fichier de config
+		
+		// demande des information sur l'asservissement du robot
+		int pwmLeftMotor = infos_stoppage_enMouvement.get("PWMmoteurGauche");
+		int pwmRightMotor = infos_stoppage_enMouvement.get("PWMmoteurDroit");
+		int derivatedRotationnalError = infos_stoppage_enMouvement.get("derivee_erreur_rotation");
+		int derivatedTranslationnalError = infos_stoppage_enMouvement.get("derivee_erreur_translation");
 		
 		// on décrète que les moteurs forcent si la puissance qu'ils demandent est trop grande
-		boolean moteur_force = Math.abs(PWMmoteurGauche) > 40 || Math.abs(PWMmoteurDroit) > 40;
+		boolean areMotorsActive = Math.abs(pwmLeftMotor) > 40 || Math.abs(pwmRightMotor) > 40;
 		
-		// on décrète que le robot est immobile si l'écart entre la position demandée et la position actuelle est constant
-		boolean bouge_pas = Math.abs(derivee_erreur_rotation) <= 10 && Math.abs(derivee_erreur_translation) <= 10;
+		// on décrète que le robot est immobile si l'écart entre la position demandée et la position actuelle est (casi) constant
+		boolean isRobotImmobile = Math.abs(derivatedRotationnalError) <= 10 && Math.abs(derivatedTranslationnalError) <= 10;
 
 		// si on patine
-		if(bouge_pas && moteur_force)
+		if(isRobotImmobile && areMotorsActive)
 		{
 			// si on patinais déja auparavant, on fait remonter le patinage au code de haut niveau (via BlocageExeption)
-			if(enCoursDeBlocage)
+			if(wasBlockedAtPreviousCall)
 			{
                 // la durée de tolérance au patinage est fixée ici (200ms)
 				// mais cette fonction n'étant appellée qu'a une fréquance de l'ordre du Hertz ( la faute a une saturation de la série)
 				// le robot mettera plus de temps a réagir ( le temps de réaction est égal au temps qui sépare 2 appels successifs de cette fonction)
-				if((System.currentTimeMillis() - debut_timer_blocage) > 200)
+				if((System.currentTimeMillis() - blockageStartTimestamp) > blockedTolerancy)
 				{
-					log.warning("le robot a dû s'arrêter suite à un patinage.", this);
-					try {
-						stopper();
-					}
-					catch(Exception e)
-					{
-						e.printStackTrace();
-					}
-					throw new BlockedException();
+					log.warning("raiseExeptionIfBlocked : le robot a dû s'arrêter suite à un patinage. (levage de BlockedException)", this);
+					stopper();
+					
+					throw new BlockedException("l'écart a la consigne ne bouge pas alors que les moteurs sont en marche");
 				}
 			}
 
 			// si on détecte pour la première fois le patinage, on continue de forcer
 			else
 			{
-				debut_timer_blocage = System.currentTimeMillis();
-				enCoursDeBlocage  = true;
+				blockageStartTimestamp = System.currentTimeMillis();
+				wasBlockedAtPreviousCall  = true;
 			}
 		}
 		// si tout va bien
 		else
-			enCoursDeBlocage = false;
+		{
+			wasBlockedAtPreviousCall = false;
+			blockageStartTimestamp = System.currentTimeMillis();
+		}
 
 	}
 
@@ -122,15 +125,10 @@ public class Locomotion implements Service
 		int derivee_erreur_translation = infos_stoppage_enMouvement.get("derivee_erreur_translation");
 		
 		// ces 2 booléens checkent la précision de l'asser. Ce n'est pas le rôle de cette fonction, 
-		// et peut causer des bugs (erreurs d'aquitement) de java si l'asser est mla fait
-		/*
-		System.out.println("erreur_rotation : "+erreur_rotation);
-		System.out.println("erreur_translation : "+erreur_translation);
-		System.out.println("derivee_erreur_rotation': "+derivee_erreur_rotation);
-		System.out.println("derivee_erreur_translation': "+derivee_erreur_translation);
-		*/
-		
+		// et peut causer des bugs (erreurs d'aquitement) de java si l'asser est mla fait		
 		//donc, on vire !
+		
+		
 		// VALEURS A REVOIR
 		boolean rotation_stoppe = Math.abs(erreur_rotation) <= 60;
 		boolean translation_stoppe = Math.abs(erreur_translation) <= 60;

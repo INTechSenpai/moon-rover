@@ -1,7 +1,7 @@
 package hook.methods;
 
 import hook.Executable;
-import robot.highlevel.LocomotionHiLevel;
+import robot.Locomotion;
 import smartMath.Vec2;
 
 /**
@@ -10,21 +10,22 @@ import smartMath.Vec2;
  *
  */
 
-public class ChangeConsigne implements Executable {
+public class ChangeConsigne implements Executable
+{
 
-        private Vec2 nouvelle_consigne;
-        private LocomotionHiLevel robot;
+        private Vec2 newConsigne;
+        private Locomotion robot;
         
-        public ChangeConsigne(Vec2 nouvelle_consigne, LocomotionHiLevel robot)
+        public ChangeConsigne(Vec2 nouvelle_consigne, Locomotion robot)
         {
             this.robot = robot;
-            this.nouvelle_consigne = nouvelle_consigne;
+            this.newConsigne = nouvelle_consigne;
         }
         
         @Override
         public boolean execute()
         {
-            robot.setConsigne(nouvelle_consigne);
+            robot.setConsigne(newConsigne);
             return true; // le robot doit bouger
         }
         

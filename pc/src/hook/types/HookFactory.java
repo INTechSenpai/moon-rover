@@ -9,99 +9,185 @@ import utils.Log;
 import utils.Config;
 
 /**
- * Classe qui permet de gérer plus facilement les hooks. Service.
- * @author pf
+ * Service fabriquant des hooks à la demande.
+ * @author pf, marsu
  *
  */
-
-public class HookGenerator implements Service
+public class HookFactory implements Service
 {
-
-	/**
-	 * Retourne un hook de position suivant les paramètres donnés
-	 * @param position
-	 * @param tolerance (facultatif, par défaut tolerance de la config)
-	 * @param effectuer_symetrie (facultatif, par défaut false)
-	 * @return
-	 */
 	
 	private Config config;
 	private Log log;
-	private GameState<RobotReal> real_state;
-
-	private int tolerance_position = 20;
-	String couleur;
+	private GameState<RobotReal> realState;
 	
-	public HookGenerator(Config config, Log log, GameState<RobotReal> real_state)
+	// la valeur de 20 est en mm, elle est remplcée par la valeur spécifié dans le fichier de config s'il y en a une
+	private int positionTolerancy = 20;
+	
+	// spécifie de quelle couleur est le robot (vert ou jaune). Uniquement donné par le fichier de config. // TODO: en faire une énumération
+	String color;
+	
+	
+	
+	/**
+	 *  appellé uniquement par Container.
+	 *  Initialise la factory
+	 * 
+	 * @param config fichier de config du match
+	 * @param log système de d log
+	 * @param realState état du jeu
+	 */
+	public HookFactory(Config config, Log log, GameState<RobotReal> realState)
 	{
 		this.config = config;
 		this.log = log;
-		this.real_state = real_state;
+		this.realState = realState;
 		updateConfig();
 	}
 
 	public void updateConfig()
 	{
-		couleur = config.get("couleur");
-		tolerance_position = Integer.parseInt(this.config.get("hooks_tolerance_mm"));		
+		// demande la couleur du robot pour ce match
+		color = config.get("couleur");
+		
+		// demande avec quelle tolérance sur la précision on déclenche les hooks
+		positionTolerancy = Integer.parseInt(this.config.get("hooks_tolerance_mm"));		
 	}
 	
-	/*
-	 * Hook de position
+	/* ======================================================================
+	 * 							Hooks de position
+	 * ======================================================================
 	 */
 	
-	public Hook hook_position(Vec2 position, int tolerance)
+	/**
+	 * demande l'instanciation d'un hook se déclenchant si le robot atteint une certaine position sur la table
+	 * la tolérance sur cette position est ici explicitement demandée et supplante celle du fichier de config
+	 * @param position de déclenchement du hook
+	 * @param tolerancy le hook sera déclenché si la distance entre le point de déclenchement et la position du robot est inférieure a cette valeur
+	 * @return le hook créé
+	 */
+	public Hook newHookPosition(Vec2 position, int tolerancy)
 	{
-		return new HookPosition(config, log, real_state, position, tolerance, couleur=="yellow");
+		return new HookPosition(config, log, realState, position, tolerancy, color=="yellow");
 	}
-	public Hook hook_position(Vec2 position)
+
+	/**
+	 * demande l'instanciation d'un hook se déclenchant si le robot atteint une certaine position sur la table
+	 * la tolérance sur cette position est ici celle du fichier de config
+	 * @param position de déclenchement du hook
+	 * @return le hook créé
+	 */
+	public Hook newHookPosition(Vec2 position)
 	{
-		return hook_position(position, tolerance_position);
+		return newHookPosition(position, positionTolerancy);
 	}
 	
-	/*
-	 * Hook d'abscisse
+	/* ======================================================================
+	 * 							Hooks d'abscisse (sur X)
+	 * ======================================================================
 	 */
 	
-	public Hook hook_abscisse(float abscisse, int tolerance)
+
+	/**
+	 * demande l'instanciation d'un hook se déclenchant si le robot atteint une certaine abscisse sur la table
+	 * la tolérance sur cette absisse est ici explicitement demandée et supplante celle du fichier de config
+	 * @param abscisse de déclenchement du hook
+	 * @param tolerancy le hook sera déclenché si l'écart entre l'abscisse de déclenchement et la position du robot est inférieur a cette valeur
+	 * @return le hook créé
+	 */
+	public Hook newHookX(float abscisse, int tolerancy)
 	{
-		return new HookX(config, log, real_state, abscisse, tolerance, couleur=="yellow");
+		return new HookX(config, log, realState, abscisse, tolerancy, color=="yellow");
 	}
 	
-	public Hook hook_abscisse(float abscisse)
+
+	/**
+	 * demande l'instanciation d'un hook se déclenchant si le robot atteint une certaine abscisse sur la table
+	 * la tolérance sur cette absisse est ici celle du fichier de config
+	 * @param abscisse de déclenchement du hook
+	 * @return le hook créé
+	 */
+	public Hook newHookX(float abscisse)
 	{
-		return hook_abscisse(abscisse, tolerance_position);
+		return newHookX(abscisse, positionTolerancy);
 	}
 	
-    public Hook hook_abscisse_droite(float abscisse, float tolerance)
+
+	/**
+	 * demande l'instanciation d'un hook se déclenchant si le robot a une abscisse sur la table supérieure à une certaine valeur
+	 * la tolérance sur cette absisse est ici explicitement demandée et supplante celle du fichier de config
+	 * L'instanciation prends en compte la couleur du robot. La condition sera "X inférieure a" si la couleur et jaune, et "X supérieur a" dans le cas cntraire.
+	 * @param abscisse de déclenchement du hook
+	 * @param tolerancy le hook sera déclenché si l'écart entre l'abscisse de déclenchement et la position du robot est inférieur a cette valeur
+	 * @return le hook créé
+	 */
+    public Hook newHookXisGreater(float abscisse, float tolerancy)
     {
-        if(couleur=="yellow")
-            return new HookXisLesser(config, log, real_state, abscisse, tolerance, couleur=="yellow");
-        return new HookXisGreater(config, log, real_state, abscisse, tolerance, couleur=="yellow");
+    	// TODO: vérifier si ce if et le color=="yellow" ne font pas double emploi (et su coup s'annulent)
+        if(color=="yellow")
+            return new HookXisLesser(config, log, realState, abscisse, tolerancy, color=="yellow");
+        return new HookXisGreater(config, log, realState, abscisse, tolerancy, color=="yellow");
     }
 
-    public Hook hook_abscisse_gauche(float abscisse, float tolerance)
+	/**
+	 * demande l'instanciation d'un hook se déclenchant si le robot a une abscisse sur la table inférieur à une certaine valeur
+	 * la tolérance sur cette absisse est ici explicitement demandée et supplante celle du fichier de config
+	 * L'instanciation prends en compte la couleur du robot. La condition sera "X supérieur a" si la couleur et jaune, et "X inférieur a" dans le cas cntraire.
+	 * @param abscisse de déclenchement du hook
+	 * @param tolerancy le hook sera déclenché si l'écart entre l'abscisse de déclenchement et la position du robot est inférieur a cette valeur
+	 * @return le hook créé
+	 */
+    public Hook newHookXisLesser(float abscisse, float tolerancy)
     {
-        if(couleur=="yellow")
-            return new HookXisGreater(config, log, real_state, abscisse, tolerance, couleur=="yellow");
-        return new HookXisLesser(config, log, real_state, abscisse, tolerance, couleur=="yellow");
+    	// TODO: vérifier si ce if et le color=="yellow" ne font pas double emploi (et su coup s'annulent)
+        if(color=="yellow")
+            return new HookXisGreater(config, log, realState, abscisse, tolerancy, color=="yellow");
+        return new HookXisLesser(config, log, realState, abscisse, tolerancy, color=="yellow");
     }
 
     /*
      * Hook d'ordonnée
      */
     
-    public Hook hook_ordonnee(float ordonnee, int tolerance)
+
+	/* ======================================================================
+	 * 							Hook d'ordonnée (sur Y)
+	 * ======================================================================
+	 */
+    
+
+	/**
+	 * demande l'instanciation d'un hook se déclenchant si le robot atteint une certaine ordonnée sur la table
+	 * la tolérance sur cette ordonnée est ici explicitement demandée et supplante celle du fichier de config
+	 * @param ordonnee de déclenchement du hook
+	 * @param tolerancy le hook sera déclenché si l'écart entre l'ordonnée de déclenchement et la position du robot est inférieur a cette valeur
+	 * @return le hook créé
+	 */
+    public Hook newHookY(float ordonnee, int tolerancy)
     {
-        return new HookY(config, log, real_state, ordonnee, tolerance);
+        return new HookY(config, log, realState, ordonnee, tolerancy);
     }
-    public Hook hook_ordonnee(float ordonnee)
+    
+
+	/**
+	 * demande l'instanciation d'un hook se déclenchant si le robot atteint une certaine ordonnée sur la table
+	 * la tolérance sur cette ordonnée est ici celle du fichier de config
+	 * @param ordonnee de déclenchement du hook
+	 * @param tolerancy le hook sera déclenché si l'écart entre l'ordonnée de déclenchement et la position du robot est inférieur a cette valeur
+	 * @return le hook créé
+	 */
+    public Hook newHookY(float ordonnee)
     {
-        return hook_ordonnee(ordonnee, tolerance_position);
+        return newHookY(ordonnee, positionTolerancy);
     }
-    public Hook hook_ordonnee_haut(float ordonnee)
+
+	/**
+	 * demande l'instanciation d'un hook se déclenchant si le robot a une ordonnée sur la table supérieure à une certaine valeur
+	 * @param ordonnee de déclenchement du hook
+	 * @return le hook créé
+	 */
+    public Hook newHookYisGreater(float ordonnee)
     {
-        return new HookYisGreater(config, log, real_state, ordonnee, couleur=="yellow");
+        return new HookYisGreater(config, log, realState, ordonnee, color=="yellow");
     }
 
 

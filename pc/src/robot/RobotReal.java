@@ -1,6 +1,5 @@
 package robot;
 
-import robot.highlevel.LocomotionHiLevel;
 import smartMath.Vec2;
 import table.Table;
 import utils.Log;
@@ -25,10 +24,10 @@ public class RobotReal extends Robot
 
 	@SuppressWarnings("unused")
 	private Table table;
-	private LocomotionHiLevel deplacements;
+	private Locomotion deplacements;
 
 	// Constructeur
-	public RobotReal( LocomotionHiLevel deplacements, Table table, Config config, Log log)
+	public RobotReal( Locomotion deplacements, Table table, Config config, Log log)
  	{
 		super(config, log);
 		this.deplacements = deplacements;

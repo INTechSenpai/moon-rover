@@ -4,7 +4,7 @@ import java.util.Hashtable;
 
 import robot.cards.ActuatorsManager;
 import robot.cards.Sensors;
-import robot.cards.Locomotion;
+import robot.cards.LocomotionCardWrapper;
 import robot.cards.laser.LaserFiltration;
 import robot.cards.laser.Laser;
 import table.Table;
@@ -48,7 +48,7 @@ public class ThreadManager
 	 * @throws ConfigException
 	 * @throws SerialManagerException
 	 */
-	public AbstractThread getThreadTimer(Table table, Sensors capteur, Locomotion deplacements, ActuatorsManager actionneurs)
+	public AbstractThread getThreadTimer(Table table, Sensors capteur, LocomotionCardWrapper deplacements, ActuatorsManager actionneurs)
 	{
 		AbstractThread thread = threads.get("threadTimer");
 		if(thread == null)

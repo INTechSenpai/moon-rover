@@ -1,4 +1,4 @@
-package robot.highlevel;
+package robot;
 
 import java.util.ArrayList;
 
@@ -13,7 +13,7 @@ import exceptions.Locomotion.BlockedException;
 import exceptions.Locomotion.CollisionException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
-import robot.cards.Locomotion;
+import robot.cards.LocomotionCardWrapper;
 import smartMath.Vec2;
 import table.Table;
 import utils.Log;
@@ -21,7 +21,7 @@ import utils.Config;
 import utils.Sleep;
 
 /**
- * Entre Deplacement (appels à la série) et RobotVrai (déplacements haut niveau), RobotBasNiveau
+ * Entre LocomtionCardWrapper (appels à la série) et RobotReal (déplacements haut niveau), Locomotion
  * s'occupe de la position, de la symétrie, des hooks, des trajectoires courbes et des blocages.
  * Structure, du bas au haut niveau: symétrie, hook, trajectoire courbe et blocage.
  * Les méthodes "non-bloquantes" se finissent alors que le robot roule encore.
@@ -31,7 +31,7 @@ import utils.Sleep;
  *
  */
 
-public class LocomotionHiLevel implements Service
+public class Locomotion implements Service
 {
 
 	private Log log;
@@ -44,14 +44,20 @@ public class LocomotionHiLevel implements Service
 	private boolean trajectoire_courbe = false;
 
 	private double orientation; // l'orientation tient compte de la symétrie
-	private Locomotion mLocomotion;
+	private LocomotionCardWrapper mLocomotion;
 	private boolean symetrie;
 	private int sleep_boucle_acquittement = 10;
 	private int nb_iterations_max = 30;
 	private int distance_degagement_robot = 50;
 	private double angle_degagement_robot;
 	private boolean insiste = false;
+	
+	
+	// TODO: voir si on pet vraiment supprimer ces variables
+	@SuppressWarnings("unused")
 	private long debut_mouvement_fini;
+	
+	@SuppressWarnings("unused")
 	private boolean fini = true;
 	private double[] oldInfos;
 
@@ -63,7 +69,7 @@ public class LocomotionHiLevel implements Service
 	 * @param table : l'aire de jeu sur laquelle on se d�place
 	 * @param mLocomotion : service de d�placement de bas niveau
 	 */
-	public LocomotionHiLevel(Log log, Config config, Table table, Locomotion mLocomotion)
+	public Locomotion(Log log, Config config, Table table, LocomotionCardWrapper mLocomotion)
 	{
 		this.log = log;
 		this.config = config;
@@ -620,6 +626,7 @@ public class LocomotionHiLevel implements Service
 	 * @throws BlockedException
 	 * @throws CollisionException
 	 */
+	@SuppressWarnings("unused") // TODO: Voir ce qu'il se passe: pourquoi elle n'est jamais appllée ?
 	private boolean mouvement_fini_routine() throws BlockedException
 	{
 		// récupérations des informations d'acquittement
@@ -631,7 +638,7 @@ public class LocomotionHiLevel implements Service
 			getmLocomotion().maj_infos_stoppage_enMouvement();
 
 			// lève une exeption de blocage si le robot patine (ie force sur ses moteurs sans bouger) 
-			getmLocomotion().leverExeptionSiPatinage();
+			getmLocomotion().raiseExeptionIfBlocked();
 
 			// robot arrivé?
 			//            System.out.println("deplacements.update_enMouvement() : " + deplacements.isRobotMoving());
@@ -810,7 +817,7 @@ public class LocomotionHiLevel implements Service
 	/**
 	 * @return the mLocomotion
 	 */
-	public Locomotion getmLocomotion()
+	public LocomotionCardWrapper getmLocomotion()
 	{
 		return mLocomotion;
 	}

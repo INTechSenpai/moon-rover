@@ -9,10 +9,11 @@ import java.io.InputStreamReader;
 
 
 
+
+import robot.Locomotion;
 import robot.RobotReal;
 import robot.cards.Sensors;
-import robot.cards.Locomotion;
-import robot.highlevel.LocomotionHiLevel;
+import robot.cards.LocomotionCardWrapper;
 import scripts.ScriptManager;
 import strategie.GameState;
 import threads.ThreadTimer;
@@ -36,8 +37,8 @@ public class Main
 	static Config config;
 	static GameState<RobotReal> real_state;
 	static ScriptManager scriptmanager;
-	static LocomotionHiLevel deplacements;
-	static Locomotion dep;
+	static Locomotion deplacements;
+	static LocomotionCardWrapper dep;
 	static Sensors capteurs;
 	static boolean doitFaireDepartRapide;
 	
@@ -72,10 +73,10 @@ public class Main
 	
 		
 		// initialise les singletons
-	    dep = (Locomotion)container.getService("Deplacements");
+	    dep = (LocomotionCardWrapper)container.getService("Deplacements");
 		real_state = (GameState<RobotReal>) container.getService("RealGameState");
 	    scriptmanager = (ScriptManager) container.getService("ScriptManager");
-	    deplacements = (LocomotionHiLevel)container.getService("DeplacementsHautNiveau");
+	    deplacements = (Locomotion)container.getService("DeplacementsHautNiveau");
 	    capteurs = (Sensors) container.getService("Capteur");
 	    
 

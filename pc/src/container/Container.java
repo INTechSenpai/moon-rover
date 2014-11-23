@@ -3,7 +3,7 @@ package container;
 import java.util.Hashtable;
 import java.util.Map;
 
-import hook.types.HookGenerator;
+import hook.types.HookFactory;
 import exceptions.ContainerException;
 import exceptions.ThreadException;
 import exceptions.serial.SerialManagerException;
@@ -12,13 +12,13 @@ import scripts.ScriptManager;
 import strategie.GameState;
 import table.Table;
 import threads.ThreadManager;
+import robot.Locomotion;
 import robot.RobotReal;
 import robot.cards.ActuatorsManager;
 import robot.cards.Sensors;
-import robot.cards.Locomotion;
+import robot.cards.LocomotionCardWrapper;
 import robot.cards.laser.LaserFiltration;
 import robot.cards.laser.Laser;
-import robot.highlevel.LocomotionHiLevel;
 import robot.serial.SerialManager;
 import robot.serial.SerialConnexion;
 
@@ -146,7 +146,7 @@ public class Container
 			instanciedServices.put(serviceRequested, (Service)serialmanager.getSerial(serviceRequested));
 		}
 		else if(serviceRequested == "Deplacements")
-			instanciedServices.put(serviceRequested, (Service)new Locomotion((Log)getService("Log"),
+			instanciedServices.put(serviceRequested, (Service)new LocomotionCardWrapper((Log)getService("Log"),
 														(SerialConnexion)getService("serieAsservissement")));
 		else if(serviceRequested == "Capteur")
 			instanciedServices.put(serviceRequested, (Service)new Sensors(	(Config)getService("Read_Ini"),
@@ -157,19 +157,19 @@ public class Container
 														(Log)getService("Log"),
 														(SerialConnexion)getService("serieCapteursActionneurs")));
 		else if(serviceRequested == "HookGenerator")
-			instanciedServices.put(serviceRequested, (Service)new HookGenerator(	(Config)getService("Read_Ini"),
+			instanciedServices.put(serviceRequested, (Service)new HookFactory(	(Config)getService("Read_Ini"),
 															(Log)getService("Log"),
 															(GameState<RobotReal>)getService("RealGameState")));
 		else if(serviceRequested == "RobotVrai")
-			instanciedServices.put(serviceRequested, (Service)new RobotReal(	(LocomotionHiLevel)getService("DeplacementsHautNiveau"),
+			instanciedServices.put(serviceRequested, (Service)new RobotReal(	(Locomotion)getService("DeplacementsHautNiveau"),
 														(Table)getService("Table"),
 														(Config)getService("Read_Ini"),
 														(Log)getService("Log")));		
         else if(serviceRequested == "DeplacementsHautNiveau")
-            instanciedServices.put(serviceRequested, (Service)new LocomotionHiLevel(  (Log)getService("Log"),
+            instanciedServices.put(serviceRequested, (Service)new Locomotion(  (Log)getService("Log"),
                                                                     (Config)getService("Read_Ini"),
                                                                     (Table)getService("Table"),
-                                                                    (Locomotion)getService("Deplacements")));
+                                                                    (LocomotionCardWrapper)getService("Deplacements")));
         else if(serviceRequested == "RealGameState")
             instanciedServices.put(serviceRequested, (Service)new GameState<RobotReal>(  (Config)getService("Read_Ini"),
                                                                   (Log)getService("Log"),
@@ -182,7 +182,7 @@ public class Container
 		else if(serviceRequested == "threadTimer")
 			instanciedServices.put(serviceRequested, (Service)threadmanager.getThreadTimer(	(Table)getService("Table"),
 																		(Sensors)getService("Capteur"),
-																		(Locomotion)getService("Deplacements"),
+																		(LocomotionCardWrapper)getService("Deplacements"),
 		                                                                (ActuatorsManager)getService("Actionneurs")));
 		else if(serviceRequested == "threadCapteurs")
 			instanciedServices.put(serviceRequested, (Service)threadmanager.getThreadCapteurs(	(RobotReal)getService("RobotVrai"),

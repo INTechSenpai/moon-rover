@@ -19,13 +19,21 @@ abstract public class Hook
 	protected ArrayList<Callback> callbacks = new ArrayList<Callback>();
 
 	//gestion des log
+	@SuppressWarnings("unused")
 	private Log log;
 	
 	//gestion de la configuration du robot
+	@SuppressWarnings("unused")
 	private Config config;
 	
 	protected GameState<RobotReal> real_state;
 
+	/**
+	 *  ce constructeur ne sera appellé que par les constructeurs des classes filles (des hooks bien précis)  
+	 * @param config
+	 * @param log
+	 * @param real_state
+	 */
 	public Hook(Config config, Log log, GameState<RobotReal> real_state)
 	{
 		this.config = config;

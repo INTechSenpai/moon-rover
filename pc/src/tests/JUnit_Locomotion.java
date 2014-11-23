@@ -15,14 +15,14 @@ import utils.Sleep;
 public class JUnit_Locomotion extends JUnit_Test
 {
 
-	private Locomotion deplacements;
+	private LocomotionCardWrapper deplacements;
 	
 	@Before
 	public void setUp() throws Exception
 	{
 		super.setUp();
 		log.debug("JUnit_DeplacementsTest.setUp()", this);
-		deplacements = (Locomotion)container.getService("Deplacements");
+		deplacements = (LocomotionCardWrapper)container.getService("Deplacements");
 		deplacements.set_x(0);
 		deplacements.set_y(1500);
 		deplacements.set_orientation(0);
