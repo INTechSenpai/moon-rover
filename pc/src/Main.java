@@ -45,9 +45,9 @@ public class Main
 // dans la config de debut de match, toujours demandé une entrée clavier assez longue (ex "oui" au lieu de "o", pour éviter les fautes de frappes. Une erreur a ce stade coûte cher.
 	
 	/**
-	 * TODO doc
-	 * @param args
-	 * @throws Exception
+	 * Point d'entrée du programme. C'est ici que le code commence par être exécuté 
+	 * @param args chaine de caractère des arguments de la ligne de commande
+	 * @throws Exception TODO : quels sont les exeptions lancés ?
 	 */
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception
@@ -65,8 +65,6 @@ public class Main
 		container = new Container();
 		container.getService("Log");
 		config = (Config) container.getService("Read_Ini");
-	
-		
 		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 		
 		//Début des paramétrages
@@ -90,7 +88,7 @@ public class Main
 		
 		// mettre le checkup du robot.
 		// ici juste des tests de déplcement
-		System.out.println("deplacement bas niveau");
+		/*System.out.println("deplacement bas niveau");
 		dep.avancer(300);
 		Thread.sleep(1000);
 		dep.avancer(-300);
@@ -99,7 +97,7 @@ public class Main
 		Thread.sleep(1000);
 		dep.tourner(1.57);
 		Thread.sleep(1000);
-		System.out.println("fini !");
+		System.out.println("fini !");*/
 		System.out.println("deplacement haut niveau");
 		deplacements.avancer(100, null, true);
 		System.out.println("fini !");

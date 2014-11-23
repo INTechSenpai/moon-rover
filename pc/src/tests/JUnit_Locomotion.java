@@ -59,7 +59,7 @@ public class JUnit_Locomotion extends JUnit_Test
         deplacements.activer_asservissement_translation();
 		log.debug("JUnit_DeplacementsTest.test_tourner()", this);
 		System.out.println("Avant tourner");
-		deplacements.tourner((float)1.2);
+		deplacements.turn((float)1.2);
         System.out.println("Après tourner");
 		Thread.sleep(2000);
 		double[] infos_float = deplacements.get_infos_x_y_orientation();

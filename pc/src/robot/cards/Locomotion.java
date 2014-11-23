@@ -152,7 +152,7 @@ public class Locomotion implements Service
 	 * Fait tourner le robot. Méthode non bloquante
 	 * @param angle
 	 */
-	public void tourner(double angle) throws SerialException
+	public void turn(double angle) throws SerialException
 	{
 		String chaines[] = {"t", Double.toString(angle)};
 		serie.communiquer(chaines, 0);		

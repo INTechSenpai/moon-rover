@@ -63,7 +63,7 @@ public class SearchConst
 
                     deplacements.change_const_rotation(kp, kd, pwm_max);
                     System.out.println(angle);
-                    deplacements.tourner(angle);
+                    deplacements.turn(angle);
 
                 }
             }

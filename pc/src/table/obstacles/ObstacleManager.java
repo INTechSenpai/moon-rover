@@ -86,7 +86,7 @@ public class ObstacleManager
     public boolean obstaclePresent(final Vec2 centre_detection, int distance)
     {
     	//TODO
-    	return true;
+    	return false;
     }   
 
     /**

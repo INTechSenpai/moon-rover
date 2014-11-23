@@ -106,7 +106,7 @@ public class ThreadTimer extends AbstractThread {
             else
                 angle = Math.atan2(positionMammouth2.y - position.y, positionMammouth2.x - position.x);
             deplacements.stopper();
-            deplacements.tourner(angle-Math.PI/2); // le filet est sur le coté gauche
+            deplacements.turn(angle-Math.PI/2); // le filet est sur le coté gauche
             
             // fin du match : désasser final
             try 

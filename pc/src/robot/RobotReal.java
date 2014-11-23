@@ -45,6 +45,7 @@ public class RobotReal extends Robot
 		super.updateConfig();
 	}
 	
+	
 	public void desactiver_asservissement_rotation()
 	{
 		deplacements.desactiver_asservissement_rotation();

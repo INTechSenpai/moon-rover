@@ -27,7 +27,7 @@ import utils.Sleep;
  * Les m√©thodes "non-bloquantes" se finissent alors que le robot roule encore.
  * (les m√©thodes non-bloquantes s'ex√©cutent tr√®s rapidement)
  * Les m√©thodes "bloquantes" se finissent alors que le robot est arr√™t√©.
- * @author pf
+ * @author pf, marsu
  *
  */
 
@@ -44,56 +44,63 @@ public class LocomotionHiLevel implements Service
     private boolean trajectoire_courbe = false;
     
     private double orientation; // l'orientation tient compte de la sym√©trie
-    private Locomotion deplacements;
-//    private HookGenerator hookgenerator;
+    private Locomotion mLocomotion;
     private boolean symetrie;
     private int sleep_boucle_acquittement = 10;
     private int nb_iterations_max = 30;
     private int distance_degagement_robot = 50;
-//    private int anticipation_trajectoire_courbe = 200;
     private double angle_degagement_robot;
     private boolean insiste = false;
     private long debut_mouvement_fini;
     private boolean fini = true;
-    private double[] old_infos;
+    private double[] oldInfos;
     
-    public LocomotionHiLevel(Log log, Config config, Table table, Locomotion deplacements)
+    /**
+     * Instancie le service de dÈplacement haut niveau du robot.
+     * AppellÈ par le container
+     * @param log : la sortie de log √† utiliser
+     * @param config : sur quel objet lire la configuration du match
+     * @param table : l'aire de jeu sur laquelle on se dÈplace
+     * @param mLocomotion : service de dÈplacement de bas niveau
+     */
+    public LocomotionHiLevel(Log log, Config config, Table table, Locomotion mLocomotion)
     {
         this.log = log;
         this.config = config;
-        this.deplacements = deplacements;
+        this.mLocomotion = mLocomotion;
 //        this.hookgenerator = hookgenerator;
         this.table = table;
         updateConfig();
     }
     
-    public void recaler()
+    /**
+     * Recale le robot sur la table pour qu'il sache ou il est sur la table et dans quel sens il est.
+     * c'est obligatoire avant un match,
+     */
+    public void readjust()
     {
-        try {
-            if(symetrie)
-                setOrientation(0f);
-            else
-                setOrientation(Math.PI);
-
+        try
+        {
+        	// Retrouve l'abscisse du robot en foncant dans un mur d'abscisse connue
             log.debug("recale X",this);
-            Sleep.sleep(2000);
+            
             avancer(-200, null, true);
-            deplacements.set_vitesse_translation(200);
-            deplacements.desactiver_asservissement_rotation();
+            mLocomotion.set_vitesse_translation(200);
+            mLocomotion.desactiver_asservissement_rotation();
             Sleep.sleep(1000);
             avancer(-200, null, true);
-            deplacements.activer_asservissement_rotation();
-            deplacements.set_vitesse_translation(Speed.READJUSTMENT.PWMTranslation);
+            mLocomotion.activer_asservissement_rotation();
+            mLocomotion.set_vitesse_translation(Speed.READJUSTMENT.PWMTranslation);
 
             position.x = 1500 - 165;
             if(symetrie)
             {
                 setOrientation(0f);
-                deplacements.set_x(-1500+165);
+                mLocomotion.set_x(-1500+165);
             }
             else
             {
-                deplacements.set_x(1500-165);
+                mLocomotion.set_x(1500-165);
                 setOrientation(Math.PI);
             }
 
@@ -105,14 +112,14 @@ public class LocomotionHiLevel implements Service
             
         	log.debug("recale Y",this);
             avancer(-600, null, true);
-            deplacements.set_vitesse_translation(200);
-            deplacements.desactiver_asservissement_rotation();
+            mLocomotion.set_vitesse_translation(200);
+            mLocomotion.desactiver_asservissement_rotation();
             Sleep.sleep(1000);
             avancer(-200, null, true);
-            deplacements.activer_asservissement_rotation();
-            deplacements.set_vitesse_translation(Speed.READJUSTMENT.PWMTranslation);
+            mLocomotion.activer_asservissement_rotation();
+            mLocomotion.set_vitesse_translation(Speed.READJUSTMENT.PWMTranslation);
             position.y = 2000 - 165;
-            deplacements.set_y(2000 - 165);
+            mLocomotion.set_y(2000 - 165);
             
 
         	log.debug("Done !",this);
@@ -121,7 +128,7 @@ public class LocomotionHiLevel implements Service
             orientation = -Math.PI/2;
             setOrientation(-Math.PI/2);
             //Normalement on se trouve √† (1500 - 165 - 100 = 1225 ; 2000 - 165 - 100 = 1725)
-            deplacements.activer_asservissement_rotation();
+            mLocomotion.activer_asservissement_rotation();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -144,8 +151,8 @@ public class LocomotionHiLevel implements Service
         boolean trigo = angle > orientation;
 
         try {
-            old_infos = deplacements.get_infos_x_y_orientation();
-            deplacements.tourner(angle);
+            oldInfos = mLocomotion.get_infos_x_y_orientation();
+            mLocomotion.turn(angle);
             while(!mouvement_fini()) // on attend la fin du mouvement
             {
                 Sleep.sleep(sleep_boucle_acquittement);
@@ -159,9 +166,9 @@ public class LocomotionHiLevel implements Service
                 if(!mur)
                 {
                     if(trigo ^ symetrie)
-                        deplacements.tourner(orientation+angle_degagement_robot);
+                        mLocomotion.turn(orientation+angle_degagement_robot);
                     else
-                        deplacements.tourner(orientation-angle_degagement_robot);
+                        mLocomotion.turn(orientation-angle_degagement_robot);
                 }
             } catch (SerialException e1)
             {
@@ -302,7 +309,8 @@ public class LocomotionHiLevel implements Service
             try
             {
                 va_au_point_hook_correction_detection(hooks, trajectoire_courbe, marche_arriere);
-            } catch (BlockedException e)
+            }
+            catch (BlockedException e)
             {
                 nb_iterations_deblocage--;
                 stopper();
@@ -316,9 +324,9 @@ public class LocomotionHiLevel implements Service
                     {
                         log.warning("On n'arrive plus √† avancer. On se d√©gage", this);
                         if(marche_arriere)
-                            deplacements.avancer(distance_degagement_robot);
+                            mLocomotion.avancer(distance_degagement_robot);
                         else
-                            deplacements.avancer(-distance_degagement_robot);
+                            mLocomotion.avancer(-distance_degagement_robot);
                         recommence = true;
                     } catch (SerialException e1)
                     {
@@ -328,7 +336,7 @@ public class LocomotionHiLevel implements Service
                     {
                         try
                         {
-                            old_infos = deplacements.get_infos_x_y_orientation();
+                            oldInfos = mLocomotion.get_infos_x_y_orientation();
                         } catch (SerialException e1)
                         {
                             e1.printStackTrace();
@@ -343,8 +351,10 @@ public class LocomotionHiLevel implements Service
                     if(nb_iterations_deblocage <= 0)
                         throw new UnableToMoveException();
                 }
-            } catch (CollisionException e)
+            }
+            catch (CollisionException e)
             {
+            	e.printStackTrace();
                 nb_iterations_ennemi--;
                 /*
                  * En cas d'ennemi, on attend (si on demande d'insiste) ou on abandonne.
@@ -388,7 +398,7 @@ public class LocomotionHiLevel implements Service
         va_au_point_symetrie(trajectoire_courbe, marche_arriere, false);
         try
         {
-            old_infos = deplacements.get_infos_x_y_orientation();
+            oldInfos = mLocomotion.get_infos_x_y_orientation();
         } catch (SerialException e)
         {
             e.printStackTrace();
@@ -451,52 +461,102 @@ public class LocomotionHiLevel implements Service
             angle += Math.PI;
         }        
         
-        va_au_point_courbe(angle, distance, trajectoire_courbe, correction);
+        moveForwardInDirection(angle, distance, trajectoire_courbe);
         
     }
     
     /**
-     * Non bloquant. Avance, de mani√®re courbe ou non.
-     * @param angle
-     * @param distance
-     * @param trajectoire_courbe
+     * Fait avancer le robot de la distance voulue dans la direction dÈsirÈe
+     * compatible avec les trajectoires courbes.
+     * Le dÈplacement n'est pas bloquant, mais le changement d'orientation pour que l'avant du robot pointe dans la bonne direction l'est.
+     * @param direction valeur relative en radian indiquant la direction dans laquelle on veut avancer
+     * @param distance valeur en mm indiquant de combien on veut avancer.
+     * @param allowCurvedPath si true, le robot essayera de tourner et avancer en mÍme temps
      * @throws BlockedException 
      */
-    public void va_au_point_courbe(double angle, double distance, boolean trajectoire_courbe, boolean correction) throws BlockedException
+    public void moveForwardInDirection(double direction, double distance, boolean allowCurvedPath) throws BlockedException
     {
-        // On interdit la trajectoire courbe si on doit faire un virage trop grand.
-        if(Math.abs(angle - orientation) > Math.PI/2)
-//            if(correction)
- //               return;
- //           else
-                trajectoire_courbe = false;
+        // On interdit la trajectoire courbe si on doit faire un virage trop grand (plus d'un quart de tour).
+        if(Math.abs(direction - orientation) > Math.PI/2)
+                allowCurvedPath = false;
+        
         try
         {
-            deplacements.tourner(angle);
-            old_infos = deplacements.get_infos_x_y_orientation();
-            if(!trajectoire_courbe) // sans virage : la premi√®re rotation est bloquante
-                while(!mouvement_fini()) // on attend la fin du mouvement
-                    Sleep.sleep(sleep_boucle_acquittement);
+        	// demande aux moteurs de tourner le robot jusqu'a ce qu'il pointe dans la bonne direction
+            mLocomotion.turn(direction);
             
-            deplacements.avancer(distance);
-        } catch (SerialException e) {
+            
+            // attends que le robot soit dans la bonne direction si nous ne sommes pas autorisÈ ‡ tourner en avancant
+            if(!allowCurvedPath) 
+            {
+            	float newOrientation = (float)oldInfos[2] + (float)direction*1000; // valeur absolue de l'orientation ‡ atteindre
+
+            	// TODO: mettre la boucle d'attente dans une fonction part entiËre (la prise de oldInfo est moche ici)
+            	oldInfos = mLocomotion.get_infos_x_y_orientation();
+                while(!isTurnFinished(newOrientation)) 
+                    Sleep.sleep(sleep_boucle_acquittement);
+            }
+            
+            // demande aux moteurs d'avancer le robot de la distance demandÈe
+            mLocomotion.avancer(distance);
+        } 
+        catch (SerialException e)
+        {
             e.printStackTrace();
         }
     }
+    
+
+
+    /**
+     * VÈrifie si le robot a fini de tourner. (On suppose que l'on a prÈcÈdemment demandÈ au robot de tourner)
+     * @param finalOrientation on dÈcrËte que le robot a fini de tourner lorsque son orientation Ègale cette valeur (en radian, valeur absolue) 
+     * @return Faux si le robot tourne encore, vrai si arriv√©e au bon point, exception si blocage
+     * @throws BlockedException si un obstacle est rencontrÈ durant la rotation
+     */
+    private boolean isTurnFinished(float finalOrientation) throws BlockedException
+    {
+        boolean out = false; 
+        try
+        {
+            double[] newInfos = mLocomotion.get_infos_x_y_orientation();
+            
+            // Le robot tourne-t-il encore ?
+            if(Math.abs(newInfos[2] - oldInfos[2]) > 20)
+                out = false;
+            
+            // le robot est-t-il arriv√© ?
+            else if(Math.abs(newInfos[2]/1000 - finalOrientation) > 20)
+                out = true;
+            
+            // si on ne bouge plus, et qu'on n'est pas arriv√©, c'est que ca bloque
+            else
+            	throw new BlockedException();
+            
+            
+   
+            oldInfos = newInfos;
+        } catch (SerialException e)
+        {
+        	log.critical("Erreur de communication avec la carte d'asser", this);
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return out;
+    }
+
 
     /**
      * Faux si le robot bouge encore, vrai si arriv√©e au bon point, exception si blocage
      * @return
      * @throws BlockedException
      */
-    
-    // TODO: wut ?
     private boolean mouvement_fini() throws BlockedException
     {
         boolean out = false;
         try
         {
-            double[] new_infos = deplacements.get_infos_x_y_orientation();
+            double[] new_infos = mLocomotion.get_infos_x_y_orientation();
             /*
             System.out.println("x: "+new_infos[0]);
             System.out.println("y: "+new_infos[1]);
@@ -504,14 +564,21 @@ public class LocomotionHiLevel implements Service
             System.out.println("distance¬≤ diff: "+new Vec2((int)old_infos[0], (int)old_infos[1]).SquaredDistance(new Vec2((int)new_infos[0], (int)new_infos[1])));
             System.out.println("angle diff: "+Math.abs(new_infos[2] - old_infos[2]));
 */
-            if(new Vec2((int)old_infos[0], (int)old_infos[1]).SquaredDistance(new Vec2((int)new_infos[0], (int)new_infos[1])) > 20 || Math.abs(new_infos[2] - old_infos[2]) > 20)
+            // Le robot bouge-t-il encore ?
+            if(new Vec2((int)oldInfos[0], (int)oldInfos[1]).SquaredDistance(new Vec2((int)new_infos[0], (int)new_infos[1])) > 20 || Math.abs(new_infos[2] - oldInfos[2]) > 20)
                 out = false;
+            
+            // le robot est-t-il arriv√© ?
             else if(new Vec2((int)new_infos[0], (int)new_infos[1]).SquaredDistance(consigne) < 10)
                 out = true;
-            else
-                throw new BlockedException();
+            
+            // si on ne bouge plus, et qu'on n'est pas arriv√©, c'est que ca bloque
+          //  else
+           //     throw new BlockedException();
+            
+            
    
-            old_infos = new_infos;
+            oldInfos = new_infos;
         } catch (SerialException e)
         {
             // TODO Auto-generated catch block
@@ -549,7 +616,7 @@ public class LocomotionHiLevel implements Service
      * 
      * @param detection_collision
      * @param sans_lever_exception
-     * @return oui si le robot est arriv√© √† destination, non si encore en mouvement
+     * @return true si le robot est arriv√© √† destination, false si encore en mouvement
      * @throws BlockedException
      * @throws CollisionException
      */
@@ -561,14 +628,14 @@ public class LocomotionHiLevel implements Service
         	// met a jour: 	l'√©cart entre la position actuelle et la position sur laquelle on est asservi
         	//				la variation de l'√©cart a la position sur laquelle on est asservi
         	//				la puissance demand√©e par les moteurs 	
-            deplacements.maj_infos_stoppage_enMouvement();
+            mLocomotion.maj_infos_stoppage_enMouvement();
             
             // l√®ve une exeption de blocage si le robot patine (ie force sur ses moteurs sans bouger) 
-            deplacements.leverExeptionSiPatinage();
+            mLocomotion.leverExeptionSiPatinage();
             
             // robot arriv√©?
 //            System.out.println("deplacements.update_enMouvement() : " + deplacements.isRobotMoving());
-            return !deplacements.isRobotMoving();
+            return !mLocomotion.isRobotMoving();
 
         } 
         catch (SerialException e) 
@@ -607,7 +674,7 @@ public class LocomotionHiLevel implements Service
     private void update_x_y_orientation()
     {
         try {
-            double[] infos = deplacements.get_infos_x_y_orientation();
+            double[] infos = mLocomotion.get_infos_x_y_orientation();
             position.x = (int)infos[0];
             position.y = (int)infos[1];
             orientation = infos[2]/1000; // car get_infos renvoie des milliradians
@@ -638,7 +705,7 @@ public class LocomotionHiLevel implements Service
     {
         log.debug("Arr√™t du robot en "+position, this);
         try {
-            deplacements.stopper();
+            mLocomotion.stopper();
         } catch (SerialException e) {
             e.printStackTrace();
         }           
@@ -661,8 +728,8 @@ public class LocomotionHiLevel implements Service
     public void setPosition(Vec2 position) {
         this.position = position.clone();
         try {
-            deplacements.set_x(position.x);
-            deplacements.set_y(position.y);
+            mLocomotion.set_x(position.x);
+            mLocomotion.set_y(position.y);
         } catch (SerialException e) {
             e.printStackTrace();
         }
@@ -676,7 +743,7 @@ public class LocomotionHiLevel implements Service
     public void setOrientation(double orientation) {
         this.orientation = orientation;
         try {
-            deplacements.set_orientation(orientation);
+            mLocomotion.set_orientation(orientation);
         } catch (SerialException e) {
             e.printStackTrace();
         }
@@ -708,8 +775,8 @@ public class LocomotionHiLevel implements Service
     {
         try
         {
-            deplacements.desactiver_asservissement_rotation();
-            deplacements.desactiver_asservissement_translation();
+            mLocomotion.desactiver_asservissement_rotation();
+            mLocomotion.desactiver_asservissement_translation();
         } catch (SerialException e)
         {
             e.printStackTrace();
@@ -720,7 +787,7 @@ public class LocomotionHiLevel implements Service
     {
         try
         {
-            deplacements.set_vitesse_rotation(pwm_max);
+            mLocomotion.set_vitesse_rotation(pwm_max);
         } catch (SerialException e)
         {
             e.printStackTrace();
@@ -731,58 +798,8 @@ public class LocomotionHiLevel implements Service
     {
         try
         {
-            deplacements.set_vitesse_translation(pwm_max);
+            mLocomotion.set_vitesse_translation(pwm_max);
         } catch (SerialException e)
         {
             e.printStackTrace();
-        }
-    }
-
-    
-    public void asservit()
-    {
-        try
-        {
-            deplacements.activer_asservissement_rotation();
-            deplacements.activer_asservissement_translation();
-        } catch (SerialException e)
-        {
-            e.printStackTrace();
-        }
-    }
-    
-    public void initialiser_deplacements()
-    {}
-    
-    public void setInsiste(boolean insiste)
-    {
-        this.insiste = insiste;
-    }
-
-    public void desactiver_asservissement_rotation()
-    {
-    	try
-		{
-			deplacements.desactiver_asservissement_rotation();
-		}
-		catch (SerialException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
-
-    public void activer_asservissement_rotation()
-    {
-    	try
-		{
-			deplacements.activer_asservissement_rotation();
-		}
-		catch (SerialException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
-
-}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
