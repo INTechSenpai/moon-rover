@@ -1,6 +1,6 @@
 package threads;
 
-import exceptions.serial.SerialException;
+import exceptions.serial.SerialConnexionException;
 import robot.cards.ActuatorsManager;
 import robot.cards.Sensors;
 import robot.cards.Locomotion;
@@ -89,7 +89,7 @@ public class ThreadTimer extends AbstractThread {
 
 		try {
 			deplacements.stopper();
-		} catch (SerialException e) {
+		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}
 		
@@ -113,7 +113,7 @@ public class ThreadTimer extends AbstractThread {
             {
                 deplacements.desactiver_asservissement_rotation();
                 deplacements.desactiver_asservissement_translation();
-            } catch (SerialException e) {
+            } catch (SerialConnexionException e) {
                 e.printStackTrace();
             }
             deplacements.arret_final();
@@ -122,7 +122,7 @@ public class ThreadTimer extends AbstractThread {
             Sleep.sleep(1500+temps_reserve_funny_action);
             actionneurs.lancerFilet();
             
-        } catch (SerialException e1)
+        } catch (SerialConnexionException e1)
         {
             // TODO Auto-generated catch block
             e1.printStackTrace();

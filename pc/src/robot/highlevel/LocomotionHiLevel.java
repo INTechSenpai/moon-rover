@@ -12,7 +12,7 @@ import enums.Speed;
 import exceptions.Locomotion.BlockedException;
 import exceptions.Locomotion.CollisionException;
 import exceptions.Locomotion.UnableToMoveException;
-import exceptions.serial.SerialException;
+import exceptions.serial.SerialConnexionException;
 import robot.cards.Locomotion;
 import smartMath.Vec2;
 import table.Table;
@@ -170,12 +170,12 @@ public class LocomotionHiLevel implements Service
 					else
 						getmLocomotion().turn(orientation-angle_degagement_robot);
 				}
-			} catch (SerialException e1)
+			} catch (SerialConnexionException e1)
 			{
 				e1.printStackTrace();
 			}
 			throw new UnableToMoveException();
-		} catch (SerialException e)
+		} catch (SerialConnexionException e)
 		{
 			e.printStackTrace();
 		}
@@ -328,7 +328,7 @@ public class LocomotionHiLevel implements Service
 							else
 								getmLocomotion().avancer(-distance_degagement_robot);
 							recommence = true;
-						} catch (SerialException e1)
+						} catch (SerialConnexionException e1)
 						{
 							e1.printStackTrace();
 						}
@@ -337,7 +337,7 @@ public class LocomotionHiLevel implements Service
 							try
 							{
 								oldInfos = getmLocomotion().get_infos_x_y_orientation();
-							} catch (SerialException e1)
+							} catch (SerialConnexionException e1)
 							{
 								e1.printStackTrace();
 							}
@@ -399,7 +399,7 @@ public class LocomotionHiLevel implements Service
 		try
 		{
 			oldInfos = getmLocomotion().get_infos_x_y_orientation();
-		} catch (SerialException e)
+		} catch (SerialConnexionException e)
 		{
 			e.printStackTrace();
 		}
@@ -500,7 +500,7 @@ public class LocomotionHiLevel implements Service
 			// demande aux moteurs d'avancer le robot de la distance demand�e
 			getmLocomotion().avancer(distance);
 		} 
-		catch (SerialException e)
+		catch (SerialConnexionException e)
 		{
 			e.printStackTrace();
 		}
@@ -536,7 +536,7 @@ public class LocomotionHiLevel implements Service
 
 
 			oldInfos = newInfos;
-		} catch (SerialException e)
+		} catch (SerialConnexionException e)
 		{
 			log.critical("Erreur de communication avec la carte d'asser", this);
 			// TODO Auto-generated catch block
@@ -579,7 +579,7 @@ public class LocomotionHiLevel implements Service
 
 
 			oldInfos = new_infos;
-		} catch (SerialException e)
+		} catch (SerialConnexionException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -638,7 +638,7 @@ public class LocomotionHiLevel implements Service
 			return !getmLocomotion().isRobotMoving();
 
 		} 
-		catch (SerialException e) 
+		catch (SerialConnexionException e) 
 		{
 			e.printStackTrace();
 			return false;
@@ -669,7 +669,7 @@ public class LocomotionHiLevel implements Service
 
 	/**
 	 * Met à jour position et orientation via la carte d'asservissement.
-	 * @throws SerialException
+	 * @throws SerialConnexionException
 	 */
 	private void update_x_y_orientation()
 	{
@@ -679,7 +679,7 @@ public class LocomotionHiLevel implements Service
 			position.y = (int)infos[1];
 			orientation = infos[2]/1000; // car get_infos renvoie des milliradians
 		}
-		catch(SerialException e)
+		catch(SerialConnexionException e)
 		{
 			e.printStackTrace();
 		}
@@ -706,7 +706,7 @@ public class LocomotionHiLevel implements Service
 		log.debug("Arrêt du robot en "+position, this);
 		try {
 			getmLocomotion().stopper();
-		} catch (SerialException e) {
+		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}           
 	}
@@ -731,7 +731,7 @@ public class LocomotionHiLevel implements Service
 		try {
 			getmLocomotion().set_x(position.x);
 			getmLocomotion().set_y(position.y);
-		} catch (SerialException e) {
+		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}
 		Sleep.sleep(300);
@@ -746,7 +746,7 @@ public class LocomotionHiLevel implements Service
 		this.orientation = orientation;
 		try {
 			getmLocomotion().set_orientation(orientation);
-		} catch (SerialException e) {
+		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}
 	}
@@ -779,7 +779,7 @@ public class LocomotionHiLevel implements Service
 		{
 			getmLocomotion().desactiver_asservissement_rotation();
 			getmLocomotion().desactiver_asservissement_translation();
-		} catch (SerialException e)
+		} catch (SerialConnexionException e)
 		{
 			e.printStackTrace();
 		}
@@ -790,7 +790,7 @@ public class LocomotionHiLevel implements Service
 		try
 		{
 			getmLocomotion().set_vitesse_rotation(pwm_max);
-		} catch (SerialException e)
+		} catch (SerialConnexionException e)
 		{
 			e.printStackTrace();
 		}
@@ -801,7 +801,7 @@ public class LocomotionHiLevel implements Service
 		try
 		{
 			getmLocomotion().set_vitesse_translation(pwm_max);
-		} catch (SerialException e)
+		} catch (SerialConnexionException e)
 		{
 			e.printStackTrace();
 		}

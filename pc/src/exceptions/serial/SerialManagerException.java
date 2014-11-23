@@ -1,7 +1,7 @@
 package exceptions.serial;
 
 /**
- * Exception levée par le serialmanager
+ * Exception levée par le gestionnaire des connexions séries
  * @author pf
  *
  */

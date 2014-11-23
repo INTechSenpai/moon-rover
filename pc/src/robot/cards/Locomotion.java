@@ -2,11 +2,11 @@ package robot.cards;
 
 import java.util.Hashtable;
 
-import robot.serial.Serial;
+import robot.serial.SerialConnexion;
 import utils.*;
 import container.Service;
 import exceptions.Locomotion.BlockedException;
-import exceptions.serial.SerialException;
+import exceptions.serial.SerialConnexionException;
 
 /**
  *  Service de déplacements bas niveau. Méthodes non bloquantes.
@@ -19,7 +19,7 @@ public class Locomotion implements Service
 
 	// Dépendances
 	private Log log;
-	private Serial serie;
+	private SerialConnexion serie;
 
 	private Hashtable<String, Integer> infos_stoppage_enMouvement;
 		
@@ -30,7 +30,7 @@ public class Locomotion implements Service
     /**
 	 * Constructeur
 	 */
-	public Locomotion(Log log, Serial serie)
+	public Locomotion(Log log, SerialConnexion serie)
 	{
 		this.log = log;
 		this.serie = serie;
@@ -142,7 +142,7 @@ public class Locomotion implements Service
 	 * Fait avancer le robot. Méthode non bloquante
 	 * @param distance
 	 */
-	public void avancer(double distance) throws SerialException
+	public void avancer(double distance) throws SerialConnexionException
 	{
 		String chaines[] = {"d", Double.toString(distance)};
 		serie.communiquer(chaines, 0);
@@ -152,7 +152,7 @@ public class Locomotion implements Service
 	 * Fait tourner le robot. Méthode non bloquante
 	 * @param angle
 	 */
-	public void turn(double angle) throws SerialException
+	public void turn(double angle) throws SerialConnexionException
 	{
 		String chaines[] = {"t", Double.toString(angle)};
 		serie.communiquer(chaines, 0);		
@@ -161,7 +161,7 @@ public class Locomotion implements Service
 	/**
 	 * Arrête le robot
 	 */
-	public void stopper() throws SerialException
+	public void stopper() throws SerialConnexionException
 	{
         desactiver_asservissement_translation();
         desactiver_asservissement_rotation();
@@ -174,7 +174,7 @@ public class Locomotion implements Service
 	 * Ecrase la position x du robot au niveau de la carte
 	 * @param x
 	 */
-	public void set_x(int x) throws SerialException
+	public void set_x(int x) throws SerialConnexionException
 	{
 		String chaines[] = {"cx", Integer.toString(x)};
 		serie.communiquer(chaines, 0);
@@ -184,7 +184,7 @@ public class Locomotion implements Service
 	 * Ecrase la position y du robot au niveau de la carte
 	 * @param y
 	 */
-	public void set_y(int y) throws SerialException
+	public void set_y(int y) throws SerialConnexionException
 	{
 		String chaines[] = {"cy", Integer.toString(y)};
 		serie.communiquer(chaines, 0);	
@@ -194,7 +194,7 @@ public class Locomotion implements Service
 	 * Ecrase l'orientation du robot au niveau de la carte
 	 * @param orientation
 	 */
-	public void set_orientation(double orientation) throws SerialException
+	public void set_orientation(double orientation) throws SerialConnexionException
 	{
 		String chaines[] = {"co", Double.toString(orientation)};
 		serie.communiquer(chaines, 0);
@@ -203,7 +203,7 @@ public class Locomotion implements Service
 	/**
 	 * Active l'asservissement en translation du robot
 	 */
-	public void activer_asservissement_translation() throws SerialException
+	public void activer_asservissement_translation() throws SerialConnexionException
 	{
 		serie.communiquer("ct1", 0);
 	}
@@ -211,7 +211,7 @@ public class Locomotion implements Service
 	/**
 	 * Active l'asservissement en rotation du robot
 	 */
-	public void activer_asservissement_rotation() throws SerialException
+	public void activer_asservissement_rotation() throws SerialConnexionException
 	{
 		serie.communiquer("cr1", 0);
 	}
@@ -219,7 +219,7 @@ public class Locomotion implements Service
 	/**
 	 * Désactive l'asservissement en translation du robot
 	 */
-	public void desactiver_asservissement_translation() throws SerialException
+	public void desactiver_asservissement_translation() throws SerialConnexionException
 	{
 		serie.communiquer("ct0", 0);
 	}
@@ -227,7 +227,7 @@ public class Locomotion implements Service
 	/**
 	 * Désactive l'asservissement en rotation du robot
 	 */
-	public void desactiver_asservissement_rotation() throws SerialException
+	public void desactiver_asservissement_rotation() throws SerialConnexionException
 	{
 		serie.communiquer("cr0", 0);
 	}
@@ -236,7 +236,7 @@ public class Locomotion implements Service
 	 * Modifie la vitesse en translation
 	 * @param pwm_max
 	 */
-	public void set_vitesse_translation(int pwm_max) throws SerialException
+	public void set_vitesse_translation(int pwm_max) throws SerialConnexionException
 	{
 		double kp, kd;
 		if(pwm_max >= 195)
@@ -283,7 +283,7 @@ public class Locomotion implements Service
 	 * Modifie la vitesse en rotation
 	 * @param pwm_max
 	 */
-	public void set_vitesse_rotation(int pwm_max) throws SerialException
+	public void set_vitesse_rotation(int pwm_max) throws SerialConnexionException
 	{
 		double kp, kd;
 		if(pwm_max > 155)
@@ -311,13 +311,13 @@ public class Locomotion implements Service
 		serie.communiquer(chaines, 0);
 	}
 	
-	public void change_const_translation(double kp, double kd, int pwm_max) throws SerialException
+	public void change_const_translation(double kp, double kd, int pwm_max) throws SerialConnexionException
 	{
 		String chaines[] = {"ctv", Double.toString(kp), Double.toString(kd), Integer.toString(pwm_max)};
 		serie.communiquer(chaines, 0);
 	}
 	
-	public void change_const_rotation(double kp, double kd, int pwm_max) throws SerialException
+	public void change_const_rotation(double kp, double kd, int pwm_max) throws SerialConnexionException
 	{
 		String chaines[] = {"crv", Double.toString(kp), Double.toString(kd), Integer.toString(pwm_max)};
 		serie.communiquer(chaines, 0);
@@ -327,7 +327,7 @@ public class Locomotion implements Service
 	 * Met à jour PWMmoteurGauche, PWMmoteurDroit, erreur_rotation, erreur_translation, derivee_erreur_rotation, derivee_erreur_translation
 	 * les nouvelles valeurs sont stokées dans la map
 	 */
-	public void maj_infos_stoppage_enMouvement() throws SerialException
+	public void maj_infos_stoppage_enMouvement() throws SerialConnexionException
 	{
 		// on envois "?infos" et on lis les 4 int (dans l'ordre : PWM droit, PWM gauche, erreurRotation, erreurTranslation)
 		String[] infos_string = serie.communiquer("?infos", 4);
@@ -363,7 +363,7 @@ public class Locomotion implements Service
 	 * Renvoie x, y et orientation du robot
 	 * @return un tableau de 3 cases: [x, y, orientation]
 	 */
-	public double[] get_infos_x_y_orientation() throws SerialException
+	public double[] get_infos_x_y_orientation() throws SerialConnexionException
 	{
 		String[] infos_string = serie.communiquer("?xyo", 3);
 		double[] infos_double = new double[3];

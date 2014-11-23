@@ -20,7 +20,7 @@ import robot.cards.laser.LaserFiltration;
 import robot.cards.laser.Laser;
 import robot.highlevel.LocomotionHiLevel;
 import robot.serial.SerialManager;
-import robot.serial.Serial;
+import robot.serial.SerialConnexion;
 
 
 //TODO: virer proprement de tous les fichiers le ThreadPosition
@@ -147,15 +147,15 @@ public class Container
 		}
 		else if(serviceRequested == "Deplacements")
 			instanciedServices.put(serviceRequested, (Service)new Locomotion((Log)getService("Log"),
-														(Serial)getService("serieAsservissement")));
+														(SerialConnexion)getService("serieAsservissement")));
 		else if(serviceRequested == "Capteur")
 			instanciedServices.put(serviceRequested, (Service)new Sensors(	(Config)getService("Read_Ini"),
 			                                                (Log)getService("Log"),
-			                                                (Serial)getService("serieCapteursActionneurs")));
+			                                                (SerialConnexion)getService("serieCapteursActionneurs")));
 		else if(serviceRequested == "Actionneurs")
 			instanciedServices.put(serviceRequested, (Service)new ActuatorsManager(	(Config)getService("Read_Ini"),
 														(Log)getService("Log"),
-														(Serial)getService("serieCapteursActionneurs")));
+														(SerialConnexion)getService("serieCapteursActionneurs")));
 		else if(serviceRequested == "HookGenerator")
 			instanciedServices.put(serviceRequested, (Service)new HookGenerator(	(Config)getService("Read_Ini"),
 															(Log)getService("Log"),
@@ -195,7 +195,7 @@ public class Container
 		else if(serviceRequested == "Laser")
 			instanciedServices.put(serviceRequested, (Service)new Laser(	(Config)getService("Read_Ini"),
 													(Log)getService("Log"),
-													(Serial)getService("serieLaser"),
+													(SerialConnexion)getService("serieLaser"),
 													(RobotReal)getService("RobotVrai")));
 		else if(serviceRequested == "FiltrageLaser")
 			instanciedServices.put(serviceRequested, (Service)new LaserFiltration(	(Config)getService("Read_Ini"),

@@ -20,12 +20,12 @@ public class SerialManager
 	private Log log;
 
 	//Series a instancier
-	public Serial serieAsservissement = null;
-	public Serial serieCapteursActionneurs = null;
-	public Serial serieLaser = null;
+	public SerialConnexion serieAsservissement = null;
+	public SerialConnexion serieCapteursActionneurs = null;
+	public SerialConnexion serieLaser = null;
 
 	//On stock les series dans une liste
-	private Hashtable<String, Serial> series = new Hashtable<String, Serial>();
+	private Hashtable<String, SerialConnexion> series = new Hashtable<String, SerialConnexion>();
 
 	//Pour chaque carte, on connait a l'avance son nom, son ping et son baudrate
 	private SpecificationCard carteAsservissement = new SpecificationCard("serieAsservissement", 0, 57600);
@@ -61,8 +61,8 @@ public class SerialManager
 				this.baudrate.add(baud);
 		}
 
-		this.serieAsservissement = new Serial(log, this.carteAsservissement.name);
-		this.serieCapteursActionneurs = new Serial(log, this.carteCapteursActionneurs.name);
+		this.serieAsservissement = new SerialConnexion(log, this.carteAsservissement.name);
+		this.serieCapteursActionneurs = new SerialConnexion(log, this.carteCapteursActionneurs.name);
 //		this.serieLaser = new Serial(log, this.carteLaser.name);
 
 		this.series.put(this.carteAsservissement.name, this.serieAsservissement);
@@ -103,7 +103,7 @@ public class SerialManager
 				if (!deja_attribues.contains(k))
 				{
 					//Creation d'une serie de test
-					Serial serialTest = new Serial(log, "carte de test de ping");
+					SerialConnexion serialTest = new SerialConnexion(log, "carte de test de ping");
 					serialTest.initialize(this.connectedSerial.get(k), baudrate);
 					
 					
@@ -207,7 +207,7 @@ public class SerialManager
 	 * @return
 	 * 				L'instance de la série
 	 */
-	public Serial getSerial(String name)	throws SerialManagerException
+	public SerialConnexion getSerial(String name)	throws SerialManagerException
 	{
 		if (this.series.containsKey(name))
 		{

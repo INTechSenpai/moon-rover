@@ -1,10 +1,10 @@
 package robot.cards;
 
-import robot.serial.Serial;
+import robot.serial.SerialConnexion;
 import utils.Log;
 import utils.Config;
 import container.Service;
-import exceptions.serial.SerialException;
+import exceptions.serial.SerialConnexionException;
 
 /**
  * Classe des capteurs, qui communique avec la carte capteur
@@ -15,12 +15,12 @@ public class Sensors implements Service {
 
 	// Dépendances
 	private Log log;
-	private Serial serie;
+	private SerialConnexion serie;
 	private Config config;
 
 	private boolean capteurs_on = true;
 
-	public Sensors(Config config, Log log, Serial serie)
+	public Sensors(Config config, Log log, SerialConnexion serie)
 	{
 		this.log = log;
 		this.config = config;
@@ -89,7 +89,7 @@ public class Sensors implements Service {
     {
 		try {
 			return Integer.parseInt(serie.communiquer("cg", 1)[0]) != 0;
-		} catch (NumberFormatException | SerialException e) {
+		} catch (NumberFormatException | SerialConnexionException e) {
 			e.printStackTrace();
 		}
 		return false;
@@ -100,7 +100,7 @@ public class Sensors implements Service {
         
         try {
             return Integer.parseInt(serie.communiquer("cm", 1)[0]) != 0;
-        } catch (NumberFormatException | SerialException e) {
+        } catch (NumberFormatException | SerialConnexionException e) {
             e.printStackTrace();
         }
         return false;
@@ -110,7 +110,7 @@ public class Sensors implements Service {
     {
 		try {
 			return Integer.parseInt(serie.communiquer("cd", 1)[0]) != 0;
-		} catch (NumberFormatException | SerialException e) {
+		} catch (NumberFormatException | SerialConnexionException e) {
 			e.printStackTrace();
 		}
 		return false;

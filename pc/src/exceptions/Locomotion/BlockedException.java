@@ -1,7 +1,7 @@
 package exceptions.Locomotion;
 
 /**
- * Exception lancée en cas de blocage mécanique du robot (les moteurs forcent sans que les codeuses ne tournent)
+ * Exception lancée en cas de blocage mécanique du robot (les moteurs forcent sans que les codeuses ne tournent pas)
  * @author pf, marsu
  *
  */

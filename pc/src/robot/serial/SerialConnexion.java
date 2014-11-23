@@ -1,6 +1,6 @@
 package robot.serial;
 
-import exceptions.serial.SerialException;
+import exceptions.serial.SerialConnexionException;
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -16,13 +16,13 @@ import java.io.OutputStream;
 import utils.Log;
 import container.Service;
 
-public class Serial implements SerialPortEventListener, Service
+public class SerialConnexion implements SerialPortEventListener, Service
 {
 	SerialPort serialPort;
 	Log log;
 	String name;
 
-	Serial (Log log, String name)
+	SerialConnexion (Log log, String name)
 	{
 		super();
 		this.log = log;
@@ -104,9 +104,9 @@ public class Serial implements SerialPortEventListener, Service
 	 * 					Nombre de lignes que l'avr va répondre (sans compter les acquittements)
 	 * @return
 	 * 					Un tableau contenant le message
-	 * @throws SerialException 
+	 * @throws SerialConnexionException 
 	 */
-	public String[] communiquer(String message, int nb_lignes_reponse) throws SerialException
+	public String[] communiquer(String message, int nb_lignes_reponse) throws SerialConnexionException
 	{
 		String[] messages = {message};
 		return communiquer(messages, nb_lignes_reponse);
@@ -120,9 +120,9 @@ public class Serial implements SerialPortEventListener, Service
 	 * 					Nombre de lignes que l'avr va répondre (sans compter les acquittements)
 	 * @return
 	 * 					Un tableau contenant le message
-	 * @throws SerialException 
+	 * @throws SerialConnexionException 
 	 */
-	public String[] communiquer(String[] messages, int nb_lignes_reponse) throws SerialException
+	public String[] communiquer(String[] messages, int nb_lignes_reponse) throws SerialConnexionException
 	{
 		synchronized(output)
 		{
@@ -156,7 +156,7 @@ public class Serial implements SerialPortEventListener, Service
 			{
 				e.printStackTrace();
 				log.critical("Ne peut pas parler à la carte " + this.name, this);
-				throw new SerialException();
+				throw new SerialConnexionException();
 			}
 	
 			try
@@ -169,7 +169,7 @@ public class Serial implements SerialPortEventListener, Service
 			catch (Exception e)
 			{
 				log.critical("Ne peut pas parler à la carte " + this.name, this);
-				throw new SerialException();
+				throw new SerialConnexionException();
 			}
 			
 		return inputLines;

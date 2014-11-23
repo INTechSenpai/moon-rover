@@ -6,7 +6,7 @@ import java.util.Map;
 import utils.Log;
 import utils.Config;
 import container.Service;
-import exceptions.ScriptException;
+import exceptions.UnknownScriptException;
 
  /**
   * Classe enregistrée comme service qui fournira les scripts
@@ -30,13 +30,13 @@ public class ScriptManager implements Service
 		scripts_robot = new ArrayList<String>();
 	}
 	
-	public Script getScript(String nom) throws ScriptException
+	public Script getScript(String nom) throws UnknownScriptException
 	{
 		Script script = instancesScripts.get(nom);
 		if(script == null)
 		{
 			log.warning("Script inconnu: "+nom, this);
-			throw new ScriptException();
+			throw new UnknownScriptException();
 		}
 		return script;
 	}

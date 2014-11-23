@@ -6,16 +6,16 @@ package exceptions;
  *
  */
 
-public class ScriptException  extends Exception
+public class UnknownScriptException  extends Exception
 {
 	private static final long serialVersionUID = -3039558414266587469L;
 
-	public ScriptException()
+	public UnknownScriptException()
 	{
 		super();
 	}
 	
-	public ScriptException(String m)
+	public UnknownScriptException(String m)
 	{
 		super(m);
 	}

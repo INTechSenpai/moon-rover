@@ -11,8 +11,8 @@ import hook.types.HookGenerator;
 import java.util.ArrayList;
 
 import exceptions.Locomotion.UnableToMoveException;
-import exceptions.serial.SerialException;
-import exceptions.ScriptException;
+import exceptions.serial.SerialConnexionException;
+import exceptions.UnknownScriptException;
 /**
  * Classe abstraite dont héritent les différents scripts.
  * S'occupe le robotvrai et robotchrono de manière à ce que ce soit transparent pour les différents scripts
@@ -42,7 +42,7 @@ public abstract class Script implements Service
 	/**
 	 * Exécute vraiment un script
 	 */
-	public void agit(int id_version, GameState<RobotReal> state, boolean retenter_si_blocage) throws ScriptException
+	public void agit(int id_version, GameState<RobotReal> state, boolean retenter_si_blocage) throws UnknownScriptException
 	{
 	}
 	
@@ -71,9 +71,9 @@ public abstract class Script implements Service
 	
 	/**
 	 * Exécute le script, avec RobotVrai ou RobotChrono
-	 * @throws SerialException 
+	 * @throws SerialConnexionException 
 	 */
-	protected void execute() throws UnableToMoveException, SerialException
+	protected void execute() throws UnableToMoveException, SerialConnexionException
 	{
 	}
 

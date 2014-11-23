@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 import enums.Speed;
 import exceptions.Locomotion.UnableToMoveException;
-import exceptions.serial.SerialException;
+import exceptions.serial.SerialConnexionException;
 
 /**
  * Effectue le lien entre le code et la réalité (permet de parler aux actionneurs, d'interroger les capteurs, etc.)
@@ -51,7 +51,7 @@ public class RobotReal extends Robot
 	{
 		try {
 			deplacements.getmLocomotion().desactiver_asservissement_rotation();
-		} catch (SerialException e) {
+		} catch (SerialConnexionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -61,7 +61,7 @@ public class RobotReal extends Robot
 	{
 		try {
 			deplacements.getmLocomotion().activer_asservissement_rotation();
-		} catch (SerialException e) {
+		} catch (SerialConnexionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
