@@ -72,7 +72,7 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     @Test
     public void test_va_au_point_detection() throws Exception
     {
-        container.demarreTousThreads();
+        container.startAllThreads();
         robot.va_au_point_gestion_exception(null, true, false, false);
     }
 
@@ -122,7 +122,7 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     @Test
     public void test_avancer_mur() throws Exception
     {
-        container.demarreTousThreads();
+        container.startAllThreads();
 //        robot.avancer(1500, null, true);
         real_state.robot.avancer_dans_mur(1500);
     }

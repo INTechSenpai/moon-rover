@@ -46,6 +46,7 @@ public class Log implements Service
 			{
 				critical(e, this);
 			}
+		warning("Service de log démarré", this);
 	
 	}
 	
@@ -153,9 +154,12 @@ public class Log implements Service
 
 	/**
 	 * Sorte de destructeur, dans lequel le fichier est sauvegardé.
+	 * // TODO: refuser les demande d'écriture sur le log si l'initialisation n'a pas été faite, ou si le destructeur a été appellé 
 	 */
-	public void destructeur()
+	public void close()
 	{
+		warning("Fin du log",this);
+		
 		if(sauvegarde_fichier)
 			try {
 				debug("Sauvegarde du fichier de logs", this);

@@ -21,7 +21,8 @@ import exceptions.serial.SerialManagerException;
  *
  */
 
-public class ThreadManager {
+public class ThreadManager
+{
 	
 	private Log log;
 	
@@ -71,7 +72,7 @@ public class ThreadManager {
 		return threads.get("threadLaser");
 	}
 
-	public void demarreThreads()
+	public void startInstanciedThreads()
 	{
 		log.debug("Démarrage des threads enregistrés", this);
 		for(String nom: threads.keySet())
@@ -83,7 +84,7 @@ public class ThreadManager {
 		}
 	}
 	
-	public void arreteThreads()
+	public void stopAllThreads()
 	{
 		AbstractThread.stopThreads = true;
 	}

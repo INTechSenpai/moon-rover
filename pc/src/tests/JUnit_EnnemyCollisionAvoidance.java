@@ -37,7 +37,7 @@ public class JUnit_EnnemyCollisionAvoidance extends JUnit_Test
 		robotvrai.setPosition(new Vec2(-600, 1410));
 		robotvrai.setOrientation((float)-Math.PI/2);
 		Thread.sleep(1000);
-		container.demarreThreads();
+		container.startInstanciedThreads();
 		Thread.sleep(1000);
 		Assert.assertEquals(table.gestionobstacles.nb_obstacles(), 0);
 		log.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this);

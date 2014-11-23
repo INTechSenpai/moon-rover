@@ -11,6 +11,8 @@ import robot.cards.Locomotion;
  * Application permettant de trouver les constantes d'asservissement en rotation
  * et en translation
  * 
+ * Ce n'est pas un code utile en match, c'est une application a part
+ * 
  * @author pf, kayou
  * 
  */
@@ -18,9 +20,12 @@ public class SearchConst
 {
     private static float kp = 0, kd = 0;
     private static int pwm_max = 0;
-    private static BufferedReader bufferRead = new BufferedReader(
-            new InputStreamReader(System.in));
+    private static BufferedReader bufferRead = new BufferedReader( new InputStreamReader(System.in) );
 
+    /**
+     *  point d'entrée du programme
+     * @param args
+     */
     public static void main(String[] args)
     {
         Container container;
@@ -72,7 +77,11 @@ public class SearchConst
             e.printStackTrace();
         }
     }
-
+	
+	/**
+	 *  demande à l'utilisateur de nouvelles valeurs de constantes
+	 * @throws IOException
+	 */
     public static void set_kp_kd_pwm() throws IOException
     {
         String s;

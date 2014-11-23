@@ -115,7 +115,7 @@ public class Main
 		
 		
 		//Le match s'arrête
-		container.destructeur();
+		container.destructor();
 	}
 	
 	

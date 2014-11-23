@@ -27,10 +27,10 @@ public class JUnit_Threads extends JUnit_Test {
 		deplacements.set_vitesse_translation(80);
 		RobotReal robotvrai = (RobotReal) container.getService("RobotVrai");
 		container.getService("threadPosition");
-		container.demarreThreads();
+		container.startInstanciedThreads();
 		Thread.sleep(100);
 		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,1500)));
-		container.arreteThreads();
+		container.stopAllThreads();
 		deplacements.set_x(100);
 		deplacements.set_y(1400);
 		Thread.sleep(100);
@@ -48,7 +48,7 @@ public class JUnit_Threads extends JUnit_Test {
 		Assert.assertTrue(table.gestionobstacles.nb_obstacles() == 0);
 		
 		container.getService("threadCapteurs");
-		container.demarreThreads();
+		container.startInstanciedThreads();
 		Thread.sleep(300);
 		Assert.assertTrue(table.gestionobstacles.nb_obstacles() >= 1);
 
@@ -60,7 +60,7 @@ public class JUnit_Threads extends JUnit_Test {
 		config.set("temps_match", 3);
 		container.getService("threadTimer");
 		long t1 = System.currentTimeMillis();
-		container.demarreTousThreads();
+		container.startAllThreads();
 		while(!ThreadTimer.fin_match)
 		{
 			Thread.sleep(500);
@@ -76,7 +76,7 @@ public class JUnit_Threads extends JUnit_Test {
 		container.getService("threadTimer");
 		System.out.println("Veuillez mettre le jumper");
 		Thread.sleep(2000);
-		container.demarreThreads();
+		container.startInstanciedThreads();
 		Thread.sleep(200);
 		Assert.assertTrue(!ThreadTimer.match_demarre);
 		System.out.println("Veuillez retirer le jumper");
@@ -90,7 +90,7 @@ public class JUnit_Threads extends JUnit_Test {
 		RobotReal robotvrai = (RobotReal) container.getService("RobotVrai");
 		robotvrai.setPosition(new Vec2(1000, 1400));
 		robotvrai.setOrientation((float)Math.PI);
-		container.demarreTousThreads();
+		container.startAllThreads();
 		Thread.sleep(200);
 		robotvrai.avancer(1000);
 	}
@@ -98,8 +98,8 @@ public class JUnit_Threads extends JUnit_Test {
 	@Test
 	public void test_fin_thread_avant_match() throws Exception
 	{
-		container.demarreTousThreads();
-		container.arreteThreads();
+		container.startAllThreads();
+		container.stopAllThreads();
 	}
 
 	

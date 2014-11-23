@@ -17,9 +17,13 @@ abstract public class Hook
 {
 
 	protected ArrayList<Callback> callbacks = new ArrayList<Callback>();
+
+	//gestion des log
+	private Log log;
 	
-	protected Config config;
-	protected Log log;
+	//gestion de la configuration du robot
+	private Config config;
+	
 	protected GameState<RobotReal> real_state;
 
 	public Hook(Config config, Log log, GameState<RobotReal> real_state)
