@@ -2,11 +2,11 @@ package threads;
 
 import java.util.Hashtable;
 
-import robot.cards.ActuatorsManager;
-import robot.cards.Sensors;
-import robot.cards.LocomotionCardWrapper;
 import robot.cards.laser.LaserFiltration;
 import robot.cards.laser.Laser;
+import robot.cardsWrappers.ActuatorCardWrapper;
+import robot.cardsWrappers.LocomotionCardWrapper;
+import robot.cardsWrappers.SensorsCardWrapper;
 import table.Table;
 import robot.RobotReal;
 import utils.Log;
@@ -48,15 +48,15 @@ public class ThreadManager
 	 * @throws ConfigException
 	 * @throws SerialManagerException
 	 */
-	public AbstractThread getThreadTimer(Table table, Sensors capteur, LocomotionCardWrapper deplacements, ActuatorsManager actionneurs)
+	public AbstractThread getThreadTimer(Table table, SensorsCardWrapper capteur, LocomotionCardWrapper deplacements, ActuatorCardWrapper actionneurs)
 	{
 		AbstractThread thread = threads.get("threadTimer");
 		if(thread == null)
-			threads.put("threadTimer", new ThreadTimer(table, capteur, deplacements, actionneurs));
+			threads.put("threadTimer", new ThreadTimer(table, capteur, deplacements));
 		return threads.get("threadTimer");
 	}
 
-	public AbstractThread getThreadCapteurs(RobotReal robotvrai, Table table, Sensors capteurs)
+	public AbstractThread getThreadCapteurs(RobotReal robotvrai, Table table, SensorsCardWrapper capteurs)
 	{
 		AbstractThread thread = threads.get("threadCapteurs");
 		if(thread == null)

@@ -19,21 +19,21 @@ class HookY extends Hook
     
     // imprécision sur la position de déclenchement du hook. (en milimètres aussi)
     // Le hook sera déclenché si la coordonnée y du robot est dans [yValue - tolerance, yValue + tolerance]
-    private float tolerance;
+    private float tolerancy;
     
     /**
      * Instancie le hook sur coordonnée Y. Valeur en Y et tolérance paramétrable.
      * @param config : sur quel objet lire la configuration du match
      * @param log : la sortie de log à utiliser
-     * @param real_state : lien avec le robot a surveiller pour le déclenchement du hook
-     * @param ordonnee : la valeur en y ou doit se déclencher le hook
-     * @param tolerance : imprécision admise sur la position qui déclenche le hook
+     * @param realState : lien avec le robot a surveiller pour le déclenchement du hook
+     * @param yValue : la valeur en y ou doit se déclencher le hook
+     * @param tolerancy : imprécision admise sur la position qui déclenche le hook
      */
-    public HookY(Config config, Log log, GameState<RobotReal> real_state, float ordonnee, float tolerance)
+    public HookY(Config config, Log log, GameState<RobotReal> realState, float yValue, float tolerancy)
     {
-        super(config, log, real_state);
-        this.yValue = ordonnee;
-        this.tolerance = tolerance;
+        super(config, log, realState);
+        this.yValue = yValue;
+        this.tolerancy = tolerancy;
     }
     
     /**
@@ -42,8 +42,8 @@ class HookY extends Hook
      */
     public boolean evaluate()
     {
-        if(Math.abs(real_state.robot.getPosition().y-yValue) < tolerance)
-            return declencher();
+        if(Math.abs(real_state.robot.getPosition().y-yValue) < tolerancy)
+            return trigger();
 
         return false;
     }

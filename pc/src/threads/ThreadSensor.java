@@ -1,7 +1,7 @@
 package threads;
 
 import robot.RobotReal;
-import robot.cards.Sensors;
+import robot.cardsWrappers.SensorsCardWrapper;
 import table.Table;
 import utils.Sleep;
 
@@ -14,12 +14,12 @@ import utils.Sleep;
 class ThreadSensor extends AbstractThread
 {
 
-	private Sensors capteur;
+	private SensorsCardWrapper capteur;
 	
 	// Valeurs par défaut s'il y a un problème de config
 	private int capteurs_frequence = 5;
 	
-	ThreadSensor(RobotReal robotvrai, Table table, Sensors capteur)
+	ThreadSensor(RobotReal robotvrai, Table table, SensorsCardWrapper capteur)
 	{
 		super(config, log);
 		this.capteur = capteur;

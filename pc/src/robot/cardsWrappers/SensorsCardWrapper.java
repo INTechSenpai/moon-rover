@@ -1,4 +1,4 @@
-package robot.cards;
+package robot.cardsWrappers;
 
 import robot.serial.SerialConnexion;
 import utils.Log;
@@ -7,11 +7,12 @@ import container.Service;
 import exceptions.serial.SerialConnexionException;
 
 /**
- * Classe des capteurs, qui communique avec la carte capteur
- * @author PF
+ * Classe simplifiant le dialogue avec les capteurs
+ * @author PF, marsu
  */
 
-public class Sensors implements Service {
+public class SensorsCardWrapper implements Service
+{
 
 	// Dépendances
 	private Log log;
@@ -20,7 +21,7 @@ public class Sensors implements Service {
 
 	private boolean capteurs_on = true;
 
-	public Sensors(Config config, Log log, SerialConnexion serie)
+	public SensorsCardWrapper(Config config, Log log, SerialConnexion serie)
 	{
 		this.log = log;
 		this.config = config;
@@ -41,36 +42,36 @@ public class Sensors implements Service {
 	-	 * @param capteur (soit "ir", soit "us")
 	-	 * @return la valeur la plus optimiste des capteurs
 	-	 */
-		public int mesurer()
-		{
-			if(!capteurs_on)
-	    		return 3000;
-			
-			String[] distances_string;
-			int[] distances;
-			
-			try{
+	public int mesurer()
+	{
+		if(!capteurs_on)
+    		return 3000;
+		
+		String[] distances_string;
+		int[] distances;
+		
+		try{
 
-				distances = new int[1];
-				distances_string = serie.communiquer("us", 1);
+			distances = new int[1];
+			distances_string = serie.communiquer("us", 1);
 
-    			distances[0] = Integer.parseInt(distances_string[0]);
-	    		
-    		    return distances[0];
-	    		
+			distances[0] = Integer.parseInt(distances_string[0]);
+    		
+		    return distances[0];
+    		
 /*		    	Arrays.sort(distances); // le dernier élément d'un tableau trié par ordre croissant est le plus grand
 		    	int distance = distances[distances.length-1];
 		    	
 		    	if(distance < 0)
 		    		return 3000;
 		    	return distance;*/
-			}
-			catch(Exception e)
-			{
-				log.critical(e.toString(), this);
-				return 3000; // valeur considérée comme infinie
-			}
 		}
+		catch(SerialConnexionException e)
+		{
+			log.critical(e.toString(), this);
+			return 3000; // valeur considérée comme infinie
+		}
+	}
 	
     public boolean demarrage_match()
     {
@@ -84,61 +85,5 @@ public class Sensors implements Service {
     		return false;
     	}
     }
- 
-    public boolean isThereFireGauche()
-    {
-		try {
-			return Integer.parseInt(serie.communiquer("cg", 1)[0]) != 0;
-		} catch (NumberFormatException | SerialConnexionException e) {
-			e.printStackTrace();
-		}
-		return false;
-    }
-
-    public boolean isThereFireMilieu()
-    {
-        
-        try {
-            return Integer.parseInt(serie.communiquer("cm", 1)[0]) != 0;
-        } catch (NumberFormatException | SerialConnexionException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public boolean isThereFireDroit()
-    {
-		try {
-			return Integer.parseInt(serie.communiquer("cd", 1)[0]) != 0;
-		} catch (NumberFormatException | SerialConnexionException e) {
-			e.printStackTrace();
-		}
-		return false;
-    }
-
-    // TODO protocoles
-    public boolean isFireRedGauche()
-    {
-        // TODO
-/*		try {
-			return Integer.parseInt(serie.communiquer("ifr", 1)[0]) == 1;
-		} catch (NumberFormatException | SerialException e) {
-			e.printStackTrace();
-		}*/
-		return false;
-    }
-
-    public boolean isFireRedDroit()
-    {
-        // TODO
-/*		try {
-			return Integer.parseInt(serie.communiquer("ifr", 1)[0]) == 1;
-		} catch (NumberFormatException | SerialException e) {
-			e.printStackTrace();
-		}*/
-		return false;
-    }
-
-    
-    
+     
 }

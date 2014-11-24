@@ -18,24 +18,24 @@ class HookX extends Hook
 	
 	// imprécision sur la position de déclenchement du hook. (en milimètres aussi)
     // Le hook sera déclenché si la coordonnée x du robot est dans [xValue - tolerance, xValue + tolerance]
-    private float tolerance;
+    private float tolerancy;
 
     /**
      * Instancie le hook sur coordonnée Y. Valeur en Y et tolérance paramétrable.
      * @param config : sur quel objet lire la configuration du match
      * @param log : la sortie de log à utiliser
-     * @param real_state : lien avec le robot a surveiller pour le déclenchement du hook
+     * @param realState : lien avec le robot a surveiller pour le déclenchement du hook
      * @param ordonnee : la valeur en y ou doit se déclencher le hook
-     * @param tolerance : imprécision admise sur la position qui déclenche le hook
+     * @param tolerancy : imprécision admise sur la position qui déclenche le hook
      * @param isYellowTeam : la couleur du robot: vert ou jaune 
      */
-	public HookX(Config config, Log log, GameState<RobotReal> real_state, float abscisse, float tolerance, boolean isYellowTeam)
+	public HookX(Config config, Log log, GameState<RobotReal> realState, float xValue, float tolerancy, boolean isYellowTeam)
 	{
-	    super(config, log, real_state);
-		this.xValue = abscisse;
-		this.tolerance = tolerance;
+	    super(config, log, realState);
+		this.xValue = xValue;
+		this.tolerancy = tolerancy;
 		if(isYellowTeam)
-			abscisse *= -1;
+			xValue *= -1;
 	}
 
     /**
@@ -44,8 +44,8 @@ class HookX extends Hook
      */
 	public boolean evaluate()
 	{
-		if(Math.abs(real_state.robot.getPosition().x-xValue) < tolerance)
-			return declencher();
+		if(Math.abs(real_state.robot.getPosition().x-xValue) < tolerancy)
+			return trigger();
 
 		return false;
 	}

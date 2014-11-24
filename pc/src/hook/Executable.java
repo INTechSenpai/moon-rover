@@ -8,7 +8,8 @@ package hook;
  * @author pf
  */
 
-public interface Executable {
+public interface Executable
+{
 
 	/**
 	 * La méthode qui sera exécutée par le hook

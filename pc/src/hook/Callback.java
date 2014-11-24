@@ -40,7 +40,7 @@ public class Callback
 	
 	/**
 	 * Le callback appelle la méthode, si elle n'est pas unique ou si elle n'est pas déjà faite
-	 * @return
+	 * @return vrai si le robot a été déplacé/ tourné, faux sinon
 	 */
 	public boolean call()
 	{
@@ -52,6 +52,10 @@ public class Callback
 		return false;
 	}
 	
+	/**
+	 * Explique si le Callback devrait être détruit
+	 * @return true si le Callback devrait être détruit
+	 */
 	public boolean shouldBeDeleted()
 	{
 	    return isUnique && isDone;

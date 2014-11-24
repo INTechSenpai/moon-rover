@@ -1,9 +1,8 @@
 package threads;
 
 import exceptions.serial.SerialConnexionException;
-import robot.cards.ActuatorsManager;
-import robot.cards.Sensors;
-import robot.cards.LocomotionCardWrapper;
+import robot.cardsWrappers.LocomotionCardWrapper;
+import robot.cardsWrappers.SensorsCardWrapper;
 import smartMath.Vec2;
 import table.Table;
 import utils.Sleep;
@@ -15,26 +14,25 @@ import utils.Sleep;
  *
  */
 
-public class ThreadTimer extends AbstractThread {
+public class ThreadTimer extends AbstractThread
+{
 
 	// Dépendance
 	private Table table;
-	private Sensors capteur;
+	private SensorsCardWrapper capteur;
 	private LocomotionCardWrapper deplacements;
-	private ActuatorsManager actionneurs;
 	
 	public static boolean match_demarre = false;
 	public static boolean fin_match = false;
 	public static long date_debut;
 	public static long duree_match = 90000;
-	public static long temps_reserve_funny_action = 1000;
+	public static int obstacleRefreshInterval = 500; // temps en ms entre deux appels par le thread timer du rafraichissement des obstacles de la table
 		
-	ThreadTimer(Table table, Sensors capteur, LocomotionCardWrapper deplacements, ActuatorsManager actionneurs)
+	ThreadTimer(Table table, SensorsCardWrapper capteur, LocomotionCardWrapper deplacements)
 	{
 		this.table = table;
 		this.capteur = capteur;
 		this.deplacements = deplacements;
-		this.actionneurs = actionneurs;
 		
 		updateConfig();
 		Thread.currentThread().setPriority(1);
@@ -43,9 +41,12 @@ public class ThreadTimer extends AbstractThread {
 	@Override
 	public void run()
 	{
-		config.set("capteurs_on", false);
-		capteur.updateConfig();
 		log.debug("Lancement du thread timer", this);
+
+		// allume les capteurs
+		config.set("capteurs_on", false);
+		capteur.updateConfig();	
+		
 		// Attente du démarrage du match
 		while(!capteur.demarrage_match() && !match_demarre)
 		{
@@ -65,25 +66,37 @@ public class ThreadTimer extends AbstractThread {
 		log.debug("LE MATCH COMMENCE !", this);
 
 
-		// Le match à démarré. Tous les 500ms, on retire les obstacles périmés
-		while(System.currentTimeMillis() - date_debut < duree_match - temps_reserve_funny_action)
+		// Le match à démarré. On retire périodiquement les obstacles périmés
+		while(System.currentTimeMillis() - date_debut < duree_match)
 		{
 			if(stopThreads)
 			{
-				log.debug("Arrêt du thread timer avant la fin du match", this);
+				log.debug("Arrêt du thread timer demandé durant le match", this);
 				return;
 			}
 			table.gestionobstacles.supprimerObstaclesPerimes(System.currentTimeMillis());
 			
-			try {
-				Thread.sleep(500);
+			try
+			{
+				Thread.sleep(obstacleRefreshInterval);
 			}
 			catch(Exception e)
 			{
 				log.warning(e.toString(), this);
 			}
 		}
+
+		onMatchEnded();
 		
+		log.debug("Fin du thread timer", this);
+		
+	}
+	
+	private void onMatchEnded()
+	{
+
+		log.debug("Fin du Match !", this);
+
 		// Le match est fini, désasservissement
 		fin_match = true;
 
@@ -92,49 +105,40 @@ public class ThreadTimer extends AbstractThread {
 		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}
-		
-		try
-        {
+
+		try {
 			// on s'oriente pour tirer le fillet
-            double[] infos = deplacements.get_infos_x_y_orientation();
-            Vec2 position = new Vec2((int)infos[0], (int)infos[1]);
-            Vec2 positionMammouth1 = new Vec2(-750, 2000);
-            Vec2 positionMammouth2 = new Vec2(750, 2000);            
-            double angle;
-            if(position.SquaredDistance(positionMammouth1) < position.SquaredDistance(positionMammouth2))
-                angle = Math.atan2(positionMammouth1.y - position.y, positionMammouth1.x - position.x);
-            else
-                angle = Math.atan2(positionMammouth2.y - position.y, positionMammouth2.x - position.x);
-            deplacements.stopper();
-            deplacements.turn(angle-Math.PI/2); // le filet est sur le coté gauche
-            
-            // fin du match : désasser final
-            try 
-            {
-                deplacements.desactiver_asservissement_rotation();
-                deplacements.desactiver_asservissement_translation();
-            } catch (SerialConnexionException e) {
-                e.printStackTrace();
-            }
-            deplacements.arret_final();
-            
-            // tir de filet!
-            Sleep.sleep(1500+temps_reserve_funny_action);
-            actionneurs.lancerFilet();
-            
-        } catch (SerialConnexionException e1)
-        {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-		
-		Sleep.sleep(500);
-		
-		
-		
-		log.debug("Fin du thread timer", this);
-		
+			double[] infos = deplacements.get_infos_x_y_orientation();
+			Vec2 position = new Vec2((int) infos[0], (int) infos[1]);
+			Vec2 positionMammouth1 = new Vec2(-750, 2000);
+			Vec2 positionMammouth2 = new Vec2(750, 2000);
+			double angle;
+			if (position.SquaredDistance(positionMammouth1) < position
+					.SquaredDistance(positionMammouth2))
+				angle = Math.atan2(positionMammouth1.y - position.y,
+						positionMammouth1.x - position.x);
+			else
+				angle = Math.atan2(positionMammouth2.y - position.y,
+						positionMammouth2.x - position.x);
+			deplacements.stopper();
+			deplacements.turn(angle - Math.PI / 2); // le filet est sur le coté
+													// gauche
+
+			// fin du match : désasser final
+			try {
+				deplacements.desactiver_asservissement_rotation();
+				deplacements.desactiver_asservissement_translation();
+			} catch (SerialConnexionException e) {
+				e.printStackTrace();
+			}
+			deplacements.arret_final();
+
+		} catch (SerialConnexionException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
+	
 	
 	public long temps_restant()
 	{
@@ -151,13 +155,6 @@ public class ThreadTimer extends AbstractThread {
 		{
 			log.warning(e, this);
 		}
-        try {
-            temps_reserve_funny_action = 1000*Long.parseLong(config.get("temps_reserve_funny_action"));
-        }
-        catch(Exception e)
-        {
-            log.warning(e, this);
-        }
 	}
 	
 }

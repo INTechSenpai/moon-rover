@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import robot.RobotReal;
-import robot.cards.LocomotionCardWrapper;
+import robot.cardsWrappers.LocomotionCardWrapper;
 import smartMath.Vec2;
 import table.Table;
 import threads.ThreadTimer;

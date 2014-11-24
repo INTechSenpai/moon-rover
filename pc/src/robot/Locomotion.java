@@ -13,7 +13,7 @@ import exceptions.Locomotion.BlockedException;
 import exceptions.Locomotion.CollisionException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
-import robot.cards.LocomotionCardWrapper;
+import robot.cardsWrappers.LocomotionCardWrapper;
 import smartMath.Vec2;
 import table.Table;
 import utils.Log;

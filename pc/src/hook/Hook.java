@@ -22,7 +22,7 @@ abstract public class Hook
 	@SuppressWarnings("unused")
 	private Log log;
 	
-	//gestion de la configuration du robot
+	//endroit ou lire la configuration du robot
 	@SuppressWarnings("unused")
 	private Config config;
 	
@@ -56,7 +56,7 @@ abstract public class Hook
 	 * Tous ses callbacks sont exécutés
 	 * @return true si ce hook modifie les déplacements du robot
 	 */
-	protected boolean declencher()
+	protected boolean trigger()
 	{
 		boolean retour = false;
 		

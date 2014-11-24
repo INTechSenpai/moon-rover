@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import robot.cards.*;
+import robot.cardsWrappers.*;
 import utils.Sleep;
 
 /**

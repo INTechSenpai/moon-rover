@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import container.Container;
-import robot.cards.LocomotionCardWrapper;
+import robot.cardsWrappers.LocomotionCardWrapper;
 
 /**
  * Application permettant de trouver les constantes d'asservissement en rotation

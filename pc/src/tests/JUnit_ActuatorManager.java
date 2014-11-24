@@ -4,17 +4,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import robot.cards.ActuatorsManager;
+import robot.cardsWrappers.ActuatorCardWrapper;
 
 public class JUnit_ActuatorManager extends JUnit_Test {
 
-	ActuatorsManager actionneurs;
+	ActuatorCardWrapper actionneurs;
 	
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 		log.debug("JUnit_ActionneursTest.setUp()", this);
-		actionneurs = (ActuatorsManager)container.getService("Actionneurs");
+		actionneurs = (ActuatorCardWrapper)container.getService("Actionneurs");
 	}
 	
 	// TODO : un test par actionneur

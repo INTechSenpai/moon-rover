@@ -14,11 +14,11 @@ import table.Table;
 import threads.ThreadManager;
 import robot.Locomotion;
 import robot.RobotReal;
-import robot.cards.ActuatorsManager;
-import robot.cards.Sensors;
-import robot.cards.LocomotionCardWrapper;
 import robot.cards.laser.LaserFiltration;
 import robot.cards.laser.Laser;
+import robot.cardsWrappers.ActuatorCardWrapper;
+import robot.cardsWrappers.LocomotionCardWrapper;
+import robot.cardsWrappers.SensorsCardWrapper;
 import robot.serial.SerialManager;
 import robot.serial.SerialConnexion;
 
@@ -149,11 +149,11 @@ public class Container
 			instanciedServices.put(serviceRequested, (Service)new LocomotionCardWrapper((Log)getService("Log"),
 														(SerialConnexion)getService("serieAsservissement")));
 		else if(serviceRequested == "Capteur")
-			instanciedServices.put(serviceRequested, (Service)new Sensors(	(Config)getService("Read_Ini"),
+			instanciedServices.put(serviceRequested, (Service)new SensorsCardWrapper(	(Config)getService("Read_Ini"),
 			                                                (Log)getService("Log"),
 			                                                (SerialConnexion)getService("serieCapteursActionneurs")));
 		else if(serviceRequested == "Actionneurs")
-			instanciedServices.put(serviceRequested, (Service)new ActuatorsManager(	(Config)getService("Read_Ini"),
+			instanciedServices.put(serviceRequested, (Service)new ActuatorCardWrapper(	(Config)getService("Read_Ini"),
 														(Log)getService("Log"),
 														(SerialConnexion)getService("serieCapteursActionneurs")));
 		else if(serviceRequested == "HookGenerator")
@@ -181,13 +181,13 @@ public class Container
 															(Log)getService("Log")));
 		else if(serviceRequested == "threadTimer")
 			instanciedServices.put(serviceRequested, (Service)threadmanager.getThreadTimer(	(Table)getService("Table"),
-																		(Sensors)getService("Capteur"),
+																		(SensorsCardWrapper)getService("Capteur"),
 																		(LocomotionCardWrapper)getService("Deplacements"),
-		                                                                (ActuatorsManager)getService("Actionneurs")));
+		                                                                (ActuatorCardWrapper)getService("Actionneurs")));
 		else if(serviceRequested == "threadCapteurs")
 			instanciedServices.put(serviceRequested, (Service)threadmanager.getThreadCapteurs(	(RobotReal)getService("RobotVrai"),
 																		(Table)getService("Table"),
-																		(Sensors)getService("Capteur")));
+																		(SensorsCardWrapper)getService("Capteur")));
 		else if(serviceRequested == "threadLaser")
 			instanciedServices.put(serviceRequested, (Service)threadmanager.getThreadLaser(	(Laser)getService("Laser"),
 																		(Table)getService("Table"),

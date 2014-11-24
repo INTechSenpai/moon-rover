@@ -1,4 +1,4 @@
-package robot.cards;
+package robot.cardsWrappers;
 
 import java.util.Hashtable;
 

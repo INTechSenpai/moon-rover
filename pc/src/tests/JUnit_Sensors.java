@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
 
-import robot.cards.Sensors;
+import robot.cardsWrappers.SensorsCardWrapper;
 
 /**
  * Test des capteurs : les obstacles doivent être détectés
@@ -15,13 +15,13 @@ import robot.cards.Sensors;
 public class JUnit_Sensors extends JUnit_Test
 {
 
-	Sensors capteurs;
+	SensorsCardWrapper capteurs;
 	
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 		log.debug("JUnit_ActionneursTest.setUp()", this);
-		capteurs = (Sensors)container.getService("Capteur");
+		capteurs = (SensorsCardWrapper)container.getService("Capteur");
 		config.set("capteurs_on", true);
 		capteurs.updateConfig();
 	}

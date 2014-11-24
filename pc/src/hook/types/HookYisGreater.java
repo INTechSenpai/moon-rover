@@ -20,13 +20,12 @@ class HookYisGreater extends HookY
      * Instancie le hook sur coordonnée Y. Valeur en Y et tolérance paramétrable.
      * @param config : sur quel objet lire la configuration du match
      * @param log : la sortie de log à utiliser
-     * @param real_state : lien avec le robot a surveiller pour le déclenchement du hook
-     * @param ordonnee : la valeur en y ou doit se déclencher le hook
-     * @param tolerance : imprécision admise sur la position qui déclenche le hook
+     * @param realState : lien avec le robot a surveiller pour le déclenchement du hook
+     * @param yValue : la valeur en y ou doit se déclencher le hook
      */
-    public HookYisGreater(Config config, Log log, GameState<RobotReal> real_state, float ordonnee, boolean effectuer_symetrie)
+    public HookYisGreater(Config config, Log log, GameState<RobotReal> realState, float yValue)
     {
-        super(config, log, real_state, ordonnee, 0);
+        super(config, log, realState, yValue, 0);
     }
     
 
@@ -38,7 +37,7 @@ class HookYisGreater extends HookY
     public boolean evaluate()
     {
     	if(real_state.robot.getPosition().y >= yValue)
-            return declencher();
+            return trigger();
 
         return false;
     }

@@ -10,10 +10,11 @@ import java.io.InputStreamReader;
 
 
 
+
 import robot.Locomotion;
 import robot.RobotReal;
-import robot.cards.Sensors;
-import robot.cards.LocomotionCardWrapper;
+import robot.cardsWrappers.LocomotionCardWrapper;
+import robot.cardsWrappers.SensorsCardWrapper;
 import scripts.ScriptManager;
 import strategie.GameState;
 import threads.ThreadTimer;
@@ -39,7 +40,7 @@ public class Main
 	static ScriptManager scriptmanager;
 	static Locomotion deplacements;
 	static LocomotionCardWrapper dep;
-	static Sensors capteurs;
+	static SensorsCardWrapper capteurs;
 	static boolean doitFaireDepartRapide;
 	
 	
@@ -77,7 +78,7 @@ public class Main
 		real_state = (GameState<RobotReal>) container.getService("RealGameState");
 	    scriptmanager = (ScriptManager) container.getService("ScriptManager");
 	    deplacements = (Locomotion)container.getService("DeplacementsHautNiveau");
-	    capteurs = (Sensors) container.getService("Capteur");
+	    capteurs = (SensorsCardWrapper) container.getService("Capteur");
 	    
 
 		
