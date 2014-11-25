@@ -34,19 +34,44 @@ import utils.Sleep;
 public class Locomotion implements Service
 {
 
+	//gestion des log
 	private Log log;
+	
+	//endroit ou lire la configuration du robot
 	private Config config;
+	
+	// La table sur laquelle le robot se déplace
 	private Table table;
+	
+	// la ditance minimale entre le centre du robot et un obstacle
 	private int largeur_robot;
+	
+	// TODO c'est quoi ?
 	private int distance_detection;
-	private Vec2 position = new Vec2();  // la position tient compte de la symétrie
-	private Vec2 consigne = new Vec2(); // La consigne est un attribut car elle peut être modifiée au sein d'un même mouvement.
+	
+	// Position courante du robot sur la table. La coordonnée X est multipliée par -1 si on est équipe jaune
+	private Vec2 position = new Vec2(); //TODO: spécifier dans la doc a un endroit logique ou est défini le système d'axe (plus le système d'orientation)
+	
+	 // Position de la table que le robot cherche a ateindre. Elle peut être modifiée au sein d'un même mouvement.
+	private Vec2 consigne = new Vec2();
+	
+	// Le système de trajectoire courbe ou de "tourner en avançant" fait rêver des génération d'INTechiens,
+	// mais ça a toujours fais perdre du temps pour un truc qui ne marche pas
 	private boolean trajectoire_courbe = false;
 
-	private double orientation; // l'orientation tient compte de la symétrie
+	// orientation actuelle du robot. L'orientation est multipliée par -1 si on est équipe jaune
+	private double orientation;
+	
+	// interface de communication avec la carte d'asservissement
 	private LocomotionCardWrapper mLocomotion;
+	
+	// la table est symétrisée si on est équipe jaune
 	private boolean symetrie;
+	
+	// Lorsque le robot doit bouge, C'est le temps d'attente entre deux vérification de l'état de ce déplacement. (arrivée, blocage, etc.)
 	private int sleep_boucle_acquittement = 10;
+	
+	
 	private int nb_iterations_max = 30;
 	private int distance_degagement_robot = 50;
 	private double angle_degagement_robot;
