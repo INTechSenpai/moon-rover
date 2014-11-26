@@ -28,8 +28,8 @@ public class SerialManager
 	private Hashtable<String, SerialConnexion> series = new Hashtable<String, SerialConnexion>();
 
 	//Pour chaque carte, on connait a l'avance son nom, son ping et son baudrate
-	private SpecificationCard carteAsservissement = new SpecificationCard("serieAsservissement", 0, 57600);
-	private SpecificationCard carteCapteursActionneurs = new SpecificationCard("serieCapteursActionneurs", 3, 57600);
+	private SpecificationCard carteAsservissement = new SpecificationCard("serieAsservissement", 0, 9600);
+	private SpecificationCard carteCapteursActionneurs = new SpecificationCard("serieCapteursActionneurs", 3, 9600);
 //	private SpecificationCard carteLaser = new SpecificationCard("serieLaser", 4, 57600);
 
 	//On stock les cartes dans une liste

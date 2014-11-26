@@ -79,7 +79,7 @@ public class RobotReal extends Robot
 	@Override
     public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
 	{
-		deplacements.avancer(distance, hooks, mur);
+		deplacements.moveForward(distance, hooks, mur);
 	}	
 
 	/**

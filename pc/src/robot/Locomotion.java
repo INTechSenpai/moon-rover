@@ -115,11 +115,11 @@ public class Locomotion implements Service
 			// Retrouve l'abscisse du robot en foncant dans un mur d'abscisse connue
 			log.debug("recale X",this);
 
-			avancer(-200, null, true);
+			moveForward(-200, null, true);
 			getmLocomotion().set_vitesse_translation(200);
 			getmLocomotion().desactiver_asservissement_rotation();
 			Sleep.sleep(1000);
-			avancer(-200, null, true);
+			moveForward(-200, null, true);
 			getmLocomotion().activer_asservissement_rotation();
 			getmLocomotion().set_vitesse_translation(Speed.READJUSTMENT.PWMTranslation);
 
@@ -137,16 +137,16 @@ public class Locomotion implements Service
 
 
 			Sleep.sleep(500);
-			avancer(40, null, true);
+			moveForward(40, null, true);
 			tourner(-Math.PI/2, null, false);
 
 
 			log.debug("recale Y",this);
-			avancer(-600, null, true);
+			moveForward(-600, null, true);
 			getmLocomotion().set_vitesse_translation(200);
 			getmLocomotion().desactiver_asservissement_rotation();
 			Sleep.sleep(1000);
-			avancer(-200, null, true);
+			moveForward(-200, null, true);
 			getmLocomotion().activer_asservissement_rotation();
 			getmLocomotion().set_vitesse_translation(Speed.READJUSTMENT.PWMTranslation);
 			position.y = 2000 - 165;
@@ -155,7 +155,7 @@ public class Locomotion implements Service
 
 			log.debug("Done !",this);
 			Sleep.sleep(500);
-			avancer(100, null, false);
+			moveForward(100, null, false);
 			orientation = -Math.PI/2;
 			setOrientation(-Math.PI/2);
 			//Normalement on se trouve à (1500 - 165 - 100 = 1225 ; 2000 - 165 - 100 = 1725)
@@ -172,7 +172,6 @@ public class Locomotion implements Service
 	 */
 	public void tourner(double angle, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
 	{
-		log.debug("Symétrie: "+symetrie, this);
 
 		if(symetrie)
 			angle = Math.PI-angle;
@@ -213,27 +212,29 @@ public class Locomotion implements Service
 	}
 
 	/**
-	 * Fait avancer le robot de "distance" (en mm).
-	 * @param distance
-	 * @param hooks
-	 * @param insiste
-	 * @throws UnableToMoveException
+	 * Fait avancer le robot de la distance spécifiée.
+	 * C'est la méthode que les utilisateurs (externes au développement du système de locomotion) vont utiliser
+	 * @param distance en mm que le robot doit franchir
+	 * @param hooks	// TODO : trouver ce que sont ces hooks a vérifier
+	 * @param insiste // TODO : trouver ce que insiste fait
+	 * @throws UnableToMoveException si le robot rencontre un problème dans son déplacement
 	 */
-	public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
+	public void moveForward(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
 	{
-		log.debug("Avancer de "+Integer.toString(distance), this);
-
-		System.out.println(position);
+		
 		update_x_y_orientation();
-		System.out.println(position);
 
+		
+		// calcule la position a atteindre en fin de mouvement
 		consigne.x = (int) (position.x + distance*Math.cos(orientation));
 		consigne.y = (int) (position.y + distance*Math.sin(orientation));
-		System.out.println(consigne);        
 		if(symetrie)
 			consigne.x = -consigne.x;
+		  
 
-		va_au_point_gestion_exception(hooks, false, distance < 0, mur);
+		moveForwardInDirectionExeptionAware(hooks, false, distance < 0, mur);
+
+		update_x_y_orientation();
 	}
 
 	/**
@@ -245,6 +246,7 @@ public class Locomotion implements Service
 	 */
 	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws UnableToMoveException
 	{
+		// en cas de coup de folie a INTech, on active la trajectoire courbe.
 		if(trajectoire_courbe)
 		{
 			log.critical("Désactive la trajectoire courbe, pauvre fou!", this);
@@ -277,11 +279,13 @@ public class Locomotion implements Service
             consigne = chemin.get(chemin.size()-1).clone();
             va_au_point_marche_arriere(hooks, null, false, false);         */   
 		}
+		
+		// sinon on fait rotation puis translation pour chaque point du chemin
 		else
 			for(Vec2 point: chemin)
 			{
 				consigne = point.clone();
-				va_au_point_marche_arriere(hooks, false, false);
+				moveBackwardInDirection(hooks, false, false);
 			}
 	}
 
@@ -291,7 +295,7 @@ public class Locomotion implements Service
 	 * @param insiste
 	 * @throws UnableToMoveException
 	 */
-	private void va_au_point_marche_arriere(ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean mur) throws UnableToMoveException
+	private void moveBackwardInDirection(ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean mur) throws UnableToMoveException
 	{
 		// choisit de manière intelligente la marche arrière ou non
 		// mais cette année, on ne peut aller, de manière automatique, que tout droit.
@@ -315,7 +319,7 @@ public class Locomotion implements Service
         boolean marche_arriere = delta.dot(orientationVec) > 0;
 		 */
 
-		va_au_point_gestion_exception(hooks, trajectoire_courbe, false, mur);
+		moveForwardInDirectionExeptionAware(hooks, trajectoire_courbe, false, mur);
 	}
 
 	/**
@@ -326,7 +330,8 @@ public class Locomotion implements Service
 	 * @param insiste
 	 * @throws UnableToMoveException 
 	 */
-	public void va_au_point_gestion_exception(ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean marche_arriere, boolean mur) throws UnableToMoveException
+	// TODO: trouver un meilleur nom pour cette méthode
+	public void moveForwardInDirectionExeptionAware(ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean marche_arriere, boolean mur) throws UnableToMoveException
 	{
 		int nb_iterations_ennemi;
 		int nb_iterations_deblocage = 2;
@@ -503,7 +508,7 @@ public class Locomotion implements Service
 	 * @param direction valeur relative en radian indiquant la direction dans laquelle on veut avancer
 	 * @param distance valeur en mm indiquant de combien on veut avancer.
 	 * @param allowCurvedPath si true, le robot essayera de tourner et avancer en m�me temps
-	 * @throws BlockedException 
+	 * @throws BlockedException si blocage mécanique du robot en chemin (pas de gestion des capteurs ici)
 	 */
 	public void moveForwardInDirection(double direction, double distance, boolean allowCurvedPath) throws BlockedException
 	{
@@ -520,10 +525,10 @@ public class Locomotion implements Service
 			// attends que le robot soit dans la bonne direction si nous ne sommes pas autoris� � tourner en avancant
 			if(!allowCurvedPath) 
 			{
-				float newOrientation = (float)oldInfos[2] + (float)direction*1000; // valeur absolue de l'orientation � atteindre
 
 				// TODO: mettre la boucle d'attente dans une fonction part enti�re (la prise de oldInfo est moche ici)
 				oldInfos = getmLocomotion().get_infos_x_y_orientation();
+				float newOrientation = (float)oldInfos[2] + (float)direction*1000; // valeur absolue de l'orientation � atteindre
 				while(!isTurnFinished(newOrientation)) 
 					Sleep.sleep(sleep_boucle_acquittement);
 			}
@@ -585,29 +590,31 @@ public class Locomotion implements Service
 	private boolean mouvement_fini() throws BlockedException
 	{
 		boolean out = false;
+		
+		//distance parcourue par le robot entre deux rafraichissement de la position a partir de laquelle on cosidère que le robot est en mouvement
+		// (distance en trasnlation ou en rotation)
+		// TODO : faire une détection paramétrable différamment en translation et en rotation, plus un calcul premant en compte le temps de rafraichissement de la position du robot
+		// car on veut un seuil de vitesse (donc dépendant du temps dt de rafraichissement de l'asser) et non un seuil sur V*dt
+		int motionThreshold = 10;
+		
+		// tolérance sur la position d'arrivée. L'exécution sera rendue a l'utilisateur de la classe Locomotion quand le robot sera plus proche de l'arrivée que cette distance
+		int aimThreshold = 10;
+		
 		try
 		{
 			double[] new_infos = getmLocomotion().get_infos_x_y_orientation();
-			/*
-            System.out.println("x: "+new_infos[0]);
-            System.out.println("y: "+new_infos[1]);
-            System.out.println("o: "+new_infos[2]);
-            System.out.println("distance² diff: "+new Vec2((int)old_infos[0], (int)old_infos[1]).SquaredDistance(new Vec2((int)new_infos[0], (int)new_infos[1])));
-            System.out.println("angle diff: "+Math.abs(new_infos[2] - old_infos[2]));
-			 */
+			
 			// Le robot bouge-t-il encore ?
-			if(new Vec2((int)oldInfos[0], (int)oldInfos[1]).SquaredDistance(new Vec2((int)new_infos[0], (int)new_infos[1])) > 20 || Math.abs(new_infos[2] - oldInfos[2]) > 20)
+			if(new Vec2((int)oldInfos[0], (int)oldInfos[1]).SquaredDistance(new Vec2((int)new_infos[0], (int)new_infos[1])) > motionThreshold || Math.abs(new_infos[2] - oldInfos[2]) > motionThreshold)
 				out = false;
 
 			// le robot est-t-il arrivé ?
-			else if(new Vec2((int)new_infos[0], (int)new_infos[1]).SquaredDistance(consigne) < 10)
+			else if(new Vec2((int)new_infos[0], (int)new_infos[1]).SquaredDistance(consigne) < aimThreshold)
 				out = true;
 
 			// si on ne bouge plus, et qu'on n'est pas arrivé, c'est que ca bloque
-			//  else
-			//     throw new BlockedException();
-
-
+			  else
+			     throw new BlockedException();
 
 			oldInfos = new_infos;
 		} catch (SerialConnexionException e)
@@ -735,10 +742,13 @@ public class Locomotion implements Service
 	 */
 	public void stopper()
 	{
-		log.debug("Arrêt du robot en "+position, this);
-		try {
+
+		try
+		{
 			getmLocomotion().stopper();
-		} catch (SerialConnexionException e) {
+		}
+		catch (SerialConnexionException e) 
+		{
 			e.printStackTrace();
 		}           
 	}

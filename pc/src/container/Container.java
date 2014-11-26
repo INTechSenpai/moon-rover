@@ -138,7 +138,7 @@ public class Container
 		// Si le service n'est pas encore instancié, on l'instancie avant de le retourner à l'utilisateur
 		else if(serviceRequested == "Table")
 			instanciedServices.put(serviceRequested, (Service)new Table(	(Log)getService("Log"),
-													(Config)getService("Read_Ini")));
+													(Config)getService("Config")));
 		else if(serviceRequested.length() > 4 && serviceRequested.substring(0,5).equals("serie")) // les séries
 		{
 			if(serialmanager == null)
@@ -149,36 +149,36 @@ public class Container
 			instanciedServices.put(serviceRequested, (Service)new LocomotionCardWrapper((Log)getService("Log"),
 														(SerialConnexion)getService("serieAsservissement")));
 		else if(serviceRequested == "Capteur")
-			instanciedServices.put(serviceRequested, (Service)new SensorsCardWrapper(	(Config)getService("Read_Ini"),
+			instanciedServices.put(serviceRequested, (Service)new SensorsCardWrapper(	(Config)getService("Config"),
 			                                                (Log)getService("Log"),
 			                                                (SerialConnexion)getService("serieCapteursActionneurs")));
 		else if(serviceRequested == "Actionneurs")
-			instanciedServices.put(serviceRequested, (Service)new ActuatorCardWrapper(	(Config)getService("Read_Ini"),
+			instanciedServices.put(serviceRequested, (Service)new ActuatorCardWrapper(	(Config)getService("Config"),
 														(Log)getService("Log"),
 														(SerialConnexion)getService("serieCapteursActionneurs")));
 		else if(serviceRequested == "HookGenerator")
-			instanciedServices.put(serviceRequested, (Service)new HookFactory(	(Config)getService("Read_Ini"),
+			instanciedServices.put(serviceRequested, (Service)new HookFactory(	(Config)getService("Config"),
 															(Log)getService("Log"),
 															(GameState<RobotReal>)getService("RealGameState")));
 		else if(serviceRequested == "RobotVrai")
 			instanciedServices.put(serviceRequested, (Service)new RobotReal(	(Locomotion)getService("DeplacementsHautNiveau"),
 														(Table)getService("Table"),
-														(Config)getService("Read_Ini"),
+														(Config)getService("Config"),
 														(Log)getService("Log")));		
         else if(serviceRequested == "DeplacementsHautNiveau")
             instanciedServices.put(serviceRequested, (Service)new Locomotion(  (Log)getService("Log"),
-                                                                    (Config)getService("Read_Ini"),
+                                                                    (Config)getService("Config"),
                                                                     (Table)getService("Table"),
                                                                     (LocomotionCardWrapper)getService("Deplacements")));
         else if(serviceRequested == "RealGameState")
-            instanciedServices.put(serviceRequested, (Service)new GameState<RobotReal>(  (Config)getService("Read_Ini"),
+            instanciedServices.put(serviceRequested, (Service)new GameState<RobotReal>(  (Config)getService("Config"),
                                                                   (Log)getService("Log"),
                                                                   (Table)getService("Table"),
                                                                   (RobotReal)getService("RobotVrai")));
  
 		else if(serviceRequested == "ScriptManager")
-			instanciedServices.put(serviceRequested, (Service)new ScriptManager(	(Config)getService("Read_Ini"),
-															(Log)getService("Log")));
+			instanciedServices.put(serviceRequested, (Service)new ScriptManager(	(Config)getService("Config"),
+																					(Log)getService("Log")));
 		else if(serviceRequested == "threadTimer")
 			instanciedServices.put(serviceRequested, (Service)threadmanager.getThreadTimer(	(Table)getService("Table"),
 																		(SensorsCardWrapper)getService("Capteur"),
@@ -193,12 +193,12 @@ public class Container
 																		(Table)getService("Table"),
 																		(LaserFiltration)getService("FiltrageLaser")));
 		else if(serviceRequested == "Laser")
-			instanciedServices.put(serviceRequested, (Service)new Laser(	(Config)getService("Read_Ini"),
+			instanciedServices.put(serviceRequested, (Service)new Laser(	(Config)getService("Config"),
 													(Log)getService("Log"),
 													(SerialConnexion)getService("serieLaser"),
 													(RobotReal)getService("RobotVrai")));
 		else if(serviceRequested == "FiltrageLaser")
-			instanciedServices.put(serviceRequested, (Service)new LaserFiltration(	(Config)getService("Read_Ini"),
+			instanciedServices.put(serviceRequested, (Service)new LaserFiltration(	(Config)getService("Config"),
 															(Log)getService("Log")));
 
 		else if(serviceRequested == "CheckUp")
