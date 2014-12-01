@@ -72,7 +72,7 @@ public class JUnit_DeplacementsHautNiveauTest extends JUnit_Test
     public void test_va_au_point_detection() throws Exception
     {
         container.startAllThreads();
-        robot.moveForwardInDirectionExeptionThrower(null, true, false, false);
+        robot.moveForwardInDirectionExeptionHandler(null, true, false, false);
     }
 
     @Test

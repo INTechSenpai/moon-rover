@@ -74,8 +74,12 @@ public class Locomotion implements Service
 	// nombre maximum d'excpetions levés d'un certain type lors d'un déplacement
 	private int maxAllowedExceptionCount = 5;
 	
+	// distance en mm sur laquelle on revient sur nos pas avant de réessayer d'atteindre le point d'arrivée lorsque le robot faire face a un obstacle qui immobilise mécaniquement le robot
+	private int blockedExceptionRetraceDistance = 50;
 	
-	private int distance_degagement_robot = 50;
+	// temps en ms que l'on attends après avoir vu un ennemi avant de réessayer d'atteindre le point d'arrivée lorsque le robot détecte que sa route est obstruée
+	private int unexpectedObstacleOnPathRetryDelay = 200; 
+	
 	private double angle_degagement_robot;
 	private boolean insiste = false;
 	
@@ -234,7 +238,7 @@ public class Locomotion implements Service
 			consigne.x = -consigne.x;
 		  
 
-		moveForwardInDirectionExeptionThrower(hooks, false, distance < 0, mur);
+		moveForwardInDirectionExeptionHandler(hooks, false, distance < 0, mur);
 
 		update_x_y_orientation();
 	}
@@ -321,20 +325,20 @@ public class Locomotion implements Service
         boolean marche_arriere = delta.dot(orientationVec) > 0;
 		 */
 
-		moveForwardInDirectionExeptionThrower(hooks, trajectoire_courbe, false, mur);
+		moveForwardInDirectionExeptionHandler(hooks, trajectoire_courbe, false, mur);
 	}
 
 	/**
 	 * Intercepte les exceptions des capteurs (on va rentrer dans un ennemi) et les exceptions de l'asservissement (le robot est mécaniquement bloqué)
 	 * Déclenche différentes réactions sur ces évènements, et si les réactions mises en places ici sont insuffisantes (on n'arrive pas a se dégager)
 	 * fais remonter l'exeption a l'utilisateur de la classe
-	 * @param hooks
-	 * @param allowCurvedPath
-	 * @param isBackward
-	 * @param insiste
-	 * @throws UnableToMoveException 
+	 * @param hooks a considérer lors de ce déplacement. Le hook n'est déclenché que s'il est dans cette liste et que sa condition d'activation est remplie
+	 * @param allowCurvedPath true si l'on autorise le robot à se déplacer le long d'une trajectoire curviligne.  false pour une simple ligne brisée
+	 * @param isBackward true si le déplacement doit se faire en marche arrière, false si le robot doit avancer en marche avant.
+	 * @param expectsWallImpact true si le robot doit s'attendre a percuter un mur au cours du déplacement. false si la route est sensée être dégagée.
+	 * @throws UnableToMoveException losrque quelque chose sur le chemin cloche et que le robot ne peut s'en défaire simplement: bloquage mécanique immobilisant le robot ou obstacle percu par les capteurs
 	 */
-	public void moveForwardInDirectionExeptionThrower(ArrayList<Hook> hooks, boolean allowCurvedPath, boolean isBackward, boolean expectsWallImpact) throws UnableToMoveException
+	public void moveForwardInDirectionExeptionHandler(ArrayList<Hook> hooks, boolean allowCurvedPath, boolean isBackward, boolean expectsWallImpact) throws UnableToMoveException
 	{
 		// nombre d'exception (et donc de nouvels essais) que l'on va lever avant de prévenir
 		// l'utilisateur en cas de bloquage mécanique du robot l'empéchant d'avancer plus loin
@@ -395,18 +399,19 @@ public class Locomotion implements Service
 		// si on arrive ici, c'est que l'on est au point d'arrivée
 	}
 	
+	/**
+	 * Réaction générique face a un souci dans le déplacment du robot. (arreter les moteurs de propultion par exemple)
+	 * @param exeptionCountStillAllowed nombre d'exception pour ce déplacement que l'on tolère encore avant de remonter le problème a l'utilisateur de la classe
+	 * @throws UnableToMoveException exception lancée quand on ne tolère plus de soucis interne au déplacement. Elle indique soit un obstacle détecté sur la route, soit que le robot a un blocage mécanique pour continuer a avancer
+	 */
 	private void generalLocomotionExeptionReaction(int exeptionCountStillAllowed) throws UnableToMoveException
 	{
-
 		log.warning("Exeption de déplacement lancée, Immobilisation du robot.", this);
-		/* TODO: si on veut pouvoir enchaîner avec un autre chemin, il
-		 * ne faut pas arrêter le robot.
-		 * ATTENTION! ceci peut être dangereux, car si aucun autre chemin
-		 * ne lui est donné, le robot va continuer sa course et percuter
-		 * l'obstacle!
-		 */
+		/* TODO: si on veut pouvoir enchaîner avec un autre chemin, il ne faut pas arrêter le robot.
+		 * ATTENTION! ceci peut être dangereux, car si aucun autre chemin ne lui est donné, le robot va continuer sa course et percuter l'obstacle ! */
 		immobilise();
 		
+		// Si cette exception fait dépasser le quota autorisé, on la remonte a l'utilisateur de la classe
 		if(exeptionCountStillAllowed <= 0)
 		{
 			log.critical("Abandon du déplacement.", this);
@@ -414,67 +419,62 @@ public class Locomotion implements Service
 		}
 	}
 	
-	
-	private boolean BlockedExceptionReaction(BlockedException e, boolean marche_arriere, boolean mur) throws UnableToMoveException
+	/**
+	 * Réaction face a un bloquage mécanique du robot l'empéchant d'avancer. (les codeuses ne tournent plus, donc le robot ne bouge pas, alors que les moteurs de propultion sont en marche)
+	 * @param e l'execption à laquelle on réagit
+	 * @param isBackward true si le déplacement doit se faire en marche arrière, false si le robot doit avancer en marche avant.
+	 * @param expectsWallImpact true si le robot doit s'attendre a percuter un mur au cours du déplacement. false si la route est sensée être dégagée.
+	 * @return true si l'on doit essayer de nouveau d'atteindre le point d'arrivée du mouvement, faux si l'on doit rester sur place.
+	 */
+	private boolean BlockedExceptionReaction(BlockedException e, boolean isBackward, boolean expectsWallImpact)
 	{
+		// valeur de retour: faut-t-il réessayer d'atteindre le point d'arrivée ? Par défaut, non.
 		boolean out  = false;
 		
-		/*
-		 * En cas de blocage, on recule (si on allait tout droit) ou on avance.
-		 */
-		// Si on insiste, on se dégage. Sinon, c'est juste normal de prendre le mur.
-		if(!mur)
+		// si on a indiqué qu'il fallait s'attendre a percuter quelque chose, l'exception est normale. Sinon, on doit réagir.
+		if(!expectsWallImpact)
 		{
-
-			log.warning("On n'arrive plus à avancer. On se dégage", this);
+			
+			log.warning("On n'arrive plus à avancer. On se dégage et on retente d'aller jusqu'au point demandé.", this);
 			try
 			{
-				if(marche_arriere)
-					mLocomotionCardWrapper.moveForward(distance_degagement_robot);
+				// On cherche a se dégager de cet obstacle : on reviens sur nos pas, et on reprend le mouvement
+				// si le mouvement était initialent en marche arrière, revenir sur nos pas est en marche avant, sinon c'est en marche arrière
+				if(isBackward)
+					mLocomotionCardWrapper.moveForward(blockedExceptionRetraceDistance);
 				else
-					mLocomotionCardWrapper.moveForward(-distance_degagement_robot);
+					mLocomotionCardWrapper.moveForward(-blockedExceptionRetraceDistance);
+				
+				// on suppose qu'on s'est dégagé, alors on va réessayer d'atteindre le point d'arrivée
 				out = true;
-			} catch (SerialConnexionException e1)
+			}
+			catch (SerialConnexionException e1)
 			{
 				e1.printStackTrace();
 			}
-			try
-			{
-				try
-				{
-					oldInfos = mLocomotionCardWrapper.getCurrentPositionAndOrientation();
-				}
-				catch (SerialConnexionException e1)
-				{
-					e1.printStackTrace();
-				}
-				while(!isMovementFinished());
-			}
-			catch (BlockedException e1)
-			{
-				immobilise();
-				log.critical("On n'arrive pas à se dégager.", this);
-				throw new UnableToMoveException();
-			}
+			
 		}
+		
 		return out;
 	}
 	
 
-	/*
-	 * En cas d'ennemi, on attend (si on demande d'insiste) ou on abandonne.
+	/**
+	 * Réaction du robot lorsque l'on détecte a distance sur notre route un obstacle qui l'obstrue
+	 * @param e l'execption à laquelle on réagit
+	 * @param isBackward true si le déplacement doit se faire en marche arrière, false si le robot doit avancer en marche avant.
+	 * @param expectsWallImpact true si le robot doit s'attendre a percuter un mur au cours du déplacement. false si la route est sensée être dégagée.
+	 * @return true si l'on doit essayer de nouveau d'atteindre le point d'arrivée du mouvement, faux si l'on doit rester sur place.
 	 */
 	private boolean unexpectedObstacleOnPathExceptionReaction(UnexpectedObstacleOnPathException e) throws UnableToMoveException
 	{
-
-		boolean out  = false;		
-
-		log.warning("Détection d'un ennemi sur notre route !", this);
+		log.warning("Détection d'un obstacle innatendu sur notre route !", this);
 		
-		//TODO: vérifier fréquemment, puis attendre (???)
-		Sleep.sleep(100);
-		out = true;
-		return out;
+		// On suppose avoir vu un robot ennemi passer sous notre nez.
+		// On attends donc juste un peu avant de réessayer
+		Sleep.sleep(unexpectedObstacleOnPathRetryDelay);
+		
+		return true;
 	}
 
 	/**
@@ -786,7 +786,7 @@ public class Locomotion implements Service
 	{
 		maxAllowedExceptionCount = Integer.parseInt(config.get("nb_tentatives"));
 		distance_detection = Integer.parseInt(config.get("distance_detection"));
-		distance_degagement_robot = Integer.parseInt(config.get("distance_degagement_robot"));
+		blockedExceptionRetraceDistance = Integer.parseInt(config.get("distance_degagement_robot"));
 		sleep_boucle_acquittement = Integer.parseInt(config.get("sleep_boucle_acquittement"));
 		angle_degagement_robot = Double.parseDouble(config.get("angle_degagement_robot"));
 		//        anticipation_trajectoire_courbe = Integer.parseInt(config.get("anticipation_trajectoire_courbe"));
