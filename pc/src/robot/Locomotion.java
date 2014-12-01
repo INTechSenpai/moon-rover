@@ -419,6 +419,7 @@ public class Locomotion implements Service
 		}
 	}
 	
+	
 	/**
 	 * Réaction face a un bloquage mécanique du robot l'empéchant d'avancer. (les codeuses ne tournent plus, donc le robot ne bouge pas, alors que les moteurs de propultion sont en marche)
 	 * @param e l'execption à laquelle on réagit
