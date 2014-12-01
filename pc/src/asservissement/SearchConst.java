@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import container.Container;
+import enums.ServiceNames;
 import robot.cardsWrappers.LocomotionCardWrapper;
 
 /**
@@ -34,7 +35,7 @@ public class SearchConst
         try
         {
             container = new Container();
-            deplacements = (LocomotionCardWrapper) container.getService("Deplacements");
+            deplacements = (LocomotionCardWrapper) container.getService(ServiceNames.LOCOMOTION_CARD_WRAPPER);
 
             System.out.println("r ou t?");
             char asserv = (char) System.in.read();

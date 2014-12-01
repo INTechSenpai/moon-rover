@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 
 
 
+
 import robot.Locomotion;
 import robot.RobotReal;
 import robot.cardsWrappers.LocomotionCardWrapper;
@@ -28,6 +29,7 @@ import threads.ThreadTimer;
 //import threads.ThreadTimer;
 import utils.Config;
 import container.Container;
+import enums.ServiceNames;
 import exceptions.ContainerException;
 import exceptions.ThreadException;
 import exceptions.Locomotion.UnableToMoveException;
@@ -76,8 +78,8 @@ public class Main
 		try {
 
 			container = new Container();
-			container.getService("Log");
-			config = (Config) container.getService("Config");
+			container.getService(ServiceNames.LOG);
+			config = (Config) container.getService(ServiceNames.CONFIG);
 			                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 			
 			//Début des paramétrages
@@ -85,11 +87,11 @@ public class Main
 		
 			
 			// initialise les singletons
-		    dep = (LocomotionCardWrapper)container.getService("Deplacements");
-			real_state = (GameState<RobotReal>) container.getService("RealGameState");
-		    scriptmanager = (ScriptManager) container.getService("ScriptManager");
-		    deplacements = (Locomotion)container.getService("DeplacementsHautNiveau");
-		    capteurs = (SensorsCardWrapper) container.getService("Capteur");
+		    dep = (LocomotionCardWrapper)container.getService(ServiceNames.LOCOMOTION_CARD_WRAPPER);
+			real_state = (GameState<RobotReal>) container.getService(ServiceNames.GAME_STATE);
+		    scriptmanager = (ScriptManager) container.getService(ServiceNames.SCRIPT_MANAGER);
+		    deplacements = (Locomotion)container.getService(ServiceNames.LOCOMOTION);
+		    capteurs = (SensorsCardWrapper) container.getService(ServiceNames.SENSORS_CARD_WRAPPER);
 		    
 
 		

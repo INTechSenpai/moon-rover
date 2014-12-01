@@ -1,10 +1,10 @@
 package robot.serial;
 import utils.Log;
+import enums.ServiceNames;
 import gnu.io.CommPortIdentifier;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 
 import exceptions.serial.SerialManagerException;
@@ -12,6 +12,7 @@ import exceptions.serial.SerialManagerException;
 /**
  * Instancie toutes les s�ries, si on lui demande gentillement!
  * @author pierre
+ * @author pf
  *
  */
 public class SerialManager 
@@ -25,11 +26,11 @@ public class SerialManager
 	public SerialConnexion serieLaser = null;
 
 	//On stock les series dans une liste
-	private Hashtable<String, SerialConnexion> series = new Hashtable<String, SerialConnexion>();
+	private SerialConnexion[] series = new SerialConnexion[3];
 
 	//Pour chaque carte, on connait a l'avance son nom, son ping et son baudrate
-	private SpecificationCard carteAsservissement = new SpecificationCard("serieAsservissement", 0, 9600);
-	private SpecificationCard carteCapteursActionneurs = new SpecificationCard("serieCapteursActionneurs", 3, 9600);
+	private SpecificationCard carteAsservissement = new SpecificationCard(ServiceNames.SERIE_ASSERVISSEMENT, 0, 9600);
+	private SpecificationCard carteCapteursActionneurs = new SpecificationCard(ServiceNames.SERIE_CAPTEURS_ACTIONNEURS, 3, 9600);
 //	private SpecificationCard carteLaser = new SpecificationCard("serieLaser", 4, 57600);
 
 	//On stock les cartes dans une liste
@@ -65,8 +66,8 @@ public class SerialManager
 		this.serieCapteursActionneurs = new SerialConnexion(log, this.carteCapteursActionneurs.name);
 //		this.serieLaser = new Serial(log, this.carteLaser.name);
 
-		this.series.put(this.carteAsservissement.name, this.serieAsservissement);
-		this.series.put(this.carteCapteursActionneurs.name, this.serieCapteursActionneurs);
+		this.series[this.carteAsservissement.name.ordinal()] = this.serieAsservissement;
+		this.series[this.carteCapteursActionneurs.name.ordinal()] = this.serieCapteursActionneurs;
 //		this.series.put(this.carteLaser.name, this.serieLaser);
 
 		checkSerial();
@@ -103,7 +104,7 @@ public class SerialManager
 				if (!deja_attribues.contains(k))
 				{
 					//Creation d'une serie de test
-					SerialConnexion serialTest = new SerialConnexion(log, "carte de test de ping");
+					SerialConnexion serialTest = new SerialConnexion(log, ServiceNames.CARTE_TEST);
 					serialTest.initialize(this.connectedSerial.get(k), baudrate);
 					
 					
@@ -207,15 +208,15 @@ public class SerialManager
 	 * @return
 	 * 				L'instance de la série
 	 */
-	public SerialConnexion getSerial(String name)	throws SerialManagerException
+	public SerialConnexion getSerial(ServiceNames name)	throws SerialManagerException
 	{
-		if (this.series.containsKey(name))
+		if (this.series[name.ordinal()] != null)
 		{
-			return this.series.get(name);
+			return this.series[name.ordinal()];
 		}
 		else
 		{
-			log.critical("Aucune série du nom : " + name + " n'existe", this);
+			log.critical("Aucune série du nom : " + name.toString() + " n'existe", this);
 			log.critical("Vérifiez les branchements ou l'interface+simulateur (redémarrez si besoin).", this);
 			log.critical("Vérifiez aussi que tous les processus Java exécutant ce code sont éteints.", this);
 			throw new SerialManagerException("serie non trouvée");

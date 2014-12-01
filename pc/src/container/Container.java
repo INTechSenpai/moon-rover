@@ -1,9 +1,8 @@
 package container;
 
-import java.util.Hashtable;
-import java.util.Map;
-
 import hook.types.HookFactory;
+import enums.ServiceNames;
+import enums.ServiceNames.TypeService;
 import exceptions.ContainerException;
 import exceptions.ThreadException;
 import exceptions.serial.SerialManagerException;
@@ -56,7 +55,7 @@ public class Container
 {
 
 	// liste des services déjà instanciés. Contient au moins Config et Log. Les autres services appelables seront présents s'ils ont déjà étés appellés au moins une fois
-	private Map<String,Service> instanciedServices = new Hashtable<String,Service>();
+	private Service[] instanciedServices = new Service[ServiceNames.values().length];
 	
 	private SerialManager serialmanager = null; //idem que threadmanager
 	private ThreadManager threadmanager;	 // TODO: Pourquoi ce manager est-il memebre de container ?
@@ -110,12 +109,12 @@ public class Container
 			System.out.println("Loading config from current directory : " +  System.getProperty("user.dir"));
 			
 			//parse le ficher de configuration.
-			instanciedServices.put("Config", (Service)new Config("./config/"));
-			config = (Config)instanciedServices.get("Config");
+			instanciedServices[ServiceNames.CONFIG.ordinal()] = (Service)new Config("./config/");
+			config = (Config)instanciedServices[ServiceNames.CONFIG.ordinal()];
 			
 			// démarre le système de log
-			instanciedServices.put("Log", (Service)new Log(config));
-			log = (Log)instanciedServices.get("Log");
+			instanciedServices[ServiceNames.LOG.ordinal()] = (Service)new Log(config);
+			log = (Log)instanciedServices[ServiceNames.LOG.ordinal()];
 		}
 		catch(Exception e)
 		{
@@ -127,83 +126,83 @@ public class Container
 	}
 
 	@SuppressWarnings("unchecked")
-	public Service getService(String serviceRequested) throws ContainerException, ThreadException, SerialManagerException
+	public Service getService(ServiceNames serviceRequested) throws ContainerException, ThreadException, SerialManagerException
 	{
     	// instancie le service demandé lors de son premier appel 
     	
     	// si le service est déja instancié, on ne le réinstancie pas
-		if(instanciedServices.containsKey(serviceRequested))
+		if(instanciedServices[serviceRequested.ordinal()] != null)
 			;
 		
 		// Si le service n'est pas encore instancié, on l'instancie avant de le retourner à l'utilisateur
-		else if(serviceRequested == "Table")
-			instanciedServices.put(serviceRequested, (Service)new Table(	(Log)getService("Log"),
-													(Config)getService("Config")));
-		else if(serviceRequested.length() > 4 && serviceRequested.substring(0,5).equals("serie")) // les séries
+		else if(serviceRequested == ServiceNames.TABLE)
+			instanciedServices[serviceRequested.ordinal()] = (Service)new Table((Log)getService(ServiceNames.LOG),
+																				(Config)getService(ServiceNames.CONFIG));
+		else if(serviceRequested.getType() == TypeService.SERIE) // les séries
 		{
 			if(serialmanager == null)
 				serialmanager = new SerialManager(log);
-			instanciedServices.put(serviceRequested, (Service)serialmanager.getSerial(serviceRequested));
+			instanciedServices[serviceRequested.ordinal()] = (Service)serialmanager.getSerial(serviceRequested);
 		}
-		else if(serviceRequested == "Deplacements")
-			instanciedServices.put(serviceRequested, (Service)new LocomotionCardWrapper((Log)getService("Log"),
-														(SerialConnexion)getService("serieAsservissement")));
-		else if(serviceRequested == "Capteur")
-			instanciedServices.put(serviceRequested, (Service)new SensorsCardWrapper(	(Config)getService("Config"),
-			                                                (Log)getService("Log"),
-			                                                (SerialConnexion)getService("serieCapteursActionneurs")));
-		else if(serviceRequested == "Actionneurs")
-			instanciedServices.put(serviceRequested, (Service)new ActuatorCardWrapper(	(Config)getService("Config"),
-														(Log)getService("Log"),
-														(SerialConnexion)getService("serieCapteursActionneurs")));
-		else if(serviceRequested == "HookGenerator")
-			instanciedServices.put(serviceRequested, (Service)new HookFactory(	(Config)getService("Config"),
-															(Log)getService("Log"),
-															(GameState<RobotReal>)getService("RealGameState")));
-		else if(serviceRequested == "RobotVrai")
-			instanciedServices.put(serviceRequested, (Service)new RobotReal(	(Locomotion)getService("DeplacementsHautNiveau"),
-														(Table)getService("Table"),
-														(Config)getService("Config"),
-														(Log)getService("Log")));		
-        else if(serviceRequested == "DeplacementsHautNiveau")
-            instanciedServices.put(serviceRequested, (Service)new Locomotion(  (Log)getService("Log"),
-                                                                    (Config)getService("Config"),
-                                                                    (Table)getService("Table"),
-                                                                    (LocomotionCardWrapper)getService("Deplacements")));
-        else if(serviceRequested == "RealGameState")
-            instanciedServices.put(serviceRequested, (Service)new GameState<RobotReal>(  (Config)getService("Config"),
-                                                                  (Log)getService("Log"),
-                                                                  (Table)getService("Table"),
-                                                                  (RobotReal)getService("RobotVrai")));
+		else if(serviceRequested == ServiceNames.LOCOMOTION_CARD_WRAPPER)
+			instanciedServices[serviceRequested.ordinal()] = (Service)new LocomotionCardWrapper((Log)getService(ServiceNames.LOG),
+															 (SerialConnexion)getService(ServiceNames.SERIE_ASSERVISSEMENT));
+		else if(serviceRequested == ServiceNames.SENSORS_CARD_WRAPPER)
+			instanciedServices[serviceRequested.ordinal()] = (Service)new SensorsCardWrapper((Config)getService(ServiceNames.CONFIG),
+			                                                 (Log)getService(ServiceNames.LOG),
+			                                                 (SerialConnexion)getService(ServiceNames.SERIE_CAPTEURS_ACTIONNEURS));
+		else if(serviceRequested == ServiceNames.ACTUATOR_CARD_WRAPPER)
+			instanciedServices[serviceRequested.ordinal()] = (Service)new ActuatorCardWrapper((Config)getService(ServiceNames.CONFIG),
+															 (Log)getService(ServiceNames.LOG),
+															 (SerialConnexion)getService(ServiceNames.SERIE_CAPTEURS_ACTIONNEURS));
+		else if(serviceRequested == ServiceNames.HOOK_FACTORY)
+			instanciedServices[serviceRequested.ordinal()] = (Service)new HookFactory((Config)getService(ServiceNames.CONFIG),
+															 (Log)getService(ServiceNames.LOG),
+															 (GameState<RobotReal>)getService(ServiceNames.GAME_STATE));
+		else if(serviceRequested == ServiceNames.ROBOT_REAL)
+			instanciedServices[serviceRequested.ordinal()] = (Service)new RobotReal((Locomotion)getService(ServiceNames.LOCOMOTION),
+															 (Table)getService(ServiceNames.TABLE),
+															 (Config)getService(ServiceNames.CONFIG),
+															 (Log)getService(ServiceNames.LOG));		
+        else if(serviceRequested == ServiceNames.LOCOMOTION)
+            instanciedServices[serviceRequested.ordinal()] = (Service)new Locomotion((Log)getService(ServiceNames.LOG),
+                                                             (Config)getService(ServiceNames.CONFIG),
+                                                             (Table)getService(ServiceNames.TABLE),
+                                                             (LocomotionCardWrapper)getService(ServiceNames.LOCOMOTION_CARD_WRAPPER));
+        else if(serviceRequested == ServiceNames.GAME_STATE)
+            instanciedServices[serviceRequested.ordinal()] = (Service)new GameState<RobotReal>(  (Config)getService(ServiceNames.CONFIG),
+                                                             (Log)getService(ServiceNames.LOG),
+                                                             (Table)getService(ServiceNames.TABLE),
+                                                             (RobotReal)getService(ServiceNames.ROBOT_REAL));
  
-		else if(serviceRequested == "ScriptManager")
-			instanciedServices.put(serviceRequested, (Service)new ScriptManager(	(Config)getService("Config"),
-																					(Log)getService("Log")));
-		else if(serviceRequested == "threadTimer")
-			instanciedServices.put(serviceRequested, (Service)threadmanager.getThreadTimer(	(Table)getService("Table"),
-																		(SensorsCardWrapper)getService("Capteur"),
-																		(LocomotionCardWrapper)getService("Deplacements"),
-		                                                                (ActuatorCardWrapper)getService("Actionneurs")));
-		else if(serviceRequested == "threadCapteurs")
-			instanciedServices.put(serviceRequested, (Service)threadmanager.getThreadCapteurs(	(RobotReal)getService("RobotVrai"),
-																		(Table)getService("Table"),
-																		(SensorsCardWrapper)getService("Capteur")));
-		else if(serviceRequested == "threadLaser")
-			instanciedServices.put(serviceRequested, (Service)threadmanager.getThreadLaser(	(Laser)getService("Laser"),
-																		(Table)getService("Table"),
-																		(LaserFiltration)getService("FiltrageLaser")));
-		else if(serviceRequested == "Laser")
-			instanciedServices.put(serviceRequested, (Service)new Laser(	(Config)getService("Config"),
-													(Log)getService("Log"),
-													(SerialConnexion)getService("serieLaser"),
-													(RobotReal)getService("RobotVrai")));
-		else if(serviceRequested == "FiltrageLaser")
-			instanciedServices.put(serviceRequested, (Service)new LaserFiltration(	(Config)getService("Config"),
-															(Log)getService("Log")));
+		else if(serviceRequested == ServiceNames.SCRIPT_MANAGER)
+			instanciedServices[serviceRequested.ordinal()] = (Service)new ScriptManager(	(Config)getService(ServiceNames.CONFIG),
+																					(Log)getService(ServiceNames.LOG));
+		else if(serviceRequested == ServiceNames.THREAD_TIMER)
+			instanciedServices[serviceRequested.ordinal()] = (Service)threadmanager.getThreadTimer(	(Table)getService(ServiceNames.TABLE),
+																		(SensorsCardWrapper)getService(ServiceNames.SENSORS_CARD_WRAPPER),
+																		(LocomotionCardWrapper)getService(ServiceNames.LOCOMOTION_CARD_WRAPPER),
+		                                                                (ActuatorCardWrapper)getService(ServiceNames.ACTUATOR_CARD_WRAPPER));
+		else if(serviceRequested == ServiceNames.THREAD_SENSOR)
+			instanciedServices[serviceRequested.ordinal()] = (Service)threadmanager.getThreadCapteurs(	(RobotReal)getService(ServiceNames.ROBOT_REAL),
+																		(Table)getService(ServiceNames.TABLE),
+																		(SensorsCardWrapper)getService(ServiceNames.SENSORS_CARD_WRAPPER));
+		else if(serviceRequested == ServiceNames.THREAD_LASER)
+			instanciedServices[serviceRequested.ordinal()] = (Service)threadmanager.getThreadLaser(	(Laser)getService(ServiceNames.LASER),
+																		(Table)getService(ServiceNames.TABLE),
+																		(LaserFiltration)getService(ServiceNames.LASER_FILTRATION));
+		else if(serviceRequested == ServiceNames.LASER)
+			instanciedServices[serviceRequested.ordinal()] = (Service)new Laser(	(Config)getService(ServiceNames.CONFIG),
+													(Log)getService(ServiceNames.LOG),
+													(SerialConnexion)getService(ServiceNames.SERIE_LASER),
+													(RobotReal)getService(ServiceNames.ROBOT_REAL));
+		else if(serviceRequested == ServiceNames.LASER_FILTRATION)
+			instanciedServices[serviceRequested.ordinal()] = (Service)new LaserFiltration(	(Config)getService(ServiceNames.CONFIG),
+															(Log)getService(ServiceNames.LOG));
 
-		else if(serviceRequested == "CheckUp")
-			instanciedServices.put(serviceRequested, (Service)new CheckUp(	(Log)getService("Log"),
-													(RobotReal)getService("RobotVrai")));
+		else if(serviceRequested == ServiceNames.CHECK_UP)
+			instanciedServices[serviceRequested.ordinal()] = (Service)new CheckUp(	(Log)getService(ServiceNames.LOG),
+													(RobotReal)getService(ServiceNames.ROBOT_REAL));
 		
 		// si le service demandé n'est pas connu, alors on log une erreur.
 		else
@@ -213,7 +212,7 @@ public class Container
 		}
 		
 		// retourne le service en mémoire à l'utilisateur
-		return instanciedServices.get(serviceRequested);
+		return instanciedServices[serviceRequested.ordinal()];
 	}	
 		
 	/**
@@ -232,17 +231,17 @@ public class Container
 	public void startAllThreads()
 	{
 		try {
-			getService("threadLaser");
+			getService(ServiceNames.THREAD_LASER);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		try {
-			getService("threadCapteurs");
+			getService(ServiceNames.THREAD_SENSOR);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		try {
-			getService("threadTimer");
+			getService(ServiceNames.THREAD_TIMER);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

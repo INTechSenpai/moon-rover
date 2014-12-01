@@ -1,5 +1,7 @@
 package robot.serial;
 
+import enums.ServiceNames;
+
 /**
  * 
  * @author pierre
@@ -7,10 +9,10 @@ package robot.serial;
  */
 class SpecificationCard 
 {
-	String name;
+	ServiceNames name;
 	int id;
 	int baudrate;
-	SpecificationCard(String name, int id, int baudrate)
+	SpecificationCard(ServiceNames name, int id, int baudrate)
 	{
 		this.name = name;
 		this.id = id;

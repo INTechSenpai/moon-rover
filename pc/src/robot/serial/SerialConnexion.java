@@ -1,5 +1,6 @@
 package robot.serial;
 
+import enums.ServiceNames;
 import exceptions.serial.SerialConnexionException;
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
@@ -20,9 +21,9 @@ public class SerialConnexion implements SerialPortEventListener, Service
 {
 	SerialPort serialPort;
 	Log log;
-	String name;
+	ServiceNames name;
 
-	SerialConnexion (Log log, String name)
+	SerialConnexion (Log log, ServiceNames name)
 	{
 		super();
 		this.log = log;
