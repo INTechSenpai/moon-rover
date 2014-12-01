@@ -101,14 +101,14 @@ public class ThreadTimer extends AbstractThread
 		fin_match = true;
 
 		try {
-			deplacements.stopper();
+			deplacements.immobilise();
 		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}
 
 		try {
 			// on s'oriente pour tirer le fillet
-			double[] infos = deplacements.get_infos_x_y_orientation();
+			double[] infos = deplacements.getCurrentPositionAndOrientation();
 			Vec2 position = new Vec2((int) infos[0], (int) infos[1]);
 			Vec2 positionMammouth1 = new Vec2(-750, 2000);
 			Vec2 positionMammouth2 = new Vec2(750, 2000);
@@ -120,18 +120,18 @@ public class ThreadTimer extends AbstractThread
 			else
 				angle = Math.atan2(positionMammouth2.y - position.y,
 						positionMammouth2.x - position.x);
-			deplacements.stopper();
+			deplacements.immobilise();
 			deplacements.turn(angle - Math.PI / 2); // le filet est sur le coté
 													// gauche
 
 			// fin du match : désasser final
 			try {
-				deplacements.desactiver_asservissement_rotation();
-				deplacements.desactiver_asservissement_translation();
+				deplacements.disableRotationnalFeedbackLoop();
+				deplacements.disableTranslationnalFeedbackLoop();
 			} catch (SerialConnexionException e) {
 				e.printStackTrace();
 			}
-			deplacements.arret_final();
+			deplacements.closeLocomotion();
 
 		} catch (SerialConnexionException e1) {
 			// TODO Auto-generated catch block

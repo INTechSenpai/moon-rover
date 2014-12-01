@@ -21,7 +21,7 @@ public class LocomotionCardWrapper implements Service
 	private Log log;
 	private SerialConnexion serie;
 
-	private Hashtable<String, Integer> infos_stoppage_enMouvement;
+	private Hashtable<String, Integer> feedbackLoopStatistics;
 		
 	private long blockageStartTimestamp;
 	
@@ -35,13 +35,13 @@ public class LocomotionCardWrapper implements Service
 		this.log = log;
 		this.serie = serie;
 		
-		infos_stoppage_enMouvement = new Hashtable<String, Integer>();
-		infos_stoppage_enMouvement.put("PWMmoteurGauche", 0);
-		infos_stoppage_enMouvement.put("PWMmoteurDroit", 0);
-		infos_stoppage_enMouvement.put("erreur_rotation", 0);
-		infos_stoppage_enMouvement.put("erreur_translation", 0);
-		infos_stoppage_enMouvement.put("derivee_erreur_rotation", 0);
-		infos_stoppage_enMouvement.put("derivee_erreur_translation", 0);
+		feedbackLoopStatistics = new Hashtable<String, Integer>();
+		feedbackLoopStatistics.put("PWMmoteurGauche", 0);
+		feedbackLoopStatistics.put("PWMmoteurDroit", 0);
+		feedbackLoopStatistics.put("erreur_rotation", 0);
+		feedbackLoopStatistics.put("erreur_translation", 0);
+		feedbackLoopStatistics.put("derivee_erreur_rotation", 0);
+		feedbackLoopStatistics.put("derivee_erreur_translation", 0);
 	}
 	
 	public void updateConfig()
@@ -63,10 +63,10 @@ public class LocomotionCardWrapper implements Service
 		int blockedTolerancy = 200;//TODO: mettre dans le fichier de config
 		
 		// demande des information sur l'asservissement du robot
-		int pwmLeftMotor = infos_stoppage_enMouvement.get("PWMmoteurGauche");
-		int pwmRightMotor = infos_stoppage_enMouvement.get("PWMmoteurDroit");
-		int derivatedRotationnalError = infos_stoppage_enMouvement.get("derivee_erreur_rotation");
-		int derivatedTranslationnalError = infos_stoppage_enMouvement.get("derivee_erreur_translation");
+		int pwmLeftMotor = feedbackLoopStatistics.get("PWMmoteurGauche");
+		int pwmRightMotor = feedbackLoopStatistics.get("PWMmoteurDroit");
+		int derivatedRotationnalError = feedbackLoopStatistics.get("derivee_erreur_rotation");
+		int derivatedTranslationnalError = feedbackLoopStatistics.get("derivee_erreur_translation");
 		
 		// on décrète que les moteurs forcent si la puissance qu'ils demandent est trop grande
 		boolean areMotorsActive = Math.abs(pwmLeftMotor) > 40 || Math.abs(pwmRightMotor) > 40;
@@ -86,7 +86,7 @@ public class LocomotionCardWrapper implements Service
 				if((System.currentTimeMillis() - blockageStartTimestamp) > blockedTolerancy)
 				{
 					log.warning("raiseExeptionIfBlocked : le robot a dû s'arrêter suite à un patinage. (levage de BlockedException)", this);
-					stopper();
+					immobilise();
 					
 					throw new BlockedException("l'écart a la consigne ne bouge pas alors que les moteurs sont en marche");
 				}
@@ -119,10 +119,10 @@ public class LocomotionCardWrapper implements Service
 	public boolean isRobotMoving()
 	{
 		// obtient les infos de l'asservissement
-		int erreur_rotation = infos_stoppage_enMouvement.get("erreur_rotation");
-		int erreur_translation = infos_stoppage_enMouvement.get("erreur_translation");
-		int derivee_erreur_rotation = infos_stoppage_enMouvement.get("derivee_erreur_rotation");
-		int derivee_erreur_translation = infos_stoppage_enMouvement.get("derivee_erreur_translation");
+		int erreur_rotation = feedbackLoopStatistics.get("erreur_rotation");
+		int erreur_translation = feedbackLoopStatistics.get("erreur_translation");
+		int derivee_erreur_rotation = feedbackLoopStatistics.get("derivee_erreur_rotation");
+		int derivee_erreur_translation = feedbackLoopStatistics.get("derivee_erreur_translation");
 		
 		// ces 2 booléens checkent la précision de l'asser. Ce n'est pas le rôle de cette fonction, 
 		// et peut causer des bugs (erreurs d'aquitement) de java si l'asser est mla fait		
@@ -140,7 +140,7 @@ public class LocomotionCardWrapper implements Service
 	 * Fait avancer le robot. Méthode non bloquante
 	 * @param distance
 	 */
-	public void avancer(double distance) throws SerialConnexionException
+	public void moveForward(double distance) throws SerialConnexionException
 	{
 		String chaines[] = {"d", Double.toString(distance)};
 		serie.communiquer(chaines, 0);
@@ -159,20 +159,20 @@ public class LocomotionCardWrapper implements Service
 	/**
 	 * Arrête le robot
 	 */
-	public void stopper() throws SerialConnexionException
+	public void immobilise() throws SerialConnexionException
 	{
-        desactiver_asservissement_translation();
-        desactiver_asservissement_rotation();
+        disableTranslationnalFeedbackLoop();
+        disableRotationnalFeedbackLoop();
 		serie.communiquer("stop", 0);
-        activer_asservissement_translation();
-        activer_asservissement_rotation();
+        enableTranslationnalFeedbackLoop();
+        enableRotationnalFeedbackLoop();
 	}
 	
 	/**
 	 * Ecrase la position x du robot au niveau de la carte
 	 * @param x
 	 */
-	public void set_x(int x) throws SerialConnexionException
+	public void setX(int x) throws SerialConnexionException
 	{
 		String chaines[] = {"cx", Integer.toString(x)};
 		serie.communiquer(chaines, 0);
@@ -182,7 +182,7 @@ public class LocomotionCardWrapper implements Service
 	 * Ecrase la position y du robot au niveau de la carte
 	 * @param y
 	 */
-	public void set_y(int y) throws SerialConnexionException
+	public void setY(int y) throws SerialConnexionException
 	{
 		String chaines[] = {"cy", Integer.toString(y)};
 		serie.communiquer(chaines, 0);	
@@ -192,7 +192,7 @@ public class LocomotionCardWrapper implements Service
 	 * Ecrase l'orientation du robot au niveau de la carte
 	 * @param orientation
 	 */
-	public void set_orientation(double orientation) throws SerialConnexionException
+	public void setOrientation(double orientation) throws SerialConnexionException
 	{
 		String chaines[] = {"co", Double.toString(orientation)};
 		serie.communiquer(chaines, 0);
@@ -201,7 +201,7 @@ public class LocomotionCardWrapper implements Service
 	/**
 	 * Active l'asservissement en translation du robot
 	 */
-	public void activer_asservissement_translation() throws SerialConnexionException
+	public void enableTranslationnalFeedbackLoop() throws SerialConnexionException
 	{
 		serie.communiquer("ct1", 0);
 	}
@@ -209,7 +209,7 @@ public class LocomotionCardWrapper implements Service
 	/**
 	 * Active l'asservissement en rotation du robot
 	 */
-	public void activer_asservissement_rotation() throws SerialConnexionException
+	public void enableRotationnalFeedbackLoop() throws SerialConnexionException
 	{
 		serie.communiquer("cr1", 0);
 	}
@@ -217,7 +217,7 @@ public class LocomotionCardWrapper implements Service
 	/**
 	 * Désactive l'asservissement en translation du robot
 	 */
-	public void desactiver_asservissement_translation() throws SerialConnexionException
+	public void disableTranslationnalFeedbackLoop() throws SerialConnexionException
 	{
 		serie.communiquer("ct0", 0);
 	}
@@ -225,7 +225,7 @@ public class LocomotionCardWrapper implements Service
 	/**
 	 * Désactive l'asservissement en rotation du robot
 	 */
-	public void desactiver_asservissement_rotation() throws SerialConnexionException
+	public void disableRotationnalFeedbackLoop() throws SerialConnexionException
 	{
 		serie.communiquer("cr0", 0);
 	}
@@ -234,7 +234,7 @@ public class LocomotionCardWrapper implements Service
 	 * Modifie la vitesse en translation
 	 * @param pwm_max
 	 */
-	public void set_vitesse_translation(int pwm_max) throws SerialConnexionException
+	public void setTranslationnalSpeed(int pwm_max) throws SerialConnexionException
 	{
 		double kp, kd;
 		if(pwm_max >= 195)
@@ -281,7 +281,7 @@ public class LocomotionCardWrapper implements Service
 	 * Modifie la vitesse en rotation
 	 * @param pwm_max
 	 */
-	public void set_vitesse_rotation(int pwm_max) throws SerialConnexionException
+	public void setRotationnalSpeed(int pwm_max) throws SerialConnexionException
 	{
 		double kp, kd;
 		if(pwm_max > 155)
@@ -309,13 +309,13 @@ public class LocomotionCardWrapper implements Service
 		serie.communiquer(chaines, 0);
 	}
 	
-	public void change_const_translation(double kp, double kd, int pwm_max) throws SerialConnexionException
+	public void changeTranslationnalFeedbackParameters(double kp, double kd, int pwm_max) throws SerialConnexionException
 	{
 		String chaines[] = {"ctv", Double.toString(kp), Double.toString(kd), Integer.toString(pwm_max)};
 		serie.communiquer(chaines, 0);
 	}
 	
-	public void change_const_rotation(double kp, double kd, int pwm_max) throws SerialConnexionException
+	public void changeRotationnalFeedbackParameters(double kp, double kd, int pwm_max) throws SerialConnexionException
 	{
 		String chaines[] = {"crv", Double.toString(kp), Double.toString(kd), Integer.toString(pwm_max)};
 		serie.communiquer(chaines, 0);
@@ -325,7 +325,7 @@ public class LocomotionCardWrapper implements Service
 	 * Met à jour PWMmoteurGauche, PWMmoteurDroit, erreur_rotation, erreur_translation, derivee_erreur_rotation, derivee_erreur_translation
 	 * les nouvelles valeurs sont stokées dans la map
 	 */
-	public void maj_infos_stoppage_enMouvement() throws SerialConnexionException
+	public void refreshFeedbackLoopStatistics() throws SerialConnexionException
 	{
 		// on envois "?infos" et on lis les 4 int (dans l'ordre : PWM droit, PWM gauche, erreurRotation, erreurTranslation)
 		String[] infos_string = serie.communiquer("?infos", 4);
@@ -336,23 +336,23 @@ public class LocomotionCardWrapper implements Service
 		// calcul des dérivées des erreurs en translation et en rotation :
 		// on fait la différence entre la valeur actuelle de l'erreur et le valeur précédemment mesurée.
 		// on divise par un dt unitaire (non mentionné dans l'expression)
-		int deriv_erreur_rot = infos_int[2] - infos_stoppage_enMouvement.get("erreur_rotation");
-		int deriv_erreur_tra = infos_int[3] - infos_stoppage_enMouvement.get("erreur_translation");
+		int deriv_erreur_rot = infos_int[2] - feedbackLoopStatistics.get("erreur_rotation");
+		int deriv_erreur_tra = infos_int[3] - feedbackLoopStatistics.get("erreur_translation");
 		
 		
 		// infos_stoppage_enMouvement est une map dont les clés sont des strings et les valeurs des int
 		
 		// on stocke la puissance consommée par les moteurs
-        infos_stoppage_enMouvement.put("PWMmoteurGauche", infos_int[0]);
-        infos_stoppage_enMouvement.put("PWMmoteurDroit", infos_int[1]);
+        feedbackLoopStatistics.put("PWMmoteurGauche", infos_int[0]);
+        feedbackLoopStatistics.put("PWMmoteurDroit", infos_int[1]);
         
         // l'erreur de translation mesurée par les codeuses
-        infos_stoppage_enMouvement.put("erreur_rotation", infos_int[2]);
-        infos_stoppage_enMouvement.put("erreur_translation", infos_int[3]);
+        feedbackLoopStatistics.put("erreur_rotation", infos_int[2]);
+        feedbackLoopStatistics.put("erreur_translation", infos_int[3]);
         
         // stocke les dérivées des erreurs, calculés 10 lignes plus haut
-        infos_stoppage_enMouvement.put("derivee_erreur_rotation", deriv_erreur_rot);
-        infos_stoppage_enMouvement.put("derivee_erreur_translation", deriv_erreur_tra);
+        feedbackLoopStatistics.put("derivee_erreur_rotation", deriv_erreur_rot);
+        feedbackLoopStatistics.put("derivee_erreur_translation", deriv_erreur_tra);
 
         
 	}
@@ -361,7 +361,7 @@ public class LocomotionCardWrapper implements Service
 	 * Renvoie x, y et orientation du robot
 	 * @return un tableau de 3 cases: [x, y, orientation]
 	 */
-	public double[] get_infos_x_y_orientation() throws SerialConnexionException
+	public double[] getCurrentPositionAndOrientation() throws SerialConnexionException
 	{
 		String[] infos_string = serie.communiquer("?xyo", 3);
 		double[] infos_double = new double[3];
@@ -375,7 +375,7 @@ public class LocomotionCardWrapper implements Service
 	/**
 	 * Arrêt de la série
 	 */
-	public void arret_final()
+	public void closeLocomotion()
 	{
 		serie.close();
 	}

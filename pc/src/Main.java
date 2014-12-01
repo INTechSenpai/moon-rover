@@ -109,18 +109,6 @@ public class Main
 	//	container.demarreTousThreads();
 
 		
-		// mettre le checkup du robot.
-		// ici juste des tests de déplcement
-		/*System.out.println("deplacement bas niveau");
-		dep.avancer(300);
-		Thread.sleep(1000);
-		dep.avancer(-300);
-		Thread.sleep(1000);
-		dep.tourner(1.0);
-		Thread.sleep(1000);
-		dep.tourner(1.57);
-		Thread.sleep(1000);
-		System.out.println("fini !");*/
 		System.out.println("deplacement haut niveau");
 		try 
 		{
@@ -128,7 +116,6 @@ public class Main
 		} 
 		catch (UnableToMoveException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println("fini !");
@@ -138,10 +125,12 @@ public class Main
 		
 		
 		// attends que le jumper soit retiré
-		try {
+		try 
+		{
 			attendreDebutMatch();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 		

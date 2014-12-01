@@ -49,7 +49,7 @@ public class RobotReal extends Robot
 	public void desactiver_asservissement_rotation()
 	{
 		try {
-			deplacements.getmLocomotion().desactiver_asservissement_rotation();
+			deplacements.getLocomotionCardWrapper().disableRotationnalFeedbackLoop();
 		} catch (SerialConnexionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -59,7 +59,7 @@ public class RobotReal extends Robot
 	public void activer_asservissement_rotation()
 	{
 		try {
-			deplacements.getmLocomotion().activer_asservissement_rotation();
+			deplacements.getLocomotionCardWrapper().enableRotationnalFeedbackLoop();
 		} catch (SerialConnexionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -90,8 +90,8 @@ public class RobotReal extends Robot
 	@Override
 	public void set_vitesse(Speed vitesse)
 	{
-        deplacements.set_vitesse_translation(vitesse.PWMTranslation);
-        deplacements.set_vitesse_rotation(vitesse.PWMTotation);
+        deplacements.setTranslationnalSpeed(vitesse.PWMTranslation);
+        deplacements.setRotationnalSpeed(vitesse.PWMTotation);
 		log.debug("Modification de la vitesse: "+vitesse, this);
 	}
 	
@@ -138,19 +138,19 @@ public class RobotReal extends Robot
     @Override
     public void stopper()
     {
-        deplacements.stopper();
+        deplacements.immobilise();
     }
 
     @Override
     public void tourner(double angle, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
     {
-        deplacements.tourner(angle, hooks, mur);
+        deplacements.turn(angle, hooks, mur);
     }
     
     @Override
     public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws UnableToMoveException
     {
-        deplacements.suit_chemin(chemin, hooks);
+        deplacements.followPath(chemin, hooks);
     }
     @Override
     public void copy(RobotChrono rc)

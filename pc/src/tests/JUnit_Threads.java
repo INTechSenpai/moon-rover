@@ -21,18 +21,18 @@ public class JUnit_Threads extends JUnit_Test {
 	public void test_arret() throws Exception
 	{
 		LocomotionCardWrapper deplacements = (LocomotionCardWrapper)container.getService("Deplacements");
-		deplacements.set_x(0);
-		deplacements.set_y(1500);
-		deplacements.set_orientation(0);
-		deplacements.set_vitesse_translation(80);
+		deplacements.setX(0);
+		deplacements.setY(1500);
+		deplacements.setOrientation(0);
+		deplacements.setTranslationnalSpeed(80);
 		RobotReal robotvrai = (RobotReal) container.getService("RobotVrai");
 		container.getService("threadPosition");
 		container.startInstanciedThreads();
 		Thread.sleep(100);
 		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,1500)));
 		container.stopAllThreads();
-		deplacements.set_x(100);
-		deplacements.set_y(1400);
+		deplacements.setX(100);
+		deplacements.setY(1400);
 		Thread.sleep(100);
 		Assert.assertTrue(robotvrai.getPosition().equals(new Vec2(0,1500)));
 	}

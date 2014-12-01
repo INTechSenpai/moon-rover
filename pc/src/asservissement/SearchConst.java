@@ -52,9 +52,9 @@ public class SearchConst
 
                     set_kp_kd_pwm();
 
-                    deplacements.change_const_translation(kp, kd, pwm_max);
+                    deplacements.changeTranslationnalFeedbackParameters(kp, kd, pwm_max);
                     System.out.println(distance);
-                    deplacements.avancer(distance);
+                    deplacements.moveForward(distance);
 
                 }
                 else if (asserv == 'r')
@@ -66,7 +66,7 @@ public class SearchConst
 
                     set_kp_kd_pwm();
 
-                    deplacements.change_const_rotation(kp, kd, pwm_max);
+                    deplacements.changeRotationnalFeedbackParameters(kp, kd, pwm_max);
                     System.out.println(angle);
                     deplacements.turn(angle);
 

@@ -10,7 +10,7 @@ import enums.Speed;
 //import hook.methodes.ChangeConsigne;
 //import hook.sortes.HookGenerator;
 import exceptions.Locomotion.BlockedException;
-import exceptions.Locomotion.CollisionException;
+import exceptions.Locomotion.UnexpectedObstacleOnPathException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
 import robot.cardsWrappers.LocomotionCardWrapper;
@@ -63,7 +63,7 @@ public class Locomotion implements Service
 	private double orientation;
 	
 	// interface de communication avec la carte d'asservissement
-	private LocomotionCardWrapper mLocomotion;
+	private LocomotionCardWrapper mLocomotionCardWrapper;
 	
 	// la table est symétrisée si on est équipe jaune
 	private boolean symetrie;
@@ -71,8 +71,10 @@ public class Locomotion implements Service
 	// Lorsque le robot doit bouge, C'est le temps d'attente entre deux vérification de l'état de ce déplacement. (arrivée, blocage, etc.)
 	private int sleep_boucle_acquittement = 10;
 	
+	// nombre maximum d'excpetions levés d'un certain type lors d'un déplacement
+	private int maxAllowedExceptionCount = 5;
 	
-	private int nb_iterations_max = 30;
+	
 	private int distance_degagement_robot = 50;
 	private double angle_degagement_robot;
 	private boolean insiste = false;
@@ -98,7 +100,7 @@ public class Locomotion implements Service
 	{
 		this.log = log;
 		this.config = config;
-		this.mLocomotion = mLocomotion;
+		this.mLocomotionCardWrapper = mLocomotion;
 		//        this.hookgenerator = hookgenerator;
 		this.table = table;
 		updateConfig();
@@ -116,41 +118,41 @@ public class Locomotion implements Service
 			log.debug("recale X",this);
 
 			moveForward(-200, null, true);
-			getmLocomotion().set_vitesse_translation(200);
-			getmLocomotion().desactiver_asservissement_rotation();
+			mLocomotionCardWrapper.setTranslationnalSpeed(200);
+			mLocomotionCardWrapper.disableRotationnalFeedbackLoop();
 			Sleep.sleep(1000);
 			moveForward(-200, null, true);
-			getmLocomotion().activer_asservissement_rotation();
-			getmLocomotion().set_vitesse_translation(Speed.READJUSTMENT.PWMTranslation);
+			mLocomotionCardWrapper.enableRotationnalFeedbackLoop();
+			mLocomotionCardWrapper.setTranslationnalSpeed(Speed.READJUSTMENT.PWMTranslation);
 
 			position.x = 1500 - 165;
 			if(symetrie)
 			{
 				setOrientation(0f);
-				getmLocomotion().set_x(-1500+165);
+				mLocomotionCardWrapper.setX(-1500+165);
 			}
 			else
 			{
-				getmLocomotion().set_x(1500-165);
+				mLocomotionCardWrapper.setX(1500-165);
 				setOrientation(Math.PI);
 			}
 
 
 			Sleep.sleep(500);
 			moveForward(40, null, true);
-			tourner(-Math.PI/2, null, false);
+			turn(-Math.PI/2, null, false);
 
 
 			log.debug("recale Y",this);
 			moveForward(-600, null, true);
-			getmLocomotion().set_vitesse_translation(200);
-			getmLocomotion().desactiver_asservissement_rotation();
+			mLocomotionCardWrapper.setTranslationnalSpeed(200);
+			mLocomotionCardWrapper.disableRotationnalFeedbackLoop();
 			Sleep.sleep(1000);
 			moveForward(-200, null, true);
-			getmLocomotion().activer_asservissement_rotation();
-			getmLocomotion().set_vitesse_translation(Speed.READJUSTMENT.PWMTranslation);
+			mLocomotionCardWrapper.enableRotationnalFeedbackLoop();
+			mLocomotionCardWrapper.setTranslationnalSpeed(Speed.READJUSTMENT.PWMTranslation);
 			position.y = 2000 - 165;
-			getmLocomotion().set_y(2000 - 165);
+			mLocomotionCardWrapper.setY(2000 - 165);
 
 
 			log.debug("Done !",this);
@@ -159,7 +161,7 @@ public class Locomotion implements Service
 			orientation = -Math.PI/2;
 			setOrientation(-Math.PI/2);
 			//Normalement on se trouve à (1500 - 165 - 100 = 1225 ; 2000 - 165 - 100 = 1725)
-			getmLocomotion().activer_asservissement_rotation();
+			mLocomotionCardWrapper.enableRotationnalFeedbackLoop();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -170,7 +172,7 @@ public class Locomotion implements Service
 	 * Fait tourner le robot (méthode bloquante)
 	 * @throws UnableToMoveException 
 	 */
-	public void tourner(double angle, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
+	public void turn(double angle, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
 	{
 
 		if(symetrie)
@@ -181,9 +183,9 @@ public class Locomotion implements Service
 		boolean trigo = angle > orientation;
 
 		try {
-			oldInfos = getmLocomotion().get_infos_x_y_orientation();
-			getmLocomotion().turn(angle);
-			while(!mouvement_fini()) // on attend la fin du mouvement
+			oldInfos = mLocomotionCardWrapper.getCurrentPositionAndOrientation();
+			mLocomotionCardWrapper.turn(angle);
+			while(!isMovementFinished()) // on attend la fin du mouvement
 			{
 				Sleep.sleep(sleep_boucle_acquittement);
 				//   log.debug("abwa?", this);
@@ -196,9 +198,9 @@ public class Locomotion implements Service
 				if(!mur)
 				{
 					if(trigo ^ symetrie)
-						getmLocomotion().turn(orientation+angle_degagement_robot);
+						mLocomotionCardWrapper.turn(orientation+angle_degagement_robot);
 					else
-						getmLocomotion().turn(orientation-angle_degagement_robot);
+						mLocomotionCardWrapper.turn(orientation-angle_degagement_robot);
 				}
 			} catch (SerialConnexionException e1)
 			{
@@ -232,7 +234,7 @@ public class Locomotion implements Service
 			consigne.x = -consigne.x;
 		  
 
-		moveForwardInDirectionExeptionAware(hooks, false, distance < 0, mur);
+		moveForwardInDirectionExeptionThrower(hooks, false, distance < 0, mur);
 
 		update_x_y_orientation();
 	}
@@ -244,7 +246,7 @@ public class Locomotion implements Service
 	 * @param insiste
 	 * @throws UnableToMoveException
 	 */
-	public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws UnableToMoveException
+	public void followPath(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws UnableToMoveException
 	{
 		// en cas de coup de folie a INTech, on active la trajectoire courbe.
 		if(trajectoire_courbe)
@@ -319,105 +321,160 @@ public class Locomotion implements Service
         boolean marche_arriere = delta.dot(orientationVec) > 0;
 		 */
 
-		moveForwardInDirectionExeptionAware(hooks, trajectoire_courbe, false, mur);
+		moveForwardInDirectionExeptionThrower(hooks, trajectoire_courbe, false, mur);
 	}
 
 	/**
-	 * Gère les exceptions, c'est-à-dire les rencontres avec l'ennemi et les câlins avec un mur.
+	 * Intercepte les exceptions des capteurs (on va rentrer dans un ennemi) et les exceptions de l'asservissement (le robot est mécaniquement bloqué)
+	 * Déclenche différentes réactions sur ces évènements, et si les réactions mises en places ici sont insuffisantes (on n'arrive pas a se dégager)
+	 * fais remonter l'exeption a l'utilisateur de la classe
 	 * @param hooks
-	 * @param trajectoire_courbe
-	 * @param marche_arriere
+	 * @param allowCurvedPath
+	 * @param isBackward
 	 * @param insiste
 	 * @throws UnableToMoveException 
 	 */
-	// TODO: trouver un meilleur nom pour cette méthode
-	public void moveForwardInDirectionExeptionAware(ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean marche_arriere, boolean mur) throws UnableToMoveException
+	public void moveForwardInDirectionExeptionThrower(ArrayList<Hook> hooks, boolean allowCurvedPath, boolean isBackward, boolean expectsWallImpact) throws UnableToMoveException
 	{
-		int nb_iterations_ennemi;
-		int nb_iterations_deblocage = 2;
+		// nombre d'exception (et donc de nouvels essais) que l'on va lever avant de prévenir
+		// l'utilisateur en cas de bloquage mécanique du robot l'empéchant d'avancer plus loin
+		int blockedExceptionStillAllowed = 2;
+		if (blockedExceptionStillAllowed > maxAllowedExceptionCount)
+			blockedExceptionStillAllowed = maxAllowedExceptionCount;
+		
+		// nombre d'exception (et donc de nouvels essais) que l'on va lever avant de prévenir
+		// l'utilisateur en cas de découverte d'un obstacle imprévu (robot adverse ou autre) sur la route
+		int unexpectedObstacleOnPathExceptionStillAllowed;
 		if(insiste)
-			nb_iterations_ennemi = nb_iterations_max;
+			unexpectedObstacleOnPathExceptionStillAllowed = maxAllowedExceptionCount;
 		else
-			nb_iterations_ennemi = 6; // 600 ms
-			boolean recommence;
-			do {
-				recommence = false;
+			unexpectedObstacleOnPathExceptionStillAllowed = 2;
+		
+		
+		
+		// drapeau indiquant s'il faut retenter d'atteindre le point d'arrivée. Initialisé à vrai pour l'essai initial.
+		boolean tryAgain = true;
+		// on essaye (de nouveau) d'aller jusqu'au point d'arrivée du mouvement
+		// cette boucle prend fin soit quand on est arrivée, soit lors d'une exception de type UnableToMoveException
+		while(tryAgain)
+		{
+		
+			tryAgain = false;
+			try
+			{
+				va_au_point_hook_correction_detection(hooks, allowCurvedPath, isBackward);
+			}
+			
+			// Si on remarque que le robot a percuté un obstacle l'empéchant d'avancer plus loin
+			catch (BlockedException e)
+			{
+				// Réaction générique aux exceptions de déplacement du robot
+				generalLocomotionExeptionReaction(blockedExceptionStillAllowed);
+				
+				//On tolère une exception de moins
+				blockedExceptionStillAllowed--;
+				
+				// On réagit spécifiquement à la présence d'un bloquage mécanique du robot
+				tryAgain = BlockedExceptionReaction(e, isBackward, expectsWallImpact);
+			}
+			
+			// Si on a vu un obstacle inattendu sur notre chemin (robot ennemi ou autre)
+			catch (UnexpectedObstacleOnPathException e)
+			{
+				// Réaction générique aux exceptions de déplacement du robot
+				generalLocomotionExeptionReaction(unexpectedObstacleOnPathExceptionStillAllowed);
+				
+				//On tolère une exception de moins
+				unexpectedObstacleOnPathExceptionStillAllowed--;
+				
+				// Réagit spécifiquement à la présence d'un obstacle
+				tryAgain = unexpectedObstacleOnPathExceptionReaction(e);
+			}
+		} // while
+
+		// si on arrive ici, c'est que l'on est au point d'arrivée
+	}
+	
+	private void generalLocomotionExeptionReaction(int exeptionCountStillAllowed) throws UnableToMoveException
+	{
+
+		log.warning("Exeption de déplacement lancée, Immobilisation du robot.", this);
+		/* TODO: si on veut pouvoir enchaîner avec un autre chemin, il
+		 * ne faut pas arrêter le robot.
+		 * ATTENTION! ceci peut être dangereux, car si aucun autre chemin
+		 * ne lui est donné, le robot va continuer sa course et percuter
+		 * l'obstacle!
+		 */
+		immobilise();
+		
+		if(exeptionCountStillAllowed <= 0)
+		{
+			log.critical("Abandon du déplacement.", this);
+			throw new UnableToMoveException();
+		}
+	}
+	
+	
+	private boolean BlockedExceptionReaction(BlockedException e, boolean marche_arriere, boolean mur) throws UnableToMoveException
+	{
+		boolean out  = false;
+		
+		/*
+		 * En cas de blocage, on recule (si on allait tout droit) ou on avance.
+		 */
+		// Si on insiste, on se dégage. Sinon, c'est juste normal de prendre le mur.
+		if(!mur)
+		{
+
+			log.warning("On n'arrive plus à avancer. On se dégage", this);
+			try
+			{
+				if(marche_arriere)
+					mLocomotionCardWrapper.moveForward(distance_degagement_robot);
+				else
+					mLocomotionCardWrapper.moveForward(-distance_degagement_robot);
+				out = true;
+			} catch (SerialConnexionException e1)
+			{
+				e1.printStackTrace();
+			}
+			try
+			{
 				try
 				{
-					va_au_point_hook_correction_detection(hooks, trajectoire_courbe, marche_arriere);
+					oldInfos = mLocomotionCardWrapper.getCurrentPositionAndOrientation();
 				}
-				catch (BlockedException e)
+				catch (SerialConnexionException e1)
 				{
-					nb_iterations_deblocage--;
-					stopper();
-					/*
-					 * En cas de blocage, on recule (si on allait tout droit) ou on avance.
-					 */
-					// Si on insiste, on se dégage. Sinon, c'est juste normal de prendre le mur.
-					if(!mur)
-					{
-						try
-						{
-							log.warning("On n'arrive plus à avancer. On se dégage", this);
-							if(marche_arriere)
-								getmLocomotion().avancer(distance_degagement_robot);
-							else
-								getmLocomotion().avancer(-distance_degagement_robot);
-							recommence = true;
-						} catch (SerialConnexionException e1)
-						{
-							e1.printStackTrace();
-						}
-						try
-						{
-							try
-							{
-								oldInfos = getmLocomotion().get_infos_x_y_orientation();
-							} catch (SerialConnexionException e1)
-							{
-								e1.printStackTrace();
-							}
-							while(!mouvement_fini());
-						} catch (BlockedException e1)
-						{
-							stopper();
-							log.critical("On n'arrive pas à se dégager.", this);
-							throw new UnableToMoveException();
-						}
-						if(nb_iterations_deblocage <= 0)
-							throw new UnableToMoveException();
-					}
+					e1.printStackTrace();
 				}
-				catch (CollisionException e)
-				{
-					e.printStackTrace();
-					nb_iterations_ennemi--;
-					/*
-					 * En cas d'ennemi, on attend (si on demande d'insiste) ou on abandonne.
-					 */
-					if(nb_iterations_ennemi <= 0)
-					{
-						/* TODO: si on veut pouvoir enchaîner avec un autre chemin, il
-						 * ne faut pas arrêter le robot.
-						 * ATTENTION! ceci peut être dangereux, car si aucun autre chemin
-						 * ne lui est donné, le robot va continuer sa course et percuter
-						 * l'obstacle!
-						 */
-						stopper();
-						log.critical("Détection d'un ennemi! Abandon du mouvement.", this);
-						throw new UnableToMoveException();
-					} //TODO: vérifier fréquemment, puis attendre
-					else
-					{
-						log.warning("Détection d'un ennemi! Attente.", this);
-						stopper();
-						Sleep.sleep(100);
-						recommence = true;
-					}
-				}
-			} while(recommence); // on recommence tant qu'on n'a pas fait trop d'itérations.
+				while(!isMovementFinished());
+			}
+			catch (BlockedException e1)
+			{
+				immobilise();
+				log.critical("On n'arrive pas à se dégager.", this);
+				throw new UnableToMoveException();
+			}
+		}
+		return out;
+	}
+	
 
-			// Tout s'est bien passé
+	/*
+	 * En cas d'ennemi, on attend (si on demande d'insiste) ou on abandonne.
+	 */
+	private boolean unexpectedObstacleOnPathExceptionReaction(UnexpectedObstacleOnPathException e) throws UnableToMoveException
+	{
+
+		boolean out  = false;		
+
+		log.warning("Détection d'un ennemi sur notre route !", this);
+		
+		//TODO: vérifier fréquemment, puis attendre (???)
+		Sleep.sleep(100);
+		out = true;
+		return out;
 	}
 
 	/**
@@ -426,15 +483,15 @@ public class Locomotion implements Service
 	 * @param hooks
 	 * @param trajectoire_courbe
 	 * @throws BlockedException 
-	 * @throws CollisionException 
+	 * @throws UnexpectedObstacleOnPathException 
 	 */
-	public void va_au_point_hook_correction_detection(ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean marche_arriere) throws BlockedException, CollisionException
+	public void va_au_point_hook_correction_detection(ArrayList<Hook> hooks, boolean trajectoire_courbe, boolean marche_arriere) throws BlockedException, UnexpectedObstacleOnPathException
 	{
 		boolean relancer;
 		va_au_point_symetrie(trajectoire_courbe, marche_arriere, false);
 		try
 		{
-			oldInfos = getmLocomotion().get_infos_x_y_orientation();
+			oldInfos = mLocomotionCardWrapper.getCurrentPositionAndOrientation();
 		} catch (SerialConnexionException e)
 		{
 			e.printStackTrace();
@@ -462,7 +519,7 @@ public class Locomotion implements Service
 			else
 				update_x_y_orientation();
 
-		} while(!mouvement_fini());
+		} while(!isMovementFinished());
 
 	}
 
@@ -519,7 +576,7 @@ public class Locomotion implements Service
 		try
 		{
 			// demande aux moteurs de tourner le robot jusqu'a ce qu'il pointe dans la bonne direction
-			getmLocomotion().turn(direction);
+			mLocomotionCardWrapper.turn(direction);
 
 
 			// attends que le robot soit dans la bonne direction si nous ne sommes pas autoris� � tourner en avancant
@@ -527,14 +584,14 @@ public class Locomotion implements Service
 			{
 
 				// TODO: mettre la boucle d'attente dans une fonction part enti�re (la prise de oldInfo est moche ici)
-				oldInfos = getmLocomotion().get_infos_x_y_orientation();
+				oldInfos = mLocomotionCardWrapper.getCurrentPositionAndOrientation();
 				float newOrientation = (float)oldInfos[2] + (float)direction*1000; // valeur absolue de l'orientation � atteindre
 				while(!isTurnFinished(newOrientation)) 
 					Sleep.sleep(sleep_boucle_acquittement);
 			}
 
 			// demande aux moteurs d'avancer le robot de la distance demand�e
-			getmLocomotion().avancer(distance);
+			mLocomotionCardWrapper.moveForward(distance);
 		} 
 		catch (SerialConnexionException e)
 		{
@@ -555,7 +612,7 @@ public class Locomotion implements Service
 		boolean out = false; 
 		try
 		{
-			double[] newInfos = getmLocomotion().get_infos_x_y_orientation();
+			double[] newInfos = mLocomotionCardWrapper.getCurrentPositionAndOrientation();
 
 			// Le robot tourne-t-il encore ?
 			if(Math.abs(newInfos[2] - oldInfos[2]) > 20)
@@ -587,7 +644,7 @@ public class Locomotion implements Service
 	 * @return
 	 * @throws BlockedException
 	 */
-	private boolean mouvement_fini() throws BlockedException
+	private boolean isMovementFinished() throws BlockedException
 	{
 		boolean out = false;
 		
@@ -602,7 +659,7 @@ public class Locomotion implements Service
 		
 		try
 		{
-			double[] new_infos = getmLocomotion().get_infos_x_y_orientation();
+			double[] new_infos = mLocomotionCardWrapper.getCurrentPositionAndOrientation();
 			
 			// Le robot bouge-t-il encore ?
 			if(new Vec2((int)oldInfos[0], (int)oldInfos[1]).SquaredDistance(new Vec2((int)new_infos[0], (int)new_infos[1])) > motionThreshold || Math.abs(new_infos[2] - oldInfos[2]) > motionThreshold)
@@ -656,7 +713,7 @@ public class Locomotion implements Service
 	 * @param sans_lever_exception
 	 * @return true si le robot est arrivé à destination, false si encore en mouvement
 	 * @throws BlockedException
-	 * @throws CollisionException
+	 * @throws UnexpectedObstacleOnPathException
 	 */
 	@SuppressWarnings("unused") // TODO: Voir ce qu'il se passe: pourquoi elle n'est jamais appllée ?
 	private boolean mouvement_fini_routine() throws BlockedException
@@ -667,14 +724,14 @@ public class Locomotion implements Service
 			// met a jour: 	l'écart entre la position actuelle et la position sur laquelle on est asservi
 			//				la variation de l'écart a la position sur laquelle on est asservi
 			//				la puissance demandée par les moteurs 	
-			getmLocomotion().maj_infos_stoppage_enMouvement();
+			mLocomotionCardWrapper.refreshFeedbackLoopStatistics();
 
 			// lève une exeption de blocage si le robot patine (ie force sur ses moteurs sans bouger) 
-			getmLocomotion().raiseExeptionIfBlocked();
+			mLocomotionCardWrapper.raiseExeptionIfBlocked();
 
 			// robot arrivé?
 			//            System.out.println("deplacements.update_enMouvement() : " + deplacements.isRobotMoving());
-			return !getmLocomotion().isRobotMoving();
+			return !mLocomotionCardWrapper.isRobotMoving();
 
 		} 
 		catch (SerialConnexionException e) 
@@ -687,9 +744,9 @@ public class Locomotion implements Service
 	/**
 	 * fonction vérifiant que l'on ne va pas taper dans le robot adverse. 
 	 * @param devant: fait la détection derrière le robot si l'on avance à reculons 
-	 * @throws CollisionException si obstacle sur le chemin
+	 * @throws UnexpectedObstacleOnPathException si obstacle sur le chemin
 	 */
-	private void detecter_collision(boolean devant) throws CollisionException
+	private void detecter_collision(boolean devant) throws UnexpectedObstacleOnPathException
 	{
 		int signe = -1;
 		if(devant)
@@ -701,7 +758,7 @@ public class Locomotion implements Service
 		if(table.gestionobstacles.obstaclePresent(centre_detection, distance_detection))
 		{
 			log.warning("Ennemi détecté en : " + centre_detection, this);
-			throw new CollisionException();
+			throw new UnexpectedObstacleOnPathException();
 		}
 
 	}
@@ -713,7 +770,7 @@ public class Locomotion implements Service
 	private void update_x_y_orientation()
 	{
 		try {
-			double[] infos = getmLocomotion().get_infos_x_y_orientation();
+			double[] infos = mLocomotionCardWrapper.getCurrentPositionAndOrientation();
 			position.x = (int)infos[0];
 			position.y = (int)infos[1];
 			orientation = infos[2]/1000; // car get_infos renvoie des milliradians
@@ -727,7 +784,7 @@ public class Locomotion implements Service
 	@Override
 	public void updateConfig()
 	{
-		nb_iterations_max = Integer.parseInt(config.get("nb_tentatives"));
+		maxAllowedExceptionCount = Integer.parseInt(config.get("nb_tentatives"));
 		distance_detection = Integer.parseInt(config.get("distance_detection"));
 		distance_degagement_robot = Integer.parseInt(config.get("distance_degagement_robot"));
 		sleep_boucle_acquittement = Integer.parseInt(config.get("sleep_boucle_acquittement"));
@@ -740,12 +797,12 @@ public class Locomotion implements Service
 	/**
 	 * Arrête le robot.
 	 */
-	public void stopper()
+	public void immobilise()
 	{
 
 		try
 		{
-			getmLocomotion().stopper();
+			mLocomotionCardWrapper.immobilise();
 		}
 		catch (SerialConnexionException e) 
 		{
@@ -771,8 +828,8 @@ public class Locomotion implements Service
 	{
 		this.position = position.clone();
 		try {
-			getmLocomotion().set_x(position.x);
-			getmLocomotion().set_y(position.y);
+			mLocomotionCardWrapper.setX(position.x);
+			mLocomotionCardWrapper.setY(position.y);
 		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}
@@ -787,7 +844,7 @@ public class Locomotion implements Service
 	{
 		this.orientation = orientation;
 		try {
-			getmLocomotion().set_orientation(orientation);
+			mLocomotionCardWrapper.setOrientation(orientation);
 		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}
@@ -815,34 +872,34 @@ public class Locomotion implements Service
 		return orientation;
 	}
 
-	public void desasservit()
+	public void disableFeedbackLoop()
 	{
 		try
 		{
-			getmLocomotion().desactiver_asservissement_rotation();
-			getmLocomotion().desactiver_asservissement_translation();
+			mLocomotionCardWrapper.disableRotationnalFeedbackLoop();
+			mLocomotionCardWrapper.disableTranslationnalFeedbackLoop();
 		} catch (SerialConnexionException e)
 		{
 			e.printStackTrace();
 		}
 	}
 
-	public void set_vitesse_rotation(int pwm_max)
+	public void setRotationnalSpeed(int pwm_max)
 	{
 		try
 		{
-			getmLocomotion().set_vitesse_rotation(pwm_max);
+			mLocomotionCardWrapper.setRotationnalSpeed(pwm_max);
 		} catch (SerialConnexionException e)
 		{
 			e.printStackTrace();
 		}
 	}
 
-	public void set_vitesse_translation(int pwm_max)
+	public void setTranslationnalSpeed(int pwm_max)
 	{
 		try
 		{
-			getmLocomotion().set_vitesse_translation(pwm_max);
+			mLocomotionCardWrapper.setTranslationnalSpeed(pwm_max);
 		} catch (SerialConnexionException e)
 		{
 			e.printStackTrace();
@@ -852,9 +909,9 @@ public class Locomotion implements Service
 	/**
 	 * @return the mLocomotion
 	 */
-	public LocomotionCardWrapper getmLocomotion()
+	public LocomotionCardWrapper getLocomotionCardWrapper()
 	{
-		return mLocomotion;
+		return mLocomotionCardWrapper;
 	}
 
 

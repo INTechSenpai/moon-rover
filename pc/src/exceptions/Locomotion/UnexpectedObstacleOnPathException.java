@@ -5,17 +5,17 @@ package exceptions.Locomotion;
  * @author pf, marsu
  *
  */
-public class CollisionException extends Exception
+public class UnexpectedObstacleOnPathException extends Exception
 {
 
 	private static final long serialVersionUID = -3791360446545658528L;
 
-	public CollisionException()
+	public UnexpectedObstacleOnPathException()
 	{
 		super();
 	}
 	
-	public CollisionException(String m)
+	public UnexpectedObstacleOnPathException(String m)
 	{
 		super(m);
 	}
