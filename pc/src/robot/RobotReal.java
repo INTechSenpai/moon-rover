@@ -91,7 +91,7 @@ public class RobotReal extends Robot
 	public void set_vitesse(Speed vitesse)
 	{
         deplacements.setTranslationnalSpeed(vitesse.PWMTranslation);
-        deplacements.setRotationnalSpeed(vitesse.PWMTotation);
+        deplacements.setRotationnalSpeed(vitesse.PWMRotation);
 		log.debug("Modification de la vitesse: "+vitesse, this);
 	}
 	
@@ -152,10 +152,10 @@ public class RobotReal extends Robot
     {
         deplacements.followPath(chemin, hooks);
     }
-    @Override
+
     public void copy(RobotChrono rc)
     {
-        super.copy(rc);
+    	// TODO
         getPositionFast().copy(rc.position);
         rc.orientation = getOrientationFast();
     }
