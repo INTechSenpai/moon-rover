@@ -1,12 +1,11 @@
 package scripts;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map;
+import hook.types.HookFactory;
 
 import utils.Log;
 import utils.Config;
 import container.Service;
+import enums.ScriptNames;
 import exceptions.UnknownScriptException;
 
  /**
@@ -19,22 +18,17 @@ public class ScriptManager implements Service
 	
 	private Log log;
 
-	// pour retrouver un script a partir de son nom
-	private Map<String,Script> instancesScripts = new Hashtable<String,Script>(); // ce commentaire est inutile
+	private Script[] instancesScripts = new Script[ScriptNames.values().length];
 
-	// TODO : effacer ?
-	@SuppressWarnings("unused")
-	private ArrayList<String> scripts_robot;
-	
-	public ScriptManager(Config config, Log log)
+	public ScriptManager(HookFactory hookfactory, Config config, Log log)
 	{
 		this.log = log;
-		scripts_robot = new ArrayList<String>();
+//		instancesScripts[ScriptNames.script_A.ordinal()] = new Script_A(hookfactory, config, log);
 	}
 	
-	public Script getScript(String nom) throws UnknownScriptException
+	public Script getScript(ScriptNames nom) throws UnknownScriptException
 	{
-		Script script = instancesScripts.get(nom);
+		Script script = instancesScripts[nom.ordinal()];
 		if(script == null)
 		{
 			log.warning("Script inconnu: "+nom, this);
