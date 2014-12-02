@@ -152,6 +152,9 @@ public class RobotReal extends Robot
     {
         deplacements.followPath(chemin, hooks);
     }
+    
+    // Cette copie est un peu plus lente que les autres car il y a un appel série
+    // Néanmoins, on ne fait cette copie qu'une fois par arbre.
     @Override
     public void copy(RobotChrono rc)
     {
