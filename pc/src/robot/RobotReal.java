@@ -51,7 +51,7 @@ public class RobotReal extends Robot
 		try {
 			deplacements.getLocomotionCardWrapper().disableRotationnalFeedbackLoop();
 		} catch (SerialConnexionException e) {
-			// TODO Auto-generated catch block
+			// On peut pas faire grand chose...
 			e.printStackTrace();
 		}
 	}
@@ -61,7 +61,7 @@ public class RobotReal extends Robot
 		try {
 			deplacements.getLocomotionCardWrapper().enableRotationnalFeedbackLoop();
 		} catch (SerialConnexionException e) {
-			// TODO Auto-generated catch block
+			// On peut pas faire grand chose...
 			e.printStackTrace();
 		}
 	}
@@ -156,23 +156,9 @@ public class RobotReal extends Robot
     public void copy(RobotChrono rc)
     {
         super.copy(rc);
-        getPositionFast().copy(rc.position);
-        rc.orientation = getOrientationFast();
+        getPosition().copy(rc.position);
+        rc.orientation = getOrientation();
     }
-
-    // TODO utilité ?
-	@Override
-	public Vec2 getPositionFast()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getOrientationFast() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	@Override
 	public void setInsiste(boolean insiste) {
