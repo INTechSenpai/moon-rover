@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
-import exceptions.UnknownScriptException;
+import exceptions.strategie.ScriptException;
 /**
  * Classe abstraite dont héritent les différents scripts.
  * S'occupe le robotvrai et robotchrono de manière à ce que ce soit transparent pour les différents scripts
@@ -42,7 +42,7 @@ public abstract class Script implements Service
 	/**
 	 * Exécute vraiment un script
 	 */
-	public void agit(int id_version, GameState<RobotReal> state, boolean retenter_si_blocage) throws UnknownScriptException
+	public void agit(int id_version, GameState<RobotReal> state, boolean retenter_si_blocage) throws ScriptException
 	{
 	}
 	
