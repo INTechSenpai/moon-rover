@@ -12,7 +12,8 @@ import exceptions.UnknownScriptException;
   * Classe enregistrée comme service qui fournira les scripts
   * @author pf, marsu
   */
- 
+
+// DEPENDS_ON_RULES
 public class ScriptManager implements Service
 {
 	
