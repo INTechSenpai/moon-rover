@@ -10,6 +10,7 @@ import hook.types.HookFactory;
 
 import java.util.ArrayList;
 
+import enums.PathfindingNodes;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
 import exceptions.strategie.ScriptException;
@@ -61,7 +62,7 @@ public abstract class Script implements Service
 	 * @param id de la version
 	 * @return la position du point d'entrée
 	 */
-	public abstract Vec2 point_entree(int id);
+	public abstract PathfindingNodes point_entree(int id);
    
 	/**
 	 * Renvoie le score que peut fournir une version d'un script

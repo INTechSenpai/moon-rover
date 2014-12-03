@@ -9,6 +9,7 @@ import hook.Hook;
 
 import java.util.ArrayList;
 
+import enums.PathfindingNodes;
 import enums.Speed;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
@@ -147,7 +148,7 @@ public class RobotReal extends Robot
     }
     
     @Override
-    public void suit_chemin(ArrayList<Vec2> chemin, ArrayList<Hook> hooks) throws UnableToMoveException
+    public void suit_chemin(ArrayList<PathfindingNodes> chemin, ArrayList<Hook> hooks) throws UnableToMoveException
     {
         deplacements.followPath(chemin, hooks);
     }
