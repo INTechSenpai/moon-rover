@@ -21,7 +21,6 @@ import exceptions.serial.SerialConnexionException;
 
 public class RobotReal extends Robot
 {
-
 	@SuppressWarnings("unused")
 	private Table table;
 	private Locomotion deplacements;
