@@ -169,4 +169,10 @@ public class RobotReal extends Robot
 		
 	}
 
+	@Override
+    public long getDate()
+    {
+    	return System.currentTimeMillis();
+    }
+
 }

@@ -1,7 +1,6 @@
 package scripts;
 
 import strategie.GameState;
-import robot.RobotChrono;
 import robot.RobotReal;
 import utils.Log;
 import utils.Config;
@@ -33,6 +32,45 @@ public abstract class Script implements Service
 	 */
 	protected ArrayList<ArrayList<Integer>> versions = new ArrayList<ArrayList<Integer>>();	
 	
+	/**
+	 * Renvoie le tableau des méta-verions d'un script
+	 * @return le tableau des méta-versions possibles
+	 */
+	public abstract ArrayList<Integer> meta_version(final GameState<?> state);
+
+    /**
+     * Renvoie le score que peut fournir une méta-version d'un script
+     * @return le score
+     */
+	public int meta_score(int id_metaversion, GameState<?> state)
+	{
+	    ArrayList<Integer> versions = this.versions.get(id_metaversion);
+        if(versions == null)
+            return -1;
+        int max = -1;
+	    for(Integer v: versions)
+	      if(max < 0 || score(v, state) > score(max, state))
+	          max = v;
+		return score(max, state);
+	}
+
+	/**
+	 * Renvoie le score que peut fournir une version d'un script
+	 * @return le score
+	 */
+	public abstract int score(int id_version, final GameState<?> state);
+	
+	/**
+	 * Renvoie le tableau des versions associées à une métaversion
+	 * @param meta_version
+	 * @return
+	 */
+	public ArrayList<Integer> version_asso(int meta_version)
+	{
+	    return versions.get(meta_version);
+	}
+
+	
 	public Script(HookFactory hookgenerator, Config config, Log log)
 	{
 		Script.hookgenerator = hookgenerator;
@@ -59,24 +97,6 @@ public abstract class Script implements Service
 		}
 
 	}
-	
-	/**
-	 * Calcule le temps d'exécution de ce script (grâce à robotChrono)
-	 * @return le temps d'exécution
-	 * @throws PathfindingException 
-	 */
-	public long calcule(int meta_id_version, GameState<RobotChrono> state)
-	{
-		try {
-			// on prend la première version de la méta-version
-			execute(versions.get(meta_id_version).get(0), state);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		return state.robot.get_compteur();
-	}	
 
 	/**
 	 * Retourne la position d'entrée associée à la version id
@@ -89,7 +109,7 @@ public abstract class Script implements Service
 	 * Exécute ou calcule le script, avec RobotVrai ou RobotChrono
 	 * @throws SerialConnexionException 
 	 */
-	protected abstract void execute(int id_version, GameState<?>state) throws UnableToMoveException, SerialConnexionException;
+	public abstract void execute(int id_version, GameState<?>state) throws UnableToMoveException, SerialConnexionException;
 
 	/**
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs, on se décale du mur, ...
