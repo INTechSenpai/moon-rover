@@ -31,7 +31,7 @@ public abstract class Script implements Service
 	/*
 	 * versions.get(meta_id) donne la liste des versions associées aux meta_id
 	 */
-	protected ArrayList<ArrayList<Integer>> versions = new ArrayList<ArrayList<Integer>>();	
+	protected ArrayList<ArrayList<Integer>> metaversions = new ArrayList<ArrayList<Integer>>();	
 	
 	/**
 	 * Renvoie le tableau des méta-verions d'un script
@@ -46,7 +46,7 @@ public abstract class Script implements Service
 	 */
 	public ArrayList<Integer> version_asso(int meta_version)
 	{
-	    return versions.get(meta_version);
+	    return metaversions.get(meta_version);
 	}
 	
 	public Script(HookFactory hookgenerator, Config config, Log log)
@@ -87,6 +87,7 @@ public abstract class Script implements Service
 
 	/**
 	 * Retourne la position d'entrée associée à la version id
+	 * Ne se préoccupe pas de savoir si cette version est possible ou pas.
 	 * @param id de la version
 	 * @return la position du point d'entrée
 	 */
