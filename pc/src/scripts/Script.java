@@ -1,7 +1,7 @@
 package scripts;
 
-import smartMath.Vec2;
 import strategie.GameState;
+import robot.RobotChrono;
 import robot.RobotReal;
 import utils.Log;
 import utils.Config;
@@ -16,7 +16,7 @@ import exceptions.serial.SerialConnexionException;
 import exceptions.strategie.ScriptException;
 /**
  * Classe abstraite dont héritent les différents scripts.
- * S'occupe le robotvrai et robotchrono de manière à ce que ce soit transparent pour les différents scripts
+ * S'occupe de robotvrai et robotchrono de manière à ce que ce soit transparent pour les différents scripts
  * @author pf, marsu
  */
 
@@ -39,12 +39,25 @@ public abstract class Script implements Service
 		Script.config = config;
 		Script.log = log;
 	}
-		
-	/**
-	 * Exécute vraiment un script
-	 */
+
 	public void agit(int id_version, GameState<RobotReal> state, boolean retenter_si_blocage) throws ScriptException
 	{
+		try
+		{
+		    state.robot.setInsiste(retenter_si_blocage);
+			execute(id_version, state);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			// le script a échoué, on prévient le haut niveau
+			throw new ScriptException();
+		}
+		finally
+		{
+			termine(state);
+		}
+
 	}
 	
 	/**
@@ -52,9 +65,17 @@ public abstract class Script implements Service
 	 * @return le temps d'exécution
 	 * @throws PathfindingException 
 	 */
-	public long calcule()
+	public long calcule(int meta_id_version, GameState<RobotChrono> state)
 	{
-		return 42;
+		try {
+			// on prend la première version de la méta-version
+			execute(versions.get(meta_id_version).get(0), state);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return state.robot.get_compteur();
 	}	
 
 	/**
@@ -65,21 +86,13 @@ public abstract class Script implements Service
 	public abstract PathfindingNodes point_entree(int id);
    
 	/**
-	 * Renvoie le score que peut fournir une version d'un script
-	 * @return le score
-	 */
-	public abstract int score(int id_version, final GameState<?> state);
-	
-	/**
-	 * Exécute le script, avec RobotVrai ou RobotChrono
+	 * Exécute ou calcule le script, avec RobotVrai ou RobotChrono
 	 * @throws SerialConnexionException 
 	 */
-	protected void execute() throws UnableToMoveException, SerialConnexionException
-	{
-	}
+	protected abstract void execute(int id_version, GameState<?>state) throws UnableToMoveException, SerialConnexionException;
 
 	/**
-	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs.
+	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs, on se décale du mur, ...
 	 */
 	abstract protected void termine(GameState<?> state);
 	
