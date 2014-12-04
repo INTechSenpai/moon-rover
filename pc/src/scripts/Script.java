@@ -39,28 +39,6 @@ public abstract class Script implements Service
 	 */
 	public abstract ArrayList<Integer> meta_version(final GameState<?> state);
 
-    /**
-     * Renvoie le score que peut fournir une méta-version d'un script
-     * @return le score
-     */
-	public int meta_score(int id_metaversion, GameState<?> state)
-	{
-	    ArrayList<Integer> versions = this.versions.get(id_metaversion);
-        if(versions == null)
-            return -1;
-        int max = -1;
-	    for(Integer v: versions)
-	      if(max < 0 || score(v, state) > score(max, state))
-	          max = v;
-		return score(max, state);
-	}
-
-	/**
-	 * Renvoie le score que peut fournir une version d'un script
-	 * @return le score
-	 */
-	public abstract int score(int id_version, final GameState<?> state);
-	
 	/**
 	 * Renvoie le tableau des versions associées à une métaversion
 	 * @param meta_version
@@ -70,7 +48,6 @@ public abstract class Script implements Service
 	{
 	    return versions.get(meta_version);
 	}
-
 	
 	public Script(HookFactory hookgenerator, Config config, Log log)
 	{
