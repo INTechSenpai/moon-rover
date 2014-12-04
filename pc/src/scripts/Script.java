@@ -10,6 +10,7 @@ import hook.types.HookFactory;
 import java.util.ArrayList;
 
 import enums.PathfindingNodes;
+import exceptions.FinMatchException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
 import exceptions.strategie.ScriptException;
@@ -78,7 +79,7 @@ public abstract class Script implements Service
 		Script.log = log;
 	}
 
-	public void agit(int id_version, GameState<RobotReal> state, boolean retenter_si_blocage) throws ScriptException
+	public void agit(int id_version, GameState<RobotReal> state, boolean retenter_si_blocage) throws ScriptException, FinMatchException
 	{
 		try
 		{
@@ -93,7 +94,16 @@ public abstract class Script implements Service
 		}
 		finally
 		{
-			termine(state);
+			try {
+				termine(state);
+			} catch (SerialConnexionException e) {
+				try {
+					termine(state);  // on réessaye encore une fois
+				} catch (SerialConnexionException e1) {
+					e1.printStackTrace();
+				}
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -109,12 +119,12 @@ public abstract class Script implements Service
 	 * Exécute ou calcule le script, avec RobotVrai ou RobotChrono
 	 * @throws SerialConnexionException 
 	 */
-	public abstract void execute(int id_version, GameState<?>state) throws UnableToMoveException, SerialConnexionException;
+	public abstract void execute(int id_version, GameState<?>state) throws UnableToMoveException, SerialConnexionException, FinMatchException;
 
 	/**
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs, on se décale du mur, ...
 	 */
-	abstract protected void termine(GameState<?> state);
+	abstract protected void termine(GameState<?> state) throws SerialConnexionException, FinMatchException;
 	
 	public void updateConfig()
 	{

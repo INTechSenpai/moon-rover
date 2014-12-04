@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import enums.PathfindingNodes;
 import enums.Speed;
+import exceptions.FinMatchException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
 
@@ -48,7 +49,7 @@ public class RobotReal extends Robot
 	}
 	
 	
-	public void desactiver_asservissement_rotation()
+	public void desactiver_asservissement_rotation() throws FinMatchException
 	{
 		try {
 			deplacements.getLocomotionCardWrapper().disableRotationnalFeedbackLoop();
@@ -58,7 +59,7 @@ public class RobotReal extends Robot
 		}
 	}
 
-	public void activer_asservissement_rotation()
+	public void activer_asservissement_rotation() throws FinMatchException
 	{
 		try {
 			deplacements.getLocomotionCardWrapper().enableRotationnalFeedbackLoop();
@@ -68,7 +69,7 @@ public class RobotReal extends Robot
 		}
 	}
 
-	public void recaler()
+	public void recaler() throws FinMatchException
 	{
 	    set_vitesse(Speed.READJUSTMENT);
 	    deplacements.readjust();
@@ -77,9 +78,10 @@ public class RobotReal extends Robot
 	/**
 	 * Avance d'une certaine distance donnée en mm (méthode bloquante), gestion des hooks
 	 * @throws UnableToMoveException 
+	 * @throws FinMatchException 
 	 */
 	@Override
-    public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
+    public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException, FinMatchException
 	{
 		deplacements.moveForward(distance, hooks, mur);
 	}	
@@ -87,10 +89,11 @@ public class RobotReal extends Robot
 	/**
 	 * Modifie la vitesse de translation
 	 * @param Speed : l'une des vitesses indexées dans enums.
+	 * @throws FinMatchException 
 	 * 
 	 */
 	@Override
-	public void set_vitesse(Speed vitesse)
+	public void set_vitesse(Speed vitesse) throws FinMatchException
 	{
         deplacements.setTranslationnalSpeed(vitesse.PWMTranslation);
         deplacements.setRotationnalSpeed(vitesse.PWMTotation);
@@ -105,25 +108,25 @@ public class RobotReal extends Robot
 	 * GETTERS & SETTERS
 	 */
 	@Override
-	public void setPosition(Vec2 position)
+	public void setPosition(Vec2 position) throws FinMatchException
 	{
 	    deplacements.setPosition(position);
 	}
 	
     @Override
-	public Vec2 getPosition()
+	public Vec2 getPosition() throws FinMatchException
 	{
 	    return deplacements.getPosition();
 	}
 
 	@Override
-	public void setOrientation(double orientation)
+	public void setOrientation(double orientation) throws FinMatchException
 	{
 	    deplacements.setOrientation(orientation);
 	}
 
     @Override
-    public double getOrientation()
+    public double getOrientation() throws FinMatchException
     {
         return deplacements.getOrientation();
     }
@@ -138,19 +141,19 @@ public class RobotReal extends Robot
 	}
 
     @Override
-    public void stopper()
+    public void stopper() throws FinMatchException
     {
         deplacements.immobilise();
     }
 
     @Override
-    public void tourner(double angle, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
+    public void tourner(double angle, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException, FinMatchException
     {
         deplacements.turn(angle, hooks, mur);
     }
     
     @Override
-    public void suit_chemin(ArrayList<PathfindingNodes> chemin, ArrayList<Hook> hooks) throws UnableToMoveException
+    public void suit_chemin(ArrayList<PathfindingNodes> chemin, ArrayList<Hook> hooks) throws UnableToMoveException, FinMatchException
     {
         deplacements.followPath(chemin, hooks);
     }
@@ -158,7 +161,7 @@ public class RobotReal extends Robot
     // Cette copie est un peu plus lente que les autres car il y a un appel série
     // Néanmoins, on ne fait cette copie qu'une fois par arbre.
     @Override
-    public void copy(RobotChrono rc)
+    public void copy(RobotChrono rc) throws FinMatchException
     {
         super.copy(rc);
         getPosition().copy(rc.position);
