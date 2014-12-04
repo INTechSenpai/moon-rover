@@ -10,7 +10,9 @@ import hook.Hook;
 
 import java.util.ArrayList;
 
+import enums.ActuatorOrder;
 import enums.PathfindingNodes;
+import enums.SleepValues;
 import enums.Speed;
 import exceptions.FinMatchException;
 import exceptions.Locomotion.UnableToMoveException;
@@ -180,5 +182,28 @@ public class RobotReal extends Robot
     {
     	return System.currentTimeMillis();
     }
+	
+	public void leverDeuxTapis() throws FinMatchException
+	{
+		try {
+			actionneurs.useActuator(ActuatorOrder.LEVE_TAPIS_GAUCHE);
+			actionneurs.useActuator(ActuatorOrder.LEVE_TAPIS_DROIT);
+			sleep(SleepValues.SLEEP_LEVER_TAPIS.duree);
+		} catch (SerialConnexionException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void poserDeuxTapis() throws FinMatchException
+	{
+		try {
+			actionneurs.useActuator(ActuatorOrder.BAISSE_TAPIS_DROIT);
+			actionneurs.useActuator(ActuatorOrder.BAISSE_TAPIS_DROIT);
+			tapisRougePose(2);
+			sleep(SleepValues.SLEEP_POSER_TAPIS.duree);
+		} catch (SerialConnexionException e) {
+			e.printStackTrace();
+		}
+	}
 
 }
