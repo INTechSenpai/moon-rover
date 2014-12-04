@@ -28,6 +28,7 @@ public class RobotReal extends Robot
 	private Table table;
 	private Locomotion deplacements;
 	private ActuatorCardWrapper actionneurs;
+
 	// Constructeur
 	public RobotReal(ActuatorCardWrapper actuator, Locomotion deplacements, Table table, Config config, Log log)
  	{
