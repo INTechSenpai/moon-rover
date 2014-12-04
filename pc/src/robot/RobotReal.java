@@ -1,5 +1,6 @@
 package robot;
 
+import robot.cardsWrappers.ActuatorCardWrapper;
 import smartMath.Vec2;
 import table.Table;
 import utils.Log;
@@ -25,11 +26,12 @@ public class RobotReal extends Robot
 	@SuppressWarnings("unused")
 	private Table table;
 	private Locomotion deplacements;
-
+	private ActuatorCardWrapper actionneurs;
 	// Constructeur
-	public RobotReal( Locomotion deplacements, Table table, Config config, Log log)
+	public RobotReal(ActuatorCardWrapper actuator, Locomotion deplacements, Table table, Config config, Log log)
  	{
 		super(config, log);
+		this.actionneurs = actuator;
 		this.deplacements = deplacements;
 		this.table = table;
 		updateConfig();
