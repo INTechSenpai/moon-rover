@@ -16,11 +16,9 @@ public class ScriptTapis extends Script {
 	public ScriptTapis(HookFactory hookgenerator, Config config, Log log)
 	{
 		super(hookgenerator, config, log);
-		
 		// Une seule métaversion (0), qui contient une seule version (0)
-		ArrayList<Integer> versions = new ArrayList<Integer>();
-		versions.add(0);
-		metaversions.add(versions);
+		metaversions.add(new ArrayList<Integer>());
+		metaversions.get(0).add(0);
 	}
 
 	@Override
@@ -46,7 +44,7 @@ public class ScriptTapis extends Script {
 	public void execute(int id_version, GameState<?> state) throws UnableToMoveException, SerialConnexionException, FinMatchException
 	{
 		state.robot.tourner(-Math.PI/2);
-		state.robot.avancer_dans_mur(-200); // TODO: vérifier distance
+		state.robot.avancer_dans_mur(-100); // TODO: vérifier distance
 		state.robot.poserDeuxTapis();
 	}
 
@@ -57,7 +55,7 @@ public class ScriptTapis extends Script {
 		state.robot.leverDeuxTapis();
 		try {
 			// et on se dégage
-			state.robot.avancer(100); // TODO vérifier distance
+			state.robot.avancer(300); // TODO vérifier distance
 		} catch (UnableToMoveException e) {
 			e.printStackTrace();
 		}

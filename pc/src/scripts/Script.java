@@ -10,6 +10,7 @@ import hook.types.HookFactory;
 import java.util.ArrayList;
 
 import enums.PathfindingNodes;
+import enums.RobotColor;
 import exceptions.FinMatchException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
@@ -24,9 +25,10 @@ public abstract class Script implements Service
 {
 
 	// Ces services resteront toujours les mêmes, on les factorise avec un static
-	protected static HookFactory hookgenerator;
-	protected static Config config;
-	protected static Log log;
+	protected HookFactory hookgenerator;
+	protected Config config;
+	protected Log log;
+	protected RobotColor color;
 
 	/*
 	 * versions.get(meta_id) donne la liste des versions associées aux meta_id
@@ -48,12 +50,29 @@ public abstract class Script implements Service
 	{
 	    return metaversions.get(meta_version);
 	}
-	
+
+	public int closest_version(final GameState<?> state, int meta_version) throws FinMatchException
+	{
+		int out = 0;
+		float distance_min = Float.MAX_VALUE;
+		for(Integer v: metaversions.get(meta_version))
+		{
+			float new_distance = state.robot.getPosition().squaredDistance(point_entree(v).getCoordonnees());
+			if(new_distance < distance_min)
+			{
+				out = v;
+				distance_min = new_distance;
+			}
+		}
+		return out;
+	}
+
 	public Script(HookFactory hookgenerator, Config config, Log log)
 	{
-		Script.hookgenerator = hookgenerator;
-		Script.config = config;
-		Script.log = log;
+		this.hookgenerator = hookgenerator;
+		this.config = config;
+		this.log = log;
+		updateConfig();
 	}
 
 	public void agit(int id_version, GameState<RobotReal> state, boolean retenter_si_blocage) throws ScriptException, FinMatchException
@@ -106,6 +125,7 @@ public abstract class Script implements Service
 	
 	public void updateConfig()
 	{
+		color = RobotColor.parse(config.get("couleur"));
 	}
 
 }

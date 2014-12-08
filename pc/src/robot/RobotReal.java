@@ -11,7 +11,9 @@ import hook.Hook;
 import java.util.ArrayList;
 
 import enums.ActuatorOrder;
+import enums.HauteurBrasClap;
 import enums.PathfindingNodes;
+import enums.Side;
 import enums.SleepValues;
 import enums.Speed;
 import exceptions.FinMatchException;
@@ -204,6 +206,22 @@ public class RobotReal extends Robot
 		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void bougeBrasClap(Side cote, HauteurBrasClap hauteur) throws SerialConnexionException, FinMatchException
+	{
+		if(cote == Side.LEFT && hauteur == HauteurBrasClap.TOUT_EN_HAUT)
+			actionneurs.useActuator(ActuatorOrder.LEVE_CLAP_GAUCHE);
+		else if(cote == Side.LEFT && hauteur == HauteurBrasClap.FRAPPE_CLAP)
+			actionneurs.useActuator(ActuatorOrder.POSITION_TAPE_CLAP_GAUCHE);
+		else if(cote == Side.LEFT && hauteur == HauteurBrasClap.RENTRE)
+			actionneurs.useActuator(ActuatorOrder.BAISSE_CLAP_GAUCHE);
+		else if(cote == Side.RIGHT && hauteur == HauteurBrasClap.TOUT_EN_HAUT)
+			actionneurs.useActuator(ActuatorOrder.LEVE_CLAP_DROIT);
+		else if(cote == Side.RIGHT && hauteur == HauteurBrasClap.FRAPPE_CLAP)
+			actionneurs.useActuator(ActuatorOrder.POSITION_TAPE_CLAP_DROIT);
+		else if(cote == Side.RIGHT && hauteur == HauteurBrasClap.RENTRE)
+			actionneurs.useActuator(ActuatorOrder.BAISSE_CLAP_DROIT);
 	}
 
 }

@@ -24,7 +24,8 @@ public class ScriptManager implements Service
 	public ScriptManager(HookFactory hookfactory, Config config, Log log)
 	{
 		this.log = log;
-//		instancesScripts[ScriptNames.script_A.ordinal()] = new Script_A(hookfactory, config, log);
+		instancesScripts[ScriptNames.ScriptClap.ordinal()] = new ScriptClap(hookfactory, config, log);
+		instancesScripts[ScriptNames.ScriptTapis.ordinal()] = new ScriptTapis(hookfactory, config, log);
 	}
 	
 	public Script getScript(ScriptNames nom) throws UnknownScriptException
