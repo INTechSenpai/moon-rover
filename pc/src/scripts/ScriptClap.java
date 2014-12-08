@@ -2,6 +2,7 @@ package scripts;
 
 import java.util.ArrayList;
 
+import enums.GameElementNames;
 import enums.HauteurBrasClap;
 import enums.PathfindingNodes;
 import enums.RobotColor;
@@ -34,9 +35,9 @@ public class ScriptClap extends Script {
 	public ArrayList<Integer> meta_version(GameState<?> state) {
 		ArrayList<Integer> out = new ArrayList<Integer>();
 		// on tente même si c'est peut-être fait par l'ennemi
-		if(state.table.isClapDone(0) != Tribool.TRUE && state.table.isClapDone(2) != Tribool.TRUE)
+		if(state.table.isDone(GameElementNames.CLAP_1) != Tribool.TRUE && state.table.isDone(GameElementNames.CLAP_2) != Tribool.TRUE)
 			out.add(0);
-		if(state.table.isClapDone(1) != Tribool.TRUE)
+		if(state.table.isDone(GameElementNames.CLAP_3) != Tribool.TRUE)
 			out.add(1);
 		return out;
 	}
