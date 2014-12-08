@@ -39,7 +39,7 @@ public class ScriptTapis extends Script {
 	@Override
 	public PathfindingNodes point_entree(int id)
 	{
-		return PathfindingNodes.SCRIPT_TAPIS;
+		return PathfindingNodes.NODE_TAPIS;
 	}
 
 	@Override
