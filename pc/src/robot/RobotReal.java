@@ -152,9 +152,9 @@ public class RobotReal extends Robot
     }
 
     @Override
-    public void tourner(double angle, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException, FinMatchException
+    public void tourner(double angle, boolean mur) throws UnableToMoveException, FinMatchException
     {
-        deplacements.turn(angle, hooks, mur);
+        deplacements.turn(angle, mur);
     }
     
     @Override
