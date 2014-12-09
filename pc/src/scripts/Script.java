@@ -25,10 +25,11 @@ public abstract class Script implements Service
 {
 
 	// Ces services resteront toujours les mêmes, on les factorise avec un static
-	protected HookFactory hookgenerator;
+	protected HookFactory hookfactory;
 	protected Config config;
 	protected Log log;
 	protected RobotColor color;
+	
 
 	/*
 	 * versions.get(meta_id) donne la liste des versions associées aux meta_id
@@ -69,7 +70,7 @@ public abstract class Script implements Service
 
 	public Script(HookFactory hookgenerator, Config config, Log log)
 	{
-		this.hookgenerator = hookgenerator;
+		this.hookfactory = hookgenerator;
 		this.config = config;
 		this.log = log;
 		updateConfig();

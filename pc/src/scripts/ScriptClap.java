@@ -11,6 +11,7 @@ import enums.Tribool;
 import exceptions.FinMatchException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
+import hook.Hook;
 import hook.types.HookFactory;
 import strategie.GameState;
 import utils.Config;
@@ -55,6 +56,7 @@ public class ScriptClap extends Script {
 			throws UnableToMoveException, SerialConnexionException,
 			FinMatchException
 	{
+		ArrayList<Hook> hooks_entre_scripts = hookfactory.getHooksEntreScripts(state);
 		// côté droit
 		if(id_version == 0)
 		{
@@ -64,13 +66,14 @@ public class ScriptClap extends Script {
 			else
 				cote = Side.RIGHT;
 			state.robot.tourner(Math.PI);
+			// TODO: probablement pas possible s'il y a des plots dans ce coin
 			state.robot.avancer_dans_mur(-100);
 			state.robot.bougeBrasClap(cote, HauteurBrasClap.FRAPPE_CLAP);
-			state.robot.avancer(300);
+			state.robot.avancer(300, hooks_entre_scripts);
 			state.robot.bougeBrasClap(cote, HauteurBrasClap.TOUT_EN_HAUT);
-			state.robot.avancer(300);
+			state.robot.avancer(300, hooks_entre_scripts);
 			state.robot.bougeBrasClap(cote, HauteurBrasClap.FRAPPE_CLAP);
-			state.robot.avancer(300);
+			state.robot.avancer(300, hooks_entre_scripts);
 		}
 		else // côté gauche
 		{

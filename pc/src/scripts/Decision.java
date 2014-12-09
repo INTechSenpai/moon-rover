@@ -1,7 +1,5 @@
 package scripts;
 
-import robot.RobotChrono;
-import strategie.GameState;
 import enums.ScriptNames;
 
 /**
@@ -16,13 +14,22 @@ public class Decision {
 	public ScriptNames script_name;
 	public int id_version;
 	public double note;
-	public GameState<RobotChrono> state; // état du jeu juste après cette décision
+	public boolean shoot_game_element;
 	
-	public Decision(ScriptNames s, int id_version, double note)
+	public Decision(ScriptNames s, int id_version, double note, boolean shoot_game_element)
 	{
 		this.script_name = s;
 		this.id_version = id_version;
 		this.note = note;
+		this.shoot_game_element = shoot_game_element;
+	}
+	
+	public void copy(Decision other)
+	{
+		other.script_name = script_name;
+		other.id_version = id_version;
+		other.note = note;
+		other.shoot_game_element = shoot_game_element;
 	}
 	
 }

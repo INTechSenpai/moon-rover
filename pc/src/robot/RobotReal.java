@@ -140,9 +140,10 @@ public class RobotReal extends Robot
 	 * Méthode sleep utilisée par les scripts
 	 */
 	@Override	
-	public void sleep(long duree)
+	public void sleep(long duree, ArrayList<Hook> hooks)
 	{
 		Sleep.sleep(duree);
+		// TODO: check hook
 	}
 
     @Override
@@ -180,9 +181,9 @@ public class RobotReal extends Robot
 	}
 
 	@Override
-    public long getDate()
+    public long getTempsDepuisDebutMatch()
     {
-    	return System.currentTimeMillis();
+    	return System.currentTimeMillis() - Config.getDateDebutMatch();
     }
 	
 	public void leverDeuxTapis() throws FinMatchException
