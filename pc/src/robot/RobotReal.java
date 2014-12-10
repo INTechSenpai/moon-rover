@@ -7,6 +7,7 @@ import utils.Log;
 import utils.Config;
 import utils.Sleep;
 import hook.Hook;
+import hook.types.HookFactory;
 
 import java.util.ArrayList;
 
@@ -14,7 +15,6 @@ import enums.ActuatorOrder;
 import enums.HauteurBrasClap;
 import enums.PathfindingNodes;
 import enums.Side;
-import enums.SleepValues;
 import enums.Speed;
 import exceptions.FinMatchException;
 import exceptions.Locomotion.UnableToMoveException;
@@ -28,20 +28,18 @@ import exceptions.serial.SerialConnexionException;
 
 public class RobotReal extends Robot
 {
-	@SuppressWarnings("unused")
-	private Table table;
+//	private Table table;
 	private Locomotion deplacements;
 	private ActuatorCardWrapper actionneurs;
 
 	// Constructeur
-	public RobotReal(ActuatorCardWrapper actuator, Locomotion deplacements, Table table, Config config, Log log)
+	public RobotReal(ActuatorCardWrapper actuator, Locomotion deplacements, Table table, Config config, Log log, HookFactory hookfactory)
  	{
-		super(config, log);
+		super(config, log, hookfactory);
 		this.actionneurs = actuator;
 		this.deplacements = deplacements;
-		this.table = table;
+//		this.table = table;
 		updateConfig();
-		vitesse = Speed.BETWEEN_SCRIPTS;		
 	}
 	
 	/*
@@ -138,12 +136,15 @@ public class RobotReal extends Robot
 
     /**
 	 * Méthode sleep utilisée par les scripts
+     * @throws FinMatchException 
 	 */
 	@Override	
-	public void sleep(long duree, ArrayList<Hook> hooks)
+	public void sleep(long duree, ArrayList<Hook> hooks) throws FinMatchException
 	{
 		Sleep.sleep(duree);
-		// TODO: check hook
+		if(hooks != null)
+			for(Hook hook: hooks)
+				hook.evaluate();
 	}
 
     @Override
@@ -191,7 +192,7 @@ public class RobotReal extends Robot
 		try {
 			actionneurs.useActuator(ActuatorOrder.LEVE_TAPIS_GAUCHE);
 			actionneurs.useActuator(ActuatorOrder.LEVE_TAPIS_DROIT);
-			sleep(SleepValues.SLEEP_LEVER_TAPIS.duree);
+			super.leverDeuxTapis();
 		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}
@@ -203,7 +204,7 @@ public class RobotReal extends Robot
 			actionneurs.useActuator(ActuatorOrder.BAISSE_TAPIS_DROIT);
 			actionneurs.useActuator(ActuatorOrder.BAISSE_TAPIS_DROIT);
 			tapisRougePose(2);
-			sleep(SleepValues.SLEEP_POSER_TAPIS.duree);
+			super.poserDeuxTapis();
 		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}
@@ -211,18 +212,9 @@ public class RobotReal extends Robot
 	
 	public void bougeBrasClap(Side cote, HauteurBrasClap hauteur) throws SerialConnexionException, FinMatchException
 	{
-		if(cote == Side.LEFT && hauteur == HauteurBrasClap.TOUT_EN_HAUT)
-			actionneurs.useActuator(ActuatorOrder.LEVE_CLAP_GAUCHE);
-		else if(cote == Side.LEFT && hauteur == HauteurBrasClap.FRAPPE_CLAP)
-			actionneurs.useActuator(ActuatorOrder.POSITION_TAPE_CLAP_GAUCHE);
-		else if(cote == Side.LEFT && hauteur == HauteurBrasClap.RENTRE)
-			actionneurs.useActuator(ActuatorOrder.BAISSE_CLAP_GAUCHE);
-		else if(cote == Side.RIGHT && hauteur == HauteurBrasClap.TOUT_EN_HAUT)
-			actionneurs.useActuator(ActuatorOrder.LEVE_CLAP_DROIT);
-		else if(cote == Side.RIGHT && hauteur == HauteurBrasClap.FRAPPE_CLAP)
-			actionneurs.useActuator(ActuatorOrder.POSITION_TAPE_CLAP_DROIT);
-		else if(cote == Side.RIGHT && hauteur == HauteurBrasClap.RENTRE)
-			actionneurs.useActuator(ActuatorOrder.BAISSE_CLAP_DROIT);
+		ActuatorOrder order = bougeBrasClapOrder(cote, hauteur);
+		actionneurs.useActuator(order);
+		super.bougeBrasClapOrder(cote, hauteur);
 	}
 
 }
