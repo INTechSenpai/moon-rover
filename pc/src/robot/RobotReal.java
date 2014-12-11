@@ -86,7 +86,7 @@ public class RobotReal extends Robot
 	@Override
     public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException, FinMatchException
 	{
-		deplacements.moveForward(distance, hooks, mur);
+		deplacements.moveLengthwise(distance, hooks, mur);
 	}	
 
 	/**
@@ -99,7 +99,7 @@ public class RobotReal extends Robot
 	public void set_vitesse(Speed vitesse) throws FinMatchException
 	{
         deplacements.setTranslationnalSpeed(vitesse.PWMTranslation);
-        deplacements.setRotationnalSpeed(vitesse.PWMTotation);
+        deplacements.setRotationnalSpeed(vitesse.PWMRotation);
 		log.debug("Modification de la vitesse: "+vitesse, this);
 	}
 	
@@ -156,7 +156,7 @@ public class RobotReal extends Robot
     @Override
     public void tourner(double angle, boolean mur) throws UnableToMoveException, FinMatchException
     {
-        deplacements.turn(angle, mur);
+        deplacements.turn(angle, null, mur);
     }
     
     @Override
