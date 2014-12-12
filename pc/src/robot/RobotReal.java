@@ -165,6 +165,14 @@ public class RobotReal extends Robot
         deplacements.followPath(chemin, hooks);
     }
     
+	@Override
+    public RobotChrono cloneIntoRobotChrono() throws FinMatchException
+    {
+    	RobotChrono rc = new RobotChrono(config, log, hookfactory);
+    	copy(rc);
+    	return rc;
+    }
+    
     // Cette copie est un peu plus lente que les autres car il y a un appel série
     // Néanmoins, on ne fait cette copie qu'une fois par arbre.
     @Override
