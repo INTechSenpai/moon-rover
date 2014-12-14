@@ -1,6 +1,6 @@
 package scripts;
 
-import pathfinding.ArcInterface;
+import pathfinding.Arc;
 import enums.ScriptNames;
 
 /**
@@ -10,7 +10,7 @@ import enums.ScriptNames;
  *
  */
 
-public class Decision implements ArcInterface {
+public class Decision implements Arc {
 
 	public ScriptNames script_name;
 	public int id_version;
