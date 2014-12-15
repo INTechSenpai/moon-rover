@@ -9,6 +9,7 @@ import hook.types.HookFactory;
 
 import java.util.ArrayList;
 
+import enums.ConfigInfo;
 import enums.PathfindingNodes;
 import enums.RobotColor;
 import exceptions.FinMatchException;
@@ -126,7 +127,7 @@ public abstract class Script implements Service
 	
 	public void updateConfig()
 	{
-		color = RobotColor.parse(config.get("couleur"));
+		color = RobotColor.parse(config.get(ConfigInfo.COULEUR));
 	}
 
 }
