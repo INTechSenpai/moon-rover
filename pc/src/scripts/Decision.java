@@ -13,24 +13,14 @@ import enums.ScriptNames;
 public class Decision implements Arc {
 
 	public ScriptNames script_name;
-	public int id_version;
-	public double note;
+	public int meta_version;
 	public boolean shoot_game_element;
 	
-	public Decision(ScriptNames s, int id_version, double note, boolean shoot_game_element)
+	public Decision(ScriptNames s, int meta_version, boolean shoot_game_element)
 	{
 		this.script_name = s;
-		this.id_version = id_version;
-		this.note = note;
+		this.meta_version = meta_version;
 		this.shoot_game_element = shoot_game_element;
-	}
-	
-	public void copy(Decision other)
-	{
-		other.script_name = script_name;
-		other.id_version = id_version;
-		other.note = note;
-		other.shoot_game_element = shoot_game_element;
 	}
 	
 }
