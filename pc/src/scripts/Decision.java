@@ -23,4 +23,9 @@ public class Decision implements Arc {
 		this.shoot_game_element = shoot_game_element;
 	}
 	
+	public String toString()
+	{
+		return script_name+", version "+meta_version+", shoot? "+shoot_game_element;
+	}
+	
 }
