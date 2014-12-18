@@ -194,34 +194,39 @@ public class RobotReal extends Robot
     	return System.currentTimeMillis() - Config.getDateDebutMatch();
     }
 	
-	public void leverDeuxTapis() throws FinMatchException
+	public void leverDeuxTapis(boolean needToSleep) throws FinMatchException
 	{
 		try {
 			actionneurs.useActuator(ActuatorOrder.LEVE_TAPIS_GAUCHE);
 			actionneurs.useActuator(ActuatorOrder.LEVE_TAPIS_DROIT);
-			super.leverDeuxTapis();
+			if(needToSleep)
+				leverDeuxTapisSleep();
 		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void poserDeuxTapis() throws FinMatchException
+	@Override
+	public void poserDeuxTapis(boolean needToSleep) throws FinMatchException
 	{
 		try {
 			actionneurs.useActuator(ActuatorOrder.BAISSE_TAPIS_DROIT);
 			actionneurs.useActuator(ActuatorOrder.BAISSE_TAPIS_DROIT);
 			tapisRougePose(2);
-			super.poserDeuxTapis();
+			if(needToSleep)
+				poserDeuxTapisSleep();
 		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void bougeBrasClap(Side cote, HauteurBrasClap hauteur) throws SerialConnexionException, FinMatchException
+	@Override
+	public void bougeBrasClap(Side cote, HauteurBrasClap hauteur, boolean needToSleep) throws SerialConnexionException, FinMatchException
 	{
 		ActuatorOrder order = bougeBrasClapOrder(cote, hauteur);
 		actionneurs.useActuator(order);
-		super.bougeBrasClapOrder(cote, hauteur);
+		if(needToSleep)
+			bougeBrasClapSleep(order);
 	}
 
 }
