@@ -7,7 +7,6 @@ import utils.Log;
 import utils.Config;
 import utils.Sleep;
 import hook.Hook;
-import hook.types.HookFactory;
 
 import java.util.ArrayList;
 
@@ -33,9 +32,9 @@ public class RobotReal extends Robot
 	private ActuatorCardWrapper actionneurs;
 
 	// Constructeur
-	public RobotReal(ActuatorCardWrapper actuator, Locomotion deplacements, Table table, Config config, Log log, HookFactory hookfactory)
+	public RobotReal(ActuatorCardWrapper actuator, Locomotion deplacements, Table table, Config config, Log log)
  	{
-		super(config, log, hookfactory);
+		super(config, log);
 		this.actionneurs = actuator;
 		this.deplacements = deplacements;
 //		this.table = table;
@@ -168,7 +167,7 @@ public class RobotReal extends Robot
 	@Override
     public RobotChrono cloneIntoRobotChrono() throws FinMatchException
     {
-    	RobotChrono rc = new RobotChrono(config, log, hookfactory);
+    	RobotChrono rc = new RobotChrono(config, log);
     	copy(rc);
     	return rc;
     }
