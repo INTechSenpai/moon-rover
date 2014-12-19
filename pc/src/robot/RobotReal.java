@@ -189,9 +189,9 @@ public class RobotReal extends Robot
 	}
 
 	@Override
-    public long getTempsDepuisDebutMatch()
+    public int getTempsDepuisDebutMatch()
     {
-    	return System.currentTimeMillis() - Config.getDateDebutMatch();
+    	return (int)(System.currentTimeMillis() - Config.getDateDebutMatch());
     }
 	
 	public void leverDeuxTapis(boolean needToSleep) throws FinMatchException
