@@ -17,8 +17,6 @@ public class ScriptTapis extends Script {
 	{
 		super(hookgenerator, config, log);
 		// Une seule métaversion (0), qui contient une seule version (0)
-		metaversions.add(new ArrayList<Integer>());
-		metaversions.get(0).add(0);
 	}
 
 	@Override

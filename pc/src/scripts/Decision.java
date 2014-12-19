@@ -1,6 +1,9 @@
 package scripts;
 
+import java.util.ArrayList;
+
 import pathfinding.Arc;
+import enums.PathfindingNodes;
 import enums.ScriptNames;
 
 /**
@@ -13,19 +16,21 @@ import enums.ScriptNames;
 public class Decision implements Arc {
 
 	public ScriptNames script_name;
-	public int meta_version;
+	public int version;
 	public boolean shoot_game_element;
+	public ArrayList<PathfindingNodes> chemin;
 	
-	public Decision(ScriptNames s, int meta_version, boolean shoot_game_element)
+	public Decision(ArrayList<PathfindingNodes> chemin, ScriptNames s, int meta_version, boolean shoot_game_element)
 	{
+		this.chemin = chemin;
 		this.script_name = s;
-		this.meta_version = meta_version;
+		this.version = meta_version;
 		this.shoot_game_element = shoot_game_element;
 	}
 	
 	public String toString()
 	{
-		return script_name+", version "+meta_version+", shoot? "+shoot_game_element;
+		return script_name+", version "+version+", shoot? "+shoot_game_element;
 	}
 	
 }

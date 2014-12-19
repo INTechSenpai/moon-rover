@@ -31,43 +31,11 @@ public abstract class Script implements Service
 	protected Log log;
 	protected RobotColor color;
 	
-
-	/*
-	 * versions.get(meta_id) donne la liste des versions associées aux meta_id
-	 */
-	protected ArrayList<ArrayList<Integer>> metaversions = new ArrayList<ArrayList<Integer>>();	
-	
 	/**
 	 * Renvoie le tableau des méta-verions d'un script
 	 * @return le tableau des méta-versions possibles
 	 */
 	public abstract ArrayList<Integer> meta_version(final GameState<?> state);
-
-	/**
-	 * Renvoie le tableau des versions associées à une métaversion
-	 * @param meta_version
-	 * @return
-	 */
-	public ArrayList<Integer> version_asso(int meta_version)
-	{
-	    return metaversions.get(meta_version);
-	}
-
-	public int closest_version(final GameState<?> state, int meta_version) throws FinMatchException
-	{
-		int out = 0;
-		float distance_min = Float.MAX_VALUE;
-		for(Integer v: metaversions.get(meta_version))
-		{
-			float new_distance = state.robot.getPosition().squaredDistance(point_entree(v).getCoordonnees());
-			if(new_distance < distance_min)
-			{
-				out = v;
-				distance_min = new_distance;
-			}
-		}
-		return out;
-	}
 
 	public Script(HookFactory hookgenerator, Config config, Log log)
 	{
