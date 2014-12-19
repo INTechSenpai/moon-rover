@@ -18,7 +18,6 @@ public class ScriptTapis extends Script {
 	public ScriptTapis(HookFactory hookgenerator, Config config, Log log)
 	{
 		super(hookgenerator, config, log);
-		// Une seule métaversion (0), qui contient une seule version (0)
 	}
 
 	@Override
