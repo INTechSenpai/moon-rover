@@ -81,7 +81,11 @@ public abstract class Script implements Service
 	 * @return la position du point d'entrée
 	 */
 	public abstract PathfindingNodes point_entree(int id);
-   
+
+	// Utilisé uniquement par robotchrono
+	public abstract PathfindingNodes point_sortie(int id);
+
+	
 	/**
 	 * Exécute ou calcule le script, avec RobotVrai ou RobotChrono
 	 * @throws SerialConnexionException 

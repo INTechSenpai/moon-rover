@@ -11,7 +11,6 @@ import enums.Tribool;
 import exceptions.FinMatchException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
-import hook.Hook;
 import hook.types.HookFactory;
 import strategie.GameState;
 import utils.Config;
@@ -51,7 +50,7 @@ public class ScriptClap extends Script {
 			throws UnableToMoveException, SerialConnexionException,
 			FinMatchException
 	{
-		ArrayList<Hook> hooks_entre_scripts = hookfactory.getHooksEntreScripts(state);
+//		ArrayList<Hook> hooks_entre_scripts = hookfactory.getHooksEntreScripts(state);
 		// côté droit
 		if(id_version == 0)
 		{
@@ -66,13 +65,13 @@ public class ScriptClap extends Script {
 			state.robot.bougeBrasClap(cote, HauteurBrasClap.FRAPPE_CLAP);
 			state.robot.clapTombe();
 			state.gridspace.setDone(GameElementNames.CLAP_3, Tribool.TRUE);
-			state.robot.avancer(300, hooks_entre_scripts);
+			state.robot.avancer(300);
 			state.robot.bougeBrasClap(cote, HauteurBrasClap.TOUT_EN_HAUT);
-			state.robot.avancer(300, hooks_entre_scripts);
+			state.robot.avancer(300);
 			state.robot.bougeBrasClap(cote, HauteurBrasClap.FRAPPE_CLAP);
 			state.robot.clapTombe();
 			state.gridspace.setDone(GameElementNames.CLAP_1, Tribool.TRUE);
-			state.robot.avancer(300, hooks_entre_scripts);
+			state.robot.avancer(300);
 		}
 		else // côté gauche
 		{
@@ -101,6 +100,11 @@ public class ScriptClap extends Script {
 		} catch (UnableToMoveException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public PathfindingNodes point_sortie(int id) {
+		return point_entree(id); // TODO
 	}
 
 }

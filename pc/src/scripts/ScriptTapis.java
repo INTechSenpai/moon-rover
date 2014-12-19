@@ -44,6 +44,7 @@ public class ScriptTapis extends Script {
 		state.robot.tourner(-Math.PI/2);
 		state.robot.avancer_dans_mur(-100); // TODO: vérifier distance
 		state.robot.poserDeuxTapis();
+		// TODO: set positionpathfinding
 	}
 
 	@Override
@@ -57,6 +58,11 @@ public class ScriptTapis extends Script {
 		} catch (UnableToMoveException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public PathfindingNodes point_sortie(int id) {
+		return point_entree(id); // TODO
 	}
 
 }
