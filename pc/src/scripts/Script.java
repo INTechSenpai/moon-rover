@@ -1,7 +1,7 @@
 package scripts;
 
+import smartMath.Vec2;
 import strategie.GameState;
-import robot.RobotReal;
 import utils.Log;
 import utils.Config;
 import container.Service;
@@ -13,6 +13,7 @@ import enums.ConfigInfo;
 import enums.PathfindingNodes;
 import enums.RobotColor;
 import exceptions.FinMatchException;
+import exceptions.ScriptHookException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
 import exceptions.strategie.ScriptException;
@@ -45,11 +46,10 @@ public abstract class Script implements Service
 		updateConfig();
 	}
 
-	public void agit(int id_version, GameState<RobotReal> state, boolean retenter_si_blocage) throws ScriptException, FinMatchException
+	public void agit(int id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
 	{
 		try
 		{
-		    state.robot.setInsiste(retenter_si_blocage);
 			execute(id_version, state);
 		}
 		catch (Exception e)
@@ -85,17 +85,20 @@ public abstract class Script implements Service
 	// Utilisé uniquement par robotchrono
 	public abstract PathfindingNodes point_sortie(int id);
 
+	public abstract void setPointSortie(int id, Vec2 position);
 	
 	/**
 	 * Exécute ou calcule le script, avec RobotVrai ou RobotChrono
 	 * @throws SerialConnexionException 
+	 * @throws ScriptHookException 
 	 */
-	public abstract void execute(int id_version, GameState<?>state) throws UnableToMoveException, SerialConnexionException, FinMatchException;
+	protected abstract void execute(int id_version, GameState<?>state) throws UnableToMoveException, SerialConnexionException, FinMatchException, ScriptHookException;
 
 	/**
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs, on se décale du mur, ...
+	 * @throws ScriptHookException 
 	 */
-	abstract protected void termine(GameState<?> state) throws SerialConnexionException, FinMatchException;
+	abstract protected void termine(GameState<?> state) throws SerialConnexionException, FinMatchException, ScriptHookException;
 	
 	public void updateConfig()
 	{

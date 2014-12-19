@@ -9,9 +9,11 @@ import enums.RobotColor;
 import enums.Side;
 import enums.Tribool;
 import exceptions.FinMatchException;
+import exceptions.ScriptHookException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
 import hook.types.HookFactory;
+import smartMath.Vec2;
 import strategie.GameState;
 import utils.Config;
 import utils.Log;
@@ -48,7 +50,7 @@ public class ScriptClap extends Script {
 	@Override
 	public void execute(int id_version, GameState<?> state)
 			throws UnableToMoveException, SerialConnexionException,
-			FinMatchException
+			FinMatchException, ScriptHookException
 	{
 //		ArrayList<Hook> hooks_entre_scripts = hookfactory.getHooksEntreScripts(state);
 		// côté droit
@@ -91,7 +93,7 @@ public class ScriptClap extends Script {
 
 	@Override
 	protected void termine(GameState<?> state) throws SerialConnexionException,
-			FinMatchException {
+			FinMatchException, ScriptHookException {
 		state.robot.bougeBrasClap(Side.LEFT, HauteurBrasClap.RENTRE);
 		state.robot.bougeBrasClap(Side.RIGHT, HauteurBrasClap.RENTRE);
 		try {
@@ -104,7 +106,24 @@ public class ScriptClap extends Script {
 
 	@Override
 	public PathfindingNodes point_sortie(int id) {
-		return point_entree(id); // TODO
+		if(id == 0)
+			return PathfindingNodes.SORTIE_CLAP_DROIT;
+		else
+			return PathfindingNodes.SORTIE_CLAP_GAUCHE;
+	}
+
+	@Override
+	public void setPointSortie(int id, Vec2 position) {
+		if(id == 0)
+		{
+			log.debug("Nouvelle position de "+PathfindingNodes.SORTIE_CLAP_DROIT+": "+position, this);
+			PathfindingNodes.SORTIE_CLAP_DROIT.setCoordonnees(position);
+		}
+		else
+		{
+			log.debug("Nouvelle position de "+PathfindingNodes.SORTIE_CLAP_GAUCHE+": "+position, this);
+			PathfindingNodes.SORTIE_CLAP_GAUCHE.setCoordonnees(position);
+		}
 	}
 
 }

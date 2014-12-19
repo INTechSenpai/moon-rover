@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import enums.PathfindingNodes;
 import exceptions.FinMatchException;
+import exceptions.ScriptHookException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
 import hook.types.HookFactory;
+import smartMath.Vec2;
 import strategie.GameState;
 import utils.Config;
 import utils.Log;
@@ -39,16 +41,15 @@ public class ScriptTapis extends Script {
 	}
 
 	@Override
-	public void execute(int id_version, GameState<?> state) throws UnableToMoveException, SerialConnexionException, FinMatchException
+	public void execute(int id_version, GameState<?> state) throws UnableToMoveException, SerialConnexionException, FinMatchException, ScriptHookException
 	{
 		state.robot.tourner(-Math.PI/2);
 		state.robot.avancer_dans_mur(-100); // TODO: vérifier distance
 		state.robot.poserDeuxTapis();
-		// TODO: set positionpathfinding
 	}
 
 	@Override
-	protected void termine(GameState<?> state) throws SerialConnexionException, FinMatchException
+	protected void termine(GameState<?> state) throws SerialConnexionException, FinMatchException, ScriptHookException
 	{
 		// on relève les tapis
 		state.robot.leverDeuxTapis();
@@ -62,7 +63,13 @@ public class ScriptTapis extends Script {
 
 	@Override
 	public PathfindingNodes point_sortie(int id) {
-		return point_entree(id); // TODO
+		return PathfindingNodes.SORTIE_TAPIS;
 	}
 
+	@Override
+	public void setPointSortie(int id, Vec2 position)
+	{
+		log.debug("Nouvelle position de "+PathfindingNodes.SORTIE_TAPIS+": "+position, this);
+		PathfindingNodes.SORTIE_TAPIS.setCoordonnees(position);
+	}
 }

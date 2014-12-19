@@ -16,6 +16,7 @@ import enums.PathfindingNodes;
 import enums.Side;
 import enums.Speed;
 import exceptions.FinMatchException;
+import exceptions.ScriptHookException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
 
@@ -81,9 +82,10 @@ public class RobotReal extends Robot
 	 * Avance d'une certaine distance donnée en mm (méthode bloquante), gestion des hooks
 	 * @throws UnableToMoveException 
 	 * @throws FinMatchException 
+	 * @throws ScriptHookException 
 	 */
 	@Override
-    public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException, FinMatchException
+    public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException, FinMatchException, ScriptHookException
 	{
 		deplacements.moveLengthwise(distance, hooks, mur);
 	}	
@@ -143,7 +145,12 @@ public class RobotReal extends Robot
 		Sleep.sleep(duree);
 		if(hooks != null)
 			for(Hook hook: hooks)
-				hook.evaluate();
+				try {
+					hook.evaluate();
+				} catch (ScriptHookException e) {
+					// Impossible d'avoir des scripts hook pendant un sleep
+					e.printStackTrace();
+				}
 	}
 
     @Override
@@ -153,13 +160,13 @@ public class RobotReal extends Robot
     }
 
     @Override
-    public void tourner(double angle, boolean mur) throws UnableToMoveException, FinMatchException
+    public void tourner(double angle, boolean mur) throws UnableToMoveException, FinMatchException, ScriptHookException
     {
         deplacements.turn(angle, null, mur);
     }
     
     @Override
-    public void suit_chemin(ArrayList<PathfindingNodes> chemin, ArrayList<Hook> hooks) throws UnableToMoveException, FinMatchException
+    public void suit_chemin(ArrayList<PathfindingNodes> chemin, ArrayList<Hook> hooks) throws UnableToMoveException, FinMatchException, ScriptHookException
     {
         deplacements.followPath(chemin, hooks);
     }
