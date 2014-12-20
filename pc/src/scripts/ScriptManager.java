@@ -17,25 +17,23 @@ import exceptions.UnknownScriptException;
 public class ScriptManager implements Service
 {
 	
-	private Log log;
-
 	private Script[] instancesScripts = new Script[ScriptNames.values().length];
 
-	public ScriptManager(HookFactory hookfactory, Config config, Log log)
+	public ScriptManager(HookFactory hookfactory, Config config, Log log) throws UnknownScriptException
 	{
-		this.log = log;
 		instancesScripts[ScriptNames.ScriptClap.ordinal()] = new ScriptClap(hookfactory, config, log);
 		instancesScripts[ScriptNames.ScriptTapis.ordinal()] = new ScriptTapis(hookfactory, config, log);
+		for(int i = 0; i < ScriptNames.values().length; i++)
+			if(instancesScripts[i] == null)
+			{
+				log.warning("Script non instancié: "+ScriptNames.values()[i], this);
+				throw new UnknownScriptException();
+			}
 	}
 	
-	public Script getScript(ScriptNames nom) throws UnknownScriptException
+	public Script getScript(ScriptNames nom)
 	{
 		Script script = instancesScripts[nom.ordinal()];
-		if(script == null)
-		{
-			log.warning("Script inconnu: "+nom, this);
-			throw new UnknownScriptException();
-		}
 		return script;
 	}
 	
