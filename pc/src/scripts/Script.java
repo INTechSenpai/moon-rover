@@ -48,6 +48,11 @@ public abstract class Script implements Service
 
 	public void agit(int id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
 	{
+		if(state.robot.getPosition().squaredDistance(point_entree(id_version).getCoordonnees()) > 400) // tolérance de 2cm
+		{
+			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+point_entree(id_version)+" et est en "+state.robot.getPosition(), this);
+			throw new ScriptException();
+		}
 		try
 		{
 			execute(id_version, state);
