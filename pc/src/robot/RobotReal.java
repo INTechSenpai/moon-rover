@@ -219,7 +219,8 @@ public class RobotReal extends Robot
 		try {
 			actionneurs.useActuator(ActuatorOrder.BAISSE_TAPIS_DROIT);
 			actionneurs.useActuator(ActuatorOrder.BAISSE_TAPIS_DROIT);
-			tapisRougePose(2);
+	    	tapisPoses = true;
+			pointsObtenus = pointsObtenus + 24;
 			if(needToSleep)
 				poserDeuxTapisSleep();
 		} catch (SerialConnexionException e) {
@@ -234,6 +235,12 @@ public class RobotReal extends Robot
 		actionneurs.useActuator(order);
 		if(needToSleep)
 			bougeBrasClapSleep(order);
+	}
+	
+	@Override
+	public void clapTombe()
+	{
+		pointsObtenus = pointsObtenus + 5;		
 	}
 
 }
