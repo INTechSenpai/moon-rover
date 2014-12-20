@@ -13,6 +13,12 @@ import strategie.GameState;
 import utils.Config;
 import utils.Log;
 
+/**
+ * Script des tapis.
+ * @author pf
+ *
+ */
+
 public class ScriptTapis extends Script {
 
 	public ScriptTapis(HookFactory hookgenerator, Config config, Log log)

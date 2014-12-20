@@ -18,6 +18,12 @@ import strategie.GameState;
 import utils.Config;
 import utils.Log;
 
+/**
+ * Script des claps.
+ * @author pf
+ *
+ */
+
 public class ScriptClap extends Script {
 
 	public ScriptClap(HookFactory hookgenerator, Config config, Log log)

@@ -9,6 +9,7 @@ import enums.ScriptNames;
 /**
  * Classe qui caractérise une décision.
  * C'est un script et ses paramètres.
+ * Un arc pour l'AStar stratégique.
  * @author pf
  *
  */
