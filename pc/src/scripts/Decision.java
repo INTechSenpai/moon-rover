@@ -16,10 +16,10 @@ import enums.ScriptNames;
 
 public class Decision implements Arc {
 
-	public ScriptNames script_name;
-	public int version;
-	public boolean shoot_game_element;
-	public ArrayList<PathfindingNodes> chemin;
+	public final ScriptNames script_name;
+	public final int version;
+	public final boolean shoot_game_element; // TODO: à virer?
+	public final ArrayList<PathfindingNodes> chemin;
 	
 	public Decision(ArrayList<PathfindingNodes> chemin, ScriptNames s, int meta_version, boolean shoot_game_element)
 	{

@@ -48,9 +48,10 @@ public abstract class Script implements Service
 
 	public void agit(int id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
 	{
-		if(state.robot.getPosition().squaredDistance(point_entree(id_version).getCoordonnees()) > 400) // tolérance de 2cm
+		PathfindingNodes pointEntree = point_entree(id_version);
+		if(pointEntree != null && state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > 400) // tolérance de 2cm TODO mettre en config
 		{
-			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+point_entree(id_version)+" et est en "+state.robot.getPosition(), this);
+			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+pointEntree+" et est en "+state.robot.getPosition(), this);
 			throw new ScriptException();
 		}
 		try
@@ -69,6 +70,7 @@ public abstract class Script implements Service
 				termine(state);
 			} catch (SerialConnexionException e) {
 				try {
+					state.robot.sleep(100); // on attends un petit peu...
 					termine(state);  // on réessaye encore une fois
 				} catch (SerialConnexionException e1) {
 					e1.printStackTrace();

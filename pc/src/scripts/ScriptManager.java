@@ -23,12 +23,14 @@ public class ScriptManager implements Service
 	{
 		instancesScripts[ScriptNames.ScriptClap.ordinal()] = new ScriptClap(hookfactory, config, log);
 		instancesScripts[ScriptNames.ScriptTapis.ordinal()] = new ScriptTapis(hookfactory, config, log);
+		instancesScripts[ScriptNames.SortieZoneDepart.ordinal()] = new SortieZoneDepart(hookfactory, config, log);
 		for(int i = 0; i < ScriptNames.values().length; i++)
 			if(instancesScripts[i] == null)
 			{
 				log.warning("Script non instancié: "+ScriptNames.values()[i], this);
 				throw new UnknownScriptException();
 			}
+		updateConfig();
 	}
 	
 	public Script getScript(ScriptNames nom)
@@ -38,7 +40,6 @@ public class ScriptManager implements Service
 	}
 	
 	public void updateConfig()
-	{
-	}
+	{}
 
 }
