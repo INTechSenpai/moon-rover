@@ -32,6 +32,8 @@ public abstract class Script implements Service
 	protected Log log;
 	protected RobotColor color;
 	
+	private int squared_tolerance_depart_script = 400;
+	
 	/**
 	 * Renvoie le tableau des méta-verions d'un script
 	 * @return le tableau des méta-versions possibles
@@ -49,7 +51,7 @@ public abstract class Script implements Service
 	public void agit(int id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
 	{
 		PathfindingNodes pointEntree = point_entree(id_version);
-		if(pointEntree != null && state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > 400) // tolérance de 2cm TODO mettre en config
+		if(pointEntree != null && state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
 		{
 			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+pointEntree+" et est en "+state.robot.getPosition(), this);
 			throw new ScriptException();
@@ -110,6 +112,7 @@ public abstract class Script implements Service
 	public void updateConfig()
 	{
 		color = RobotColor.parse(config.get(ConfigInfo.COULEUR));
+		squared_tolerance_depart_script = Integer.parseInt(config.get(ConfigInfo.TOLERANCE_DEPART_SCRIPT));
 	}
 
 }

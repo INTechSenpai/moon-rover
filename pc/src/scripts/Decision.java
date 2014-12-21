@@ -18,20 +18,18 @@ public class Decision implements Arc {
 
 	public final ScriptNames script_name;
 	public final int version;
-	public final boolean shoot_game_element; // TODO: à virer?
 	public final ArrayList<PathfindingNodes> chemin;
 	
-	public Decision(ArrayList<PathfindingNodes> chemin, ScriptNames s, int meta_version, boolean shoot_game_element)
+	public Decision(ArrayList<PathfindingNodes> chemin, ScriptNames s, int version)
 	{
 		this.chemin = chemin;
 		this.script_name = s;
-		this.version = meta_version;
-		this.shoot_game_element = shoot_game_element;
+		this.version = version;
 	}
 	
 	public String toString()
 	{
-		return script_name+", version "+version+", shoot? "+shoot_game_element;
+		return script_name+", version "+version;
 	}
 	
 }
