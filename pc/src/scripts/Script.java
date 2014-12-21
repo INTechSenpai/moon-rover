@@ -125,8 +125,9 @@ public abstract class Script implements Service
 	
 	public void updateConfig()
 	{
-		color = RobotColor.parse(config.get(ConfigInfo.COULEUR));
-		squared_tolerance_depart_script = Integer.parseInt(config.get(ConfigInfo.TOLERANCE_DEPART_SCRIPT));
+		color = config.getColor();
+		squared_tolerance_depart_script = config.getInt(ConfigInfo.TOLERANCE_DEPART_SCRIPT);
+		squared_tolerance_depart_script *= squared_tolerance_depart_script; // on en utilise le carré
 	}
 
 }
