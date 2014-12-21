@@ -8,7 +8,6 @@ import exceptions.ScriptHookException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
 import hook.types.HookFactory;
-import smartMath.Vec2;
 import strategie.GameState;
 import utils.Config;
 import utils.Log;
@@ -69,12 +68,5 @@ public class ScriptTapis extends Script {
 	@Override
 	public PathfindingNodes point_sortie(int id) {
 		return PathfindingNodes.SORTIE_TAPIS;
-	}
-
-	@Override
-	public void setPointSortie(int id, Vec2 position)
-	{
-		log.debug("Nouvelle position de "+PathfindingNodes.SORTIE_TAPIS+": "+position, this);
-		PathfindingNodes.SORTIE_TAPIS.setCoordonnees(position);
 	}
 }

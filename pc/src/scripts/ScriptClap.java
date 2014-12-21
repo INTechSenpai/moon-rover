@@ -13,7 +13,6 @@ import exceptions.ScriptHookException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
 import hook.types.HookFactory;
-import smartMath.Vec2;
 import strategie.GameState;
 import utils.Config;
 import utils.Log;
@@ -116,20 +115,6 @@ public class ScriptClap extends Script {
 			return PathfindingNodes.SORTIE_CLAP_DROIT;
 		else
 			return PathfindingNodes.SORTIE_CLAP_GAUCHE;
-	}
-
-	@Override
-	public void setPointSortie(int id, Vec2 position) {
-		if(id == 0)
-		{
-			log.debug("Nouvelle position de "+PathfindingNodes.SORTIE_CLAP_DROIT+": "+position, this);
-			PathfindingNodes.SORTIE_CLAP_DROIT.setCoordonnees(position);
-		}
-		else
-		{
-			log.debug("Nouvelle position de "+PathfindingNodes.SORTIE_CLAP_GAUCHE+": "+position, this);
-			PathfindingNodes.SORTIE_CLAP_GAUCHE.setCoordonnees(position);
-		}
 	}
 
 }

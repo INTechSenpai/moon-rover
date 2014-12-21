@@ -13,6 +13,7 @@ import enums.ConfigInfo;
 import enums.PathfindingNodes;
 import enums.RobotColor;
 import exceptions.FinMatchException;
+import exceptions.PointSortieException;
 import exceptions.ScriptHookException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
@@ -48,7 +49,7 @@ public abstract class Script implements Service
 		updateConfig();
 	}
 
-	public void agit(int id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
+	public final void agit(int id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
 	{
 		PathfindingNodes pointEntree = point_entree(id_version);
 		if(pointEntree != null && state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
@@ -91,10 +92,23 @@ public abstract class Script implements Service
 	 */
 	public abstract PathfindingNodes point_entree(int id);
 
-	// Utilisé uniquement par robotchrono
+	/**
+	 * Utilisé par robotchrono
+	 * @param id
+	 * @return
+	 */
 	public abstract PathfindingNodes point_sortie(int id);
 
-	public abstract void setPointSortie(int id, Vec2 position);
+	public final void checkPointSortie(int id, Vec2 position) throws PointSortieException
+	{
+		PathfindingNodes sortie = point_sortie(id);
+		if(!position.equals(sortie.getCoordonnees()))
+		{
+			log.critical("Position de "+sortie+" incorrecte! Sa bonne position est: "+position, this);
+			throw new PointSortieException();
+		}
+
+	}
 	
 	/**
 	 * Exécute ou calcule le script, avec RobotVrai ou RobotChrono

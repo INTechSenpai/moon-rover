@@ -8,7 +8,6 @@ import exceptions.ScriptHookException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
 import hook.types.HookFactory;
-import smartMath.Vec2;
 import strategie.GameState;
 import utils.Config;
 import utils.Log;
@@ -30,23 +29,19 @@ public class SortieZoneDepart extends Script {
 
 	@Override
 	public ArrayList<Integer> meta_version(GameState<?> state) {
-		return new ArrayList<Integer>();
+		ArrayList<Integer> out = new ArrayList<Integer>();
+		out.add(0);
+		return out;
 	}
 
 	@Override
 	public PathfindingNodes point_entree(int id) {
-		return null;
+		return PathfindingNodes.POINT_DEPART;
 	}
 
 	@Override
 	public PathfindingNodes point_sortie(int id) {
 		return PathfindingNodes.SORTIE_ZONE_DEPART;
-	}
-
-	@Override
-	public void setPointSortie(int id, Vec2 position)
-	{
-		PathfindingNodes.SORTIE_ZONE_DEPART.setCoordonnees(position);
 	}
 
 	@Override
