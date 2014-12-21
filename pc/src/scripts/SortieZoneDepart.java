@@ -49,6 +49,7 @@ public class SortieZoneDepart extends Script {
 			throws UnableToMoveException, SerialConnexionException,
 			FinMatchException, ScriptHookException
 	{
+		state.robot.tourner(Math.PI);
 		state.robot.avancer(500); // TODO vérifier distance
 	}
 
