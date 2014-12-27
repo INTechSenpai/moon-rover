@@ -39,7 +39,7 @@ public abstract class Script implements Service
 	 * Renvoie le tableau des méta-verions d'un script
 	 * @return le tableau des méta-versions possibles
 	 */
-	public abstract ArrayList<Integer> meta_version(final GameState<?> state);
+	public abstract ArrayList<Integer> getVersions(final GameState<?> state);
 
 	public Script(HookFactory hookgenerator, Config config, Log log)
 	{

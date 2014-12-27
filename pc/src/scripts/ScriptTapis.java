@@ -26,7 +26,7 @@ public class ScriptTapis extends Script {
 	}
 
 	@Override
-	public ArrayList<Integer> meta_version(GameState<?> state)
+	public ArrayList<Integer> getVersions(GameState<?> state)
 	{
 		// Si les tapis sont posés, pas de métaversion possible
 		ArrayList<Integer> out = new ArrayList<Integer>();

@@ -34,7 +34,7 @@ public class ScriptClap extends Script {
 	// id 0: droite
 	// id 1: gauche
 	@Override
-	public ArrayList<Integer> meta_version(GameState<?> state) {
+	public ArrayList<Integer> getVersions(GameState<?> state) {
 		ArrayList<Integer> out = new ArrayList<Integer>();
 		// on tente même si c'est peut-être fait par l'ennemi
 		if(state.gridspace.isDone(GameElementNames.CLAP_1) != Tribool.TRUE && state.gridspace.isDone(GameElementNames.CLAP_3) != Tribool.TRUE)

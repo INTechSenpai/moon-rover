@@ -87,6 +87,8 @@ public class RobotReal extends Robot
 	@Override
     public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException, FinMatchException, ScriptHookException
 	{
+		// Il est nécessaire d'ajouter le hookFinMatch avant chaque appel de deplacements qui prenne un peu de temps (avancer, tourner, ...)
+		hooks.add(hookFinMatch);
 		deplacements.moveLengthwise(distance, hooks, mur);
 	}	
 
@@ -162,12 +164,15 @@ public class RobotReal extends Robot
     @Override
     public void tourner(double angle, boolean mur) throws UnableToMoveException, FinMatchException, ScriptHookException
     {
-        deplacements.turn(angle, null, mur);
+    	ArrayList<Hook> hooks = new ArrayList<Hook>();
+		hooks.add(hookFinMatch);
+        deplacements.turn(angle, hooks, mur);
     }
     
     @Override
     public void suit_chemin(ArrayList<PathfindingNodes> chemin, ArrayList<Hook> hooks) throws UnableToMoveException, FinMatchException, ScriptHookException
     {
+		hooks.add(hookFinMatch);
         deplacements.followPath(chemin, hooks);
     }
     

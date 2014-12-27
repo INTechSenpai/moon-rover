@@ -24,6 +24,8 @@ public class ScriptManager implements Service
 		instancesScripts[ScriptNames.ScriptClap.ordinal()] = new ScriptClap(hookfactory, config, log);
 		instancesScripts[ScriptNames.ScriptTapis.ordinal()] = new ScriptTapis(hookfactory, config, log);
 		instancesScripts[ScriptNames.SortieZoneDepart.ordinal()] = new SortieZoneDepart(hookfactory, config, log);
+		instancesScripts[ScriptNames.ScriptAttente.ordinal()] = new ScriptAttente(hookfactory, config, log);
+
 		for(int i = 0; i < ScriptNames.values().length; i++)
 			if(instancesScripts[i] == null)
 			{

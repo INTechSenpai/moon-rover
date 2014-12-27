@@ -28,7 +28,7 @@ public class SortieZoneDepart extends Script {
 	}
 
 	@Override
-	public ArrayList<Integer> meta_version(GameState<?> state) {
+	public ArrayList<Integer> getVersions(GameState<?> state) {
 		ArrayList<Integer> out = new ArrayList<Integer>();
 		out.add(0);
 		return out;
