@@ -36,7 +36,7 @@ public class ScriptAttente extends Script
 		if(state.robot instanceof RobotChrono)
 		{
 			entree_sortie = ((RobotChrono)state.robot).getPositionPathfinding();
-			if(entree_sortie != null)
+			if(entree_sortie != null && state.canSleepUntilSomethingChange())
 				version.add(0);
 		}
 		return version;
@@ -59,7 +59,10 @@ public class ScriptAttente extends Script
 			throws UnableToMoveException, SerialConnexionException,
 			FinMatchException, ScriptHookException
 	{
-		state.robot.sleep(2000);
+		/**
+		 * On attend jusqu'à ce qu'un obstacle ait disparu.
+		 */
+		state.sleepUntilSomethingChange();
 	}
 
 	@Override
