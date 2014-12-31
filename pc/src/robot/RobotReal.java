@@ -1,20 +1,19 @@
 package robot;
 
 import robot.cardsWrappers.ActuatorCardWrapper;
-import smartMath.Vec2;
+import robot.cardsWrappers.enums.ActuatorOrder;
+import robot.cardsWrappers.enums.HauteurBrasClap;
 import table.Table;
 import utils.Log;
 import utils.Config;
 import utils.Sleep;
+import utils.Vec2;
 import hook.Hook;
 
 import java.util.ArrayList;
 
-import enums.ActuatorOrder;
-import enums.HauteurBrasClap;
-import enums.PathfindingNodes;
+import astar.arc.PathfindingNodes;
 import enums.Side;
-import enums.Speed;
 import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
 import exceptions.Locomotion.UnableToMoveException;

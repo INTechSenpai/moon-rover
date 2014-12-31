@@ -1,11 +1,9 @@
 package scripts;
 
 import hook.types.HookFactory;
-
 import utils.Log;
 import utils.Config;
 import container.Service;
-import enums.ScriptNames;
 import exceptions.UnknownScriptException;
 
  /**

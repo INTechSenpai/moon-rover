@@ -2,9 +2,8 @@ package scripts;
 
 import java.util.ArrayList;
 
-import enums.GameElementNames;
-import enums.HauteurBrasClap;
-import enums.PathfindingNodes;
+import astar.arc.PathfindingNodes;
+import obstacles.gameElement.GameElementNames;
 import enums.RobotColor;
 import enums.Side;
 import enums.Tribool;
@@ -13,6 +12,7 @@ import exceptions.ScriptHookException;
 import exceptions.Locomotion.UnableToMoveException;
 import exceptions.serial.SerialConnexionException;
 import hook.types.HookFactory;
+import robot.cardsWrappers.enums.HauteurBrasClap;
 import strategie.GameState;
 import utils.Config;
 import utils.Log;

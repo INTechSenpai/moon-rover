@@ -2,7 +2,7 @@ package scripts;
 
 import java.util.ArrayList;
 
-import enums.PathfindingNodes;
+import astar.arc.PathfindingNodes;
 import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
 import exceptions.Locomotion.UnableToMoveException;
