@@ -16,8 +16,8 @@ import astar.arc.PathfindingNodes;
 import enums.Side;
 import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
-import exceptions.Locomotion.UnableToMoveException;
-import exceptions.serial.SerialConnexionException;
+import exceptions.SerialConnexionException;
+import exceptions.UnableToMoveException;
 
 /**
  * Effectue le lien entre le code et la réalité (permet de parler aux actionneurs, d'interroger les capteurs, etc.)

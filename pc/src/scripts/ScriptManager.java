@@ -1,6 +1,6 @@
 package scripts;
 
-import hook.types.HookFactory;
+import hook.HookFactory;
 import utils.Log;
 import utils.Config;
 import container.Service;

@@ -7,17 +7,17 @@ import utils.Config;
 import utils.Vec2;
 import astar.arc.PathfindingNodes;
 import container.Service;
-import hook.types.HookFactory;
+import hook.HookFactory;
 
 import java.util.ArrayList;
 
 import enums.RobotColor;
 import exceptions.FinMatchException;
 import exceptions.PointSortieException;
+import exceptions.ScriptException;
 import exceptions.ScriptHookException;
-import exceptions.Locomotion.UnableToMoveException;
-import exceptions.serial.SerialConnexionException;
-import exceptions.strategie.ScriptException;
+import exceptions.SerialConnexionException;
+import exceptions.UnableToMoveException;
 /**
  * Classe abstraite dont héritent les différents scripts.
  * S'occupe de robotvrai et robotchrono de manière à ce que ce soit transparent pour les différents scripts

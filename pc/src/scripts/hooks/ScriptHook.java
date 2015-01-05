@@ -1,7 +1,7 @@
 package scripts.hooks;
 
 import exceptions.FinMatchException;
-import exceptions.strategie.ScriptException;
+import exceptions.ScriptException;
 import robot.RobotReal;
 import strategie.GameState;
 import utils.Log;
@@ -21,6 +21,13 @@ public abstract class ScriptHook {
 		this.log = log;
 	}
 	
+	/**
+	 * Attention! On ne sait a priori pas où on est, dans quelle orientation, etc.
+	 * Il faut donc vérifier qu'il y a bien la place de faire l'action, potentiellement se mettre en position, etc.
+	 * @param gamestate
+	 * @throws ScriptException
+	 * @throws FinMatchException
+	 */
 	protected abstract void execute(GameState<RobotReal> gamestate) throws ScriptException, FinMatchException;
 
 	protected abstract void termine(GameState<RobotReal> gamestate) throws ScriptException, FinMatchException;
