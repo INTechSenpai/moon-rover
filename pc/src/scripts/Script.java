@@ -24,14 +24,12 @@ import exceptions.UnableToMoveException;
  * @author pf, marsu
  */
 
-public abstract class Script implements Service 
+public abstract class Script implements Service
 {
-
-	// Ces services resteront toujours les mêmes, on les factorise avec un static
+	protected RobotColor color;
 	protected HookFactory hookfactory;
 	protected Config config;
 	protected Log log;
-	protected RobotColor color;
 	
 	private int squared_tolerance_depart_script = 400;
 	
@@ -48,6 +46,14 @@ public abstract class Script implements Service
 		this.log = log;
 		updateConfig();
 	}
+
+	/**
+	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs, on se décale du mur, ...
+	 * A priori sans avoir besoin du numéro de version; si besoin est, à rajouter en paramètre.
+	 * @throws ScriptHookException 
+	 */
+	protected abstract void termine(GameState<?> gamestate) throws ScriptException, FinMatchException, SerialConnexionException, ScriptHookException;
+	
 
 	public final void agit(int id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
 	{
@@ -112,17 +118,17 @@ public abstract class Script implements Service
 	
 	/**
 	 * Exécute ou calcule le script, avec RobotVrai ou RobotChrono
+	 * Attention! Pour les scripts de hook, on ne sait a priori pas où on est, dans quelle orientation, etc.
+	 * Il faut donc vérifier qu'il y a bien la place de faire l'action, potentiellement se mettre en position, etc.
+	 * @param gamestate
+	 * @throws ScriptException
+	 * @throws FinMatchException
+	 *
 	 * @throws SerialConnexionException 
 	 * @throws ScriptHookException 
 	 */
 	protected abstract void execute(int id_version, GameState<?>state) throws UnableToMoveException, SerialConnexionException, FinMatchException, ScriptHookException;
 
-	/**
-	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs, on se décale du mur, ...
-	 * @throws ScriptHookException 
-	 */
-	abstract protected void termine(GameState<?> state) throws SerialConnexionException, FinMatchException, ScriptHookException;
-	
 	public void updateConfig()
 	{
 		color = config.getColor();

@@ -1,4 +1,4 @@
-package scripts;
+package scripts.anticipables;
 
 import java.util.ArrayList;
 
@@ -13,6 +13,7 @@ import exceptions.SerialConnexionException;
 import exceptions.UnableToMoveException;
 import hook.HookFactory;
 import robot.cardsWrappers.enums.HauteurBrasClap;
+import scripts.Script;
 import strategie.GameState;
 import utils.Config;
 import utils.Log;

@@ -7,7 +7,7 @@ package scripts;
  *
  */
 
-public enum ScriptNames {
+public enum ScriptAnticipableNames {
 	SortieZoneDepart(false), // false = pas pris en compte dans la stratégie
 	ScriptClap(true),
 	ScriptTapis(true),
@@ -16,7 +16,7 @@ public enum ScriptNames {
 	private boolean canIDoIt; // ce booléan dépend du robot!
 	// si on a deux robots, ils ne pourront pas faire la même chose...
 	
-	ScriptNames(boolean canIDoIt)
+	ScriptAnticipableNames(boolean canIDoIt)
 	{
 		this.canIDoIt = canIDoIt;
 	}
