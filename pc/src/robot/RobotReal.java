@@ -235,6 +235,13 @@ public class RobotReal extends Robot
 	@Override
 	public void bougeBrasClap(Side cote, HauteurBrasClap hauteur, boolean needToSleep) throws SerialConnexionException, FinMatchException
 	{
+		/**
+		 * Symétrie:
+		 * une couleur lève le bras gauche,
+		 * une autre le bras droit.
+		 */
+		if(symetrie)
+			cote = cote.getSymmetric();
 		ActuatorOrder order = bougeBrasClapOrder(cote, hauteur);
 		actionneurs.useActuator(order);
 		if(needToSleep)

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import astar.arc.PathfindingNodes;
 import obstacles.gameElement.GameElementNames;
-import enums.RobotColor;
 import enums.Side;
 import enums.Tribool;
 import exceptions.FinMatchException;
@@ -62,35 +61,24 @@ public class ScriptClap extends Script {
 		// côté droit
 		if(id_version == 0)
 		{
-			Side cote;
-			if(color == RobotColor.GREEN)
-				cote = Side.LEFT;
-			else
-				cote = Side.RIGHT;
 			state.robot.tourner(Math.PI);
 			// TODO: probablement pas possible s'il y a des plots dans ce coin
 			state.robot.avancer_dans_mur(-100);
-			state.robot.bougeBrasClap(cote, HauteurBrasClap.FRAPPE_CLAP);
+			state.robot.bougeBrasClap(Side.LEFT, HauteurBrasClap.FRAPPE_CLAP);
 			state.robot.clapTombe();
 			state.gridspace.setDone(GameElementNames.CLAP_3, Tribool.TRUE);
 			state.robot.avancer(300);
-			state.robot.bougeBrasClap(cote, HauteurBrasClap.TOUT_EN_HAUT);
+			state.robot.bougeBrasClap(Side.LEFT, HauteurBrasClap.TOUT_EN_HAUT);
 			state.robot.avancer(300);
-			state.robot.bougeBrasClap(cote, HauteurBrasClap.FRAPPE_CLAP);
+			state.robot.bougeBrasClap(Side.LEFT, HauteurBrasClap.FRAPPE_CLAP);
 			state.robot.clapTombe();
 			state.gridspace.setDone(GameElementNames.CLAP_1, Tribool.TRUE);
 			state.robot.avancer(300);
 		}
 		else // côté gauche
 		{
-			Side cote;
-			if(color == RobotColor.GREEN)
-				cote = Side.RIGHT;
-			else
-				cote = Side.LEFT;
-			
 			state.robot.tourner(0);
-			state.robot.bougeBrasClap(cote, HauteurBrasClap.FRAPPE_CLAP);
+			state.robot.bougeBrasClap(Side.RIGHT, HauteurBrasClap.FRAPPE_CLAP);
 			state.robot.clapTombe();
 			state.gridspace.setDone(GameElementNames.CLAP_2, Tribool.TRUE);
 			state.robot.avancer(300);
