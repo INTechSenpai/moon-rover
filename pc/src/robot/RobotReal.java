@@ -144,14 +144,13 @@ public class RobotReal extends Robot
 	public void sleep(long duree, ArrayList<Hook> hooks) throws FinMatchException
 	{
 		Sleep.sleep(duree);
-		if(hooks != null)
-			for(Hook hook: hooks)
-				try {
-					hook.evaluate();
-				} catch (ScriptHookException e) {
-					// Impossible d'avoir des scripts hook pendant un sleep
-					e.printStackTrace();
-				}
+		for(Hook hook: hooks)
+			try {
+				hook.evaluate();
+			} catch (ScriptHookException e) {
+				// Impossible d'avoir des scripts hook pendant un sleep
+				e.printStackTrace();
+			}
 	}
 
     @Override
