@@ -53,22 +53,12 @@ public class RobotReal extends Robot
 	
 	public void desactiver_asservissement_rotation() throws FinMatchException
 	{
-		try {
-			deplacements.getLocomotionCardWrapper().disableRotationnalFeedbackLoop();
-		} catch (SerialConnexionException e) {
-			// On peut pas faire grand chose...
-			e.printStackTrace();
-		}
+		deplacements.disableRotationnalFeedbackLoop();
 	}
 
 	public void activer_asservissement_rotation() throws FinMatchException
 	{
-		try {
-			deplacements.getLocomotionCardWrapper().enableRotationnalFeedbackLoop();
-		} catch (SerialConnexionException e) {
-			// On peut pas faire grand chose...
-			e.printStackTrace();
-		}
+		deplacements.enableRotationnalFeedbackLoop();
 	}
 
 	public void recaler() throws FinMatchException
@@ -160,18 +150,19 @@ public class RobotReal extends Robot
     }
 
     @Override
-    public void tourner(double angle, boolean mur) throws UnableToMoveException, FinMatchException, ScriptHookException
+    public void tourner(double angle) throws UnableToMoveException, FinMatchException, ScriptHookException
     {
     	ArrayList<Hook> hooks = new ArrayList<Hook>();
 		hooks.add(hookFinMatch);
-        deplacements.turn(angle, hooks, mur);
+        deplacements.turn(angle, hooks);
     }
     
     @Override
     public void suit_chemin(ArrayList<PathfindingNodes> chemin, ArrayList<Hook> hooks) throws UnableToMoveException, FinMatchException, ScriptHookException
     {
 		hooks.add(hookFinMatch);
-        deplacements.followPath(chemin, hooks);
+		// DEPENDS ON RULES
+        deplacements.followPath(chemin, hooks, DirectionStrategy.FORCE_FORWARD_MOTION);
     }
     
 	@Override
