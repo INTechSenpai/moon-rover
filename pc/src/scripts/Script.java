@@ -58,9 +58,9 @@ public abstract class Script implements Service
 	public final void agit(int id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
 	{
 		PathfindingNodes pointEntree = point_entree(id_version);
-		if(pointEntree != null && state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
+		if(state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
 		{
-			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+pointEntree+" et est en "+state.robot.getPosition(), this);
+			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+pointEntree+" "+pointEntree.getCoordonnees()+" et est en "+state.robot.getPosition(), this);
 			throw new ScriptException();
 		}
 		try
