@@ -238,4 +238,8 @@ public class RobotReal extends Robot
 		pointsObtenus = pointsObtenus + 5;		
 	}
 
+	public boolean isEnemyHere() {
+		return deplacements.isEnemyHere();
+	}
+
 }
