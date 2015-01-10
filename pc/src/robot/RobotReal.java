@@ -90,8 +90,8 @@ public class RobotReal extends Robot
 	@Override
 	public void set_vitesse(Speed vitesse) throws FinMatchException
 	{
-        deplacements.setTranslationnalSpeed(vitesse.PWMTranslation);
-        deplacements.setRotationnalSpeed(vitesse.PWMRotation);
+        deplacements.setTranslationnalSpeed(vitesse);
+        deplacements.setRotationnalSpeed(vitesse);
 		log.debug("Modification de la vitesse: "+vitesse, this);
 	}
 	
@@ -182,12 +182,6 @@ public class RobotReal extends Robot
         getPosition().copy(rc.position);
         rc.orientation = getOrientation();
     }
-
-	@Override
-	public void setInsiste(boolean insiste) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
     public int getTempsDepuisDebutMatch()
