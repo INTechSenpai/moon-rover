@@ -8,6 +8,7 @@ import exceptions.ScriptHookException;
 import exceptions.SerialConnexionException;
 import exceptions.UnableToMoveException;
 import hook.HookFactory;
+import robot.RobotChrono;
 import scripts.Script;
 import strategie.GameState;
 import utils.Config;
@@ -29,7 +30,7 @@ public class SortieZoneDepart extends Script {
 	}
 
 	@Override
-	public ArrayList<Integer> getVersions(GameState<?> state) {
+	public ArrayList<Integer> getVersions(GameState<RobotChrono> state) {
 		ArrayList<Integer> out = new ArrayList<Integer>();
 		out.add(0);
 		return out;

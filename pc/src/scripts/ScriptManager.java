@@ -5,6 +5,7 @@ import scripts.anticipables.ScriptAttente;
 import scripts.anticipables.ScriptClap;
 import scripts.anticipables.ScriptTapis;
 import scripts.anticipables.SortieZoneDepart;
+import scripts.hooks.ScriptFunnyAction;
 import utils.Log;
 import utils.Config;
 import container.Service;
@@ -15,21 +16,21 @@ import exceptions.UnknownScriptException;
   * @author pf, marsu
   */
 
-// DEPENDS_ON_RULES
 public class ScriptManager implements Service
 {
 	
 	private Script[] instancesScriptsAnticipables = new Script[ScriptAnticipableNames.values().length];
 	private Script[] instancesScriptsHook = new Script[ScriptHookNames.values().length];
-
+	
 	public ScriptManager(HookFactory hookfactory, Config config, Log log) throws UnknownScriptException
 	{
+		// DEPENDS_ON_RULES
 		instancesScriptsAnticipables[ScriptAnticipableNames.ScriptClap.ordinal()] = new ScriptClap(hookfactory, config, log);
 		instancesScriptsAnticipables[ScriptAnticipableNames.ScriptTapis.ordinal()] = new ScriptTapis(hookfactory, config, log);
 		instancesScriptsAnticipables[ScriptAnticipableNames.SortieZoneDepart.ordinal()] = new SortieZoneDepart(hookfactory, config, log);
 		instancesScriptsAnticipables[ScriptAnticipableNames.ScriptAttente.ordinal()] = new ScriptAttente(hookfactory, config, log);
 
-//		instancesScriptsHook[ScriptHookNames.EXEMPLE.ordinal()] = new ...
+		instancesScriptsHook[ScriptHookNames.FUNNY_ACTION.ordinal()] = new ScriptFunnyAction(hookfactory, config, log);
 		
 		for(int i = 0; i < ScriptAnticipableNames.values().length; i++)
 			if(instancesScriptsAnticipables[i] == null)
@@ -46,7 +47,7 @@ public class ScriptManager implements Service
 
 		updateConfig();
 	}
-	
+
 	public Script getScript(ScriptAnticipableNames nom)
 	{
 		Script script = instancesScriptsAnticipables[nom.ordinal()];

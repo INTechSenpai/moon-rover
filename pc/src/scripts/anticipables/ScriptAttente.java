@@ -24,35 +24,30 @@ import utils.Log;
 public class ScriptAttente extends Script
 {
 
-	private PathfindingNodes entree_sortie = null;
-	
 	public ScriptAttente(HookFactory hookgenerator, Config config, Log log)
 	{
 		super(hookgenerator, config, log);
 	}
 
 	@Override
-	public ArrayList<Integer> getVersions(GameState<?> state) {
+	public ArrayList<Integer> getVersions(GameState<RobotChrono> state) {
 		ArrayList<Integer> version = new ArrayList<Integer>();
-		if(state.robot instanceof RobotChrono)
-		{
-			entree_sortie = ((RobotChrono)state.robot).getPositionPathfinding();
-			if(entree_sortie != null && state.canSleepUntilSomethingChange())
-				version.add(0);
-		}
+		PathfindingNodes entree_sortie = ((RobotChrono)state.robot).getPositionPathfinding();
+		if(entree_sortie != null && state.canSleepUntilSomethingChange())
+			version.add(entree_sortie.ordinal());
 		return version;
 	}
 
 	@Override
 	public PathfindingNodes point_entree(int id) {
 		// ce qui signifie: on ne bouge pas
-		return entree_sortie;
+		return PathfindingNodes.values()[id];
 	}
 
 	@Override
 	public PathfindingNodes point_sortie(int id) {
 		// ce qui signifie: on ne bouge pas
-		return entree_sortie;
+		return PathfindingNodes.values()[id];
 	}
 
 	@Override

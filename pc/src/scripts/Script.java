@@ -1,5 +1,7 @@
 package scripts;
 
+import robot.RobotChrono;
+import robot.RobotReal;
 import strategie.GameState;
 import utils.ConfigInfo;
 import utils.Log;
@@ -31,13 +33,13 @@ public abstract class Script implements Service
 	protected Config config;
 	protected Log log;
 	
-	private int squared_tolerance_depart_script = 400;
+	private int squared_tolerance_depart_script = 400; // 2cm
 	
 	/**
 	 * Renvoie le tableau des méta-verions d'un script
 	 * @return le tableau des méta-versions possibles
 	 */
-	public abstract ArrayList<Integer> getVersions(final GameState<?> state);
+	public abstract ArrayList<Integer> getVersions(final GameState<RobotChrono> state);
 
 	public Script(HookFactory hookgenerator, Config config, Log log)
 	{
@@ -57,8 +59,12 @@ public abstract class Script implements Service
 
 	public final void agit(int id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
 	{
+		if(state.robot instanceof RobotReal)
+			log.debug("Agit version "+id_version, this);
 		PathfindingNodes pointEntree = point_entree(id_version);
-		if(state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
+		
+		// Un point d'entrée peut être nul, par exemple
+		if(pointEntree != null && state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
 		{
 			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+pointEntree+" "+pointEntree.getCoordonnees()+" et est en "+state.robot.getPosition(), this);
 			throw new ScriptException();
