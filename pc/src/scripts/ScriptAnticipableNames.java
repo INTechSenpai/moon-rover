@@ -1,8 +1,7 @@
 package scripts;
 
 /**
- * Enumération des noms des scripts
- * 
+ * Enumération des noms des scripts pris en compte dans la stratégie
  * @author pf
  *
  */
