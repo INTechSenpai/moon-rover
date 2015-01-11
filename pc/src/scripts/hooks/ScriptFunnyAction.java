@@ -35,7 +35,10 @@ public class ScriptFunnyAction extends Script {
 	@Override
 	protected void termine(GameState<?> gamestate) throws ScriptException,
 			FinMatchException, SerialConnexionException, ScriptHookException {
-		// DEPENDS_ON_RULES
+		// Fin du match
+		gamestate.robot.stopper();
+		gamestate.robot.desactiver_asservissement_rotation();
+		gamestate.robot.desactiver_asservissement_translation();
 	}
 
 	@Override

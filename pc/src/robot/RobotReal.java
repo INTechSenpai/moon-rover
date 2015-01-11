@@ -56,6 +56,11 @@ public class RobotReal extends Robot
 		deplacements.disableRotationnalFeedbackLoop();
 	}
 
+	public void desactiver_asservissement_translation() throws FinMatchException
+	{
+		deplacements.disableTranslationalFeedbackLoop();
+	}
+
 	public void activer_asservissement_rotation() throws FinMatchException
 	{
 		deplacements.enableRotationnalFeedbackLoop();
