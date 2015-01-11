@@ -10,7 +10,8 @@ public enum ScriptAnticipableNames {
 	SortieZoneDepart(false), // false = pas pris en compte dans la stratégie
 	ScriptClap(true),
 	ScriptTapis(true),
-	ScriptAttente(true);
+	ScriptAttente(true),
+	ScriptCherchePlot(false);
 	
 	private boolean canIDoIt; // ce booléan dépend du robot!
 	// si on a deux robots, ils ne pourront pas faire la même chose...

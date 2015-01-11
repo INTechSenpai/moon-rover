@@ -2,10 +2,12 @@ package scripts;
 
 import hook.HookFactory;
 import scripts.anticipables.ScriptAttente;
+import scripts.anticipables.ScriptCherchePlot;
 import scripts.anticipables.ScriptClap;
 import scripts.anticipables.ScriptTapis;
 import scripts.anticipables.SortieZoneDepart;
 import scripts.hooks.ScriptFunnyAction;
+import scripts.hooks.ScriptPrendPlot;
 import utils.Log;
 import utils.Config;
 import container.Service;
@@ -29,8 +31,10 @@ public class ScriptManager implements Service
 		instancesScriptsAnticipables[ScriptAnticipableNames.ScriptTapis.ordinal()] = new ScriptTapis(hookfactory, config, log);
 		instancesScriptsAnticipables[ScriptAnticipableNames.SortieZoneDepart.ordinal()] = new SortieZoneDepart(hookfactory, config, log);
 		instancesScriptsAnticipables[ScriptAnticipableNames.ScriptAttente.ordinal()] = new ScriptAttente(hookfactory, config, log);
+		instancesScriptsAnticipables[ScriptAnticipableNames.ScriptCherchePlot.ordinal()] = new ScriptCherchePlot(hookfactory, config, log);
 
 		instancesScriptsHook[ScriptHookNames.FUNNY_ACTION.ordinal()] = new ScriptFunnyAction(hookfactory, config, log);
+		instancesScriptsHook[ScriptHookNames.SCRIPT_PREND_PLOT.ordinal()] = new ScriptPrendPlot(hookfactory, config, log);
 		
 		for(int i = 0; i < ScriptAnticipableNames.values().length; i++)
 			if(instancesScriptsAnticipables[i] == null)
