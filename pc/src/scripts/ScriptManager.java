@@ -54,12 +54,22 @@ public class ScriptManager implements Service
 		updateConfig();
 	}
 
+	/**
+	 * Récupère un script anticipable
+	 * @param nom
+	 * @return
+	 */
 	public Script getScript(ScriptAnticipableNames nom)
 	{
 		Script script = instancesScriptsAnticipables[nom.ordinal()];
 		return script;
 	}
 
+	/**
+	 * Récupère un script de hook
+	 * @param nom
+	 * @return
+	 */
 	public Script getScript(ScriptHookNames nom)
 	{
 		Script script = instancesScriptsHook[nom.ordinal()];
