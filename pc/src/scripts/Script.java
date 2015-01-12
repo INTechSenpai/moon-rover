@@ -13,7 +13,6 @@ import hook.HookFactory;
 
 import java.util.ArrayList;
 
-import enums.RobotColor;
 import exceptions.FinMatchException;
 import exceptions.PointSortieException;
 import exceptions.ScriptException;
@@ -28,7 +27,7 @@ import exceptions.UnableToMoveException;
 
 public abstract class Script implements Service
 {
-	protected RobotColor color;
+	protected boolean symmetry;
 	protected HookFactory hookfactory;
 	protected Config config;
 	protected Log log;
@@ -56,7 +55,15 @@ public abstract class Script implements Service
 	 */
 	protected abstract void termine(GameState<?> gamestate) throws ScriptException, FinMatchException, SerialConnexionException, ScriptHookException;
 	
-
+	/**
+	 * Surcouche d'exécute, avec une gestion d'erreur.
+	 * Peut être appelé avec un RobotReal ou un RobotChrono
+	 * @param id_version
+	 * @param state
+	 * @throws ScriptException
+	 * @throws FinMatchException
+	 * @throws ScriptHookException
+	 */
 	public final void agit(int id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
 	{
 		if(state.robot instanceof RobotReal)
@@ -111,6 +118,12 @@ public abstract class Script implements Service
 	 */
 	public abstract PathfindingNodes point_sortie(int id);
 
+	/**
+	 * Vérifie la position de sortie en simulation.
+	 * @param id
+	 * @param position
+	 * @throws PointSortieException
+	 */
 	public final void checkPointSortie(int id, Vec2 position) throws PointSortieException
 	{
 		PathfindingNodes sortie = point_sortie(id);
@@ -137,7 +150,7 @@ public abstract class Script implements Service
 
 	public void updateConfig()
 	{
-		color = config.getColor();
+		symmetry = config.getSymmetry();
 		squared_tolerance_depart_script = config.getInt(ConfigInfo.TOLERANCE_DEPART_SCRIPT);
 		squared_tolerance_depart_script *= squared_tolerance_depart_script; // on en utilise le carré
 	}
