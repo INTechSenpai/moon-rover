@@ -6,6 +6,7 @@ import scripts.anticipables.ScriptCherchePlot;
 import scripts.anticipables.ScriptClap;
 import scripts.anticipables.ScriptTapis;
 import scripts.anticipables.SortieZoneDepart;
+import scripts.hooks.ScriptDegommePile;
 import scripts.hooks.ScriptFunnyAction;
 import scripts.hooks.ScriptPrendPlot;
 import utils.Log;
@@ -34,7 +35,8 @@ public class ScriptManager implements Service
 		instancesScriptsAnticipables[ScriptAnticipableNames.CHERCHE_PLOT.ordinal()] = new ScriptCherchePlot(hookfactory, config, log);
 
 		instancesScriptsHook[ScriptHookNames.FUNNY_ACTION.ordinal()] = new ScriptFunnyAction(hookfactory, config, log);
-		instancesScriptsHook[ScriptHookNames.SCRIPT_PREND_PLOT.ordinal()] = new ScriptPrendPlot(hookfactory, config, log);
+		instancesScriptsHook[ScriptHookNames.PREND_PLOT.ordinal()] = new ScriptPrendPlot(hookfactory, config, log);
+		instancesScriptsHook[ScriptHookNames.DEGOMME_PILE.ordinal()] = new ScriptDegommePile(hookfactory, config, log);
 		
 		for(int i = 0; i < ScriptAnticipableNames.values().length; i++)
 			if(instancesScriptsAnticipables[i] == null)
