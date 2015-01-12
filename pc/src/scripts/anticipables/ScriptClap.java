@@ -32,16 +32,20 @@ public class ScriptClap extends Script {
 	}
 
 	// Deux métaversions, contenant chacune une version.
-	// id 0: droite
-	// id 1: gauche
+	// id 0: droite, les deux clap
+	// id 1: droite, un seul clap (le 2e, celui de gauche)
+	// id 2: gauche
 	@Override
 	public ArrayList<Integer> getVersions(GameState<RobotChrono> state) {
 		ArrayList<Integer> out = new ArrayList<Integer>();
 		// on tente même si c'est peut-être fait par l'ennemi
 		if(state.gridspace.isDone(GameElementNames.CLAP_1) != Tribool.TRUE && state.gridspace.isDone(GameElementNames.CLAP_3) != Tribool.TRUE)
 			out.add(0);
-		if(state.gridspace.isDone(GameElementNames.CLAP_2) != Tribool.TRUE)
+		// on autorise à choisir la version 1 même si la version 0 est possible
+		if(state.gridspace.isDone(GameElementNames.CLAP_1) != Tribool.TRUE)
 			out.add(1);
+		if(state.gridspace.isDone(GameElementNames.CLAP_2) != Tribool.TRUE)
+			out.add(2);
 		return out;
 	}
 
@@ -49,6 +53,8 @@ public class ScriptClap extends Script {
 	public PathfindingNodes point_entree(int id) {
 		if(id == 0)
 			return PathfindingNodes.CLAP_DROIT;
+		else if(id == 1)
+			return PathfindingNodes.CLAP_DROIT_SECOND;
 		else
 			return PathfindingNodes.CLAP_GAUCHE;
 	}
@@ -76,7 +82,17 @@ public class ScriptClap extends Script {
 			state.gridspace.setDone(GameElementNames.CLAP_1, Tribool.TRUE);
 			state.robot.avancer(300);
 		}
-		else // côté gauche
+		else if(id_version == 1)
+		{
+			state.robot.tourner(Math.PI);
+			state.robot.bougeBrasClap(Side.LEFT, HauteurBrasClap.TOUT_EN_HAUT);
+			state.robot.avancer(300);
+			state.robot.bougeBrasClap(Side.LEFT, HauteurBrasClap.FRAPPE_CLAP);
+			state.robot.clapTombe();
+			state.gridspace.setDone(GameElementNames.CLAP_1, Tribool.TRUE);
+			state.robot.avancer(300);
+		}
+		else if(id_version == 2)// côté gauche
 		{
 			state.robot.tourner(0);
 			state.robot.bougeBrasClap(Side.RIGHT, HauteurBrasClap.FRAPPE_CLAP);

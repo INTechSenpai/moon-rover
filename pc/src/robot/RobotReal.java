@@ -253,4 +253,9 @@ public class RobotReal extends Robot
 		actionneurs.close();
 	}
 
+	public void initActuatorLocomotion()
+	{
+		// TODO: replier les bras, etc
+	}
+
 }
