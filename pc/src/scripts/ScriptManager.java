@@ -27,11 +27,11 @@ public class ScriptManager implements Service
 	public ScriptManager(HookFactory hookfactory, Config config, Log log) throws UnknownScriptException
 	{
 		// DEPENDS_ON_RULES
-		instancesScriptsAnticipables[ScriptAnticipableNames.ScriptClap.ordinal()] = new ScriptClap(hookfactory, config, log);
-		instancesScriptsAnticipables[ScriptAnticipableNames.ScriptTapis.ordinal()] = new ScriptTapis(hookfactory, config, log);
-		instancesScriptsAnticipables[ScriptAnticipableNames.SortieZoneDepart.ordinal()] = new SortieZoneDepart(hookfactory, config, log);
-		instancesScriptsAnticipables[ScriptAnticipableNames.ScriptAttente.ordinal()] = new ScriptAttente(hookfactory, config, log);
-		instancesScriptsAnticipables[ScriptAnticipableNames.ScriptCherchePlot.ordinal()] = new ScriptCherchePlot(hookfactory, config, log);
+		instancesScriptsAnticipables[ScriptAnticipableNames.CLAP.ordinal()] = new ScriptClap(hookfactory, config, log);
+		instancesScriptsAnticipables[ScriptAnticipableNames.TAPIS.ordinal()] = new ScriptTapis(hookfactory, config, log);
+		instancesScriptsAnticipables[ScriptAnticipableNames.SORTIE_ZONE_DEPART.ordinal()] = new SortieZoneDepart(hookfactory, config, log);
+		instancesScriptsAnticipables[ScriptAnticipableNames.ATTENTE.ordinal()] = new ScriptAttente(hookfactory, config, log);
+		instancesScriptsAnticipables[ScriptAnticipableNames.CHERCHE_PLOT.ordinal()] = new ScriptCherchePlot(hookfactory, config, log);
 
 		instancesScriptsHook[ScriptHookNames.FUNNY_ACTION.ordinal()] = new ScriptFunnyAction(hookfactory, config, log);
 		instancesScriptsHook[ScriptHookNames.SCRIPT_PREND_PLOT.ordinal()] = new ScriptPrendPlot(hookfactory, config, log);

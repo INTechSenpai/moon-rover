@@ -7,11 +7,11 @@ package scripts;
  */
 
 public enum ScriptAnticipableNames {
-	SortieZoneDepart(false), // false = pas pris en compte dans la stratégie
-	ScriptClap(true),
-	ScriptTapis(true),
-	ScriptAttente(true),
-	ScriptCherchePlot(false);
+	SORTIE_ZONE_DEPART(false), // false = pas pris en compte dans la stratégie
+	CLAP(true),
+	TAPIS(true),
+	ATTENTE(true),
+	CHERCHE_PLOT(false);
 	
 	private boolean canIDoIt; // ce booléan dépend du robot!
 	// si on a deux robots, ils ne pourront pas faire la même chose...
