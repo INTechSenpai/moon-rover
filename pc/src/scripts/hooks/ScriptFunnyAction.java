@@ -10,6 +10,7 @@ import exceptions.SerialConnexionException;
 import exceptions.UnableToMoveException;
 import hook.HookFactory;
 import robot.RobotChrono;
+import robot.RobotReal;
 import scripts.Script;
 import strategie.GameState;
 import utils.Config;
@@ -39,6 +40,7 @@ public class ScriptFunnyAction extends Script {
 		gamestate.robot.stopper();
 		gamestate.robot.desactiver_asservissement_rotation();
 		gamestate.robot.desactiver_asservissement_translation();
+		((RobotReal)(gamestate.robot)).closeSerialConnections();
 	}
 
 	@Override

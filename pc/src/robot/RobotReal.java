@@ -246,5 +246,11 @@ public class RobotReal extends Robot
 	public boolean isEnemyHere() {
 		return deplacements.isEnemyHere();
 	}
+	
+	public void closeSerialConnections()
+	{
+		deplacements.close();
+		actionneurs.close();
+	}
 
 }
