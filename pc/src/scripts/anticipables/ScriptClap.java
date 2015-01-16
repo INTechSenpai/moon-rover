@@ -119,6 +119,8 @@ public class ScriptClap extends Script {
 	public PathfindingNodes point_sortie(int id) {
 		if(id == 0)
 			return PathfindingNodes.SORTIE_CLAP_DROIT;
+		else if(id == 1)
+			return PathfindingNodes.SORTIE_CLAP_DROIT_SECOND;
 		else
 			return PathfindingNodes.SORTIE_CLAP_GAUCHE;
 	}
