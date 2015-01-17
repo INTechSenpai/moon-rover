@@ -198,9 +198,11 @@ public class RobotReal extends Robot
 	{
 		try {
 			actionneurs.useActuator(ActuatorOrder.LEVE_TAPIS_GAUCHE);
+			if(needToSleep)
+				leverTapisSleep();
 			actionneurs.useActuator(ActuatorOrder.LEVE_TAPIS_DROIT);
 			if(needToSleep)
-				leverDeuxTapisSleep();
+				leverTapisSleep();
 		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}
@@ -210,12 +212,14 @@ public class RobotReal extends Robot
 	public void poserDeuxTapis(boolean needToSleep) throws FinMatchException
 	{
 		try {
+			actionneurs.useActuator(ActuatorOrder.BAISSE_TAPIS_GAUCHE);
+			if(needToSleep)
+				poserTapisSleep();
 			actionneurs.useActuator(ActuatorOrder.BAISSE_TAPIS_DROIT);
-			actionneurs.useActuator(ActuatorOrder.BAISSE_TAPIS_DROIT);
+			if(needToSleep)
+				poserTapisSleep();
 	    	tapisPoses = true;
 			pointsObtenus = pointsObtenus + 24;
-			if(needToSleep)
-				poserDeuxTapisSleep();
 		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}

@@ -74,23 +74,37 @@ public class ScriptClap extends Script {
 			state.robot.bougeBrasClap(Side.LEFT, HauteurBrasClap.FRAPPE_CLAP);
 			state.robot.clapTombe();
 			state.gridspace.setDone(GameElementNames.CLAP_3, Tribool.TRUE);
-			state.robot.avancer(300);
+			state.robot.avancer(150);
 			state.robot.bougeBrasClap(Side.LEFT, HauteurBrasClap.TOUT_EN_HAUT);
 			state.robot.avancer(300);
 			state.robot.bougeBrasClap(Side.LEFT, HauteurBrasClap.FRAPPE_CLAP);
 			state.robot.clapTombe();
 			state.gridspace.setDone(GameElementNames.CLAP_1, Tribool.TRUE);
-			state.robot.avancer(300);
+			state.robot.avancer(150);
 		}
 		else if(id_version == 1)
 		{
-			state.robot.tourner(Math.PI);
-			state.robot.bougeBrasClap(Side.LEFT, HauteurBrasClap.TOUT_EN_HAUT);
-			state.robot.avancer(300);
-			state.robot.bougeBrasClap(Side.LEFT, HauteurBrasClap.FRAPPE_CLAP);
-			state.robot.clapTombe();
+			Side s;
+			double angle = state.robot.getOrientation();
+			double cos = Math.cos(angle);
+			double sin = Math.sin(angle);
+			if(cos+sin > 0)
+				s = Side.RIGHT;
+			else
+				s = Side.LEFT;
+			if(cos-sin < 0)
+			{
+				if(s == Side.RIGHT)
+					state.robot.tourner(Math.PI/4);
+				else
+					state.robot.tourner(-3*Math.PI/4);
+			}
+			state.robot.bougeBrasClap(s, HauteurBrasClap.FRAPPE_CLAP);
+			if(s == Side.RIGHT)
+				state.robot.tourner(-Math.PI/4);
+			else
+				state.robot.tourner(3*Math.PI/4);
 			state.gridspace.setDone(GameElementNames.CLAP_1, Tribool.TRUE);
-			state.robot.avancer(300);
 		}
 		else if(id_version == 2)// côté gauche
 		{
@@ -107,12 +121,6 @@ public class ScriptClap extends Script {
 			FinMatchException, ScriptHookException {
 		state.robot.bougeBrasClap(Side.LEFT, HauteurBrasClap.RENTRE);
 		state.robot.bougeBrasClap(Side.RIGHT, HauteurBrasClap.RENTRE);
-		try {
-			state.robot.tourner(Math.PI/2);
-			state.robot.avancer(200);		
-		} catch (UnableToMoveException e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Override

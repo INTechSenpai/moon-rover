@@ -10,7 +10,7 @@ public enum ScriptAnticipableNames {
 	SORTIE_ZONE_DEPART(false), // false = pas pris en compte dans la stratégie
 	CLAP(true),
 	TAPIS(true),
-	ATTENTE(true),
+	ATTENTE(false),
 	CHERCHE_PLOT(false);
 	
 	private boolean canIDoIt; // ce booléan dépend du robot!
