@@ -3,7 +3,6 @@ package scripts.anticipables;
 import java.util.ArrayList;
 
 import astar.arc.PathfindingNodes;
-import obstacles.gameElement.GameElementNames;
 import enums.Side;
 import enums.Tribool;
 import exceptions.FinMatchException;
@@ -15,6 +14,7 @@ import robot.cardsWrappers.enums.HauteurBrasClap;
 import robot.RobotChrono;
 import scripts.Script;
 import strategie.GameState;
+import table.GameElementNames;
 import utils.Config;
 import utils.Log;
 
@@ -39,7 +39,7 @@ public class ScriptClap extends Script {
 	public ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono> state) {
 		ArrayList<PathfindingNodes> out = new ArrayList<PathfindingNodes>();
 		// on tente même si c'est peut-être fait par l'ennemi
-		if(state.gridspace.isDone(GameElementNames.CLAP_1) != Tribool.TRUE && state.gridspace.isDone(GameElementNames.CLAP_3) != Tribool.TRUE)
+		if(state.gridspace.isDone(GameElementNames.CLAP_1) != Tribool.TRUE || state.gridspace.isDone(GameElementNames.CLAP_3) != Tribool.TRUE)
 			out.add(PathfindingNodes.CLAP_DROIT);
 		// on autorise à choisir la version 1 même si la version 0 est possible
 		if(state.gridspace.isDone(GameElementNames.CLAP_1) != Tribool.TRUE)
