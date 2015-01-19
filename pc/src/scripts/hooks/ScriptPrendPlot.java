@@ -11,6 +11,7 @@ import strategie.GameState;
 import table.GameElementNames;
 import utils.Config;
 import utils.Log;
+import utils.Vec2;
 
 /**
  * Script hook de prise de plot.
@@ -22,6 +23,8 @@ import utils.Log;
 public class ScriptPrendPlot extends ScriptHook
 {
 
+	private int distance_optimale;
+	
 	public ScriptPrendPlot(HookFactory hookgenerator, Config config, Log log)
 	{
 		super(hookgenerator, config, log);
@@ -39,7 +42,15 @@ public class ScriptPrendPlot extends ScriptHook
 			throws UnableToMoveException, SerialConnexionException,
 			FinMatchException
 	{
-		// TODO
+		state.robot.stopper();
+		Vec2 position = state.robot.getPosition();
+		Vec2 position_obstacle = id_version.getObstacle().getPosition();
+		double orientation_cible = Math.atan2(position_obstacle.y-position.y, position_obstacle.x-position.x);
+		state.robot.tourner(orientation_cible);
+		// TODO: vérifier qu'en tournant on ne shoot pas le plot
+		int distance = (int) position.distance(position_obstacle);
+		state.robot.avancer(distance-distance_optimale);
+		// TODO finir le script
 	}
 
 }
