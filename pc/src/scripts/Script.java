@@ -8,7 +8,6 @@ import utils.Log;
 import utils.Config;
 import utils.Vec2;
 import astar.arc.PathfindingNodes;
-import container.Service;
 import hook.HookFactory;
 
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ import exceptions.UnableToMoveException;
  * @author pf, marsu
  */
 
-public abstract class Script implements Service
+public abstract class Script
 {
 	protected boolean symmetry;
 	protected HookFactory hookfactory;
@@ -64,14 +63,13 @@ public abstract class Script implements Service
 	 * @throws FinMatchException
 	 * @throws ScriptHookException
 	 */
-	public final void agit(PathfindingNodes id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
+	public void agit(PathfindingNodes id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
 	{
 		if(state.robot instanceof RobotReal)
 			log.debug("Agit version "+id_version, this);
 		PathfindingNodes pointEntree = id_version;
 		
-		// Un point d'entrée peut être nul, par exemple
-		if(pointEntree != null && state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
+		if(state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
 		{
 			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+pointEntree+" "+pointEntree.getCoordonnees()+" et est en "+state.robot.getPosition(), this);
 			throw new ScriptException();

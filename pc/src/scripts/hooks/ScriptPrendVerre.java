@@ -13,16 +13,16 @@ import utils.Config;
 import utils.Log;
 
 /**
- * Script hook de prise de plot.
- * C'est le script appelé lorsqu'on a détecté un plot.
+ * Script hook de prise de verre.
+ * C'est le script appelé lorsqu'on a détecté un verre.
  * @author pf
  *
  */
 
-public class ScriptPrendPlot extends ScriptHook
+public class ScriptPrendVerre extends ScriptHook
 {
 
-	public ScriptPrendPlot(HookFactory hookgenerator, Config config, Log log)
+	public ScriptPrendVerre(HookFactory hookgenerator, Config config, Log log)
 	{
 		super(hookgenerator, config, log);
 	}

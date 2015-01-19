@@ -9,6 +9,7 @@ import scripts.anticipables.SortieZoneDepart;
 import scripts.hooks.ScriptDegommePile;
 import scripts.hooks.ScriptFunnyAction;
 import scripts.hooks.ScriptPrendPlot;
+import scripts.hooks.ScriptPrendVerre;
 import utils.Log;
 import utils.Config;
 import container.Service;
@@ -23,7 +24,7 @@ public class ScriptManager implements Service
 {
 	
 	private Script[] instancesScriptsAnticipables = new Script[ScriptAnticipableNames.values().length];
-	private Script[] instancesScriptsHook = new Script[ScriptHookNames.values().length];
+	private ScriptHook[] instancesScriptsHook = new ScriptHook[ScriptHookNames.values().length];
 	
 	public ScriptManager(HookFactory hookfactory, Config config, Log log) throws UnknownScriptException
 	{
@@ -37,6 +38,7 @@ public class ScriptManager implements Service
 		instancesScriptsHook[ScriptHookNames.FUNNY_ACTION.ordinal()] = new ScriptFunnyAction(hookfactory, config, log);
 		instancesScriptsHook[ScriptHookNames.PREND_PLOT.ordinal()] = new ScriptPrendPlot(hookfactory, config, log);
 		instancesScriptsHook[ScriptHookNames.DEGOMME_PILE.ordinal()] = new ScriptDegommePile(hookfactory, config, log);
+		instancesScriptsHook[ScriptHookNames.PREND_VERRE.ordinal()] = new ScriptPrendVerre(hookfactory, config, log);
 		
 		for(int i = 0; i < ScriptAnticipableNames.values().length; i++)
 			if(instancesScriptsAnticipables[i] == null)
@@ -70,9 +72,9 @@ public class ScriptManager implements Service
 	 * @param nom
 	 * @return
 	 */
-	public Script getScript(ScriptHookNames nom)
+	public ScriptHook getScript(ScriptHookNames nom)
 	{
-		Script script = instancesScriptsHook[nom.ordinal()];
+		ScriptHook script = instancesScriptsHook[nom.ordinal()];
 		return script;
 	}
 

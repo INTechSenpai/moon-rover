@@ -9,6 +9,7 @@ package scripts;
 public enum ScriptHookNames {
 	FUNNY_ACTION(false),
 	PREND_PLOT(false),
+	PREND_VERRE(false),
 	DEGOMME_PILE(false);
 	
 	private boolean canIDoIt; // ce booléan dépend du robot!
