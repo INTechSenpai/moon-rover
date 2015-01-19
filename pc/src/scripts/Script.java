@@ -38,7 +38,7 @@ public abstract class Script implements Service
 	 * Renvoie le tableau des méta-verions d'un script
 	 * @return le tableau des méta-versions possibles
 	 */
-	public abstract ArrayList<Integer> getVersions(final GameState<RobotChrono> state);
+	public abstract ArrayList<PathfindingNodes> getVersions(final GameState<RobotChrono> state);
 
 	public Script(HookFactory hookgenerator, Config config, Log log)
 	{
@@ -64,11 +64,11 @@ public abstract class Script implements Service
 	 * @throws FinMatchException
 	 * @throws ScriptHookException
 	 */
-	public final void agit(int id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
+	public final void agit(PathfindingNodes id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
 	{
 		if(state.robot instanceof RobotReal)
 			log.debug("Agit version "+id_version, this);
-		PathfindingNodes pointEntree = point_entree(id_version);
+		PathfindingNodes pointEntree = id_version;
 		
 		// Un point d'entrée peut être nul, par exemple
 		if(pointEntree != null && state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
@@ -104,19 +104,14 @@ public abstract class Script implements Service
 	}
 
 	/**
-	 * Retourne la position d'entrée associée à la version id
-	 * Ne se préoccupe pas de savoir si cette version est possible ou pas.
-	 * @param id de la version
-	 * @return la position du point d'entrée
-	 */
-	public abstract PathfindingNodes point_entree(int id);
-
-	/**
 	 * Utilisé par robotchrono
 	 * @param id
 	 * @return
 	 */
-	public abstract PathfindingNodes point_sortie(int id);
+	public PathfindingNodes point_sortie(PathfindingNodes id)
+	{
+		return id.getSortie();
+	}
 
 	/**
 	 * Vérifie la position de sortie en simulation.
@@ -124,7 +119,7 @@ public abstract class Script implements Service
 	 * @param position
 	 * @throws PointSortieException
 	 */
-	public final void checkPointSortie(int id, Vec2 position) throws PointSortieException
+	public final void checkPointSortie(PathfindingNodes id, Vec2 position) throws PointSortieException
 	{
 		PathfindingNodes sortie = point_sortie(id);
 		if(!position.equals(sortie.getCoordonnees()))
@@ -146,7 +141,7 @@ public abstract class Script implements Service
 	 * @throws SerialConnexionException 
 	 * @throws ScriptHookException 
 	 */
-	protected abstract void execute(int id_version, GameState<?>state) throws UnableToMoveException, SerialConnexionException, FinMatchException, ScriptHookException;
+	protected abstract void execute(PathfindingNodes id_version, GameState<?>state) throws UnableToMoveException, SerialConnexionException, FinMatchException, ScriptHookException;
 
 	public void updateConfig()
 	{

@@ -31,7 +31,7 @@ public class ScriptPrendPlot extends Script
 	}
 
 	@Override
-	public ArrayList<Integer> getVersions(GameState<RobotChrono> state) {
+	public ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono> state) {
 		return null;
 	}
 
@@ -43,19 +43,7 @@ public class ScriptPrendPlot extends Script
 	}
 
 	@Override
-	public PathfindingNodes point_entree(int id)
-	{
-		return null;
-	}
-
-	@Override
-	public PathfindingNodes point_sortie(int id)
-	{
-		return null;
-	}
-
-	@Override
-	protected void execute(int id_version, GameState<?> state)
+	protected void execute(PathfindingNodes id_version, GameState<?> state)
 			throws UnableToMoveException, SerialConnexionException,
 			FinMatchException, ScriptHookException
 	{

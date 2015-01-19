@@ -30,28 +30,22 @@ public class ScriptAttente extends Script
 	}
 
 	@Override
-	public ArrayList<Integer> getVersions(GameState<RobotChrono> state) {
-		ArrayList<Integer> version = new ArrayList<Integer>();
+	public ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono> state) {
+		ArrayList<PathfindingNodes> version = new ArrayList<PathfindingNodes>();
 		PathfindingNodes entree_sortie = ((RobotChrono)state.robot).getPositionPathfinding();
 		if(entree_sortie != null && state.canSleepUntilSomethingChange())
-			version.add(entree_sortie.ordinal());
+			version.add(entree_sortie);
 		return version;
 	}
 
 	@Override
-	public PathfindingNodes point_entree(int id) {
+	public PathfindingNodes point_sortie(PathfindingNodes id) {
 		// ce qui signifie: on ne bouge pas
-		return PathfindingNodes.values()[id];
+		return id;
 	}
 
 	@Override
-	public PathfindingNodes point_sortie(int id) {
-		// ce qui signifie: on ne bouge pas
-		return PathfindingNodes.values()[id];
-	}
-
-	@Override
-	protected void execute(int id_version, GameState<?> state)
+	protected void execute(PathfindingNodes id_version, GameState<?> state)
 			throws UnableToMoveException, SerialConnexionException,
 			FinMatchException, ScriptHookException
 	{

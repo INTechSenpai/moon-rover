@@ -30,24 +30,14 @@ public class SortieZoneDepart extends Script {
 	}
 
 	@Override
-	public ArrayList<Integer> getVersions(GameState<RobotChrono> state) {
-		ArrayList<Integer> out = new ArrayList<Integer>();
-		out.add(0);
+	public ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono> state) {
+		ArrayList<PathfindingNodes> out = new ArrayList<PathfindingNodes>();
+		out.add(PathfindingNodes.POINT_DEPART);
 		return out;
 	}
 
 	@Override
-	public PathfindingNodes point_entree(int id) {
-		return PathfindingNodes.POINT_DEPART;
-	}
-
-	@Override
-	public PathfindingNodes point_sortie(int id) {
-		return PathfindingNodes.SORTIE_ZONE_DEPART;
-	}
-
-	@Override
-	protected void execute(int id_version, GameState<?> state)
+	protected void execute(PathfindingNodes id_version, GameState<?> state)
 			throws UnableToMoveException, SerialConnexionException,
 			FinMatchException, ScriptHookException
 	{

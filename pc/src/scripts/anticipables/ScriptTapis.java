@@ -28,26 +28,20 @@ public class ScriptTapis extends Script {
 	}
 
 	@Override
-	public ArrayList<Integer> getVersions(GameState<RobotChrono> state)
+	public ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono> state)
 	{
 		// Si les tapis sont posés, pas de métaversion possible
-		ArrayList<Integer> out = new ArrayList<Integer>();
+		ArrayList<PathfindingNodes> out = new ArrayList<PathfindingNodes>();
 		if(state.robot.areTapisPoses())
 			return out;
 		
 		// Sinon, on renvoie uniquement la méta_version 0
-		out.add(0);
+		out.add(PathfindingNodes.NODE_TAPIS);
 		return out;
 	}
 
 	@Override
-	public PathfindingNodes point_entree(int id)
-	{
-		return PathfindingNodes.NODE_TAPIS;
-	}
-
-	@Override
-	public void execute(int id_version, GameState<?> state) throws UnableToMoveException, SerialConnexionException, FinMatchException, ScriptHookException
+	public void execute(PathfindingNodes id_version, GameState<?> state) throws UnableToMoveException, SerialConnexionException, FinMatchException, ScriptHookException
 	{
 		state.robot.tourner(-Math.PI/2);
 		state.robot.avancer_dans_mur(-260); // TODO: vérifier distance
@@ -65,10 +59,5 @@ public class ScriptTapis extends Script {
 		} catch (UnableToMoveException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public PathfindingNodes point_sortie(int id) {
-		return PathfindingNodes.SORTIE_TAPIS;
 	}
 }

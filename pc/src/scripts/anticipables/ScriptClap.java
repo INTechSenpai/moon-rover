@@ -36,37 +36,27 @@ public class ScriptClap extends Script {
 	// id 1: droite, un seul clap (le 2e, celui de gauche)
 	// id 2: gauche
 	@Override
-	public ArrayList<Integer> getVersions(GameState<RobotChrono> state) {
-		ArrayList<Integer> out = new ArrayList<Integer>();
+	public ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono> state) {
+		ArrayList<PathfindingNodes> out = new ArrayList<PathfindingNodes>();
 		// on tente même si c'est peut-être fait par l'ennemi
 		if(state.gridspace.isDone(GameElementNames.CLAP_1) != Tribool.TRUE && state.gridspace.isDone(GameElementNames.CLAP_3) != Tribool.TRUE)
-			out.add(0);
+			out.add(PathfindingNodes.CLAP_DROIT);
 		// on autorise à choisir la version 1 même si la version 0 est possible
 		if(state.gridspace.isDone(GameElementNames.CLAP_1) != Tribool.TRUE)
-			out.add(1);
+			out.add(PathfindingNodes.CLAP_DROIT_SECOND);
 		if(state.gridspace.isDone(GameElementNames.CLAP_2) != Tribool.TRUE)
-			out.add(2);
+			out.add(PathfindingNodes.CLAP_GAUCHE);
 		return out;
 	}
 
 	@Override
-	public PathfindingNodes point_entree(int id) {
-		if(id == 0)
-			return PathfindingNodes.CLAP_DROIT;
-		else if(id == 1)
-			return PathfindingNodes.CLAP_DROIT_SECOND;
-		else
-			return PathfindingNodes.CLAP_GAUCHE;
-	}
-
-	@Override
-	public void execute(int id_version, GameState<?> state)
+	public void execute(PathfindingNodes id_version, GameState<?> state)
 			throws UnableToMoveException, SerialConnexionException,
 			FinMatchException, ScriptHookException
 	{
 //		ArrayList<Hook> hooks_entre_scripts = hookfactory.getHooksEntreScripts(state);
 		// côté droit
-		if(id_version == 0)
+		if(id_version == PathfindingNodes.CLAP_DROIT)
 		{
 			state.robot.tourner(Math.PI);
 			// TODO: probablement pas possible s'il y a des plots dans ce coin
@@ -82,7 +72,7 @@ public class ScriptClap extends Script {
 			state.gridspace.setDone(GameElementNames.CLAP_1, Tribool.TRUE);
 			state.robot.avancer(150);
 		}
-		else if(id_version == 1)
+		else if(id_version == PathfindingNodes.CLAP_DROIT_SECOND)
 		{
 			Side s;
 			double angle = state.robot.getOrientation();
@@ -106,7 +96,7 @@ public class ScriptClap extends Script {
 				state.robot.tourner(3*Math.PI/4);
 			state.gridspace.setDone(GameElementNames.CLAP_1, Tribool.TRUE);
 		}
-		else if(id_version == 2)// côté gauche
+		else if(id_version == PathfindingNodes.CLAP_GAUCHE)// côté gauche
 		{
 			state.robot.tourner(0);
 			state.robot.bougeBrasClap(Side.RIGHT, HauteurBrasClap.FRAPPE_CLAP);
@@ -121,16 +111,6 @@ public class ScriptClap extends Script {
 			FinMatchException, ScriptHookException {
 		state.robot.bougeBrasClap(Side.LEFT, HauteurBrasClap.RENTRE);
 		state.robot.bougeBrasClap(Side.RIGHT, HauteurBrasClap.RENTRE);
-	}
-
-	@Override
-	public PathfindingNodes point_sortie(int id) {
-		if(id == 0)
-			return PathfindingNodes.SORTIE_CLAP_DROIT;
-		else if(id == 1)
-			return PathfindingNodes.SORTIE_CLAP_DROIT_SECOND;
-		else
-			return PathfindingNodes.SORTIE_CLAP_GAUCHE;
 	}
 
 }
