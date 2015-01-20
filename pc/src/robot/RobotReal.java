@@ -18,6 +18,7 @@ import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
 import exceptions.SerialConnexionException;
 import exceptions.UnableToMoveException;
+import exceptions.WallCollisionDetectedException;
 
 /**
  * Effectue le lien entre le code et la réalité (permet de parler aux actionneurs, d'interroger les capteurs, etc.)
@@ -149,6 +150,9 @@ public class RobotReal extends Robot
 				hook.evaluate();
 			} catch (ScriptHookException e) {
 				// Impossible d'avoir des scripts hook pendant un sleep
+				e.printStackTrace();
+			} catch (WallCollisionDetectedException e) {
+				// Impossible pendant un sleep
 				e.printStackTrace();
 			}
 	}
