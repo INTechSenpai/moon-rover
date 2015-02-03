@@ -12,7 +12,7 @@ import hook.Hook;
 
 import java.util.ArrayList;
 
-import astar.arc.PathfindingNodes;
+import astar.arc.SegmentTrajectoireCourbe;
 import enums.Side;
 import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
@@ -177,7 +177,7 @@ public class RobotReal extends Robot
     }
     
     @Override
-    public void suit_chemin(ArrayList<PathfindingNodes> chemin, ArrayList<Hook> hooks) throws UnableToMoveException, FinMatchException, ScriptHookException
+    public void suit_chemin(ArrayList<SegmentTrajectoireCourbe> chemin, ArrayList<Hook> hooks) throws UnableToMoveException, FinMatchException, ScriptHookException
     {
 		hooks.add(hookFinMatch);
 		// DEPENDS ON RULES
