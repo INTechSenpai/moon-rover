@@ -8,12 +8,17 @@ import utils.Log;
 import utils.Config;
 import utils.Sleep;
 import utils.Vec2;
+import hook.Callback;
+import hook.Executable;
 import hook.Hook;
+import hook.methods.ThrowsChangeDirection;
+import hook.types.HookDemiPlan;
 
 import java.util.ArrayList;
 
 import astar.arc.SegmentTrajectoireCourbe;
 import enums.Side;
+import exceptions.ChangeDirectionException;
 import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
 import exceptions.SerialConnexionException;
@@ -31,6 +36,8 @@ public class RobotReal extends Robot
 //	private Table table;
 	private Locomotion deplacements;
 	private ActuatorCardWrapper actionneurs;
+	
+	private HookDemiPlan hookTrajectoireCourbe;
 
 	// Constructeur
 	public RobotReal(ActuatorCardWrapper actuator, Locomotion deplacements, Table table, Config config, Log log)
@@ -154,6 +161,9 @@ public class RobotReal extends Robot
 			} catch (WallCollisionDetectedException e) {
 				// Impossible pendant un sleep
 				e.printStackTrace();
+			} catch (ChangeDirectionException e) {
+				// Impossible pendant un sleep
+				e.printStackTrace();
 			}
 	}
 
@@ -180,8 +190,7 @@ public class RobotReal extends Robot
     public void suit_chemin(ArrayList<SegmentTrajectoireCourbe> chemin, ArrayList<Hook> hooks) throws UnableToMoveException, FinMatchException, ScriptHookException
     {
 		hooks.add(hookFinMatch);
-		// DEPENDS ON RULES
-        deplacements.followPath(chemin, hooks, DirectionStrategy.FORCE_FORWARD_MOTION);
+        deplacements.followPath(chemin, hookTrajectoireCourbe, hooks, DirectionStrategy.getDefaultStrategy());
     }
     
 	@Override
@@ -274,6 +283,13 @@ public class RobotReal extends Robot
 	public void initActuatorLocomotion()
 	{
 		// TODO: replier les bras, etc
+	}
+
+	public void setHookTrajectoireCourbe(HookDemiPlan hookTrajectoireCourbe)
+	{
+		Executable action = new ThrowsChangeDirection();
+		hookTrajectoireCourbe.ajouter_callback(new Callback(action));
+		this.hookTrajectoireCourbe = hookTrajectoireCourbe;
 	}
 
 }
