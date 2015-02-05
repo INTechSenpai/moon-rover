@@ -1,6 +1,7 @@
 package robot;
 
 import robot.cardsWrappers.ActuatorCardWrapper;
+import robot.cardsWrappers.STMcardWrapper;
 import robot.cardsWrappers.enums.ActuatorOrder;
 import robot.cardsWrappers.enums.HauteurBrasClap;
 import utils.Log;
@@ -34,13 +35,13 @@ import exceptions.WallCollisionDetectedException;
 public class RobotReal extends Robot
 {
 //	private Table table;
-	private Locomotion deplacements;
+	private STMcardWrapper deplacements;
 	private ActuatorCardWrapper actionneurs;
 	
 	private HookDemiPlan hookTrajectoireCourbe;
 
 	// Constructeur
-	public RobotReal(ActuatorCardWrapper actuator, Locomotion deplacements, Config config, Log log)
+	public RobotReal(ActuatorCardWrapper actuator, STMcardWrapper deplacements, Config config, Log log)
  	{
 		super(config, log);
 		this.actionneurs = actuator;
@@ -63,17 +64,31 @@ public class RobotReal extends Robot
 	
 	public void desactiver_asservissement_rotation() throws FinMatchException
 	{
-		deplacements.disableRotationnalFeedbackLoop();
+		try {
+			deplacements.disableRotationalFeedbackLoop();
+		} catch (SerialConnexionException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void desactiver_asservissement_translation() throws FinMatchException
 	{
-		deplacements.disableTranslationalFeedbackLoop();
+		try {
+			deplacements.disableTranslationalFeedbackLoop();
+		} catch (SerialConnexionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void activer_asservissement_rotation() throws FinMatchException
 	{
-		deplacements.enableRotationnalFeedbackLoop();
+		try {
+			deplacements.enableRotationalFeedbackLoop();
+		} catch (SerialConnexionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void recaler() throws FinMatchException
@@ -93,7 +108,12 @@ public class RobotReal extends Robot
 	{
 		// Il est nécessaire d'ajouter le hookFinMatch avant chaque appel de deplacements qui prenne un peu de temps (avancer, tourner, ...)
 		hooks.add(hookFinMatch);
-		deplacements.moveLengthwise(distance, hooks, mur);
+		try {
+			deplacements.moveLengthwise(distance, hooks, mur);
+		} catch (ScriptHookException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}	
 
 	/**
@@ -105,8 +125,13 @@ public class RobotReal extends Robot
 	@Override
 	public void set_vitesse(Speed vitesse) throws FinMatchException
 	{
-        deplacements.setTranslationnalSpeed(vitesse);
-        deplacements.setRotationnalSpeed(vitesse);
+        try {
+			deplacements.setTranslationalSpeed(vitesse);
+	        deplacements.setRotationalSpeed(vitesse);
+		} catch (SerialConnexionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		log.debug("Modification de la vitesse: "+vitesse);
 	}
 	
@@ -167,7 +192,12 @@ public class RobotReal extends Robot
     @Override
     public void stopper() throws FinMatchException
     {
-        deplacements.immobilise();
+        try {
+			deplacements.immobilise();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     @Override
@@ -175,7 +205,12 @@ public class RobotReal extends Robot
     {
     	ArrayList<Hook> hooks = new ArrayList<Hook>();
 		hooks.add(hookFinMatch);
-		deplacements.turn(angle, hooks);
+		try {
+			deplacements.turn(angle, hooks);
+		} catch (ScriptHookException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     @Override
