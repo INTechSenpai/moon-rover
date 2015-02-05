@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<history>
+   <processor signature="arm-none-eabi-gcc noversion nomachine -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wall -ffunction-sections -g -O2 -lstdc++ -c -DSTM32F407VG -DSTM32F4XX -DUSE_STDPERIPH_DRIVER -D__ASSEMBLY__ -DSUPPORT_CPLUSPLUS -D__FPU_USED -DHSE_VALUE=8000000 -I..\..\..\..\..\Documents\Git\stm32f4\projects\asservissement\cmsis_boot -I..\..\..\..\..\Documents\Git\stm32f4\projects -I..\..\..\..\..\Documents\Git\stm32f4\projects\asservissement -I..\..\..\..\..\Documents\Git\stm32f4\projects\asservissement\include -I..\..\..\..\..\Documents\Git\stm32f4\library -I..\..\..\..\..\Documents\Git\stm32f4\projects\asservissement\cmsis_lib\include -I..\..\..\..\..\Documents\Git\stm32f4\projects\asservissement\cmsis -I..\..\..\..\..\Documents\Git\stm32f4\projects\asservissement\cmsis_lib -I..\..\..\..\..\Documents\Git\stm32f4 -I..\..\..\..\..\Documents\Git">
+      <target file="syscalls.o" lastModified="14b2c9461ff">
+         <source file="..\..\..\syscalls\syscalls.c" lastModified="14b1790b26d"/>
+      </target>
+      <target file="stm32f4xx_gpio.o" lastModified="14b2c946182">
+         <source file="..\..\..\cmsis_lib\source\stm32f4xx_gpio.c" lastModified="14b1790b25e"/>
+      </target>
+      <target file="stm32f4xx_tim.o" lastModified="14b2c94657a">
+         <source file="..\..\..\cmsis_lib\source\stm32f4xx_tim.c" lastModified="14b1790b25e"/>
+      </target>
+      <target file="system_stm32f4xx.o" lastModified="14b2c9461c1">
+         <source file="..\..\..\cmsis_boot\system_stm32f4xx.c" lastModified="14b1790b23f"/>
+      </target>
+      <target file="stm32f4xx_rtc.o" lastModified="14b2c946461">
+         <source file="..\..\..\cmsis_lib\source\stm32f4xx_rtc.c" lastModified="14b1790b25e"/>
+      </target>
+      <target file="startup_stm32f4xx.o" lastModified="14b2c945ed3">
+         <source file="..\..\..\cmsis_boot\startup\startup_stm32f4xx.c" lastModified="14b1790b22f"/>
+      </target>
+      <target file="MotionControlSystem.o" lastModified="14b2c946125">
+         <source file="..\..\..\src\MotionControlSystem.cpp" lastModified="14b1790b26d"/>
+      </target>
+      <target file="stm32f4xx_usart.o" lastModified="14b2c945eb4">
+         <source file="..\..\..\cmsis_lib\source\stm32f4xx_usart.c" lastModified="14b1790b26d"/>
+      </target>
+      <target file="main.o" lastModified="14b2c945fcd">
+         <source file="..\..\..\main.cpp" lastModified="14b1790b26d"/>
+      </target>
+      <target file="Counter.o" lastModified="14b2c946338">
+         <source file="..\..\..\src\Counter.cpp" lastModified="14b1790b26d"/>
+      </target>
+      <target file="Motor.o" lastModified="14b2c9462f9">
+         <source file="..\..\..\src\Motor.cpp" lastModified="14b1790b26d"/>
+      </target>
+      <target file="Uart_IT.o" lastModified="14b2c94629c">
+         <source file="..\..\..\..\..\library\Uart_IT.cpp" lastModified="14b1790b200"/>
+      </target>
+      <target file="delay.o" lastModified="14b2c945e27">
+         <source file="..\..\..\..\..\library\delay.c" lastModified="14b1790b210"/>
+      </target>
+      <target file="stm32f4xx_rcc.o" lastModified="14b2c946059">
+         <source file="..\..\..\cmsis_lib\source\stm32f4xx_rcc.c" lastModified="14b1790b25e"/>
+      </target>
+      <target file="misc.o" lastModified="14b2c94622e">
+         <source file="..\..\..\cmsis_lib\source\misc.c" lastModified="14b1790b25e"/>
+      </target>
+   </processor>
+</history>

@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<history>
+   <processor signature="arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -g -nostartfiles -Map=total.map -O0 --gc-sections -lgcc -lc -lm -LD:\CooCox\CoIDE\configuration\ProgramData\total -TD:\CooCox\CoIDE\configuration\ProgramData\total/arm-gcc-link.ld -g -L..\..\.. -lstdc++ -L..\..\..\..\..\..\..\..\Program Files (x86)\GNU Tools ARM Embedded\4.7 2012q4\arm-none-eabi\lib\armv7e-m\softfp -lm">
+      <target file="total.elf" lastModified="14b408c5b4d">
+         <source file="..\..\..\..\..\..\..\..\Program Files (x86)\GNU Tools ARM Embedded\4.7 2012q4\arm-none-eabi\lib\armv7e-m\softfp\libm.a" lastModified="13b769b5a98"/>
+         <source file="..\obj\delay.o" lastModified="14b408c53a5"/>
+         <source file="..\obj\stm32f4xx_usart.o" lastModified="14b408c5403"/>
+         <source file="..\obj\startup_stm32f4xx.o" lastModified="14b408c5422"/>
+         <source file="..\obj\main.o" lastModified="14b408c5504"/>
+         <source file="..\obj\stm32f4xx_rcc.o" lastModified="14b408c5561"/>
+         <source file="..\obj\MotionControlSystem.o" lastModified="14b408c55ec"/>
+         <source file="..\obj\stm32f4xx_gpio.o" lastModified="14b408c563b"/>
+         <source file="..\obj\system_stm32f4xx.o" lastModified="14b408c5660"/>
+         <source file="..\obj\syscalls.o" lastModified="14b408c569e"/>
+         <source file="..\obj\misc.o" lastModified="14b408c56c5"/>
+         <source file="..\obj\Uart_IT.o" lastModified="14b408c5723"/>
+         <source file="..\obj\Motor.o" lastModified="14b408c577b"/>
+         <source file="..\obj\Counter.o" lastModified="14b408c57ac"/>
+         <source file="..\obj\stm32f4xx_rtc.o" lastModified="14b408c5838"/>
+         <source file="..\obj\stm32f4xx_tim.o" lastModified="14b408c58c6"/>
+      </target>
+   </processor>
+</history>
