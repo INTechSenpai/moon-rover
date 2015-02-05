@@ -6,9 +6,11 @@ import container.Service;
 /**
  * Service qui permettra de faire un checkup du robot avant le match
  * @author pf
- *
+ * (marsu) : Cette année on l'utilisera, promi !
  */
-public class CheckUp implements Service {
+
+public class CheckUp implements Service 
+{
 
 	private Log log;
 	private RobotVrai robotvrai;
@@ -34,7 +36,7 @@ public class CheckUp implements Service {
 		}
 	}
 	
-	public void maj_config()
+	public void updateConfig()
 	{
 	}
 }

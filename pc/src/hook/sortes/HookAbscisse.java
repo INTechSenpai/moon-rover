@@ -8,12 +8,13 @@ import utils.Log;
 import utils.Read_Ini;
 
 /**
- * Classe des hook d'abscisse, qui hérite de la classe hook
+ * Classe hook d'abscisse, qui hérite de la classe hook
  * @author pf
  *
  */
 
-class HookAbscisse extends Hook {
+class HookAbscisse extends Hook
+{
 
 	private float abscisse;
 	private float tolerance;

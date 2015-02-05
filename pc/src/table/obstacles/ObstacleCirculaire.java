@@ -9,7 +9,9 @@ import smartMath.Vec2;
  */
 public class ObstacleCirculaire extends Obstacle
 {
-
+	// le Vec2 "position" indique le centre de l'obstacle
+	
+	// rayon de cet obstacle
 	protected int radius;
 	
 	public ObstacleCirculaire(Vec2 position, int rad)
@@ -34,6 +36,7 @@ public class ObstacleCirculaire extends Obstacle
 	{
 		return radius;
 	}
+	
 	public String toString()
 	{
 		return super.toString()+", rayon: "+radius;

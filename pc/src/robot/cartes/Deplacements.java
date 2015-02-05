@@ -43,7 +43,7 @@ public class Deplacements implements Service {
 		infos_stoppage_enMouvement.put("derivee_erreur_translation", 0);
 	}
 	
-	public void maj_config()
+	public void updateConfig()
 	{
 	}	
 	
@@ -131,8 +131,8 @@ public class Deplacements implements Service {
 		
 		//donc, on vire !
 		// VALEURS A REVOIR
-		boolean rotation_stoppe = Math.abs(erreur_rotation) <= 30;
-		boolean translation_stoppe = Math.abs(erreur_translation) <= 30;
+		boolean rotation_stoppe = Math.abs(erreur_rotation) <= 60;
+		boolean translation_stoppe = Math.abs(erreur_translation) <= 60;
 		boolean bouge_pas = Math.abs(derivee_erreur_rotation) <= 20 && Math.abs(derivee_erreur_translation) <= 20;
 		return !(rotation_stoppe && translation_stoppe && bouge_pas);
 	}
@@ -162,11 +162,11 @@ public class Deplacements implements Service {
 	 */
 	public void stopper() throws SerialException
 	{
-//        desactiver_asservissement_translation();
-//        desactiver_asservissement_rotation();
+        desactiver_asservissement_translation();
+        desactiver_asservissement_rotation();
 		serie.communiquer("stop", 0);
-//        activer_asservissement_translation();
-//        activer_asservissement_rotation();
+        activer_asservissement_translation();
+        activer_asservissement_rotation();
 	}
 	
 	/**

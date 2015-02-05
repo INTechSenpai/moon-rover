@@ -34,7 +34,7 @@ public class Log implements Service
 	{
 		this.config = config;
 		
-		maj_config();
+		updateConfig();
 		
 		if(sauvegarde_fichier)
 			try {
@@ -169,7 +169,7 @@ public class Log implements Service
 	}
 	
 	@Override
-	public void maj_config()
+	public void updateConfig()
 	{
 		try {
 			affiche_debug = Boolean.parseBoolean(this.config.get("affiche_debug"));

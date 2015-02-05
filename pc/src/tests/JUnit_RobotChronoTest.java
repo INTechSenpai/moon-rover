@@ -6,15 +6,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import enums.Cote;
-import enums.PositionRateau;
 import robot.*;
 import smartMath.Vec2;
-	/**
-	 * Tests unitaires pour RobotChrono
-	 * @author pf
-	 *
-	 */
+/**
+ * Tests unitaires pour RobotChrono
+ * @author pf
+ *
+ */
 public class JUnit_RobotChronoTest extends JUnit_Test {
 
 	private RobotChrono robotchrono;
@@ -43,7 +41,7 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 	{
 		log.debug("JUnit_RobotChronoTest.test_va_au_point_symetrie()", this);
 		config.set("couleur", "jaune");
-		robotchrono.maj_config();
+		robotchrono.updateConfig();
 		robotchrono = new RobotChrono(config, log);
 		robotchrono.setPosition(new Vec2(0, 1500));
 		robotchrono.setOrientation(0);
@@ -89,20 +87,7 @@ public class JUnit_RobotChronoTest extends JUnit_Test {
 	@Test
 	public void test_actionneurs() throws Exception
 	{
-		robotchrono.bac_bas();
-		robotchrono.bac_haut();
-		robotchrono.deposer_fresques();
-		robotchrono.isFresquesPosees();
-		robotchrono.rateau(PositionRateau.BAS, Cote.DROIT);
-		robotchrono.rateau(PositionRateau.BAS, Cote.GAUCHE);
-		robotchrono.rateau(PositionRateau.HAUT, Cote.DROIT);
-		robotchrono.rateau(PositionRateau.HAUT, Cote.GAUCHE);
-		robotchrono.rateau(PositionRateau.RANGER, Cote.DROIT);
-		robotchrono.rateau(PositionRateau.RANGER, Cote.GAUCHE);
-		robotchrono.rateau(PositionRateau.SUPER_BAS, Cote.DROIT);
-		robotchrono.rateau(PositionRateau.SUPER_BAS, Cote.GAUCHE);
-		robotchrono.tirerBalle();
-		robotchrono.sleep(100);
+		// TODO: tester les actionneurs de robotchrono
 	}
 		
 }

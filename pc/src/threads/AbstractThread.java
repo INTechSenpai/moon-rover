@@ -6,7 +6,7 @@ import container.Service;
 
 /**
  * Classe abstraite des threads
- * @author pf
+ * @author pf,marsu
  *
  */
 
@@ -27,7 +27,7 @@ public abstract class AbstractThread extends Thread implements Service {
 	{		
 	}
 
-	public void maj_config()
+	public void updateConfig()
 	{
 	}
 	

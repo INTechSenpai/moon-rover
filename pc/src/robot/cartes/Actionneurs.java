@@ -24,7 +24,7 @@ public class Actionneurs implements Service {
 		
 	}
 
-	public void maj_config()
+	public void updateConfig()
 	{
 	}
 

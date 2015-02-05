@@ -13,7 +13,8 @@ import utils.Read_Ini;
  *
  */
 
-abstract public class Hook {
+abstract public class Hook
+{
 
 	protected ArrayList<Callback> callbacks = new ArrayList<Callback>();
 	
@@ -45,6 +46,7 @@ abstract public class Hook {
 	protected boolean declencher()
 	{
 		boolean retour = false;
+		
 		for(Callback callback : callbacks)
 			retour |= callback.appeler();
 		return retour;
