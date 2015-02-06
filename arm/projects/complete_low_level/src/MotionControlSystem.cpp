@@ -23,9 +23,11 @@ void MotionControlSystem::init() {
 	 */
 
 	translationPID.setControllerDirection(PidDirection::DIRECT);
-	translationPID.setTunings(0.45, 9.0, 0.);
+	//translationPID.setTunings(0.45, 9.0, 0.);
+	translationPID.setTunings(1., 0., 0.);
 	rotationPID.setControllerDirection(PidDirection::DIRECT);
-	rotationPID.setTunings(.8, 15.0, 0.);
+	//rotationPID.setTunings(.8, 15.0, 0.);
+	rotationPID.setTunings(1., 0., 0.);
 
 	/**
 	 * Initialisation de la boucle d'asservissement (TIMER 4)
@@ -97,22 +99,20 @@ void MotionControlSystem::enableRotationControl(bool enabled) {
 }
 
 void MotionControlSystem::control() {
-//
-//	int32_t leftTicks = Counter::getLeftValue();
-//	int32_t rightTicks = Counter::getRightValue();
-//
-//	if (translationControlled) {
-//		currentDistance = leftTicks + rightTicks;
-//		//currentDistance = (leftTicks + rightTicks) / 2;
-//		translationPID.compute();
-//	} else
-//		pwmTranslation = 0;
-//
-//	if (rotationControlled) {
-//		currentAngle = leftTicks - rightTicks;
-//		rotationPID.compute();
-//	} else
-		pwmTranslation = 150 ;
+
+	int32_t leftTicks = Counter::getLeftValue();
+	int32_t rightTicks = Counter::getRightValue();
+
+	if (translationControlled) {
+		currentDistance = (leftTicks + rightTicks) / 2;
+		translationPID.compute();
+	} else
+		pwmTranslation = 0;
+
+	if (rotationControlled) {
+		currentAngle = -leftTicks + rightTicks;
+		rotationPID.compute();
+	} else
 		pwmRotation = 0;
 	applyControl();
 }

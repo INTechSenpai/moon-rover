@@ -16,41 +16,56 @@
 <part id="3"/>
 <part id="4"/>
 <part id="5"/>
+<part id="6"/>
 </presentation>
 </folder>
 </info>
 </editorArea>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="main.cpp" partName="main.cpp" path="C:/Boulot/intech/intech/Code/stm32f4/projects/complete_low_level/main.cpp" title="main.cpp" tooltip="C:/Boulot/intech/intech/Code/stm32f4/projects/complete_low_level/main.cpp" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/complete_low_level/main.cpp"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="876" selectionTopPixel="2952"/>
-</editor>
-<editor activePart="true" focus="true" id="org.eclipse.cdt.ui.editor.CEditor" name="Motor.cpp" partName="Motor.cpp" path="C:/Boulot/intech/intech/Code/stm32f4/projects/complete_low_level/src/Motor.cpp" title="Motor.cpp" tooltip="C:/Boulot/intech/intech/Code/stm32f4/projects/complete_low_level/src/Motor.cpp" workbook="DefaultEditorWorkbook">
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="Motor.cpp" partName="Motor.cpp" path="D:/Documents/Git/stm32f4/projects/complete_low_level/src/Motor.cpp" title="Motor.cpp" tooltip="D:/Documents/Git/stm32f4/projects/complete_low_level/src/Motor.cpp" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/complete_low_level/src/Motor.cpp"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="4377" selectionTopPixel="730"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="5510" selectionTopPixel="3213"/>
 </editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="ActuatorsMgr.hpp" partName="ActuatorsMgr.hpp" path="C:/Boulot/intech/intech/Code/stm32f4/projects/complete_low_level/include/ActuatorsMgr.hpp" title="ActuatorsMgr.hpp" tooltip="C:/Boulot/intech/intech/Code/stm32f4/projects/complete_low_level/include/ActuatorsMgr.hpp" workbook="DefaultEditorWorkbook">
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="ActuatorsMgr.hpp" partName="ActuatorsMgr.hpp" path="D:/Documents/Git/stm32f4/projects/complete_low_level/include/ActuatorsMgr.hpp" title="ActuatorsMgr.hpp" tooltip="D:/Documents/Git/stm32f4/projects/complete_low_level/include/ActuatorsMgr.hpp" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/complete_low_level/include/ActuatorsMgr.hpp"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1915" selectionTopPixel="1143"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="66" selectionTopPixel="0"/>
 </editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="ax12.hpp" partName="ax12.hpp" title="ax12.hpp" tooltip="C:\Boulot\intech\intech\Code\stm32f4\library\ax12.hpp" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" path="C:\Boulot\intech\intech\Code\stm32f4\library\ax12.hpp" project="complete_low_level"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="370" selectionTopPixel="2400"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="stm32f4xx_gpio.h" partName="stm32f4xx_gpio.h" path="C:/Boulot/intech/intech/Code/stm32f4/projects/complete_low_level/cmsis_lib/include/stm32f4xx_gpio.h" title="stm32f4xx_gpio.h" tooltip="C:/Boulot/intech/intech/Code/stm32f4/projects/complete_low_level/cmsis_lib/include/stm32f4xx_gpio.h" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/complete_low_level/cmsis_lib/include/stm32f4xx_gpio.h"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="4233" selectionTopPixel="2660"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="MotionControlSystem.h" partName="MotionControlSystem.h" path="C:/Boulot/intech/intech/Code/stm32f4/projects/complete_low_level/include/MotionControlSystem.h" title="MotionControlSystem.h" tooltip="C:/Boulot/intech/intech/Code/stm32f4/projects/complete_low_level/include/MotionControlSystem.h" workbook="DefaultEditorWorkbook">
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="MotionControlSystem.h" partName="MotionControlSystem.h" path="D:/Documents/Git/stm32f4/projects/complete_low_level/include/MotionControlSystem.h" title="MotionControlSystem.h" tooltip="D:/Documents/Git/stm32f4/projects/complete_low_level/include/MotionControlSystem.h" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/complete_low_level/include/MotionControlSystem.h"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1805" selectionTopPixel="1040"/>
+<editorState selectionHorizontalPixel="0" selectionLength="12" selectionOffset="1557" selectionTopPixel="820"/>
+</editor>
+<editor activePart="true" focus="true" id="org.eclipse.cdt.ui.editor.CEditor" name="MotionControlSystem.cpp" partName="MotionControlSystem.cpp" path="D:/Documents/Git/stm32f4/projects/complete_low_level/src/MotionControlSystem.cpp" title="MotionControlSystem.cpp" tooltip="D:/Documents/Git/stm32f4/projects/complete_low_level/src/MotionControlSystem.cpp" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/complete_low_level/src/MotionControlSystem.cpp"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="3239" selectionTopPixel="2080"/>
+</editor>
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="pid.hpp" partName="pid.hpp" title="pid.hpp" tooltip="D:\Documents\Git\stm32f4\library\pid.hpp" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" path="D:\Documents\Git\stm32f4\library\pid.hpp" project="complete_low_level"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="194" selectionTopPixel="690"/>
+</editor>
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="Motor.h" partName="Motor.h" path="D:/Documents/Git/stm32f4/projects/complete_low_level/include/Motor.h" title="Motor.h" tooltip="D:/Documents/Git/stm32f4/projects/complete_low_level/include/Motor.h" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/complete_low_level/include/Motor.h"/>
+<editorState selectionHorizontalPixel="0" selectionLength="6" selectionOffset="487" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="main.cpp" partName="main.cpp" path="D:/Documents/Git/stm32f4/projects/complete_low_level/main.cpp" title="main.cpp" tooltip="D:/Documents/Git/stm32f4/projects/complete_low_level/main.cpp" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/complete_low_level/main.cpp"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="7033" selectionTopPixel="5273"/>
 </editor>
 </editors>
 <views>
+<view id="org.coocox.builder.ui.views.ProjectView" partName="Project">
+<viewState CommonNavigator.LINKING_ENABLED="0" horizontalPosition="0" org.eclipse.ui.navigator.resources.workingSets.showTopLevelWorkingSets="0" verticalPosition="0">
+<expanded>
+<element path="/complete_low_level"/>
+<element path="/complete_low_level/include"/>
+<element path="/complete_low_level/library"/>
+<element path="/complete_low_level/src"/>
+</expanded>
+<selection>
+<element path="/complete_low_level/library/safe_enum.hpp"/>
+</selection>
+</viewState>
+</view>
 <view id="org.coocox.component.ui.ComponentView" partName="Components">
 <viewState/>
-</view>
-<view id="org.coocox.builder.ui.views.ProjectView" partName="Project">
-<viewState CommonNavigator.LINKING_ENABLED="0" horizontalPosition="0" org.eclipse.ui.navigator.resources.workingSets.showTopLevelWorkingSets="0" verticalPosition="0"/>
 </view>
 <view id="org.coocox.codebugger.trace.ui.traceview" partName="Semihosting">
 <viewState/>
@@ -61,7 +76,7 @@
 </view>
 <view id="org.eclipse.debug.ui.VariableView" partName="Variables"/>
 </views>
-<perspectives activePart="org.coocox.builder.ui.views.ProjectView" activePerspective="org.coocox.builder.perspective.CoBuilder">
+<perspectives activePart="org.eclipse.cdt.ui.editor.CEditor" activePerspective="org.coocox.builder.perspective.CoBuilder">
 <perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
 <descriptor class="org.coocox.builder.ui.PerspectiveCoBuilder" id="org.coocox.builder.perspective.CoBuilder" label="CooCox CoBuilder"/>
 <alwaysOnActionSet id="org.eclipse.search.searchActionSet"/>
@@ -92,8 +107,8 @@
 <hide_toolbar_item_id id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
 <hide_toolbar_item_id id="org.eclipse.debug.ui.commands.TerminateAndRelaunch"/>
 <view id="org.coocox.component.ui.ComponentView"/>
-<view id="org.eclipse.ui.console.ConsoleView"/>
 <view id="org.coocox.builder.ui.views.ProjectView"/>
+<view id="org.eclipse.ui.console.ConsoleView"/>
 <fastViewBars/>
 <layout>
 <mainWindow>
@@ -111,7 +126,7 @@
 <page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@544e03" ratio="0.8284153" ratioLeft="758" ratioRight="157" relationship="4" relative="org.eclipse.ui.internal.ViewStack@13f21d4">
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@544e03" ratio="0.64961916" ratioLeft="597" ratioRight="322" relationship="4" relative="org.eclipse.ui.internal.ViewStack@13f21d4">
 <folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">
 <page content="org.eclipse.ui.console.ConsoleView" label="Console"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
@@ -131,7 +146,13 @@
 </folder>
 </info>
 <info part="org.eclipse.ui.editorss" ratio="0.44989106" ratioLeft="413" ratioRight="505" relationship="4" relative="org.coocox.builder.ui.exampleView"/>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@1c5f031" ratio="0.54545456" ratioLeft="438" ratioRight="365" relationship="4" relative="org.eclipse.ui.internal.ViewStack@13f21d4">
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@2fba49" ratio="0.5" ratioLeft="784" ratioRight="784" relationship="2" relative="org.eclipse.ui.editorss">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.search.ui.views.SearchView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@1c5f031" ratio="0.23847167" ratioLeft="181" ratioRight="578" relationship="4" relative="org.eclipse.ui.internal.ViewStack@13f21d4">
 <folder activePageID="org.coocox.builder.ui.views.ProjectView" appearance="2" expanded="2">
 <page content="org.coocox.builder.ui.views.ProjectView" label="Project"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
@@ -235,176 +256,166 @@
 <workingSets/>
 <navigationHistory>
 <editors>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/main.cpp"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/src/Motor.cpp"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/src/MotionControlSystem.cpp"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/include/ActuatorsMgr.hpp"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/src/MotionControlSystem.cpp"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/include/MotionControlSystem.h"/>
-<editor factoryID="org.coocox.builder.ui.persistent.PersistentElementFactory" id="org.coocox.welcome.ui.WelcomePage">
-<org.coocox.welcome.ui.WelcomePage/>
-</editor>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/include/Counter.h"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/src/Counter.cpp"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/src/Uart_IT.cpp"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/include/Communication.hpp"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/cmsis_boot/stm32f4xx.h"/>
+<editor factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="D:\Documents\Git\stm32f4\library\pid.hpp" project="complete_low_level"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/include/Motor.h"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/main.cpp"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/library/Uart.hpp"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/src/MotionControlSystem.cpp"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/include/Counter.h"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/src/Motor.cpp"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/src/Motor.cpp"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/src/Counter.cpp"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/library/Uart.hpp"/>
-<editor factoryID="org.coocox.builder.ui.persistent.PersistentElementFactory" id="org.coocox.builder.ui.editors.ConfigEditor">
-<org.coocox.builder.ui.editors.ConfigEditor/>
-</editor>
+<editor factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="C:\Boulot\intech\intech\Code\stm32f4\library\ax12.hpp" project="complete_low_level"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/complete_low_level/cmsis_lib/include/stm32f4xx_gpio.h"/>
+<editor factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="D:\Documents\Git\stm32f4\library\ax12.hpp" project="complete_low_level"/>
 </editors>
-<item historyLabel="MotionControlSystem.cpp" index="3">
-<position info="not_deleted" x="2126" y="0"/>
+<item historyLabel="Motor.cpp" index="0">
+<position info="not_deleted" x="5291" y="0"/>
 </item>
-<item historyLabel="MotionControlSystem.h" index="4">
-<position info="not_deleted" x="1805" y="0"/>
+<item historyLabel="Motor.h" index="5">
+<position info="not_deleted" x="487" y="6"/>
 </item>
-<item historyLabel="MotionControlSystem.cpp" index="3">
-<position info="not_deleted" x="2126" y="0"/>
+<item historyLabel="Motor.cpp" index="0">
+<position info="not_deleted" x="683" y="0"/>
 </item>
-<item historyLabel="main.cpp" index="0">
-<position info="not_deleted" x="3036" y="0"/>
+<item historyLabel="pid.hpp" index="4">
+<position info="not_deleted" x="682" y="0"/>
 </item>
-<item historyLabel="Motor.cpp" index="1">
-<position info="not_deleted" x="5315" y="0"/>
+<item historyLabel="main.cpp" index="6">
+<position info="not_deleted" x="0" y="0"/>
 </item>
-<item historyLabel="MotionControlSystem.cpp" index="3">
-<position info="not_deleted" x="3448" y="0"/>
+<item historyLabel="Motor.cpp" index="0">
+<position info="not_deleted" x="1143" y="0"/>
 </item>
-<item historyLabel="main.cpp" index="0">
-<position info="not_deleted" x="3036" y="0"/>
-</item>
-<item historyLabel="main.cpp" index="0">
-<position info="not_deleted" x="6474" y="0"/>
-</item>
-<item historyLabel="main.cpp" index="0">
-<position info="not_deleted" x="1879" y="0"/>
+<item historyLabel="main.cpp" index="6">
+<position info="not_deleted" x="0" y="0"/>
 </item>
 <item historyLabel="ActuatorsMgr.hpp" index="2">
-<position info="not_deleted" x="3095" y="0"/>
+<position info="not_deleted" x="2747" y="0"/>
 </item>
-<item historyLabel="welcome" index="5"/>
+<item historyLabel="Motor.cpp" index="0">
+<position info="not_deleted" x="5510" y="0"/>
+</item>
+<item historyLabel="main.cpp" index="6">
+<position info="not_deleted" x="6463" y="0"/>
+</item>
+<item historyLabel="Motor.cpp" index="0">
+<position info="not_deleted" x="5510" y="0"/>
+</item>
+<item historyLabel="main.cpp" index="6">
+<position info="not_deleted" x="3151" y="0"/>
+</item>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="2051" y="14"/>
+</item>
+<item historyLabel="MotionControlSystem.h" index="3">
+<position info="not_deleted" x="1306" y="14"/>
+</item>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="235" y="14"/>
+</item>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="3170" y="14"/>
+</item>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="3912" y="14"/>
+</item>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="4672" y="14"/>
+</item>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="4720" y="14"/>
+</item>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="235" y="14"/>
+</item>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="3151" y="0"/>
+</item>
+<item historyLabel="pid.hpp" index="4">
+<position info="not_deleted" x="682" y="0"/>
+</item>
+<item historyLabel="ax12.hpp" index="7">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="stm32f4xx_gpio.h" index="8">
+<position info="not_deleted" x="4233" y="0"/>
+</item>
+<item historyLabel="ax12.hpp" index="7">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="stm32f4xx_gpio.h" index="8">
+<position info="not_deleted" x="4233" y="0"/>
+</item>
 <item historyLabel="ActuatorsMgr.hpp" index="2">
-<position info="not_deleted" x="1915" y="0"/>
+<position info="not_deleted" x="66" y="0"/>
 </item>
-<item historyLabel="main.cpp" index="0">
-<position info="not_deleted" x="1879" y="0"/>
-</item>
-<item historyLabel="Motor.cpp" index="1">
-<position info="not_deleted" x="5315" y="0"/>
-</item>
-<item historyLabel="MotionControlSystem.cpp" index="3">
-<position info="not_deleted" x="2892" y="0"/>
-</item>
-<item historyLabel="Counter.h" index="6">
-<position info="not_deleted" x="167" y="7"/>
-</item>
-<item historyLabel="Counter.cpp" index="7">
+<item historyLabel="ax12.hpp" index="9">
 <position info="not_deleted" x="0" y="0"/>
 </item>
-<item historyLabel="Counter.cpp" index="7">
-<position info="not_deleted" x="430" y="0"/>
+<item historyLabel="ActuatorsMgr.hpp" index="2">
+<position info="not_deleted" x="66" y="0"/>
 </item>
-<item historyLabel="Counter.cpp" index="7">
-<position info="not_deleted" x="351" y="0"/>
+<item historyLabel="stm32f4xx_gpio.h" index="8">
+<position info="not_deleted" x="4233" y="0"/>
 </item>
-<item historyLabel="Uart_IT.cpp" index="8">
-<position info="not_deleted" x="0" y="0"/>
+<item historyLabel="ActuatorsMgr.hpp" index="2">
+<position info="not_deleted" x="66" y="0"/>
 </item>
-<item historyLabel="Communication.hpp" index="9">
-<position info="not_deleted" x="0" y="0"/>
+<item historyLabel="pid.hpp" index="4">
+<position info="not_deleted" x="194" y="0"/>
 </item>
-<item historyLabel="Uart_IT.cpp" index="8">
-<position info="not_deleted" x="616" y="0"/>
+<item historyLabel="main.cpp" index="6">
+<position info="not_deleted" x="3149" y="0"/>
 </item>
-<item historyLabel="stm32f4xx.h" index="10">
-<position info="not_deleted" x="69195" y="6"/>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="2056" y="0"/>
 </item>
-<item historyLabel="Uart_IT.cpp" index="8">
-<position info="not_deleted" x="616" y="0"/>
+<item historyLabel="MotionControlSystem.h" index="3">
+<position info="not_deleted" x="959" y="14"/>
 </item>
-<item historyLabel="Counter.cpp" index="7">
-<position info="not_deleted" x="2005" y="0"/>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="3219" y="0"/>
 </item>
-<item historyLabel="main.cpp" index="11">
-<position info="not_deleted" x="152" y="0"/>
+<item historyLabel="main.cpp" index="6">
+<position info="not_deleted" x="3149" y="0"/>
 </item>
-<item historyLabel="Uart.hpp" index="12">
-<position info="not_deleted" x="934" y="4"/>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="561" y="0"/>
 </item>
-<item historyLabel="MotionControlSystem.cpp" index="13">
-<position info="not_deleted" x="2892" y="0"/>
+<item historyLabel="Motor.cpp" index="0">
+<position info="not_deleted" x="5510" y="0"/>
 </item>
-<item historyLabel="main.cpp" index="11">
-<position info="not_deleted" x="1344" y="0"/>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="4696" y="0"/>
 </item>
-<item historyLabel="MotionControlSystem.cpp" index="13">
-<position info="not_deleted" x="2333" y="15"/>
+<item historyLabel="pid.hpp" index="4">
+<position info="not_deleted" x="194" y="0"/>
 </item>
-<item historyLabel="Counter.h" index="14">
-<position info="not_deleted" x="167" y="7"/>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="3262" y="0"/>
 </item>
-<item historyLabel="Counter.h" index="14">
-<position info="not_deleted" x="251" y="13"/>
+<item historyLabel="main.cpp" index="6">
+<position info="not_deleted" x="7033" y="0"/>
 </item>
-<item historyLabel="Counter.cpp" index="7">
-<position info="not_deleted" x="2544" y="0"/>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="4102" y="14"/>
 </item>
-<item historyLabel="main.cpp" index="11">
-<position info="not_deleted" x="578" y="0"/>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="4304" y="0"/>
 </item>
-<item historyLabel="Counter.cpp" index="7">
-<position info="not_deleted" x="1685" y="0"/>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="6260" y="0"/>
 </item>
-<item historyLabel="main.cpp" index="11">
-<position info="not_deleted" x="578" y="0"/>
+<item historyLabel="MotionControlSystem.h" index="3">
+<position info="not_deleted" x="1557" y="12"/>
 </item>
-<item historyLabel="Motor.cpp" index="15">
-<position info="not_deleted" x="5315" y="0"/>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="5414" y="12"/>
 </item>
-<item historyLabel="MotionControlSystem.cpp" index="13">
-<position info="not_deleted" x="2375" y="0"/>
+<item historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="5114" y="12"/>
 </item>
-<item historyLabel="Counter.cpp" index="7">
-<position info="not_deleted" x="1685" y="0"/>
-</item>
-<item historyLabel="Motor.cpp" index="16">
-<position info="not_deleted" x="5315" y="0"/>
-</item>
-<item historyLabel="Counter.cpp" index="7">
-<position info="not_deleted" x="2341" y="0"/>
-</item>
-<item historyLabel="Motor.cpp" index="16">
-<position info="not_deleted" x="5315" y="0"/>
-</item>
-<item historyLabel="Counter.cpp" index="7">
-<position info="not_deleted" x="2341" y="0"/>
-</item>
-<item historyLabel="Motor.cpp" index="16">
-<position info="not_deleted" x="5315" y="0"/>
-</item>
-<item historyLabel="Counter.cpp" index="17">
-<position info="not_deleted" x="2051" y="0"/>
-</item>
-<item historyLabel="Motor.cpp" index="16">
-<position info="not_deleted" x="5460" y="0"/>
-</item>
-<item historyLabel="Uart.hpp" index="18">
-<position info="not_deleted" x="3810" y="0"/>
-</item>
-<item historyLabel="Motor.cpp" index="16">
-<position info="not_deleted" x="5460" y="0"/>
-</item>
-<item historyLabel="Configuration" index="19"/>
-<item active="true" historyLabel="Motor.cpp" index="16">
-<position info="not_deleted" x="5051" y="0"/>
+<item active="true" historyLabel="MotionControlSystem.cpp" index="1">
+<position info="not_deleted" x="3223" y="12"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
@@ -413,9 +424,34 @@
 <actionBarAdvisor/>
 </window>
 <mruList>
+<file factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="ax12.hpp" tooltip="D:\Documents\Git\stm32f4\library\ax12.hpp">
+<persistable path="D:\Documents\Git\stm32f4\library\ax12.hpp" project="complete_low_level"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="main.cpp" tooltip="complete_low_level/main.cpp">
+<persistable path="/complete_low_level/main.cpp"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="Motor.h" tooltip="complete_low_level/include/Motor.h">
+<persistable path="/complete_low_level/include/Motor.h"/>
+</file>
+<file factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="pid.hpp" tooltip="D:\Documents\Git\stm32f4\library\pid.hpp">
+<persistable path="D:\Documents\Git\stm32f4\library\pid.hpp" project="complete_low_level"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="MotionControlSystem.cpp" tooltip="complete_low_level/src/MotionControlSystem.cpp">
+<persistable path="/complete_low_level/src/MotionControlSystem.cpp"/>
+</file>
+<file factoryID="org.coocox.component.ui.editors.repository.RepositoryElementFactory" id="org.coocox.builder.ui.editors.repository.RepositoryBrowser" name="Repository" tooltip="Repository">
+<persistable>
+<subPage/>
+</persistable>
+</file>
 <file factoryID="org.coocox.builder.ui.persistent.PersistentElementFactory" id="org.coocox.builder.ui.editors.ConfigEditor" name="" tooltip="">
 <persistable>
 <org.coocox.builder.ui.editors.ConfigEditor/>
+</persistable>
+</file>
+<file factoryID="org.coocox.builder.ui.persistent.PersistentElementFactory" id="org.coocox.welcome.ui.WelcomePage" name="" tooltip="">
+<persistable>
+<org.coocox.welcome.ui.WelcomePage/>
 </persistable>
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="stm32f4xx_gpio.c" tooltip="complete_low_level/cmsis_lib/source/stm32f4xx_gpio.c">
@@ -438,27 +474,6 @@
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="MotionControlSystem.h" tooltip="complete_low_level/include/MotionControlSystem.h">
 <persistable path="/complete_low_level/include/MotionControlSystem.h"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="MotionControlSystem.cpp" tooltip="complete_low_level/src/MotionControlSystem.cpp">
-<persistable path="/complete_low_level/src/MotionControlSystem.cpp"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="stm32f4xx_gpio.h" tooltip="complete_low_level/cmsis_lib/include/stm32f4xx_gpio.h">
-<persistable path="/complete_low_level/cmsis_lib/include/stm32f4xx_gpio.h"/>
-</file>
-<file factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="ax12.hpp" tooltip="C:\Boulot\intech\intech\Code\stm32f4\library\ax12.hpp">
-<persistable path="C:\Boulot\intech\intech\Code\stm32f4\library\ax12.hpp" project="complete_low_level"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="ActuatorsMgr.hpp" tooltip="complete_low_level/include/ActuatorsMgr.hpp">
-<persistable path="/complete_low_level/include/ActuatorsMgr.hpp"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="Motor.cpp" tooltip="complete_low_level/src/Motor.cpp">
-<persistable path="/complete_low_level/src/Motor.cpp"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="main.cpp" tooltip="asservissement/main.cpp">
-<persistable path="/asservissement/main.cpp"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="Uart_IT.cpp" tooltip="asservissement/src/Uart_IT.cpp">
-<persistable path="/asservissement/src/Uart_IT.cpp"/>
 </file>
 </mruList>
 </workbench>
