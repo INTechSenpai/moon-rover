@@ -115,7 +115,7 @@ void Motor::initPWM(){
 	uint16_t prescaler = (uint16_t)((SystemCoreClock / 2) / 256000) - 1; //le deuxième /2 est dû au changement pour un timer de clock doublée
 
 	//Configuration du TIMER 8
-	TIM_TimeBaseStructure.TIM_Period = 255;
+	TIM_TimeBaseStructure.TIM_Period = 10;//ancienne valeur = 255
 	TIM_TimeBaseStructure.TIM_Prescaler = prescaler;
 	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;

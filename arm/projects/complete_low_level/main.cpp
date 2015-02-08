@@ -15,6 +15,13 @@ int main(void)
 	motionControlSystem->init();
 	ActuatorsMgr actuatorsMgr;
 
+	float
+	kp_trans = 0.4,
+	kd_trans = 5,
+	kp_rot = 0.08,
+	kd_rot = 7;
+	bool translation = true;//permet de basculer entre les réglages Kp de translation et de rotation
+
 	while(1)
 	{
 		if (serial.available()) {
@@ -114,38 +121,70 @@ int main(void)
 			}
 			else if(!strcmp("kp",order))
 			{
-				float kp;
 				serial.printfln("kp?");
-				serial.read(kp);
-				serial.printfln("kp = %f", kp);
-				bool translation = false;
 				if (translation)
 				{
-					motionControlSystem->setTranslationTunings(kp,0,0);
-					motionControlSystem->orderTranslation(-1000);
+					serial.read(kp_trans);
+					serial.printfln("kp = %f", kp_trans);
+					motionControlSystem->setTranslationTunings(kp_trans,0,kd_trans);
+					motionControlSystem->setRotationTunings(kp_rot,0,kd_rot);
+					motionControlSystem->orderTranslation(100);
+					Delay(3000);
+					serial.printfln("%f\r\n%f", motionControlSystem->getX(), motionControlSystem->getY());
+					serial.printfln("%f", motionControlSystem->getAngleRadian());
+					motionControlSystem->orderTranslation(-100);
+					Delay(3000);
+					serial.printfln("%f\r\n%f", motionControlSystem->getX(), motionControlSystem->getY());
+					serial.printfln("%f", motionControlSystem->getAngleRadian());
 				}
 				else
 				{
-					motionControlSystem->setRotationTunings(kp,0,0);
-					motionControlSystem->orderRotation(PI);
+					serial.read(kp_rot);
+					serial.printfln("kp = %f", kp_rot);
+					motionControlSystem->setTranslationTunings(kp_trans,0,kd_trans);
+					motionControlSystem->setRotationTunings(kp_rot,0,kd_rot);
+					motionControlSystem->orderRotation(PI/2);
+					Delay(3000);
+					serial.printfln("%f\r\n%f", motionControlSystem->getX(), motionControlSystem->getY());
+					serial.printfln("%f", motionControlSystem->getAngleRadian());
+					motionControlSystem->orderRotation(0);
+					Delay(3000);
+					serial.printfln("%f\r\n%f", motionControlSystem->getX(), motionControlSystem->getY());
+					serial.printfln("%f", motionControlSystem->getAngleRadian());
 				}
 			}
 			else if(!strcmp("kd",order))
 			{
-				float kd;
 				serial.printfln("kd?");
-				serial.read(kd);
-				serial.printfln("kd = %f", kd);
-				bool translation = true;
 				if (translation)
 				{
-					motionControlSystem->setTranslationTunings(1.5,0,kd);
-					motionControlSystem->orderTranslation(-1000);
+					serial.read(kd_trans);
+					serial.printfln("kd = %f", kd_trans);
+					motionControlSystem->setTranslationTunings(kp_trans,0,kd_trans);
+					motionControlSystem->setRotationTunings(kp_rot,0,kd_rot);
+					motionControlSystem->orderTranslation(100);
+					Delay(3000);
+					serial.printfln("%f\r\n%f", motionControlSystem->getX(), motionControlSystem->getY());
+					serial.printfln("%f", motionControlSystem->getAngleRadian());
+					motionControlSystem->orderTranslation(-100);
+					Delay(3000);
+					serial.printfln("%f\r\n%f", motionControlSystem->getX(), motionControlSystem->getY());
+					serial.printfln("%f", motionControlSystem->getAngleRadian());
 				}
 				else
 				{
-					motionControlSystem->setRotationTunings(1,0,kd);
-					motionControlSystem->orderRotation(PI);
+					serial.read(kd_rot);
+					serial.printfln("kd = %f", kd_rot);
+					motionControlSystem->setTranslationTunings(kp_trans,0,kd_trans);
+					motionControlSystem->setRotationTunings(kp_rot,0,kd_rot);
+					motionControlSystem->orderRotation(PI/2);
+					Delay(3000);
+					serial.printfln("%f\r\n%f", motionControlSystem->getX(), motionControlSystem->getY());
+					serial.printfln("%f", motionControlSystem->getAngleRadian());
+					motionControlSystem->orderRotation(0);
+					Delay(3000);
+					serial.printfln("%f\r\n%f", motionControlSystem->getX(), motionControlSystem->getY());
+					serial.printfln("%f", motionControlSystem->getAngleRadian());
 				}
 			}
 			else if(!strcmp("obd",order))

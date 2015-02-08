@@ -23,11 +23,9 @@ void MotionControlSystem::init() {
 	 */
 
 	translationPID.setControllerDirection(PidDirection::DIRECT);
-	//translationPID.setTunings(0.45, 9.0, 0.);
-	translationPID.setTunings(1., 0., 0.);
+	translationPID.setTunings(0.4, 0., 5);
 	rotationPID.setControllerDirection(PidDirection::DIRECT);
-	//rotationPID.setTunings(.8, 15.0, 0.);
-	rotationPID.setTunings(1., 0., 0.);
+	rotationPID.setTunings(0.08, 0., 7);
 
 	/**
 	 * Initialisation de la boucle d'asservissement (TIMER 4)
@@ -110,7 +108,7 @@ void MotionControlSystem::control() {
 		pwmTranslation = 0;
 
 	if (rotationControlled) {
-		currentAngle = -leftTicks + rightTicks;
+		currentAngle = (-leftTicks + rightTicks)/2;//Je pense qu'il manquait un "/2"
 		rotationPID.compute();
 	} else
 		pwmRotation = 0;

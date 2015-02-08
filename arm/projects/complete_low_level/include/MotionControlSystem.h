@@ -11,15 +11,18 @@
 #include <Uart.hpp>
 
 #define PI 3.14159265
-#define PI_TIC 24809 // pi/TICK_TO_RADIAN
+//#define PI_TIC 24809 // pi/TICK_TO_RADIAN
+#define PI_TIC 2171
 
 /**
  * 123,825 mm : diametre des roues
  * 12000 ticks par tour de roue
  */
 #define PERIMETER_MM 123.825*PI
-#define TICK_TO_MM 0.0324173 // PERIMETER_MM/12000
-#define TICK_TO_RADIAN 0.00012663 // TICK_TO_MM/256 : entre roues de 25.6cm
+//#define TICK_TO_MM 0.0324173 // PERIMETER_MM/12000
+#define TICK_TO_MM 0.2077
+//#define TICK_TO_RADIAN 0.00012663 // TICK_TO_MM/256 : entre roues de 25.6cm
+#define TICK_TO_RADIAN 0.0014469
 
 class MotionControlSystem : public Singleton<MotionControlSystem> {
 private:
