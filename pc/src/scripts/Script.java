@@ -27,6 +27,7 @@ import exceptions.UnableToMoveException;
 public abstract class Script
 {
 	protected boolean symmetry;
+	protected int positionTolerancy;
 	protected HookFactory hookfactory;
 	protected Config config;
 	protected Log log;
@@ -144,6 +145,7 @@ public abstract class Script
 	public void updateConfig()
 	{
 		symmetry = config.getSymmetry();
+		positionTolerancy = config.getInt(ConfigInfo.HOOKS_TOLERANCE_MM);		
 		squared_tolerance_depart_script = config.getInt(ConfigInfo.TOLERANCE_DEPART_SCRIPT);
 		squared_tolerance_depart_script *= squared_tolerance_depart_script; // on en utilise le carré
 	}
