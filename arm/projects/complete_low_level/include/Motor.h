@@ -31,18 +31,15 @@ typedef safe_enum<side_def> Side;
 class Motor {
 private:
 	Side side;
-	uint8_t maxPWM;
-
 	void toggleDirection();
 	void setDirection(Direction);
 
 public:
 	Motor(Side);
+	float getNerf();
+	void setNerf(float newNerf);
 	static void initPWM();
 	void run(int16_t);
-	void setMaxPWM(uint8_t);
-
-
 };
 
 #endif

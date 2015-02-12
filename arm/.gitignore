@@ -1,3 +1,4 @@
-*.cogui
-*.comarker
+**/*.cogui
+**/*.comarker
 build/
+**/complete_low_level/complete_low_level/

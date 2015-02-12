@@ -28,6 +28,19 @@ void MotionControlSystem::init() {
 	rotationPID.setTunings(0.08, 0., 7);
 
 	/**
+	 * Réglage du PWM maximum
+	 */
+	setMaxPWMtranslation(120);
+	setMaxPWMrotation(100);
+
+	/**
+	 * Réglage de la balance des moteurs
+	 * balance = PWM_moteur_droit/PWM_moteur_gauche
+	 */
+	setBalance(1);
+
+
+	/**
 	 * Initialisation de la boucle d'asservissement (TIMER 4)
 	 */
 
@@ -164,7 +177,7 @@ int32_t MotionControlSystem::optimumAngle(int32_t fromAngle, int32_t toAngle) {
 }
 
 void MotionControlSystem::applyControl() {
-	leftMotor.run(pwmTranslation - pwmRotation);
+	leftMotor.run(int16_t(float(pwmTranslation - pwmRotation)*balance));
 	rightMotor.run(pwmTranslation + pwmRotation);
 }
 
@@ -239,4 +252,27 @@ float MotionControlSystem::getY(){
 	return y;
 }
 
+float MotionControlSystem::getBalance(){
+	return balance;
+}
+
+void MotionControlSystem::setBalance(float newBalance){
+	balance = newBalance;
+}
+
+void MotionControlSystem::setMaxPWMtranslation(uint8_t PWM){
+	translationPID.setOutputLimits(-PWM, PWM);
+}
+
+void MotionControlSystem::setMaxPWMrotation(uint8_t PWM){
+	rotationPID.setOutputLimits(-PWM, PWM);
+}
+
+uint8_t MotionControlSystem::getMaxPWMtranslation(){
+	return translationPID.getOutputLimit();
+}
+
+uint8_t MotionControlSystem::getMaxPWMrotation(){
+	return rotationPID.getOutputLimit();
+}
 

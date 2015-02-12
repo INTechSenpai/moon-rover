@@ -32,7 +32,7 @@ public:
 		this->input = input;
 		this->setPoint = setPoint;
 
-		setOutputLimits(-170, 170);
+		setOutputLimits(-255, 255);
 		setTunings(0, 0, 0);
 	}
 
@@ -86,6 +86,11 @@ public:
 			(*output) = outMax;
 		else if ((*output) < outMin)
 			(*output) = outMin;
+	}
+
+	int16_t getOutputLimit()
+	{
+		return outMax;
 	}
 
 	void setControllerDirection(PidDirection dir) {

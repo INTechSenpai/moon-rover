@@ -22,7 +22,7 @@
 //#define TICK_TO_MM 0.0324173 // PERIMETER_MM/12000
 #define TICK_TO_MM 0.2077
 //#define TICK_TO_RADIAN 0.00012663 // TICK_TO_MM/256 : entre roues de 25.6cm
-#define TICK_TO_RADIAN 0.0014469
+#define TICK_TO_RADIAN 0.0014468
 
 class MotionControlSystem : public Singleton<MotionControlSystem> {
 private:
@@ -44,6 +44,7 @@ private:
 
 	int16_t pwmRotation;
 	int16_t pwmTranslation;
+	float balance; //Pour tout PWM on a : balance = PWM_moteur_droit/PWM_moteur_gauche
 	float x;
 	float y;
 	bool moving;
@@ -95,6 +96,12 @@ public:
 	void setOriginalAngle(float);
 	float getX();
 	float getY();
+	float getBalance();
+	void setBalance(float newBalance);
+	uint8_t getMaxPWMtranslation();
+	uint8_t getMaxPWMrotation();
+	void setMaxPWMtranslation(uint8_t);
+	void setMaxPWMrotation(uint8_t);
 };
 
 #endif /* MOTION_CONTROL_H_ */

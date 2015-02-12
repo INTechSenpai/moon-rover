@@ -17,7 +17,7 @@
 #include "Motor.h"
 
 Motor::Motor(Side s) :
-		side(s), maxPWM(210) {
+		side(s){
 
 	/**
 	 * Configuration des pins pour le sens des moteurs
@@ -52,9 +52,9 @@ void Motor::initPWM(){
 	TIM_OCInitTypeDef TIM_OCInitStructure;
 
 	/**
-	 * Configuration des PWM générés sur les canaux 1 et 2 du TIMER8
+	 * Configuration des PWM générés sur les canaux 1 et 2 du TIMER2
 	 */
-	//Active l'horloge du TIMER 8
+	//Active l'horloge du TIMER 2
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 	//Active l'horloge du port C
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
@@ -62,7 +62,7 @@ void Motor::initPWM(){
 
 	/**
 	 * Configuration pins PWM :
-	 * TIM8 CH1 (PC6 = moteur gauche) et TIM8 CH2 (PC7 = moteur droit)
+	 * TIM2 CH1 (PC6 = moteur gauche) et TIM2 CH2 (PC7 = moteur droit)
 	 *
 	 */
 
@@ -151,17 +151,17 @@ void Motor::run(int16_t pwm){
 		setDirection(Direction::FORWARD);
 
 		if (side == Side::LEFT) {
-			TIM2->CCR1 = MIN(pwm, maxPWM);
+			TIM2->CCR1 = pwm;
 		} else {
-			TIM2->CCR2 = MIN(pwm, maxPWM);
+			TIM2->CCR2 = pwm;
 		}
 
 	} else {
 		setDirection(Direction::BACKWARD);
 		if (side == Side::LEFT) {
-			TIM2->CCR1 = MIN(-pwm, maxPWM);
+			TIM2->CCR1 = -pwm;
 		} else {
-			TIM2->CCR2 = MIN(-pwm, maxPWM);
+			TIM2->CCR2 = -pwm;
 		}
 	}
 }
@@ -180,8 +180,4 @@ void Motor::setDirection(Direction dir) {
 			GPIO_ResetBits(GPIOD, GPIO_Pin_12);
 		}
 	}
-}
-
-void Motor::setMaxPWM(uint8_t max) {
-	maxPWM = max;
 }
