@@ -149,19 +149,18 @@ void Motor::run(int16_t pwm){
 
 	if (pwm >= 0) {
 		setDirection(Direction::FORWARD);
-
 		if (side == Side::LEFT) {
-			TIM2->CCR1 = pwm;
+			TIM2->CCR1 = MIN(pwm,255);
 		} else {
-			TIM2->CCR2 = pwm;
+			TIM2->CCR2 = MIN(pwm,255);
 		}
 
 	} else {
 		setDirection(Direction::BACKWARD);
 		if (side == Side::LEFT) {
-			TIM2->CCR1 = -pwm;
+			TIM2->CCR1 = MIN(-pwm,255);
 		} else {
-			TIM2->CCR2 = -pwm;
+			TIM2->CCR2 = MIN(-pwm,255);
 		}
 	}
 }

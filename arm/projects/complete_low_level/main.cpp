@@ -12,15 +12,10 @@ int main(void)
 	serial_ax.init(9600);
 
 	MotionControlSystem* motionControlSystem = &MotionControlSystem::Instance();
-	motionControlSystem->init();
+	motionControlSystem->init(100, 100);
 	ActuatorsMgr actuatorsMgr;
 
-	float
-	kp_trans = 0.2,
-	kd_trans = 35,
-	kp_rot = 0.2,
-	kd_rot = 50;
-	bool translation = true;//permet de basculer entre les réglages Kp de translation et de rotation
+	bool translation = true;//permet de basculer entre les réglages de cte d'asserv en translation et en rotation
 
 	while(1)
 	{
@@ -28,18 +23,70 @@ int main(void)
 			char order[200];
 			serial.read(order);
 
+			serial.printfln("_");//Acquittement
+
 			if(!strcmp("?",order))
 			{
-				serial.printfln("complete");
+				serial.printfln("0");
 			}
 			else if(!strcmp("!",order))
 			{
-				serial.printfln("%lf", 3.15402151024021654);
+				serial.printfln("Abwabwa.");
 			}
 			else if(!strcmp("oxy",order))
 			{
-				serial.printfln("%f\r\n%f", motionControlSystem->getX(), motionControlSystem->getY());
+				serial.printfln("x=%f\r\ny=%f", motionControlSystem->getX(), motionControlSystem->getY());
+				serial.printfln("o=%f", motionControlSystem->getAngleRadian());
+			}
+			else if(!strcmp("?xyo",order))
+			{
+				serial.printfln("%f", motionControlSystem->getX());
+				serial.printfln("%f", motionControlSystem->getY());
 				serial.printfln("%f", motionControlSystem->getAngleRadian());
+			}
+			else if(!strcmp("us_av",order))
+			{
+				serial.printfln("%d", 3000);//Distance mesurée par l'ultrason avant gauche, en mm
+				serial.printfln("%d", 3000);//Distance mesurée par l'ultrason avant droit, en mm
+			}
+			else if(!strcmp("us_ar",order))
+			{
+				serial.printfln("%d", 3000);//Distance mesurée par l'ultrason arrière gauche, en mm
+				serial.printfln("%d", 3000);//Distance mesurée par l'ultrason arrière droit, en mm
+			}
+			else if(!strcmp("ct0",order))
+			{
+				motionControlSystem->enableTranslationControl(false);
+			}
+			else if(!strcmp("ct1",order))
+			{
+				motionControlSystem->enableTranslationControl(true);
+			}
+			else if(!strcmp("cr0",order))
+			{
+				motionControlSystem->enableRotationControl(false);
+			}
+			else if(!strcmp("cr1",order))
+			{
+				motionControlSystem->enableRotationControl(true);
+			}
+			else if(!strcmp("cx",order))
+			{
+				float x;
+				serial.read(x);
+				motionControlSystem->setX(x);
+			}
+			else if(!strcmp("cy",order))
+			{
+				float y;
+				serial.read(y);
+				motionControlSystem->setY(y);
+			}
+			else if(!strcmp("co",order))
+			{
+				float o;
+				serial.read(o);
+				motionControlSystem->setOriginalAngle(o);
 			}
 			else if(!strcmp("ticks", order))
 			{
@@ -121,29 +168,40 @@ int main(void)
 			}
 			else if(!strcmp("kp",order))//Test d'une valeur de Kp
 			{
+				float kp, ki, kd;
 				serial.printfln("kp?");
 				if (translation)
 				{
-					serial.read(kp_trans);
-					serial.printfln("kp_trans = %f", kp_trans);
-					motionControlSystem->setTranslationTunings(kp_trans,0,kd_trans);
-					motionControlSystem->setRotationTunings(kp_rot,0,kd_rot);
-					motionControlSystem->orderTranslation(100);
-					Delay(3000);
+					motionControlSystem->getTranslationTunings(kp,ki,kd);
+					serial.read(kp);
+					serial.printfln("kp_trans = %f", kp);
+					motionControlSystem->setTranslationTunings(kp,ki,kd);
+					motionControlSystem->orderTranslation(300);
+					for(int t=0; t<12; t++)
+					{
+//						serial.printfln("Pwm trans : %d", motionControlSystem->getPWMTranslation());
+//						serial.printfln("Pwm rotation : %d", motionControlSystem->getPWMRotation());
+						Delay(250);
+					}
 					serial.printfln("%f\r\n%f", motionControlSystem->getX(), motionControlSystem->getY());
 					serial.printfln("%f", motionControlSystem->getAngleRadian());
-					motionControlSystem->orderTranslation(-100);
-					Delay(3000);
+					motionControlSystem->orderTranslation(-300);
+					for(int t=0; t<12; t++)
+					{
+//						serial.printfln("Pwm trans : %d", motionControlSystem->getPWMTranslation());
+//						serial.printfln("Pwm rotation : %d", motionControlSystem->getPWMRotation());
+						Delay(250);
+					}
 					serial.printfln("%f\r\n%f", motionControlSystem->getX(), motionControlSystem->getY());
 					serial.printfln("%f", motionControlSystem->getAngleRadian());
 				}
 				else
 				{
-					serial.read(kp_rot);
-					serial.printfln("kp_rot = %f", kp_rot);
-					motionControlSystem->setTranslationTunings(kp_trans,0,kd_trans);
-					motionControlSystem->setRotationTunings(kp_rot,0,kd_rot);
-					motionControlSystem->orderRotation(PI/2);
+					motionControlSystem->getRotationTunings(kp,ki,kd);
+					serial.read(kp);
+					serial.printfln("kp_rot = %f", kp);
+					motionControlSystem->setRotationTunings(kp,ki,kd);
+					motionControlSystem->orderRotation(2*PI/3);
 					Delay(3000);
 					serial.printfln("%f\r\n%f", motionControlSystem->getX(), motionControlSystem->getY());
 					serial.printfln("%f", motionControlSystem->getAngleRadian());
@@ -155,29 +213,30 @@ int main(void)
 			}
 			else if(!strcmp("kd",order))//Test d'une valeur de Kd
 			{
+				float kp, ki, kd;
 				serial.printfln("kd ?");
 				if (translation)
 				{
-					serial.read(kd_trans);
-					serial.printfln("kd_trans = %f", kd_trans);
-					motionControlSystem->setTranslationTunings(kp_trans,0,kd_trans);
-					motionControlSystem->setRotationTunings(kp_rot,0,kd_rot);
-					motionControlSystem->orderTranslation(100);
+					motionControlSystem->getTranslationTunings(kp,ki,kd);
+					serial.read(kd);
+					serial.printfln("kd_trans = %f", kd);
+					motionControlSystem->setTranslationTunings(kp,ki,kd);
+					motionControlSystem->orderTranslation(300);
 					Delay(3000);
 					serial.printfln("%f\r\n%f", motionControlSystem->getX(), motionControlSystem->getY());
 					serial.printfln("%f", motionControlSystem->getAngleRadian());
-					motionControlSystem->orderTranslation(-100);
+					motionControlSystem->orderTranslation(-300);
 					Delay(3000);
 					serial.printfln("%f\r\n%f", motionControlSystem->getX(), motionControlSystem->getY());
 					serial.printfln("%f", motionControlSystem->getAngleRadian());
 				}
 				else
 				{
-					serial.read(kd_rot);
-					serial.printfln("kd_rot = %f", kd_rot);
-					motionControlSystem->setTranslationTunings(kp_trans,0,kd_trans);
-					motionControlSystem->setRotationTunings(kp_rot,0,kd_rot);
-					motionControlSystem->orderRotation(PI/2);
+					motionControlSystem->getRotationTunings(kp,ki,kd);
+					serial.read(kd);
+					serial.printfln("kd_rot = %f", kd);
+					motionControlSystem->setRotationTunings(kp,ki,kd);
+					motionControlSystem->orderRotation(2*PI/3);
 					Delay(3000);
 					serial.printfln("%f\r\n%f", motionControlSystem->getX(), motionControlSystem->getY());
 					serial.printfln("%f", motionControlSystem->getAngleRadian());
@@ -197,8 +256,10 @@ int main(void)
 			}
 			else if(!strcmp("display",order))
 			{
-				motionControlSystem->setTranslationTunings(kp_trans,0,kd_trans);
-				motionControlSystem->setRotationTunings(kp_rot,0,kd_rot);
+				float kp_trans, ki_trans, kd_trans,
+					kp_rot, ki_rot, kd_rot;
+				motionControlSystem->getTranslationTunings(kp_trans,ki_trans,kd_trans);
+				motionControlSystem->getRotationTunings(kp_rot,ki_rot,kd_rot);
 				serial.printfln("translation : kp= %f  ; kd= %f", kp_trans, kd_trans);
 				serial.printfln("rotation :    kp= %f  ; kd= %f", kp_rot, kd_rot);
 				serial.printfln("balance = %f", motionControlSystem->getBalance());
@@ -229,31 +290,48 @@ int main(void)
 			}
 			else if(!strcmp("kpt",order))
 			{
+				float kp, ki, kd;
 				serial.printfln("kp_trans ?");
-				serial.read(kp_trans);
-				motionControlSystem->setTranslationTunings(kp_trans,0,kd_trans);
-				serial.printfln("kp_trans = %f", kp_trans);
+				motionControlSystem->getTranslationTunings(kp,ki,kd);
+				serial.read(kp);
+				motionControlSystem->setTranslationTunings(kp,ki,kd);
+				serial.printfln("kp_trans = %f", kp);
 			}
 			else if(!strcmp("kdt",order))
 			{
+				float kp, ki, kd;
 				serial.printfln("kd_trans ?");
-				serial.read(kd_trans);
-				motionControlSystem->setTranslationTunings(kp_trans,0,kd_trans);
-				serial.printfln("kd_trans = %f", kd_trans);
+				motionControlSystem->getTranslationTunings(kp,ki,kd);
+				serial.read(kd);
+				motionControlSystem->setTranslationTunings(kp,ki,kd);
+				serial.printfln("kd_trans = %f", kd);
 			}
 			else if(!strcmp("kpr",order))
 			{
+				float kp, ki, kd;
 				serial.printfln("kp_rot ?");
-				serial.read(kp_rot);
-				motionControlSystem->setRotationTunings(kp_rot,0,kd_rot);
-				serial.printfln("kp_rot = %f", kp_rot);
+				motionControlSystem->getRotationTunings(kp,ki,kd);
+				serial.read(kp);
+				motionControlSystem->setRotationTunings(kp,ki,kd);
+				serial.printfln("kp_rot = %f", kp);
 			}
 			else if(!strcmp("kdr",order))
 			{
+				float kp, ki, kd;
 				serial.printfln("kd_rot ?");
-				serial.read(kd_rot);
-				motionControlSystem->setRotationTunings(kp_rot,0,kd_rot);
-				serial.printfln("kd_rot = %f", kd_rot);
+				motionControlSystem->getRotationTunings(kp,ki,kd);
+				serial.read(kd);
+				motionControlSystem->setRotationTunings(kp,ki,kd);
+				serial.printfln("kd_rot = %f", kd);
+			}
+			else if(!strcmp("track",order))
+			{
+				motionControlSystem->printTracking();
+			}
+			else if(!strcmp("clear",order))
+			{
+				motionControlSystem->clearTracking();
+				serial.printfln("Tracking array cleared");
 			}
 
 
@@ -379,7 +457,7 @@ int main(void)
 extern "C" {
 //Interruption overflow TIMER4
 void TIM4_IRQHandler(void) { //2kHz = 0.0005s = 0.5ms
-	__IO static uint32_t i = 0;
+	__IO static uint32_t i = 0, j = 0;
 	static MotionControlSystem* motionControlSystem = &MotionControlSystem::Instance();
 
 	if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET) {
@@ -395,7 +473,13 @@ void TIM4_IRQHandler(void) { //2kHz = 0.0005s = 0.5ms
 			i = 0;
 		}
 
+		if(j >= 200){ //100ms
+			motionControlSystem->track();
+			j=0;
+		}
+
 		i++;
+		j++;
 	}
 }
 }

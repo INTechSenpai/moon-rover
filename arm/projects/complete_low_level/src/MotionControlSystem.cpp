@@ -1,6 +1,5 @@
 #include "MotionControlSystem.h"
 
-
 MotionControlSystem::MotionControlSystem() :
 		leftMotor(Side::LEFT), rightMotor(Side::RIGHT), translationControlled(
 				true), rotationControlled(true), translationPID(
@@ -10,7 +9,7 @@ MotionControlSystem::MotionControlSystem() :
 				false) {
 }
 
-void MotionControlSystem::init() {
+void MotionControlSystem::init(int16_t maxPWMtranslation, int16_t maxPWMrotation) {
 	/**
 	 * Initialisation moteurs et encodeurs
 	 */
@@ -19,19 +18,41 @@ void MotionControlSystem::init() {
 	Counter();
 
 	/**
-	 * Réglage des PID
+	 * Renseignement de la base de données des constantes d'asservissement
 	 */
+	float database[][NB_CTE_ASSERV]=
+	{//		 PWM  Kp   Ki   Kd
+			{120, 0.08, 0., 20.},//Translation
+			{120,   2., 0., 700},//Rotation
+			{100, 0.2, 0. , 90.},//Translation
+			{150, 2.5, 0. , 600},//Rotation
+			{  0,  0 , 0. ,   0},//Translation
+			{100,  3 , 0. ,1200},//Rotation
+			{ 0., 0. , 0. ,  0.},//Translation
+			{ 0., 0. , 0. ,  0.} //Rotation
+	};
 
-	translationPID.setControllerDirection(PidDirection::DIRECT);
-	translationPID.setTunings(0.4, 0., 5);
-	rotationPID.setControllerDirection(PidDirection::DIRECT);
-	rotationPID.setTunings(0.08, 0., 7);
+	for(int i=0; i<NB_SPEED; i++)
+	{
+		for(int j=0; j<NB_CTE_ASSERV; j++)
+		{
+			translationTunings[i][j] = database[2*i][j];
+			rotationTunings[i][j] = database[2*i+1][j];
+		}
+	}
+
 
 	/**
-	 * Réglage du PWM maximum
+	 * Réglage des PID et des PWMmax en fonction des PWMmax donnés
 	 */
-	setMaxPWMtranslation(120);
-	setMaxPWMrotation(100);
+
+	this->maxPWMtranslation = maxPWMtranslation;
+	this->maxPWMrotation = maxPWMrotation;
+
+	translationPID.setControllerDirection(PidDirection::DIRECT);
+	MotionControlSystem::setSmartTranslationTunings();
+	rotationPID.setControllerDirection(PidDirection::DIRECT);
+	MotionControlSystem::setSmartRotationTunings();
 
 	/**
 	 * Réglage de la balance des moteurs
@@ -117,12 +138,24 @@ void MotionControlSystem::control() {
 	if (translationControlled) {
 		currentDistance = (leftTicks + rightTicks) / 2;
 		translationPID.compute();
+
+		if(pwmTranslation > maxPWMtranslation)
+			pwmTranslation = maxPWMtranslation;
+		if(pwmTranslation < -maxPWMtranslation)
+			pwmTranslation = -maxPWMtranslation;
+
 	} else
 		pwmTranslation = 0;
 
 	if (rotationControlled) {
-		currentAngle = (-leftTicks + rightTicks)/2;//Je pense qu'il manquait un "/2"
+		currentAngle = (rightTicks - leftTicks) / 2;
 		rotationPID.compute();
+
+		if(pwmRotation > maxPWMrotation)
+			pwmRotation = maxPWMrotation;
+		if(pwmRotation < -maxPWMrotation)
+			pwmRotation = -maxPWMrotation;
+
 	} else
 		pwmRotation = 0;
 	applyControl();
@@ -177,8 +210,40 @@ int32_t MotionControlSystem::optimumAngle(int32_t fromAngle, int32_t toAngle) {
 }
 
 void MotionControlSystem::applyControl() {
-	leftMotor.run(int16_t(float(pwmTranslation - pwmRotation)*balance));
+	leftMotor.run(pwmTranslation - pwmRotation);
 	rightMotor.run(pwmTranslation + pwmRotation);
+}
+
+void MotionControlSystem::track(){
+	static int i = 0;//Curseur du tableau
+	this->trackArray[i][0] = x;
+	this->trackArray[i][1] = y;
+	this->trackArray[i][2] = getAngleRadian();
+	this->trackArray[i][3] = pwmTranslation;
+	this->trackArray[i][4] = pwmRotation;
+	i = (i+1)%(TRACKER_SIZE);
+}
+
+void MotionControlSystem::printTracking(){
+	for(int i=0; i<TRACKER_SIZE; i++)
+	{
+		if(this->trackArray[i][3] != 0 || this->trackArray[i][4] != 0)
+		{
+			serial.printfln("x=%f | y=%f | o=%f", this->trackArray[i][0], this->trackArray[i][1], this->trackArray[i][2]);
+			serial.printfln("pwmT=%f | pwmR=%f", this->trackArray[i][3], this->trackArray[i][4]);
+		}
+	}
+}
+
+void MotionControlSystem::clearTracking(){
+	for(int i=0; i<TRACKER_SIZE; i++)
+	{
+		this->trackArray[i][0] = 0;
+		this->trackArray[i][1] = 0;
+		this->trackArray[i][2] = 0;
+		this->trackArray[i][3] = 0;
+		this->trackArray[i][4] = 0;
+	}
 }
 
 /**
@@ -252,6 +317,14 @@ float MotionControlSystem::getY(){
 	return y;
 }
 
+void MotionControlSystem::setX(float newX){
+	this->x = newX;
+}
+
+void MotionControlSystem::setY(float newY){
+	this->y = newY;
+}
+
 float MotionControlSystem::getBalance(){
 	return balance;
 }
@@ -260,19 +333,45 @@ void MotionControlSystem::setBalance(float newBalance){
 	balance = newBalance;
 }
 
-void MotionControlSystem::setMaxPWMtranslation(uint8_t PWM){
-	translationPID.setOutputLimits(-PWM, PWM);
+void MotionControlSystem::setMaxPWMtranslation(int16_t PWM){
+	this->maxPWMtranslation = PWM;
 }
 
-void MotionControlSystem::setMaxPWMrotation(uint8_t PWM){
-	rotationPID.setOutputLimits(-PWM, PWM);
+void MotionControlSystem::setMaxPWMrotation(int16_t PWM){
+	this->maxPWMrotation = PWM;
 }
 
-uint8_t MotionControlSystem::getMaxPWMtranslation(){
-	return translationPID.getOutputLimit();
+int16_t MotionControlSystem::getMaxPWMtranslation(){
+	return this->maxPWMtranslation;
 }
 
-uint8_t MotionControlSystem::getMaxPWMrotation(){
-	return rotationPID.getOutputLimit();
+int16_t MotionControlSystem::getMaxPWMrotation(){
+	return this->maxPWMrotation;
 }
 
+void MotionControlSystem::setSmartTranslationTunings()
+{
+	int i = getBestTuningsInDatabase(this->maxPWMtranslation, this->translationTunings);
+	translationPID.setTunings(translationTunings[i][1], translationTunings[i][2], translationTunings[i][3]);
+}
+
+void MotionControlSystem::setSmartRotationTunings()
+{
+	int i = getBestTuningsInDatabase(this->maxPWMrotation, this->rotationTunings);
+	rotationPID.setTunings(rotationTunings[i][1], rotationTunings[i][2], rotationTunings[i][3]);
+}
+
+int MotionControlSystem::getBestTuningsInDatabase(int16_t pwm, float database[NB_SPEED][NB_CTE_ASSERV])
+{
+	float ecartMin = 255, indice;
+	for(int i=0; i<NB_CTE_ASSERV; i++)
+	{
+		float ecart = ABS(database[i][0] - float(pwm));
+		if(ecart < ecartMin)
+		{
+			ecartMin = ecart;
+			indice = i;
+		}
+	}
+	return indice;
+}

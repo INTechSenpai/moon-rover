@@ -24,6 +24,13 @@
 //#define TICK_TO_RADIAN 0.00012663 // TICK_TO_MM/256 : entre roues de 25.6cm
 #define TICK_TO_RADIAN 0.0014468
 
+#define NB_SPEED 4 //Nombre de vitesses différentes gérées par l'asservissement
+#define NB_CTE_ASSERV 4 //Nombre de variables constituant un asservissement : pwmMAX, kp, ki, kd
+
+#define TRACKER_SIZE 1024
+
+extern Uart<1> serial;
+
 class MotionControlSystem : public Singleton<MotionControlSystem> {
 private:
 	Motor leftMotor;
@@ -44,10 +51,16 @@ private:
 
 	int16_t pwmRotation;
 	int16_t pwmTranslation;
+	int16_t maxPWMtranslation;
+	int16_t maxPWMrotation;
 	float balance; //Pour tout PWM on a : balance = PWM_moteur_droit/PWM_moteur_gauche
 	float x;
 	float y;
 	bool moving;
+	float translationTunings[NB_SPEED][NB_CTE_ASSERV];
+	float rotationTunings[NB_SPEED][NB_CTE_ASSERV];
+
+	float trackArray[TRACKER_SIZE][5];
 
 	void applyControl();
 	bool isPhysicallyStopped();
@@ -64,11 +77,14 @@ public:
     }
 	int32_t currentDistance;
 	int32_t currentAngle;
-	void init();
+	void init(int16_t maxPWMtranslation, int16_t maxPWMrotation);
 
 	void control();
 	void updatePosition();
 	int manageStop();
+	void track();///Stock les valeurs de position et de pwm dans un tableau
+	void printTracking();///Affiche le tableau de positions et pwm enregistées
+	void clearTracking();///Vider le tableau des positions et pwm
 
 	int getPWMTranslation();
 	int getPWMRotation();
@@ -96,12 +112,24 @@ public:
 	void setOriginalAngle(float);
 	float getX();
 	float getY();
+	void setX(float);
+	void setY(float);
 	float getBalance();
 	void setBalance(float newBalance);
-	uint8_t getMaxPWMtranslation();
-	uint8_t getMaxPWMrotation();
-	void setMaxPWMtranslation(uint8_t);
-	void setMaxPWMrotation(uint8_t);
+	int16_t getMaxPWMtranslation();
+	int16_t getMaxPWMrotation();
+	void setMaxPWMtranslation(int16_t);
+	void setMaxPWMrotation(int16_t);
+
+	/*
+	 * Règlage des constantes d'asservissement et du pwm
+	 * à partir du pwm donné en argument et de la base de
+	 * donnée de constantes compatibles qui associent
+	 * chaque pwm à des constanes d'asservissement.
+	 */
+	void setSmartTranslationTunings();
+	void setSmartRotationTunings();
+	int getBestTuningsInDatabase(int16_t pwm, float[NB_SPEED][NB_CTE_ASSERV]);
 };
 
 #endif /* MOTION_CONTROL_H_ */
