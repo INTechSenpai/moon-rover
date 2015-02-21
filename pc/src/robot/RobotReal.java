@@ -91,12 +91,7 @@ public class RobotReal extends Robot
 	{
 		// Il est nécessaire d'ajouter le hookFinMatch avant chaque appel de deplacements qui prenne un peu de temps (avancer, tourner, ...)
 		hooks.add(hookFinMatch);
-		try {
-			deplacements.moveLengthwise(distance, hooks, mur);
-		} catch (ScriptHookException e) {
-			log.debug("Script de hook ignoré", this);
-			e.printStackTrace();
-		}
+		deplacements.moveLengthwise(distance, hooks, mur);
 	}	
 
 	/**
@@ -178,12 +173,7 @@ public class RobotReal extends Robot
     {
     	ArrayList<Hook> hooks = new ArrayList<Hook>();
 		hooks.add(hookFinMatch);
-		try {
-			deplacements.turn(angle, hooks);
-		} catch (ScriptHookException e) {
-			log.debug("Script de hook ignoré", this);
-			e.printStackTrace();
-		}
+		deplacements.turn(angle, hooks);
     }
     
     @Override
