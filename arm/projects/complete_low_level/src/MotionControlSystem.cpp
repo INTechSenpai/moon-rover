@@ -6,7 +6,7 @@ MotionControlSystem::MotionControlSystem() :
 				&currentDistance, &pwmTranslation, &translationSetpoint), rotationPID(
 				&currentAngle, &pwmRotation, &rotationSetpoint), originalAngle(
 				0.0), rotationSetpoint(0), translationSetpoint(0), x(0.0), y(0.0), moving(
-				false) {
+				false), moveAbnormal(false) {
 }
 
 void MotionControlSystem::init(int16_t maxPWMtranslation, int16_t maxPWMrotation) {
@@ -161,34 +161,52 @@ void MotionControlSystem::control() {
 	applyControl();
 }
 
-bool MotionControlSystem::isPhysicallyStopped() {
-	return (translationPID.getDerivativeError() == 0)
-			&& (rotationPID.getDerivativeError() == 0);
+bool MotionControlSystem::isPhysicallyStopped(int seuil) {
+	return (ABS(translationPID.getDerivativeError()) <= seuil)
+			&& (ABS(rotationPID.getDerivativeError()) <= seuil);
 }
 
-int MotionControlSystem::manageStop() {
+void MotionControlSystem::manageStop()
+{
 	static uint32_t time = 0;
 
-	if (isPhysicallyStopped() && moving) {
+	if (isPhysicallyStopped(1) && moving)
+	{
 
-		if (time == 0) { //Début du timer
+		if (time == 0)
+		{ //Début du timer
 			time = Millis();
-		} else {
-			if ((Millis() - time) >= 500) { //Si arrêté plus de 500ms
-				if (translationPID.getError() <= 100	&& rotationPID.getError() <= 100) { //Stopé pour cause de fin de mouvement
-					return 1;
-				}else if (pwmRotation >= 60 || pwmTranslation >= 60) { //Stoppé pour blocage
-					return 2;
+		}
+		else
+		{
+			if ((Millis() - time) >= 500)
+			{ //Si arrêté plus de 500ms
+				if (ABS(translationPID.getError()) <= 100 && ABS(rotationPID.getError()) <= 100)
+				{ //Stopé pour cause de fin de mouvement
+					serial.printfln("fin de mouvement, err = %d", translationPID.getError());
+					stop();
+					moveAbnormal = false;
 				}
-
-				stop(); //Arrêt
-				time = 0;
+				else if (ABS(pwmRotation) >= 60 || ABS(pwmTranslation) >= 60)
+				{ //Stoppé pour blocage
+					serial.printfln("bloque !");
+					stop();
+					moveAbnormal = true;
+				}
+				else
+				{//Stoppé par les frottements du robot sur la table
+					serial.printfln("frottements");
+					stop();
+				}
 			}
 		}
-	} else {
-		time = 0;
 	}
-	return 0;
+	else
+	{
+		time = 0;
+		if(moving)
+			moveAbnormal = false;
+	}
 }
 
 void MotionControlSystem::updatePosition() {
@@ -374,4 +392,12 @@ int MotionControlSystem::getBestTuningsInDatabase(int16_t pwm, float database[NB
 		}
 	}
 	return indice;
+}
+
+bool MotionControlSystem::isMoving(){
+	return moving;
+}
+
+bool MotionControlSystem::isMoveAbnormal(){
+	return moveAbnormal;
 }

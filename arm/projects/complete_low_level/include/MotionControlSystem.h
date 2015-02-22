@@ -57,13 +57,14 @@ private:
 	float x;
 	float y;
 	bool moving;
+	bool moveAbnormal;
 	float translationTunings[NB_SPEED][NB_CTE_ASSERV];
 	float rotationTunings[NB_SPEED][NB_CTE_ASSERV];
 
 	float trackArray[TRACKER_SIZE][5];
 
 	void applyControl();
-	bool isPhysicallyStopped();
+	bool isPhysicallyStopped(int);//Indique si le robot est immobile, avec une certaine tolérance passée en argument, exprimmée en ticks*[fréquence d'asservissement]
 
 public:
 
@@ -73,7 +74,7 @@ public:
 			&currentDistance, &pwmTranslation, &translationSetpoint), rotationPID(
 			&currentAngle, &pwmRotation, &rotationSetpoint), originalAngle(0.0),rotationSetpoint(
 			0), translationSetpoint(0), x(
-			0), y(0), moving(false) {
+			0), y(0), moving(false), moveAbnormal(false) {
     }
 	int32_t currentDistance;
 	int32_t currentAngle;
@@ -81,7 +82,7 @@ public:
 
 	void control();
 	void updatePosition();
-	int manageStop();
+	void manageStop();
 	void track();///Stock les valeurs de position et de pwm dans un tableau
 	void printTracking();///Affiche le tableau de positions et pwm enregistées
 	void clearTracking();///Vider le tableau des positions et pwm
@@ -130,6 +131,9 @@ public:
 	void setSmartTranslationTunings();
 	void setSmartRotationTunings();
 	int getBestTuningsInDatabase(int16_t pwm, float[NB_SPEED][NB_CTE_ASSERV]);
+
+	bool isMoving();
+	bool isMoveAbnormal();
 };
 
 #endif /* MOTION_CONTROL_H_ */

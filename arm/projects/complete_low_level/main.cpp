@@ -33,6 +33,11 @@ int main(void)
 			{
 				serial.printfln("Abwabwa.");
 			}
+			else if(!strcmp("f",order))//Indiquer l'état du mouvement du robot
+			{
+				serial.printfln("%d", motionControlSystem->isMoving());//Robot en mouvement ou pas ?
+				serial.printfln("%d", motionControlSystem->isMoveAbnormal());//Cet état du mouvement est il anormal ?
+			}
 			else if(!strcmp("oxy",order))
 			{
 				serial.printfln("x=%f\r\ny=%f", motionControlSystem->getX(), motionControlSystem->getY());
@@ -74,18 +79,21 @@ int main(void)
 			{
 				float x;
 				serial.read(x);
+				serial.printfln("_");//Acquittement
 				motionControlSystem->setX(x);
 			}
 			else if(!strcmp("cy",order))
 			{
 				float y;
 				serial.read(y);
+				serial.printfln("_");//Acquittement
 				motionControlSystem->setY(y);
 			}
 			else if(!strcmp("co",order))
 			{
 				float o;
 				serial.read(o);
+				serial.printfln("_");//Acquittement
 				motionControlSystem->setOriginalAngle(o);
 			}
 			else if(!strcmp("ticks", order))
@@ -104,15 +112,24 @@ int main(void)
 			{
 				int deplacement = 0;
 				serial.read(deplacement);
-				serial.printfln("On avance de %d mm", deplacement);
+				serial.printfln("_");//Acquittement
+				//serial.printfln("On avance de %d mm", deplacement);
 				motionControlSystem->orderTranslation(deplacement);
 			}
 			else if(!strcmp("t", order))
 			{
 				float angle = motionControlSystem->getAngleRadian();
 				serial.read(angle);
-				serial.printfln("On tourne a %f radian", angle);
+				serial.printfln("_");//Acquittement
+				//serial.printfln("On tourne a %f radian", angle);
 				motionControlSystem->orderRotation(angle);
+			}
+			else if(!strcmp("t3", order))//Tourner en relatif
+			{
+				float angle_actuel = motionControlSystem->getAngleRadian(), delta_angle = 0;
+				serial.read(delta_angle);
+				serial.printfln("_");
+				motionControlSystem->orderRotation(angle_actuel + delta_angle);
 			}
 			else if (!strcmp("broad",order))
 			{
@@ -333,6 +350,10 @@ int main(void)
 				motionControlSystem->clearTracking();
 				serial.printfln("Tracking array cleared");
 			}
+			else if(!strcmp("mov",order))
+			{
+				serial.printfln("%d", motionControlSystem->isMoving());
+			}
 
 
 
@@ -468,7 +489,8 @@ void TIM4_IRQHandler(void) { //2kHz = 0.0005s = 0.5ms
 		motionControlSystem->control();
 		motionControlSystem->updatePosition();
 
-		if (i >= 100) { //50ms
+		if (i >= 10) { //5ms
+			//Gestion de l'arrêt
 			motionControlSystem->manageStop();
 			i = 0;
 		}
