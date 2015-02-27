@@ -108,12 +108,7 @@ public class RobotReal extends Robot
 	{
 		// Il est nécessaire d'ajouter le hookFinMatch avant chaque appel de deplacements qui prenne un peu de temps (avancer, tourner, ...)
 		hooks.add(hookFinMatch);
-		try {
-			deplacements.moveLengthwise(distance, hooks, mur);
-		} catch (ScriptHookException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		deplacements.moveLengthwise(distance, hooks, mur);
 	}	
 
 	/**
@@ -205,12 +200,7 @@ public class RobotReal extends Robot
     {
     	ArrayList<Hook> hooks = new ArrayList<Hook>();
 		hooks.add(hookFinMatch);
-		try {
-			deplacements.turn(angle, hooks);
-		} catch (ScriptHookException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		deplacements.turn(angle, hooks);
     }
     
     @Override
@@ -303,7 +293,7 @@ public class RobotReal extends Robot
 	}
 
 	public boolean isEnemyHere() {
-		return deplacements.isEnemyHere();
+		return deplacements.isEnemyHere(); // TODO: ne pas demander à déplacements mais à gridspace
 	}
 	
 	public void closeSerialConnections()
