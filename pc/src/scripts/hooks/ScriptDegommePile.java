@@ -30,7 +30,7 @@ public class ScriptDegommePile extends ScriptHook
 	protected void termine(GameState<RobotReal> gamestate) throws ScriptException,
 			FinMatchException, SerialConnexionException
 	{
-		// TODO
+		// TODO (avec règlement)
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class ScriptDegommePile extends ScriptHook
 			throws UnableToMoveException, SerialConnexionException,
 			FinMatchException
 	{
-		// TODO
+		// TODO (avec règlement)
 	}
 
 }

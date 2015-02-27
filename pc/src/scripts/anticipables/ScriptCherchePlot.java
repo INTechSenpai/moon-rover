@@ -31,14 +31,14 @@ public class ScriptCherchePlot extends Script
 
 	@Override
 	public ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono> state) {
-		// TODO Auto-generated method stub
+		// TODO (avec règlement)
 		return null;
 	}
 
 	@Override
 	protected void termine(GameState<?> gamestate) throws ScriptException,
 			FinMatchException, SerialConnexionException, ScriptHookException {
-		// TODO Auto-generated method stub
+		// TODO (avec règlement)
 		
 	}
 
@@ -46,7 +46,7 @@ public class ScriptCherchePlot extends Script
 	protected void execute(PathfindingNodes id_version, GameState<?> state)
 			throws UnableToMoveException, SerialConnexionException,
 			FinMatchException, ScriptHookException {
-		// TODO Auto-generated method stub
+		// TODO (avec règlement)
 		
 	}
 

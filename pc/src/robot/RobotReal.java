@@ -272,7 +272,7 @@ public class RobotReal extends Robot
 
 	public void initActuatorLocomotion()
 	{
-		// TODO: replier les bras, etc
+		// TODO (avec règlement)
 	}
 
 	public void setHookTrajectoireCourbe(HookDemiPlan hookTrajectoireCourbe)

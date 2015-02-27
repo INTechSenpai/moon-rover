@@ -59,7 +59,7 @@ public class ScriptClap extends Script {
 		if(id_version == PathfindingNodes.CLAP_DROIT)
 		{
 			state.robot.tourner(Math.PI);
-			// TODO: probablement pas possible s'il y a des plots dans ce coin
+			// TODO (avec règlement)
 			state.robot.avancer_dans_mur(-100);
 			state.robot.bougeBrasClap(Side.LEFT, HauteurBrasClap.FRAPPE_CLAP);
 			state.robot.clapTombe();

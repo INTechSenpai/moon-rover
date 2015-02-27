@@ -34,7 +34,7 @@ public class ScriptPrendPlot extends ScriptHook
 	protected void termine(GameState<RobotReal> gamestate) throws ScriptException,
 			FinMatchException, SerialConnexionException
 	{
-		// TODO
+		// TODO (avec règlement)
 	}
 
 	@Override
@@ -47,10 +47,9 @@ public class ScriptPrendPlot extends ScriptHook
 		Vec2 position_obstacle = id_version.getObstacle().getPosition();
 		double orientation_cible = Math.atan2(position_obstacle.y-position.y, position_obstacle.x-position.x);
 		state.robot.tourner(orientation_cible);
-		// TODO: vérifier qu'en tournant on ne shoot pas le plot
+		// TODO (avec règlement)
 		int distance = (int) position.distance(position_obstacle);
 		state.robot.avancer(distance-distance_optimale);
-		// TODO finir le script
 	}
 
 }

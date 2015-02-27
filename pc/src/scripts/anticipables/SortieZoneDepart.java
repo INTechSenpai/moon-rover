@@ -42,7 +42,7 @@ public class SortieZoneDepart extends Script {
 			FinMatchException, ScriptHookException
 	{
 		state.robot.tourner(Math.PI);
-		state.robot.avancer(500); // TODO vérifier distance
+		state.robot.avancer(500); // TODO (avec règlement)
 	}
 
 	@Override

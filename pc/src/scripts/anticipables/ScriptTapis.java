@@ -44,7 +44,7 @@ public class ScriptTapis extends Script {
 	public void execute(PathfindingNodes id_version, GameState<?> state) throws UnableToMoveException, SerialConnexionException, FinMatchException, ScriptHookException
 	{
 		state.robot.tourner(-Math.PI/2);
-		state.robot.avancer_dans_mur(-260); // TODO: vérifier distance
+		state.robot.avancer_dans_mur(-260);
 		state.robot.poserDeuxTapis();
 	}
 
@@ -55,7 +55,7 @@ public class ScriptTapis extends Script {
 		state.robot.leverDeuxTapis();
 		try {
 			// et on se dégage
-			state.robot.avancer(260); // TODO vérifier distance
+			state.robot.avancer(260); // TODO (avec règlement)
 		} catch (UnableToMoveException e) {
 			e.printStackTrace();
 		}
