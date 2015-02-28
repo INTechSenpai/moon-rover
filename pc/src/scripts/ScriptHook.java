@@ -14,7 +14,6 @@ import utils.Log;
 
 public abstract class ScriptHook
 {
-	protected boolean symmetry;
 	protected HookFactory hookfactory;
 	protected Config config;
 	protected Log log;
@@ -77,7 +76,5 @@ public abstract class ScriptHook
 	protected abstract void termine(GameState<RobotReal> gamestate) throws ScriptException, FinMatchException, SerialConnexionException;
 
 	public void updateConfig()
-	{
-		symmetry = config.getSymmetry();
-	}
+	{}
 }
