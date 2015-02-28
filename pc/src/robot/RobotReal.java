@@ -3,7 +3,6 @@ package robot;
 import robot.cardsWrappers.ActuatorCardWrapper;
 import robot.cardsWrappers.enums.ActuatorOrder;
 import robot.cardsWrappers.enums.HauteurBrasClap;
-import table.Table;
 import utils.Log;
 import utils.Config;
 import utils.Sleep;
@@ -40,12 +39,11 @@ public class RobotReal extends Robot
 	private HookDemiPlan hookTrajectoireCourbe;
 
 	// Constructeur
-	public RobotReal(ActuatorCardWrapper actuator, Locomotion deplacements, Table table, Config config, Log log)
+	public RobotReal(ActuatorCardWrapper actuator, Locomotion deplacements, Config config, Log log)
  	{
 		super(config, log);
 		this.actionneurs = actuator;
 		this.deplacements = deplacements;
-//		this.table = table;
 		updateConfig();
 	}
 	
@@ -56,6 +54,9 @@ public class RobotReal extends Robot
 	public void updateConfig()
 	{
 		super.updateConfig();
+		actionneurs.updateConfig();
+		deplacements.updateConfig();
+		log.updateConfig();
 	}
 	
 	
