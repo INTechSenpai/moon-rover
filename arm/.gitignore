@@ -2,3 +2,4 @@
 **/*.comarker
 build/
 **/complete_low_level/complete_low_level/
+**/logs/

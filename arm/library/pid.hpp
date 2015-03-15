@@ -24,7 +24,7 @@ typedef safe_enum<pid_direction_def> PidDirection;
 class PID {
 public:
 
-	PID(int32_t* input, int16_t* output, int32_t* setPoint) :
+	PID(volatile int32_t* input, volatile int16_t* output, volatile int32_t* setPoint) :
 			controllerDirection(PidDirection::DIRECT), epsilon(0), pre_error(
 					0), integral(0) {
 
@@ -135,9 +135,9 @@ private:
 
 	PidDirection controllerDirection;
 
-	int32_t* input; //Valeur du codeur
-	int16_t* output; //Output : pwm
-	int32_t* setPoint; //Valeur à atteindre
+	volatile int32_t* input; //Valeur du codeur
+	volatile int16_t* output; //Output : pwm
+	volatile int32_t* setPoint; //Valeur à atteindre
 
 	uint8_t epsilon;
 	int16_t outMin, outMax;

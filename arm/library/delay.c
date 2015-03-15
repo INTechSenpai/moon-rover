@@ -9,6 +9,12 @@
 #include "delay.h"
 
 void Delay(__IO uint32_t time) {
+	__IO uint32_t time_setpoint=timestamp+time*1000;
+	while (timestamp < time_setpoint)
+		;
+}
+
+void Delay_us(__IO uint32_t time) {
 	__IO uint32_t time_setpoint=timestamp+time;
 	while (timestamp < time_setpoint)
 		;
@@ -16,7 +22,7 @@ void Delay(__IO uint32_t time) {
 
 void Delay_Init(){
 	//Initialisation SysTick à la ms
-	if (SysTick_Config(SystemCoreClock / 1000)) {
+	if (SysTick_Config(SystemCoreClock / 1000000)) {
 		/* Capture error */
 		while (1)
 			;
@@ -28,5 +34,9 @@ void SysTick_Handler(void) {
 }
 
 uint32_t Millis(){
+	return timestamp/1000;
+}
+
+uint32_t Micros(){
 	return timestamp;
 }

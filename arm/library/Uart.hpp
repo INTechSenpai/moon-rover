@@ -308,7 +308,7 @@ public:
 	 * Availability of data in the buffer
 	 *
 	 */
-	static inline bool available(void) {
+	static inline uint8_t available(void) {
 		return (RX_BUFFER_SIZE + rx_buffer_.head - rx_buffer_.tail)
 				% RX_BUFFER_SIZE;
 	}

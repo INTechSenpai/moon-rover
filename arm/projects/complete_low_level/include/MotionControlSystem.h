@@ -1,6 +1,8 @@
 #ifndef MOTION_CONTROL_H_
 #define MOTION_CONTROL_H_
 
+#define DEBUG	1
+
 #include "Singleton.hpp"
 #include "Motor.h"
 #include "pid.hpp"
@@ -27,7 +29,11 @@
 #define NB_SPEED 4 //Nombre de vitesses différentes gérées par l'asservissement
 #define NB_CTE_ASSERV 4 //Nombre de variables constituant un asservissement : pwmMAX, kp, ki, kd
 
+#if DEBUG
 #define TRACKER_SIZE 1024
+#else
+#define TRACKER_SIZE 1
+#endif
 
 extern Uart<1> serial;
 
@@ -35,64 +41,91 @@ class MotionControlSystem : public Singleton<MotionControlSystem> {
 private:
 	Motor leftMotor;
 	Motor rightMotor;
-	bool translationControlled;
-	bool rotationControlled;
+	volatile bool translationControlled;
+	volatile bool rotationControlled;
 	PID translationPID;
 	PID rotationPID;
 
-	float originalAngle;
+	volatile float originalAngle;
 
 	//Consignes à atteindre en tick
-	int32_t rotationSetpoint;
-	int32_t translationSetpoint;
+	volatile int32_t rotationSetpoint;
+	volatile int32_t translationSetpoint;
 
-	//Angle et distance en tick au dernier refresh
-
-
-	int16_t pwmRotation;
-	int16_t pwmTranslation;
-	int16_t maxPWMtranslation;
-	int16_t maxPWMrotation;
+	volatile int16_t pwmRotation;
+	volatile int16_t pwmTranslation;
+	volatile int16_t maxPWMtranslation;
+	volatile int16_t maxPWMrotation;
 	float balance; //Pour tout PWM on a : balance = PWM_moteur_droit/PWM_moteur_gauche
-	float x;
-	float y;
-	bool moving;
-	bool moveAbnormal;
+	volatile float x;
+	volatile float y;
+	volatile bool moving;
+	volatile bool moveAbnormal;
 	float translationTunings[NB_SPEED][NB_CTE_ASSERV];
 	float rotationTunings[NB_SPEED][NB_CTE_ASSERV];
 
-	float trackArray[TRACKER_SIZE][5];
+
+	/*
+	 * Dispositif d'enregistrement de l'état du système pour permettre le débug
+	 * La valeur de TRACKER_SIZE dépend de la valeur de DEBUG.
+	 */
+
+	struct trackerType
+	{
+		float x;
+		float y;
+		float angle;
+		int consigneTranslation;
+		int consigneRotation;
+		int translationCourante;
+		int rotationCourante;
+		bool asservTranslation;
+		bool asservRotation;
+		uint8_t pwmTranslation;
+		uint8_t pwmRotation;
+		uint8_t tailleBufferReception;
+	};
+
+	trackerType trackArray[TRACKER_SIZE];
 
 	void applyControl();
 	bool isPhysicallyStopped(int);//Indique si le robot est immobile, avec une certaine tolérance passée en argument, exprimmée en ticks*[fréquence d'asservissement]
 
+
+	/*
+	 * Constantes de réglage de la détection de blocage physique
+	 */
+	unsigned int delayToStop;//En ms
+	int toleranceInTick;//Nombre de ticks de tolérance pour considérer qu'on est arrivé à destination
+	int pwmMinToMove;//PWM minimal en dessous duquel le robot ne bougera pas
+	int minSpeed;//Vitesse en dessous de laquelle on considère la vitesse comme nulle (en tick*[freq d'asserv])
+
+
 public:
 
 	MotionControlSystem();
-    MotionControlSystem (const MotionControlSystem&): leftMotor(Side::LEFT), rightMotor(Side::RIGHT),translationControlled(
-			true), rotationControlled(true), translationPID(
-			&currentDistance, &pwmTranslation, &translationSetpoint), rotationPID(
-			&currentAngle, &pwmRotation, &rotationSetpoint), originalAngle(0.0),rotationSetpoint(
-			0), translationSetpoint(0), x(
-			0), y(0), moving(false), moveAbnormal(false) {
-    }
-	int32_t currentDistance;
-	int32_t currentAngle;
+    MotionControlSystem (const MotionControlSystem&);
+
+	volatile int32_t currentDistance;
+	volatile int32_t currentAngle;
 	void init(int16_t maxPWMtranslation, int16_t maxPWMrotation);
 
 	void control();
 	void updatePosition();
 	void manageStop();
-	void track();///Stock les valeurs de position et de pwm dans un tableau
-	void printTracking();///Affiche le tableau de positions et pwm enregistées
-	void clearTracking();///Vider le tableau des positions et pwm
 
-	int getPWMTranslation();
-	int getPWMRotation();
-	int getTranslationGoal();
-	int getRotationGoal();
-	int getLeftEncoder();
-	int getRightEncoder();
+	void track();///Stock les valeurs de débug
+	void printTrackingOXY();///Affiche les x,y,angle du tableau de tracking
+	void printTrackingAll();///Affiche l'intégralité du tableau de tracking
+	void printTrackingLocomotion();
+	void printTrackingSerie();
+
+	int getPWMTranslation() const;
+	int getPWMRotation() const;
+	int getTranslationGoal() const;
+	int getRotationGoal() const;
+	int getLeftEncoder() const;
+	int getRightEncoder() const;
 
 	void enable(bool);
 	void enableTranslationControl(bool);
@@ -111,14 +144,14 @@ public:
 
 	float getAngleRadian() const;
 	void setOriginalAngle(float);
-	float getX();
-	float getY();
+	float getX() const;
+	float getY() const;
 	void setX(float);
 	void setY(float);
-	float getBalance();
+	float getBalance() const;
 	void setBalance(float newBalance);
-	int16_t getMaxPWMtranslation();
-	int16_t getMaxPWMrotation();
+	int16_t getMaxPWMtranslation() const;
+	int16_t getMaxPWMrotation() const;
 	void setMaxPWMtranslation(int16_t);
 	void setMaxPWMrotation(int16_t);
 
@@ -130,10 +163,10 @@ public:
 	 */
 	void setSmartTranslationTunings();
 	void setSmartRotationTunings();
-	int getBestTuningsInDatabase(int16_t pwm, float[NB_SPEED][NB_CTE_ASSERV]);
+	int getBestTuningsInDatabase(int16_t pwm, float[NB_SPEED][NB_CTE_ASSERV]) const;
 
-	bool isMoving();
-	bool isMoveAbnormal();
+	bool isMoving() const;
+	bool isMoveAbnormal() const;
 };
 
 #endif /* MOTION_CONTROL_H_ */

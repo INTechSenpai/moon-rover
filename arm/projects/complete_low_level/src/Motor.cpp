@@ -25,21 +25,21 @@ Motor::Motor(Side s) :
 	 * Droite : PD12 (IN3)
 	 */
 
-	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_StructInit(&GPIO_InitStructure); //Remplit avec les valeurs par défaut
+	GPIO_InitTypeDef GPIO_InitStruct;
+	GPIO_StructInit(&GPIO_InitStruct); //Remplit avec les valeurs par défaut
 	// Active l'horloge du port D
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
 
 	if (s == Side::LEFT) {
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-		GPIO_Init(GPIOD, &GPIO_InitStructure);
+		GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;
+		GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
+		GPIO_InitStruct.GPIO_Speed = GPIO_Speed_100MHz;
+		GPIO_Init(GPIOD, &GPIO_InitStruct);
 	} else {
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
-		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-		GPIO_Init(GPIOD, &GPIO_InitStructure);
+		GPIO_InitStruct.GPIO_Pin = GPIO_Pin_12;
+		GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
+		GPIO_InitStruct.GPIO_Speed = GPIO_Speed_100MHz;
+		GPIO_Init(GPIOD, &GPIO_InitStruct);
 	}
 
 	setDirection(Direction::FORWARD);
@@ -47,7 +47,7 @@ Motor::Motor(Side s) :
 
 void Motor::initPWM(){
 	//Structures
-	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitTypeDef GPIO_InitStruct;
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 	TIM_OCInitTypeDef TIM_OCInitStructure;
 
@@ -66,18 +66,18 @@ void Motor::initPWM(){
 	 *
 	 */
 
-	GPIO_StructInit(&GPIO_InitStructure); //Remplit avec les valeurs par défaut
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	GPIO_StructInit(&GPIO_InitStruct); //Remplit avec les valeurs par défaut
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_15;
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(GPIOA, &GPIO_InitStruct);
 	//Connexion des 2 pins PC6 et PC7 à la fonction alternative liée au TIMER 8
 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource15, GPIO_AF_TIM2);
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_3;
+	GPIO_Init(GPIOB, &GPIO_InitStruct);
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource3, GPIO_AF_TIM2);
 
 	/* -----------------------------------------------------------------------

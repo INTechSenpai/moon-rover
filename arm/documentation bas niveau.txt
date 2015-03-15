@@ -1,0 +1,258 @@
+**************************************************************************
+**************************************************************************
+** Liste des commandes et spécification du protocol de la liaison série **
+**************************************************************************
+**************************************************************************
+
+Remarque : la droite et la gauche sont à considérer du point de vue du robot, c'est à dire en regardant dans la même direction que l'avant du robot.
+
+
+
+ **************************************
+ Etat du robot au démarrage de la carte
+ **************************************
+
+x = 0 (mm)
+y = 0 (mm)
+orientation = 0 (radians)
+Asservissement en translation et en rotation ACTIVE
+Position d'asservissement : (0;0;0)
+PWM max en translation = 100
+PWM max en rotation = 100
+Les constantes d'asservissement sont celles les plus adaptées aux PWM max (cf liste des constantes d'asservissement)
+Les AX12 des actionneurs sont tous asservis à la position qu'ils avaient à leur allumage.
+L'ascenseur du monte-plot est asservi en position 'sol'
+(il peut évetuellement se trouver ailleurs à l'allumage mais retournera au niveau du sol dès pression sur l'un de ses contacteurs)
+
+
+ *************************************
+ Liste des constantes d'asservissement
+ *************************************
+
+Translation
+[à compléter]
+
+Rotation
+[à compléter]
+
+
+ **********************************
+ Spécifications de la liaison série
+ **********************************
+
+Baudrate		:	115 200 bauds
+Parité			:	aucune
+Bits d'arrêt	:	1 bit
+Bits de données	:	8 bits
+
+Taille du buffer de réception : 64 octets
+
+
+ *************************
+ Protocol de communication
+ ************************* 
+
+Il s'agit d'une architecture client-serveur avec accusé de réception.
+Le haut niveau (raspberry Pi ou PC) est le client, le bas niveau (stm32f4) est le serveur.
+
+1. Commande envoyée par le haut niveau
+	La commande est une chaine de caractères de taille inférieur à 64 caractères (ceci inclu le caractère de fin de chaine) terminée par un retour à la ligne.
+2. Le bas niveau accuse la réception de la commande
+	L'accusé de réception est le caractère '_' suivi d'un retour à la ligne.
+3.
+  a. Si la commande est une demande d'informations
+	Le bas niveau envoie l'information demandée dans un format dépendant de la commande et spécifié dans la liste des commandes ci-dessous.
+  b. Si la commande correspond à un ordre nécessitant l'indication d'une valeur numérique
+	Le bas niveau attend la réception d'une ligne supplémentaire, correspondant à un chiffre dont le format dépend de la commande.
+	Une fois cette seconde ligne reçue, le bas niveau accuse la réception avec un '_'.
+  c. Sinon
+	Le bas niveau ne répond rien de plus.
+	
+
+
+	
+	
+
+	*************************
+	** Liste des commandes **
+	*************************
+
+ ********************************************
+ Obtenir des informations sur l'état du robot
+ ********************************************
+
+requête		traduction de la réponse									typage
+
+?xyo		[ligne1] composante x de la position en mm					float
+			[ligne2] composante y de la position en mm					folat
+			[ligne3] orientation du robot en radians					float
+
+f			[ligne1] le robot est-il en train de se déplacer ?			boolean
+			[ligne2] l'état précédement indiqué est-il normal ?			boolean
+			
+j			le jumper est-il SORTI ?									boolean
+
+ccg			le porte-gobelet gauche est-il PLEIN ?						boolean
+ccd			le porte-gobelet droit est-il PLEIN ?						boolean
+ccm			le monte-plot CONTIENT-il un plot ?							boolean
+
+us_av		[ligne1] distance mesurée par le capteur avant gauche (mm)	integer
+			[ligne2] distance mesurée par le capteur avant droit (mm)	integer
+us_ar		[ligne1] distance mesurée par le capteur arrière gauche(mm)	integer
+			[ligne2] distance mesurée par le capteur arrière droit (mm) integer
+
+
+ ***********************
+ Commandes de locomotion
+ ***********************
+
+d		Ordonne une translation. 
+		La ligne suivante doit être un ENTIER correspondant à la distance de déplacement voulue en mm.
+
+t		Ordonne une rotation absolue.
+		La ligne suivante doit être un FLOTANT correspondant à l'orientation ABSOLUE voulue pour le robot, en radians.
+
+t3		Ordonne une rotation relative.
+		La ligne suivante doit être un FLOTANT correspondant à l'angle de rotation voulu, en radians.
+
+stop	Ordonne un asservissement sur place.
+
+ct0		Désactive l'asservissement en translation. Effet : pwmTranslation = 0 quelle que soit la consigne en translation.
+ct1		Active l'asservissement en translation.
+cr0		Désactive l'asservissement en rotation. Effet : pwmRotation = 0 quelle que soit la consigne en rotation. 
+cr1		Active l'asservissement en rotation.
+
+Commandes de réglage de la position
+Ces commandes n'ont aucun effet sur l'asservissement en position, et l'état des PWM.
+Leur seul effet est de modifier les valeurs retournées par '?xyo' (et de les faire coïncider si possible avec les valeurs réelles !)
+La ligne suivante devra être un flotant correspondant à la valeur désirée.
+
+cx		Réglage de x (mm)
+cy		Réglage de y (mm)
+co		Réglage de l'angle (radians)
+
+
+ *********************************************
+ Protocol d'arrêt du robot durant un mouvement
+ *********************************************
+
+Durant l'exécution d'une commande du type 'd' 't' 't3' si le robot doit être arrêté au plus vite, il est nécessaire d'exécuter l'opération suivante :
+
+1. Désactiver l'asservissement (a pour effet concret de forcer tous les PWM à 0)
+	ct0
+	cr0
+2. Attendre l'arrêt effectif du robot
+	attendre que la commande f réponde que le mouvement est terminé (elle indiquera également un blocage mécanique si la position visée n'est pas atteinte)
+3. Réasservir le robot sur sa position d'arrêt
+	stop (la position courante devient la position d'asservissement)
+	ct1
+	cr1 (réactivation de l'asservissement pour pouvoir repartir ensuite si besoin)
+
+
+
+ *************************
+ Commandes des actionneurs
+ *************************
+
+Commandes des bras avant
+Un bras est dit fermé si il est en position pour maintenir un gobelet à l'intérieur du robot.
+On entend par "lentement" une vitesse permettant de ramasser un plot (ouverture) ou un gobelet (fermeture), les deux vitesses pouvant être différentes.
+
+obd		ouvrir le bras droit
+fbd		fermer le bras droit
+
+obg		ouvrir le bras gauche
+fbg		fermer le bras gauche
+
+obdl	ouvrir le bras droit lentement
+fbdl	fermer le bras droit lentement
+
+obgl	ouvrir le bras gauche lentement
+fbgl	fermer le bras gauche lentement
+
+
+Commandes de la machoire du monte-plot
+
+omd		ouvrir la machoire droite
+fmd		fermer la machoire droite
+
+omg		ouvrir la machoire gauche
+fmg		fermer la machoire gauche
+
+
+Commandes de l'ascenseur du monte-plot
+
+ah		niveau haut
+ab		niveau bas (ou poser sur l'estrade)
+as		poser sur le sol
+ae		niveau de l'estrade (permet de passer par dessus)
+
+
+Commandes du guide à plots
+
+ogd		ouvrir le guide de droite
+fgd		fermer le guide de droite
+gdi		mettre le guide de droite en position intermédiaire
+
+ogg		ouvrir le guide de gauche
+fgg		fermer le guide de gauche
+ggi		mettre le guide de gauche en position intermédiaire (désactive l'anti-retour en continuant de maintenir la pile)
+
+go		équivalent à ogg et ogd
+gf		équivalent à fgg et fgd
+gi		équivalent à ggi et gdi
+
+
+Commandes des pose-tapis
+
+ptd		poser le tapis droit
+rtd		remonter le pose-tapis droit
+
+ptg		poser le tapis gauche
+rtg		remonter le pose-tapis gauche
+
+
+Commandes des bras à claps
+Position haute : le bars passe au dessus des claps
+Position médiane : la bras abaisse le clap
+Position basse : le bras est rangé contre le robot
+
+cdh		clap droit en position haute		
+cdm		clap droit en position médiane
+cdb		clap droit en position basse
+
+cgh		clap gauche en position haute
+cgm		clap gauche en position médiane
+cgb		clap gauche en position basse
+
+
+ **************************************************
+ Protocol d'initialisation des actionneurs du robot
+ **************************************************
+Avant le début du match, il faut exécuter les commandes suivantes afin de s'asurer que les actionneurs sont tous positionnés correctement.
+
+Asservir tous les AX12 de bras & pose-tapis à leur position "fermé" :
+	rtg
+	rtd
+	cgb
+	cdb
+	fbg
+	fbd
+
+Verrouiller le guide du monte plot afin d'assurer le bon fonctionnement de l'anti-retour
+	omg
+	omd
+	[delay]
+	ogg
+	ogd		(ouverture du guide, il faut au préalable ouvrir les machoires pour ne rien abîmer)
+	[delay]
+	fgd
+	[delay]
+	fgg		(fermeture différée des deux côtés, une fermeture simultanée provoque un blocage au niveau de l'anti-retour)
+	[delay]
+	fmg
+	fmd
+
+Placer l'ascenseur en position basse (adaptée aux déplacements)
+	ah		(la position haute est la seule pouvant être atteinte avec certitude sans connaître la position initiale)
+	ab
