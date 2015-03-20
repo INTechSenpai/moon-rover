@@ -4,7 +4,7 @@
  *
  * @author Paul Bernier
  *
- * 28/11/2912
+ * 28/11/2012
  * v1.0
  * To get the latest version of the lib, please go to : http://github.com/Absurdev/UART_STM32F4
  *
@@ -270,21 +270,25 @@ public:
 	}
 
 	static inline void disable_rx() {
+		while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET) {}
 		USART_InitStruct.USART_Mode &= ~USART_Mode_Rx;
 		USART_Init(USARTx, &USART_InitStruct);
 	}
 
 	static inline void enable_rx() {
+		while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET) {}
 		USART_InitStruct.USART_Mode |= USART_Mode_Rx;
 		USART_Init(USARTx, &USART_InitStruct);
 	}
 
 	static inline void disable_tx() {
+		while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET) {}
 		USART_InitStruct.USART_Mode &= ~USART_Mode_Tx;
 		USART_Init(USARTx, &USART_InitStruct);
 	}
 
 	static inline void enable_tx() {
+		while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET) {}
 		USART_InitStruct.USART_Mode |= USART_Mode_Tx;
 		USART_Init(USARTx, &USART_InitStruct);
 	}
@@ -299,9 +303,9 @@ public:
 	 *
 	 */
 	static inline void send_char(unsigned char c) {
+		while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET) {}
 		USART_SendData(USARTx, c);
-		while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET) {
-		}
+		while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET) {}
 	}
 
 	/**

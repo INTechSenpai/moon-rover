@@ -65,6 +65,7 @@ private:
 
 	volatile EtatAscenseur etatAscenseur;
 	volatile EtatAscenseur consigneAscenseur;
+	uint16_t vitesseBrasLente;
 
 public:
 	ActuatorsMgr()
@@ -82,7 +83,7 @@ public:
 
 		etatAscenseur = Sol;
 		consigneAscenseur = Sol;
-
+		vitesseBrasLente = 25;
 		/* Set variables used */
 		GPIO_InitTypeDef GPIO_InitStruct;
 		GPIO_StructInit(&GPIO_InitStruct); //Remplit avec les valeurs par défaut
@@ -337,29 +338,42 @@ public:
 	void fmg() {
 		machoireGauche->goTo(mgFerme);
 	}
+
+	void setArmSpeed(uint16_t speed) {
+		vitesseBrasLente = speed;
+	}
+
 	void obd() {
+		brasDroit->changeSpeed(100); //pleine vitesse
 		brasDroit->goTo(bdOuvert);
 	}
 	void fbd() {
+		brasDroit->changeSpeed(100); //pleine vitesse
 		brasDroit->goTo(bdFerme);
 	}
 	void obg() {
+		brasDroit->changeSpeed(100); //pleine vitesse
 		brasGauche->goTo(bgOuvert);
 	}
 	void fbg() {
+		brasDroit->changeSpeed(100); //pleine vitesse
 		brasGauche->goTo(bgFerme);
 	}
-	void obdl() {
-
+	void obdl() {					//Attention, ça ne remet pas la vitesse de l'AX12 à 100% après
+		brasDroit->changeSpeed(vitesseBrasLente); //vitesse divisée par deux
+		brasDroit->goTo(bdOuvert);
 	}
 	void fbdl() {
-
+		brasDroit->changeSpeed(vitesseBrasLente); //vitesse divisée par deux
+		brasDroit->goTo(bdFerme);
 	}
 	void obgl() {
-
+		brasGauche->changeSpeed(vitesseBrasLente); //vitesse divisée par deux
+		brasGauche->goTo(bgOuvert);
 	}
 	void fbgl() {
-
+		brasGauche->changeSpeed(vitesseBrasLente); //vitesse divisée par deux
+		brasGauche->goTo(bgFerme);
 	}
 	void ogd() {
 		guideDroit->goTo(gdOuvert);
@@ -427,9 +441,8 @@ public:
 	}
 
 	void broad(){
-		clapGauche->goToB(100);
-		Delay(1000);
-		clapGauche->goToB(200);
+		machoireDroite->goToB(100);
+		machoireDroite->goToB(0);
 	}
 
 };

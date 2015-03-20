@@ -22,7 +22,7 @@ SensorMgr::SensorMgr():
 	rightBackUS()
 {
 	lastRefreshTime = 0;
-	refreshDelay = 10;//(ms)
+	refreshDelay = 25;//(ms)
 
 	/* Set variables used */
 	GPIO_InitTypeDef GPIO_InitStruct;
@@ -109,7 +109,7 @@ SensorMgr::SensorMgr():
 	/* Interrupt mode */
 	EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
 	/* Triggers on rising and falling edge */
-	EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+	EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising;
 	/* Add to EXTI */
 	EXTI_Init(&EXTI_InitStruct);
 
@@ -117,9 +117,9 @@ SensorMgr::SensorMgr():
 	/* PA6 is connected to EXTI_Line6, which has EXTI9_5_IRQn vector */
 	NVIC_InitStruct.NVIC_IRQChannel = EXTI9_5_IRQn;
 	/* Set priority */
-	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0x00;
 	/* Set sub priority */
-	NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0x00;
 	/* Enable interrupt */
 	NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
 	/* Add to NVIC */
@@ -156,7 +156,7 @@ SensorMgr::SensorMgr():
 	/* Interrupt mode */
 	EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
 	/* Triggers on rising and falling edge */
-	EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+	EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising;
 	/* Add to EXTI */
 	EXTI_Init(&EXTI_InitStruct);
 
@@ -164,9 +164,9 @@ SensorMgr::SensorMgr():
 	/* PA4 is connected to EXTI_Line4, which has EXTI4_IRQn vector */
 	NVIC_InitStruct.NVIC_IRQChannel = EXTI4_IRQn;
 	/* Set priority */
-	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0x00;
 	/* Set sub priority */
-	NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0x01;
 	/* Enable interrupt */
 	NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
 	/* Add to NVIC */
@@ -204,7 +204,7 @@ SensorMgr::SensorMgr():
 	/* Interrupt mode */
 	EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
 	/* Triggers on rising and falling edge */
-	EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+	EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising;
 	/* Add to EXTI */
 	EXTI_Init(&EXTI_InitStruct);
 
@@ -212,9 +212,9 @@ SensorMgr::SensorMgr():
 	/* PA7 is connected to EXTI_Line7, which has EXTI9_5_IRQn vector */
 	NVIC_InitStruct.NVIC_IRQChannel = EXTI9_5_IRQn;
 	/* Set priority */
-	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0x00;
 	/* Set sub priority */
-	NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0x02;
 	/* Enable interrupt */
 	NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
 	/* Add to NVIC */
@@ -252,7 +252,7 @@ SensorMgr::SensorMgr():
 	/* Interrupt mode */
 	EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
 	/* Triggers on rising and falling edge */
-	EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+	EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising;
 	/* Add to EXTI */
 	EXTI_Init(&EXTI_InitStruct);
 
@@ -260,9 +260,9 @@ SensorMgr::SensorMgr():
 	/* PB1 is connected to EXTI_Line1, which has EXTI1_IRQn vector */
 	NVIC_InitStruct.NVIC_IRQChannel = EXTI1_IRQn;
 	/* Set priority */
-	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0x00;
 	/* Set sub priority */
-	NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0x03;
 	/* Enable interrupt */
 	NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
 	/* Add to NVIC */
@@ -283,13 +283,14 @@ void SensorMgr::refresh()
 
 	if(currentTime - lastRefreshTime >= refreshDelay)
 	{
-		if(capteur == 0)
-			rightFrontUS.refresh();
-		else if(capteur == 1)
+		if(capteur == 0) {
 			leftFrontUS.refresh();
-		else if(capteur == 2)
+		} else if(capteur == 1) {
 			rightBackUS.refresh();
-		else if(capteur == 3)
+		}
+		else if(capteur == 2) {
+			rightFrontUS.refresh();
+		} else if(capteur == 3)
 			leftBackUS.refresh();
 
 		capteur = (capteur+1)%4;
@@ -303,12 +304,11 @@ void SensorMgr::refresh()
  */
 
 void SensorMgr::rightFrontUSInterrupt(){
-	//serial.printfln("Avant-Droit:");
 	rightFrontUS.interruption();
+
 }
 
 void SensorMgr::leftFrontUSInterrupt(){
-	//serial.printfln("Avant-Gauche:");
 	leftFrontUS.interruption();
 }
 

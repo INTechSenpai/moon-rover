@@ -94,8 +94,8 @@ void MotionControlSystem::init(int16_t maxPWMtranslation, int16_t maxPWMrotation
 	NVIC_InitTypeDef NVIC_InitStructure;
 	//Configuration et activation de l'interruption
 	NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 16;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 
@@ -156,8 +156,8 @@ void MotionControlSystem::enableRotationControl(bool enabled) {
 	rotationControlled = enabled;
 }
 
-void MotionControlSystem::control() {
-
+void MotionControlSystem::control()
+{
 	/*
 	 * Comptage des ticks de la roue droite
 	 * Cette codeuse est connectée à un timer 16bit
