@@ -105,7 +105,7 @@ SensorMgr::SensorMgr():
 	/* PA6 is connected to EXTI_Line6 */
 	EXTI_InitStruct.EXTI_Line = EXTI_Line6;
 	/* Enable interrupt */
-	EXTI_InitStruct.EXTI_LineCmd = ENABLE;
+	EXTI_InitStruct.EXTI_LineCmd = DISABLE;
 	/* Interrupt mode */
 	EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
 	/* Triggers on rising and falling edge */
@@ -152,7 +152,7 @@ SensorMgr::SensorMgr():
 	/* PA4 is connected to EXTI_Line4 */
 	EXTI_InitStruct.EXTI_Line = EXTI_Line4;
 	/* Enable interrupt */
-	EXTI_InitStruct.EXTI_LineCmd = ENABLE;
+	EXTI_InitStruct.EXTI_LineCmd = DISABLE;
 	/* Interrupt mode */
 	EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
 	/* Triggers on rising and falling edge */
@@ -200,7 +200,7 @@ SensorMgr::SensorMgr():
 	/* PA7 is connected to EXTI_Line7 */
 	EXTI_InitStruct.EXTI_Line = EXTI_Line7;
 	/* Enable interrupt */
-	EXTI_InitStruct.EXTI_LineCmd = ENABLE;
+	EXTI_InitStruct.EXTI_LineCmd = DISABLE;
 	/* Interrupt mode */
 	EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
 	/* Triggers on rising and falling edge */
@@ -248,7 +248,7 @@ SensorMgr::SensorMgr():
 	/* PB1 is connected to EXTI_Line1 */
 	EXTI_InitStruct.EXTI_Line = EXTI_Line1;
 	/* Enable interrupt */
-	EXTI_InitStruct.EXTI_LineCmd = ENABLE;
+	EXTI_InitStruct.EXTI_LineCmd = DISABLE;
 	/* Interrupt mode */
 	EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
 	/* Triggers on rising and falling edge */

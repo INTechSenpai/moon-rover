@@ -411,19 +411,33 @@ int main(void)
  *		   *|ACTIONNEURS|*
  *		   *|___________|*
  */
-			else if(!strcmp("ss", order))
+		else if(!strcmp("ss",order))
 		{
 			uint16_t a17 = 0x19;
 			serial.read(a17);
 			actuatorsMgr->setArmSpeed(a17);
 		}
-			else if(!strcmp("obd",order))
+		else if(!strcmp("e",order))
+		{
+			uint16_t angle = 0;
+			serial.printfln("set angle");
+			if(angle <= 300)
+			{
+				serial.read(angle);
+				actuatorsMgr->e(angle);
+			}
+		}
+		else if(!strcmp("obd",order))
 		{
 			actuatorsMgr->obd();//		Ouvrir bras droit
 		}
 		else if(!strcmp("fbd",order))
 		{
 			actuatorsMgr->fbd();//		Fermer bras droit
+		}
+		else if(!strcmp("mbd",order))
+		{
+			actuatorsMgr->mbd();//		Bras droit en position médiane
 		}
 		else if(!strcmp("obg",order))
 		{
@@ -432,6 +446,10 @@ int main(void)
 		else if(!strcmp("fbg",order))
 		{
 			actuatorsMgr->fbg();//		Fermer bras gauche
+		}
+		else if(!strcmp("mbg",order))
+		{
+			actuatorsMgr->mbg();//		Bras gauche en position médiane
 		}
 		else if(!strcmp("obdl",order))
 		{

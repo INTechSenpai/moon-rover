@@ -60,9 +60,6 @@ public:
 
 	void refresh()
 	{
-		EXTI_sensor.EXTI_LineCmd = DISABLE;
-		EXTI_Init(&EXTI_sensor);
-
 			// On met la pin en output
 		GPIO_sensor.GPIO_Mode = GPIO_Mode_OUT;
 		GPIO_Init(GPIOx, &GPIO_sensor);
@@ -89,38 +86,6 @@ public:
 	/** Fonction appellée par l'interruption. S'occupe d'enregistrer la valeur de la longueur
 	 *  de l'impulsion retournée par le capteur, et de la convertir en une distance en mm.
 	 */
-//	void interruption()
-//	{
-//		// Front montant si bit == 1, descendant sinon.
-//		static uint8_t ancienBit=0;
-//		uint8_t bit = GPIO_ReadInputDataBit(GPIOx, GPIO_sensor.GPIO_Pin);
-//
-//		// Début de l'impulsion
-//		if (bit && bit!=ancienBit)
-//		{
-//			origineTimer = Micros();
-//			ancienBit=bit;
-//		}
-//
-//		// Fin de l'impulsion
-//		else if(!(bit) && bit!=ancienBit)
-//		{
-//			uint32_t temps_impulsion;
-//			ancienBit=bit;
-//				//Enregistrement de la dernière distance calculée, mais sans l'envoyer (l'envoi se fait par la méthode value)
-//			uint32_t current_time;
-//			current_time = Micros();
-//			temps_impulsion = current_time - origineTimer;
-//			ringBufferValeurs.append( 10*temps_impulsion/58 );
-//			derniereDistance = mediane(ringBufferValeurs);
-//			serial.printf("");//No hack here, follow your path...
-//		}
-//		else
-//		{
-//			//serial.printfln("I knew it !");
-//		}
-//	}
-
 	void interruption()
 	{
 		static bool risingEdgeTrigger = true;
@@ -139,7 +104,6 @@ public:
 			temps_impulsion = current_time - origineTimer;		//Le temps entre les deux fronts
 			ringBufferValeurs.append( 10*temps_impulsion/58 );	//On ajoute la distance mesurée à cet instant dans un buffer, calculé ainsi en fonction du temps entre les fronts
 			derniereDistance = mediane(ringBufferValeurs);		//Ce qu'on renvoie est la médiane du buffer, ainsi on élimine les valeurs extrêmes qui peuvent être absurdes
-			//serial.printfln("%d", 10*temps_impulsion/58);//No hack here, follow your path...
 			risingEdgeTrigger = true;
 			EXTI_sensor.EXTI_LineCmd = DISABLE;					//On a reçu la réponse qui nous intéressait, on désactive donc les lectures d'interruptions sur ce capteur
 			EXTI_Init(&EXTI_sensor);

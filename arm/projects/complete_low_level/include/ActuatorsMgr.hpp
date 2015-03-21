@@ -12,9 +12,11 @@
 
 extern Uart<1> serial;
 
-#define bgOuvert 300
+#define bgOuvert 292
 #define bgFerme 98
-#define bdOuvert 5
+#define bgMilieu 208
+#define bdOuvert 8
+#define bdMilieu 95
 #define bdFerme 203
 #define mgOuvert 240
 #define mgFerme 65
@@ -239,91 +241,10 @@ public:
 			GPIO_ResetBits(GPIOD, GPIO_Pin_14);//Sens de l'ascenseur = Descendre
 			GPIO_SetBits(GPIOC, GPIO_Pin_8);//Mise en marche du moteur
 		}
+	}
 
-
-//		if(consigneAscenseur == etatAscenseur)
-//		{
-//			GPIO_ResetBits(GPIOC, GPIO_Pin_8);//Arrêt du moteur
-//		}
-//		else if(consigneAscenseur == Haut)
-//		{
-//			GPIO_SetBits(GPIOD, GPIO_Pin_14);//Sens de l'ascenseur = Monter
-//			GPIO_SetBits(GPIOC, GPIO_Pin_8);//Mise en marche du moteur
-//		}
-//		else if(consigneAscenseur == Sol)
-//		{
-//			GPIO_ResetBits(GPIOD, GPIO_Pin_14);//Sens de l'ascenseur = Descendre
-//			GPIO_SetBits(GPIOC, GPIO_Pin_8);//Mise en marche du moteur
-//		}
-//		else if(consigneAscenseur == Bas && etatAscenseur == Sol)
-//		{
-//			GPIO_SetBits(GPIOD, GPIO_Pin_14);//Sens de l'ascenseur = Monter
-//			GPIO_SetBits(GPIOC, GPIO_Pin_8);//Mise en marche du moteur
-//		}
-//		else if(consigneAscenseur == Bas)
-//		{
-//			GPIO_ResetBits(GPIOD, GPIO_Pin_14);//Sens de l'ascenseur = Descendre
-//			GPIO_SetBits(GPIOC, GPIO_Pin_8);//Mise en marche du moteur
-//		}
-//		else if(consigneAscenseur == Estrade && (etatAscenseur == Bas || etatAscenseur == Sol || etatAscenseur == SousEstrade))
-//		{
-//			GPIO_SetBits(GPIOD, GPIO_Pin_14);//Sens de l'ascenseur = Monter
-//			GPIO_SetBits(GPIOC, GPIO_Pin_8);//Mise en marche du moteur
-//		}
-//		else if(consigneAscenseur == Estrade)
-//		{
-//			GPIO_ResetBits(GPIOD, GPIO_Pin_14);//Sens de l'ascenseur = Descendre
-//			GPIO_SetBits(GPIOC, GPIO_Pin_8);//Mise en marche du moteur
-//		}
-//		else if(consigneAscenseur == Milieu && etatAscenseur == Haut)
-//		{
-//			GPIO_ResetBits(GPIOD, GPIO_Pin_14);//Sens de l'ascenseur = Descendre
-//			GPIO_SetBits(GPIOC, GPIO_Pin_8);//Mise en marche du moteur
-//		}
-//		else if(consigneAscenseur == Milieu)
-//		{
-//			GPIO_SetBits(GPIOD, GPIO_Pin_14);//Sens de l'ascenseur = Monter
-//			GPIO_SetBits(GPIOC, GPIO_Pin_8);//Mise en marche du moteur
-//		}
-
-
-
-//		serial.printf("Consigne ascenseur = ");
-//		if(consigneAscenseur == Haut)
-//			serial.printfln("HAUT");
-//		else if(consigneAscenseur == Milieu)
-//			serial.printfln("MILIEU");
-//		else if(consigneAscenseur == Bas)
-//			serial.printfln("BAS");
-//		else if(consigneAscenseur == Sol)
-//			serial.printfln("SOL");
-//		else if(consigneAscenseur == Estrade)
-//			serial.printfln("ESTRADE");
-//		else if(etatAscenseur == SousEstrade)
-//			serial.printfln("SOUS ESTRADE");
-//		serial.printf("\n");
-//
-//		serial.printfln("Monte=%d", moteurMonte);
-//		serial.printfln("true=%d", (!moteurMonte || !moteurON));
-//		serial.printf("Etat ascenseur = ");
-//		if(etatAscenseur == Haut)
-//			serial.printfln("HAUT");
-//		else if(etatAscenseur == Milieu)
-//			serial.printfln("MILIEU");
-//		else if(etatAscenseur == Bas)
-//			serial.printfln("BAS");
-//		else if(etatAscenseur == Sol)
-//			serial.printfln("SOL");
-//		else if(etatAscenseur == Estrade)
-//			serial.printfln("ESTRADE");
-//		else if(etatAscenseur == SousEstrade)
-//			serial.printfln("SOUS ESTRADE");
-//		else if(etatAscenseur == SousSol)
-//			serial.printfln("SOUS SOL");
-//		serial.printf("\n");
-//		serial.printf("\n");
-
-
+	void e(uint16_t angle){
+		brasGauche->goTo(angle);
 	}
 
 	void omd() {
@@ -351,13 +272,21 @@ public:
 		brasDroit->changeSpeed(100); //pleine vitesse
 		brasDroit->goTo(bdFerme);
 	}
-	void obg() {
+	void mbd() {
 		brasDroit->changeSpeed(100); //pleine vitesse
+		brasDroit->goTo(bdMilieu);
+	}
+	void obg() {
+		brasGauche->changeSpeed(100); //pleine vitesse
 		brasGauche->goTo(bgOuvert);
 	}
 	void fbg() {
-		brasDroit->changeSpeed(100); //pleine vitesse
+		brasGauche->changeSpeed(100); //pleine vitesse
 		brasGauche->goTo(bgFerme);
+	}
+	void mbg(){
+		brasGauche->changeSpeed(100); //pleine vitesse
+		brasGauche->goTo(bgMilieu);
 	}
 	void obdl() {					//Attention, ça ne remet pas la vitesse de l'AX12 à 100% après
 		brasDroit->changeSpeed(vitesseBrasLente); //vitesse divisée par deux
