@@ -6,7 +6,7 @@ import strategie.GameState;
 import utils.ConfigInfo;
 import utils.Log;
 import utils.Config;
-import utils.Vec2;
+import vec2.Vec2;
 import astar.arc.PathfindingNodes;
 import hook.HookFactory;
 

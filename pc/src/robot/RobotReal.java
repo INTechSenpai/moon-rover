@@ -6,7 +6,7 @@ import robot.cardsWrappers.enums.HauteurBrasClap;
 import utils.Log;
 import utils.Config;
 import utils.Sleep;
-import utils.Vec2;
+import vec2.Vec2;
 import hook.Callback;
 import hook.Executable;
 import hook.Hook;
