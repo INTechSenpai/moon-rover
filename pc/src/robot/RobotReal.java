@@ -6,6 +6,7 @@ import robot.cardsWrappers.enums.HauteurBrasClap;
 import utils.Log;
 import utils.Config;
 import utils.Sleep;
+import vec2.ReadOnly;
 import vec2.Vec2;
 import hook.Callback;
 import hook.Executable;
@@ -117,17 +118,17 @@ public class RobotReal extends Robot
 	 * GETTERS & SETTERS
 	 */
 	@Override
-	public void setPosition(Vec2 position) throws FinMatchException
+	public void setPosition(Vec2<? extends ReadOnly> position) throws FinMatchException
 	{
 	    deplacements.setPosition(position);
 	}
 	
     @Override
-	public Vec2 getPosition() throws FinMatchException
+	public Vec2<ReadOnly> getPosition() throws FinMatchException
 	{
 	    return deplacements.getPosition();
 	}
-
+    
 	@Override
 	public void setOrientation(double orientation) throws FinMatchException
 	{

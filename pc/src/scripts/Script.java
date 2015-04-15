@@ -6,6 +6,7 @@ import strategie.GameState;
 import utils.ConfigInfo;
 import utils.Log;
 import utils.Config;
+import vec2.ReadOnly;
 import vec2.Vec2;
 import astar.arc.PathfindingNodes;
 import hook.HookFactory;
@@ -117,7 +118,7 @@ public abstract class Script
 	 * @param position
 	 * @throws PointSortieException
 	 */
-	public final void checkPointSortie(PathfindingNodes id, Vec2 position) throws PointSortieException
+	public final void checkPointSortie(PathfindingNodes id, Vec2<? extends ReadOnly> position) throws PointSortieException
 	{
 		PathfindingNodes sortie = point_sortie(id);
 		if(!position.equals(sortie.getCoordonnees()))

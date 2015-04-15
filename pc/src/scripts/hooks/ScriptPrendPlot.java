@@ -11,6 +11,7 @@ import strategie.GameState;
 import table.GameElementNames;
 import utils.Config;
 import utils.Log;
+import vec2.ReadOnly;
 import vec2.Vec2;
 
 /**
@@ -43,8 +44,8 @@ public class ScriptPrendPlot extends ScriptHook
 			FinMatchException
 	{
 		state.robot.stopper();
-		Vec2 position = state.robot.getPosition();
-		Vec2 position_obstacle = id_version.getObstacle().getPosition();
+		Vec2<ReadOnly> position = state.robot.getPosition();
+		Vec2<ReadOnly> position_obstacle = id_version.getObstacle().getPosition();
 		double orientation_cible = Math.atan2(position_obstacle.y-position.y, position_obstacle.x-position.x);
 		state.robot.tourner(orientation_cible);
 		// TODO (avec règlement)
