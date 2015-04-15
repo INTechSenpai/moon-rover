@@ -118,7 +118,7 @@ public abstract class Script
 	 * @param position
 	 * @throws PointSortieException
 	 */
-	public final void checkPointSortie(PathfindingNodes id, Vec2<? extends ReadOnly> position) throws PointSortieException
+	public final void checkPointSortie(PathfindingNodes id, Vec2<ReadOnly> position) throws PointSortieException
 	{
 		PathfindingNodes sortie = point_sortie(id);
 		if(!position.equals(sortie.getCoordonnees()))

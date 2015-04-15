@@ -118,7 +118,7 @@ public class RobotReal extends Robot
 	 * GETTERS & SETTERS
 	 */
 	@Override
-	public void setPosition(Vec2<? extends ReadOnly> position) throws FinMatchException
+	public void setPosition(Vec2<ReadOnly> position) throws FinMatchException
 	{
 	    deplacements.setPosition(position);
 	}
