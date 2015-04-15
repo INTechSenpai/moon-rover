@@ -13,6 +13,8 @@ import scripts.Script;
 import strategie.GameState;
 import utils.Config;
 import utils.Log;
+import vec2.ReadOnly;
+import vec2.ReadWrite;
 
 /**
  * Faux script. Permet de sortir de la zone de départ.
@@ -30,23 +32,23 @@ public class SortieZoneDepart extends Script {
 	}
 
 	@Override
-	public ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono> state) {
+	public ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono,ReadOnly> state) {
 		ArrayList<PathfindingNodes> out = new ArrayList<PathfindingNodes>();
 		out.add(PathfindingNodes.POINT_DEPART);
 		return out;
 	}
 
 	@Override
-	protected void execute(PathfindingNodes id_version, GameState<?> state)
+	protected void execute(PathfindingNodes id_version, GameState<?,ReadWrite> state)
 			throws UnableToMoveException, SerialConnexionException,
 			FinMatchException, ScriptHookException
 	{
-		state.robot.tourner(Math.PI);
-		state.robot.avancer(500); // TODO (avec règlement)
+		GameState.tourner(state, Math.PI);
+		GameState.avancer(state, 500); // TODO (avec règlement)
 	}
 
 	@Override
-	protected void termine(GameState<?> state) throws SerialConnexionException, FinMatchException, ScriptHookException
+	protected void termine(GameState<?,ReadWrite> state) throws SerialConnexionException, FinMatchException, ScriptHookException
 	{}
 	
 }

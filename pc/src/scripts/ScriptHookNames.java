@@ -7,10 +7,8 @@ package scripts;
  */
 
 public enum ScriptHookNames {
-	FUNNY_ACTION(false),
-	PREND_PLOT(false),
-	PREND_VERRE(false),
-	DEGOMME_PILE(false);
+	EXEMPLE(false),
+	FUNNY_ACTION(false);
 	
 	private boolean canIDoIt; // ce booléan dépend du robot!
 	// si on a deux robots, ils ne pourront pas faire la même chose...

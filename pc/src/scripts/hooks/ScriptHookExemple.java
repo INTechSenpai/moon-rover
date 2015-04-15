@@ -11,31 +11,31 @@ import strategie.GameState;
 import table.GameElementNames;
 import utils.Config;
 import utils.Log;
+import vec2.ReadWrite;
 
 /**
- * Script hook de prise de verre.
- * C'est le script appelé lorsqu'on a détecté un verre.
+ * Exemple
  * @author pf
  *
  */
 
-public class ScriptPrendVerre extends ScriptHook
+public class ScriptHookExemple extends ScriptHook
 {
 
-	public ScriptPrendVerre(HookFactory hookgenerator, Config config, Log log)
+	public ScriptHookExemple(HookFactory hookgenerator, Config config, Log log)
 	{
 		super(hookgenerator, config, log);
 	}
 
 	@Override
-	protected void termine(GameState<RobotReal> gamestate) throws ScriptException,
+	protected void termine(GameState<RobotReal,ReadWrite> gamestate) throws ScriptException,
 			FinMatchException, SerialConnexionException
 	{
 		// TODO (avec règlement)
 	}
 
 	@Override
-	protected void execute(GameElementNames id_version, GameState<RobotReal> state)
+	protected void execute(GameElementNames id_version, GameState<RobotReal,ReadWrite> state)
 			throws UnableToMoveException, SerialConnexionException,
 			FinMatchException
 	{

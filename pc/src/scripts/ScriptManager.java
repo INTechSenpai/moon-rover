@@ -2,14 +2,8 @@ package scripts;
 
 import hook.HookFactory;
 import scripts.anticipables.ScriptAttente;
-import scripts.anticipables.ScriptCherchePlot;
-import scripts.anticipables.ScriptClap;
-import scripts.anticipables.ScriptTapis;
 import scripts.anticipables.SortieZoneDepart;
-import scripts.hooks.ScriptDegommePile;
-import scripts.hooks.ScriptFunnyAction;
-import scripts.hooks.ScriptPrendPlot;
-import scripts.hooks.ScriptPrendVerre;
+import scripts.hooks.ScriptHookExemple;
 import utils.Log;
 import utils.Config;
 import container.Service;
@@ -29,16 +23,10 @@ public class ScriptManager implements Service
 	public ScriptManager(HookFactory hookfactory, Config config, Log log) throws UnknownScriptException
 	{
 		// DEPENDS_ON_RULES
-		instancesScriptsAnticipables[ScriptAnticipableNames.CLAP.ordinal()] = new ScriptClap(hookfactory, config, log);
-		instancesScriptsAnticipables[ScriptAnticipableNames.TAPIS.ordinal()] = new ScriptTapis(hookfactory, config, log);
 		instancesScriptsAnticipables[ScriptAnticipableNames.SORTIE_ZONE_DEPART.ordinal()] = new SortieZoneDepart(hookfactory, config, log);
 		instancesScriptsAnticipables[ScriptAnticipableNames.ATTENTE.ordinal()] = new ScriptAttente(hookfactory, config, log);
-		instancesScriptsAnticipables[ScriptAnticipableNames.CHERCHE_PLOT.ordinal()] = new ScriptCherchePlot(hookfactory, config, log);
 
-		instancesScriptsHook[ScriptHookNames.FUNNY_ACTION.ordinal()] = new ScriptFunnyAction(hookfactory, config, log);
-		instancesScriptsHook[ScriptHookNames.PREND_PLOT.ordinal()] = new ScriptPrendPlot(hookfactory, config, log);
-		instancesScriptsHook[ScriptHookNames.DEGOMME_PILE.ordinal()] = new ScriptDegommePile(hookfactory, config, log);
-		instancesScriptsHook[ScriptHookNames.PREND_VERRE.ordinal()] = new ScriptPrendVerre(hookfactory, config, log);
+		instancesScriptsHook[ScriptHookNames.EXEMPLE.ordinal()] = new ScriptHookExemple(hookfactory, config, log);
 		
 		for(int i = 0; i < ScriptAnticipableNames.values().length; i++)
 			if(instancesScriptsAnticipables[i] == null)

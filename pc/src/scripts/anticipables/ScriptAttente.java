@@ -13,6 +13,8 @@ import scripts.Script;
 import strategie.GameState;
 import utils.Config;
 import utils.Log;
+import vec2.ReadOnly;
+import vec2.ReadWrite;
 
 /**
  * N'est pas vraiment un script à proprement parler. C'est juste une attente.
@@ -30,9 +32,10 @@ public class ScriptAttente extends Script
 	}
 
 	@Override
-	public ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono> state) {
+	public ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono,ReadOnly> state)
+	{
 		ArrayList<PathfindingNodes> version = new ArrayList<PathfindingNodes>();
-		PathfindingNodes entree_sortie = ((RobotChrono)state.robot).getPositionPathfinding();
+		PathfindingNodes entree_sortie = GameState.getPositionPathfinding(state);
 		if(entree_sortie != null && state.canSleepUntilSomethingChange())
 			version.add(entree_sortie);
 		return version;
@@ -45,18 +48,18 @@ public class ScriptAttente extends Script
 	}
 
 	@Override
-	protected void execute(PathfindingNodes id_version, GameState<?> state)
+	protected void execute(PathfindingNodes id_version, GameState<?,ReadWrite> state)
 			throws UnableToMoveException, SerialConnexionException,
 			FinMatchException, ScriptHookException
 	{
 		/**
 		 * On attend jusqu'à ce qu'un obstacle ait disparu.
 		 */
-		state.sleepUntilSomethingChange();
+		GameState.sleepUntilSomethingChange(state);
 	}
 
 	@Override
-	protected void termine(GameState<?> state) throws SerialConnexionException,
+	protected void termine(GameState<?,ReadWrite> state) throws SerialConnexionException,
 			FinMatchException, ScriptHookException
 	{
 	}
