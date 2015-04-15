@@ -11,6 +11,7 @@ import strategie.GameState;
 import table.GameElementNames;
 import utils.Config;
 import utils.Log;
+import vec2.ReadWrite;
 
 public abstract class ScriptHook
 {
@@ -36,7 +37,7 @@ public abstract class ScriptHook
 	 * @throws FinMatchException
 	 * @throws ScriptHookException
 	 */
-	public final void agit(GameElementNames id_version, GameState<RobotReal> state) throws ScriptException, FinMatchException
+	public final void agit(GameElementNames id_version, GameState<RobotReal,ReadWrite> state) throws ScriptException, FinMatchException
 	{
 		log.debug("Agit script hook version "+id_version);
 		try
@@ -55,7 +56,7 @@ public abstract class ScriptHook
 				termine(state);
 			} catch (SerialConnexionException e) {
 				try {
-					state.robot.sleep(100); // on attends un petit peu...
+					GameState.sleep(state, 100); // on attends un petit peu...
 					termine(state);  // on réessaye encore une fois
 				} catch (SerialConnexionException e1) {
 					e1.printStackTrace();
@@ -66,14 +67,14 @@ public abstract class ScriptHook
 
 	}
 
-	protected abstract void execute(GameElementNames id_version, GameState<RobotReal>state) throws UnableToMoveException, SerialConnexionException, FinMatchException;
+	protected abstract void execute(GameElementNames id_version, GameState<RobotReal,ReadWrite>state) throws UnableToMoveException, SerialConnexionException, FinMatchException;
 	
 	/**
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs, on se décale du mur, ...
 	 * A priori sans avoir besoin du numéro de version; si besoin est, à rajouter en paramètre.
 	 * @throws ScriptHookException 
 	 */
-	protected abstract void termine(GameState<RobotReal> gamestate) throws ScriptException, FinMatchException, SerialConnexionException;
+	protected abstract void termine(GameState<RobotReal,ReadWrite> gamestate) throws ScriptException, FinMatchException, SerialConnexionException;
 
 	public void updateConfig()
 	{}

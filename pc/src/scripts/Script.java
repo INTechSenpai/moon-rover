@@ -1,12 +1,12 @@
 package scripts;
 
 import robot.RobotChrono;
-import robot.RobotReal;
 import strategie.GameState;
 import utils.ConfigInfo;
 import utils.Log;
 import utils.Config;
 import vec2.ReadOnly;
+import vec2.ReadWrite;
 import vec2.Vec2;
 import astar.arc.PathfindingNodes;
 import hook.HookFactory;
@@ -38,7 +38,7 @@ public abstract class Script
 	 * Renvoie le tableau des méta-verions d'un script
 	 * @return le tableau des méta-versions possibles
 	 */
-	public abstract ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono> state);
+	public abstract ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono,ReadOnly> state);
 
 	public Script(HookFactory hookgenerator, Config config, Log log)
 	{
@@ -53,7 +53,7 @@ public abstract class Script
 	 * A priori sans avoir besoin du numéro de version; si besoin est, à rajouter en paramètre.
 	 * @throws ScriptHookException 
 	 */
-	protected abstract void termine(GameState<?> gamestate) throws ScriptException, FinMatchException, SerialConnexionException, ScriptHookException;
+	protected abstract void termine(GameState<?,ReadWrite> gamestate) throws ScriptException, FinMatchException, SerialConnexionException, ScriptHookException;
 	
 	/**
 	 * Surcouche d'exécute, avec une gestion d'erreur.
@@ -64,15 +64,15 @@ public abstract class Script
 	 * @throws FinMatchException
 	 * @throws ScriptHookException
 	 */
-	public void agit(PathfindingNodes id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
+	public void agit(PathfindingNodes id_version, GameState<?,ReadWrite> state) throws ScriptException, FinMatchException, ScriptHookException
 	{
-		if(state.robot instanceof RobotReal)
-			log.debug("Agit version "+id_version);
+//		if(state.robot instanceof RobotReal)
+//			log.debug("Agit version "+id_version);
 		PathfindingNodes pointEntree = id_version;
 		
-		if(state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
+		if(GameState.getPosition(state.getReadOnly()).squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
 		{
-			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+pointEntree+" "+pointEntree.getCoordonnees()+" et est en "+state.robot.getPosition());
+			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+pointEntree+" "+pointEntree.getCoordonnees()+" et est en "+GameState.getPosition(state.getReadOnly()));
 			throw new ScriptException();
 		}
 		try
@@ -91,7 +91,7 @@ public abstract class Script
 				termine(state);
 			} catch (SerialConnexionException e) {
 				try {
-					state.robot.sleep(100); // on attends un petit peu...
+					GameState.sleep(state, 100); // on attends un petit peu...
 					termine(state);  // on réessaye encore une fois
 				} catch (SerialConnexionException e1) {
 					e1.printStackTrace();
@@ -140,7 +140,7 @@ public abstract class Script
 	 * @throws SerialConnexionException 
 	 * @throws ScriptHookException 
 	 */
-	protected abstract void execute(PathfindingNodes id_version, GameState<?>state) throws UnableToMoveException, SerialConnexionException, FinMatchException, ScriptHookException;
+	protected abstract void execute(PathfindingNodes id_version, GameState<?,ReadWrite>state) throws UnableToMoveException, SerialConnexionException, FinMatchException, ScriptHookException;
 
 	public void updateConfig()
 	{
