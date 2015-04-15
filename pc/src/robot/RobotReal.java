@@ -107,7 +107,7 @@ public class RobotReal extends Robot
 	{
         deplacements.setTranslationnalSpeed(vitesse);
         deplacements.setRotationnalSpeed(vitesse);
-		log.debug("Modification de la vitesse: "+vitesse, this);
+		log.debug("Modification de la vitesse: "+vitesse);
 	}
 	
 	/*

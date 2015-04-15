@@ -43,13 +43,13 @@ public class ScriptManager implements Service
 		for(int i = 0; i < ScriptAnticipableNames.values().length; i++)
 			if(instancesScriptsAnticipables[i] == null)
 			{
-				log.warning("Script non instancié: "+ScriptAnticipableNames.values()[i], this);
+				log.warning("Script non instancié: "+ScriptAnticipableNames.values()[i]);
 				throw new UnknownScriptException();
 			}
 		for(int i = 0; i < ScriptHookNames.values().length; i++)
 			if(instancesScriptsHook[i] == null)
 			{
-				log.warning("Script non instancié: "+ScriptHookNames.values()[i], this);
+				log.warning("Script non instancié: "+ScriptHookNames.values()[i]);
 				throw new UnknownScriptException();
 			}
 

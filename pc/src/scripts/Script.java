@@ -38,7 +38,7 @@ public abstract class Script
 	 * Renvoie le tableau des méta-verions d'un script
 	 * @return le tableau des méta-versions possibles
 	 */
-	public abstract ArrayList<PathfindingNodes> getVersions(final GameState<RobotChrono> state);
+	public abstract ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono> state);
 
 	public Script(HookFactory hookgenerator, Config config, Log log)
 	{
@@ -67,12 +67,12 @@ public abstract class Script
 	public void agit(PathfindingNodes id_version, GameState<?> state) throws ScriptException, FinMatchException, ScriptHookException
 	{
 		if(state.robot instanceof RobotReal)
-			log.debug("Agit version "+id_version, this);
+			log.debug("Agit version "+id_version);
 		PathfindingNodes pointEntree = id_version;
 		
 		if(state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
 		{
-			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+pointEntree+" "+pointEntree.getCoordonnees()+" et est en "+state.robot.getPosition(), this);
+			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+pointEntree+" "+pointEntree.getCoordonnees()+" et est en "+state.robot.getPosition());
 			throw new ScriptException();
 		}
 		try
@@ -123,7 +123,7 @@ public abstract class Script
 		PathfindingNodes sortie = point_sortie(id);
 		if(!position.equals(sortie.getCoordonnees()))
 		{
-			log.critical("Position de "+sortie+" incorrecte! Sa bonne position est: "+position, this);
+			log.critical("Position de "+sortie+" incorrecte! Sa bonne position est: "+position);
 			throw new PointSortieException();
 		}
 

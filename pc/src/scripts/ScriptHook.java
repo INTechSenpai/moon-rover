@@ -38,7 +38,7 @@ public abstract class ScriptHook
 	 */
 	public final void agit(GameElementNames id_version, GameState<RobotReal> state) throws ScriptException, FinMatchException
 	{
-		log.debug("Agit script hook version "+id_version, this);
+		log.debug("Agit script hook version "+id_version);
 		try
 		{
 			execute(id_version, state);
