@@ -36,7 +36,7 @@ public class ScriptAttente extends Script
 	{
 		ArrayList<PathfindingNodes> version = new ArrayList<PathfindingNodes>();
 		PathfindingNodes entree_sortie = GameState.getPositionPathfinding(state);
-		if(entree_sortie != null && state.canSleepUntilSomethingChange())
+		if(entree_sortie != null && GameState.canSleepUntilSomethingChange(state))
 			version.add(entree_sortie);
 		return version;
 	}
