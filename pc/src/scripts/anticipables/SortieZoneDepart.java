@@ -2,6 +2,8 @@ package scripts.anticipables;
 
 import java.util.ArrayList;
 
+import permissions.ReadOnly;
+import permissions.ReadWrite;
 import astar.arc.PathfindingNodes;
 import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
@@ -13,8 +15,6 @@ import scripts.Script;
 import strategie.GameState;
 import utils.Config;
 import utils.Log;
-import vec2.ReadOnly;
-import vec2.ReadWrite;
 
 /**
  * Faux script. Permet de sortir de la zone de départ.

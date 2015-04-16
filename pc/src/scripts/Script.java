@@ -5,14 +5,14 @@ import strategie.GameState;
 import utils.ConfigInfo;
 import utils.Log;
 import utils.Config;
-import vec2.ReadOnly;
-import vec2.ReadWrite;
-import vec2.Vec2;
+import utils.Vec2;
 import astar.arc.PathfindingNodes;
 import hook.HookFactory;
 
 import java.util.ArrayList;
 
+import permissions.ReadOnly;
+import permissions.ReadWrite;
 import exceptions.FinMatchException;
 import exceptions.PointSortieException;
 import exceptions.ScriptException;

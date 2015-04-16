@@ -6,8 +6,7 @@ import robot.cardsWrappers.enums.HauteurBrasClap;
 import utils.Log;
 import utils.Config;
 import utils.Sleep;
-import vec2.ReadOnly;
-import vec2.Vec2;
+import utils.Vec2;
 import hook.Callback;
 import hook.Executable;
 import hook.Hook;
@@ -16,6 +15,7 @@ import hook.types.HookDemiPlan;
 
 import java.util.ArrayList;
 
+import permissions.ReadOnly;
 import astar.arc.SegmentTrajectoireCourbe;
 import enums.Side;
 import exceptions.ChangeDirectionException;

@@ -1,5 +1,6 @@
 package scripts;
 
+import permissions.ReadWrite;
 import exceptions.FinMatchException;
 import exceptions.ScriptException;
 import exceptions.ScriptHookException;
@@ -11,7 +12,6 @@ import strategie.GameState;
 import table.GameElementNames;
 import utils.Config;
 import utils.Log;
-import vec2.ReadWrite;
 
 public abstract class ScriptHook
 {
