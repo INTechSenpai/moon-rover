@@ -186,7 +186,7 @@ public class RobotReal extends Robot
     }
     
 	@Override
-    public RobotChrono cloneIntoRobotChrono() throws FinMatchException
+    public RobotChrono cloneIntoRobotChrono()
     {
     	RobotChrono rc = new RobotChrono(config, log);
     	copy(rc);
@@ -196,11 +196,16 @@ public class RobotReal extends Robot
     // Cette copie est un peu plus lente que les autres car il y a un appel série
     // Néanmoins, on ne fait cette copie qu'une fois par arbre.
     @Override
-    public void copy(RobotChrono rc) throws FinMatchException
+    public void copy(RobotChrono rc)
     {
         super.copy(rc);
-        getPosition().copy(rc.position);
-        rc.orientation = getOrientation();
+        try {
+			Vec2.copy(getPosition(), rc.position);
+			rc.orientation = getOrientation();
+		} catch (FinMatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
 	@Override
