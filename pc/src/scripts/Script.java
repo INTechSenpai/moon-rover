@@ -6,13 +6,13 @@ import utils.ConfigInfo;
 import utils.Log;
 import utils.Config;
 import utils.Vec2;
-import astar.arc.PathfindingNodes;
 import hook.HookFactory;
 
 import java.util.ArrayList;
 
 import permissions.ReadOnly;
 import permissions.ReadWrite;
+import planification.astar.arc.PathfindingNodes;
 import exceptions.FinMatchException;
 import exceptions.PointSortieException;
 import exceptions.ScriptException;

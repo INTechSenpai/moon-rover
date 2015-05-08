@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import permissions.ReadOnly;
 import permissions.ReadWrite;
-import astar.arc.PathfindingNodes;
+import planification.astar.arc.PathfindingNodes;
 import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
 import exceptions.SerialConnexionException;

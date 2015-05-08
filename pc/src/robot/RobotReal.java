@@ -17,7 +17,7 @@ import hook.types.HookDemiPlan;
 import java.util.ArrayList;
 
 import permissions.ReadOnly;
-import astar.arc.SegmentTrajectoireCourbe;
+import planification.astar.arc.SegmentTrajectoireCourbe;
 import enums.Side;
 import exceptions.ChangeDirectionException;
 import exceptions.FinMatchException;
