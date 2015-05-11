@@ -10,6 +10,7 @@
 #include "misc.h"
 #include "capteur_srf05.hpp"
 #include "Singleton.hpp"
+#include "MotionControlSystem.h"
 #include <Uart.hpp>
 
 extern Uart<1> serial;
@@ -19,16 +20,16 @@ class SensorMgr : public Singleton<SensorMgr>
 public:
 	SensorMgr();
 
-	int getLeftFrontValue() const;
-	int getRightFrontValue() const;
-	int getLeftBackValue() const;
-	int getRightBackValue() const;
+	int getLeftFrontValue();
+	int getRightFrontValue();
+	int getLeftBackValue();
+	int getRightBackValue();
 	bool isPlotInside() const;
 	bool isLeftGlassInside() const;
 	bool isRightGlassInside() const;
 	bool isJumperOut() const;
 
-	void refresh();
+	void refresh(MOVING_DIRECTION direction, bool moving);
 
 	void leftFrontUSInterrupt();
 	void rightFrontUSInterrupt();

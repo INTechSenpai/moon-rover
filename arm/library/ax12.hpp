@@ -97,6 +97,7 @@ private:
     	 * instruction : commande donnée à l'AX12 (cf liste de DEFINE ci-dessus)
     	 * data : tableau contenant les paramètres allant avec la commande
     	 */
+    	Serial_AX12::enable_tx();
         uint8_t checksum = 0;
         Serial_AX12::send_char(0xFF);
         Serial_AX12::send_char(0xFF);
@@ -113,6 +114,7 @@ private:
         }
 
         Serial_AX12::send_char(~checksum);
+        //Serial_AX12::disable_tx();
 //        Serial_AX12::disable_tx();        //désactiver la série sortante
 //        Serial_AX12::enable_rx();            //activer la série entrante
 //        //Delay(10);
@@ -128,6 +130,7 @@ private:
     	 * instruction : commande donnée à l'AX12 (cf liste de DEFINE ci-dessus)
     	 * data : tableau contenant les paramètres allant avec la commande
     	 */
+    	Serial_AX12::enable_tx();
         uint8_t checksum = 0;
         Serial_AX12::send_char(0xFF);
         Serial_AX12::send_char(0xFF);
@@ -144,6 +147,7 @@ private:
         }
 
         Serial_AX12::send_char(~checksum);
+        //Serial_AX12::disable_tx();
     }
 
     /*Lecture d'un packet en provenance de l'AX12
@@ -260,33 +264,30 @@ public:
 
     AX(uint8_t id, uint16_t AX_angle_CW, uint16_t AX_angle_CCW) // Constructeur de la classe
     {
-        Serial_AX12::disable_rx();
         id_ = id;
         angleMin_ = AX_angle_CW;
         angleMax_ = AX_angle_CCW;
-        init(AX_angle_CW, AX_angle_CCW);
-        writeDataB(AX_RETURN_LEVEL, 1, 0);
+        init();
     }
 
     AX(uint8_t id) // Constructeur de la classe pour faire tourner l'AX12 en continu
     {
-        Serial_AX12::disable_rx();
         id_ = id;
         angleMin_ = 0;
         angleMax_ = 0;
         init();
     }
 
-    void init(uint16_t AX_angle_CW = 0, uint16_t AX_angle_CCW = 0)
+    void init()
     {
-        // Active l'asservissement du servo
+        Serial_AX12::disable_rx();
+        writeData(AX_RETURN_LEVEL, 1, 0);
         writeData(AX_TORQUE_ENABLE, 1, 1);
-        // Pas de limitation d'angles
+        writeData(AX_LIMIT_TEMPERATURE, 1, 150);
+        writeData(AX_CW_ANGLE_LIMIT_L, 2, angleMin_);
+        writeData(AX_CCW_ANGLE_LIMIT_L, 2, angleMax_);
 
-        writeData(AX_CW_ANGLE_LIMIT_L, 2, AX_angle_CW);
-        writeData(AX_CCW_ANGLE_LIMIT_L, 2, AX_angle_CCW);
-        //baudrate
-        writeData(AX_BAUD_RATE, 1, 0xCF);
+        changeSpeed(100);
     }
     /// Reset de l'AX12
     void reset()

@@ -26,7 +26,7 @@
 //#define TICK_TO_RADIAN 0.00012663 // TICK_TO_MM/256 : entre roues de 25.6cm
 #define TICK_TO_RADIAN 0.0014468
 
-#define NB_SPEED 4 //Nombre de vitesses différentes gérées par l'asservissement
+#define NB_SPEED 6 //Nombre de vitesses différentes gérées par l'asservissement
 #define NB_CTE_ASSERV 4 //Nombre de variables constituant un asservissement : pwmMAX, kp, ki, kd
 
 #if DEBUG
@@ -34,6 +34,8 @@
 #else
 #define TRACKER_SIZE 1
 #endif
+
+enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 extern Uart<1> serial;
 
@@ -51,6 +53,12 @@ private:
 	//Consignes à atteindre en tick
 	volatile int32_t rotationSetpoint;
 	volatile int32_t translationSetpoint;
+	volatile int32_t translationFinalSetpoint;
+	volatile int32_t rotationFinalSetpoint;
+
+	//Coefficients directeurs de la rampe de la consigne (unité : tick/fréquence d'asserv)
+	float vitesseEvolutionConsigneTranslation;
+	float vitesseEvolutionConsigneRotation;
 
 	volatile int16_t pwmRotation;
 	volatile int16_t pwmTranslation;
@@ -60,6 +68,7 @@ private:
 	volatile float x;
 	volatile float y;
 	volatile bool moving;
+	volatile MOVING_DIRECTION direction;
 	volatile bool moveAbnormal;
 	float translationTunings[NB_SPEED][NB_CTE_ASSERV];
 	float rotationTunings[NB_SPEED][NB_CTE_ASSERV];
@@ -81,8 +90,8 @@ private:
 		int rotationCourante;
 		bool asservTranslation;
 		bool asservRotation;
-		uint8_t pwmTranslation;
-		uint8_t pwmRotation;
+		int16_t pwmTranslation;
+		int16_t pwmRotation;
 		uint8_t tailleBufferReception;
 	};
 
@@ -119,6 +128,8 @@ public:
 	void printTrackingAll();///Affiche l'intégralité du tableau de tracking
 	void printTrackingLocomotion();
 	void printTrackingSerie();
+	void printTrackingPWM();
+	void printTrackingAsserv();
 
 	int getPWMTranslation() const;
 	int getPWMRotation() const;
@@ -135,6 +146,7 @@ public:
 	void orderRotation(float);
 	void orderRawPwm(Side,int16_t);
 	void stop();
+	void stopMotion();
 	static int32_t optimumAngle(int32_t,int32_t);
 
 	void setTranslationTunings(float, float, float);
@@ -148,12 +160,14 @@ public:
 	float getY() const;
 	void setX(float);
 	void setY(float);
+	void resetPosition(void);
 	float getBalance() const;
 	void setBalance(float newBalance);
 	int16_t getMaxPWMtranslation() const;
 	int16_t getMaxPWMrotation() const;
 	void setMaxPWMtranslation(int16_t);
 	void setMaxPWMrotation(int16_t);
+	void setDelayToStop(uint32_t);
 
 	/*
 	 * Règlage des constantes d'asservissement et du pwm
@@ -167,6 +181,16 @@ public:
 
 	bool isMoving() const;
 	bool isMoveAbnormal() const;
+	MOVING_DIRECTION getMovingDirection() const;
+
+	/* Fonction permettant de Test de différents PWM, afin de connaître le PWM minimal mettant en mouvement le robot */
+	void testPWM(int16_t listePWM[], unsigned int nbPWM);
+
+	void testTranslation(int);
+	void testRotation(float);
+	void testPID(void);
+	void testVariableSpeed(void);
+	void testSpeed();
 };
 
 #endif /* MOTION_CONTROL_H_ */

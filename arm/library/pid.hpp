@@ -34,6 +34,7 @@ public:
 
 		setOutputLimits(-32678, 32767);
 		setTunings(0, 0, 0);
+		resetErrors();
 	}
 
 	void compute() {
@@ -125,6 +126,10 @@ public:
 
 	int32_t getDerivativeError() const {
 		return derivative;
+	}
+
+	int32_t getIntegralErrol() const {
+		return integral;
 	}
 
 private:

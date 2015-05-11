@@ -22,7 +22,7 @@ SensorMgr::SensorMgr():
 	rightBackUS()
 {
 	lastRefreshTime = 0;
-	refreshDelay = 25;//(ms)
+	refreshDelay = 13;//(ms)
 
 	/* Set variables used */
 	GPIO_InitTypeDef GPIO_InitStruct;
@@ -276,21 +276,21 @@ SensorMgr::SensorMgr():
 /*
  * Fonction de mise à jour des capteurs à ultrason
  */
-void SensorMgr::refresh()
+void SensorMgr::refresh(MOVING_DIRECTION direction, bool moving)
 {
 	static uint8_t capteur = 0;
 	currentTime = Millis();
 
 	if(currentTime - lastRefreshTime >= refreshDelay)
 	{
-		if(capteur == 0) {
+		if(capteur == 0 && (direction == FORWARD || !moving)) {
 			leftFrontUS.refresh();
-		} else if(capteur == 1) {
+		} else if(capteur == 1 && (direction == BACKWARD || !moving)) {
 			rightBackUS.refresh();
 		}
-		else if(capteur == 2) {
+		else if(capteur == 2 && (direction == FORWARD || !moving)) {
 			rightFrontUS.refresh();
-		} else if(capteur == 3)
+		} else if(capteur == 3 && (direction == BACKWARD  || !moving))
 			leftBackUS.refresh();
 
 		capteur = (capteur+1)%4;
@@ -325,19 +325,19 @@ void SensorMgr::leftBackUSInterrupt(){
  * Fonctions de récupération de la distance mesurée
  */
 
-int SensorMgr::getRightFrontValue() const{
+int SensorMgr::getRightFrontValue() {
 	return rightFrontUS.value();
 }
 
-int SensorMgr::getLeftFrontValue() const{
+int SensorMgr::getLeftFrontValue() {
 	return leftFrontUS.value();
 }
 
-int SensorMgr::getRightBackValue() const{
+int SensorMgr::getRightBackValue() {
 	return rightBackUS.value();
 }
 
-int SensorMgr::getLeftBackValue() const{
+int SensorMgr::getLeftBackValue() {
 	return leftBackUS.value();
 }
 

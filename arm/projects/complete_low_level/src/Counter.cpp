@@ -87,6 +87,6 @@ int32_t Counter::getLeftValue() {
 }
 
 int32_t Counter::getRightValue() {
-	//Translate to int32_t
+	//Translate to int16_t
 	return (TIM_GetCounter(TIM3)-32767);
 }

@@ -146,7 +146,6 @@ void Motor::initPWM(){
 }
 
 void Motor::run(int16_t pwm){
-
 	if (pwm >= 0) {
 		setDirection(Direction::FORWARD);
 		if (side == Side::LEFT) {

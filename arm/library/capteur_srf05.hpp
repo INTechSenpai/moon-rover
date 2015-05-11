@@ -6,7 +6,8 @@
 #include "ring_buffer.hpp"
 #include "Uart.hpp"
 
-#define NB_VALEURS_MEDIANE_SRF  4
+#define NB_VALEURS_MEDIANE_SRF  5
+// /!\ BEWARE /!\ Rechanger cette valeur à 5 pour l'homologation pour réduire le délai de détection.
 
 typedef ring_buffer<uint32_t, NB_VALEURS_MEDIANE_SRF> ringBufferSRF;
 extern Uart<1> serial;
@@ -53,9 +54,11 @@ public:
 		this->EXTI_sensor = EXTI_sensor;
 	}
 
-	uint32_t value() const
+	uint32_t value()
 	{
-		return derniereDistance;
+		uint32_t valeurRetour = derniereDistance;
+		//derniereDistance = 0;
+		return valeurRetour;
 	}
 
 	void refresh()
@@ -102,11 +105,14 @@ public:
 			uint32_t temps_impulsion, current_time;
 			current_time = Micros();
 			temps_impulsion = current_time - origineTimer;		//Le temps entre les deux fronts
+			//derniereDistance = 10*temps_impulsion/58;
 			ringBufferValeurs.append( 10*temps_impulsion/58 );	//On ajoute la distance mesurée à cet instant dans un buffer, calculé ainsi en fonction du temps entre les fronts
 			derniereDistance = mediane(ringBufferValeurs);		//Ce qu'on renvoie est la médiane du buffer, ainsi on élimine les valeurs extrêmes qui peuvent être absurdes
 			risingEdgeTrigger = true;
 			EXTI_sensor.EXTI_LineCmd = DISABLE;					//On a reçu la réponse qui nous intéressait, on désactive donc les lectures d'interruptions sur ce capteur
 			EXTI_Init(&EXTI_sensor);
+			GPIO_sensor.GPIO_Mode = GPIO_Mode_OUT;
+			GPIO_Init(GPIOx, &GPIO_sensor);
 		}
 	}
 
@@ -115,8 +121,8 @@ private:
 	EXTI_InitTypeDef EXTI_sensor;//Variable permettant de régler le vecteur d'interruptions associé au capteur
 	GPIO_TypeDef* GPIOx;//Port de la pin du capteur
 	ringBufferSRF ringBufferValeurs;
-	uint32_t derniereDistance;		//contient la dernière distance acquise, prête à être envoyée
-	uint32_t origineTimer;			//origine de temps afin de mesurer une durée
+	volatile uint32_t derniereDistance;		//contient la dernière distance acquise, prête à être envoyée
+	volatile uint32_t origineTimer;			//origine de temps afin de mesurer une durée
 };
 
 #endif

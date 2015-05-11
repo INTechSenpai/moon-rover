@@ -36,6 +36,10 @@ public:
     }
 };
 
+
+/** TODO
+ * A changer en un tri plus optimisé
+ */
 template<typename T, uint16_t BUFFER_SIZE>
 void bubble_sort(ring_buffer<T, BUFFER_SIZE> & buff) {
     T* buffer = buff.data();
@@ -59,7 +63,7 @@ uint32_t regression_lin(T x1, T x2, T y1, T y2, T2 x) {
 template<typename T, uint16_t BUFFER_SIZE>
 T mediane(ring_buffer<T, BUFFER_SIZE> & buff) {
     bubble_sort(buff);
-    return buff.data()[buff.current()];
+    return buff.data()[BUFFER_SIZE/2];
 }
 
 #endif
