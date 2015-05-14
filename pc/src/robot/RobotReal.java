@@ -1,9 +1,8 @@
 package robot;
 
-import robot.cardsWrappers.ActuatorCardWrapper;
-import robot.cardsWrappers.STMcardWrapper;
-import robot.cardsWrappers.enums.ActuatorOrder;
-import robot.cardsWrappers.enums.HauteurBrasClap;
+import robot.stm.ActuatorOrder;
+import robot.stm.HauteurBrasClap;
+import robot.stm.STMcard;
 import utils.Log;
 import utils.Config;
 import utils.Sleep;
@@ -27,7 +26,7 @@ import exceptions.UnableToMoveException;
 import exceptions.WallCollisionDetectedException;
 
 /**
- * Effectue le lien entre le code et la réalité (permet de parler aux actionneurs, d'interroger les capteurs, etc.)
+ * Effectue le lien entre le code et la réalité (permet de parler aux stm, d'interroger les capteurs, etc.)
  * @author pf, marsu
  *
  */
@@ -35,17 +34,15 @@ import exceptions.WallCollisionDetectedException;
 public class RobotReal extends Robot
 {
 //	private Table table;
-	private STMcardWrapper deplacements;
-	private ActuatorCardWrapper actionneurs;
+	private STMcard stm;
 	
 	private HookDemiPlan hookTrajectoireCourbe;
 
 	// Constructeur
-	public RobotReal(ActuatorCardWrapper actuator, STMcardWrapper deplacements, Config config, Log log)
+	public RobotReal(STMcard stm, Config config, Log log)
  	{
 		super(config, log);
-		this.actionneurs = actuator;
-		this.deplacements = deplacements;
+		this.stm = stm;
 		updateConfig();
 	}
 	
@@ -56,8 +53,7 @@ public class RobotReal extends Robot
 	public void updateConfig()
 	{
 		super.updateConfig();
-		actionneurs.updateConfig();
-		deplacements.updateConfig();
+		stm.updateConfig();
 		log.updateConfig();
 	}
 	
@@ -65,7 +61,7 @@ public class RobotReal extends Robot
 	public void desactiver_asservissement_rotation() throws FinMatchException
 	{
 		try {
-			deplacements.disableRotationalFeedbackLoop();
+			stm.disableRotationalFeedbackLoop();
 		} catch (SerialConnexionException e) {
 			e.printStackTrace();
 		}
@@ -74,7 +70,7 @@ public class RobotReal extends Robot
 	public void desactiver_asservissement_translation() throws FinMatchException
 	{
 		try {
-			deplacements.disableTranslationalFeedbackLoop();
+			stm.disableTranslationalFeedbackLoop();
 		} catch (SerialConnexionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -84,7 +80,7 @@ public class RobotReal extends Robot
 	public void activer_asservissement_rotation() throws FinMatchException
 	{
 		try {
-			deplacements.enableRotationalFeedbackLoop();
+			stm.enableRotationalFeedbackLoop();
 		} catch (SerialConnexionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -94,7 +90,7 @@ public class RobotReal extends Robot
 	public void recaler() throws FinMatchException
 	{
 	    set_vitesse(Speed.READJUSTMENT);
-	    deplacements.readjust();
+	    stm.readjust();
 	}
 	
 	/**
@@ -106,9 +102,9 @@ public class RobotReal extends Robot
 	@Override
     public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException, FinMatchException
 	{
-		// Il est nécessaire d'ajouter le hookFinMatch avant chaque appel de deplacements qui prenne un peu de temps (avancer, tourner, ...)
+		// Il est nécessaire d'ajouter le hookFinMatch avant chaque appel de stm qui prenne un peu de temps (avancer, tourner, ...)
 		hooks.add(hookFinMatch);
-		deplacements.moveLengthwise(distance, hooks, mur);
+		stm.moveLengthwise(distance, hooks, mur);
 	}	
 
 	/**
@@ -121,8 +117,8 @@ public class RobotReal extends Robot
 	public void set_vitesse(Speed vitesse) throws FinMatchException
 	{
         try {
-			deplacements.setTranslationalSpeed(vitesse);
-	        deplacements.setRotationalSpeed(vitesse);
+			stm.setTranslationalSpeed(vitesse);
+	        stm.setRotationalSpeed(vitesse);
 		} catch (SerialConnexionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -140,25 +136,25 @@ public class RobotReal extends Robot
 	@Override
 	public void setPosition(Vec2<ReadOnly> position) throws FinMatchException
 	{
-	    deplacements.setPosition(position);
+	    stm.setPosition(position);
 	}
 	
     @Override
 	public Vec2<ReadOnly> getPosition() throws FinMatchException
 	{
-	    return deplacements.getPosition();
+	    return stm.getPosition();
 	}
     
 	@Override
 	public void setOrientation(double orientation) throws FinMatchException
 	{
-	    deplacements.setOrientation(orientation);
+	    stm.setOrientation(orientation);
 	}
 
     @Override
     public double getOrientation() throws FinMatchException
     {
-        return deplacements.getOrientation();
+        return stm.getOrientation();
     }
 
     /**
@@ -188,7 +184,7 @@ public class RobotReal extends Robot
     public void stopper() throws FinMatchException
     {
         try {
-			deplacements.immobilise();
+			stm.immobilise();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -200,14 +196,14 @@ public class RobotReal extends Robot
     {
     	ArrayList<Hook> hooks = new ArrayList<Hook>();
 		hooks.add(hookFinMatch);
-		deplacements.turn(angle, hooks);
+		stm.turn(angle, hooks);
     }
     
     @Override
     public void suit_chemin(ArrayList<SegmentTrajectoireCourbe> chemin, ArrayList<Hook> hooks) throws UnableToMoveException, FinMatchException, ScriptHookException
     {
 		hooks.add(hookFinMatch);
-        deplacements.followPath(chemin, hookTrajectoireCourbe, hooks, DirectionStrategy.getDefaultStrategy());
+        stm.followPath(chemin, hookTrajectoireCourbe, hooks, DirectionStrategy.getDefaultStrategy());
     }
     
 	@Override
@@ -242,10 +238,10 @@ public class RobotReal extends Robot
 	public void leverDeuxTapis(boolean needToSleep) throws FinMatchException
 	{
 		try {
-			actionneurs.useActuator(ActuatorOrder.LEVE_TAPIS_GAUCHE);
+			stm.useActuator(ActuatorOrder.LEVE_TAPIS_GAUCHE);
 			if(needToSleep)
 				leverTapisSleep();
-			actionneurs.useActuator(ActuatorOrder.LEVE_TAPIS_DROIT);
+			stm.useActuator(ActuatorOrder.LEVE_TAPIS_DROIT);
 			if(needToSleep)
 				leverTapisSleep();
 		} catch (SerialConnexionException e) {
@@ -257,10 +253,10 @@ public class RobotReal extends Robot
 	public void poserDeuxTapis(boolean needToSleep) throws FinMatchException
 	{
 		try {
-			actionneurs.useActuator(ActuatorOrder.BAISSE_TAPIS_GAUCHE);
+			stm.useActuator(ActuatorOrder.BAISSE_TAPIS_GAUCHE);
 			if(needToSleep)
 				poserTapisSleep();
-			actionneurs.useActuator(ActuatorOrder.BAISSE_TAPIS_DROIT);
+			stm.useActuator(ActuatorOrder.BAISSE_TAPIS_DROIT);
 			if(needToSleep)
 				poserTapisSleep();
 	    	tapisPoses = true;
@@ -281,7 +277,7 @@ public class RobotReal extends Robot
 		if(symetrie)
 			cote = cote.getSymmetric();
 		ActuatorOrder order = bougeBrasClapOrder(cote, hauteur);
-		actionneurs.useActuator(order);
+		stm.useActuator(order);
 		if(needToSleep)
 			bougeBrasClapSleep(order);
 	}
@@ -293,13 +289,12 @@ public class RobotReal extends Robot
 	}
 
 	public boolean isEnemyHere() {
-		return deplacements.isEnemyHere(); // TODO: ne pas demander à déplacements mais à gridspace
+		return stm.isEnemyHere(); // TODO: ne pas demander à déplacements mais à gridspace
 	}
 	
 	public void closeSerialConnections()
 	{
-		deplacements.close();
-		actionneurs.close();
+		stm.close();
 	}
 
 	public void initActuatorLocomotion()
