@@ -1,7 +1,5 @@
 package robot;
 
-import robot.stm.ActuatorOrder;
-import robot.stm.HauteurBrasClap;
 import robot.stm.STMcard;
 import utils.Log;
 import utils.Config;
@@ -17,7 +15,6 @@ import java.util.ArrayList;
 
 import permissions.ReadOnly;
 import planification.astar.arc.SegmentTrajectoireCourbe;
-import enums.Side;
 import exceptions.ChangeDirectionException;
 import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
@@ -235,59 +232,6 @@ public class RobotReal extends Robot
     	return (int)(System.currentTimeMillis() - Config.getDateDebutMatch());
     }
 	
-	public void leverDeuxTapis(boolean needToSleep) throws FinMatchException
-	{
-		try {
-			stm.useActuator(ActuatorOrder.LEVE_TAPIS_GAUCHE);
-			if(needToSleep)
-				leverTapisSleep();
-			stm.useActuator(ActuatorOrder.LEVE_TAPIS_DROIT);
-			if(needToSleep)
-				leverTapisSleep();
-		} catch (SerialConnexionException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@Override
-	public void poserDeuxTapis(boolean needToSleep) throws FinMatchException
-	{
-		try {
-			stm.useActuator(ActuatorOrder.BAISSE_TAPIS_GAUCHE);
-			if(needToSleep)
-				poserTapisSleep();
-			stm.useActuator(ActuatorOrder.BAISSE_TAPIS_DROIT);
-			if(needToSleep)
-				poserTapisSleep();
-	    	tapisPoses = true;
-			pointsObtenus = pointsObtenus + 24;
-		} catch (SerialConnexionException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@Override
-	public void bougeBrasClap(Side cote, HauteurBrasClap hauteur, boolean needToSleep) throws SerialConnexionException, FinMatchException
-	{
-		/**
-		 * Symétrie:
-		 * une couleur lève le bras gauche,
-		 * une autre le bras droit.
-		 */
-		if(symetrie)
-			cote = cote.getSymmetric();
-		ActuatorOrder order = bougeBrasClapOrder(cote, hauteur);
-		stm.useActuator(order);
-		if(needToSleep)
-			bougeBrasClapSleep(order);
-	}
-	
-	@Override
-	public void clapTombe()
-	{
-		pointsObtenus = pointsObtenus + 5;		
-	}
-
 	public boolean isEnemyHere() {
 		return stm.isEnemyHere(); // TODO: ne pas demander à déplacements mais à gridspace
 	}
