@@ -15,12 +15,10 @@ import java.util.ArrayList;
 
 import permissions.ReadOnly;
 import planification.astar.arc.SegmentTrajectoireCourbe;
-import exceptions.ChangeDirectionException;
 import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
 import exceptions.SerialConnexionException;
 import exceptions.UnableToMoveException;
-import exceptions.WallCollisionDetectedException;
 
 /**
  * Effectue le lien entre le code et la réalité (permet de parler aux stm, d'interroger les capteurs, etc.)
@@ -162,19 +160,6 @@ public class RobotReal extends Robot
 	public void sleep(long duree, ArrayList<Hook> hooks) throws FinMatchException
 	{
 		Sleep.sleep(duree);
-		for(Hook hook: hooks)
-			try {
-				hook.evaluate();
-			} catch (ScriptHookException e) {
-				// Impossible d'avoir des scripts hook pendant un sleep
-				e.printStackTrace();
-			} catch (WallCollisionDetectedException e) {
-				// Impossible pendant un sleep
-				e.printStackTrace();
-			} catch (ChangeDirectionException e) {
-				// Impossible pendant un sleep
-				e.printStackTrace();
-			}
 	}
 
     @Override
