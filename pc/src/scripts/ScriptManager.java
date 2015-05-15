@@ -27,7 +27,8 @@ public class ScriptManager implements Service
 		instancesScriptsAnticipables[ScriptAnticipableNames.ATTENTE.ordinal()] = new ScriptAttente(hookfactory, config, log);
 
 		instancesScriptsHook[ScriptHookNames.EXEMPLE.ordinal()] = new ScriptHookExemple(hookfactory, config, log);
-		
+		instancesScriptsHook[ScriptHookNames.FUNNY_ACTION.ordinal()] = new ScriptHookExemple(hookfactory, config, log);
+				
 		for(int i = 0; i < ScriptAnticipableNames.values().length; i++)
 			if(instancesScriptsAnticipables[i] == null)
 			{
