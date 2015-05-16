@@ -48,8 +48,6 @@ public class RobotReal extends Robot
 	public void updateConfig()
 	{
 		super.updateConfig();
-		stm.updateConfig();
-		log.updateConfig();
 	}
 	
 	
