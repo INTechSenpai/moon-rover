@@ -33,6 +33,7 @@ public abstract class Script
 	protected Log log;
 	
 	private int squared_tolerance_depart_script = 400; // 2cm
+	protected boolean symetrie;
 	
 	/**
 	 * Renvoie le tableau des méta-verions d'un script
@@ -147,6 +148,7 @@ public abstract class Script
 		positionTolerancy = config.getInt(ConfigInfo.HOOKS_TOLERANCE_MM);		
 		squared_tolerance_depart_script = config.getInt(ConfigInfo.TOLERANCE_DEPART_SCRIPT);
 		squared_tolerance_depart_script *= squared_tolerance_depart_script; // on en utilise le carré
+		symetrie = config.getSymmetry();
 	}
 
 }

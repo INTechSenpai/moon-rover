@@ -68,6 +68,13 @@ public class ScriptManager implements Service
 	}
 
 	public void updateConfig()
-	{}
+	{
+		for(int i = 0; i < ScriptAnticipableNames.values().length; i++)
+			if(instancesScriptsAnticipables[i] == null)
+				instancesScriptsAnticipables[i].updateConfig();
+		for(int i = 0; i < ScriptHookNames.values().length; i++)
+			if(instancesScriptsHook[i] == null)
+				instancesScriptsHook[i].updateConfig();
+	}
 
 }
