@@ -20,14 +20,14 @@ public class ScriptManager implements Service
 	private Script[] instancesScriptsAnticipables = new Script[ScriptAnticipableNames.values().length];
 	private ScriptHook[] instancesScriptsHook = new ScriptHook[ScriptHookNames.values().length];
 	
-	public ScriptManager(HookFactory hookfactory, Config config, Log log) throws UnknownScriptException
+	public ScriptManager(HookFactory hookfactory, Log log) throws UnknownScriptException
 	{
 		// DEPENDS_ON_RULES
-		instancesScriptsAnticipables[ScriptAnticipableNames.SORTIE_ZONE_DEPART.ordinal()] = new SortieZoneDepart(hookfactory, config, log);
-		instancesScriptsAnticipables[ScriptAnticipableNames.ATTENTE.ordinal()] = new ScriptAttente(hookfactory, config, log);
+		instancesScriptsAnticipables[ScriptAnticipableNames.SORTIE_ZONE_DEPART.ordinal()] = new SortieZoneDepart(hookfactory, log);
+		instancesScriptsAnticipables[ScriptAnticipableNames.ATTENTE.ordinal()] = new ScriptAttente(hookfactory, log);
 
-		instancesScriptsHook[ScriptHookNames.EXEMPLE.ordinal()] = new ScriptHookExemple(hookfactory, config, log);
-		instancesScriptsHook[ScriptHookNames.FUNNY_ACTION.ordinal()] = new ScriptHookExemple(hookfactory, config, log);
+		instancesScriptsHook[ScriptHookNames.EXEMPLE.ordinal()] = new ScriptHookExemple(hookfactory, log);
+		instancesScriptsHook[ScriptHookNames.FUNNY_ACTION.ordinal()] = new ScriptHookExemple(hookfactory, log);
 				
 		for(int i = 0; i < ScriptAnticipableNames.values().length; i++)
 			if(instancesScriptsAnticipables[i] == null)
@@ -41,8 +41,6 @@ public class ScriptManager implements Service
 				log.warning("Script non instancié: "+ScriptHookNames.values()[i]);
 				throw new UnknownScriptException();
 			}
-
-		updateConfig();
 	}
 
 	/**
@@ -67,14 +65,14 @@ public class ScriptManager implements Service
 		return script;
 	}
 
-	public void updateConfig()
+	public void updateConfig(Config config)
 	{
 		for(int i = 0; i < ScriptAnticipableNames.values().length; i++)
 			if(instancesScriptsAnticipables[i] == null)
-				instancesScriptsAnticipables[i].updateConfig();
+				instancesScriptsAnticipables[i].updateConfig(config);
 		for(int i = 0; i < ScriptHookNames.values().length; i++)
 			if(instancesScriptsHook[i] == null)
-				instancesScriptsHook[i].updateConfig();
+				instancesScriptsHook[i].updateConfig(config);
 	}
 
 }

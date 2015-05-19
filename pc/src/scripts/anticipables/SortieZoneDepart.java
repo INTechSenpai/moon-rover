@@ -13,7 +13,6 @@ import hook.HookFactory;
 import robot.RobotChrono;
 import scripts.Script;
 import strategie.GameState;
-import utils.Config;
 import utils.Log;
 
 /**
@@ -26,9 +25,9 @@ import utils.Log;
 
 public class SortieZoneDepart extends Script {
 
-	public SortieZoneDepart(HookFactory hookgenerator, Config config, Log log)
+	public SortieZoneDepart(HookFactory hookgenerator, Log log)
 	{
-		super(hookgenerator, config, log);
+		super(hookgenerator, log);
 	}
 
 	@Override

@@ -14,7 +14,7 @@ import hook.types.HookDemiPlan;
 import java.util.ArrayList;
 
 import permissions.ReadOnly;
-import planification.astar.arc.SegmentTrajectoireCourbe;
+import planification.LocomotionArc;
 import exceptions.ScriptHookException;
 import exceptions.UnableToMoveException;
 
@@ -32,20 +32,19 @@ public class RobotReal extends Robot
 	private HookDemiPlan hookTrajectoireCourbe;
 
 	// Constructeur
-	public RobotReal(STMcard stm, Config config, Log log)
+	public RobotReal(STMcard stm, Log log)
  	{
-		super(config, log);
+		super(log);
 		this.stm = stm;
-		updateConfig();
 	}
 	
 	/*
 	 * MÉTHODES PUBLIQUES
 	 */
 	
-	public void updateConfig()
+	public void updateConfig(Config config)
 	{
-		super.updateConfig();
+		super.updateConfig(config);
 	}
 	
 	
@@ -159,7 +158,7 @@ public class RobotReal extends Robot
     }
     
     @Override
-    public void suit_chemin(ArrayList<SegmentTrajectoireCourbe> chemin, ArrayList<Hook> hooks) throws UnableToMoveException, ScriptHookException
+    public void suit_chemin(ArrayList<LocomotionArc> chemin, ArrayList<Hook> hooks) throws UnableToMoveException, ScriptHookException
     {
 		hooks.add(hookFinMatch);
         stm.followPath(chemin, hookTrajectoireCourbe, hooks, DirectionStrategy.getDefaultStrategy());
@@ -168,7 +167,7 @@ public class RobotReal extends Robot
 	@Override
     public RobotChrono cloneIntoRobotChrono()
     {
-    	RobotChrono rc = new RobotChrono(config, log);
+    	RobotChrono rc = new RobotChrono(log);
     	copy(rc);
     	return rc;
     }

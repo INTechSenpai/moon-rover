@@ -19,12 +19,10 @@ public abstract class ScriptHook
 	protected Config config;
 	protected Log log;
 
-	public ScriptHook(HookFactory hookgenerator, Config config, Log log)
+	public ScriptHook(HookFactory hookgenerator, Log log)
 	{
 		this.hookfactory = hookgenerator;
-		this.config = config;
 		this.log = log;
-		updateConfig();
 	}
 
 	/**
@@ -76,6 +74,6 @@ public abstract class ScriptHook
 	 */
 	protected abstract void termine(GameState<RobotReal,ReadWrite> gamestate) throws ScriptException, FinMatchException, SerialConnexionException;
 
-	public void updateConfig()
+	public void updateConfig(Config config)
 	{}
 }

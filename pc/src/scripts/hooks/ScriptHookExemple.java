@@ -22,9 +22,9 @@ import utils.Log;
 public class ScriptHookExemple extends ScriptHook
 {
 
-	public ScriptHookExemple(HookFactory hookgenerator, Config config, Log log)
+	public ScriptHookExemple(HookFactory hookgenerator, Log log)
 	{
-		super(hookgenerator, config, log);
+		super(hookgenerator, log);
 	}
 
 	@Override

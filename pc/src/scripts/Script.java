@@ -29,7 +29,6 @@ public abstract class Script
 {
 	protected int positionTolerancy;
 	protected HookFactory hookfactory;
-	protected Config config;
 	protected Log log;
 	
 	private int squared_tolerance_depart_script = 400; // 2cm
@@ -41,12 +40,10 @@ public abstract class Script
 	 */
 	public abstract ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono,ReadOnly> state);
 
-	public Script(HookFactory hookgenerator, Config config, Log log)
+	public Script(HookFactory hookgenerator, Log log)
 	{
 		this.hookfactory = hookgenerator;
-		this.config = config;
 		this.log = log;
-		updateConfig();
 	}
 
 	/**
@@ -143,7 +140,7 @@ public abstract class Script
 	 */
 	protected abstract void execute(PathfindingNodes id_version, GameState<?,ReadWrite>state) throws UnableToMoveException, SerialConnexionException, FinMatchException, ScriptHookException;
 
-	public void updateConfig()
+	public void updateConfig(Config config)
 	{
 		positionTolerancy = config.getInt(ConfigInfo.HOOKS_TOLERANCE_MM);		
 		squared_tolerance_depart_script = config.getInt(ConfigInfo.TOLERANCE_DEPART_SCRIPT);
