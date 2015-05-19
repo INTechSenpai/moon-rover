@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 import permissions.ReadOnly;
 import planification.astar.arc.SegmentTrajectoireCourbe;
-import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
 import exceptions.SerialConnexionException;
 import exceptions.UnableToMoveException;
@@ -51,7 +50,7 @@ public class RobotReal extends Robot
 	}
 	
 	
-	public void desactiver_asservissement_rotation() throws FinMatchException
+	public void desactiver_asservissement_rotation()
 	{
 		try {
 			stm.disableRotationalFeedbackLoop();
@@ -60,7 +59,7 @@ public class RobotReal extends Robot
 		}
 	}
 
-	public void desactiver_asservissement_translation() throws FinMatchException
+	public void desactiver_asservissement_translation()
 	{
 		try {
 			stm.disableTranslationalFeedbackLoop();
@@ -70,7 +69,7 @@ public class RobotReal extends Robot
 		}
 	}
 
-	public void activer_asservissement_rotation() throws FinMatchException
+	public void activer_asservissement_rotation()
 	{
 		try {
 			stm.enableRotationalFeedbackLoop();
@@ -80,7 +79,7 @@ public class RobotReal extends Robot
 		}
 	}
 
-	public void recaler() throws FinMatchException
+	public void recaler()
 	{
 	    set_vitesse(Speed.READJUSTMENT);
 	    stm.readjust();
@@ -93,7 +92,7 @@ public class RobotReal extends Robot
 	 * @throws ScriptHookException 
 	 */
 	@Override
-    public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException, FinMatchException
+    public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
 	{
 		// Il est nécessaire d'ajouter le hookFinMatch avant chaque appel de stm qui prenne un peu de temps (avancer, tourner, ...)
 		hooks.add(hookFinMatch);
@@ -107,7 +106,7 @@ public class RobotReal extends Robot
 	 * 
 	 */
 	@Override
-	public void set_vitesse(Speed vitesse) throws FinMatchException
+	public void set_vitesse(Speed vitesse)
 	{
         try {
 			stm.setTranslationalSpeed(vitesse);
@@ -127,25 +126,25 @@ public class RobotReal extends Robot
 	 * GETTERS & SETTERS
 	 */
 	@Override
-	public void setPosition(Vec2<ReadOnly> position) throws FinMatchException
+	public void setPosition(Vec2<ReadOnly> position)
 	{
 	    stm.setPosition(position);
 	}
 	
     @Override
-	public Vec2<ReadOnly> getPosition() throws FinMatchException
+	public Vec2<ReadOnly> getPosition()
 	{
 	    return stm.getPosition();
 	}
     
 	@Override
-	public void setOrientation(double orientation) throws FinMatchException
+	public void setOrientation(double orientation)
 	{
 	    stm.setOrientation(orientation);
 	}
 
     @Override
-    public double getOrientation() throws FinMatchException
+    public double getOrientation()
     {
         return stm.getOrientation();
     }
@@ -155,13 +154,13 @@ public class RobotReal extends Robot
      * @throws FinMatchException 
 	 */
 	@Override	
-	public void sleep(long duree, ArrayList<Hook> hooks) throws FinMatchException
+	public void sleep(long duree, ArrayList<Hook> hooks)
 	{
 		Sleep.sleep(duree);
 	}
 
     @Override
-    public void stopper() throws FinMatchException
+    public void stopper()
     {
         try {
 			stm.immobilise();
@@ -172,7 +171,7 @@ public class RobotReal extends Robot
     }
 
     @Override
-    public void tourner(double angle) throws UnableToMoveException, FinMatchException
+    public void tourner(double angle) throws UnableToMoveException
     {
     	ArrayList<Hook> hooks = new ArrayList<Hook>();
 		hooks.add(hookFinMatch);
@@ -180,7 +179,7 @@ public class RobotReal extends Robot
     }
     
     @Override
-    public void suit_chemin(ArrayList<SegmentTrajectoireCourbe> chemin, ArrayList<Hook> hooks) throws UnableToMoveException, FinMatchException, ScriptHookException
+    public void suit_chemin(ArrayList<SegmentTrajectoireCourbe> chemin, ArrayList<Hook> hooks) throws UnableToMoveException, ScriptHookException
     {
 		hooks.add(hookFinMatch);
         stm.followPath(chemin, hookTrajectoireCourbe, hooks, DirectionStrategy.getDefaultStrategy());
@@ -200,13 +199,8 @@ public class RobotReal extends Robot
     public void copy(RobotChrono rc)
     {
         super.copy(rc);
-        try {
-			Vec2.copy(getPosition(), rc.position);
-			rc.orientation = getOrientation();
-		} catch (FinMatchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Vec2.copy(getPosition(), rc.position);
+		rc.orientation = getOrientation();
     }
 
 	@Override
