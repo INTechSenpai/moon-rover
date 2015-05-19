@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import permissions.ReadOnly;
 import planification.astar.arc.SegmentTrajectoireCourbe;
 import exceptions.ScriptHookException;
-import exceptions.SerialConnexionException;
 import exceptions.UnableToMoveException;
 
 /**
@@ -52,31 +51,17 @@ public class RobotReal extends Robot
 	
 	public void desactiver_asservissement_rotation()
 	{
-		try {
-			stm.disableRotationalFeedbackLoop();
-		} catch (SerialConnexionException e) {
-			e.printStackTrace();
-		}
+		stm.disableRotationalFeedbackLoop();
 	}
 
 	public void desactiver_asservissement_translation()
 	{
-		try {
-			stm.disableTranslationalFeedbackLoop();
-		} catch (SerialConnexionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		stm.disableTranslationalFeedbackLoop();
 	}
 
 	public void activer_asservissement_rotation()
 	{
-		try {
-			stm.enableRotationalFeedbackLoop();
-		} catch (SerialConnexionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		stm.enableRotationalFeedbackLoop();
 	}
 
 	public void recaler()
@@ -108,13 +93,8 @@ public class RobotReal extends Robot
 	@Override
 	public void set_vitesse(Speed vitesse)
 	{
-        try {
-			stm.setTranslationalSpeed(vitesse);
-	        stm.setRotationalSpeed(vitesse);
-		} catch (SerialConnexionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		stm.setTranslationalSpeed(vitesse);
+        stm.setRotationalSpeed(vitesse);
 		log.debug("Modification de la vitesse: "+vitesse);
 	}
 	
