@@ -10,7 +10,6 @@ import robot.RobotReal;
 import scripts.ScriptHook;
 import strategie.GameState;
 import table.GameElementNames;
-import utils.Config;
 import utils.Log;
 
 /**
