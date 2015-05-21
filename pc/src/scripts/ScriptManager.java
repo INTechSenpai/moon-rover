@@ -65,6 +65,18 @@ public class ScriptManager implements Service
 		return script;
 	}
 
+	@Override
+	public void useConfig(Config config)
+	{
+		for(int i = 0; i < ScriptAnticipableNames.values().length; i++)
+			if(instancesScriptsAnticipables[i] == null)
+				instancesScriptsAnticipables[i].useConfig(config);
+		for(int i = 0; i < ScriptHookNames.values().length; i++)
+			if(instancesScriptsHook[i] == null)
+				instancesScriptsHook[i].useConfig(config);
+	}
+
+	@Override
 	public void updateConfig(Config config)
 	{
 		for(int i = 0; i < ScriptAnticipableNames.values().length; i++)

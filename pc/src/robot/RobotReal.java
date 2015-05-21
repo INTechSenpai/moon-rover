@@ -46,7 +46,11 @@ public class RobotReal extends Robot
 	{
 		super.updateConfig(config);
 	}
-	
+
+	public void useConfig(Config config)
+	{
+		super.useConfig(config);
+	}
 	
 	public void desactiver_asservissement_rotation()
 	{

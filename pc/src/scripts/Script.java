@@ -142,10 +142,14 @@ public abstract class Script
 
 	public void updateConfig(Config config)
 	{
+		symetrie = config.getSymmetry();
+	}
+
+	public void useConfig(Config config)
+	{
 		positionTolerancy = config.getInt(ConfigInfo.HOOKS_TOLERANCE_MM);		
 		squared_tolerance_depart_script = config.getInt(ConfigInfo.TOLERANCE_DEPART_SCRIPT);
 		squared_tolerance_depart_script *= squared_tolerance_depart_script; // on en utilise le carré
-		symetrie = config.getSymmetry();
 	}
 
 }
