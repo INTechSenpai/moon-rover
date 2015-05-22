@@ -114,25 +114,25 @@ public class RobotReal extends Robot
 	@Override
 	public void setPosition(Vec2<ReadOnly> position)
 	{
-	    stm.setPosition(position);
+//	    stm.setPosition(position);
 	}
 	
     @Override
 	public Vec2<ReadOnly> getPosition()
 	{
-	    return stm.getPosition();
+//	    return stm.getPosition();
 	}
     
 	@Override
 	public void setOrientation(double orientation)
 	{
-	    stm.setOrientation(orientation);
+//	    stm.setOrientation(orientation);
 	}
 
     @Override
     public double getOrientation()
     {
-        return stm.getOrientation();
+//        return stm.getOrientation();
     }
 
     /**
@@ -149,7 +149,7 @@ public class RobotReal extends Robot
     public void stopper()
     {
         try {
-			stm.immobilise();
+//			stm.immobilise();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -161,14 +161,7 @@ public class RobotReal extends Robot
     {
     	ArrayList<Hook> hooks = new ArrayList<Hook>();
 		hooks.add(hookFinMatch);
-		stm.turn(angle, hooks);
-    }
-    
-    @Override
-    public void suit_chemin(ArrayList<LocomotionArc> chemin, ArrayList<Hook> hooks) throws UnableToMoveException, ScriptHookException
-    {
-		hooks.add(hookFinMatch);
-        stm.followPath(chemin, hookTrajectoireCourbe, hooks, DirectionStrategy.getDefaultStrategy());
+//		stm.turn(angle, hooks);
     }
     
 	@Override
@@ -196,7 +189,8 @@ public class RobotReal extends Robot
     }
 	
 	public boolean isEnemyHere() {
-		return stm.isEnemyHere(); // TODO: ne pas demander à déplacements mais à gridspace
+		// TODO
+		return false;
 	}
 	
 	public void closeSerialConnections()
