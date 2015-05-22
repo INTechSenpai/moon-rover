@@ -1,6 +1,5 @@
 package robot;
 
-import robot.stm.STMcard;
 import serial.SerialConnexion;
 import utils.Log;
 import utils.Config;
@@ -15,7 +14,6 @@ import hook.types.HookDemiPlan;
 import java.util.ArrayList;
 
 import permissions.ReadOnly;
-import planification.LocomotionArc;
 import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
 import exceptions.SerialConnexionException;
@@ -32,8 +30,6 @@ public class RobotReal extends Robot
 //	private Table table;
 	private SerialConnexion stm;
 	
-	private HookDemiPlan hookTrajectoireCourbe;
-
 	// Constructeur
 	public RobotReal(SerialConnexion stm, Log log)
  	{
@@ -57,23 +53,23 @@ public class RobotReal extends Robot
 	
 	public void desactiver_asservissement_rotation()
 	{
-		stm.disableRotationalFeedbackLoop();
+//		stm.disableRotationalFeedbackLoop();
 	}
 
 	public void desactiver_asservissement_translation()
 	{
-		stm.disableTranslationalFeedbackLoop();
+//		stm.disableTranslationalFeedbackLoop();
 	}
 
 	public void activer_asservissement_rotation()
 	{
-		stm.enableRotationalFeedbackLoop();
+//		stm.enableRotationalFeedbackLoop();
 	}
 
 	public void recaler() // TODO: on garde le recalage?
 	{
 	    set_vitesse(Speed.READJUSTMENT);
-	    stm.readjust();
+//	    stm.readjust();
 	}
 	
 	/**
@@ -87,7 +83,7 @@ public class RobotReal extends Robot
 	{
 		// Il est nécessaire d'ajouter le hookFinMatch avant chaque appel de stm qui prenne un peu de temps (avancer, tourner, ...)
 		hooks.add(hookFinMatch);
-		stm.moveLengthwise(distance, hooks, mur);
+//		stm.moveLengthwise(distance, hooks, mur);
 	}	
 
 	/**
@@ -99,8 +95,8 @@ public class RobotReal extends Robot
 	@Override
 	public void set_vitesse(Speed vitesse)
 	{
-		stm.setTranslationalSpeed(vitesse);
-        stm.setRotationalSpeed(vitesse);
+//		stm.setTranslationalSpeed(vitesse);
+//        stm.setRotationalSpeed(vitesse);
 		log.debug("Modification de la vitesse: "+vitesse);
 	}
 	
@@ -120,6 +116,7 @@ public class RobotReal extends Robot
     @Override
 	public Vec2<ReadOnly> getPosition()
 	{
+    	return new Vec2<ReadOnly>(0,1000);
 //	    return stm.getPosition();
 	}
     
@@ -132,6 +129,7 @@ public class RobotReal extends Robot
     @Override
     public double getOrientation()
     {
+    	return 0;
 //        return stm.getOrientation();
     }
 
@@ -207,7 +205,7 @@ public class RobotReal extends Robot
 	{
 		Executable action = new ThrowsChangeDirection();
 		hookTrajectoireCourbe.ajouter_callback(new Callback(action));
-		this.hookTrajectoireCourbe = hookTrajectoireCourbe;
+//		this.hookTrajectoireCourbe = hookTrajectoireCourbe;
 	}
 	
 	/**
