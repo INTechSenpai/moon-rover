@@ -1,6 +1,7 @@
 package robot;
 
 import robot.stm.STMcard;
+import serial.SerialConnexion;
 import utils.Log;
 import utils.Config;
 import utils.Sleep;
@@ -15,7 +16,9 @@ import java.util.ArrayList;
 
 import permissions.ReadOnly;
 import planification.LocomotionArc;
+import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
+import exceptions.SerialConnexionException;
 import exceptions.UnableToMoveException;
 
 /**
@@ -27,12 +30,12 @@ import exceptions.UnableToMoveException;
 public class RobotReal extends Robot
 {
 //	private Table table;
-	private STMcard stm;
+	private SerialConnexion stm;
 	
 	private HookDemiPlan hookTrajectoireCourbe;
 
 	// Constructeur
-	public RobotReal(STMcard stm, Log log)
+	public RobotReal(SerialConnexion stm, Log log)
  	{
 		super(log);
 		this.stm = stm;
@@ -211,6 +214,19 @@ public class RobotReal extends Robot
 		Executable action = new ThrowsChangeDirection();
 		hookTrajectoireCourbe.ajouter_callback(new Callback(action));
 		this.hookTrajectoireCourbe = hookTrajectoireCourbe;
+	}
+	
+	/**
+	 * Envoie un ordre à la série. Le protocole est défini dans l'enum ActuatorOrder
+	 * @param order l'ordre à envoyer
+	 * @throws SerialConnexionException en cas de problème de communication avec la carte actionneurs
+	 * @throws FinMatchException 
+	 */
+	public void useActuator(ActuatorOrder order)
+	{
+		if(symetrie)
+			order = order.getSymmetry();
+		stm.communiquer(order.getSerialOrder());
 	}
 
 }
