@@ -32,7 +32,7 @@ public abstract class Script
 	protected Log log;
 	
 	private int squared_tolerance_depart_script = 400; // 2cm
-	protected boolean symetrie;
+	protected volatile boolean symetrie;
 	
 	/**
 	 * Renvoie le tableau des méta-verions d'un script

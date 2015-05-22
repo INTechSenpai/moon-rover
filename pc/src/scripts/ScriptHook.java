@@ -19,7 +19,7 @@ public abstract class ScriptHook
 	protected Config config;
 	protected Log log;
 	
-	protected boolean symetrie;
+	protected volatile boolean symetrie;
 
 	public ScriptHook(HookFactory hookgenerator, Log log)
 	{
