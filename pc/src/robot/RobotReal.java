@@ -67,7 +67,7 @@ public class RobotReal extends Robot
 		stm.enableRotationalFeedbackLoop();
 	}
 
-	public void recaler()
+	public void recaler() // TODO: on garde le recalage?
 	{
 	    set_vitesse(Speed.READJUSTMENT);
 	    stm.readjust();
