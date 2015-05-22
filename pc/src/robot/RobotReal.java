@@ -181,9 +181,9 @@ public class RobotReal extends Robot
     }
 
 	@Override
-    public int getTempsDepuisDebutMatch()
+    public long getTempsDepuisDebutMatch()
     {
-    	return (int)(System.currentTimeMillis() - dateDebutMatch);
+    	return System.currentTimeMillis() - dateDebutMatch;
     }
 	
 	public boolean isEnemyHere() {
