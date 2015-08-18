@@ -14,14 +14,15 @@ import java.util.ArrayList;
 
 import buffer.DataForSerialOutput;
 import permissions.ReadOnly;
+import requete.RequeteSTM;
 import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
 import exceptions.SerialConnexionException;
 import exceptions.UnableToMoveException;
 
 /**
- * Effectue le lien entre le code et la réalité (permet de parler aux stm, d'interroger les capteurs, etc.)
- * @author pf, marsu
+ * Effectue le lien entre le code et la réalité (permet de parler à la stm, d'interroger les capteurs, etc.)
+ * @author pf
  *
  */
 
@@ -29,49 +30,44 @@ public class RobotReal extends Robot
 {
 //	private Table table;
 	private DataForSerialOutput stm;
+	private RequeteSTM requete;
 	
 	// Constructeur
-	public RobotReal(DataForSerialOutput stm, Log log)
+	public RobotReal(DataForSerialOutput stm, Log log, RequeteSTM requete)
  	{
 		super(log);
 		this.stm = stm;
+		this.requete = requete;
 	}
 	
 	/*
 	 * MÉTHODES PUBLIQUES
 	 */
 	
+	@Override
 	public void updateConfig(Config config)
 	{
 		super.updateConfig(config);
 	}
 
+	@Override
 	public void useConfig(Config config)
 	{
 		super.useConfig(config);
 	}
 	
-	public void desactiver_asservissement_rotation()
+/*	@Override
+	public void desactiveAsservissement()
 	{
-//		stm.disableRotationalFeedbackLoop();
+		stm.desactiveAsservissement();
 	}
 
-	public void desactiver_asservissement_translation()
+	@Override
+	public void activeAsservissement()
 	{
-//		stm.disableTranslationalFeedbackLoop();
-	}
+		stm.activeAsservissement();
+	}*/
 
-	public void activer_asservissement_rotation()
-	{
-//		stm.enableRotationalFeedbackLoop();
-	}
-
-	public void recaler() // TODO: on garde le recalage?
-	{
-	    set_vitesse(Speed.READJUSTMENT);
-//	    stm.readjust();
-	}
-	
 	/**
 	 * Avance d'une certaine distance donnée en mm (méthode bloquante), gestion des hooks
 	 * @throws UnableToMoveException 
@@ -82,8 +78,17 @@ public class RobotReal extends Robot
     public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
 	{
 		// Il est nécessaire d'ajouter le hookFinMatch avant chaque appel de stm qui prenne un peu de temps (avancer, tourner, ...)
-		hooks.add(hookFinMatch);
-//		stm.moveLengthwise(distance, hooks, mur);
+//		hooks.add(hookFinMatch);
+		try {
+			synchronized(requete)
+			{
+				stm.avancer(distance, hooks, mur);
+				requete.wait();
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}	
 
 	/**
@@ -95,8 +100,7 @@ public class RobotReal extends Robot
 	@Override
 	public void set_vitesse(Speed vitesse)
 	{
-//		stm.setTranslationalSpeed(vitesse);
-//        stm.setRotationalSpeed(vitesse);
+		stm.setSpeed(vitesse);
 		log.debug("Modification de la vitesse: "+vitesse);
 	}
 	
@@ -107,32 +111,23 @@ public class RobotReal extends Robot
 	/* 
 	 * GETTERS & SETTERS
 	 */
-	@Override
-	public void setPosition(Vec2<ReadOnly> position)
+	public void setPositionOrientationSTM(Vec2<ReadOnly> position, double orientation)
 	{
-//	    stm.setPosition(position);
+		stm.setPositionOrientation(position, orientation);
 	}
-	
-    @Override
-	public Vec2<ReadOnly> getPosition()
+
+	public void setPositionOrientationJava(Vec2<ReadOnly> position, double orientation)
 	{
-    	return new Vec2<ReadOnly>(0,1000);
-//	    return stm.getPosition();
+		Vec2.copy(position, this.position);
+		this.orientation = orientation;
+	}
+
+	public void updatePositionOrientation()
+	{
+	    stm.getPositionOrientation();
+	    
 	}
     
-	@Override
-	public void setOrientation(double orientation)
-	{
-//	    stm.setOrientation(orientation);
-	}
-
-    @Override
-    public double getOrientation()
-    {
-    	return 0;
-//        return stm.getOrientation();
-    }
-
     /**
 	 * Méthode sleep utilisée par les scripts
      * @throws FinMatchException 
@@ -147,7 +142,7 @@ public class RobotReal extends Robot
     public void stopper()
     {
         try {
-//			stm.immobilise();
+			stm.immobilise();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -159,7 +154,7 @@ public class RobotReal extends Robot
     {
     	ArrayList<Hook> hooks = new ArrayList<Hook>();
 		hooks.add(hookFinMatch);
-//		stm.turn(angle, hooks);
+		stm.turn(angle, hooks);		
     }
     
 	@Override
@@ -191,16 +186,6 @@ public class RobotReal extends Robot
 		return false;
 	}
 	
-	public void closeSerialConnections()
-	{
-//		stm.close();
-	}
-
-	public void initActuatorLocomotion()
-	{
-		// TODO (avec règlement)
-	}
-
 	public void setHookTrajectoireCourbe(HookDemiPlan hookTrajectoireCourbe)
 	{
 		Executable action = new ThrowsChangeDirection();
@@ -218,7 +203,17 @@ public class RobotReal extends Robot
 	{
 		if(symetrie)
 			order = order.getSymmetry();
-		stm.add(order);
+		stm.utiliseActionneurs(order);
+	}
+
+	@Override
+	public Vec2<ReadOnly> getPosition() {
+		return position.getReadOnly();
+	}
+
+	@Override
+	public double getOrientation() {
+		return orientation;
 	}
 
 }
