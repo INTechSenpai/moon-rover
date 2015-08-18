@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import buffer.DataForSerialOutput;
 import permissions.ReadOnly;
 import requete.RequeteSTM;
+import requete.RequeteType;
 import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
 import exceptions.SerialConnexionException;
@@ -82,8 +83,14 @@ public class RobotReal extends Robot
 		try {
 			synchronized(requete)
 			{
+				RequeteType type;
 				stm.avancer(distance, hooks, mur);
-				requete.wait();
+				do {
+					requete.wait();
+					type = requete.get();
+					if(type == RequeteType.BLOCAGE_MECANIQUE)
+						throw new UnableToMoveException();
+				} while(type != RequeteType.TRAJET_FINI);
 			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -154,8 +161,14 @@ public class RobotReal extends Robot
 		try {
 			synchronized(requete)
 			{
+				RequeteType type;
 				stm.turn(angle, new ArrayList<Hook>());
-				requete.wait();
+				do {
+					requete.wait();
+					type = requete.get();
+					if(type == RequeteType.BLOCAGE_MECANIQUE)
+						throw new UnableToMoveException();
+				} while(type != RequeteType.TRAJET_FINI);
 			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -207,18 +220,24 @@ public class RobotReal extends Robot
 	 */
 	public void useActuator(ActuatorOrder order)
 	{
-		try {
+		if(symetrie)
+			order = order.getSymmetry();
+		stm.utiliseActionneurs(order);
+/*		try {
 			synchronized(requete)
 			{
 				if(symetrie)
 					order = order.getSymmetry();
 				stm.utiliseActionneurs(order);
-				requete.wait();
+				do {
+					requete.wait();
+					// TODO gérer le cas du problème d'actionneurs
+				} while(requete.type != RequeteType.ACTIONNEURS_FINI);
 			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	@Override
