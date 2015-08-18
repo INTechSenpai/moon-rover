@@ -125,7 +125,6 @@ public class RobotReal extends Robot
 	public void updatePositionOrientation()
 	{
 	    stm.getPositionOrientation();
-	    
 	}
     
     /**
@@ -152,9 +151,16 @@ public class RobotReal extends Robot
     @Override
     public void tourner(double angle) throws UnableToMoveException
     {
-    	ArrayList<Hook> hooks = new ArrayList<Hook>();
-		hooks.add(hookFinMatch);
-		stm.turn(angle, hooks);		
+		try {
+			synchronized(requete)
+			{
+				stm.turn(angle, new ArrayList<Hook>());
+				requete.wait();
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
 	@Override
@@ -201,9 +207,18 @@ public class RobotReal extends Robot
 	 */
 	public void useActuator(ActuatorOrder order)
 	{
-		if(symetrie)
-			order = order.getSymmetry();
-		stm.utiliseActionneurs(order);
+		try {
+			synchronized(requete)
+			{
+				if(symetrie)
+					order = order.getSymmetry();
+				stm.utiliseActionneurs(order);
+				requete.wait();
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
