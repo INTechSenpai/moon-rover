@@ -1,6 +1,5 @@
 package robot;
 
-import serial.SerialConnexion;
 import utils.Log;
 import utils.Config;
 import utils.Sleep;
@@ -13,6 +12,7 @@ import hook.types.HookDemiPlan;
 
 import java.util.ArrayList;
 
+import buffer.DataForSerialOutput;
 import permissions.ReadOnly;
 import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
@@ -28,10 +28,10 @@ import exceptions.UnableToMoveException;
 public class RobotReal extends Robot
 {
 //	private Table table;
-	private SerialConnexion stm;
+	private DataForSerialOutput stm;
 	
 	// Constructeur
-	public RobotReal(SerialConnexion stm, Log log)
+	public RobotReal(DataForSerialOutput stm, Log log)
  	{
 		super(log);
 		this.stm = stm;
@@ -193,7 +193,7 @@ public class RobotReal extends Robot
 	
 	public void closeSerialConnections()
 	{
-		stm.close();
+//		stm.close();
 	}
 
 	public void initActuatorLocomotion()
@@ -218,7 +218,7 @@ public class RobotReal extends Robot
 	{
 		if(symetrie)
 			order = order.getSymmetry();
-		stm.communiquer(order.getSerialOrder());
+		stm.add(order);
 	}
 
 }
