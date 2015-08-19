@@ -16,7 +16,6 @@ import planification.astar.arc.PathfindingNodes;
 import exceptions.FinMatchException;
 import exceptions.PointSortieException;
 import exceptions.ScriptException;
-import exceptions.ScriptHookException;
 import exceptions.UnableToMoveException;
 /**
  * Classe abstraite dont héritent les différents scripts.
@@ -48,9 +47,10 @@ public abstract class Script
 	/**
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs, on se décale du mur, ...
 	 * A priori sans avoir besoin du numéro de version; si besoin est, à rajouter en paramètre.
-	 * @throws ScriptHookException 
+	 * @throws ScriptException 
+	 * @throws FinMatchException 
 	 */
-	protected abstract void termine(GameState<?,ReadWrite> gamestate) throws ScriptException, FinMatchException, ScriptHookException;
+	protected abstract void termine(GameState<?,ReadWrite> gamestate) throws ScriptException, FinMatchException;
 	
 	/**
 	 * Surcouche d'exécute, avec une gestion d'erreur.
@@ -59,9 +59,8 @@ public abstract class Script
 	 * @param state
 	 * @throws ScriptException
 	 * @throws FinMatchException
-	 * @throws ScriptHookException
 	 */
-	public void agit(PathfindingNodes id_version, GameState<?,ReadWrite> state) throws ScriptException, FinMatchException, ScriptHookException
+	public void agit(PathfindingNodes id_version, GameState<?,ReadWrite> state) throws ScriptException, FinMatchException
 	{
 //		if(state.robot instanceof RobotReal)
 //			log.debug("Agit version "+id_version);
@@ -122,12 +121,9 @@ public abstract class Script
 	 * Il faut donc vérifier qu'il y a bien la place de faire l'action, potentiellement se mettre en position, etc.
 	 * @param gamestate
 	 * @throws ScriptException
-	 * @throws FinMatchException
-	 *
-	 * @throws SerialConnexionException 
-	 * @throws ScriptHookException 
+	 * @throws UnableToMoveException 
 	 */
-	protected abstract void execute(PathfindingNodes id_version, GameState<?,ReadWrite>state) throws UnableToMoveException, FinMatchException, ScriptHookException;
+	protected abstract void execute(PathfindingNodes id_version, GameState<?,ReadWrite>state) throws UnableToMoveException, FinMatchException;
 
 	public void updateConfig(Config config)
 	{

@@ -6,7 +6,6 @@ import permissions.ReadOnly;
 import permissions.ReadWrite;
 import planification.astar.arc.PathfindingNodes;
 import exceptions.FinMatchException;
-import exceptions.ScriptHookException;
 import exceptions.UnableToMoveException;
 import hook.HookFactory;
 import robot.RobotChrono;
@@ -38,14 +37,14 @@ public class SortieZoneDepart extends Script {
 
 	@Override
 	protected void execute(PathfindingNodes id_version, GameState<?,ReadWrite> state)
-			throws UnableToMoveException, FinMatchException, ScriptHookException
+			throws UnableToMoveException, FinMatchException
 	{
 		GameState.tourner(state, Math.PI);
 		GameState.avancer(state, 500); // TODO (avec règlement)
 	}
 
 	@Override
-	protected void termine(GameState<?,ReadWrite> state) throws FinMatchException, ScriptHookException
+	protected void termine(GameState<?,ReadWrite> state) throws FinMatchException
 	{}
 	
 }

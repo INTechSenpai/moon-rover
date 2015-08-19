@@ -3,7 +3,6 @@ package scripts;
 import permissions.ReadWrite;
 import exceptions.FinMatchException;
 import exceptions.ScriptException;
-import exceptions.ScriptHookException;
 import exceptions.UnableToMoveException;
 import hook.HookFactory;
 import robot.RobotReal;
@@ -34,7 +33,6 @@ public abstract class ScriptHook
 	 * @param state
 	 * @throws ScriptException
 	 * @throws FinMatchException
-	 * @throws ScriptHookException
 	 */
 	public final void agit(GameElementNames id_version, GameState<RobotReal,ReadWrite> state) throws ScriptException, FinMatchException
 	{
@@ -61,7 +59,8 @@ public abstract class ScriptHook
 	/**
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs, on se décale du mur, ...
 	 * A priori sans avoir besoin du numéro de version; si besoin est, à rajouter en paramètre.
-	 * @throws ScriptHookException 
+	 * @throws ScriptException 
+	 * @throws FinMatchException 
 	 */
 	protected abstract void termine(GameState<RobotReal,ReadWrite> gamestate) throws ScriptException, FinMatchException;
 

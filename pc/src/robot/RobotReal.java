@@ -12,7 +12,6 @@ import buffer.DataForSerialOutput;
 import permissions.ReadOnly;
 import requete.RequeteSTM;
 import requete.RequeteType;
-import exceptions.ScriptHookException;
 import exceptions.UnableToMoveException;
 
 /**
