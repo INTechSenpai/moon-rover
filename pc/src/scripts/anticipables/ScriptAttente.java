@@ -32,9 +32,9 @@ public class ScriptAttente extends Script
 	public ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono,ReadOnly> state)
 	{
 		ArrayList<PathfindingNodes> version = new ArrayList<PathfindingNodes>();
-		PathfindingNodes entree_sortie = GameState.getPositionPathfinding(state);
+/*		PathfindingNodes entree_sortie = GameState.getPositionPathfinding(state);
 		if(entree_sortie != null && GameState.canSleepUntilSomethingChange(state))
-			version.add(entree_sortie);
+			version.add(entree_sortie);*/
 		return version;
 	}
 

@@ -66,7 +66,6 @@ public class RobotReal extends Robot
 	/**
 	 * Avance d'une certaine distance donnée en mm (méthode bloquante), gestion des hooks
 	 * @throws UnableToMoveException 
-	 * @throws ScriptHookException 
 	 */
 	@Override
     public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
@@ -94,7 +93,6 @@ public class RobotReal extends Robot
 	/**
 	 * Modifie la vitesse de translation
 	 * @param Speed : l'une des vitesses indexées dans enums.
-	 * 
 	 */
 	@Override
 	public void setVitesse(Speed vitesse)
@@ -139,6 +137,9 @@ public class RobotReal extends Robot
 		}
     }
 
+    /**
+     * Tourne, quoi. L'angle est absolu
+     */
     @Override
     public void tourner(double angle) throws UnableToMoveException
     {
