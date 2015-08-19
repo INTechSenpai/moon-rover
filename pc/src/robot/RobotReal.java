@@ -25,7 +25,6 @@ import exceptions.UnableToMoveException;
 
 public class RobotReal extends Robot
 {
-//	private Table table;
 	private DataForSerialOutput stm;
 	private RequeteSTM requete;
 	
@@ -35,6 +34,8 @@ public class RobotReal extends Robot
 		super(log);
 		this.stm = stm;
 		this.requete = requete;
+		// On envoie à la STM la vitesse par défaut
+		setVitesse(vitesse);
 	}
 	
 	/*
@@ -97,23 +98,15 @@ public class RobotReal extends Robot
 	/**
 	 * Modifie la vitesse de translation
 	 * @param Speed : l'une des vitesses indexées dans enums.
-	 * @throws FinMatchException 
 	 * 
 	 */
 	@Override
-	public void set_vitesse(Speed vitesse)
+	public void setVitesse(Speed vitesse)
 	{
 		stm.setSpeed(vitesse);
 		log.debug("Modification de la vitesse: "+vitesse);
 	}
 	
-	/*
-	 * ACTIONNEURS
-	 */
-	
-	/* 
-	 * GETTERS & SETTERS
-	 */
 	public void setPositionOrientationSTM(Vec2<ReadOnly> position, double orientation)
 	{
 		stm.setPositionOrientation(position, orientation);
@@ -195,18 +188,6 @@ public class RobotReal extends Robot
     {
     	return System.currentTimeMillis() - dateDebutMatch;
     }
-	
-	public boolean isEnemyHere() {
-		// TODO
-		return false;
-	}
-	
-/*	public void setHookTrajectoireCourbe(HookDemiPlan hookTrajectoireCourbe)
-	{
-		Executable action = new ThrowsChangeDirection();
-		hookTrajectoireCourbe.ajouter_callback(new Callback(action));
-//		this.hookTrajectoireCourbe = hookTrajectoireCourbe;
-	}*/
 	
 	/**
 	 * Envoie un ordre à la série. Le protocole est défini dans l'enum ActuatorOrder
