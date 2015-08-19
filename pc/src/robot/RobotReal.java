@@ -216,8 +216,6 @@ public class RobotReal extends Robot
 	 */
 	public void useActuator(ActuatorOrder order)
 	{
-		if(symetrie)
-			order = order.getSymmetry();
 		stm.utiliseActionneurs(order);
 /*		try {
 			synchronized(requete)
