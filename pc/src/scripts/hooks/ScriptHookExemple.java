@@ -3,7 +3,6 @@ package scripts.hooks;
 import permissions.ReadWrite;
 import exceptions.FinMatchException;
 import exceptions.ScriptException;
-import exceptions.SerialConnexionException;
 import exceptions.UnableToMoveException;
 import hook.HookFactory;
 import robot.RobotReal;
@@ -28,15 +27,14 @@ public class ScriptHookExemple extends ScriptHook
 
 	@Override
 	protected void termine(GameState<RobotReal,ReadWrite> gamestate) throws ScriptException,
-			FinMatchException, SerialConnexionException
+			FinMatchException
 	{
 		// TODO (avec règlement)
 	}
 
 	@Override
 	protected void execute(GameElementNames id_version, GameState<RobotReal,ReadWrite> state)
-			throws UnableToMoveException, SerialConnexionException,
-			FinMatchException
+			throws UnableToMoveException, FinMatchException
 	{
 		// TODO (avec règlement)
 	}

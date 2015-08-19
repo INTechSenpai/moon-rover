@@ -7,7 +7,6 @@ import permissions.ReadWrite;
 import planification.astar.arc.PathfindingNodes;
 import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
-import exceptions.SerialConnexionException;
 import exceptions.UnableToMoveException;
 import hook.HookFactory;
 import robot.RobotChrono;
@@ -48,7 +47,7 @@ public class ScriptAttente extends Script
 
 	@Override
 	protected void execute(PathfindingNodes id_version, GameState<?,ReadWrite> state)
-			throws UnableToMoveException, SerialConnexionException,
+			throws UnableToMoveException,
 			FinMatchException, ScriptHookException
 	{
 		/**
@@ -58,8 +57,7 @@ public class ScriptAttente extends Script
 	}
 
 	@Override
-	protected void termine(GameState<?,ReadWrite> state) throws SerialConnexionException,
-			FinMatchException, ScriptHookException
+	protected void termine(GameState<?,ReadWrite> state) throws FinMatchException, ScriptHookException
 	{
 	}
 

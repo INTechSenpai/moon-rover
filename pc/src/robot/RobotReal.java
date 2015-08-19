@@ -12,9 +12,7 @@ import buffer.DataForSerialOutput;
 import permissions.ReadOnly;
 import requete.RequeteSTM;
 import requete.RequeteType;
-import exceptions.FinMatchException;
 import exceptions.ScriptHookException;
-import exceptions.SerialConnexionException;
 import exceptions.UnableToMoveException;
 
 /**
@@ -69,7 +67,6 @@ public class RobotReal extends Robot
 	/**
 	 * Avance d'une certaine distance donnée en mm (méthode bloquante), gestion des hooks
 	 * @throws UnableToMoveException 
-	 * @throws FinMatchException 
 	 * @throws ScriptHookException 
 	 */
 	@Override
@@ -125,7 +122,6 @@ public class RobotReal extends Robot
     
     /**
 	 * Méthode sleep utilisée par les scripts
-     * @throws FinMatchException 
 	 */
 	@Override	
 	public void sleep(long duree, ArrayList<Hook> hooks)
@@ -192,8 +188,6 @@ public class RobotReal extends Robot
 	/**
 	 * Envoie un ordre à la série. Le protocole est défini dans l'enum ActuatorOrder
 	 * @param order l'ordre à envoyer
-	 * @throws SerialConnexionException en cas de problème de communication avec la carte actionneurs
-	 * @throws FinMatchException 
 	 */
 	public void useActuator(ActuatorOrder order)
 	{

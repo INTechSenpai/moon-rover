@@ -17,7 +17,6 @@ import exceptions.FinMatchException;
 import exceptions.PointSortieException;
 import exceptions.ScriptException;
 import exceptions.ScriptHookException;
-import exceptions.SerialConnexionException;
 import exceptions.UnableToMoveException;
 /**
  * Classe abstraite dont héritent les différents scripts.
@@ -51,7 +50,7 @@ public abstract class Script
 	 * A priori sans avoir besoin du numéro de version; si besoin est, à rajouter en paramètre.
 	 * @throws ScriptHookException 
 	 */
-	protected abstract void termine(GameState<?,ReadWrite> gamestate) throws ScriptException, FinMatchException, SerialConnexionException, ScriptHookException;
+	protected abstract void termine(GameState<?,ReadWrite> gamestate) throws ScriptException, FinMatchException, ScriptHookException;
 	
 	/**
 	 * Surcouche d'exécute, avec une gestion d'erreur.
@@ -85,17 +84,7 @@ public abstract class Script
 		}
 		finally
 		{
-			try {
-				termine(state);
-			} catch (SerialConnexionException e) {
-				try {
-					GameState.sleep(state, 100); // on attends un petit peu...
-					termine(state);  // on réessaye encore une fois
-				} catch (SerialConnexionException e1) {
-					e1.printStackTrace();
-				}
-				e.printStackTrace();
-			}
+			termine(state);
 		}
 
 	}
@@ -138,7 +127,7 @@ public abstract class Script
 	 * @throws SerialConnexionException 
 	 * @throws ScriptHookException 
 	 */
-	protected abstract void execute(PathfindingNodes id_version, GameState<?,ReadWrite>state) throws UnableToMoveException, SerialConnexionException, FinMatchException, ScriptHookException;
+	protected abstract void execute(PathfindingNodes id_version, GameState<?,ReadWrite>state) throws UnableToMoveException, FinMatchException, ScriptHookException;
 
 	public void updateConfig(Config config)
 	{

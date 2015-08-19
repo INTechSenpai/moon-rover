@@ -4,7 +4,6 @@ import permissions.ReadWrite;
 import exceptions.FinMatchException;
 import exceptions.ScriptException;
 import exceptions.ScriptHookException;
-import exceptions.SerialConnexionException;
 import exceptions.UnableToMoveException;
 import hook.HookFactory;
 import robot.RobotReal;
@@ -52,29 +51,19 @@ public abstract class ScriptHook
 		}
 		finally
 		{
-			try {
-				termine(state);
-			} catch (SerialConnexionException e) {
-				try {
-					GameState.sleep(state, 100); // on attends un petit peu...
-					termine(state);  // on réessaye encore une fois
-				} catch (SerialConnexionException e1) {
-					e1.printStackTrace();
-				}
-				e.printStackTrace();
-			}
+			termine(state);
 		}
 
 	}
 
-	protected abstract void execute(GameElementNames id_version, GameState<RobotReal,ReadWrite>state) throws UnableToMoveException, SerialConnexionException, FinMatchException;
+	protected abstract void execute(GameElementNames id_version, GameState<RobotReal,ReadWrite>state) throws UnableToMoveException, FinMatchException;
 	
 	/**
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs, on se décale du mur, ...
 	 * A priori sans avoir besoin du numéro de version; si besoin est, à rajouter en paramètre.
 	 * @throws ScriptHookException 
 	 */
-	protected abstract void termine(GameState<RobotReal,ReadWrite> gamestate) throws ScriptException, FinMatchException, SerialConnexionException;
+	protected abstract void termine(GameState<RobotReal,ReadWrite> gamestate) throws ScriptException, FinMatchException;
 
 	public void updateConfig(Config config)
 	{
