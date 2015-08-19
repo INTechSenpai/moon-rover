@@ -4,11 +4,7 @@ import utils.Log;
 import utils.Config;
 import utils.Sleep;
 import utils.Vec2;
-import hook.Callback;
-import hook.Executable;
 import hook.Hook;
-import hook.methods.ThrowsChangeDirection;
-import hook.types.HookDemiPlan;
 
 import java.util.ArrayList;
 
@@ -162,7 +158,7 @@ public class RobotReal extends Robot
 			synchronized(requete)
 			{
 				RequeteType type;
-				stm.turn(angle, new ArrayList<Hook>());
+				stm.turn(angle);
 				do {
 					requete.wait();
 					type = requete.get();
@@ -205,12 +201,12 @@ public class RobotReal extends Robot
 		return false;
 	}
 	
-	public void setHookTrajectoireCourbe(HookDemiPlan hookTrajectoireCourbe)
+/*	public void setHookTrajectoireCourbe(HookDemiPlan hookTrajectoireCourbe)
 	{
 		Executable action = new ThrowsChangeDirection();
 		hookTrajectoireCourbe.ajouter_callback(new Callback(action));
 //		this.hookTrajectoireCourbe = hookTrajectoireCourbe;
-	}
+	}*/
 	
 	/**
 	 * Envoie un ordre à la série. Le protocole est défini dans l'enum ActuatorOrder
