@@ -1,5 +1,6 @@
 package robot;
 
+import utils.ConfigInfo;
 import utils.Log;
 import utils.Config;
 import utils.Sleep;
@@ -24,6 +25,7 @@ public class RobotReal extends Robot
 {
 	private DataForSerialOutput stm;
 	private RequeteSTM requete;
+	private boolean matchDemarre = false;
 	
 	// Constructeur
 	public RobotReal(DataForSerialOutput stm, Log log, RequeteSTM requete)
@@ -43,6 +45,7 @@ public class RobotReal extends Robot
 	public void updateConfig(Config config)
 	{
 		super.updateConfig(config);
+		matchDemarre = config.getBoolean(ConfigInfo.MATCH_DEMARRE);
 	}
 
 	@Override
@@ -182,7 +185,10 @@ public class RobotReal extends Robot
 	@Override
     public long getTempsDepuisDebutMatch()
     {
-    	return System.currentTimeMillis() - dateDebutMatch;
+		if(!matchDemarre)
+			return 0;
+		else
+			return System.currentTimeMillis() - dateDebutMatch;
     }
 	
 	/**
