@@ -25,7 +25,7 @@ public class RobotReal extends Robot
 {
 	private DataForSerialOutput stm;
 	private RequeteSTM requete;
-	private boolean matchDemarre = false;
+	private volatile boolean matchDemarre = false;
 	
 	// Constructeur
 	public RobotReal(DataForSerialOutput stm, Log log, RequeteSTM requete)
