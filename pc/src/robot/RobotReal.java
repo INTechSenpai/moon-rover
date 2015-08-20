@@ -35,6 +35,7 @@ public class RobotReal extends Robot
 		this.requete = requete;
 		// On envoie à la STM la vitesse par défaut
 		setVitesse(vitesse);
+		stm.envoieActionneurs();
 	}
 	
 	/*
