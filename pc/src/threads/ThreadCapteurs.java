@@ -1,35 +1,32 @@
 package threads;
 
-import permissions.ReadOnly;
 import buffer.IncomingData;
 import buffer.IncomingDataBuffer;
 import robot.RobotReal;
-import table.GameElementNames;
-import table.ObstacleManager;
+import table.Capteurs;
 import utils.Config;
 import utils.Log;
-import utils.Vec2;
 import container.Service;
 
 /**
- * Thread du manager d'obstacle. Surveille IncomingDataBuffer
+ * Thread qui gère les entrées des capteurs
  * @author pf
  *
  */
 
-public class ThreadObstacleManager extends Thread implements Service
+public class ThreadCapteurs extends Thread implements Service
 {
 	private IncomingDataBuffer buffer;
-	private ObstacleManager obstaclemanager;
+	private Capteurs capteurs;
 	private RobotReal robot;
 	
 	protected Log log;
 	
-	public ThreadObstacleManager(Log log, IncomingDataBuffer buffer, ObstacleManager obstaclemanager, RobotReal robot)
+	public ThreadCapteurs(Log log, IncomingDataBuffer buffer, Capteurs capteurs, RobotReal robot)
 	{
 		this.log = log;
 		this.buffer = buffer;
-		this.obstaclemanager = obstaclemanager;
+		this.capteurs = capteurs;
 		this.robot = robot;
 	}
 	
@@ -54,8 +51,8 @@ public class ThreadObstacleManager extends Thread implements Service
 			// Il n'est pas synchronized car il ne modifie pas le buffer
 //			if(e != null)
 			robot.setPositionOrientationJava(e.positionRobot, e.orientationRobot);
-//			if(e.capteursOn)
-//				obstaclemanager.updateObstaclesMobiles(e);
+			if(e.capteursOn)
+				capteurs.updateObstaclesMobiles(e);
 			
 		}
 //		log.debug("Fermeture de ThreadObstacleManager");
@@ -68,21 +65,5 @@ public class ThreadObstacleManager extends Thread implements Service
 	@Override
 	public void useConfig(Config config)
 	{}
-	
-	/**
-	 * Supprime les éléments de jeux qui sont proches de cette position.
-	 * @param position
-	 */
-	private void checkGameElements(Vec2<ReadOnly> position)
-	{
-	    // On vérifie aussi ceux qui ont un rayon nul (distributeur, clap, ..)
-	    for(GameElementNames g: GameElementNames.values)
-	        if(table.isDone(g) == Tribool.FALSE && table.isProcheObstacle(g, position, rayonEnnemi))
-	        	table.setDone(g, Tribool.MAYBE);
-	}
-
 
 }
-
-
-
