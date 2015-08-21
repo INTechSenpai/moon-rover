@@ -1,9 +1,9 @@
 package threads;
 
+import obstacles.Capteurs;
 import buffer.IncomingData;
 import buffer.IncomingDataBuffer;
 import robot.RobotReal;
-import table.Capteurs;
 import utils.Config;
 import utils.Log;
 import container.Service;
