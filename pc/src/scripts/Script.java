@@ -66,9 +66,9 @@ public abstract class Script
 //			log.debug("Agit version "+id_version);
 		PathfindingNodes pointEntree = id_version;
 		
-		if(GameState.getPosition(state.getReadOnly()).squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
+		if(state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
 		{
-			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+pointEntree+" "+pointEntree.getCoordonnees()+" et est en "+GameState.getPosition(state.getReadOnly()));
+			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+pointEntree+" "+pointEntree.getCoordonnees()+" et est en "+state.robot.getPosition());
 			throw new ScriptException();
 		}
 		try

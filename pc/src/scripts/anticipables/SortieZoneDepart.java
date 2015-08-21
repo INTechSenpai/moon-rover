@@ -39,8 +39,8 @@ public class SortieZoneDepart extends Script {
 	protected void execute(PathfindingNodes id_version, GameState<?,ReadWrite> state)
 			throws UnableToMoveException, FinMatchException
 	{
-		GameState.tourner(state, Math.PI);
-		GameState.avancer(state, 500); // TODO (avec règlement)
+		state.robot.tourner(Math.PI);
+		state.robot.avancer(500); // TODO (avec règlement)
 	}
 
 	@Override
