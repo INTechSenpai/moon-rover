@@ -1,6 +1,5 @@
 package robot;
 
-import utils.ConfigInfo;
 import utils.Log;
 import utils.Config;
 import utils.Sleep;
@@ -10,6 +9,7 @@ import hook.Hook;
 import java.util.ArrayList;
 
 import buffer.DataForSerialOutput;
+import pathfinding.dstarlite.GridSpace;
 import permissions.ReadOnly;
 import requete.RequeteSTM;
 import requete.RequeteType;
@@ -25,29 +25,24 @@ public class RobotReal extends Robot
 {
 	private DataForSerialOutput stm;
 	private RequeteSTM requete;
-	private volatile boolean matchDemarre = false;
-	
+	private GridSpace gridspace;
+		
 	// Constructeur
-	public RobotReal(DataForSerialOutput stm, Log log, RequeteSTM requete)
+	public RobotReal(DataForSerialOutput stm, Log log, RequeteSTM requete, GridSpace gridspace)
  	{
 		super(log);
 		this.stm = stm;
 		this.requete = requete;
+		this.gridspace = gridspace;
 		// On envoie à la STM la vitesse par défaut
 		setVitesse(vitesse);
 		stm.envoieActionneurs();
+		stm.envoieRayonsCourbure();
 	}
 	
 	/*
 	 * MÉTHODES PUBLIQUES
 	 */
-	
-	@Override
-	public void updateConfig(Config config)
-	{
-		super.updateConfig(config);
-		matchDemarre = config.getBoolean(ConfigInfo.MATCH_DEMARRE);
-	}
 
 	@Override
 	public void useConfig(Config config)
@@ -55,17 +50,15 @@ public class RobotReal extends Robot
 		super.useConfig(config);
 	}
 	
-/*	@Override
-	public void desactiveAsservissement()
+	public void setAccelerationLaterale(int accelerationLaterale)
 	{
-		stm.desactiveAsservissement();
+		this.accelerationLaterale = accelerationLaterale;
 	}
-
-	@Override
-	public void activeAsservissement()
+	
+	public void setEnMarcheAvance(boolean enMarcheAvant)
 	{
-		stm.activeAsservissement();
-	}*/
+		this.enMarcheAvant = enMarcheAvant;
+	}
 
 	/**
 	 * Avance d'une certaine distance donnée en mm (méthode bloquante), gestion des hooks
@@ -164,25 +157,13 @@ public class RobotReal extends Robot
 			e.printStackTrace();
 		}
     }
-    
-	@Override
-    public RobotChrono cloneIntoRobotChrono()
-    {
-    	RobotChrono rc = new RobotChrono(log);
-    	copy(rc);
-    	return rc;
-    }
-    
-    // Cette copie est un peu plus lente que les autres car il y a un appel série
-    // Néanmoins, on ne fait cette copie qu'une fois par arbre.
-    @Override
-    public void copy(RobotChrono rc)
-    {
-        super.copy(rc);
-		Vec2.copy(getPosition(), rc.position);
-		rc.orientation = getOrientation();
-    }
 
+	@Override
+	public int getPositionGridSpace()
+	{
+		return gridspace.computeGridPoint(position.getReadOnly());
+	}
+	
 	@Override
     public long getTempsDepuisDebutMatch()
     {
@@ -214,16 +195,6 @@ public class RobotReal extends Robot
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-	}
-
-	@Override
-	public Vec2<ReadOnly> getPosition() {
-		return position.getReadOnly();
-	}
-
-	@Override
-	public double getOrientation() {
-		return orientation;
 	}
 
 }
