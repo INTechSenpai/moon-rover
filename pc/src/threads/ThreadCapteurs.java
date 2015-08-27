@@ -3,7 +3,6 @@ package threads;
 import obstacles.Capteurs;
 import buffer.IncomingData;
 import buffer.IncomingDataBuffer;
-import robot.RobotReal;
 import utils.Config;
 import utils.Log;
 import container.Service;
@@ -18,16 +17,14 @@ public class ThreadCapteurs extends Thread implements Service
 {
 	private IncomingDataBuffer buffer;
 	private Capteurs capteurs;
-	private RobotReal robot;
 	
 	protected Log log;
 	
-	public ThreadCapteurs(Log log, IncomingDataBuffer buffer, Capteurs capteurs, RobotReal robot)
+	public ThreadCapteurs(Log log, IncomingDataBuffer buffer, Capteurs capteurs)
 	{
 		this.log = log;
 		this.buffer = buffer;
 		this.capteurs = capteurs;
-		this.robot = robot;
 	}
 	
 	@Override
@@ -50,7 +47,6 @@ public class ThreadCapteurs extends Thread implements Service
 			// Cet appel peut lancer un obstaclemanager.notifyAll()
 			// Il n'est pas synchronized car il ne modifie pas le buffer
 //			if(e != null)
-			robot.setPositionOrientationJava(e.positionRobot, e.orientationRobot);
 			if(e.capteursOn)
 				capteurs.updateObstaclesMobiles(e);
 			
