@@ -5,7 +5,6 @@ import exceptions.FinMatchException;
 import exceptions.ScriptException;
 import exceptions.UnableToMoveException;
 import hook.HookFactory;
-import robot.RobotReal;
 import strategie.GameState;
 import table.GameElementNames;
 import utils.Config;
@@ -34,7 +33,7 @@ public abstract class ScriptHook
 	 * @throws ScriptException
 	 * @throws FinMatchException
 	 */
-	public final void agit(GameElementNames id_version, GameState<RobotReal,ReadWrite> state) throws ScriptException, FinMatchException
+	public final void agit(GameElementNames id_version, GameState<?,ReadWrite> state) throws ScriptException, FinMatchException
 	{
 		log.debug("Agit script hook version "+id_version);
 		try
@@ -54,7 +53,7 @@ public abstract class ScriptHook
 
 	}
 
-	protected abstract void execute(GameElementNames id_version, GameState<RobotReal,ReadWrite>state) throws UnableToMoveException, FinMatchException;
+	protected abstract void execute(GameElementNames id_version, GameState<?,ReadWrite>state) throws UnableToMoveException, FinMatchException;
 	
 	/**
 	 * Méthode toujours appelée à la fin du script (via un finally). Repli des actionneurs, on se décale du mur, ...
@@ -62,8 +61,17 @@ public abstract class ScriptHook
 	 * @throws ScriptException 
 	 * @throws FinMatchException 
 	 */
-	protected abstract void termine(GameState<RobotReal,ReadWrite> gamestate) throws ScriptException, FinMatchException;
+	protected abstract void termine(GameState<?,ReadWrite> gamestate) throws ScriptException, FinMatchException;
 
+	/**
+	 * Le robot peut-il effectuer cette action ?
+	 * (il ne peut par exemple pas prendre un objet si sa pile est pleine, etc.)
+	 * Utilisé lors de la planification de trajectoire
+	 * @param gamestate
+	 * @return
+	 */
+	protected abstract boolean isPossible(GameState<?,ReadWrite> gamestate);
+	
 	public void updateConfig(Config config)
 	{
 		symetrie = config.getSymmetry();

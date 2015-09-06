@@ -1,5 +1,6 @@
 package scripts;
 
+import pathfinding.dstarlite.GridSpace;
 import hook.HookFactory;
 import scripts.anticipables.ScriptAttente;
 import scripts.anticipables.SortieZoneDepart;
@@ -17,14 +18,14 @@ import exceptions.UnknownScriptException;
 public class ScriptManager implements Service
 {
 	
-	private Script[] instancesScriptsAnticipables = new Script[ScriptAnticipableNames.values().length];
+	private ScriptAnticipable[] instancesScriptsAnticipables = new ScriptAnticipable[ScriptAnticipableNames.values().length];
 	private ScriptHook[] instancesScriptsHook = new ScriptHook[ScriptHookNames.values().length];
 	
-	public ScriptManager(HookFactory hookfactory, Log log) throws UnknownScriptException
+	public ScriptManager(HookFactory hookfactory, Log log, GridSpace gridspace) throws UnknownScriptException
 	{
 		// DEPENDS_ON_RULES
-		instancesScriptsAnticipables[ScriptAnticipableNames.SORTIE_ZONE_DEPART.ordinal()] = new SortieZoneDepart(hookfactory, log);
-		instancesScriptsAnticipables[ScriptAnticipableNames.ATTENTE.ordinal()] = new ScriptAttente(hookfactory, log);
+		instancesScriptsAnticipables[ScriptAnticipableNames.SORTIE_ZONE_DEPART.ordinal()] = new SortieZoneDepart(hookfactory, log, gridspace);
+		instancesScriptsAnticipables[ScriptAnticipableNames.ATTENTE.ordinal()] = new ScriptAttente(hookfactory, log, gridspace);
 
 		instancesScriptsHook[ScriptHookNames.EXEMPLE.ordinal()] = new ScriptHookExemple(hookfactory, log);
 		instancesScriptsHook[ScriptHookNames.FUNNY_ACTION.ordinal()] = new ScriptHookExemple(hookfactory, log);
@@ -48,9 +49,9 @@ public class ScriptManager implements Service
 	 * @param nom
 	 * @return
 	 */
-	public Script getScript(ScriptAnticipableNames nom)
+	public ScriptAnticipable getScript(ScriptAnticipableNames nom)
 	{
-		Script script = instancesScriptsAnticipables[nom.ordinal()];
+		ScriptAnticipable script = instancesScriptsAnticipables[nom.ordinal()];
 		return script;
 	}
 

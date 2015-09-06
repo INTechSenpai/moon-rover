@@ -2,14 +2,14 @@ package scripts.anticipables;
 
 import java.util.ArrayList;
 
+import pathfinding.dstarlite.GridSpace;
 import permissions.ReadOnly;
 import permissions.ReadWrite;
-import planification.astar.arc.PathfindingNodes;
 import exceptions.FinMatchException;
 import exceptions.UnableToMoveException;
 import hook.HookFactory;
 import robot.RobotChrono;
-import scripts.Script;
+import scripts.ScriptAnticipable;
 import strategie.GameState;
 import utils.Log;
 
@@ -20,18 +20,18 @@ import utils.Log;
  *
  */
 
-public class ScriptAttente extends Script
+public class ScriptAttente extends ScriptAnticipable
 {
 
-	public ScriptAttente(HookFactory hookgenerator, Log log)
+	public ScriptAttente(HookFactory hookgenerator, Log log, GridSpace gridspace)
 	{
-		super(hookgenerator, log);
+		super(hookgenerator, log, gridspace);
 	}
 
 	@Override
-	public ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono,ReadOnly> state)
+	public ArrayList<Integer> getVersions(GameState<RobotChrono,ReadOnly> state)
 	{
-		ArrayList<PathfindingNodes> version = new ArrayList<PathfindingNodes>();
+		ArrayList<Integer> version = new ArrayList<Integer>();
 /*		PathfindingNodes entree_sortie = GameState.getPositionPathfinding(state);
 		if(entree_sortie != null && GameState.canSleepUntilSomethingChange(state))
 			version.add(entree_sortie);*/
@@ -39,13 +39,13 @@ public class ScriptAttente extends Script
 	}
 
 	@Override
-	public PathfindingNodes point_sortie(PathfindingNodes id) {
+	public int point_sortie(int id) {
 		// ce qui signifie: on ne bouge pas
 		return id;
 	}
 
 	@Override
-	protected void execute(PathfindingNodes id_version, GameState<?,ReadWrite> state)
+	protected void execute(int id_version, GameState<?,ReadWrite> state)
 			throws UnableToMoveException, FinMatchException
 	{
 		/**

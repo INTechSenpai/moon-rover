@@ -2,14 +2,14 @@ package scripts.anticipables;
 
 import java.util.ArrayList;
 
+import pathfinding.dstarlite.GridSpace;
 import permissions.ReadOnly;
 import permissions.ReadWrite;
-import planification.astar.arc.PathfindingNodes;
 import exceptions.FinMatchException;
 import exceptions.UnableToMoveException;
 import hook.HookFactory;
 import robot.RobotChrono;
-import scripts.Script;
+import scripts.ScriptAnticipable;
 import strategie.GameState;
 import utils.Log;
 
@@ -21,22 +21,21 @@ import utils.Log;
  *
  */
 
-public class SortieZoneDepart extends Script {
+public class SortieZoneDepart extends ScriptAnticipable {
 
-	public SortieZoneDepart(HookFactory hookgenerator, Log log)
+	public SortieZoneDepart(HookFactory hookgenerator, Log log, GridSpace gridspace)
 	{
-		super(hookgenerator, log);
+		super(hookgenerator, log, gridspace);
 	}
 
 	@Override
-	public ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono,ReadOnly> state) {
-		ArrayList<PathfindingNodes> out = new ArrayList<PathfindingNodes>();
-		out.add(PathfindingNodes.POINT_DEPART);
+	public ArrayList<Integer> getVersions(GameState<RobotChrono,ReadOnly> state) {
+		ArrayList<Integer> out = new ArrayList<Integer>();
 		return out;
 	}
 
 	@Override
-	protected void execute(PathfindingNodes id_version, GameState<?,ReadWrite> state)
+	protected void execute(int id_version, GameState<?,ReadWrite> state)
 			throws UnableToMoveException, FinMatchException
 	{
 		state.robot.tourner(Math.PI);
@@ -46,5 +45,12 @@ public class SortieZoneDepart extends Script {
 	@Override
 	protected void termine(GameState<?,ReadWrite> state) throws FinMatchException
 	{}
+
+	@Override
+	public int point_sortie(int id)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 }

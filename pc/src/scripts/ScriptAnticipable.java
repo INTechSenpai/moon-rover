@@ -10,9 +10,9 @@ import hook.HookFactory;
 
 import java.util.ArrayList;
 
+import pathfinding.dstarlite.GridSpace;
 import permissions.ReadOnly;
 import permissions.ReadWrite;
-import planification.astar.arc.PathfindingNodes;
 import exceptions.FinMatchException;
 import exceptions.PointSortieException;
 import exceptions.ScriptException;
@@ -23,11 +23,12 @@ import exceptions.UnableToMoveException;
  * @author pf, marsu
  */
 
-public abstract class Script
+public abstract class ScriptAnticipable
 {
 	protected int positionTolerancy;
 	protected HookFactory hookfactory;
 	protected Log log;
+	private GridSpace gridspace;
 	
 	private int squared_tolerance_depart_script = 400; // 2cm
 	protected volatile boolean symetrie;
@@ -36,12 +37,13 @@ public abstract class Script
 	 * Renvoie le tableau des méta-verions d'un script
 	 * @return le tableau des méta-versions possibles
 	 */
-	public abstract ArrayList<PathfindingNodes> getVersions(GameState<RobotChrono,ReadOnly> state);
+	public abstract ArrayList<Integer> getVersions(GameState<RobotChrono,ReadOnly> state);
 
-	public Script(HookFactory hookgenerator, Log log)
+	public ScriptAnticipable(HookFactory hookgenerator, Log log, GridSpace gridspace)
 	{
 		this.hookfactory = hookgenerator;
 		this.log = log;
+		this.gridspace = gridspace;
 	}
 
 	/**
@@ -60,11 +62,11 @@ public abstract class Script
 	 * @throws ScriptException
 	 * @throws FinMatchException
 	 */
-	public void agit(PathfindingNodes id_version, GameState<?,ReadWrite> state) throws ScriptException, FinMatchException
+	public void agit(int id_version, GameState<?,ReadWrite> state) throws ScriptException, FinMatchException
 	{
 //		if(state.robot instanceof RobotReal)
 //			log.debug("Agit version "+id_version);
-		PathfindingNodes pointEntree = id_version;
+		int pointEntree = id_version;
 		
 		if(state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
 		{
@@ -93,10 +95,7 @@ public abstract class Script
 	 * @param id
 	 * @return
 	 */
-	public PathfindingNodes point_sortie(PathfindingNodes id)
-	{
-		return id.getSortie();
-	}
+	public abstract int point_sortie(int id);
 
 	/**
 	 * Vérifie la position de sortie en simulation.
@@ -104,9 +103,9 @@ public abstract class Script
 	 * @param position
 	 * @throws PointSortieException
 	 */
-	public final void checkPointSortie(PathfindingNodes id, Vec2<ReadOnly> position) throws PointSortieException
+	public final void checkPointSortie(int id, Vec2<ReadOnly> position) throws PointSortieException
 	{
-		PathfindingNodes sortie = point_sortie(id);
+		int sortie = point_sortie(id);
 		if(!position.equals(sortie.getCoordonnees()))
 		{
 			log.critical("Position de "+sortie+" incorrecte! Sa bonne position est: "+position);
@@ -123,7 +122,7 @@ public abstract class Script
 	 * @throws ScriptException
 	 * @throws UnableToMoveException 
 	 */
-	protected abstract void execute(PathfindingNodes id_version, GameState<?,ReadWrite>state) throws UnableToMoveException, FinMatchException;
+	protected abstract void execute(int id_version, GameState<?,ReadWrite>state) throws UnableToMoveException, FinMatchException;
 
 	public void updateConfig(Config config)
 	{
