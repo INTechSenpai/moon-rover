@@ -1,7 +1,6 @@
 package scripts;
 
 import robot.RobotChrono;
-import strategie.GameState;
 import utils.ConfigInfo;
 import utils.Log;
 import utils.Config;
@@ -10,6 +9,7 @@ import hook.HookFactory;
 
 import java.util.ArrayList;
 
+import pathfinding.GameState;
 import pathfinding.dstarlite.GridSpace;
 import permissions.ReadOnly;
 import permissions.ReadWrite;

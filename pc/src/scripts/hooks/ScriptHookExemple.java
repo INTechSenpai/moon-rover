@@ -1,12 +1,12 @@
 package scripts.hooks;
 
+import pathfinding.GameState;
 import permissions.ReadWrite;
 import exceptions.FinMatchException;
 import exceptions.ScriptException;
 import exceptions.UnableToMoveException;
 import hook.HookFactory;
 import scripts.ScriptHook;
-import strategie.GameState;
 import table.GameElementNames;
 import utils.Log;
 

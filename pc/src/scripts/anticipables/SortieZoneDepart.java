@@ -2,6 +2,7 @@ package scripts.anticipables;
 
 import java.util.ArrayList;
 
+import pathfinding.GameState;
 import pathfinding.dstarlite.GridSpace;
 import permissions.ReadOnly;
 import permissions.ReadWrite;
@@ -10,7 +11,6 @@ import exceptions.UnableToMoveException;
 import hook.HookFactory;
 import robot.RobotChrono;
 import scripts.ScriptAnticipable;
-import strategie.GameState;
 import utils.Log;
 
 /**
