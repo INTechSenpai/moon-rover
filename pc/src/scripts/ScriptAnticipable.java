@@ -68,9 +68,9 @@ public abstract class ScriptAnticipable
 //			log.debug("Agit version "+id_version);
 		int pointEntree = id_version;
 		
-		if(state.robot.getPosition().squaredDistance(pointEntree.getCoordonnees()) > squared_tolerance_depart_script)
+		if(state.robot.getPosition().squaredDistance(gridspace.computeVec2(pointEntree)) > squared_tolerance_depart_script)
 		{
-			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+pointEntree+" "+pointEntree.getCoordonnees()+" et est en "+state.robot.getPosition());
+			log.critical("Appel d'un script à une mauvaise position. Le robot devrait être en "+pointEntree+" et est en "+state.robot.getPosition());
 			throw new ScriptException();
 		}
 		try
@@ -106,7 +106,7 @@ public abstract class ScriptAnticipable
 	public final void checkPointSortie(int id, Vec2<ReadOnly> position) throws PointSortieException
 	{
 		int sortie = point_sortie(id);
-		if(!position.equals(sortie.getCoordonnees()))
+		if(!position.equals(gridspace.computeVec2(sortie)))
 		{
 			log.critical("Position de "+sortie+" incorrecte! Sa bonne position est: "+position);
 			throw new PointSortieException();
