@@ -49,12 +49,7 @@ public class RobotReal extends Robot
 	{
 		super.useConfig(config);
 	}
-	
-	public void setAccelerationLaterale(int accelerationLaterale)
-	{
-		this.accelerationLaterale = accelerationLaterale;
-	}
-	
+		
 	public void setEnMarcheAvance(boolean enMarcheAvant)
 	{
 		this.enMarcheAvant = enMarcheAvant;
