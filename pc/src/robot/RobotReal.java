@@ -37,7 +37,6 @@ public class RobotReal extends Robot
 		// On envoie à la STM la vitesse par défaut
 		setVitesse(vitesse);
 		stm.envoieActionneurs();
-		stm.envoieRayonsCourbure();
 	}
 	
 	/*
