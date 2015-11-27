@@ -10,62 +10,10 @@
 #include "diag/Trace.h"
 
 #include "Timer.h"
-#include "BlinkLed.h"
 #include "FreeRTOS.h"
-#include "cmsis_os.h"
+#include "task.h"
 #include "Uart.hpp"
-
-// ----------------------------------------------------------------------------
-//
-// Semihosting STM32F4 led blink sample (trace via DEBUG).
-//
-// In debug configurations, demonstrate how to print a greeting message
-// on the trace device. In release configurations the message is
-// simply discarded.
-//
-// To demonstrate semihosting, display a message on the standard output
-// and another message on the standard error.
-//
-// Then demonstrates how to blink a led with 1 Hz, using a
-// continuous loop and SysTick delays.
-//
-// On DEBUG, the uptime in seconds is also displayed on the trace device.
-//
-// Trace support is enabled by adding the TRACE macro definition.
-// By default the trace messages are forwarded to the DEBUG output,
-// but can be rerouted to any device or completely suppressed, by
-// changing the definitions required in system/src/diag/trace_impl.c
-// (currently OS_USE_TRACE_ITM, OS_USE_TRACE_SEMIHOSTING_DEBUG/_STDOUT).
-//
-
-// Definitions visible only within this translation unit.
-namespace
-{
-  // ----- Timing definitions -------------------------------------------------
-
-  // Keep the LED on for 2/3 of a second.
-  constexpr Timer::ticks_t BLINK_ON_TICKS = Timer::FREQUENCY_HZ * 1 / 4;
-  constexpr Timer::ticks_t BLINK_OFF_TICKS = Timer::FREQUENCY_HZ
-      - BLINK_ON_TICKS;
-}
-
-// ----- LED definitions ------------------------------------------------------
-
-#define BLINK_PORT_NUMBER         (3)
-#define BLINK_PIN_NUMBER_GREEN    (12)
-#define BLINK_PIN_NUMBER_ORANGE   (13)
-#define BLINK_PIN_NUMBER_RED      (14)
-#define BLINK_PIN_NUMBER_BLUE     (15)
-#define BLINK_ACTIVE_LOW          (false)
-
-BlinkLed blinkLeds[4] =
-  {
-    { BLINK_PORT_NUMBER, BLINK_PIN_NUMBER_GREEN, BLINK_ACTIVE_LOW },
-    { BLINK_PORT_NUMBER, BLINK_PIN_NUMBER_ORANGE, BLINK_ACTIVE_LOW },
-    { BLINK_PORT_NUMBER, BLINK_PIN_NUMBER_RED, BLINK_ACTIVE_LOW },
-    { BLINK_PORT_NUMBER, BLINK_PIN_NUMBER_BLUE, BLINK_ACTIVE_LOW },
-  };
-
+#include "_initialize_hardware.c"
 
 // ----- main() ---------------------------------------------------------------
 
@@ -76,25 +24,109 @@ BlinkLed blinkLeds[4] =
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
+TIM_Encoder_InitTypeDef encoder;
+TIM_HandleTypeDef timer;
+Uart<2> serial_pc;
+
+void hello_world_task(void* p)
+{
+	while(1)
+	{
+	  serial_pc.printfln("T3");
+	  vTaskDelay(1000);
+	}
+}
+
+void hello_world_task2(void* p)
+{
+	while(1)
+	{
+	  serial_pc.printfln("ABWABWA");
+	  vTaskDelay(1000);
+	}
+}
+
 int main(int argc, char* argv[])
 {
-Uart<2> serial_pc;
-  Timer timer;
+	 HAL_Init();
+	 SystemClock_Config();
+	 // Test de codeur
+/*
+	 HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+	 HAL_NVIC_SetPriority(SysTick_IRQn, 0, 1);
+
+	 timer.Instance = TIM3;
+	 timer.Init.Period = 0xFFFF;
+	 timer.Init.CounterMode = TIM_COUNTERMODE_UP;
+	 timer.Init.Prescaler = 0;
+	 timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+
+	 HAL_TIM_Encoder_MspInit(&timer);
+
+	 encoder.EncoderMode = TIM_ENCODERMODE_TI12;
+
+	 encoder.IC1Filter = 0x0F;
+	 encoder.IC1Polarity = TIM_INPUTCHANNELPOLARITY_RISING;
+	 encoder.IC1Prescaler = TIM_ICPSC_DIV4;
+	 encoder.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+
+	 encoder.IC2Filter = 0x0F;
+	 encoder.IC2Polarity = TIM_INPUTCHANNELPOLARITY_FALLING;
+	 encoder.IC2Prescaler = TIM_ICPSC_DIV4;
+	 encoder.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+
+	 if (HAL_TIM_Encoder_Init(&timer, &encoder) != HAL_OK) {
+		 // TODO
+	 }
+
+	 if(HAL_TIM_Encoder_Start_IT(&timer,TIM_CHANNEL_1)!=HAL_OK){
+		 // TODO
+	 }*/
+
+//  Timer timer2;
   serial_pc.init(9600);
-  timer.start ();
+ // timer2.start ();
   char out[50];
+//  osKernelInitialize();
+  xTaskCreate(hello_world_task, (char*)"TEST1", (2048)/4, 0, 1, 0);
+  xTaskCreate(hello_world_task2, (char*)"TEST2", (2048)/4, 0, 1, 0);
+  vTaskStartScheduler();
   while(1)
   {
-	  serial_pc.printfln("truc");
-	  serial_pc.read(out);
-	  serial_pc.printfln(out);
-//	  osDelay(1000);
-//	  timer.sleep (Timer::FREQUENCY_HZ);
+	  serial_pc.printfln("ERREUR");
+//	  serial_pc.printfln("%d", TIM3->CNT);
   }
 
   return 0;
 }
 
+
+void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim)
+	{
+ GPIO_InitTypeDef GPIO_InitStruct;
+
+ if (htim->Instance == TIM3) {
+
+ __TIM3_CLK_ENABLE();
+
+ __GPIOB_CLK_ENABLE();
+
+ GPIO_InitStruct.Pin = GPIO_PIN_4 | GPIO_PIN_5;
+ GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+ GPIO_InitStruct.Pull = GPIO_PULLUP;
+ GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+ GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
+ HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+ HAL_NVIC_SetPriority(TIM3_IRQn, 0, 1);
+
+ HAL_NVIC_EnableIRQ(TIM3_IRQn);
+ }
+}
+
+void TIM3_IRQHandler(void){
+ HAL_TIM_IRQHandler(&timer);
+}
 #pragma GCC diagnostic pop
 
 // ----------------------------------------------------------------------------

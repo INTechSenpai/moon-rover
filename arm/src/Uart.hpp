@@ -25,7 +25,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "FreeRTOS.h"
-#include "cmsis_os.h"
 
 #define RX_BUFFER_SIZE 64
 
