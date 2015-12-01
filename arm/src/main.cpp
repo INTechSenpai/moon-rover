@@ -12,8 +12,10 @@
 #include "Timer.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "Uart.hpp"
 #include "_initialize_hardware.c"
+#include "Executable.h"
+#include "Hook.h"
+#include "Uart.hpp"
 
 // ----- main() ---------------------------------------------------------------
 
@@ -26,23 +28,37 @@
 
 TIM_Encoder_InitTypeDef encoder;
 TIM_HandleTypeDef timer;
-Uart<2> serial_pc;
+Uart<2> serial_rb;
 
 void hello_world_task(void* p)
 {
+//	Exec_Update_Table exec;
+//	HookTemps testHook(1, 3000);
+	//  testHook.insert((Executable_t) (&changeTable), 0, 0);
+
 	while(1)
 	{
-	  serial_pc.printfln("T3");
-	  vTaskDelay(1000);
+//		if(testHook.evalue())
+//			testHook.execute();
+		serial_rb.printfln("truc");
+		vTaskDelay(1000);
 	}
 }
 
 void hello_world_task2(void* p)
 {
+	char lecture[100];
 	while(1)
 	{
-	  serial_pc.printfln("ABWABWA");
-	  vTaskDelay(1000);
+		if(serial_rb.available())
+		{
+			serial_rb.read(lecture);
+			if(strcmp(lecture,"color?") == 0)
+				serial_rb.printfln("color rouge");
+		}
+		else
+			serial_rb.printfln("bwa");
+		vTaskDelay(1000);
 	}
 }
 
@@ -84,17 +100,20 @@ int main(int argc, char* argv[])
 	 }*/
 
 //  Timer timer2;
-  serial_pc.init(9600);
- // timer2.start ();
-  char out[50];
-//  osKernelInitialize();
-  xTaskCreate(hello_world_task, (char*)"TEST1", (2048)/4, 0, 1, 0);
-  xTaskCreate(hello_world_task2, (char*)"TEST2", (2048)/4, 0, 1, 0);
+	serial_rb.init(115200);
+	serial_rb.printfln("test");
+	Exec_Update_Table::setSerie(serial_rb);
+	HookTemps::setDateDebutMatch();
+//	Exec_Update_Table exec;
+//	exec.execute();
+  xTaskCreate(hello_world_task, (char*)"TEST1", 2048, 0, 1, 0);
+  xTaskCreate(hello_world_task2, (char*)"TEST2", 2048, 0, 1, 0);
   vTaskStartScheduler();
   while(1)
   {
-	  serial_pc.printfln("ERREUR");
+//	  serial_rb.printfln("ERREUR");
 //	  serial_pc.printfln("%d", TIM3->CNT);
+//	  vTaskDelay(1000);
   }
 
   return 0;

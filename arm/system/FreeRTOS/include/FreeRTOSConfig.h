@@ -95,6 +95,7 @@
 #define configUSE_MALLOC_FAILED_HOOK    0
 #define configUSE_APPLICATION_TASK_TAG  0
 #define configUSE_COUNTING_SEMAPHORES   1
+#define configUSE_TIME_SLICING			0
 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES           0
