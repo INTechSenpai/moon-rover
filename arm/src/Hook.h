@@ -16,13 +16,16 @@ public:
 	bool evalue();
 	Hook(bool isUnique, uint8_t nbCallback);
 	~Hook();
-	void insert(Executable f, uint8_t indice);
+	void insert(Executable* f, uint8_t indice);
 	void execute();
 
-private:
+protected:
 	bool m_isUnique;
+	bool m_isDone;
+
+private:
 	uint8_t m_nbCallback;
-	Executable* m_callbacks;
+	Executable** m_callbacks;
 };
 
 class HookTemps : public Hook
@@ -34,6 +37,41 @@ private:
 public:
 	static void setDateDebutMatch();
 	HookTemps(uint8_t nbCallback, uint32_t dateExecution);
+	bool evalue();
+};
+
+class HookContact : public Hook
+{
+private:
+	uint8_t m_nbCapteur;
+
+public:
+	HookContact(bool isUnique, uint8_t nbCallback, uint8_t nbCapteur);
+	bool evalue();
+};
+
+class HookPosition : public Hook
+{
+private:
+	uint32_t m_x;
+	uint32_t m_y;
+	uint32_t m_tolerance;
+
+public:
+	HookPosition(bool isUnique, uint8_t nbCallback, uint32_t x, uint32_t y, uint32_t tolerance);
+	bool evalue();
+};
+
+class HookDemiPlan : public Hook
+{
+private:
+	uint32_t m_x;
+	uint32_t m_y;
+	uint32_t m_direction_x;
+	uint32_t m_direction_y;
+
+public:
+	HookDemiPlan(uint8_t nbCallback, uint32_t x, uint32_t y, uint32_t direction_x, uint32_t direction_y);
 	bool evalue();
 };
 
