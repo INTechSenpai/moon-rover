@@ -13,15 +13,14 @@ class Hook
 {
 
 public:
-	bool evalue();
+	virtual bool evalue() = 0;
 	Hook(bool isUnique, uint8_t nbCallback);
-	~Hook();
+	virtual ~Hook();
 	void insert(Executable* f, uint8_t indice);
-	void execute();
+	bool execute();
 
 protected:
 	bool m_isUnique;
-	bool m_isDone;
 
 private:
 	uint8_t m_nbCallback;

@@ -6,7 +6,7 @@
 #include "Executable.h"
 
 
-Hook::Hook(bool isUnique, uint8_t nbCallback) : m_isUnique(isUnique), m_isDone(false), m_nbCallback(nbCallback)
+Hook::Hook(bool isUnique, uint8_t nbCallback) : m_isUnique(isUnique), m_nbCallback(nbCallback)
 {
 	m_callbacks = (Executable**) pvPortMalloc(sizeof(Executable*)*m_nbCallback);
 }
@@ -16,15 +16,17 @@ void Hook::insert(Executable* f, uint8_t indice)
 	m_callbacks[indice] = f;
 }
 
-void Hook::execute()
+bool Hook::execute()
 {
-	m_isDone = true;
 	for(int i = 0; i < m_nbCallback; i++)
 		(*m_callbacks[i]).execute();
+	return m_isUnique;
 }
 
 Hook::~Hook()
 {
+	for(int i = 0; i < m_nbCallback; i++)
+		vPortFree(m_callbacks[i]);
 	vPortFree(m_callbacks);
 }
 
@@ -36,7 +38,7 @@ uint32_t HookTemps::m_dateDebutMatch;
 
 bool HookTemps::evalue()
 {
-	return (!m_isUnique || !m_isDone) && (xTaskGetTickCount() - m_dateDebutMatch) >= m_dateExecution;
+	return (xTaskGetTickCount() - m_dateDebutMatch) >= m_dateExecution;
 }
 
 void HookTemps::setDateDebutMatch()
