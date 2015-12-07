@@ -57,7 +57,7 @@ private:
 	uint32_t m_tolerance;
 
 public:
-	HookPosition(bool isUnique, uint8_t nbCallback, uint32_t x, uint32_t y, uint32_t tolerance);
+	HookPosition(uint8_t nbCallback, uint32_t x, uint32_t y, uint32_t tolerance);
 	bool evalue();
 };
 

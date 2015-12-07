@@ -10,6 +10,7 @@
 #include <vector>
 #include "diag/Trace.h"
 
+#include "math.h"
 #include "Timer.h"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -17,6 +18,7 @@
 #include "Executable.h"
 #include "Hook.h"
 #include "Uart.hpp"
+#include "global.h"
 
 using namespace std;
 
@@ -31,12 +33,23 @@ using namespace std;
 
 TIM_Encoder_InitTypeDef encoder, encoder2;
 TIM_HandleTypeDef timer, timer2;
-Uart<2> serial_rb;
 vector<Hook*> listeHooks;
+
+#define TICKS_PAR_TOUR_CODEUSE 4000
+#define RAYON_CODEUSE_EN_MM 25
+#define MM_PAR_TICK ((2 * M_PI * RAYON_CODEUSE_EN_MM) / TICKS_PAR_TOUR_CODEUSE)
+#define TICK_CODEUR_DROIT TIM5->CNT
+#define TICK_CODEUR_GAUCHE TIM2->CNT
+#define LONGUEUR_CODEUSE_A_CODEUSE_EN_MM 360
+// il faut s'assurer que TICKS_PAR_TOUR_ROBOT < 65536
+#define TICKS_PAR_TOUR_ROBOT ((M_PI * LONGUEUR_CODEUSE_A_CODEUSE_EN_MM) / MM_PAR_TICK)
+#define FRONTIERE_MODULO (TICKS_PAR_TOUR_ROBOT + (65536 - TICKS_PAR_TOUR_ROBOT) / 2)
+#define TICK_TO_RAD(x) ((x / TICKS_PAR_TOUR_ROBOT) * 2 * M_PI)
+#define TICK_TO_MM(x) (x * MM_PAR_TICK)
 
 bool verifieSousChaine(const char* chaine, int* index, const char* comparaison)
 {
-	int i = 0;
+	uint8_t i = 0;
 	while(comparaison[i] != '\0')
 	{
 		if(chaine[*index] != comparaison[i])
@@ -50,9 +63,9 @@ bool verifieSousChaine(const char* chaine, int* index, const char* comparaison)
 	return true;
 }
 
-int parseInt(char* chaine, int* index)
+uint32_t parseInt(char* chaine, int* index)
 {
-	int somme = 0;
+	uint32_t somme = 0;
 	while(chaine[*index] >= '0' && chaine[*index] <= '9')
 	{
 		somme = 10*somme + chaine[*index] - '0';
@@ -68,10 +81,11 @@ void thread_ecoute_serie(void* p)
 {
 //		char lecture[] = "Hda 1000 1 tbl 14 truc";
 //		char lecture[] = "Hct 8 T 1 tbl 14 truc";
-//		char lecture[] = "Hdp 1000 2000 10 0 3 tbl 14 scr 1 act 8";
-//		char lecture[] = "Hpo 1000 2000 10 F 1 tbl 14 truc";
+//		char lecture[] = "Hdp 20 0 10 0 3 tbl 14 scr 1 act 8";
+//		char lecture[] = "Hpo 30 10 25 1 tbl 14 truc";
 //		char lecture[] = "Hda 5000 3 tbl 14 scr 5 act 2";
 		char lecture[300];
+//		char lecture2[300];
 		while(1)
 		{
 			if(serial_rb.available())
@@ -149,13 +163,10 @@ void thread_ecoute_serie(void* p)
 						uint32_t tolerance = parseInt(lecture, &index);
 						serial_rb.printfln("tolerance : %d",tolerance);
 						index++;
-						bool unique = lecture[index++] == 'T';
-						serial_rb.printfln("unique? %d", unique);
-						index++;
 						nbcallbacks = parseInt(lecture, &index);
 						serial_rb.printfln("nbCallback : %d",nbcallbacks);
 						index++;
-						hookActuel = new(pvPortMalloc(sizeof(HookPosition))) HookPosition(unique, nbcallbacks, x, y, tolerance);
+						hookActuel = new(pvPortMalloc(sizeof(HookPosition))) HookPosition(nbcallbacks, x, y, tolerance);
 						listeHooks.push_back(hookActuel);
 					}
 					else
@@ -202,7 +213,18 @@ void thread_ecoute_serie(void* p)
 						}
 					}
 				}
-//					serial_rb.printfln("color rouge");
+				// utilisé pour les tests uniquement
+				else if(verifieSousChaine(lecture, &index, "gxyo"))
+				{
+					serial_rb.printfln("%d %d %d",(int)x_odo, (int)y_odo, (int)(orientation_odo*1000));
+				}
+				else if(verifieSousChaine(lecture, &index, "sxyo"))
+				{
+					x_odo = parseInt(lecture, &(++index));
+					y_odo = parseInt(lecture, &(++index));
+					orientation_odo = parseInt(lecture, &(++index))/1000.;
+				}
+				//					serial_rb.printfln("color rouge");
 			}
 //			serial_rb.printfln("%d", TIM5->CNT);
 
@@ -221,10 +243,11 @@ void thread_hook(void* p)
 		for(it = listeHooks.begin(); it < listeHooks.end(); it++)
 		{
 			Hook* hook = *it;
-			serial_rb.printfln("Eval hook");
+//			serial_rb.printfln("Eval hook");
+//			serial_rb.printfln("%d %d %d",(int)x_odo, (int)y_odo, (int)(orientation*1000));
 			if((*hook).evalue())
 			{
-				serial_rb.printfln("Execution!");
+//				serial_rb.printfln("Execution!");
 				if((*hook).execute()) // suppression demandée
 				{
 					vPortFree(hook);
@@ -238,8 +261,88 @@ void thread_hook(void* p)
 	}
 }
 
+/**
+ * Thread d'odométrie
+ */
+void thread_odometrie(void* p)
+{
+	x_odo = 0;
+	y_odo = 0;
+	orientation_odo = 0;
+	uint16_t orientationTick = 0, orientationMoyTick;
+	uint16_t old_tick_gauche = TICK_CODEUR_GAUCHE, old_tick_droit = TICK_CODEUR_DROIT, tmp;
+	int16_t distanceTick, delta_tick_droit, delta_tick_gauche, deltaOrientationTick;
+	double k, distance, deltaOrientation;
+
+	while(1)
+	{
+		// La formule d'odométrie est corrigée pour tenir compte des trajectoires
+		// (au lieu d'avoir une approximation linéaire, on a une approximation circulaire)
+		tmp = TICK_CODEUR_GAUCHE;
+		delta_tick_gauche = tmp - old_tick_gauche;
+		old_tick_gauche = tmp;
+		tmp = TICK_CODEUR_DROIT;
+		delta_tick_droit = tmp - old_tick_droit;
+		old_tick_droit = tmp;
+
+		distanceTick = (delta_tick_droit + delta_tick_gauche) / 2;
+		distance = TICK_TO_MM(distanceTick);
+		deltaOrientationTick = (delta_tick_droit - delta_tick_gauche) / 2;
+		orientationMoyTick = orientationTick + deltaOrientationTick/2;
+		if(orientationMoyTick > (int)TICKS_PAR_TOUR_ROBOT)
+		{
+			if(orientationMoyTick < (int)FRONTIERE_MODULO)
+				orientationMoyTick -= (int)TICKS_PAR_TOUR_ROBOT;
+			else
+				orientationMoyTick += (int)TICKS_PAR_TOUR_ROBOT;
+		}
+		orientationTick += deltaOrientationTick;
+		orientation_odo = TICK_TO_RAD(orientationMoyTick);
+		deltaOrientation = TICK_TO_RAD(deltaOrientationTick);
+
+		if(deltaOrientationTick == 0) // afin d'éviter la division par 0
+			k = 1.;
+		else
+			k = sin(deltaOrientation/2)/(deltaOrientation/2);
+
+		x_odo += k*distance*cos(orientation_odo);
+		y_odo += k*distance*sin(orientation_odo);
+
+		vTaskDelay(10);
+	}
+}
+
 void hello_world_task2(void* p)
 {
+
+
+//	char lecture[100];
+	while(1)
+	{
+/*		if(serial_rb.available())
+		{
+			serial_rb.read(lecture);
+			if(strcmp(lecture,"color?") == 0)
+				serial_rb.printfln("color rouge");
+		}*/
+//		serial_rb.printfln("%d %d", TIM2->CNT, TIM5->CNT);
+//		serial_rb.printfln("%d, %d", (int)x, (int)y);
+
+		vTaskDelay(200);
+	}
+}
+
+int main(int argc, char* argv[])
+{
+	 HAL_Init();
+	 SystemClock_Config();
+
+	 HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+	 HAL_NVIC_SetPriority(SysTick_IRQn, 0, 1);
+
+	 HookTemps::setDateDebutMatch();
+	 listeHooks.reserve(100);
+	 serial_rb.init(115200);
 	 timer.Instance = TIM5;
 	 timer.Init.Period = 0xFFFF;
 	 timer.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -271,66 +374,40 @@ void hello_world_task2(void* p)
 		 serial_rb.printfln("Erreur 2");
 	 }
 
-		 timer2.Instance = TIM2;
-		 timer2.Init.Period = 0xFFFF;
-		 timer2.Init.CounterMode = TIM_COUNTERMODE_UP;
-		 timer2.Init.Prescaler = 0;
-		 timer2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	 timer2.Instance = TIM2;
+	 timer2.Init.Period = 0xFFFF;
+	 timer2.Init.CounterMode = TIM_COUNTERMODE_UP;
+	 timer2.Init.Prescaler = 0;
+	 timer2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 
-		 HAL_TIM_Encoder_MspInit(0);
+	 HAL_TIM_Encoder_MspInit(0);
 
-		 encoder2.EncoderMode = TIM_ENCODERMODE_TI12;
+	 encoder2.EncoderMode = TIM_ENCODERMODE_TI12;
 
-		 encoder2.IC1Filter = 0x0F;
-		 encoder2.IC1Polarity = TIM_INPUTCHANNELPOLARITY_RISING;
-		 encoder2.IC1Prescaler = TIM_ICPSC_DIV4;
-		 encoder2.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+	 encoder2.IC1Filter = 0x0F;
+	 encoder2.IC1Polarity = TIM_INPUTCHANNELPOLARITY_RISING;
+	 encoder2.IC1Prescaler = TIM_ICPSC_DIV4;
+	 encoder2.IC1Selection = TIM_ICSELECTION_DIRECTTI;
 
-		 encoder2.IC2Filter = 0x0F;
-		 encoder2.IC2Polarity = TIM_INPUTCHANNELPOLARITY_FALLING;
-		 encoder2.IC2Prescaler = TIM_ICPSC_DIV4;
-		 encoder2.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+	 encoder2.IC2Filter = 0x0F;
+	 encoder2.IC2Polarity = TIM_INPUTCHANNELPOLARITY_FALLING;
+	 encoder2.IC2Prescaler = TIM_ICPSC_DIV4;
+	 encoder2.IC2Selection = TIM_ICSELECTION_DIRECTTI;
 
 
-		 if (HAL_TIM_Encoder_Init(&timer2, &encoder2) != HAL_OK)
-		 {
-			 serial_rb.printfln("Erreur 1");
-		 }
+	 if (HAL_TIM_Encoder_Init(&timer2, &encoder2) != HAL_OK)
+	 {
+		 serial_rb.printfln("Erreur 1");
+	 }
 
-		 if(HAL_TIM_Encoder_Start_IT(&timer2,TIM_CHANNEL_1)!=HAL_OK)
-		 {
-			 serial_rb.printfln("Erreur 2");
-		 }
+	 if(HAL_TIM_Encoder_Start_IT(&timer2,TIM_CHANNEL_1)!=HAL_OK)
+	 {
+		 serial_rb.printfln("Erreur 2");
+	 }
 
-//	char lecture[100];
-	while(1)
-	{
-/*		if(serial_rb.available())
-		{
-			serial_rb.read(lecture);
-			if(strcmp(lecture,"color?") == 0)
-				serial_rb.printfln("color rouge");
-		}*/
-		serial_rb.printfln("%d %d", TIM2->CNT, TIM5->CNT);
-
-		vTaskDelay(200);
-	}
-}
-
-int main(int argc, char* argv[])
-{
-	 HAL_Init();
-	 SystemClock_Config();
-
-	 HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
-	 HAL_NVIC_SetPriority(SysTick_IRQn, 0, 1);
-
-	 Executable::setSerie(serial_rb);
-	 HookTemps::setDateDebutMatch();
-	 listeHooks.reserve(100);
-	 serial_rb.init(115200);
 	 xTaskCreate(thread_hook, (char*)"TH_HOOK", 2048, 0, 1, 0);
 	 xTaskCreate(thread_ecoute_serie, (char*)"TH_LISTEN", 2048, 0, 1, 0);
+	 xTaskCreate(thread_odometrie, (char*)"TH_ODO", 2048, 0, 1, 0);
 	 xTaskCreate(hello_world_task2, (char*)"TEST2", 2048, 0, 1, 0);
 	 vTaskStartScheduler();
 	 while(1)

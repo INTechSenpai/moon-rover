@@ -2,9 +2,8 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
-
+#include "global.h"
 #include "Executable.h"
-
 
 Hook::Hook(bool isUnique, uint8_t nbCallback) : m_isUnique(isUnique), m_nbCallback(nbCallback)
 {
@@ -68,11 +67,10 @@ HookContact::HookContact(bool isUnique, uint8_t nbCallback, uint8_t nbCapteur):H
 
 bool HookPosition::evalue()
 {
-	// TODO
-	return false;
+	return (x_odo - m_x) * (x_odo - m_x) + (y_odo - m_y) * (y_odo - m_y) < m_tolerance;
 }
 
-HookPosition::HookPosition(bool isUnique, uint8_t nbCallback, uint32_t x, uint32_t y, uint32_t tolerance):Hook(isUnique,nbCallback), m_x(x), m_y(y), m_tolerance(tolerance)
+HookPosition::HookPosition(uint8_t nbCallback, uint32_t x, uint32_t y, uint32_t tolerance):Hook(true,nbCallback), m_x(x), m_y(y), m_tolerance(tolerance)
 {}
 
 /**
@@ -81,8 +79,7 @@ HookPosition::HookPosition(bool isUnique, uint8_t nbCallback, uint32_t x, uint32
 
 bool HookDemiPlan::evalue()
 {
-	// TODO
-	return false;
+	return (x_odo - m_x) * m_direction_x + (y_odo - m_y) * m_direction_y > 0;
 }
 
 HookDemiPlan::HookDemiPlan(uint8_t nbCallback, uint32_t x, uint32_t y, uint32_t direction_x, uint32_t direction_y):Hook(true, nbCallback), m_x(x), m_y(y), m_direction_x(direction_x), m_direction_y(direction_y)
