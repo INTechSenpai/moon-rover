@@ -41,11 +41,11 @@ vector<Hook*> listeHooks;
 #define TICK_CODEUR_DROIT TIM5->CNT
 #define TICK_CODEUR_GAUCHE TIM2->CNT
 #define LONGUEUR_CODEUSE_A_CODEUSE_EN_MM 360
-// il faut s'assurer que TICKS_PAR_TOUR_ROBOT < 65536
-#define TICKS_PAR_TOUR_ROBOT ((M_PI * LONGUEUR_CODEUSE_A_CODEUSE_EN_MM) / MM_PAR_TICK)
-#define FRONTIERE_MODULO (TICKS_PAR_TOUR_ROBOT + (65536 - TICKS_PAR_TOUR_ROBOT) / 2)
+
+#define TICKS_PAR_TOUR_ROBOT ((2 *M_PI * LONGUEUR_CODEUSE_A_CODEUSE_EN_MM) / MM_PAR_TICK)
+#define FRONTIERE_MODULO (TICKS_PAR_TOUR_ROBOT + (4294967296 - TICKS_PAR_TOUR_ROBOT) / 2)
 #define TICK_TO_RAD(x) ((x / TICKS_PAR_TOUR_ROBOT) * 2 * M_PI)
-#define TICK_TO_MM(x) (x * MM_PAR_TICK)
+#define TICK_TO_MM(x) (x * MM_PAR_TICK / 2)
 
 bool verifieSousChaine(const char* chaine, int* index, const char* comparaison)
 {
@@ -101,70 +101,70 @@ void thread_ecoute_serie(void* p)
 
 					if(verifieSousChaine(lecture, &index, "da"))
 					{
-						serial_rb.printfln("hook de date");
+//						serial_rb.printfln("hook de date");
 						index++;
 						uint32_t date = parseInt(lecture, &index);
-						serial_rb.printfln("date : %d",date);
+//						serial_rb.printfln("date : %d",date);
 						index++;
 						nbcallbacks = parseInt(lecture, &index);
-						serial_rb.printfln("nbCallback : %d",nbcallbacks);
+//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
 						index++;
 						hookActuel = new(pvPortMalloc(sizeof(HookTemps))) HookTemps(nbcallbacks, date);
 						listeHooks.push_back(hookActuel);
 					}
 					else if(verifieSousChaine(lecture, &index, "ct"))
 					{
-						serial_rb.printfln("hook de contact");
+//						serial_rb.printfln("hook de contact");
 						index++;
 						uint8_t nbContact = parseInt(lecture, &index);
-						serial_rb.printfln("nbContact : %d",nbContact);
+//						serial_rb.printfln("nbContact : %d",nbContact);
 						index++;
 						bool unique = lecture[index++] == 'T';
-						serial_rb.printfln("unique? %d", unique);
+//						serial_rb.printfln("unique? %d", unique);
 						index++;
 						nbcallbacks = parseInt(lecture, &index);
-						serial_rb.printfln("nbCallback : %d",nbcallbacks);
+//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
 						index++;
 						hookActuel = new(pvPortMalloc(sizeof(HookContact))) HookContact(unique, nbcallbacks, nbContact);
 						listeHooks.push_back(hookActuel);
 					}
 					else if(verifieSousChaine(lecture, &index, "dp"))
 					{
-						serial_rb.printfln("hook de demi plan");
+//						serial_rb.printfln("hook de demi plan");
 						index++;
 						uint32_t x = parseInt(lecture, &index);
-						serial_rb.printfln("x : %d",x);
+//						serial_rb.printfln("x : %d",x);
 						index++;
 						uint32_t y = parseInt(lecture, &index);
-						serial_rb.printfln("y : %d",y);
+//						serial_rb.printfln("y : %d",y);
 						index++;
 						uint32_t dir_x = parseInt(lecture, &index);
-						serial_rb.printfln("dirx : %d",dir_x);
+//						serial_rb.printfln("dirx : %d",dir_x);
 						index++;
 						uint32_t dir_y = parseInt(lecture, &index);
-						serial_rb.printfln("diry : %d",dir_y);
+//						serial_rb.printfln("diry : %d",dir_y);
 						index++;
 						nbcallbacks = parseInt(lecture, &index);
-						serial_rb.printfln("nbCallback : %d",nbcallbacks);
+//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
 						index++;
 						hookActuel = new(pvPortMalloc(sizeof(HookDemiPlan))) HookDemiPlan(nbcallbacks, x, y, dir_x, dir_y);
 						listeHooks.push_back(hookActuel);
 					}
 					else if(verifieSousChaine(lecture, &index, "po"))
 					{
-						serial_rb.printfln("hook de position");
+//						serial_rb.printfln("hook de position");
 						index++;
 						uint32_t x = parseInt(lecture, &index);
-						serial_rb.printfln("x : %d",x);
+//						serial_rb.printfln("x : %d",x);
 						index++;
 						uint32_t y = parseInt(lecture, &index);
-						serial_rb.printfln("y : %d",y);
+//						serial_rb.printfln("y : %d",y);
 						index++;
 						uint32_t tolerance = parseInt(lecture, &index);
-						serial_rb.printfln("tolerance : %d",tolerance);
+//						serial_rb.printfln("tolerance : %d",tolerance);
 						index++;
 						nbcallbacks = parseInt(lecture, &index);
-						serial_rb.printfln("nbCallback : %d",nbcallbacks);
+//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
 						index++;
 						hookActuel = new(pvPortMalloc(sizeof(HookPosition))) HookPosition(nbcallbacks, x, y, tolerance);
 						listeHooks.push_back(hookActuel);
@@ -175,34 +175,32 @@ void thread_ecoute_serie(void* p)
 						continue;
 					}
 
-					serial_rb.printfln("nbCallback : %d",nbcallbacks);
-
 					for(int i = 0; i < nbcallbacks; i++)
 					{
 						if(verifieSousChaine(lecture, &index, "tbl"))
 						{
-							serial_rb.printfln("callback : table");
+//							serial_rb.printfln("callback : table");
 							int nbElem = parseInt(lecture, &(++index));
 							index++;
-							serial_rb.printfln("element : %d", nbElem);
+//							serial_rb.printfln("element : %d", nbElem);
 							Exec_Update_Table* tmp = new(pvPortMalloc(sizeof(Exec_Update_Table))) Exec_Update_Table(nbElem);
 							hookActuel->insert(tmp, i);
 						}
 						else if(verifieSousChaine(lecture, &index, "scr"))
 						{
-							serial_rb.printfln("callback : script");
+//							serial_rb.printfln("callback : script");
 							int nbScript = parseInt(lecture, &(++index));
 							index++;
-							serial_rb.printfln("script : %d", nbScript);
+//							serial_rb.printfln("script : %d", nbScript);
 							Exec_Script* tmp = new(pvPortMalloc(sizeof(Exec_Script))) Exec_Script(nbScript);
 							hookActuel->insert(tmp, i);
 						}
 						else if(verifieSousChaine(lecture, &index, "act"))
 						{
-							serial_rb.printfln("callback : actionneurs");
+//							serial_rb.printfln("callback : actionneurs");
 							int nbAct = parseInt(lecture, &(++index));
 							index++;
-							serial_rb.printfln("act : %d", nbAct);
+//							serial_rb.printfln("act : %d", nbAct);
 							Exec_Act* tmp = new(pvPortMalloc(sizeof(Exec_Act))) Exec_Act(nbAct);
 							hookActuel->insert(tmp, i);
 						}
@@ -216,7 +214,9 @@ void thread_ecoute_serie(void* p)
 				// utilisé pour les tests uniquement
 				else if(verifieSousChaine(lecture, &index, "gxyo"))
 				{
+					while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 					serial_rb.printfln("%d %d %d",(int)x_odo, (int)y_odo, (int)(orientation_odo*1000));
+					xSemaphoreGive(serial_rb_mutex);
 				}
 				else if(verifieSousChaine(lecture, &index, "sxyo"))
 				{
@@ -261,6 +261,9 @@ void thread_hook(void* p)
 	}
 }
 
+// TODO : période odo et asser à INTech : 0.5ms
+// TODO : les volatile
+
 /**
  * Thread d'odométrie
  */
@@ -269,7 +272,7 @@ void thread_odometrie(void* p)
 	x_odo = 0;
 	y_odo = 0;
 	orientation_odo = 0;
-	uint16_t orientationTick = 0, orientationMoyTick;
+	uint32_t orientationTick = 0, orientationMoyTick;
 	uint16_t old_tick_gauche = TICK_CODEUR_GAUCHE, old_tick_droit = TICK_CODEUR_DROIT, tmp;
 	int16_t distanceTick, delta_tick_droit, delta_tick_gauche, deltaOrientationTick;
 	double k, distance, deltaOrientation;
@@ -285,20 +288,28 @@ void thread_odometrie(void* p)
 		delta_tick_droit = tmp - old_tick_droit;
 		old_tick_droit = tmp;
 
-		distanceTick = (delta_tick_droit + delta_tick_gauche) / 2;
+		// on évite les formules avec "/ 2", qui font perdre de l'information et qui peuvent s'accumuler
+
+		distanceTick = delta_tick_droit + delta_tick_gauche;
 		distance = TICK_TO_MM(distanceTick);
-		deltaOrientationTick = (delta_tick_droit - delta_tick_gauche) / 2;
+		deltaOrientationTick = delta_tick_droit - delta_tick_gauche;
+		// l'erreur à cause du "/2" ne s'accumule pas
 		orientationMoyTick = orientationTick + deltaOrientationTick/2;
-		if(orientationMoyTick > (int)TICKS_PAR_TOUR_ROBOT)
+
+		if(orientationMoyTick > (uint32_t)TICKS_PAR_TOUR_ROBOT)
 		{
-			if(orientationMoyTick < (int)FRONTIERE_MODULO)
-				orientationMoyTick -= (int)TICKS_PAR_TOUR_ROBOT;
+			if(orientationMoyTick < (uint32_t)FRONTIERE_MODULO)
+				orientationMoyTick -= (uint32_t)TICKS_PAR_TOUR_ROBOT;
 			else
-				orientationMoyTick += (int)TICKS_PAR_TOUR_ROBOT;
+				orientationMoyTick += (uint32_t)TICKS_PAR_TOUR_ROBOT;
 		}
 		orientationTick += deltaOrientationTick;
 		orientation_odo = TICK_TO_RAD(orientationMoyTick);
 		deltaOrientation = TICK_TO_RAD(deltaOrientationTick);
+
+//		serial_rb.printfln("TICKS_PAR_TOUR_ROBOT = %d", (int)TICKS_PAR_TOUR_ROBOT);
+//		serial_rb.printfln("orientationMoyTick = %d", orientationMoyTick);
+//		serial_rb.printfln("orientation = %d", (int)(orientation_odo*1000));
 
 		if(deltaOrientationTick == 0) // afin d'éviter la division par 0
 			k = 1.;
@@ -308,7 +319,7 @@ void thread_odometrie(void* p)
 		x_odo += k*distance*cos(orientation_odo);
 		y_odo += k*distance*sin(orientation_odo);
 
-		vTaskDelay(10);
+		vTaskDelay(5);
 	}
 }
 
