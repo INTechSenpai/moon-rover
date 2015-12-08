@@ -2,8 +2,11 @@
 #include "Motor.h"
 #include "pid.hpp"
 #include "average.hpp"
+#include "global.h"
+#include <cmath>
+#include "math.h"
 
-#define AVERAGE_SPEED_SIZE 25
+#define AVERAGE_SPEED_SIZE 10
 
 enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
@@ -22,6 +25,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
  * 			autrement les unitées ci-dessus ne seront plus valables.
  */
 
+	int32_t zero = 0;
 
 	//	Asservissement en vitesse du moteur droit
 	volatile int32_t rightSpeedSetpoint;	// ticks/seconde
@@ -36,10 +40,9 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	PID leftSpeedPID(&currentLeftSpeed, &leftPWM, &leftSpeedSetpoint);
 
 	//	Asservissement en position : translation
-	volatile int32_t translationSetpoint;	// ticks
-	volatile int32_t currentDistance;		// ticks
+	volatile int32_t currentDistance;		// distance à parcourir, en ticks
 	volatile int32_t translationSpeed;		// ticks/seconde
-	PID translationPID(&currentDistance, &translationSpeed, &translationSetpoint);
+	PID translationPID(&currentDistance, &translationSpeed, &zero);
 	//	Asservissement en position : rotation
 
 	volatile int32_t rotationSetpoint;		// angle absolu visé (en ticks)
@@ -59,24 +62,6 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	Average<int32_t, AVERAGE_SPEED_SIZE> averageLeftSpeed;
 	Average<int32_t, AVERAGE_SPEED_SIZE> averageRightSpeed;
 
-	// Définit la vitesse à utiliser pour les tests d'asservissement (testSpeed et testSpeedReverse)
-	volatile int32_t speedTest;
-
-
-/*
- * 	Variables de positionnement haut niveau (exprimmées en unités pratiques ^^)
- *
- * 	Toutes ces variables sont initialisées à 0. Elles doivent donc être règlées ensuite
- * 	par le haut niveau pour correspondre à son système de coordonnées.
- * 	Le bas niveau met à jour la valeur de ces variables mais ne les utilise jamais pour
- * 	lui même, il se contente de les transmettre au haut niveau.
- */
-	volatile float x;				// Positionnement 'x' (mm)
-	volatile float y;				// Positionnement 'y' (mm)
-	volatile float originalAngle;	// Angle d'origine	  (radians)
-	// 'originalAngle' représente un offset ajouté à l'angle courant pour que nos angles en radians coïncident avec la représentation haut niveau des angles.
-
-
 	// Variables d'état du mouvement
 	volatile bool moving;
 	volatile MOVING_DIRECTION direction;
@@ -93,3 +78,127 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	//Nombre de ticks de tolérance pour considérer qu'on est arrivé à destination
 	int toleranceTranslation;
 	int toleranceRotation;
+
+	int32_t previousLeftSpeedSetpoint = 0;
+	int32_t previousRightSpeedSetpoint = 0;
+
+	double x_consigne, y_consigne;
+
+	/**
+	 * Donne la consigne sous forme (x, y) utilisée pour la translation
+	 */
+	void setConsigneTranslation(double x, double y)
+	{
+		x_consigne = x;
+		y_consigne = y;
+	}
+
+	void setConsigneRotation(uint32_t orientation)
+	{
+		rotationSetpoint = orientation;
+	}
+
+	void setRotationSetpoint(int32_t rotationSetpointTmp)
+	{
+		// gestion de la rotation (on va au plus court)
+		if(rotationSetpointTmp < currentAngle - TICKS_PAR_TOUR_ROBOT / 2)
+			rotationSetpoint = rotationSetpointTmp + TICKS_PAR_TOUR_ROBOT;
+		else if(rotationSetpointTmp > currentAngle + TICKS_PAR_TOUR_ROBOT / 2)
+			rotationSetpoint = rotationSetpointTmp - TICKS_PAR_TOUR_ROBOT;
+		else
+			rotationSetpoint = rotationSetpointTmp;
+	}
+
+	void controlTranslation(int16_t delta_tick_droit, int16_t delta_tick_gauche, uint32_t orientationMoyTick)
+	{
+		// Pour le calcul de l'accélération intantanée :
+
+		currentAngle = (int32_t) orientationMoyTick;
+
+		currentLeftSpeed = delta_tick_gauche * FREQUENCE_ODO_ASSER; // (nb-de-tick-passés)*(freq_asserv) (ticks/sec)
+		currentRightSpeed = delta_tick_droit * FREQUENCE_ODO_ASSER;
+
+		averageLeftSpeed.add(currentLeftSpeed);
+		averageRightSpeed.add(currentRightSpeed);
+
+		currentLeftSpeed = averageLeftSpeed.value(); // On utilise pour l'asserv la valeur moyenne des dernieres current Speed
+		currentRightSpeed = averageRightSpeed.value();
+
+		// calcul de la consigne en translation et en rotation
+		currentDistance = (int32_t)(hypot(x_odo - x_consigne, y_odo - y_consigne) * (1 / MM_PAR_TICK));
+		translationPID.compute();	// Actualise la valeur de 'translationSpeed'
+
+		// pas de correction de l'orientation si on est très proche (3cm ou moins)
+		if(currentDistance > 30 / MM_PAR_TICK)
+		{
+			setRotationSetpoint(RAD_TO_TICK(atan2(y_consigne - y_odo, x_consigne - x_odo)));
+			rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
+			// gestion de la symétrie pour les déplacements
+			if(isSymmetry)
+				rotationSpeed = -rotationSpeed;
+		}
+		else
+			rotationSpeed = 0;
+
+		// Limitation de la consigne de vitesse en translation
+		if(translationSpeed > maxSpeedTranslation)
+			translationSpeed = maxSpeedTranslation;
+		else if(translationSpeed < -maxSpeedTranslation)
+			translationSpeed = -maxSpeedTranslation;
+
+
+		// Limitation de la consigne de vitesse en rotation
+		if(rotationSpeed > maxSpeedRotation)
+			rotationSpeed = maxSpeedRotation;
+		else if(rotationSpeed < -maxSpeedRotation)
+			rotationSpeed = -maxSpeedRotation;
+
+		leftSpeedSetpoint = translationSpeed - rotationSpeed;
+		rightSpeedSetpoint = translationSpeed + rotationSpeed;
+
+		// Limitation de la vitesses
+		if(leftSpeedSetpoint > maxSpeed)
+			leftSpeedSetpoint = maxSpeed;
+		else if(leftSpeedSetpoint < -maxSpeed)
+			leftSpeedSetpoint = -maxSpeed;
+		if(rightSpeedSetpoint > maxSpeed)
+			rightSpeedSetpoint = maxSpeed;
+		else if(rightSpeedSetpoint < -maxSpeed)
+			rightSpeedSetpoint = -maxSpeed;
+
+
+		// Limitation de l'accélération du moteur gauche
+		if(leftSpeedSetpoint - previousLeftSpeedSetpoint > maxAcceleration)
+		{
+			leftSpeedSetpoint = previousLeftSpeedSetpoint + maxAcceleration;
+		}
+		else if(leftSpeedSetpoint - previousLeftSpeedSetpoint < -maxAcceleration)
+		{
+			leftSpeedSetpoint = previousLeftSpeedSetpoint - maxAcceleration;
+		}
+
+		// Limitation de l'accélération du moteur droit
+		if(rightSpeedSetpoint - previousRightSpeedSetpoint > maxAcceleration)
+		{
+			rightSpeedSetpoint = previousRightSpeedSetpoint + maxAcceleration;
+		}
+		else if(rightSpeedSetpoint - previousRightSpeedSetpoint < -maxAcceleration)
+		{
+			rightSpeedSetpoint = previousRightSpeedSetpoint - maxAcceleration;
+		}
+
+
+		previousLeftSpeedSetpoint = leftSpeedSetpoint;
+		previousRightSpeedSetpoint = rightSpeedSetpoint;
+
+		//serial.printfln("%d",(leftSpeedSetpoint - currentLeftSpeed));
+
+		if(leftSpeedControlled)
+			leftSpeedPID.compute();		// Actualise la valeur de 'leftPWM'
+		if(rightSpeedControlled)
+			rightSpeedPID.compute();	// Actualise la valeur de 'rightPWM'
+
+		leftMotor.run(leftPWM);
+		rightMotor.run(rightPWM);
+	}
+

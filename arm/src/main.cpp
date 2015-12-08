@@ -35,17 +35,6 @@ TIM_Encoder_InitTypeDef encoder, encoder2;
 TIM_HandleTypeDef timer, timer2;
 vector<Hook*> listeHooks;
 
-#define TICKS_PAR_TOUR_CODEUSE 4000
-#define RAYON_CODEUSE_EN_MM 25
-#define MM_PAR_TICK ((2 * M_PI * RAYON_CODEUSE_EN_MM) / TICKS_PAR_TOUR_CODEUSE)
-#define TICK_CODEUR_DROIT TIM5->CNT
-#define TICK_CODEUR_GAUCHE TIM2->CNT
-#define LONGUEUR_CODEUSE_A_CODEUSE_EN_MM 360
-
-#define TICKS_PAR_TOUR_ROBOT ((2 *M_PI * LONGUEUR_CODEUSE_A_CODEUSE_EN_MM) / MM_PAR_TICK)
-#define FRONTIERE_MODULO (TICKS_PAR_TOUR_ROBOT + (4294967296 - TICKS_PAR_TOUR_ROBOT) / 2)
-#define TICK_TO_RAD(x) ((x / TICKS_PAR_TOUR_ROBOT) * 2 * M_PI)
-#define TICK_TO_MM(x) (x * MM_PAR_TICK / 2)
 
 bool verifieSousChaine(const char* chaine, int* index, const char* comparaison)
 {
@@ -261,8 +250,10 @@ void thread_hook(void* p)
 	}
 }
 
-// TODO : période odo et asser à INTech : 0.5ms
 // TODO : les volatile
+// TODO : les mutex
+// TODO : tester #include "arm_math.h"
+
 
 /**
  * Thread d'odométrie
@@ -292,7 +283,13 @@ void thread_odometrie(void* p)
 
 		distanceTick = delta_tick_droit + delta_tick_gauche;
 		distance = TICK_TO_MM(distanceTick);
-		deltaOrientationTick = delta_tick_droit - delta_tick_gauche;
+
+		// gestion de la symétrie
+		if(!isSymmetry)
+			deltaOrientationTick = delta_tick_droit - delta_tick_gauche;
+		else
+			deltaOrientationTick = delta_tick_gauche - delta_tick_droit;
+
 		// l'erreur à cause du "/2" ne s'accumule pas
 		orientationMoyTick = orientationTick + deltaOrientationTick/2;
 
@@ -319,7 +316,7 @@ void thread_odometrie(void* p)
 		x_odo += k*distance*cos(orientation_odo);
 		y_odo += k*distance*sin(orientation_odo);
 
-		vTaskDelay(5);
+		vTaskDelay(1000 / FREQUENCE_ODO_ASSER);
 	}
 }
 

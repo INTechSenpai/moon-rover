@@ -20,6 +20,7 @@ Motor::Motor(Side s) :
 		side(s){
 
 	setDirection(Direction::FORWARD);
+	initPWM();
 }
 
 void Motor::initPWM(){
