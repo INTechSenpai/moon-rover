@@ -155,7 +155,6 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		else if(translationSpeed < -maxSpeedTranslation)
 			translationSpeed = -maxSpeedTranslation;
 
-
 		// Limitation de la consigne de vitesse en rotation
 		if(rotationSpeed > maxSpeedRotation)
 			rotationSpeed = maxSpeedRotation;
@@ -175,27 +174,17 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		else if(rightSpeedSetpoint < -maxSpeed)
 			rightSpeedSetpoint = -maxSpeed;
 
-
 		// Limitation de l'accélération du moteur gauche
 		if(leftSpeedSetpoint - previousLeftSpeedSetpoint > maxAcceleration)
-		{
 			leftSpeedSetpoint = previousLeftSpeedSetpoint + maxAcceleration;
-		}
 		else if(leftSpeedSetpoint - previousLeftSpeedSetpoint < -maxAcceleration)
-		{
 			leftSpeedSetpoint = previousLeftSpeedSetpoint - maxAcceleration;
-		}
 
 		// Limitation de l'accélération du moteur droit
 		if(rightSpeedSetpoint - previousRightSpeedSetpoint > maxAcceleration)
-		{
 			rightSpeedSetpoint = previousRightSpeedSetpoint + maxAcceleration;
-		}
 		else if(rightSpeedSetpoint - previousRightSpeedSetpoint < -maxAcceleration)
-		{
 			rightSpeedSetpoint = previousRightSpeedSetpoint - maxAcceleration;
-		}
-
 
 		previousLeftSpeedSetpoint = leftSpeedSetpoint;
 		previousRightSpeedSetpoint = rightSpeedSetpoint;
@@ -211,8 +200,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		rightMotor.run(rightPWM);
 	}
 
-
-    void controlRotation(int16_t delta_tick_droit, int16_t delta_tick_gauche, uint32_t orientationMoyTick)
+    void controlRotation(uint32_t orientationMoyTick)
     {
         currentAngle = (int32_t) orientationMoyTick;
         rotationPID.compute();      // Actualise la valeur de 'rotationSpeed'
@@ -232,6 +220,9 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     void controlTrajectoire()
     {
         // TODO
+
+
+
     }
 
     // freine le plus rapidement possible

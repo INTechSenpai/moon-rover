@@ -21,12 +21,13 @@
 #define RAD_TO_TICK(x) ((x * TICKS_PAR_TOUR_ROBOT) / (2 * M_PI))
 #define TICK_TO_MM(x) (x * MM_PAR_TICK / 2)
 
-enum MODE_ASSER {PAS_ASSER, ASSER_TRANSLATION, ASSER_ROTATION, ASSER_TRAJECTOIRE, ASSER_STOP_ROBOT};
-enum DIRECTION_STRATEGY {FORCE_BACK_MOTION, FORCE_FORWARD_MOTION, FASTEST};
+enum ModeAsser {PAS_ASSER, ASSER_TRANSLATION, ASSER_ROTATION, ASSER_TRAJECTOIRE, ASSER_STOP_ROBOT};
+enum DirectionStrategy {FORCE_BACK_MOTION, FORCE_FORWARD_MOTION, FASTEST};
 
 extern bool isSymmetry;
 extern bool marcheAvant;
 extern Uart<2> serial_rb;
+extern DirectionStrategy strategy;
 
 /**
  * x_odo, y_odo et orientation_odo sont exprimés dans le repère symétrisé, qui n'est pas forcément le repère réel

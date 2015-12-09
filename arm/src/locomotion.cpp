@@ -1,6 +1,8 @@
 /*
  * Fonction haut niveau de déplacement (fonctions bloquantes, gestion des blocages, de la symétrie, …).
  */
+#include "global.h"
+
 
 void computeDirection(int x_consigne, int y_consigne)
 {
