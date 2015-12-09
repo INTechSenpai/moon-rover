@@ -21,7 +21,11 @@
 #define RAD_TO_TICK(x) ((x * TICKS_PAR_TOUR_ROBOT) / (2 * M_PI))
 #define TICK_TO_MM(x) (x * MM_PAR_TICK / 2)
 
+enum MODE_ASSER {PAS_ASSER, ASSER_TRANSLATION, ASSER_ROTATION, ASSER_TRAJECTOIRE, ASSER_STOP_ROBOT};
+enum DIRECTION_STRATEGY {FORCE_BACK_MOTION, FORCE_FORWARD_MOTION, FASTEST};
+
 extern bool isSymmetry;
+extern bool marcheAvant;
 extern Uart<2> serial_rb;
 
 /**
@@ -29,6 +33,7 @@ extern Uart<2> serial_rb;
  */
 extern double x_odo, y_odo; // abscisse et ordonnée exprimées en mm
 extern double orientation_odo; // exprimé en radians
+extern double cos_orientation_odo, sin_orientation_odo;
 extern bool asserEnable;
 
 // MUTEX

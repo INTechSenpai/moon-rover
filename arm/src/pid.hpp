@@ -30,7 +30,6 @@ public:
 		pre_error = 0;
 		derivative = 0;
 		integral = 0;
-		resetErrors();
 	}
 
 	void compute() {
@@ -44,12 +43,11 @@ public:
 				kp * error + ki * integral + kd * derivative);
 
 		//Saturation
-/*
 		if (result > outMax) {
 			result = outMax;
 		} else if (result < outMin) {
 			result = outMin;
-		}*/
+		}
 
 
 
@@ -75,15 +73,6 @@ public:
 
 		outMin = min;
 		outMax = max;
-
-		if ((*output) > outMax)
-			(*output) = outMax;
-		else if ((*output) < outMin)
-			(*output) = outMin;
-	}
-
-	int32_t getOutputLimit() const {
-		return outMax;
 	}
 
 	void setEpsilon(int32_t seuil) {
@@ -92,45 +81,19 @@ public:
 		epsilon = seuil;
 	}
 
-	int32_t getEpsilon() const {
-		return epsilon;
-	}
-
 	void resetErrors() {
 		pre_error = 0;
 		integral = 0;
 	}
-	float getKp() const {
-		return kp;
-	}
-	float getKi() const {
-		return ki;
-	}
-	float getKd() const {
-		return kd;
-	}
-
-	int32_t getError() const {
-		return pre_error;
-	}
-
-	int32_t getDerivativeError() const {
-		return derivative;
-	}
-
-	int32_t getIntegralErrol() const {
-		return integral;
-	}
-
 private:
 
 	float kp;
 	float ki;
 	float kd;
 
-	volatile int32_t* input; //Valeur du codeur
-	volatile int32_t* output; //Output : pwm
-	volatile int32_t* setPoint; //Valeur à atteindre
+	volatile int32_t* input; //valeur actuelle, réelle
+	volatile int32_t* output; //Output : commande
+	volatile int32_t* setPoint; //Valeur à atteindre, consigne
 
 	int32_t epsilon;
 	int32_t outMin, outMax;

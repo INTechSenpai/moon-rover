@@ -313,8 +313,11 @@ void thread_odometrie(void* p)
 		else
 			k = sin(deltaOrientation/2)/(deltaOrientation/2);
 
-		x_odo += k*distance*cos(orientation_odo);
-		y_odo += k*distance*sin(orientation_odo);
+        cos_orientation_odo = cos(orientation_odo);
+        sin_orientation_odo = sin(orientation_odo);
+
+		x_odo += k*distance*cos_orientation_odo;
+		y_odo += k*distance*sin_orientation_odo;
 
 		vTaskDelay(1000 / FREQUENCE_ODO_ASSER);
 	}

@@ -111,7 +111,6 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 	void controlTranslation(int16_t delta_tick_droit, int16_t delta_tick_gauche, uint32_t orientationMoyTick)
 	{
-		// Pour le calcul de l'accélération intantanée :
 
 		currentAngle = (int32_t) orientationMoyTick;
 
@@ -128,10 +127,20 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		currentDistance = (int32_t)(hypot(x_odo - x_consigne, y_odo - y_consigne) * (1 / MM_PAR_TICK));
 		translationPID.compute();	// Actualise la valeur de 'translationSpeed'
 
+        if(!marcheAvant)
+            translationSpeed = -translationSpeed;
+
 		// pas de correction de l'orientation si on est très proche (3cm ou moins)
 		if(currentDistance > 30 / MM_PAR_TICK)
 		{
 			setRotationSetpoint(RAD_TO_TICK(atan2(y_consigne - y_odo, x_consigne - x_odo)));
+            if(!marcheAvant)
+            {
+                // on inverse la consigne (puisqu'on va en marche arrière)
+                rotationSetpoint += TICKS_PAR_TOUR_ROBOT / 2;
+                if(rotationSetpoint > TICKS_PAR_TOUR_ROBOT)
+                    rotationSetpoint -= TICKS_PAR_TOUR_ROBOT;
+            }
 			rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
 			// gestion de la symétrie pour les déplacements
 			if(isSymmetry)
@@ -202,3 +211,43 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		rightMotor.run(rightPWM);
 	}
 
+
+    void controlRotation(int16_t delta_tick_droit, int16_t delta_tick_gauche, uint32_t orientationMoyTick)
+    {
+        currentAngle = (int32_t) orientationMoyTick;
+        rotationPID.compute();      // Actualise la valeur de 'rotationSpeed'
+        // gestion de la symétrie pour les déplacements
+        if(isSymmetry)
+            rotationSpeed = -rotationSpeed;
+        leftSpeedSetpoint = - rotationSpeed;
+        rightSpeedSetpoint = rotationSpeed;
+        
+        leftSpeedPID.compute();     // Actualise la valeur de 'leftPWM'
+        rightSpeedPID.compute();    // Actualise la valeur de 'rightPWM'
+
+        leftMotor.run(leftPWM);
+        rightMotor.run(rightPWM);
+    }
+
+    void controlTrajectoire()
+    {
+        // TODO
+    }
+
+    // freine le plus rapidement possible
+    void controlStop()
+    {
+        leftSpeedSetpoint = 0;
+        rightSpeedSetpoint = 0;
+
+        leftSpeedPID.compute();     // Actualise la valeur de 'leftPWM'
+        rightSpeedPID.compute();    // Actualise la valeur de 'rightPWM'
+            
+        leftMotor.run(leftPWM);
+        rightMotor.run(rightPWM);
+    }
+
+    void setVitesseMaxTranslation(int16_t speedTr)
+    {
+        // TODO
+    }
