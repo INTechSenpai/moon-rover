@@ -16,10 +16,9 @@
 
 #include "Motor.h"
 
-Motor::Motor(Side s) :
-		side(s){
-
-	setDirection(Direction::FORWARD);
+Motor::Motor(Side s) : side(s)
+{
+	setDirection(MOTOR_FORWARD);
 	initPWM();
 }
 

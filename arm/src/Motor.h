@@ -7,26 +7,18 @@
 #define __MOTOR_h__
 
 #include "stm32f4xx.h"
-#include "safe_enum.hpp"
 #include "utils.h"
 #include "stm32f4xx_hal_gpio.h"
 #include "stm32f4xx_hal_tim.h"
 #include "stm32f4xx_hal_rcc.h"
 
-struct direction_def {
-	enum type {
-		BACKWARD, FORWARD
-	};
+enum Direction {
+	MOTOR_BACKWARD, MOTOR_FORWARD
 };
 
-struct side_def {
-	enum type {
-		LEFT, RIGHT
-	};
+enum Side {
+	MOTOR_LEFT, MOTOR_RIGHT
 };
-
-typedef safe_enum<direction_def> Direction;
-typedef safe_enum<side_def> Side;
 
 class Motor {
 private:

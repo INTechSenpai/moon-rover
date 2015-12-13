@@ -32,7 +32,7 @@ using namespace std;
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
 TIM_Encoder_InitTypeDef encoder, encoder2;
-TIM_HandleTypeDef timer, timer2;
+TIM_HandleTypeDef timer, timer2, timer3;
 vector<Hook*> listeHooks;
 
 
@@ -200,6 +200,12 @@ void thread_ecoute_serie(void* p)
 						}
 					}
 				}
+				else if(verifieSousChaine(lecture, &index, "?"))
+				{
+					while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+					serial_rb.printfln("T3");
+					xSemaphoreGive(serial_rb_mutex);
+				}
 				// utilisé pour les tests uniquement
 				else if(verifieSousChaine(lecture, &index, "gxyo"))
 				{
@@ -209,8 +215,8 @@ void thread_ecoute_serie(void* p)
 				}
 				else if(verifieSousChaine(lecture, &index, "sxyo"))
 				{
-					x_odo = parseInt(lecture, &(++index));
-					y_odo = parseInt(lecture, &(++index));
+					x_odo = parseInt(lecture, &(++index))/1000.;
+					y_odo = parseInt(lecture, &(++index))/1000.;
 					orientation_odo = parseInt(lecture, &(++index))/1000.;
 				}
 				//					serial_rb.printfln("color rouge");
@@ -343,6 +349,39 @@ void hello_world_task2(void* p)
 	}
 }
 
+void TIM3_Init(void)
+{
+    // Configure TIM4 for PWM
+	timer3.Instance = TIM3;
+	// Calcul du prescaler qui vient directement d'INTech
+	timer3.Init.Prescaler= (uint16_t)((SystemCoreClock / 2) / 256000) - 1; //le deuxième /2 est dû au changement pour un timer de clock doublée
+	timer3.Init.CounterMode = TIM_COUNTERMODE_UP;
+	timer3.Init.Period = 8000;
+	timer3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    HAL_TIM_PWM_Init(&timer3);
+
+    // Configure channels 1-4 for TIM4,
+    // each channel is mapped to a GPIO pin
+    TIM_OC_InitTypeDef oc_config;
+    oc_config.OCMode = TIM_OCMODE_PWM1;
+    oc_config.Pulse = 6000;
+    oc_config.OCPolarity = TIM_OCPOLARITY_LOW;
+//    oc_config.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+//    oc_config.OCIdleState = TIM_OCIDLESTATE_RESET;
+    oc_config.OCFastMode = TIM_OCFAST_DISABLE;
+
+    HAL_TIM_PWM_ConfigChannel(&timer3, &oc_config, TIM_CHANNEL_1);
+
+    // Flip the OC polarity for channels 2 and 4
+    oc_config.OCMode = TIM_OCMODE_PWM1;
+    HAL_TIM_PWM_ConfigChannel(&timer3, &oc_config, TIM_CHANNEL_2);
+
+    // I want to shift channel 1-4 90 degrees apart...
+    HAL_TIM_PWM_Start(&timer3, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&timer3, TIM_CHANNEL_2);
+
+}
+
 int main(int argc, char* argv[])
 {
 	 HAL_Init();
@@ -350,7 +389,6 @@ int main(int argc, char* argv[])
 
 	 HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
 	 HAL_NVIC_SetPriority(SysTick_IRQn, 0, 1);
-
 	 HookTemps::setDateDebutMatch();
 	 listeHooks.reserve(100);
 	 serial_rb.init(115200);
@@ -391,8 +429,6 @@ int main(int argc, char* argv[])
 	 timer2.Init.Prescaler = 0;
 	 timer2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 
-	 HAL_TIM_Encoder_MspInit(0);
-
 	 encoder2.EncoderMode = TIM_ENCODERMODE_TI12;
 
 	 encoder2.IC1Filter = 0x0F;
@@ -416,10 +452,36 @@ int main(int argc, char* argv[])
 		 serial_rb.printfln("Erreur 2");
 	 }
 
+	 HAL_TIM_Encoder_MspInit(0);
+//	 TIM3_Init();
+
+	    GPIO_InitTypeDef GPIO_InitStruct;
+	    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+	    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+	    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+	    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);
+	    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
+
+	 // Pins de direction moteur
+//	    GPIO_InitTypeDef GPIO_InitStruct;
+	    GPIO_InitStruct.Pin = GPIO_PIN_14 | GPIO_PIN_12;
+	    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+	    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+
+//	 TIM3->CCR1 = 150;
+//	 TIM3->CCR2 = 200;
+
+
 	 xTaskCreate(thread_hook, (char*)"TH_HOOK", 2048, 0, 1, 0);
 	 xTaskCreate(thread_ecoute_serie, (char*)"TH_LISTEN", 2048, 0, 1, 0);
 	 xTaskCreate(thread_odometrie, (char*)"TH_ODO", 2048, 0, 1, 0);
-	 xTaskCreate(hello_world_task2, (char*)"TEST2", 2048, 0, 1, 0);
+//	 xTaskCreate(hello_world_task2, (char*)"TEST2", 2048, 0, 1, 0);
 	 vTaskStartScheduler();
 	 while(1)
 	 {
@@ -432,8 +494,8 @@ int main(int argc, char* argv[])
 
 
 void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim)
-	{
- GPIO_InitTypeDef GPIO_InitStructA, GPIO_InitStructA2, GPIO_InitStructB;
+{
+ GPIO_InitTypeDef GPIO_InitStructA, GPIO_InitStructA2, GPIO_InitStructB, GPIO_InitStructC;
 
  __TIM5_CLK_ENABLE();
 
@@ -468,7 +530,20 @@ void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim)
  HAL_GPIO_Init(GPIOB, &GPIO_InitStructB);
 
  HAL_NVIC_SetPriority(TIM2_IRQn, 0, 1);
+/*
+ __TIM3_CLK_ENABLE();
 
+ __GPIOC_CLK_ENABLE();
+
+ GPIO_InitStructC.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+ GPIO_InitStructC.Mode = GPIO_MODE_AF_PP;
+ GPIO_InitStructC.Pull = GPIO_NOPULL;
+ GPIO_InitStructC.Speed = GPIO_SPEED_HIGH;
+ GPIO_InitStructC.Alternate = GPIO_AF2_TIM3;
+ HAL_GPIO_Init(GPIOC, &GPIO_InitStructC);
+
+ HAL_NVIC_SetPriority(TIM3_IRQn, 0, 1);
+*/
 }
 
 

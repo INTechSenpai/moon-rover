@@ -10,8 +10,8 @@
 
 enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
-	Motor leftMotor(Side::LEFT);
-	Motor rightMotor(Side::RIGHT);
+	Motor leftMotor(MOTOR_LEFT);
+	Motor rightMotor(MOTOR_RIGHT);
 
 /*
  * 		Définition des variables d'état du système (position, vitesse, consigne, ...)
@@ -111,7 +111,6 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 	void controlTranslation(int16_t delta_tick_droit, int16_t delta_tick_gauche, uint32_t orientationMoyTick)
 	{
-
 		currentAngle = (int32_t) orientationMoyTick;
 
 		currentLeftSpeed = delta_tick_gauche * FREQUENCE_ODO_ASSER; // (nb-de-tick-passés)*(freq_asserv) (ticks/sec)
@@ -210,6 +209,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
         leftSpeedSetpoint = - rotationSpeed;
         rightSpeedSetpoint = rotationSpeed;
         
+        // TODO : aussi asserv en position
+
         leftSpeedPID.compute();     // Actualise la valeur de 'leftPWM'
         rightSpeedPID.compute();    // Actualise la valeur de 'rightPWM'
 
