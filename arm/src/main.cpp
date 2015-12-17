@@ -232,6 +232,11 @@ void thread_ecoute_serie(void* p)
  */
 void thread_hook(void* p)
 {
+// TODO : il faut plusieurs listes de hooks:
+// - les hooks permanents
+// - les hooks de scripts, qui sont régulièrement vidés
+// Les "hooks" de trajectoire courbe sont gérés par l'asservissement directement
+
 	while(1)
 	{
 		vector<Hook*>::iterator it;
