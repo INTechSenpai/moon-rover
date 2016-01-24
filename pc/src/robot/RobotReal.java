@@ -35,6 +35,7 @@ public class RobotReal extends Robot
 		this.requete = requete;
 		this.gridspace = gridspace;
 		// On envoie à la STM la vitesse par défaut
+		stm.initOdoSTM(new Vec2<ReadOnly>(0, 1000), 3.12);
 		setVitesse(vitesse);
 		stm.envoieActionneurs();
 	}
@@ -90,11 +91,6 @@ public class RobotReal extends Robot
 	{
 		stm.setSpeed(vitesse);
 		log.debug("Modification de la vitesse: "+vitesse);
-	}
-	
-	public void initOdoSTM(Vec2<ReadOnly> position, double orientation)
-	{
-		stm.initOdoSTM(position, orientation);
 	}
 
 	public void setPositionOrientationJava(Vec2<ReadOnly> position, double orientation)
