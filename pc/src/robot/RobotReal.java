@@ -62,8 +62,6 @@ public class RobotReal extends Robot
 	@Override
     public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
 	{
-		// Il est nécessaire d'ajouter le hookFinMatch avant chaque appel de stm qui prenne un peu de temps (avancer, tourner, ...)
-//		hooks.add(hookFinMatch);
 		try {
 			synchronized(requete)
 			{
@@ -77,7 +75,6 @@ public class RobotReal extends Robot
 				} while(type != RequeteType.TRAJET_FINI);
 			}
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}	
