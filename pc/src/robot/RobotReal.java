@@ -92,9 +92,9 @@ public class RobotReal extends Robot
 		log.debug("Modification de la vitesse: "+vitesse);
 	}
 	
-	public void setPositionOrientationSTM(Vec2<ReadOnly> position, double orientation)
+	public void initOdoSTM(Vec2<ReadOnly> position, double orientation)
 	{
-		stm.setPositionOrientation(position, orientation);
+		stm.initOdoSTM(position, orientation);
 	}
 
 	public void setPositionOrientationJava(Vec2<ReadOnly> position, double orientation)
