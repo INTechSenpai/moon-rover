@@ -34,7 +34,7 @@ using namespace std;
 TIM_Encoder_InitTypeDef encoder, encoder2;
 TIM_HandleTypeDef timer, timer2, timer3;
 vector<Hook*> listeHooks;
-
+bool startOdo = false;
 
 bool verifieSousChaine(const char* chaine, int* index, const char* comparaison)
 {
@@ -206,24 +206,60 @@ void thread_ecoute_serie(void* p)
 					serial_rb.printfln("T3");
 					xSemaphoreGive(serial_rb_mutex);
 				}
+
+				else if(verifieSousChaine(lecture, &index, "sspd"))
+				{
+					// TODO
+				}
+
+				else if(verifieSousChaine(lecture, &index, "d"))
+				{
+					// TODO
+					vTaskDelay(1000);
+					while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+					serial_rb.printfln("arv");
+					xSemaphoreGive(serial_rb_mutex);
+				}
+
+				else if(verifieSousChaine(lecture, &index, "t"))
+				{
+					// TODO
+					vTaskDelay(1000);
+					while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+					serial_rb.printfln("arv");
+					xSemaphoreGive(serial_rb_mutex);
+				}
+				else if(verifieSousChaine(lecture, &index, "initodo"))
+				{
+					if(!startOdo)
+					{
+						x_odo = parseInt(lecture, &(++index));
+						y_odo = parseInt(lecture, &(++index));
+						orientation_odo = parseInt(lecture, &(++index))/1000.;
+						orientationTick = RAD_TO_TICK(orientation_odo);
+	//					orientationTick = RAD_TO_TICK(parseInt(lecture, &(++index))/1000.);
+						serial_rb.printfln("%d",(int)orientationTick);
+						serial_rb.printfln("%d",(int)(TICK_TO_RAD(orientationTick)*1000));
+						startOdo = true;
+					}
+					else
+						serial_rb.printfln("ERR_ODO",(int)orientationTick);
+				}
+
 				// utilisé pour les tests uniquement
 				else if(verifieSousChaine(lecture, &index, "gxyo"))
 				{
 					while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+					serial_rb.printfln("%d",(int)orientationTick);
 					serial_rb.printfln("%d %d %d",(int)x_odo, (int)y_odo, (int)(orientation_odo*1000));
 					xSemaphoreGive(serial_rb_mutex);
 				}
-				else if(verifieSousChaine(lecture, &index, "sxyo"))
-				{
-					x_odo = parseInt(lecture, &(++index))/1000.;
-					y_odo = parseInt(lecture, &(++index))/1000.;
-					orientation_odo = parseInt(lecture, &(++index))/1000.;
-				}
 				//					serial_rb.printfln("color rouge");
 			}
+			else // on n'attend que s'il n'y avait rien. Ainsi, si la série prend du retard elle n'attend pas pour traiter toutes les données entrantes
+				vTaskDelay(5);
 //			serial_rb.printfln("%d", TIM5->CNT);
 
-			vTaskDelay(50);
 		}
 }
 
@@ -274,11 +310,15 @@ void thread_odometrie(void* p)
 	x_odo = 0;
 	y_odo = 0;
 	orientation_odo = 0;
-	uint32_t orientationTick = 0, orientationMoyTick;
+	orientationTick = 0;
+	uint32_t orientationMoyTick = 0;;
 	uint16_t old_tick_gauche = TICK_CODEUR_GAUCHE, old_tick_droit = TICK_CODEUR_DROIT, tmp;
 	int16_t distanceTick, delta_tick_droit, delta_tick_gauche, deltaOrientationTick;
 	double k, distance, deltaOrientation;
 
+	// On attend l'initialisation de xyo avant de démarrer l'odo, sinon ça casse tout.
+	while(!startOdo)
+		vTaskDelay(5);
 	while(1)
 	{
 		// La formule d'odométrie est corrigée pour tenir compte des trajectoires
@@ -330,6 +370,7 @@ void thread_odometrie(void* p)
 		x_odo += k*distance*cos_orientation_odo;
 		y_odo += k*distance*sin_orientation_odo;
 
+//		vTaskDelay(1000);
 		vTaskDelay(1000 / FREQUENCE_ODO_ASSER);
 	}
 }
@@ -459,6 +500,9 @@ int main(int argc, char* argv[])
 
 	 HAL_TIM_Encoder_MspInit(0);
 //	 TIM3_Init();
+
+	 __GPIOC_CLK_ENABLE();
+	 __GPIOD_CLK_ENABLE();
 
 	    GPIO_InitTypeDef GPIO_InitStruct;
 	    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;

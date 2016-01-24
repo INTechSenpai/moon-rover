@@ -34,6 +34,7 @@ extern DirectionStrategy strategy;
  */
 extern double x_odo, y_odo; // abscisse et ordonnée exprimées en mm
 extern double orientation_odo; // exprimé en radians
+extern uint32_t orientationTick;
 extern double cos_orientation_odo, sin_orientation_odo;
 extern bool asserEnable;
 
