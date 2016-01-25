@@ -47,8 +47,8 @@ public class ThreadCapteurs extends Thread implements Service
 			// Cet appel peut lancer un obstaclemanager.notifyAll()
 			// Il n'est pas synchronized car il ne modifie pas le buffer
 //			if(e != null)
-			if(e.capteursOn)
-				capteurs.updateObstaclesMobiles(e);
+//			if(e.capteursOn)
+			capteurs.updateObstaclesMobiles(e);
 			
 		}
 //		log.debug("Fermeture de ThreadObstacleManager");
