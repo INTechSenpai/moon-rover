@@ -2,6 +2,7 @@ package robot;
 
 import utils.Log;
 import utils.Config;
+import utils.ConfigInfo;
 import utils.Sleep;
 import utils.Vec2;
 import hook.Hook;
@@ -35,7 +36,6 @@ public class RobotReal extends Robot
 		this.requete = requete;
 		this.gridspace = gridspace;
 		// On envoie à la STM la vitesse par défaut
-		stm.initOdoSTM(new Vec2<ReadOnly>(0, 1000), 3.12);
 		setVitesse(vitesse);
 		stm.envoieActionneurs();
 	}
@@ -48,6 +48,11 @@ public class RobotReal extends Robot
 	public void useConfig(Config config)
 	{
 		super.useConfig(config);
+		int x = config.getInt(ConfigInfo.X_DEPART);
+		int y = config.getInt(ConfigInfo.Y_DEPART);
+		double o = config.getDouble(ConfigInfo.O_DEPART);
+		setPositionOrientationJava(new Vec2<ReadOnly>(x, y), o);
+		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
 	}
 		
 	public void setEnMarcheAvance(boolean enMarcheAvant)
