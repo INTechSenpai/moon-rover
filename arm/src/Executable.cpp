@@ -5,7 +5,6 @@
 Executable::~Executable()
 {}
 
-
 /**
  * Exécutable update table
  */

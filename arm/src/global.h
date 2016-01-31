@@ -27,6 +27,7 @@ enum DirectionStrategy {FORCE_BACK_MOTION, FORCE_FORWARD_MOTION, FASTEST};
 extern bool isSymmetry;
 extern bool marcheAvant;
 extern Uart<2> serial_rb;
+extern Uart<1> serial_ax12;
 extern DirectionStrategy strategy;
 
 /**
@@ -34,7 +35,6 @@ extern DirectionStrategy strategy;
  */
 extern double x_odo, y_odo; // abscisse et ordonnée exprimées en mm
 extern double orientation_odo; // exprimé en radians
-extern uint32_t orientationTick;
 extern double cos_orientation_odo, sin_orientation_odo;
 extern bool asserEnable;
 

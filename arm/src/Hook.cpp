@@ -5,7 +5,7 @@
 #include "global.h"
 #include "Executable.h"
 
-Hook::Hook(bool isUnique, uint8_t nbCallback) : m_isUnique(isUnique), m_nbCallback(nbCallback)
+Hook::Hook(uint16_t id, bool isUnique, uint8_t nbCallback) : m_id(id), m_isUnique(isUnique), m_nbCallback(nbCallback)
 {
 	m_callbacks = (Executable**) pvPortMalloc(sizeof(Executable*)*m_nbCallback);
 }
@@ -29,6 +29,11 @@ Hook::~Hook()
 	vPortFree(m_callbacks);
 }
 
+uint16_t Hook::getId()
+{
+	return m_id;
+}
+
 /**
  * HOOK DE TEMPS
  */
@@ -45,7 +50,7 @@ void HookTemps::setDateDebutMatch()
 	m_dateDebutMatch = xTaskGetTickCount();
 }
 
-HookTemps::HookTemps(uint8_t nbCallback, uint32_t dateExecution):Hook(true, nbCallback), m_dateExecution(dateExecution)
+HookTemps::HookTemps(uint16_t id, uint8_t nbCallback, uint32_t dateExecution):Hook(id, true, nbCallback), m_dateExecution(dateExecution)
 {}
 
 /**
@@ -58,7 +63,7 @@ bool HookContact::evalue()
 	return false;
 }
 
-HookContact::HookContact(bool isUnique, uint8_t nbCallback, uint8_t nbCapteur):Hook(isUnique, nbCallback), m_nbCapteur(nbCapteur)
+HookContact::HookContact(uint16_t id, bool isUnique, uint8_t nbCallback, uint8_t nbCapteur):Hook(id, isUnique, nbCallback), m_nbCapteur(nbCapteur)
 {}
 
 /**
@@ -70,7 +75,7 @@ bool HookPosition::evalue()
 	return (x_odo - m_x) * (x_odo - m_x) + (y_odo - m_y) * (y_odo - m_y) < m_tolerance;
 }
 
-HookPosition::HookPosition(uint8_t nbCallback, uint32_t x, uint32_t y, uint32_t tolerance):Hook(true,nbCallback), m_x(x), m_y(y), m_tolerance(tolerance)
+HookPosition::HookPosition(uint16_t id, uint8_t nbCallback, uint32_t x, uint32_t y, uint32_t tolerance):Hook(id,true,nbCallback), m_x(x), m_y(y), m_tolerance(tolerance)
 {}
 
 /**
@@ -82,5 +87,5 @@ bool HookDemiPlan::evalue()
 	return (x_odo - m_x) * m_direction_x + (y_odo - m_y) * m_direction_y > 0;
 }
 
-HookDemiPlan::HookDemiPlan(uint8_t nbCallback, uint32_t x, uint32_t y, uint32_t direction_x, uint32_t direction_y):Hook(true, nbCallback), m_x(x), m_y(y), m_direction_x(direction_x), m_direction_y(direction_y)
+HookDemiPlan::HookDemiPlan(uint16_t id, uint8_t nbCallback, uint32_t x, uint32_t y, uint32_t direction_x, uint32_t direction_y):Hook(id, true, nbCallback), m_x(x), m_y(y), m_direction_x(direction_x), m_direction_y(direction_y)
 {}

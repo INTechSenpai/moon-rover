@@ -10,7 +10,7 @@ class Executable
 {
 public:
 	virtual void execute()=0;
-	virtual ~Executable()=0;
+	virtual ~Executable();
 };
 
 class Exec_Update_Table : public Executable
