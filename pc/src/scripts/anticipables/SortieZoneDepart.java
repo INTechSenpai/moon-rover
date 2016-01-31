@@ -8,15 +8,17 @@ import permissions.ReadOnly;
 import permissions.ReadWrite;
 import exceptions.FinMatchException;
 import exceptions.UnableToMoveException;
+import hook.Hook;
 import hook.HookFactory;
+import hook.methods.UtiliseActionneur;
+import hook.types.HookDate;
+import robot.ActuatorOrder;
 import robot.RobotChrono;
 import scripts.ScriptAnticipable;
 import utils.Log;
 
 /**
- * Faux script. Permet de sortir de la zone de départ.
- * Pas de version. Exécutée dès le début du match.
- * Permet de calculer une stratégie à la sortie de ce "script"
+ * Test
  * @author pf
  *
  */
@@ -38,8 +40,12 @@ public class SortieZoneDepart extends ScriptAnticipable {
 	protected void execute(int id_version, GameState<?,ReadWrite> state)
 			throws UnableToMoveException, FinMatchException
 	{
+		ArrayList<Hook> hooks = new ArrayList<Hook>();
+		Hook hook = new HookDate(log, 2000);
+		hook.ajouter_callback(new UtiliseActionneur(ActuatorOrder.BAISSE_TAPIS_DROIT));
+		hooks.add(hook);
 		state.robot.tourner(Math.PI);
-		state.robot.avancer(500); // TODO (avec règlement)
+		state.robot.avancer(500, hooks);
 	}
 
 	@Override

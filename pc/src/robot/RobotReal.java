@@ -37,7 +37,7 @@ public class RobotReal extends Robot
 		this.gridspace = gridspace;
 		// On envoie à la STM la vitesse par défaut
 		setVitesse(vitesse);
-		stm.envoieActionneurs();
+//		stm.envoieActionneurs();
 	}
 	
 	/*
@@ -70,14 +70,19 @@ public class RobotReal extends Robot
 		try {
 			synchronized(requete)
 			{
+				stm.envoieHooks(hooks);
 				RequeteType type;
-				stm.avancer(distance, hooks, mur);
+				stm.avancer(distance, mur);
 				do {
 					requete.wait();
 					type = requete.get();
 					if(type == RequeteType.BLOCAGE_MECANIQUE)
+					{
+						stm.deleteHooks(hooks);
 						throw new UnableToMoveException();
+					}
 				} while(type != RequeteType.TRAJET_FINI);
+				stm.deleteHooks(hooks);
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -112,7 +117,9 @@ public class RobotReal extends Robot
 	@Override	
 	public void sleep(long duree, ArrayList<Hook> hooks)
 	{
+		stm.envoieHooks(hooks);
 		Sleep.sleep(duree);
+		stm.deleteHooks(hooks);
 	}
 
     @Override
