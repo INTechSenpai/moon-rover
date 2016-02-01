@@ -74,7 +74,8 @@ public class RobotReal extends Robot
 				RequeteType type;
 				stm.avancer(distance, mur);
 				do {
-					requete.wait();
+					if(requete.isEmpty())
+						requete.wait();
 					type = requete.get();
 					if(type == RequeteType.BLOCAGE_MECANIQUE)
 					{
@@ -145,7 +146,9 @@ public class RobotReal extends Robot
 				RequeteType type;
 				stm.turn(angle);
 				do {
-					requete.wait();
+					if(requete.isEmpty())
+						requete.wait();
+
 					type = requete.get();
 					if(type == RequeteType.BLOCAGE_MECANIQUE)
 						throw new UnableToMoveException();
