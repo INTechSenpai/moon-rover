@@ -31,12 +31,16 @@ using namespace std;
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
+#define TAILLE_BUFFER_LECTURE_SERIE	10
+
 TIM_Encoder_InitTypeDef encoder, encoder2;
 TIM_HandleTypeDef timer, timer2, timer3;
 vector<Hook*> listeHooks;
-volatile SemaphoreHandle_t listeHooks_mutex = xSemaphoreCreateMutex();
 volatile bool startOdo = false;
 volatile bool matchDemarre = true; // TODO
+volatile int indexRead = 0;
+volatile int indexWrite = 0;
+char lectures[TAILLE_BUFFER_LECTURE_SERIE][100];
 
 bool verifieSousChaine(const char* chaine, int* index, const char* comparaison)
 {
@@ -74,159 +78,21 @@ uint32_t parseInt(char* chaine, int* index)
  */
 void thread_ecoute_serie(void* p)
 {
-//		char lecture[] = "Hda 1 8 0";
-//		char lecture[] = "Hda 1000 1 tbl 14 truc";
-//		char lecture[] = "Hct 8 T 1 tbl 14 truc";
-//		char lecture[] = "Hdp 20 0 10 0 3 tbl 14 scr 1 act 8";
-//		char lecture[] = "Hpo 30 10 25 1 tbl 14 truc";
-//		char lecture[] = "Hda 5000 3 tbl 14 scr 5 act 2";
-		char lecture[300];
-//		char lecture2[300];
 		while(1)
 		{
 			while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 			if(serial_rb.available())
 			{
+				char* lecture = lectures[indexWrite];
 				serial_rb.read(lecture);
 				xSemaphoreGive(serial_rb_mutex);
 				int index = 0;
 
-				if(lecture[0] == 'H') // parse de hook
+				if(lecture[0] == 'H' || lecture[0] == 'h') // parse de hook fait dans le thread de hook (car ce sont des actions un peu longues)
 				{
-					index++;
-					Hook* hookActuel;
-					uint8_t nbcallbacks;
-					uint16_t id;
-
-					if(verifieSousChaine(lecture, &index, "da"))
-					{
-//						serial_rb.printfln("hook de date");
-						index++;
-						uint32_t date = parseInt(lecture, &index);
-//						serial_rb.printfln("date : %d",date);
-						index++;
-						id = parseInt(lecture, &index);
-						serial_rb.printfln("id = %d",(int)id);
-
-						index++;
-						nbcallbacks = parseInt(lecture, &index);
-//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
-						index++;
-						hookActuel = new(pvPortMalloc(sizeof(HookTemps))) HookTemps(id, nbcallbacks, date);
-						while(xSemaphoreTake(listeHooks_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-						listeHooks.push_back(hookActuel);
-						xSemaphoreGive(listeHooks_mutex);
-					}
-					else if(verifieSousChaine(lecture, &index, "ct"))
-					{
-//						serial_rb.printfln("hook de contact");
-						index++;
-						uint8_t nbContact = parseInt(lecture, &index);
-//						serial_rb.printfln("nbContact : %d",nbContact);
-						index++;
-						bool unique = lecture[index++] == 'T';
-//						serial_rb.printfln("unique? %d", unique);
-						index++;
-						id = parseInt(lecture, &index);
-						index++;
-						nbcallbacks = parseInt(lecture, &index);
-//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
-						index++;
-						hookActuel = new(pvPortMalloc(sizeof(HookContact))) HookContact(id, unique, nbcallbacks, nbContact);
-						while(xSemaphoreTake(listeHooks_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-						listeHooks.push_back(hookActuel);
-						xSemaphoreGive(listeHooks_mutex);
-					}
-					else if(verifieSousChaine(lecture, &index, "dp"))
-					{
-//						serial_rb.printfln("hook de demi plan");
-						index++;
-						uint32_t x = parseInt(lecture, &index);
-//						serial_rb.printfln("x : %d",x);
-						index++;
-						uint32_t y = parseInt(lecture, &index);
-//						serial_rb.printfln("y : %d",y);
-						index++;
-						uint32_t dir_x = parseInt(lecture, &index);
-//						serial_rb.printfln("dirx : %d",dir_x);
-						index++;
-						uint32_t dir_y = parseInt(lecture, &index);
-//						serial_rb.printfln("diry : %d",dir_y);
-						index++;
-						id = parseInt(lecture, &index);
-						index++;
-						nbcallbacks = parseInt(lecture, &index);
-//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
-						index++;
-						hookActuel = new(pvPortMalloc(sizeof(HookDemiPlan))) HookDemiPlan(id, nbcallbacks, x, y, dir_x, dir_y);
-						while(xSemaphoreTake(listeHooks_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-						listeHooks.push_back(hookActuel);
-						xSemaphoreGive(listeHooks_mutex);
-					}
-					else if(verifieSousChaine(lecture, &index, "po"))
-					{
-//						serial_rb.printfln("hook de position");
-						index++;
-						uint32_t x = parseInt(lecture, &index);
-//						serial_rb.printfln("x : %d",x);
-						index++;
-						uint32_t y = parseInt(lecture, &index);
-//						serial_rb.printfln("y : %d",y);
-						index++;
-						uint32_t tolerance = parseInt(lecture, &index);
-//						serial_rb.printfln("tolerance : %d",tolerance);
-						index++;
-						id = parseInt(lecture, &index);
-						index++;
-						nbcallbacks = parseInt(lecture, &index);
-//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
-						index++;
-						hookActuel = new(pvPortMalloc(sizeof(HookPosition))) HookPosition(id, nbcallbacks, x, y, tolerance);
-						while(xSemaphoreTake(listeHooks_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-						listeHooks.push_back(hookActuel);
-						xSemaphoreGive(listeHooks_mutex);
-					}
-					else
-					{
-						serial_rb.printfln("Erreur de parsing hook : %s",lecture);
-						continue;
-					}
-
-					for(int i = 0; i < nbcallbacks; i++)
-					{
-						if(verifieSousChaine(lecture, &index, "tbl"))
-						{
-//							serial_rb.printfln("callback : table");
-							int nbElem = parseInt(lecture, &(++index));
-							index++;
-//							serial_rb.printfln("element : %d", nbElem);
-							Exec_Update_Table* tmp = new(pvPortMalloc(sizeof(Exec_Update_Table))) Exec_Update_Table(nbElem);
-							hookActuel->insert(tmp, i);
-						}
-						else if(verifieSousChaine(lecture, &index, "scr"))
-						{
-//							serial_rb.printfln("callback : script");
-							int nbScript = parseInt(lecture, &(++index));
-							index++;
-//							serial_rb.printfln("script : %d", nbScript);
-							Exec_Script* tmp = new(pvPortMalloc(sizeof(Exec_Script))) Exec_Script(nbScript);
-							hookActuel->insert(tmp, i);
-						}
-						else if(verifieSousChaine(lecture, &index, "act"))
-						{
-//							serial_rb.printfln("callback : actionneurs");
-							int nbAct = parseInt(lecture, &(++index));
-							index++;
-//							serial_rb.printfln("act : %d", nbAct);
-							Exec_Act* tmp = new(pvPortMalloc(sizeof(Exec_Act))) Exec_Act(nbAct);
-							hookActuel->insert(tmp, i);
-						}
-						else
-						{
-							serial_rb.printfln("Erreur de parsing callback : %s",lecture);
-							break;
-						}
-					}
+					indexWrite++;
+					indexWrite %= TAILLE_BUFFER_LECTURE_SERIE;
+//					serial_rb.printfln("%d %d", indexWrite, indexRead);
 				}
 				else if(verifieSousChaine(lecture, &index, "?"))
 				{
@@ -239,50 +105,10 @@ void thread_ecoute_serie(void* p)
 				{
 					// TODO
 				}
-
-				else if(verifieSousChaine(lecture, &index, "hkclrall"))
-				{
-					while(xSemaphoreTake(listeHooks_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-					listeHooks.clear();
-					xSemaphoreGive(listeHooks_mutex);
-				}
-
-				else if(verifieSousChaine(lecture, &index, "hkclr"))
-				{
-					index++;
-					uint8_t nbIds = parseInt(lecture, &index);
-					while(xSemaphoreTake(listeHooks_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-					vector<Hook*>::iterator it = listeHooks.begin();
-
-					serial_rb.printfln("Suppression");
-
-					for(uint8_t i = 0; i < nbIds; i++)
-					{
-						uint16_t id = parseInt(lecture, &(++index));
-						serial_rb.printfln("id cherche = %d",(int)id);
-
-						for(uint8_t j = 0; j < listeHooks.size(); j++)
-						{
-							Hook* hook = listeHooks[j];
-							if(hook->getId() == id)
-							{
-								vPortFree(hook);
-								listeHooks[j] = listeHooks.back();
-								listeHooks.pop_back();
-								serial_rb.printfln("supprime");
-								break; // l'id est unique
-							}
-						}
-
-					}
-
-					xSemaphoreGive(listeHooks_mutex);
-				}
-
 				else if(verifieSousChaine(lecture, &index, "t"))
 				{
 					// TODO
-					vTaskDelay(1000);
+//					vTaskDelay(1000);
 					while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 					serial_rb.printfln("arv");
 					xSemaphoreGive(serial_rb_mutex);
@@ -320,27 +146,13 @@ void thread_ecoute_serie(void* p)
 					serial_rb.printfln("%d %d %d",(int)x_odo, (int)y_odo, (int)(orientation_odo*1000));
 					xSemaphoreGive(serial_rb_mutex);
 				}
-				else if(verifieSousChaine(lecture, &index, "nbhooks"))
-				{
-					while(xSemaphoreTake(listeHooks_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-					while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-					serial_rb.printfln("taille = %d",(int)listeHooks.size());
-					vector<Hook*>::iterator it;
-					for(it = listeHooks.begin(); it < listeHooks.end(); it++)
-					{
-						Hook* h = *it;
-						serial_rb.printfln("%d",(int)h->getId());
-					}
 
-					xSemaphoreGive(serial_rb_mutex);
-					xSemaphoreGive(listeHooks_mutex);
-				}
 				//					serial_rb.printfln("color rouge");
 			}
 			else // on n'attend que s'il n'y avait rien. Ainsi, si la série prend du retard elle n'attend pas pour traiter toutes les données entrantes suivantes
 			{
 				xSemaphoreGive(serial_rb_mutex);
-				vTaskDelay(5);
+//				vTaskDelay(1);
 			}
 //			serial_rb.printfln("%d", TIM5->CNT);
 
@@ -352,37 +164,200 @@ void thread_ecoute_serie(void* p)
  */
 void thread_hook(void* p)
 {
-// TODO : il faut plusieurs listes de hooks:
-// - les hooks permanents
-// - les hooks de scripts, qui sont régulièrement vidés
-// Les "hooks" de trajectoire courbe sont gérés par l'asservissement directement
-
-	// On attend
-	while(!matchDemarre)
-		vTaskDelay(50);
 	while(1)
 	{
-		while(xSemaphoreTake(listeHooks_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-		for(uint8_t i = 0; i < listeHooks.size(); i++)
+		if(indexWrite != indexRead) // tiens, un nouveau message !
 		{
-			Hook* hook = listeHooks[i];
-//			serial_rb.printfln("Eval hook");
-//			serial_rb.printfln("%d %d %d",(int)x_odo, (int)y_odo, (int)(orientation*1000));
-			if((*hook).evalue())
+			char* lecture = lectures[indexRead];
+			int index = 1;
+			Hook* hookActuel;
+			uint8_t nbcallbacks;
+			uint16_t id;
+
+			if(lecture[0] == 'H')
 			{
-//				serial_rb.printfln("Execution!");
-				if((*hook).execute()) // suppression demandée
+				if(verifieSousChaine(lecture, &index, "da"))
 				{
-					vPortFree(hook);
-					listeHooks[i] = listeHooks.back();
-					listeHooks.pop_back();
-					i--;
+	//						serial_rb.printfln("hook de date");
+					index++;
+					uint32_t date = parseInt(lecture, &index);
+	//						serial_rb.printfln("date : %d",date);
+					index++;
+					id = parseInt(lecture, &index);
+					index++;
+					nbcallbacks = parseInt(lecture, &index);
+	//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
+					index++;
+					hookActuel = new(pvPortMalloc(sizeof(HookTemps))) HookTemps(id, nbcallbacks, date);
+					listeHooks.push_back(hookActuel);
+				}
+				else if(verifieSousChaine(lecture, &index, "ct"))
+				{
+	//						serial_rb.printfln("hook de contact");
+					index++;
+					uint8_t nbContact = parseInt(lecture, &index);
+	//						serial_rb.printfln("nbContact : %d",nbContact);
+					index++;
+					bool unique = lecture[index++] == 'T';
+	//						serial_rb.printfln("unique? %d", unique);
+					index++;
+					id = parseInt(lecture, &index);
+					index++;
+					nbcallbacks = parseInt(lecture, &index);
+	//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
+					index++;
+					hookActuel = new(pvPortMalloc(sizeof(HookContact))) HookContact(id, unique, nbcallbacks, nbContact);
+					listeHooks.push_back(hookActuel);
+				}
+				else if(verifieSousChaine(lecture, &index, "dp"))
+				{
+	//						serial_rb.printfln("hook de demi plan");
+					index++;
+					uint32_t x = parseInt(lecture, &index);
+	//						serial_rb.printfln("x : %d",x);
+					index++;
+					uint32_t y = parseInt(lecture, &index);
+	//						serial_rb.printfln("y : %d",y);
+					index++;
+					uint32_t dir_x = parseInt(lecture, &index);
+	//						serial_rb.printfln("dirx : %d",dir_x);
+					index++;
+					uint32_t dir_y = parseInt(lecture, &index);
+	//						serial_rb.printfln("diry : %d",dir_y);
+					index++;
+					id = parseInt(lecture, &index);
+					index++;
+					nbcallbacks = parseInt(lecture, &index);
+	//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
+					index++;
+					hookActuel = new(pvPortMalloc(sizeof(HookDemiPlan))) HookDemiPlan(id, nbcallbacks, x, y, dir_x, dir_y);
+					listeHooks.push_back(hookActuel);
+				}
+				else if(verifieSousChaine(lecture, &index, "po"))
+				{
+	//						serial_rb.printfln("hook de position");
+					index++;
+					uint32_t x = parseInt(lecture, &index);
+	//						serial_rb.printfln("x : %d",x);
+					index++;
+					uint32_t y = parseInt(lecture, &index);
+	//						serial_rb.printfln("y : %d",y);
+					index++;
+					uint32_t tolerance = parseInt(lecture, &index);
+	//						serial_rb.printfln("tolerance : %d",tolerance);
+					index++;
+					id = parseInt(lecture, &index);
+					index++;
+					nbcallbacks = parseInt(lecture, &index);
+	//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
+					index++;
+					hookActuel = new(pvPortMalloc(sizeof(HookPosition))) HookPosition(id, nbcallbacks, x, y, tolerance);
+					listeHooks.push_back(hookActuel);
+				}
+				else
+				{
+					serial_rb.printfln("Erreur de parsing hook : %s",lecture);
+					indexRead++;
+					indexRead %= TAILLE_BUFFER_LECTURE_SERIE;
+					continue;
+				}
+
+				for(int i = 0; i < nbcallbacks; i++)
+				{
+					if(verifieSousChaine(lecture, &index, "tbl"))
+					{
+	//							serial_rb.printfln("callback : table");
+						int nbElem = parseInt(lecture, &(++index));
+						index++;
+	//							serial_rb.printfln("element : %d", nbElem);
+						Exec_Update_Table* tmp = new(pvPortMalloc(sizeof(Exec_Update_Table))) Exec_Update_Table(nbElem);
+						hookActuel->insert(tmp, i);
+					}
+					else if(verifieSousChaine(lecture, &index, "scr"))
+					{
+	//							serial_rb.printfln("callback : script");
+						int nbScript = parseInt(lecture, &(++index));
+						index++;
+	//							serial_rb.printfln("script : %d", nbScript);
+						Exec_Script* tmp = new(pvPortMalloc(sizeof(Exec_Script))) Exec_Script(nbScript);
+						hookActuel->insert(tmp, i);
+					}
+					else if(verifieSousChaine(lecture, &index, "act"))
+					{
+	//							serial_rb.printfln("callback : actionneurs");
+						int nbAct = parseInt(lecture, &(++index));
+						index++;
+	//							serial_rb.printfln("act : %d", nbAct);
+						Exec_Act* tmp = new(pvPortMalloc(sizeof(Exec_Act))) Exec_Act(nbAct);
+						hookActuel->insert(tmp, i);
+					}
+					else
+					{
+						serial_rb.printfln("Erreur de parsing callback : %s",lecture);
+						break;
+					}
+				}
+			}
+			else if(lecture[0] == 'h')
+			{
+				if(verifieSousChaine(lecture, &index, "hkclrall"))
+				{
+					listeHooks.clear();
+				}
+
+				else if(verifieSousChaine(lecture, &index, "hkclr"))
+				{
+					index++;
+					uint8_t nbIds = parseInt(lecture, &index);
+					vector<Hook*>::iterator it = listeHooks.begin();
+
+					for(uint8_t i = 0; i < nbIds; i++)
+					{
+						uint16_t id = parseInt(lecture, &(++index));
+
+						for(uint8_t j = 0; j < listeHooks.size(); j++)
+						{
+							Hook* hook = listeHooks[j];
+							if(hook->getId() == id)
+							{
+								vPortFree(hook);
+								listeHooks[j] = listeHooks.back();
+								listeHooks.pop_back();
+								break; // l'id est unique
+							}
+						}
+
+					}
+				}
+			}
+//			else
+//				serial_rb.printfln("Erreur parsing hook : %s", lecture);
+
+			indexRead++;
+			indexRead %= TAILLE_BUFFER_LECTURE_SERIE;
+		}
+
+		if(matchDemarre)
+		{
+			for(uint8_t i = 0; i < listeHooks.size(); i++)
+			{
+				Hook* hook = listeHooks[i];
+//				serial_rb.printfln("Eval hook");
+	//			serial_rb.printfln("%d %d %d",(int)x_odo, (int)y_odo, (int)(orientation*1000));
+				if((*hook).evalue())
+				{
+	//				serial_rb.printfln("Execution!");
+					if((*hook).execute()) // suppression demandée
+					{
+						vPortFree(hook);
+						listeHooks[i] = listeHooks.back();
+						listeHooks.pop_back();
+						i--;
+					}
 				}
 			}
 		}
-		xSemaphoreGive(listeHooks_mutex);
-//		serial_rb.printfln("%d",xTaskGetTickCount());
-		vTaskDelay(20);
+		vTaskDelay(10);
 	}
 }
 
