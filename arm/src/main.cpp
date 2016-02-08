@@ -19,6 +19,7 @@
 #include "Hook.h"
 #include "Uart.hpp"
 #include "global.h"
+#include "ax12.hpp"
 
 using namespace std;
 
@@ -41,6 +42,8 @@ volatile bool matchDemarre = true; // TODO
 volatile int indexRead = 0;
 volatile int indexWrite = 0;
 char lectures[TAILLE_BUFFER_LECTURE_SERIE][100];
+Uart<6> serial_ax;
+AX<Uart<6>>* ax12;
 
 bool verifieSousChaine(const char* chaine, int* index, const char* comparaison)
 {
@@ -78,6 +81,10 @@ uint32_t parseInt(char* chaine, int* index)
  */
 void thread_ecoute_serie(void* p)
 {
+	 serial_rb.init(115200);
+	 serial_ax.init(57600);
+	 ax12 = new AX<Uart<6>>(0, 0, 1023);
+
 		while(1)
 		{
 			while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
@@ -100,7 +107,11 @@ void thread_ecoute_serie(void* p)
 					serial_rb.printfln("T3");
 					xSemaphoreGive(serial_rb_mutex);
 				}
-
+				else if(verifieSousChaine(lecture, &index, "ax"))
+				{
+					uint16_t angle = parseInt(lecture, &(++index));
+					ax12->goTo(angle);
+				}
 				else if(verifieSousChaine(lecture, &index, "sspd"))
 				{
 					// TODO
@@ -164,6 +175,7 @@ void thread_ecoute_serie(void* p)
  */
 void thread_hook(void* p)
 {
+
 	while(1)
 	{
 		if(indexWrite != indexRead) // tiens, un nouveau message !
@@ -285,10 +297,11 @@ void thread_hook(void* p)
 					else if(verifieSousChaine(lecture, &index, "act"))
 					{
 	//							serial_rb.printfln("callback : actionneurs");
-						int nbAct = parseInt(lecture, &(++index));
+						uint8_t nbAct = parseInt(lecture, &(++index));
+						uint16_t angle = parseInt(lecture, &(++index));
 						index++;
 	//							serial_rb.printfln("act : %d", nbAct);
-						Exec_Act* tmp = new(pvPortMalloc(sizeof(Exec_Act))) Exec_Act(nbAct);
+						Exec_Act* tmp = new(pvPortMalloc(sizeof(Exec_Act))) Exec_Act(ax12, angle);
 						hookActuel->insert(tmp, i);
 					}
 					else
@@ -440,26 +453,6 @@ void thread_odometrie(void* p)
 	}
 }
 
-void hello_world_task2(void* p)
-{
-
-
-//	char lecture[100];
-	while(1)
-	{
-/*		if(serial_rb.available())
-		{
-			serial_rb.read(lecture);
-			if(strcmp(lecture,"color?") == 0)
-				serial_rb.printfln("color rouge");
-		}*/
-//		serial_rb.printfln("%d %d", TIM2->CNT, TIM5->CNT);
-//		serial_rb.printfln("%d, %d", (int)x, (int)y);
-
-		vTaskDelay(200);
-	}
-}
-
 void TIM3_Init(void)
 {
     // Configure TIM4 for PWM
@@ -502,7 +495,7 @@ int main(int argc, char* argv[])
 	 HAL_NVIC_SetPriority(SysTick_IRQn, 0, 1);
 	 HookTemps::setDateDebutMatch();
 	 listeHooks.reserve(100);
-	 serial_rb.init(115200);
+
 	 timer.Instance = TIM5;
 	 timer.Init.Period = 0xFFFF;
 	 timer.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -523,7 +516,7 @@ int main(int argc, char* argv[])
 	 encoder.IC2Prescaler = TIM_ICPSC_DIV4;
 	 encoder.IC2Selection = TIM_ICSELECTION_DIRECTTI;
 
-
+/*
 	 if (HAL_TIM_Encoder_Init(&timer, &encoder) != HAL_OK)
 	 {
 		 serial_rb.printfln("Erreur 1");
@@ -533,7 +526,7 @@ int main(int argc, char* argv[])
 	 {
 		 serial_rb.printfln("Erreur 2");
 	 }
-
+*/
 	 timer2.Instance = TIM2;
 	 timer2.Init.Period = 0xFFFF;
 	 timer2.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -553,7 +546,7 @@ int main(int argc, char* argv[])
 	 encoder2.IC2Selection = TIM_ICSELECTION_DIRECTTI;
 
 
-	 if (HAL_TIM_Encoder_Init(&timer2, &encoder2) != HAL_OK)
+/*	 if (HAL_TIM_Encoder_Init(&timer2, &encoder2) != HAL_OK)
 	 {
 		 serial_rb.printfln("Erreur 1");
 	 }
@@ -562,7 +555,7 @@ int main(int argc, char* argv[])
 	 {
 		 serial_rb.printfln("Erreur 2");
 	 }
-
+*/
 	 HAL_TIM_Encoder_MspInit(0);
 //	 TIM3_Init();
 

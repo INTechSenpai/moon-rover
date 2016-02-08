@@ -27,7 +27,6 @@ enum DirectionStrategy {FORCE_BACK_MOTION, FORCE_FORWARD_MOTION, FASTEST};
 extern bool isSymmetry;
 extern bool marcheAvant;
 extern Uart<2> serial_rb;
-extern Uart<1> serial_ax12;
 extern DirectionStrategy strategy;
 
 /**

@@ -3,7 +3,6 @@
 bool isSymmetry;
 bool marcheAvant;
 Uart<2> serial_rb;
-Uart<1> serial_ax12;
 double x_odo, y_odo; // abscisse et ordonnée exprimées en mm
 double orientation_odo; // exprimé en radians
 SemaphoreHandle_t serial_rb_mutex = xSemaphoreCreateMutex();
