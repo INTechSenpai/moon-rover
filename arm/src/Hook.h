@@ -20,11 +20,13 @@ public:
 	bool execute(); // idem
 	uint16_t getId(); // idem
 
+private:
+	uint16_t m_id;
+
 protected:
 	bool m_isUnique;
 
 private:
-	uint16_t m_id;
 	uint8_t m_nbCallback;
 	Executable** m_callbacks;
 };

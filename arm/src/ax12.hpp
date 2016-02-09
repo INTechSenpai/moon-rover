@@ -208,9 +208,6 @@ private:
 
 public:
 
-    AX()
-	{}
-
     AX(uint8_t id, uint16_t AX_angle_CW, uint16_t AX_angle_CCW) // Constructeur de la classe
     {
         id_ = id;
@@ -303,8 +300,9 @@ public:
     /// Goto - Envoyer un angle en DEGRES entre angleMin et angleMax
     void goTo(uint16_t angle)
     {
-        writeData(AX_GOAL_POSITION_L, 2,
-                (uint16_t) (((uint32_t) 1023 * angle) / 300));
+    	if(angle >= angleMin_ && angle <= angleMax_)
+    		writeData(AX_GOAL_POSITION_L, 2,
+    				(uint16_t) (((uint32_t) 1023 * angle) / 300));
     }
 
     void static goToB(uint16_t angle)

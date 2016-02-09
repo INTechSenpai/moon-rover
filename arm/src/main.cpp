@@ -380,6 +380,28 @@ void thread_hook(void* p)
 
 
 /**
+ * Thread des capteurs
+ */
+void thread_capteurs(void* p)
+{
+	while(1)
+	{
+		// on récupère d'abord le mutex de la série. Ainsi, le mutex odométrie (et donc le thread d'odométrie) n'est jamais bloqué longtemps
+
+		while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+		while(xSemaphoreTake(odo_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+		uint16_t distanceCapteur = 50;
+		serial_rb.printfln("cpt %d %d %d %d",(int)x_odo, (int)y_odo, (int)(orientation_odo*1000), distanceCapteur);
+		xSemaphoreGive(odo_mutex);
+		xSemaphoreGive(serial_rb_mutex);
+		vTaskDelay(100);
+
+	}
+
+}
+
+
+/**
  * Thread d'odométrie
  */
 void thread_odometrie(void* p)
@@ -430,7 +452,6 @@ void thread_odometrie(void* p)
 				orientationMoyTick += (uint32_t)TICKS_PAR_TOUR_ROBOT;
 		}
 		orientationTick += deltaOrientationTick;
-		orientation_odo = TICK_TO_RAD(orientationMoyTick);
 		deltaOrientation = TICK_TO_RAD(deltaOrientationTick);
 
 //		serial_rb.printfln("TICKS_PAR_TOUR_ROBOT = %d", (int)TICKS_PAR_TOUR_ROBOT);
@@ -442,11 +463,14 @@ void thread_odometrie(void* p)
 		else
 			k = sin(deltaOrientation/2)/(deltaOrientation/2);
 
+		while(xSemaphoreTake(odo_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+		orientation_odo = TICK_TO_RAD(orientationMoyTick);
         cos_orientation_odo = cos(orientation_odo);
         sin_orientation_odo = sin(orientation_odo);
 
 		x_odo += k*distance*cos_orientation_odo;
 		y_odo += k*distance*sin_orientation_odo;
+		xSemaphoreGive(odo_mutex);
 
 //		vTaskDelay(1000);
 		vTaskDelay(1000 / FREQUENCE_ODO_ASSER);
@@ -591,7 +615,7 @@ int main(int argc, char* argv[])
 	 xTaskCreate(thread_hook, (char*)"TH_HOOK", 2048, 0, 1, 0);
 	 xTaskCreate(thread_ecoute_serie, (char*)"TH_LISTEN", 2048, 0, 1, 0);
 	 xTaskCreate(thread_odometrie, (char*)"TH_ODO", 2048, 0, 1, 0);
-//	 xTaskCreate(hello_world_task2, (char*)"TEST2", 2048, 0, 1, 0);
+	 xTaskCreate(thread_capteurs, (char*)"TH_CPT", 2048, 0, 1, 0);
 	 vTaskStartScheduler();
 	 while(1)
 	 {
@@ -605,7 +629,7 @@ int main(int argc, char* argv[])
 
 void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim)
 {
- GPIO_InitTypeDef GPIO_InitStructA, GPIO_InitStructA2, GPIO_InitStructB, GPIO_InitStructC;
+ GPIO_InitTypeDef GPIO_InitStructA, GPIO_InitStructA2, GPIO_InitStructB;
 
  __TIM5_CLK_ENABLE();
 

@@ -26,7 +26,7 @@
 #include <stdarg.h>
 #include "FreeRTOS.h"
 
-#define RX_BUFFER_SIZE 64
+#define RX_BUFFER_SIZE 128
 
 template<uint8_t USART_ID>
 class Uart {
@@ -128,8 +128,8 @@ public:
 		ring_buffer() {
 		}
 		unsigned char buffer[RX_BUFFER_SIZE];
-		int head;
-		int tail;
+		int head = 0;
+		int tail = 0;
 	};
 	static volatile ring_buffer rx_buffer_;
 

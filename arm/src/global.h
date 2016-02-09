@@ -39,5 +39,6 @@ extern bool asserEnable;
 
 // MUTEX
 extern SemaphoreHandle_t serial_rb_mutex;
+extern SemaphoreHandle_t odo_mutex;
 
 #endif
