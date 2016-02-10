@@ -46,11 +46,10 @@ void Exec_Script::execute()
 Exec_Act::~Exec_Act()
 {}
 
-Exec_Act::Exec_Act(uint32_t nbAct):m_nbAct(nbAct)
+Exec_Act::Exec_Act(AX<Uart<6>>* ax, uint16_t angle):m_ax(ax), m_angle(angle)
 {}
 
 void Exec_Act::execute()
 {
-	serial_rb.printfln("ordre SSC32");
-	// TODO envoie série SSC 32
+	m_ax->goTo(m_angle);
 }

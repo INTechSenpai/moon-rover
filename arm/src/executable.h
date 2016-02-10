@@ -5,6 +5,7 @@
 #include "task.h"
 #include "Uart.hpp"
 #include "global.h"
+#include "ax12.hpp"
 
 class Executable
 {
@@ -36,11 +37,12 @@ public:
 class Exec_Act : public Executable
 {
 private:
-	uint32_t m_nbAct;
+	AX<Uart<6>>* m_ax;
+	uint16_t m_angle;
 public:
 	void execute();
 	~Exec_Act();
-	Exec_Act(uint32_t nbAct);
+	Exec_Act(AX<Uart<6>>* ax, uint16_t angle);
 };
 
 #endif

@@ -26,7 +26,7 @@
 #include <stdarg.h>
 #include "FreeRTOS.h"
 
-#define RX_BUFFER_SIZE 64
+#define RX_BUFFER_SIZE 128
 
 template<uint8_t USART_ID>
 class Uart {
@@ -128,8 +128,8 @@ public:
 		ring_buffer() {
 		}
 		unsigned char buffer[RX_BUFFER_SIZE];
-		int head;
-		int tail;
+		int head = 0;
+		int tail = 0;
 	};
 	static volatile ring_buffer rx_buffer_;
 
@@ -153,16 +153,16 @@ public:
 		case 1:
 			UART.Instance = USART1;
 
-			GPIO_InitStruct.Pin = GPIO_PIN_15 | GPIO_PIN_10; // Pins A15 (TX) and A10 (RX)
+			GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7; // Pins B6 (TX) and B7 (RX)
 			GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
 
-			__HAL_RCC_GPIOA_CLK_ENABLE();
+			__HAL_RCC_GPIOB_CLK_ENABLE();
 			__HAL_RCC_USART1_CLK_ENABLE();
 
 			NVIC_SetPriority(USART1_IRQn, 1);
 			NVIC_EnableIRQ(USART1_IRQn);
 
-			HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+			HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 			break;
 		case 2:
 			UART.Instance = USART2;
@@ -212,7 +212,7 @@ public:
 	 *
 	 */
 	static inline void send_char(unsigned char c) {
-		HAL_UART_Transmit_IT(&UART, (uint8_t*) c, 1);
+		HAL_UART_Transmit(&UART, (uint8_t*) &c, 1, 100);
 	}
 
 	/**
