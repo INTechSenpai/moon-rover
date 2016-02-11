@@ -33,6 +33,47 @@ using namespace std;
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
 #define TAILLE_BUFFER_LECTURE_SERIE	10
+#define IN_PING 0x3F
+#define IN_PONG1 0x42
+#define IN_PONG2 0x57
+#define IN_AVANCER 0x02
+#define IN_AVANCER_MUR 0x03
+#define IN_TOURNER 0x04
+#define IN_ACTIONNEURS 0x06
+#define IN_STOP 0x07
+#define IN_INIT_ODO 0x08
+#define IN_GET_XYO 0x09
+#define IN_SET_VITESSE 0x0A
+#define IN_RESEND_PACKET 0xFF
+#define IN_REMOVE_ALL_HOOKS 0x40
+#define IN_REMOVE_SOME_HOOKS 0x41
+#define IN_HOOK_DATE 0x44
+#define IN_HOOK_DEMI_PLAN 0x45
+#define IN_HOOK_POSITION 0x46
+#define IN_HOOK_POSITION_UNIQUE 0x47
+#define IN_HOOK_CONTACT 0x48
+#define IN_HOOK_CONTACT_UNIQUE 0x49
+#define IN_CALLBACK_ELT 0x00
+#define IN_CALLBACK_SCRIPT 0x40
+#define IN_CALLBACK_AX12 0x80
+#define IN_CALLBACK_MASK 0xC0
+
+#define OUT_PING 0x3F
+#define OUT_PONG1 0x54
+#define OUT_PONG2 0x33
+#define OUT_ROBOT_ARRIVE 0x02
+#define OUT_PROBLEME_MECA 0x03
+#define OUT_DEBUT_MATCH 0x04
+#define OUT_FIN_MATCH 0x05
+#define OUT_COULEUR_ROBOT_SANS_SYMETRIE 0x06
+#define OUT_COULEUR_ROBOT_AVEC_SYMETRIE 0x07
+#define OUT_ROBOT_MARCHE_AVANT 0x08
+#define OUT_ROBOT_MARCHE_ARRIERE 0x09
+#define OUT_CAPTEURS 0x0A
+#define OUT_XYO 0x0B
+#define OUT_CODE_COQUILLAGES 0x0C
+#define OUT_RESEND_PACKET 0xFF
+#define OUT_ELEMENT_SHOOTE 0x0D
 
 TIM_Encoder_InitTypeDef encoder, encoder2;
 TIM_HandleTypeDef timer, timer2, timer3;
