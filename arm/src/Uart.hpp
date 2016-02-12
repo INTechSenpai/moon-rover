@@ -224,6 +224,35 @@ public:
 				% RX_BUFFER_SIZE;
 	}
 
+	
+	/**
+	 * Read one byte from the ring buffer with a timeout (~ in ms)
+	 *
+	 */
+	static inline uint8_t read_char(unsigned char *byte, uint16_t timeout = 0) {
+		uint16_t i = 0;
+		uint8_t j = 0;
+
+		// Hack for timeout
+		if (timeout > 0)
+			timeout *= 26;
+
+		while (!available()) {
+			if (timeout > 0) {
+				if (i > timeout)
+					return READ_TIMEOUT;
+				if (j == 0)
+					i++;
+				j++;
+			}
+		}
+
+		*byte = rx_buffer_.buffer[rx_buffer_.tail];
+		rx_buffer_.tail = (rx_buffer_.tail + 1) % RX_BUFFER_SIZE;
+
+		return READ_SUCCESS;
+	}
+
 	/**
 	 * Read one byte from the ring buffer with a timeout (~ in ms)
 	 *

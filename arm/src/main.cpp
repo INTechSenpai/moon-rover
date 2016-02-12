@@ -32,6 +32,8 @@ using namespace std;
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
+#define SERIE_TIMEOUT
+
 #define TAILLE_BUFFER_LECTURE_SERIE	10
 #define IN_PING 0x3F
 #define IN_PONG1 0x42
@@ -53,6 +55,7 @@ using namespace std;
 #define IN_HOOK_POSITION_UNIQUE 0x47
 #define IN_HOOK_CONTACT 0x48
 #define IN_HOOK_CONTACT_UNIQUE 0x49
+#define IN_HOOK_MASK 0x40
 #define IN_CALLBACK_ELT 0x00
 #define IN_CALLBACK_SCRIPT 0x40
 #define IN_CALLBACK_AX12 0x80
@@ -75,6 +78,11 @@ using namespace std;
 #define OUT_RESEND_PACKET 0xFF
 #define OUT_ELEMENT_SHOOTE 0x0D
 
+#define ID_FORT 0x00
+#define ID_FAIBLE 0x01
+#define COMMANDE 0x02
+#define PARAM 0x03
+
 TIM_Encoder_InitTypeDef encoder, encoder2;
 TIM_HandleTypeDef timer, timer2, timer3;
 vector<Hook*> listeHooks;
@@ -86,37 +94,6 @@ char lectures[TAILLE_BUFFER_LECTURE_SERIE][100];
 Uart<6> serial_ax;
 AX<Uart<6>>* ax12;
 
-bool verifieSousChaine(const char* chaine, int* index, const char* comparaison)
-{
-	uint8_t i = 0;
-	while(comparaison[i] != '\0')
-	{
-		if(chaine[*index] != comparaison[i])
-		{
-			*index -= i;
-			return false;
-		}
-		(*index)++;
-		i++;
-	}
-	return true;
-}
-
-/**
- * L'index peut pointer sur le premier chiffre ou avant
- * L'index, à la fin, pointe sur le caractère qui suit l'entier
- */
-uint32_t parseInt(char* chaine, int* index)
-{
-	uint32_t somme = 0;
-	while(chaine[*index] >= '0' && chaine[*index] <= '9')
-	{
-		somme = 10*somme + chaine[*index] - '0';
-		(*index)++;
-	}
-	return somme;
-}
-
 /**
  * Thread qui écoute la série
  */
@@ -125,18 +102,49 @@ void thread_ecoute_serie(void* p)
 	 serial_rb.init(115200);
 	 serial_ax.init(57600);
 	 ax12 = new AX<Uart<6>>(0, 0, 1023);
-
+    uint16_t idDernierPaquet = -1;
+    uint16_t idPaquet;
 		while(1)
 		{
 			while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 			if(serial_rb.available())
 			{
-				char* lecture = lectures[indexWrite];
-				serial_rb.read(lecture);
-				xSemaphoreGive(serial_rb_mutex);
-				int index = 0;
+                char entete;
+                uint8_t index = 0;
+                // Vérification de l'entête
 
-				if(lecture[0] == 'H' || lecture[0] == 'h') // parse de hook fait dans le thread de hook (car ce sont des actions un peu longues)
+                serial_rb.read_char(&entete, SERIE_TIMEOUT);
+                if(entete != 0x55)
+                {
+                    xSemaphoreGive(serial_rb_mutex);
+                    continue;
+                }
+
+                serial_rb.read_char(&entete, SERIE_TIMEOUT);
+                if(entete != 0xAA)
+                {
+                    xSemaphoreGive(serial_rb_mutex);
+                    continue;
+                }
+
+                // Récupération de l'id
+                serial_rb.read_char(lecture[index++], SERIE_TIMEOUT); // id point fort
+                serial_rb.read_char(lecture[index++], SERIE_TIMEOUT); // id point faible
+
+                int idPaquet = (lecture[ID_FORT] << 8) + lecture[ID_FAIBLE];
+                
+                // On redemande les paquets manquants si besoin est
+                if(idPaquet > idDernierPaquet)
+                {
+                    idDernierPaquet++; // id paquet théoriquement reçu
+                    while(idPaque > idDernierPaquet)
+                        askResend(idDernierPaquet++);
+                }
+
+				char* lecture = lectures[indexWrite];
+				serial_rb.read_char(lecture, SERIE_TIMEOUT);
+
+				if(lecture[HOOK_MASK] == 'H')
 				{
 					indexWrite++;
 					indexWrite %= TAILLE_BUFFER_LECTURE_SERIE;
@@ -200,6 +208,7 @@ void thread_ecoute_serie(void* p)
 				}
 
 				//					serial_rb.printfln("color rouge");
+				xSemaphoreGive(serial_rb_mutex);
 			}
 			else // on n'attend que s'il n'y avait rien. Ainsi, si la série prend du retard elle n'attend pas pour traiter toutes les données entrantes suivantes
 			{
