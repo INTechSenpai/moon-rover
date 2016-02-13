@@ -24,6 +24,7 @@
 #define RAD_TO_TICK(x) ((x * TICKS_PAR_TOUR_ROBOT) / (2 * M_PI))
 #define TICK_TO_MM(x) (x * MM_PAR_TICK / 2)
 
+#define MEMOIRE_VITESSE 25
 enum ModeAsser {PAS_ASSER, ASSER_TRANSLATION, ASSER_ROTATION, ASSER_TRAJECTOIRE, ASSER_STOP_ROBOT};
 enum DirectionStrategy {FORCE_BACK_MOTION, FORCE_FORWARD_MOTION, FASTEST};
 
@@ -31,7 +32,6 @@ extern bool isSymmetry;
 extern bool marcheAvant;
 extern Uart<2> serial_rb;
 extern DirectionStrategy strategy;
-extern uint8_t odo_courbure;
 
 /**
  * x_odo, y_odo et orientation_odo sont exprimés dans le repère symétrisé, qui n'est pas forcément le repère réel
@@ -39,7 +39,8 @@ extern uint8_t odo_courbure;
 extern double x_odo, y_odo; // abscisse et ordonnée exprimées en mm
 extern double orientation_odo; // exprimé en radians
 extern double cos_orientation_odo, sin_orientation_odo;
-extern bool asserEnable;
+extern double vd_odo, vg_odo; // vitesses exprimées en tick / ms
+extern double courbure_odo; // en mm^-1
 
 // MUTEX
 extern SemaphoreHandle_t odo_mutex;

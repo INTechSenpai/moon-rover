@@ -383,7 +383,7 @@ void thread_capteurs(void* p)
 			x = x_odo;
 			y = y_odo;
 			orientation = (uint16_t) orientation_odo;
-			courbure = odo_courbure;
+			courbure = courbure_odo;
 			marcheAvantTmp = marcheAvant;
 		xSemaphoreGive(odo_mutex);
 		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, 0);
@@ -399,14 +399,26 @@ void thread_capteurs(void* p)
  */
 void thread_odometrie(void* p)
 {
+	int16_t positionGauche[MEMOIRE_VITESSE]; // on introduit un effet de mémoire afin de pouvoir mesurer la vitesse sur un intervalle pas trop petit
+	int16_t positionDroite[MEMOIRE_VITESSE];
+	uint8_t indiceMemoire = 0;
 	x_odo = 0;
 	y_odo = 0;
 	orientation_odo = 0;
+	courbure_odo = 0;
+	vg_odo = 0;
+	vd_odo = 0;
 	uint32_t orientationTick = 0;
 	uint32_t orientationMoyTick = 0;;
 	uint16_t old_tick_gauche = TICK_CODEUR_GAUCHE, old_tick_droit = TICK_CODEUR_DROIT, tmp;
 	int16_t distanceTick, delta_tick_droit, delta_tick_gauche, deltaOrientationTick;
 	double k, distance, deltaOrientation;
+
+	for(int i = 0; i < MEMOIRE_VITESSE; i++)
+	{
+		positionDroite[i] = old_tick_droit;
+		positionGauche[i] = old_tick_gauche;
+	}
 
 	// On attend l'initialisation de xyo avant de démarrer l'odo, sinon ça casse tout.
 	while(!startOdo)
@@ -414,14 +426,27 @@ void thread_odometrie(void* p)
 	orientationTick = RAD_TO_TICK(orientation_odo);
 	while(1)
 	{
+		while(xSemaphoreTake(odo_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+
 		// La formule d'odométrie est corrigée pour tenir compte des trajectoires
 		// (au lieu d'avoir une approximation linéaire, on a une approximation circulaire)
 		tmp = TICK_CODEUR_GAUCHE;
 		delta_tick_gauche = tmp - old_tick_gauche;
 		old_tick_gauche = tmp;
+		vg_odo = (tmp - positionGauche[indiceMemoire]) / MEMOIRE_VITESSE;
+		positionGauche[indiceMemoire] = tmp;
+
 		tmp = TICK_CODEUR_DROIT;
 		delta_tick_droit = tmp - old_tick_droit;
 		old_tick_droit = tmp;
+		vd_odo = (tmp - positionDroite[indiceMemoire]) / MEMOIRE_VITESSE;
+		positionDroite[indiceMemoire] = tmp;
+
+		// Calcul issu de Thalès. Position si le robot tourne vers la droite (pour être cohérent avec l'orientation)
+		courbure_odo = 2 / LONGUEUR_CODEUSE_A_CODEUSE_EN_MM * (vg_odo - vd_odo) / (vg_odo + vd_odo);
+
+		indiceMemoire++;
+		indiceMemoire %= MEMOIRE_VITESSE;
 
 		// on évite les formules avec "/ 2", qui font perdre de l'information et qui peuvent s'accumuler
 
@@ -456,7 +481,6 @@ void thread_odometrie(void* p)
 		else
 			k = sin(deltaOrientation/2)/(deltaOrientation/2);
 
-		while(xSemaphoreTake(odo_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 		orientation_odo = TICK_TO_RAD(orientationMoyTick);
         cos_orientation_odo = cos(orientation_odo);
         sin_orientation_odo = sin(orientation_odo);

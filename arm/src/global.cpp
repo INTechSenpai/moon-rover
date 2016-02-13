@@ -8,4 +8,4 @@ double orientation_odo; // exprimé en radians
 double cos_orientation_odo, sin_orientation_odo;
 bool asserEnable;
 SemaphoreHandle_t odo_mutex = xSemaphoreCreateMutex();
-uint8_t odo_courbure;
+double courbure_odo;
