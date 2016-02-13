@@ -51,6 +51,9 @@ void thread_ecoute_serie(void* p)
 	 serial_ax.init(57600);
 	 ax12 = new AX<Uart<6>>(0, 0, 1023);
     uint16_t idDernierPaquet = -1;
+		Hook* hookActuel;
+		uint8_t nbcallbacks;
+		uint16_t id;
 
 		while(1)
 		{
@@ -71,8 +74,8 @@ void thread_ecoute_serie(void* p)
                     continue;
 
                 // Récupération de l'id
-                serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // id point fort
-                serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // id point faible
+                serial_rb.read_char(lecture, SERIE_TIMEOUT); // id point fort
+                serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // id point faible
 
                 uint16_t idPaquet = (lecture[ID_FORT] << 8) + lecture[ID_FAIBLE];
                 
@@ -84,7 +87,7 @@ void thread_ecoute_serie(void* p)
                         askResend(idDernierPaquet++);
                 }
 
-				serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // lecture de la commande
+				serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // lecture de la commande
 
 
 				if(lecture[COMMANDE] == IN_PING)
@@ -95,21 +98,21 @@ void thread_ecoute_serie(void* p)
 				}
 				else if(lecture[COMMANDE] == IN_ACTIONNEURS)
 				{
-					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT);
+					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT);
 					ax12->goTo(lecture[PARAM]);
 				}
 				else if(lecture[COMMANDE] == IN_TOURNER)
 				{
-					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT);
-					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT);
+					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT);
+					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT);
 					uint16_t angle = (lecture[PARAM] << 8) + lecture[PARAM + 1];
 					vTaskDelay(1000);
 					sendArrive();
 				}
 				else if((lecture[COMMANDE] & 0xFE) == IN_AVANCER)
 				{
-					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT);
-					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT);
+					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT);
+					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT);
 					uint16_t distance = (lecture[PARAM] << 8) + lecture[PARAM + 1];
 					bool mur = lecture[COMMANDE] == IN_AVANCER_MUR;
 					vTaskDelay(1000);
@@ -117,11 +120,11 @@ void thread_ecoute_serie(void* p)
 				}
 				else if(lecture[COMMANDE] == IN_INIT_ODO)
 				{
-					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // x
-					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // xy
-					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // y
-					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // o
-					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // o
+					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // x
+					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // xy
+					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // y
+					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // o
+					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // o
 
 					int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
 					x -= 1500;
@@ -146,8 +149,141 @@ void thread_ecoute_serie(void* p)
 				// POUR TEST UNIQUEMENT
 				else if(lecture[COMMANDE] == IN_GET_XYO)
 				{
-					unsigned char out[] = {0, 0, 0, 0, OUT_PONG1, OUT_PONG2, 0};
+// TODO
+				}
+				else if(lecture[COMMANDE] == IN_RESEND_PACKET)
+				{
+					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // id
+					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // id
+					uint16_t id = (lecture[PARAM] << 8) + lecture[PARAM + 1];
+					resend(id);
+				}
+				else if(lecture[COMMANDE] == IN_REMOVE_ALL_HOOKS)
+				{
+					listeHooks.clear();
+				}
+				else if(lecture[COMMANDE] == IN_REMOVE_SOME_HOOKS)
+				{
+					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // nb
+					uint8_t nbIds = lecture[PARAM];
+					vector<Hook*>::iterator it = listeHooks.begin();
 
+					for(uint8_t i = 0; i < nbIds; i++)
+					{
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // date
+						uint16_t id = lecture[PARAM + 1 + i];
+
+						for(uint8_t j = 0; j < listeHooks.size(); j++)
+						{
+							Hook* hook = listeHooks[j];
+							if(hook->getId() == id)
+							{
+								vPortFree(hook);
+								listeHooks[j] = listeHooks.back();
+								listeHooks.pop_back();
+								break; // l'id est unique
+							}
+						}
+
+					}
+				}
+				else if((lecture[COMMANDE] & IN_HOOK_MASK) == IN_HOOK_GROUP)
+				{
+					if(lecture[COMMANDE] == IN_HOOK_DATE)
+					{
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // date
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // date
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // date
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // id
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // nb_callback
+
+						uint32_t date = (lecture[PARAM] << 16) + (lecture[PARAM + 1] << 8) + lecture[PARAM + 2];
+						id = lecture[PARAM + 3];
+						nbcallbacks = lecture[PARAM + 4];
+						hookActuel = new(pvPortMalloc(sizeof(HookTemps))) HookTemps(id, nbcallbacks, date);
+						listeHooks.push_back(hookActuel);
+					}
+					else if((lecture[COMMANDE] & 0xFE) == IN_HOOK_CONTACT)
+					{
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // nb_capt
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // id
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // nb_callback
+						uint8_t nbContact = lecture[PARAM];
+						bool unique = lecture[COMMANDE] == IN_HOOK_CONTACT_UNIQUE;
+						id = lecture[PARAM + 1];
+						nbcallbacks = lecture[PARAM + 2];
+						hookActuel = new(pvPortMalloc(sizeof(HookContact))) HookContact(id, unique, nbcallbacks, nbContact);
+						listeHooks.push_back(hookActuel);
+					}
+					else if(lecture[COMMANDE] == IN_HOOK_DEMI_PLAN)
+					{
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // x point
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // xy point
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // y point
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // x direction
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // xy direction
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // y direction
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // id
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // nb_callback
+
+						int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
+						x -= 1500;
+						uint16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
+
+						int16_t dir_x = (lecture[PARAM + 3] << 4) + (lecture[PARAM + 4] >> 4);
+						dir_x -= 1500;
+						uint16_t dir_y = ((lecture[PARAM + 4] & 0x0F) << 8) + lecture[PARAM + 5];
+						id = lecture[PARAM + 6];
+						nbcallbacks = lecture[PARAM + 7];
+						hookActuel = new(pvPortMalloc(sizeof(HookDemiPlan))) HookDemiPlan(id, nbcallbacks, x, y, dir_x, dir_y);
+						listeHooks.push_back(hookActuel);
+					}
+					else if((lecture[COMMANDE] & 0xFE) == IN_HOOK_POSITION)
+					{
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // x
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // xy
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // y
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // rayon
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // rayon
+
+						int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
+						x -= 1500;
+						uint16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
+
+						uint32_t tolerance = (lecture[PARAM + 3] << 8) + lecture[PARAM + 4];
+						id = lecture[PARAM + 5];
+						nbcallbacks = lecture[PARAM + 6];
+						hookActuel = new(pvPortMalloc(sizeof(HookPosition))) HookPosition(id, nbcallbacks, x, y, tolerance);
+						listeHooks.push_back(hookActuel);
+					}
+					else
+						continue;
+
+					for(int i = 0; i < nbcallbacks; i++)
+					{
+						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // callback
+						if(((lecture[index]) & IN_CALLBACK_MASK) == IN_CALLBACK_ELT)
+						{
+							uint8_t nbElem = lecture[index] & ~IN_CALLBACK_MASK;
+							Exec_Update_Table* tmp = new(pvPortMalloc(sizeof(Exec_Update_Table))) Exec_Update_Table(nbElem);
+							hookActuel->insert(tmp, i);
+						}
+						else if(((lecture[index]) & IN_CALLBACK_MASK) == IN_CALLBACK_SCRIPT)
+						{
+							uint8_t nbScript = lecture[index] & ~IN_CALLBACK_MASK;
+							Exec_Script* tmp = new(pvPortMalloc(sizeof(Exec_Script))) Exec_Script(nbScript);
+							hookActuel->insert(tmp, i);
+						}
+						else if(((lecture[index]) & IN_CALLBACK_MASK) == IN_CALLBACK_SCRIPT)
+						{
+							uint8_t nbAct = lecture[index] & ~IN_CALLBACK_MASK;
+							serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT);
+							serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT);
+							uint16_t angle = (lecture[index - 1] << 8) + lecture[index];
+							Exec_Act* tmp = new(pvPortMalloc(sizeof(Exec_Act))) Exec_Act(ax12, angle);
+							hookActuel->insert(tmp, i);
+						}
+					}
 				}
 
 				//					serial_rb.printfln("color rouge");
@@ -169,177 +305,7 @@ void thread_hook(void* p)
 
 	while(1)
 	{
-		if(indexWrite != indexRead) // tiens, un nouveau message !
-		{
-			char* lecture = lectures[indexRead];
-			int index = 1;
-			Hook* hookActuel;
-			uint8_t nbcallbacks;
-			uint16_t id;
 
-			if(lecture[0] == 'H')
-			{
-				if(verifieSousChaine(lecture, &index, "da"))
-				{
-	//						serial_rb.printfln("hook de date");
-					index++;
-					uint32_t date = parseInt(lecture, &index);
-	//						serial_rb.printfln("date : %d",date);
-					index++;
-					id = parseInt(lecture, &index);
-					index++;
-					nbcallbacks = parseInt(lecture, &index);
-	//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
-					index++;
-					hookActuel = new(pvPortMalloc(sizeof(HookTemps))) HookTemps(id, nbcallbacks, date);
-					listeHooks.push_back(hookActuel);
-				}
-				else if(verifieSousChaine(lecture, &index, "ct"))
-				{
-	//						serial_rb.printfln("hook de contact");
-					index++;
-					uint8_t nbContact = parseInt(lecture, &index);
-	//						serial_rb.printfln("nbContact : %d",nbContact);
-					index++;
-					bool unique = lecture[index++] == 'T';
-	//						serial_rb.printfln("unique? %d", unique);
-					index++;
-					id = parseInt(lecture, &index);
-					index++;
-					nbcallbacks = parseInt(lecture, &index);
-	//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
-					index++;
-					hookActuel = new(pvPortMalloc(sizeof(HookContact))) HookContact(id, unique, nbcallbacks, nbContact);
-					listeHooks.push_back(hookActuel);
-				}
-				else if(verifieSousChaine(lecture, &index, "dp"))
-				{
-	//						serial_rb.printfln("hook de demi plan");
-					index++;
-					uint32_t x = parseInt(lecture, &index);
-	//						serial_rb.printfln("x : %d",x);
-					index++;
-					uint32_t y = parseInt(lecture, &index);
-	//						serial_rb.printfln("y : %d",y);
-					index++;
-					uint32_t dir_x = parseInt(lecture, &index);
-	//						serial_rb.printfln("dirx : %d",dir_x);
-					index++;
-					uint32_t dir_y = parseInt(lecture, &index);
-	//						serial_rb.printfln("diry : %d",dir_y);
-					index++;
-					id = parseInt(lecture, &index);
-					index++;
-					nbcallbacks = parseInt(lecture, &index);
-	//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
-					index++;
-					hookActuel = new(pvPortMalloc(sizeof(HookDemiPlan))) HookDemiPlan(id, nbcallbacks, x, y, dir_x, dir_y);
-					listeHooks.push_back(hookActuel);
-				}
-				else if(verifieSousChaine(lecture, &index, "po"))
-				{
-	//						serial_rb.printfln("hook de position");
-					index++;
-					uint32_t x = parseInt(lecture, &index);
-	//						serial_rb.printfln("x : %d",x);
-					index++;
-					uint32_t y = parseInt(lecture, &index);
-	//						serial_rb.printfln("y : %d",y);
-					index++;
-					uint32_t tolerance = parseInt(lecture, &index);
-	//						serial_rb.printfln("tolerance : %d",tolerance);
-					index++;
-					id = parseInt(lecture, &index);
-					index++;
-					nbcallbacks = parseInt(lecture, &index);
-	//						serial_rb.printfln("nbCallback : %d",nbcallbacks);
-					index++;
-					hookActuel = new(pvPortMalloc(sizeof(HookPosition))) HookPosition(id, nbcallbacks, x, y, tolerance);
-					listeHooks.push_back(hookActuel);
-				}
-				else
-				{
-					serial_rb.printfln("Erreur de parsing hook : %s",lecture);
-					indexRead++;
-					indexRead %= TAILLE_BUFFER_ECRITURE_SERIE;
-					continue;
-				}
-
-				for(int i = 0; i < nbcallbacks; i++)
-				{
-					if(verifieSousChaine(lecture, &index, "tbl"))
-					{
-	//							serial_rb.printfln("callback : table");
-						int nbElem = parseInt(lecture, &(++index));
-						index++;
-	//							serial_rb.printfln("element : %d", nbElem);
-						Exec_Update_Table* tmp = new(pvPortMalloc(sizeof(Exec_Update_Table))) Exec_Update_Table(nbElem);
-						hookActuel->insert(tmp, i);
-					}
-					else if(verifieSousChaine(lecture, &index, "scr"))
-					{
-	//							serial_rb.printfln("callback : script");
-						int nbScript = parseInt(lecture, &(++index));
-						index++;
-	//							serial_rb.printfln("script : %d", nbScript);
-						Exec_Script* tmp = new(pvPortMalloc(sizeof(Exec_Script))) Exec_Script(nbScript);
-						hookActuel->insert(tmp, i);
-					}
-					else if(verifieSousChaine(lecture, &index, "act"))
-					{
-	//							serial_rb.printfln("callback : actionneurs");
-						uint8_t nbAct = parseInt(lecture, &(++index));
-						uint16_t angle = parseInt(lecture, &(++index));
-						index++;
-	//							serial_rb.printfln("act : %d", nbAct);
-						Exec_Act* tmp = new(pvPortMalloc(sizeof(Exec_Act))) Exec_Act(ax12, angle);
-						hookActuel->insert(tmp, i);
-					}
-					else
-					{
-						serial_rb.printfln("Erreur de parsing callback : %s",lecture);
-						break;
-					}
-				}
-			}
-			else if(lecture[0] == 'h')
-			{
-				if(verifieSousChaine(lecture, &index, "hkclrall"))
-				{
-					listeHooks.clear();
-				}
-
-				else if(verifieSousChaine(lecture, &index, "hkclr"))
-				{
-					index++;
-					uint8_t nbIds = parseInt(lecture, &index);
-					vector<Hook*>::iterator it = listeHooks.begin();
-
-					for(uint8_t i = 0; i < nbIds; i++)
-					{
-						uint16_t id = parseInt(lecture, &(++index));
-
-						for(uint8_t j = 0; j < listeHooks.size(); j++)
-						{
-							Hook* hook = listeHooks[j];
-							if(hook->getId() == id)
-							{
-								vPortFree(hook);
-								listeHooks[j] = listeHooks.back();
-								listeHooks.pop_back();
-								break; // l'id est unique
-							}
-						}
-
-					}
-				}
-			}
-//			else
-//				serial_rb.printfln("Erreur parsing hook : %s", lecture);
-
-			indexRead++;
-			indexRead %= TAILLE_BUFFER_ECRITURE_SERIE;
-		}
 
 		if(matchDemarre)
 		{
@@ -377,13 +343,15 @@ void thread_capteurs(void* p)
 {
 	while(1)
 	{
-		uint16_t x, y, orientation, courbure, marcheAvantTmp;
+		uint16_t x, y, orientation;
+		uint8_t courbure;
+		bool marcheAvantTmp;
 		// l'envoi série n'est pas fait quand on a le mutex d'odo afin d'éviter de ralentir le thread d'odo
 		while(xSemaphoreTake(odo_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-			x = x_odo;
-			y = y_odo;
+			x = (uint16_t) x_odo;
+			y = (uint16_t) y_odo;
 			orientation = (uint16_t) orientation_odo;
-			courbure = courbure_odo;
+			courbure = (uint8_t) courbure_odo;
 			marcheAvantTmp = marcheAvant;
 		xSemaphoreGive(odo_mutex);
 		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, 0);
