@@ -17,7 +17,24 @@ import enums.SerialProtocol;
 
 public class SerialSTM extends SerialConnexion implements Service
 {
-	private byte[] question, reponse;
+	private static byte[] question, reponse;
+
+	// Il faut qu'ils soient définis avant l'appel au constructeur…
+	static
+	{
+		question = new byte[6];
+		question[0] = (byte) 0x55;
+		question[1] = (byte) 0xAA;
+		question[2] = 0;
+		question[3] = 0;
+		question[4] = SerialProtocol.OUT_PING.code;
+		question[5] = (byte) ~question[4]; // checksum
+		
+		reponse = new byte[3];
+		reponse[0] = SerialProtocol.IN_PONG1.code;
+		reponse[1] = SerialProtocol.IN_PONG2.code;
+		reponse[2] = (byte) ~(SerialProtocol.IN_PONG1.code+SerialProtocol.IN_PONG2.code); // checksum
+	}
 	
 	public SerialSTM(Log log, int baudrate) {
 		super(log, baudrate);
@@ -25,16 +42,6 @@ public class SerialSTM extends SerialConnexion implements Service
 		// le problème du ping, c'est que SerialConnexion ne connaît pas l'id du paquet à envoyer
 		// du coup, on met l'id 0. Comme ça, la STM pensera que c'est un vieux paquet mais y répondra quand même,
 		// et ça ne posera pas problème.
-		question = new byte[4];
-		question[0] = 0;
-		question[1] = 0;
-		question[2] = SerialProtocol.OUT_PING.code;
-		question[3] = (byte) ~question[2]; // checksum
-		
-		reponse = new byte[3];
-		reponse[0] = SerialProtocol.IN_PONG1.code;
-		reponse[1] = SerialProtocol.IN_PONG2.code;
-		reponse[2] = (byte) ~(SerialProtocol.IN_PONG1.code+SerialProtocol.IN_PONG2.code); // checksum
 
 	}
 	
@@ -53,11 +60,24 @@ public class SerialSTM extends SerialConnexion implements Service
 			//ping
 			output.write(question);
 
+			if(Config.debugSerie)
+			{
+				log.debug("Question : ");
+				afficheMessage(question);
+			}
+
 			// on laisse le temps au périphérique de réagir
-			Sleep.sleep(50);
-						
-			byte[] lu = new byte[reponse.length];
+			Sleep.sleep(100);
+			
+			log.debug("Nb dispo : "+input.available());
+			byte[] lu = new byte[input.available()];
 			int nbLu = input.read(lu);
+			
+			if(Config.debugSerie)
+			{
+				log.debug("Réponse : ");
+				afficheMessage(lu);
+			}
 			
 			// le +4 vient du fait qu'on ne vérifie pas l'id du paquet qui arrive ni l'entete
 			if(nbLu != reponse.length + 4)	// vérification du nombre de byte lu
@@ -103,7 +123,13 @@ public class SerialSTM extends SerialConnexion implements Service
 	{
 		String m = "";
 		for(int i = 0; i < out.length; i++)
-			m += Integer.toHexString(out[i]).toUpperCase()+" ";
+		{
+			String s = Integer.toHexString(out[i]).toUpperCase();
+			if(s.length() == 1)
+				m += "0"+s+" ";
+			else
+				m += s.substring(s.length()-2, s.length())+" ";
+		}
 		log.debug(m);
 	}
 	
