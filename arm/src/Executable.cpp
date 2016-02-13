@@ -1,6 +1,7 @@
 #include "Executable.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "serie.h"
 
 Executable::~Executable()
 {}
@@ -11,9 +12,7 @@ Executable::~Executable()
 
 void Exec_Update_Table::execute()
 {
-	while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-	serial_rb.printfln("tbl %d", m_nbElem);
-	xSemaphoreGive(serial_rb_mutex);
+	sendElementShoot(m_nbElem);
 }
 
 Exec_Update_Table::~Exec_Update_Table()
@@ -34,9 +33,6 @@ Exec_Script::Exec_Script(uint32_t nbScript):m_nbScript(nbScript)
 
 void Exec_Script::execute()
 {
-	while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-	serial_rb.printfln("scr %d", m_nbScript);
-	xSemaphoreGive(serial_rb_mutex);
 }
 
 /**

@@ -20,7 +20,8 @@
 #include "Uart.hpp"
 #include "global.h"
 #include "ax12.hpp"
-
+#include "serie.h"
+#include "serialProtocol.h"
 using namespace std;
 
 // ----- main() ---------------------------------------------------------------
@@ -32,65 +33,12 @@ using namespace std;
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
-#define SERIE_TIMEOUT
-
-#define TAILLE_BUFFER_LECTURE_SERIE	10
-#define IN_PING 0x3F
-#define IN_PONG1 0x42
-#define IN_PONG2 0x57
-#define IN_AVANCER 0x02
-#define IN_AVANCER_MUR 0x03
-#define IN_TOURNER 0x04
-#define IN_ACTIONNEURS 0x06
-#define IN_STOP 0x07
-#define IN_INIT_ODO 0x08
-#define IN_GET_XYO 0x09
-#define IN_SET_VITESSE 0x0A
-#define IN_RESEND_PACKET 0xFF
-#define IN_REMOVE_ALL_HOOKS 0x40
-#define IN_REMOVE_SOME_HOOKS 0x41
-#define IN_HOOK_DATE 0x44
-#define IN_HOOK_DEMI_PLAN 0x45
-#define IN_HOOK_POSITION 0x46
-#define IN_HOOK_POSITION_UNIQUE 0x47
-#define IN_HOOK_CONTACT 0x48
-#define IN_HOOK_CONTACT_UNIQUE 0x49
-#define IN_HOOK_MASK 0x40
-#define IN_CALLBACK_ELT 0x00
-#define IN_CALLBACK_SCRIPT 0x40
-#define IN_CALLBACK_AX12 0x80
-#define IN_CALLBACK_MASK 0xC0
-
-#define OUT_PING 0x3F
-#define OUT_PONG1 0x54
-#define OUT_PONG2 0x33
-#define OUT_ROBOT_ARRIVE 0x02
-#define OUT_PROBLEME_MECA 0x03
-#define OUT_DEBUT_MATCH 0x04
-#define OUT_FIN_MATCH 0x05
-#define OUT_COULEUR_ROBOT_SANS_SYMETRIE 0x06
-#define OUT_COULEUR_ROBOT_AVEC_SYMETRIE 0x07
-#define OUT_ROBOT_MARCHE_AVANT 0x08
-#define OUT_ROBOT_MARCHE_ARRIERE 0x09
-#define OUT_CAPTEURS 0x0A
-#define OUT_XYO 0x0B
-#define OUT_CODE_COQUILLAGES 0x0C
-#define OUT_RESEND_PACKET 0xFF
-#define OUT_ELEMENT_SHOOTE 0x0D
-
-#define ID_FORT 0x00
-#define ID_FAIBLE 0x01
-#define COMMANDE 0x02
-#define PARAM 0x03
 
 TIM_Encoder_InitTypeDef encoder, encoder2;
 TIM_HandleTypeDef timer, timer2, timer3;
 vector<Hook*> listeHooks;
 volatile bool startOdo = false;
 volatile bool matchDemarre = true; // TODO
-volatile int indexRead = 0;
-volatile int indexWrite = 0;
-char lectures[TAILLE_BUFFER_LECTURE_SERIE][100];
 Uart<6> serial_ax;
 AX<Uart<6>>* ax12;
 
@@ -103,92 +51,88 @@ void thread_ecoute_serie(void* p)
 	 serial_ax.init(57600);
 	 ax12 = new AX<Uart<6>>(0, 0, 1023);
     uint16_t idDernierPaquet = -1;
-    uint16_t idPaquet;
+
 		while(1)
 		{
-			while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 			if(serial_rb.available())
 			{
-                char entete;
+				unsigned char out[50];
+				unsigned char lecture[50];
+                unsigned char entete;
                 uint8_t index = 0;
                 // Vérification de l'entête
 
                 serial_rb.read_char(&entete, SERIE_TIMEOUT);
                 if(entete != 0x55)
-                {
-                    xSemaphoreGive(serial_rb_mutex);
                     continue;
-                }
 
                 serial_rb.read_char(&entete, SERIE_TIMEOUT);
                 if(entete != 0xAA)
-                {
-                    xSemaphoreGive(serial_rb_mutex);
                     continue;
-                }
 
                 // Récupération de l'id
-                serial_rb.read_char(lecture[index++], SERIE_TIMEOUT); // id point fort
-                serial_rb.read_char(lecture[index++], SERIE_TIMEOUT); // id point faible
+                serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // id point fort
+                serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // id point faible
 
-                int idPaquet = (lecture[ID_FORT] << 8) + lecture[ID_FAIBLE];
+                uint16_t idPaquet = (lecture[ID_FORT] << 8) + lecture[ID_FAIBLE];
                 
                 // On redemande les paquets manquants si besoin est
                 if(idPaquet > idDernierPaquet)
                 {
                     idDernierPaquet++; // id paquet théoriquement reçu
-                    while(idPaque > idDernierPaquet)
+                    while(idPaquet > idDernierPaquet)
                         askResend(idDernierPaquet++);
                 }
 
-				char* lecture = lectures[indexWrite];
-				serial_rb.read_char(lecture, SERIE_TIMEOUT);
+				serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // lecture de la commande
 
-				if(lecture[HOOK_MASK] == 'H')
-				{
-					indexWrite++;
-					indexWrite %= TAILLE_BUFFER_LECTURE_SERIE;
-//					serial_rb.printfln("%d %d", indexWrite, indexRead);
-				}
-				else if(verifieSousChaine(lecture, &index, "?"))
-				{
-					while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-					serial_rb.printfln("T3");
-					xSemaphoreGive(serial_rb_mutex);
-				}
-				else if(verifieSousChaine(lecture, &index, "ax"))
-				{
-					uint16_t angle = parseInt(lecture, &(++index));
-					ax12->goTo(angle);
-				}
-				else if(verifieSousChaine(lecture, &index, "sspd"))
-				{
-					// TODO
-				}
-				else if(verifieSousChaine(lecture, &index, "t"))
-				{
-					// TODO
-//					vTaskDelay(1000);
-					while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-					serial_rb.printfln("arv");
-					xSemaphoreGive(serial_rb_mutex);
-				}
 
-				else if(verifieSousChaine(lecture, &index, "r"))
+				if(lecture[COMMANDE] == IN_PING)
 				{
-					// TODO
+					out[3] = OUT_PONG1;
+					out[4] = OUT_PONG2;
+					send(out, 5+2);
+				}
+				else if(lecture[COMMANDE] == IN_ACTIONNEURS)
+				{
+					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT);
+					ax12->goTo(lecture[PARAM]);
+				}
+				else if(lecture[COMMANDE] == IN_TOURNER)
+				{
+					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT);
+					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT);
+					uint16_t angle = (lecture[PARAM] << 8) + lecture[PARAM + 1];
 					vTaskDelay(1000);
-					while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-					serial_rb.printfln("arv");
-					xSemaphoreGive(serial_rb_mutex);
+					sendArrive();
 				}
-				else if(verifieSousChaine(lecture, &index, "initodo"))
+				else if((lecture[COMMANDE] & 0xFE) == IN_AVANCER)
 				{
+					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT);
+					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT);
+					uint16_t distance = (lecture[PARAM] << 8) + lecture[PARAM + 1];
+					bool mur = lecture[COMMANDE] == IN_AVANCER_MUR;
+					vTaskDelay(1000);
+					sendArrive();
+				}
+				else if(lecture[COMMANDE] == IN_INIT_ODO)
+				{
+					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // x
+					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // xy
+					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // y
+					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // o
+					serial_rb.read_char(lecture+index++, SERIE_TIMEOUT); // o
+
+					int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
+					x -= 1500;
+					uint16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
+					uint16_t o = (lecture[PARAM + 3] << 8) + lecture[PARAM + 4];
+
 					if(!startOdo)
 					{
-						x_odo = parseInt(lecture, &(++index));
-						y_odo = parseInt(lecture, &(++index));
-						orientation_odo = parseInt(lecture, &(++index))/1000.;
+						x_odo = x;
+						y_odo = y;
+						orientation_odo = o/1000.;
 
 	//					orientationTick = RAD_TO_TICK(parseInt(lecture, &(++index))/1000.);
 //						serial_rb.printfln("%d",(int)orientationTick);
@@ -200,19 +144,16 @@ void thread_ecoute_serie(void* p)
 				}
 
 				// POUR TEST UNIQUEMENT
-				else if(verifieSousChaine(lecture, &index, "gxyo"))
+				else if(lecture[COMMANDE] == IN_GET_XYO)
 				{
-					while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-					serial_rb.printfln("%d %d %d",(int)x_odo, (int)y_odo, (int)(orientation_odo*1000));
-					xSemaphoreGive(serial_rb_mutex);
+					unsigned char out[] = {0, 0, 0, 0, OUT_PONG1, OUT_PONG2, 0};
+
 				}
 
 				//					serial_rb.printfln("color rouge");
-				xSemaphoreGive(serial_rb_mutex);
 			}
 			else // on n'attend que s'il n'y avait rien. Ainsi, si la série prend du retard elle n'attend pas pour traiter toutes les données entrantes suivantes
 			{
-				xSemaphoreGive(serial_rb_mutex);
 //				vTaskDelay(1);
 			}
 //			serial_rb.printfln("%d", TIM5->CNT);
@@ -320,7 +261,7 @@ void thread_hook(void* p)
 				{
 					serial_rb.printfln("Erreur de parsing hook : %s",lecture);
 					indexRead++;
-					indexRead %= TAILLE_BUFFER_LECTURE_SERIE;
+					indexRead %= TAILLE_BUFFER_ECRITURE_SERIE;
 					continue;
 				}
 
@@ -397,7 +338,7 @@ void thread_hook(void* p)
 //				serial_rb.printfln("Erreur parsing hook : %s", lecture);
 
 			indexRead++;
-			indexRead %= TAILLE_BUFFER_LECTURE_SERIE;
+			indexRead %= TAILLE_BUFFER_ECRITURE_SERIE;
 		}
 
 		if(matchDemarre)
@@ -436,14 +377,16 @@ void thread_capteurs(void* p)
 {
 	while(1)
 	{
-		// on récupère d'abord le mutex de la série. Ainsi, le mutex odométrie (et donc le thread d'odométrie) n'est jamais bloqué longtemps
-
-		while(xSemaphoreTake(serial_rb_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+		uint16_t x, y, orientation, courbure, marcheAvantTmp;
+		// l'envoi série n'est pas fait quand on a le mutex d'odo afin d'éviter de ralentir le thread d'odo
 		while(xSemaphoreTake(odo_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-		uint16_t distanceCapteur = 50;
-		serial_rb.printfln("cpt %d %d %d %d",(int)x_odo, (int)y_odo, (int)(orientation_odo*1000), distanceCapteur);
+			x = x_odo;
+			y = y_odo;
+			orientation = (uint16_t) orientation_odo;
+			courbure = odo_courbure;
+			marcheAvantTmp = marcheAvant;
 		xSemaphoreGive(odo_mutex);
-		xSemaphoreGive(serial_rb_mutex);
+		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, 0);
 		vTaskDelay(100);
 
 	}

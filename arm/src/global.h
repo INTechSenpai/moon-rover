@@ -5,6 +5,9 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 
+#define SERIE_TIMEOUT 10
+#define TAILLE_BUFFER_ECRITURE_SERIE	50
+
 #define ATTENTE_MUTEX_MS 10
 #define FREQUENCE_ODO_ASSER 200
 
@@ -28,6 +31,7 @@ extern bool isSymmetry;
 extern bool marcheAvant;
 extern Uart<2> serial_rb;
 extern DirectionStrategy strategy;
+extern uint8_t odo_courbure;
 
 /**
  * x_odo, y_odo et orientation_odo sont exprimés dans le repère symétrisé, qui n'est pas forcément le repère réel
@@ -38,7 +42,6 @@ extern double cos_orientation_odo, sin_orientation_odo;
 extern bool asserEnable;
 
 // MUTEX
-extern SemaphoreHandle_t serial_rb_mutex;
 extern SemaphoreHandle_t odo_mutex;
 
 #endif
