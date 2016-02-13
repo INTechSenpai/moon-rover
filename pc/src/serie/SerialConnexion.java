@@ -37,6 +37,8 @@ public abstract class SerialConnexion implements SerialPortEventListener, Serial
 	/** The output stream to the port */
 	protected OutputStream output;
 
+	protected boolean busy = false;
+	
 	/** Milliseconds to block while waiting for port open */
 	private static final int TIME_OUT = 2000;
 
@@ -66,11 +68,12 @@ public abstract class SerialConnexion implements SerialPortEventListener, Serial
 				log.critical("Port série non trouvé, réessaie dans 500 ms");
 				Sleep.sleep(500);
 			}
-		}
+		}		
 	}
 
 	protected synchronized boolean searchPort()
 	{
+		busy = true;
 		log.debug("Recherche de la série à "+baudrate+" baud");
 		Enumeration<?> ports = CommPortIdentifier.getPortIdentifiers();
 
@@ -97,6 +100,7 @@ public abstract class SerialConnexion implements SerialPortEventListener, Serial
 				// ça pose des problèmes avec le ping
 				serialPort.notifyOnDataAvailable(true);
 //				notifyAll();
+				busy = false; // voilà, les threads peuvent parler
 				return true;
 			}
 			else
@@ -152,18 +156,32 @@ public abstract class SerialConnexion implements SerialPortEventListener, Serial
 		}
 	}
 	
-
-	/**
-	 * Méthode pour envoyer un message à la carte
-	 * @param messages
-	 */
+	public void communiquer(String out)
+	{
+		communiquer(out.getBytes());
+	}
+	
 	public abstract void communiquer(byte[] out);
+	
+	protected void attendSiPing()
+	{
+		// Si la série est occupée, on attend sagement
+		if(busy)
+			synchronized(this)
+			{
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+	}
 
 
 	/**
 	 * Doit être appelé quand on arrête de se servir de la série
 	 */
-	public synchronized void close()
+	public void close()
 	{
 		if (!isClosed && serialPort != null)
 		{
@@ -180,7 +198,7 @@ public abstract class SerialConnexion implements SerialPortEventListener, Serial
 	/**
 	 * Gestion d'un évènement sur la série.
 	 */
-	public synchronized void serialEvent(SerialPortEvent oEvent)
+	public void serialEvent(SerialPortEvent oEvent)
 	{
 		try {
 			if(input.available() > 0)
@@ -192,6 +210,9 @@ public abstract class SerialConnexion implements SerialPortEventListener, Serial
 	
 	public boolean available() throws IOException
 	{
+		// tant qu'on est occupé, on dit qu'on ne reçoit rien
+		if(busy)
+			return false;
 		return input.available() != 0;
 	}
 	
@@ -203,6 +224,8 @@ public abstract class SerialConnexion implements SerialPortEventListener, Serial
 	 */
 	public byte read() throws IOException, MissingCharacterException
 	{
+		attendSiPing();
+
 		if(input.available() == 0)
 			Sleep.sleep(1); // On attend un tout petit peu, au cas où
 

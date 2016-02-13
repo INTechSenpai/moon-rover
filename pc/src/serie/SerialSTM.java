@@ -8,6 +8,9 @@ import enums.SerialProtocol;
 
 /**
  * Série de la STM
+ * Il n'y a pas besoin de "synchronized" car il y deux threads qui utilisent cette série : le thread de lecture et celui d'écriture.
+ * Et comme la série peut gérer les deux en parallèle… (full duplex)
+ * Le seul moment où il faut bloquer les threads c'est quand la série ping, et utilise les deux sens (lecture et écriture)
  * @author pf
  *
  */
@@ -40,7 +43,7 @@ public class SerialSTM extends SerialConnexion implements Service
 	 * Ping de la carte.
 	 * @return l'id de la carte
 	 */
-	public synchronized boolean ping()
+	protected boolean ping()
 	{
 		try
 		{
@@ -77,7 +80,7 @@ public class SerialSTM extends SerialConnexion implements Service
 		}
 	}
 	
-	protected synchronized void estimeLatence()
+	protected void estimeLatence()
 	{
 		try {
 			log.debug("Estimation de la latence…");
@@ -104,7 +107,7 @@ public class SerialSTM extends SerialConnexion implements Service
 		log.debug(m);
 	}
 	
-	public synchronized void communiquer(byte[] out)
+	public void communiquer(byte[] out)
 	{
 		/**
 		 * Un appel à une série fermée ne devrait jamais être effectué.
@@ -116,6 +119,8 @@ public class SerialSTM extends SerialConnexion implements Service
 			return;
 		}
 
+		super.attendSiPing();
+		
 		try
 		{
 			if(Config.debugSerie)
