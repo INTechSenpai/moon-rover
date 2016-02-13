@@ -1,4 +1,4 @@
-package utils;
+package serie;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.PortInUseException;
@@ -13,6 +13,8 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
+import utils.Log;
+import utils.Sleep;
 import exceptions.MissingCharacterException;
 
 /**
@@ -21,7 +23,7 @@ import exceptions.MissingCharacterException;
  *
  */
 
-public abstract class SerialConnexion implements SerialPortEventListener
+public abstract class SerialConnexion implements SerialPortEventListener, SerialInterface
 {
 	private SerialPort serialPort;
 	protected Log log;
@@ -71,7 +73,6 @@ public abstract class SerialConnexion implements SerialPortEventListener
 	{
 		log.debug("Recherche de la série à "+baudrate+" baud");
 		Enumeration<?> ports = CommPortIdentifier.getPortIdentifiers();
-		serialPort.notifyOnDataAvailable(false); // on désactive le listener qui pourrait paniquer avec le ping
 
 		while(ports.hasMoreElements())
 		{
@@ -129,6 +130,7 @@ public abstract class SerialConnexion implements SerialPortEventListener
 			serialPort.setOutputBufferSize(100);
 			serialPort.enableReceiveTimeout(100);
 			serialPort.enableReceiveThreshold(1);
+			serialPort.notifyOnDataAvailable(false); // on désactive le listener qui pourrait paniquer avec le ping
 			// Configuration du Listener
 			try {
 				serialPort.addEventListener(this);
@@ -150,9 +152,6 @@ public abstract class SerialConnexion implements SerialPortEventListener
 		}
 	}
 	
-	protected abstract void estimeLatence();
-
-	protected abstract boolean ping();
 
 	/**
 	 * Méthode pour envoyer un message à la carte
@@ -213,5 +212,8 @@ public abstract class SerialConnexion implements SerialPortEventListener
 		return (byte) input.read();
 	}
 	
+	protected abstract boolean ping();
+	protected abstract void estimeLatence();
+	protected abstract void afficheMessage(byte[] out);
 
 }

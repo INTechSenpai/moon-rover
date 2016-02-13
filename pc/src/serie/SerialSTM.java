@@ -1,5 +1,8 @@
-package utils;
+package serie;
 
+import utils.Config;
+import utils.Log;
+import utils.Sleep;
 import container.Service;
 import enums.SerialProtocol;
 
@@ -93,7 +96,7 @@ public class SerialSTM extends SerialConnexion implements Service
 		}
 	}
 	
-	private void afficheMessage(byte[] out)
+	protected void afficheMessage(byte[] out)
 	{
 		String m = "";
 		for(int i = 0; i < out.length; i++)
