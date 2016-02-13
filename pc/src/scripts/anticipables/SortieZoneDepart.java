@@ -42,7 +42,7 @@ public class SortieZoneDepart extends ScriptAnticipable {
 	{
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
 		Hook hook = new HookDate(log, 2000);
-		hook.ajouter_callback(new UtiliseActionneur(ActuatorOrder.BAISSE_TAPIS_DROIT));
+		hook.ajouter_callback(new UtiliseActionneur(ActuatorOrder.TEST));
 		hooks.add(hook);
 		state.robot.tourner(Math.PI);
 		state.robot.avancer(500, hooks);
