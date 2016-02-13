@@ -28,7 +28,6 @@ public abstract class ScriptAnticipable
 	protected int positionTolerancy;
 	protected HookFactory hookfactory;
 	protected Log log;
-	private GridSpace gridspace;
 	
 	private int squared_tolerance_depart_script = 400; // 2cm
 	protected volatile boolean symetrie;
@@ -39,11 +38,10 @@ public abstract class ScriptAnticipable
 	 */
 	public abstract ArrayList<Integer> getVersions(GameState<RobotChrono,ReadOnly> state);
 
-	public ScriptAnticipable(HookFactory hookgenerator, Log log, GridSpace gridspace)
+	public ScriptAnticipable(HookFactory hookgenerator, Log log)
 	{
 		this.hookfactory = hookgenerator;
 		this.log = log;
-		this.gridspace = gridspace;
 	}
 
 	/**
@@ -96,23 +94,6 @@ public abstract class ScriptAnticipable
 	 * @return
 	 */
 	public abstract int point_sortie(int id);
-
-	/**
-	 * Vérifie la position de sortie en simulation.
-	 * @param id
-	 * @param position
-	 * @throws PointSortieException
-	 */
-	public final void checkPointSortie(int id, Vec2<ReadOnly> position) throws PointSortieException
-	{
-		int sortie = point_sortie(id);
-		if(!position.equals(gridspace.computeVec2(sortie)))
-		{
-			log.critical("Position de "+sortie+" incorrecte! Sa bonne position est: "+position);
-			throw new PointSortieException();
-		}
-
-	}
 	
 	/**
 	 * Exécute ou calcule le script, avec RobotVrai ou RobotChrono

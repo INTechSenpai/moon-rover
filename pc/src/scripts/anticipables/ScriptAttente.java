@@ -3,7 +3,6 @@ package scripts.anticipables;
 import java.util.ArrayList;
 
 import pathfinding.GameState;
-import pathfinding.dstarlite.GridSpace;
 import permissions.ReadOnly;
 import permissions.ReadWrite;
 import exceptions.FinMatchException;
@@ -23,9 +22,9 @@ import utils.Log;
 public class ScriptAttente extends ScriptAnticipable
 {
 
-	public ScriptAttente(HookFactory hookgenerator, Log log, GridSpace gridspace)
+	public ScriptAttente(HookFactory hookgenerator, Log log)
 	{
-		super(hookgenerator, log, gridspace);
+		super(hookgenerator, log);
 	}
 
 	@Override

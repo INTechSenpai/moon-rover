@@ -51,7 +51,7 @@ public class RobotReal extends Robot
 		int x = config.getInt(ConfigInfo.X_DEPART);
 		int y = config.getInt(ConfigInfo.Y_DEPART);
 		double o = config.getDouble(ConfigInfo.O_DEPART);
-		setPositionOrientationJava(new Vec2<ReadOnly>(x, y), o);
+		setPositionOrientationCourbureDirection(new Vec2<ReadOnly>(x, y), o, 0, true);
 		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
 	}
 		
@@ -101,10 +101,12 @@ public class RobotReal extends Robot
 		log.debug("Modification de la vitesse: "+vitesse);
 	}
 
-	public void setPositionOrientationJava(Vec2<ReadOnly> position, double orientation)
+	public void setPositionOrientationCourbureDirection(Vec2<ReadOnly> position, double orientation, double courbure, boolean enMarcheAvant)
 	{
 		Vec2.copy(position, this.position);
 		this.orientation = orientation;
+		this.courbure = courbure;
+		this.enMarcheAvant = enMarcheAvant;
 	}
 
 	public void updatePositionOrientation()

@@ -25,9 +25,9 @@ import utils.Log;
 
 public class SortieZoneDepart extends ScriptAnticipable {
 
-	public SortieZoneDepart(HookFactory hookgenerator, Log log, GridSpace gridspace)
+	public SortieZoneDepart(HookFactory hookgenerator, Log log)
 	{
-		super(hookgenerator, log, gridspace);
+		super(hookgenerator, log);
 	}
 
 	@Override
