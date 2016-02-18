@@ -26,15 +26,13 @@ public class RobotReal extends Robot
 {
 	private DataForSerialOutput stm;
 	private RequeteSTM requete;
-	private GridSpace gridspace;
 		
 	// Constructeur
-	public RobotReal(DataForSerialOutput stm, Log log, RequeteSTM requete, GridSpace gridspace)
+	public RobotReal(DataForSerialOutput stm, Log log, RequeteSTM requete)
  	{
 		super(log);
 		this.stm = stm;
 		this.requete = requete;
-		this.gridspace = gridspace;
 		// On envoie à la STM la vitesse par défaut
 		setVitesse(vitesse);
 //		stm.envoieActionneurs();
@@ -165,7 +163,7 @@ public class RobotReal extends Robot
 	@Override
 	public int getPositionGridSpace()
 	{
-		return gridspace.computeGridPoint(position.getReadOnly());
+		return GridSpace.computeGridPoint(position.getReadOnly());
 	}
 	
 	@Override

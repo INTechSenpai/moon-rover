@@ -50,7 +50,8 @@ public class ScriptAttente extends ScriptAnticipable
 		/**
 		 * On attend jusqu'à ce qu'un obstacle ait disparu.
 		 */
-		GameState.sleepUntilSomethingChange(state);
+//		GameState.sleepUntilSomethingChange(state);
+		// TODO
 	}
 
 	@Override

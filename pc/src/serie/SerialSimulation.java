@@ -33,7 +33,13 @@ public class SerialSimulation implements SerialInterface, Service {
 	{
 		String m = "";
 		for(int i = 0; i < out.length; i++)
-			m += Integer.toHexString(out[i]).toUpperCase()+" ";
+		{
+			String s = Integer.toHexString(out[i]).toUpperCase();
+			if(s.length() == 1)
+				m += "0"+s+" ";
+			else
+				m += s.substring(s.length()-2, s.length())+" ";
+		}
 		log.debug(m);
 	}
 	
