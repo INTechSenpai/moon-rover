@@ -2,7 +2,7 @@ package pathfinding;
 
 import obstacles.memory.ObstaclesIteratorFutur;
 import obstacles.memory.ObstaclesMemory;
-import robot.Robot;
+import robot.RobotChrono;
 import robot.RobotReal;
 import container.Service;
 import table.Table;
@@ -18,7 +18,6 @@ import utils.Config;
 public class RealGameState extends GameState implements Service
 {
 	// cet iterator et cette table sont ceux du gridspace. Modifier l'un modifie l'autre.
-    private RobotReal robot;
     protected Log log;
     private ObstaclesMemory memory;
     
@@ -47,14 +46,11 @@ public class RealGameState extends GameState implements Service
     public void useConfig(Config config)
     {}
     
-	public Robot getRobot()
-	{
-		return robot;
-	}
-
-	public void copyAStarCourbe(ChronoGameState state) {
-		// TODO Auto-generated method stub
-		
-	}
+    public final void copyAStarCourbe(ChronoGameState modified)
+    {
+    	table.copy(modified.table);
+        robot.copyThetaStar((RobotChrono) modified.robot);
+        modified.iterator.init(System.currentTimeMillis());
+    }
 
 }
