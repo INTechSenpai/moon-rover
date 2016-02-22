@@ -1,20 +1,17 @@
 package scripts;
 
-import robot.RobotChrono;
+import table.Table;
 import utils.ConfigInfo;
 import utils.Log;
 import utils.Config;
-import utils.Vec2;
 import hook.HookFactory;
 
 import java.util.ArrayList;
 
+import pathfinding.ChronoGameState;
 import pathfinding.GameState;
-import pathfinding.dstarlite.GridSpace;
-import permissions.ReadOnly;
-import permissions.ReadWrite;
+import robot.Robot;
 import exceptions.FinMatchException;
-import exceptions.PointSortieException;
 import exceptions.ScriptException;
 import exceptions.UnableToMoveException;
 /**
@@ -36,7 +33,7 @@ public abstract class ScriptAnticipable
 	 * Renvoie le tableau des méta-verions d'un script
 	 * @return le tableau des méta-versions possibles
 	 */
-	public abstract ArrayList<Integer> getVersions(GameState<RobotChrono,ReadOnly> state);
+	public abstract ArrayList<Integer> getVersions(Table table, Robot robot);
 
 	public ScriptAnticipable(HookFactory hookgenerator, Log log)
 	{
@@ -50,7 +47,7 @@ public abstract class ScriptAnticipable
 	 * @throws ScriptException 
 	 * @throws FinMatchException 
 	 */
-	protected abstract void termine(GameState<?,ReadWrite> gamestate) throws ScriptException, FinMatchException;
+	protected abstract void termine(Table table, Robot robot) throws ScriptException, FinMatchException;
 	
 	/**
 	 * Surcouche d'exécute, avec une gestion d'erreur.
@@ -60,7 +57,7 @@ public abstract class ScriptAnticipable
 	 * @throws ScriptException
 	 * @throws FinMatchException
 	 */
-	public void agit(int id_version, GameState<?,ReadWrite> state) throws ScriptException, FinMatchException
+	public void agit(int id_version, Table table, Robot robot) throws ScriptException, FinMatchException
 	{
 //		if(state.robot instanceof RobotReal)
 //			log.debug("Agit version "+id_version);
@@ -73,7 +70,7 @@ public abstract class ScriptAnticipable
 		}*/
 		try
 		{
-			execute(id_version, state);
+			execute(id_version, table, robot);
 		}
 		catch (Exception e)
 		{
@@ -83,7 +80,7 @@ public abstract class ScriptAnticipable
 		}
 		finally
 		{
-			termine(state);
+			termine(table, robot);
 		}
 
 	}
@@ -103,7 +100,7 @@ public abstract class ScriptAnticipable
 	 * @throws ScriptException
 	 * @throws UnableToMoveException 
 	 */
-	protected abstract void execute(int id_version, GameState<?,ReadWrite>state) throws UnableToMoveException, FinMatchException;
+	protected abstract void execute(int id_version, Table table, Robot robot) throws UnableToMoveException, FinMatchException;
 
 	public void updateConfig(Config config)
 	{

@@ -2,6 +2,7 @@ package scripts.anticipables;
 
 import java.util.ArrayList;
 
+import pathfinding.ChronoGameState;
 import pathfinding.GameState;
 import pathfinding.dstarlite.GridSpace;
 import permissions.ReadOnly;
@@ -13,8 +14,10 @@ import hook.HookFactory;
 import hook.methods.UtiliseActionneur;
 import hook.types.HookDate;
 import robot.ActuatorOrder;
+import robot.Robot;
 import robot.RobotChrono;
 import scripts.ScriptAnticipable;
+import table.Table;
 import utils.Log;
 
 /**
@@ -31,25 +34,25 @@ public class SortieZoneDepart extends ScriptAnticipable {
 	}
 
 	@Override
-	public ArrayList<Integer> getVersions(GameState<RobotChrono,ReadOnly> state) {
+	public ArrayList<Integer> getVersions(Table table, Robot robot) {
 		ArrayList<Integer> out = new ArrayList<Integer>();
 		return out;
 	}
 
 	@Override
-	protected void execute(int id_version, GameState<?,ReadWrite> state)
+	protected void execute(int id_version, Table table, Robot robot)
 			throws UnableToMoveException, FinMatchException
 	{
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
 		Hook hook = new HookDate(log, 2000);
 		hook.ajouter_callback(new UtiliseActionneur(ActuatorOrder.TEST));
 		hooks.add(hook);
-		state.robot.tourner(Math.PI);
-		state.robot.avancer(500, hooks);
+		robot.tourner(Math.PI);
+		robot.avancer(500, hooks);
 	}
 
 	@Override
-	protected void termine(GameState<?,ReadWrite> state) throws FinMatchException
+	protected void termine(Table table, Robot robot) throws FinMatchException
 	{}
 
 	@Override
