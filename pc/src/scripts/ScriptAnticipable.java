@@ -8,8 +8,6 @@ import hook.HookFactory;
 
 import java.util.ArrayList;
 
-import pathfinding.ChronoGameState;
-import pathfinding.GameState;
 import robot.Robot;
 import exceptions.FinMatchException;
 import exceptions.ScriptException;
@@ -61,7 +59,7 @@ public abstract class ScriptAnticipable
 	{
 //		if(state.robot instanceof RobotReal)
 //			log.debug("Agit version "+id_version);
-		int pointEntree = id_version;
+//		int pointEntree = id_version;
 		
 /*		if(state.robot.getPosition().squaredDistance(gridspace.computeVec2(pointEntree)) > squared_tolerance_depart_script)
 		{
