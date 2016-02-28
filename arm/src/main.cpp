@@ -47,72 +47,77 @@ AX<Uart<6>>* ax12;
  */
 void thread_ecoute_serie(void* p)
 {
-	 serial_rb.init(115200);
-	 serial_ax.init(57600);
+	 serial_rb.init(115200, UART_MODE_TX_RX);
+	 serial_ax.init(57600, UART_MODE_TX);
 	 ax12 = new AX<Uart<6>>(0, 0, 1023);
     uint16_t idDernierPaquet = -1;
 		Hook* hookActuel;
 		uint8_t nbcallbacks;
 		uint16_t id;
-
+serial_rb.printf("A");
 		while(1)
 		{
 			if(serial_rb.available())
 			{
-				unsigned char out[50];
+				serial_rb.printf("B");
 				unsigned char lecture[50];
-                unsigned char entete;
-                uint8_t index = 0;
-                // Vérification de l'entête
+				unsigned char entete;
+				uint8_t index = 0;
+				// Vérification de l'entête
 
-                serial_rb.read_char(&entete, SERIE_TIMEOUT);
-                if(entete != 0x55)
-                    continue;
+				serial_rb.send_char(0x99);
+				serial_rb.read_char(&entete);
+				serial_rb.send_char(entete);
+				if(entete != 0x55)
+					continue;
+				serial_rb.send_char(0x10);
 
-                serial_rb.read_char(&entete, SERIE_TIMEOUT);
-                if(entete != 0xAA)
-                    continue;
+				serial_rb.read_char(&entete);
+				if(entete != 0xAA)
+					continue;
+			   serial_rb.send_char(0x11);
 
-                // Récupération de l'id
-                serial_rb.read_char(lecture, SERIE_TIMEOUT); // id point fort
-                serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // id point faible
+				serial_rb.send_char(0x10);
+				// Récupération de l'id
+				serial_rb.read_char(lecture); // id point fort
+				serial_rb.send_char(0x11);
+				serial_rb.read_char(lecture+(++index)); // id point faible
+				serial_rb.send_char(0x12);
+				uint16_t idPaquet = (lecture[ID_FORT] << 8) + lecture[ID_FAIBLE];
 
-                uint16_t idPaquet = (lecture[ID_FORT] << 8) + lecture[ID_FAIBLE];
-                
-                // On redemande les paquets manquants si besoin est
-                if(idPaquet > idDernierPaquet)
-                {
-                    idDernierPaquet++; // id paquet théoriquement reçu
-                    while(idPaquet > idDernierPaquet)
-                        askResend(idDernierPaquet++);
-                }
+				// On redemande les paquets manquants si besoin est
+				if(idPaquet > idDernierPaquet)
+				{
+					idDernierPaquet++; // id paquet théoriquement reçu
+					while(idPaquet > idDernierPaquet)
+						askResend(idDernierPaquet++);
+				}
 
-				serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // lecture de la commande
+				serial_rb.read_char(lecture+(++index)); // lecture de la commande
 
+				serial_rb.send_char(lecture[COMMANDE]);
 
 				if(lecture[COMMANDE] == IN_PING)
 				{
-					out[3] = OUT_PONG1;
-					out[4] = OUT_PONG2;
-					send(out, 5+2);
+					sendPong();
 				}
 				else if(lecture[COMMANDE] == IN_ACTIONNEURS)
 				{
-					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT);
+					serial_rb.read_char(lecture+(++index));
 					ax12->goTo(lecture[PARAM]);
 				}
 				else if(lecture[COMMANDE] == IN_TOURNER)
 				{
-					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT);
-					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT);
+					serial_rb.read_char(lecture+(++index));
+					serial_rb.read_char(lecture+(++index));
 					uint16_t angle = (lecture[PARAM] << 8) + lecture[PARAM + 1];
 					vTaskDelay(1000);
 					sendArrive();
 				}
 				else if((lecture[COMMANDE] & 0xFE) == IN_AVANCER)
 				{
-					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT);
-					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT);
+					serial_rb.read_char(lecture+(++index));
+					serial_rb.read_char(lecture+(++index));
 					uint16_t distance = (lecture[PARAM] << 8) + lecture[PARAM + 1];
 					bool mur = lecture[COMMANDE] == IN_AVANCER_MUR;
 					vTaskDelay(1000);
@@ -120,11 +125,11 @@ void thread_ecoute_serie(void* p)
 				}
 				else if(lecture[COMMANDE] == IN_INIT_ODO)
 				{
-					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // x
-					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // xy
-					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // y
-					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // o
-					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // o
+					serial_rb.read_char(lecture+(++index)); // x
+					serial_rb.read_char(lecture+(++index)); // xy
+					serial_rb.read_char(lecture+(++index)); // y
+					serial_rb.read_char(lecture+(++index)); // o
+					serial_rb.read_char(lecture+(++index)); // o
 
 					int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
 					x -= 1500;
@@ -153,8 +158,8 @@ void thread_ecoute_serie(void* p)
 				}
 				else if(lecture[COMMANDE] == IN_RESEND_PACKET)
 				{
-					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // id
-					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // id
+					serial_rb.read_char(lecture+(++index)); // id
+					serial_rb.read_char(lecture+(++index)); // id
 					uint16_t id = (lecture[PARAM] << 8) + lecture[PARAM + 1];
 					resend(id);
 				}
@@ -164,13 +169,13 @@ void thread_ecoute_serie(void* p)
 				}
 				else if(lecture[COMMANDE] == IN_REMOVE_SOME_HOOKS)
 				{
-					serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // nb
+					serial_rb.read_char(lecture+(++index)); // nb
 					uint8_t nbIds = lecture[PARAM];
 					vector<Hook*>::iterator it = listeHooks.begin();
 
 					for(uint8_t i = 0; i < nbIds; i++)
 					{
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // date
+						serial_rb.read_char(lecture+(++index)); // date
 						uint16_t id = lecture[PARAM + 1 + i];
 
 						for(uint8_t j = 0; j < listeHooks.size(); j++)
@@ -191,11 +196,11 @@ void thread_ecoute_serie(void* p)
 				{
 					if(lecture[COMMANDE] == IN_HOOK_DATE)
 					{
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // date
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // date
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // date
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // id
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // nb_callback
+						serial_rb.read_char(lecture+(++index)); // date
+						serial_rb.read_char(lecture+(++index)); // date
+						serial_rb.read_char(lecture+(++index)); // date
+						serial_rb.read_char(lecture+(++index)); // id
+						serial_rb.read_char(lecture+(++index)); // nb_callback
 
 						uint32_t date = (lecture[PARAM] << 16) + (lecture[PARAM + 1] << 8) + lecture[PARAM + 2];
 						id = lecture[PARAM + 3];
@@ -205,9 +210,9 @@ void thread_ecoute_serie(void* p)
 					}
 					else if((lecture[COMMANDE] & 0xFE) == IN_HOOK_CONTACT)
 					{
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // nb_capt
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // id
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // nb_callback
+						serial_rb.read_char(lecture+(++index)); // nb_capt
+						serial_rb.read_char(lecture+(++index)); // id
+						serial_rb.read_char(lecture+(++index)); // nb_callback
 						uint8_t nbContact = lecture[PARAM];
 						bool unique = lecture[COMMANDE] == IN_HOOK_CONTACT_UNIQUE;
 						id = lecture[PARAM + 1];
@@ -217,14 +222,14 @@ void thread_ecoute_serie(void* p)
 					}
 					else if(lecture[COMMANDE] == IN_HOOK_DEMI_PLAN)
 					{
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // x point
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // xy point
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // y point
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // x direction
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // xy direction
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // y direction
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // id
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // nb_callback
+						serial_rb.read_char(lecture+(++index)); // x point
+						serial_rb.read_char(lecture+(++index)); // xy point
+						serial_rb.read_char(lecture+(++index)); // y point
+						serial_rb.read_char(lecture+(++index)); // x direction
+						serial_rb.read_char(lecture+(++index)); // xy direction
+						serial_rb.read_char(lecture+(++index)); // y direction
+						serial_rb.read_char(lecture+(++index)); // id
+						serial_rb.read_char(lecture+(++index)); // nb_callback
 
 						int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
 						x -= 1500;
@@ -240,11 +245,11 @@ void thread_ecoute_serie(void* p)
 					}
 					else if((lecture[COMMANDE] & 0xFE) == IN_HOOK_POSITION)
 					{
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // x
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // xy
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // y
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // rayon
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // rayon
+						serial_rb.read_char(lecture+(++index)); // x
+						serial_rb.read_char(lecture+(++index)); // xy
+						serial_rb.read_char(lecture+(++index)); // y
+						serial_rb.read_char(lecture+(++index)); // rayon
+						serial_rb.read_char(lecture+(++index)); // rayon
 
 						int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
 						x -= 1500;
@@ -261,7 +266,7 @@ void thread_ecoute_serie(void* p)
 
 					for(int i = 0; i < nbcallbacks; i++)
 					{
-						serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT); // callback
+						serial_rb.read_char(lecture+(++index)); // callback
 						if(((lecture[index]) & IN_CALLBACK_MASK) == IN_CALLBACK_ELT)
 						{
 							uint8_t nbElem = lecture[index] & ~IN_CALLBACK_MASK;
@@ -277,24 +282,25 @@ void thread_ecoute_serie(void* p)
 						else if(((lecture[index]) & IN_CALLBACK_MASK) == IN_CALLBACK_SCRIPT)
 						{
 							uint8_t nbAct = lecture[index] & ~IN_CALLBACK_MASK;
-							serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT);
-							serial_rb.read_char(lecture+(++index), SERIE_TIMEOUT);
+							serial_rb.read_char(lecture+(++index));
+							serial_rb.read_char(lecture+(++index));
 							uint16_t angle = (lecture[index - 1] << 8) + lecture[index];
 							Exec_Act* tmp = new(pvPortMalloc(sizeof(Exec_Act))) Exec_Act(ax12, angle);
 							hookActuel->insert(tmp, i);
 						}
 					}
 				}
+			}
 
 				//					serial_rb.printfln("color rouge");
-			}
+
 			else // on n'attend que s'il n'y avait rien. Ainsi, si la série prend du retard elle n'attend pas pour traiter toutes les données entrantes suivantes
 			{
 //				vTaskDelay(1);
 			}
+		}
 //			serial_rb.printfln("%d", TIM5->CNT);
 
-		}
 }
 
 /**
@@ -600,7 +606,7 @@ int main(int argc, char* argv[])
 	 xTaskCreate(thread_hook, (char*)"TH_HOOK", 2048, 0, 1, 0);
 	 xTaskCreate(thread_ecoute_serie, (char*)"TH_LISTEN", 2048, 0, 1, 0);
 	 xTaskCreate(thread_odometrie, (char*)"TH_ODO", 2048, 0, 1, 0);
-	 xTaskCreate(thread_capteurs, (char*)"TH_CPT", 2048, 0, 1, 0);
+//	 xTaskCreate(thread_capteurs, (char*)"TH_CPT", 2048, 0, 1, 0);
 	 vTaskStartScheduler();
 	 while(1)
 	 {

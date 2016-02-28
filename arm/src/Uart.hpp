@@ -25,8 +25,13 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "FreeRTOS.h"
+#include "task.h"
 
 #define RX_BUFFER_SIZE 128
+
+	enum {
+		READ_TIMEOUT = 0, READ_SUCCESS = 1
+	};
 
 template<uint8_t USART_ID>
 class Uart {
@@ -53,24 +58,17 @@ public:
 	}
 
 	struct ring_buffer {
-
-		ring_buffer() {
-		}
 		unsigned char buffer[RX_BUFFER_SIZE];
 		int head = 0;
 		int tail = 0;
 	};
 	static volatile ring_buffer rx_buffer_;
 
-	enum {
-		READ_TIMEOUT = 0, READ_SUCCESS = 1
-	};
-
 	/**
 	 * Initialize the UART  : set pins, enable clocks, set uart, enable interrupt
 	 *
 	 */
-	static inline void init(uint32_t baudrate) {
+	static inline void init(uint32_t baudrate, uint32_t mode) {
 		GPIO_InitTypeDef GPIO_InitStruct;
 
 		//General settings of pins TX/RX
@@ -107,12 +105,11 @@ public:
 
 			HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 			break;
-		case 6:
+		case 6: // Série AX12
 			UART.Instance = USART6;
-
+//			HAL_HalfDuplex_Init(&UART); // si un jour on a le temps de configurer correctement les AX12...
 			GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7; // Pins C6 (TX) and C7 (RX)
 			GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
-
 			__HAL_RCC_GPIOC_CLK_ENABLE();
 			__HAL_RCC_USART6_CLK_ENABLE();
 
@@ -128,7 +125,7 @@ public:
 		UART.Init.WordLength = UART_WORDLENGTH_8B; // octet comme taille élémentaire (standard)
 		UART.Init.StopBits = UART_STOPBITS_1; // bit de stop = 1 (standard)
 		UART.Init.Parity = UART_PARITY_NONE; // pas de bit de parité (standard)
-		UART.Init.Mode = UART_MODE_TX_RX;
+		UART.Init.Mode = mode;
 
 		if (HAL_UART_Init(&UART) != HAL_OK)
 			while(1);
@@ -146,11 +143,10 @@ public:
 
 	/**
 	 * Availability of data in the buffer
-	 *
 	 */
-	static inline bool available(void) {
-		return (RX_BUFFER_SIZE + rx_buffer_.head - rx_buffer_.tail)
-				% RX_BUFFER_SIZE;
+	static inline bool available(void)
+	{
+		return rx_buffer_.head != rx_buffer_.tail;
 	}
 
 	
@@ -158,27 +154,14 @@ public:
 	 * Read one byte from the ring buffer with a timeout (~ in ms)
 	 *
 	 */
-	static inline uint8_t read_char(unsigned char *byte, uint16_t timeout = 0) {
-		uint16_t i = 0;
-		uint8_t j = 0;
-
-		// Hack for timeout
-		if (timeout > 0)
-			timeout *= 26;
-
-		while (!available()) {
-			if (timeout > 0) {
-				if (i > timeout)
-					return READ_TIMEOUT;
-				if (j == 0)
-					i++;
-				j++;
-			}
-		}
-
+	static inline uint8_t read_char(unsigned char *byte)
+	{
+		if(!available())
+			vTaskDelay(1);
+		if(!available())
+			return READ_TIMEOUT;
 		*byte = rx_buffer_.buffer[rx_buffer_.tail];
 		rx_buffer_.tail = (rx_buffer_.tail + 1) % RX_BUFFER_SIZE;
-
 		return READ_SUCCESS;
 	}
 
@@ -189,7 +172,8 @@ public:
 	 */
 	static inline void store_char(unsigned char c) {
 		int i = (rx_buffer_.head + 1) % RX_BUFFER_SIZE;
-		if (i != rx_buffer_.tail) {
+		if (i != rx_buffer_.tail)
+		{
 			rx_buffer_.buffer[rx_buffer_.head] = c;
 			rx_buffer_.head = i;
 		}

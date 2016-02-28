@@ -59,6 +59,12 @@ void inline sendArrive()
 	send(out, 6);
 }
 
+void inline sendPong()
+{
+	unsigned char out[] = {0, 0, 0, 0, OUT_PONG1, OUT_PONG2, 0};
+	send(out, 5+2);
+}
+
 void inline sendElementShoot(uint8_t nbElem)
 {
 	unsigned char out[] = {0, 0, 0, 0, OUT_ELEMENT_SHOOTE, nbElem, 0};
