@@ -9,6 +9,15 @@ extern SemaphoreHandle_t serial_rb_mutex_TX;
 extern unsigned char paquetsEnvoyes[TAILLE_BUFFER_ECRITURE_SERIE][20];
 extern uint8_t longueurPaquets[TAILLE_BUFFER_ECRITURE_SERIE];
 
+bool inline verifieChecksum(unsigned char* m, uint8_t longueur)
+{
+	uint8_t lu, c = 0;
+	for(uint8_t i = 0; i <= longueur; i++)
+		c += m[i];
+	serial_rb.read_char(&lu);
+	return (~c & 0xFF) == lu; // c est casté en int avant de faire ~, donc il faut vérifier uniquement l'octet de poids faible
+}
+
 void inline resend(uint16_t id)
 {
 	if(id > idPaquetEnvoi - TAILLE_BUFFER_ECRITURE_SERIE)
@@ -16,7 +25,7 @@ void inline resend(uint16_t id)
 		unsigned char* m = paquetsEnvoyes[id % TAILLE_BUFFER_ECRITURE_SERIE];
 		uint8_t longueur = longueurPaquets[id % TAILLE_BUFFER_ECRITURE_SERIE];
 		*(m+2) = idPaquetEnvoi >> 8; // on actualise l'ID et le checksum
-		*(m+3) = (uint8_t) idPaquetEnvoi;
+		*(m+3) = (uint8_t) idPaquetEnvoi & 0xFF;
 		uint8_t c = 0;
 		for(int i = 2; i < longueur-1; i++)
 			c += m[i];
@@ -49,14 +58,16 @@ void inline send(unsigned char* m, uint8_t longueur)
 
 void inline askResend(uint16_t id)
 {
-	unsigned char out[] = {0, 0, 0, 0, OUT_RESEND_PACKET, (uint8_t) (id >> 8), (uint8_t) (id), 0};
-	send(out, 8);
+//	unsigned char out[] = {0, 0, 0, 0, OUT_RESEND_PACKET, (uint8_t) (id >> 8), (uint8_t) (id), 0};
+	unsigned char out[] = {0, 0, 0, 0, OUT_RESEND_PACKET, 0, 1, 0};
+//	send(out, 5+3);
+	send(out, 5+3);
 }
 
 void inline sendArrive()
 {
 	unsigned char out[] = {0, 0, 0, 0, OUT_ROBOT_ARRIVE, 0};
-	send(out, 6);
+	send(out, 5+1);
 }
 
 void inline sendPong()

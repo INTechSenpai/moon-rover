@@ -54,35 +54,43 @@ void thread_ecoute_serie(void* p)
 		Hook* hookActuel;
 		uint8_t nbcallbacks;
 		uint16_t id;
-serial_rb.printf("A");
+
 		while(1)
 		{
 			if(serial_rb.available())
 			{
-				serial_rb.printf("B");
 				unsigned char lecture[50];
 				unsigned char entete;
 				uint8_t index = 0;
 				// Vérification de l'entête
 
-				serial_rb.send_char(0x99);
+//				sendPong();
+//				askResend(0);
+//				serial_rb.send_char(0x99);
 				serial_rb.read_char(&entete);
-				serial_rb.send_char(entete);
+//				serial_rb.send_char(entete);
 				if(entete != 0x55)
+				{
+//				serial_rb.send_char(0x88);
 					continue;
-				serial_rb.send_char(0x10);
+				}
+//				serial_rb.send_char(0x10);
 
 				serial_rb.read_char(&entete);
 				if(entete != 0xAA)
-					continue;
-			   serial_rb.send_char(0x11);
+				{
+//					serial_rb.send_char(0x89);
 
-				serial_rb.send_char(0x10);
+					continue;
+				}
+//			   serial_rb.send_char(0x11);
+
+//				serial_rb.send_char(0x10);
 				// Récupération de l'id
 				serial_rb.read_char(lecture); // id point fort
-				serial_rb.send_char(0x11);
+//				serial_rb.send_char(0x11);
 				serial_rb.read_char(lecture+(++index)); // id point faible
-				serial_rb.send_char(0x12);
+//				serial_rb.send_char(0x12);
 				uint16_t idPaquet = (lecture[ID_FORT] << 8) + lecture[ID_FAIBLE];
 
 				// On redemande les paquets manquants si besoin est
@@ -95,33 +103,49 @@ serial_rb.printf("A");
 
 				serial_rb.read_char(lecture+(++index)); // lecture de la commande
 
-				serial_rb.send_char(lecture[COMMANDE]);
+//				serial_rb.send_char(lecture[COMMANDE]);
 
 				if(lecture[COMMANDE] == IN_PING)
 				{
-					sendPong();
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+						sendPong();
 				}
 				else if(lecture[COMMANDE] == IN_ACTIONNEURS)
 				{
 					serial_rb.read_char(lecture+(++index));
-					ax12->goTo(lecture[PARAM]);
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+						ax12->goTo(lecture[PARAM]);
 				}
 				else if(lecture[COMMANDE] == IN_TOURNER)
 				{
 					serial_rb.read_char(lecture+(++index));
 					serial_rb.read_char(lecture+(++index));
-					uint16_t angle = (lecture[PARAM] << 8) + lecture[PARAM + 1];
-					vTaskDelay(1000);
-					sendArrive();
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+					{
+						uint16_t angle = (lecture[PARAM] << 8) + lecture[PARAM + 1];
+						vTaskDelay(1000);
+						sendArrive();
+					}
 				}
 				else if((lecture[COMMANDE] & 0xFE) == IN_AVANCER)
 				{
 					serial_rb.read_char(lecture+(++index));
 					serial_rb.read_char(lecture+(++index));
-					uint16_t distance = (lecture[PARAM] << 8) + lecture[PARAM + 1];
-					bool mur = lecture[COMMANDE] == IN_AVANCER_MUR;
-					vTaskDelay(1000);
-					sendArrive();
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+					{
+						uint16_t distance = (lecture[PARAM] << 8) + lecture[PARAM + 1];
+						bool mur = lecture[COMMANDE] == IN_AVANCER_MUR;
+						vTaskDelay(1000);
+						sendArrive();
+					}
 				}
 				else if(lecture[COMMANDE] == IN_INIT_ODO)
 				{
@@ -131,21 +155,26 @@ serial_rb.printf("A");
 					serial_rb.read_char(lecture+(++index)); // o
 					serial_rb.read_char(lecture+(++index)); // o
 
-					int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
-					x -= 1500;
-					uint16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
-					uint16_t o = (lecture[PARAM + 3] << 8) + lecture[PARAM + 4];
-
-					if(!startOdo)
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
 					{
-						x_odo = x;
-						y_odo = y;
-						orientation_odo = o/1000.;
+						int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
+						x -= 1500;
+						uint16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
+						uint16_t o = (lecture[PARAM + 3] << 8) + lecture[PARAM + 4];
 
-	//					orientationTick = RAD_TO_TICK(parseInt(lecture, &(++index))/1000.);
-//						serial_rb.printfln("%d",(int)orientationTick);
-//						serial_rb.printfln("%d",(int)(TICK_TO_RAD(orientationTick)*1000));
-						startOdo = true;
+						if(!startOdo)
+						{
+							x_odo = x;
+							y_odo = y;
+							orientation_odo = o/1000.;
+
+		//					orientationTick = RAD_TO_TICK(parseInt(lecture, &(++index))/1000.);
+	//						serial_rb.printfln("%d",(int)orientationTick);
+	//						serial_rb.printfln("%d",(int)(TICK_TO_RAD(orientationTick)*1000));
+							startOdo = true;
+						}
 					}
 //					else
 //						serial_rb.printfln("ERR_ODO",(int)orientationTick);
@@ -155,17 +184,27 @@ serial_rb.printf("A");
 				else if(lecture[COMMANDE] == IN_GET_XYO)
 				{
 // TODO
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
 				}
 				else if(lecture[COMMANDE] == IN_RESEND_PACKET)
 				{
 					serial_rb.read_char(lecture+(++index)); // id
 					serial_rb.read_char(lecture+(++index)); // id
-					uint16_t id = (lecture[PARAM] << 8) + lecture[PARAM + 1];
-					resend(id);
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+					{
+						uint16_t id = (lecture[PARAM] << 8) + lecture[PARAM + 1];
+						resend(id);
+					}
 				}
 				else if(lecture[COMMANDE] == IN_REMOVE_ALL_HOOKS)
 				{
-					listeHooks.clear();
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+						listeHooks.clear();
 				}
 				else if(lecture[COMMANDE] == IN_REMOVE_SOME_HOOKS)
 				{
@@ -191,6 +230,8 @@ serial_rb.printf("A");
 						}
 
 					}
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
 				}
 				else if((lecture[COMMANDE] & IN_HOOK_MASK) == IN_HOOK_GROUP)
 				{
