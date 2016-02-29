@@ -18,7 +18,7 @@ import enums.SerialProtocol;
 public class SerialSTM extends SerialConnexion implements Service
 {
 	private static byte[] question, reponse;
-
+	private int premierID;
 	// Il faut qu'ils soient définis avant l'appel au constructeur…
 	static
 	{
@@ -33,7 +33,7 @@ public class SerialSTM extends SerialConnexion implements Service
 		reponse = new byte[3];
 		reponse[0] = SerialProtocol.IN_PONG1.code;
 		reponse[1] = SerialProtocol.IN_PONG2.code;
-		reponse[2] = (byte) ~(SerialProtocol.IN_PONG1.code+SerialProtocol.IN_PONG2.code); // checksum
+		reponse[2] = 0;
 	}
 	
 	public SerialSTM(Log log, int baudrate) {
@@ -69,10 +69,8 @@ public class SerialSTM extends SerialConnexion implements Service
 			// on laisse le temps au périphérique de réagir
 			Sleep.sleep(100);
 			
-			log.debug("Nb dispo : "+input.available());
 			byte[] lu = new byte[input.available()];
 			int nbLu = input.read(lu);
-			
 			if(Config.debugSerie)
 			{
 				log.debug("Réponse : ");
@@ -81,14 +79,26 @@ public class SerialSTM extends SerialConnexion implements Service
 			
 			// le +4 vient du fait qu'on ne vérifie pas l'id du paquet qui arrive ni l'entete
 			if(nbLu != reponse.length + 4)	// vérification du nombre de byte lu
+			{
+//				log.debug("Mauvaise taille");
 				return false;
+			}
 
-			if(lu[0] != 0x55 || lu[1] != 0xAA) // vérification de l'entete
+			if(lu[0] != (byte)0x55 || lu[1] != (byte)0xAA) // vérification de l'entete
+			{
+//				log.debug("Mauvais entête "+lu[0]+" "+(byte)0x55+" "+lu[1]+" "+(byte)0xAA);
 				return false;
+			}
 			
-			for(int i = 0; i < reponse.length; i++)
+			premierID = (lu[2] << 8) + lu[3];
+			
+			// on ne vérifie pas le checksum qui dépend de l'id
+			for(int i = 0; i < reponse.length-1; i++)
 				if(reponse[i] != lu[i+4]) // on ne vérifie pas l'ID
+				{
+						log.debug("Erreur au caractère "+(i+4));
 					return false;
+				}
 			
 			log.debug("Série trouvée.");
 			return true;
@@ -102,7 +112,7 @@ public class SerialSTM extends SerialConnexion implements Service
 	
 	protected void estimeLatence()
 	{
-		try {
+/*		try {
 			log.debug("Estimation de la latence…");
 			long avant = System.currentTimeMillis();
 			for(int i = 0; i < 10; i++)
@@ -116,7 +126,7 @@ public class SerialSTM extends SerialConnexion implements Service
 		catch (Exception e)
 		{
 			e.printStackTrace();
-		}
+		}*/
 	}
 	
 	protected void afficheMessage(byte[] out)
@@ -159,7 +169,7 @@ public class SerialSTM extends SerialConnexion implements Service
 			int c = 0;
 			for(int i = 0; i < out.length; i++)
 				c += out[i];
-			output.write(~c);
+			output.write((byte)~c);
 		}
 		catch (Exception e)
 		{
@@ -186,5 +196,11 @@ public class SerialSTM extends SerialConnexion implements Service
 	@Override
 	public void updateConfig(Config config)
 	{}
+
+	@Override
+	public int getFirstID()
+	{
+		return premierID;
+	}
 
 }

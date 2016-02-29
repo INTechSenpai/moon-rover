@@ -16,4 +16,5 @@ public interface SerialInterface
 	public void close();
 	public boolean available() throws IOException;
 	public byte read() throws IOException, MissingCharacterException;
+	public int getFirstID();
 }

@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
+import utils.Config;
 import utils.Log;
 import utils.Sleep;
 import exceptions.MissingCharacterException;
@@ -166,15 +167,18 @@ public abstract class SerialConnexion implements SerialPortEventListener, Serial
 	
 	protected void attendSiPing()
 	{
+//		log.debug("busy : "+busy);
 		// Si la série est occupée, on attend sagement
 		if(busy)
 			synchronized(this)
 			{
+				log.debug("Attente du ping");
 				try {
 					wait();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				log.debug("Attente du ping finie");
 			}
 	}
 
@@ -199,11 +203,14 @@ public abstract class SerialConnexion implements SerialPortEventListener, Serial
 	/**
 	 * Gestion d'un évènement sur la série.
 	 */
-	public void serialEvent(SerialPortEvent oEvent)
+	public synchronized void serialEvent(SerialPortEvent oEvent)
 	{
+//		log.debug("SerialEvent !");
 		try {
 			if(input.available() > 0)
 				notify();
+//			else
+//				log.debug("Fausse alerte");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -226,14 +233,24 @@ public abstract class SerialConnexion implements SerialPortEventListener, Serial
 	public byte read() throws IOException, MissingCharacterException
 	{
 		attendSiPing();
-
 		if(input.available() == 0)
 			Sleep.sleep(1); // On attend un tout petit peu, au cas où
 
 		if(input.available() == 0)
 			throw new MissingCharacterException(); // visiblement on ne recevra rien de plus
+ 
+		byte out = (byte) input.read();
 
-		return (byte) input.read();
+		if(Config.debugSerie)
+		{
+			String s = Integer.toHexString(out).toUpperCase();
+			if(s.length() == 1)
+				log.debug("Reçu : "+"0"+s);
+			else
+				log.debug("Reçu : "+s.substring(s.length()-2, s.length()));	
+		}
+
+		return out;
 	}
 	
 	protected abstract boolean ping();

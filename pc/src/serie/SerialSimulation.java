@@ -72,4 +72,11 @@ public class SerialSimulation implements SerialInterface, Service {
 	@Override
 	public void updateConfig(Config config)
 	{}
+
+	@Override
+	public int getFirstID()
+	{
+		return 0;
+	}
+
 }
