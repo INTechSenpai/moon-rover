@@ -24,7 +24,7 @@ import exceptions.MissingCharacterException;
  *
  */
 
-public abstract class SerialConnexion implements SerialPortEventListener, SerialInterface
+public abstract class SerialConnexion implements SerialPortEventListener
 {
 	private SerialPort serialPort;
 	protected Log log;
@@ -230,7 +230,7 @@ public abstract class SerialConnexion implements SerialPortEventListener, Serial
 	 * @throws IOException
 	 * @throws MissingCharacterException
 	 */
-	public byte read() throws IOException, MissingCharacterException
+	public int read() throws IOException, MissingCharacterException
 	{
 		attendSiPing();
 		if(input.available() == 0)
@@ -250,7 +250,7 @@ public abstract class SerialConnexion implements SerialPortEventListener, Serial
 				log.debug("Reçu : "+s.substring(s.length()-2, s.length()));	
 		}
 
-		return out;
+		return out & 0xFF;
 	}
 	
 	protected abstract boolean ping();

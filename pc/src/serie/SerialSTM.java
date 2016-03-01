@@ -15,7 +15,7 @@ import enums.SerialProtocol;
  *
  */
 
-public class SerialSTM extends SerialConnexion implements Service
+public class SerialSTM extends SerialConnexion implements Service, SerialInterface
 {
 	private static byte[] question, reponse;
 	private int premierID;
@@ -27,7 +27,7 @@ public class SerialSTM extends SerialConnexion implements Service
 		question[1] = (byte) 0xAA;
 		question[2] = 0;
 		question[3] = 0;
-		question[4] = SerialProtocol.OUT_PING.code;
+		question[4] = SerialProtocol.OUT_PING_NEW_CONNECTION.code;
 		question[5] = (byte) ~question[4]; // checksum
 		
 		reponse = new byte[3];
@@ -90,7 +90,7 @@ public class SerialSTM extends SerialConnexion implements Service
 				return false;
 			}
 			
-			premierID = (lu[2] << 8) + lu[3];
+			premierID = (((int)lu[2] & 0xFF) << 8) + ((int)lu[3] & 0xFF);
 			
 			// on ne vérifie pas le checksum qui dépend de l'id
 			for(int i = 0; i < reponse.length-1; i++)
@@ -169,6 +169,11 @@ public class SerialSTM extends SerialConnexion implements Service
 			int c = 0;
 			for(int i = 0; i < out.length; i++)
 				c += out[i];
+/*			if((new Random()).nextInt(5) == 0)
+			{
+				log.debug("Erreur d'envoi simulée");
+				c = 1;
+			}*/
 			output.write((byte)~c);
 		}
 		catch (Exception e)

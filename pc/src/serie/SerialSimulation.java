@@ -60,7 +60,7 @@ public class SerialSimulation implements SerialInterface, Service {
 	}
 
 	@Override
-	public byte read() throws IOException, MissingCharacterException
+	public int read() throws IOException, MissingCharacterException
 	{
 		return 0;
 	}
