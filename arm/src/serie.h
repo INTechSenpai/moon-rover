@@ -58,9 +58,7 @@ void inline send(unsigned char* m, uint8_t longueur)
 
 void inline askResend(uint16_t id)
 {
-//	unsigned char out[] = {0, 0, 0, 0, OUT_RESEND_PACKET, (uint8_t) (id >> 8), (uint8_t) (id), 0};
-	unsigned char out[] = {0, 0, 0, 0, OUT_RESEND_PACKET, 0, 1, 0};
-//	send(out, 5+3);
+	unsigned char out[] = {0, 0, 0, 0, OUT_RESEND_PACKET, (uint8_t) (id >> 8), (uint8_t) (id), 0};
 	send(out, 5+3);
 }
 

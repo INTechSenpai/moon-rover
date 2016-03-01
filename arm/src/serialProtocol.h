@@ -1,4 +1,5 @@
 #define IN_PING 0x3F
+#define IN_PING_NEW_CONNECTION 0x40
 #define IN_PONG1 0x42
 #define IN_PONG2 0x57
 #define IN_AVANCER 0x02

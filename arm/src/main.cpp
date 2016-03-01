@@ -101,16 +101,27 @@ void thread_ecoute_serie(void* p)
 						askResend(idDernierPaquet++);
 				}
 
+				// Si on reçoit un ID ancien… on fait comme si de rien n'était
+
 				serial_rb.read_char(lecture+(++index)); // lecture de la commande
 
 //				serial_rb.send_char(lecture[COMMANDE]);
 
-				if(lecture[COMMANDE] == IN_PING)
+				if(lecture[COMMANDE] == IN_PING_NEW_CONNECTION)
 				{
 					if(!verifieChecksum(lecture, index))
 						askResend(idPaquet);
 					else
+					{
+						idDernierPaquet = idPaquet; // on réinitialise le numéro des paquets
 						sendPong();
+					}
+				}
+				else if(lecture[COMMANDE] == IN_PING)
+				{
+					serial_rb.read_char(lecture+(++index));
+					// Cas particulier. Pas de checksum
+					sendPong();
 				}
 				else if(lecture[COMMANDE] == IN_ACTIONNEURS)
 				{
