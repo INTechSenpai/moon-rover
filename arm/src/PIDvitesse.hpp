@@ -12,52 +12,79 @@
 #include <stdint.h>
 #include "utils.h"
 
+/**
+ *
+ * on ne peut pas juste faire deux asser en vitesse, un pour chaque roue
+ * déjà parce que les contraintes mécaniques affectent les deux de manière interdépendante
+ * ensuite parce qu'il faut faire attention à la courbure. Par exemple, si un moteur est moins péchu que l'autre, il ne faut pas que la trajectoire fasse n'importe quoi
+ * dans ce cas, le moteur le plus péchu devra peut-être attendre l'autre afin de conserver une courbure convenable
+ *
+ */
 
 class PIDvitesse
 {
 public:
 
-
-	PIDvitesse(volatile int32_t* vitesseGaucheReelle, volatile int32_t* vitesseDroiteReelle, volatile int32_t* commandePWMGauche, volatile int32_t* commandePWMDroite, volatile int32_t* consigneVitesseGauche, volatile int32_t* consigneVitesseDroite)
+	PIDvitesse(volatile int32_t* vitesseLineaireReelle, volatile int32_t* courbureReelle, volatile int32_t* commandePWMGauche, volatile int32_t* commandePWMDroite, volatile int32_t* consigneVitesseLineaire, volatile int32_t* consigneCourbure)
 	{
-		this->vitesseGaucheReelle = vitesseGaucheReelle;
-		this->vitesseDroiteReelle = vitesseDroiteReelle;
+		this->vitesseLineaireReelle = vitesseLineaireReelle;
+		this->courbureReelle = courbureReelle;
 		this->commandePWMGauche = commandePWMGauche;
 		this->commandePWMDroite = commandePWMDroite;
-		this->consigneVitesseGauche = consigneVitesseGauche;
-		this->consigneVitesseDroite = consigneVitesseDroite;
+		this->consigneVitesseLineaire = consigneVitesseLineaire;
+		this->consigneCourbure = consigneCourbure;
 
-		setTunings(0, 0, 0);
+		setTuningsC(0, 0, 0);
+		setTuningsV(0, 0, 0);
 		epsilon = 0;
 		PMWmax = 1000;
-		pre_errorG = 0;
-		derivativeG = 0;
-		integralG = 0;
 
-		pre_errorD = 0;
-		derivativeD = 0;
-		integralD = 0;
+		pre_errorC = 0;
+		derivativeC = 0;
+		integralC = 0;
+		pre_errorV = 0;
+		derivativeV = 0;
+		integralV = 0;
 	}
 
 	void compute() {
-// TODO modification de la consigne afin de respecter les contraintes mécaniques
-// notamment : accélération limitée, vitesse limitée, somme des vitesses limitées, …
+	// On suppose que consigneVitesseLineaire et consigneCourbure ont déjà été limitées
+		int32_t errorV = (*consigneVitesseLineaire) - (*vitesseLineaireReelle);
+		derivativeV = errorV - pre_errorV;
+		integralV += errorV;
+		pre_errorV = errorV;
 
-		int32_t errorG = (*consigneVitesseGauche) - (*vitesseGaucheReelle);
-		derivativeG = errorG - pre_errorG;
-		integralG += errorG;
-		pre_errorG = errorG;
+		// Commande pour ajuster la vitesse linéaire
+		int32_t resultV = (int32_t)(kpV * errorV + kiV * integralV + kdV * derivativeV);
 
-		int32_t resultG = (int32_t)(
-				kp * errorG + ki * integralG + kd * derivativeG);
+// TODO limitations en accélération linéaire
 
-		int32_t errorD = (*consigneVitesseDroite) - (*vitesseDroiteReelle);
-		derivativeD = errorD - pre_errorD;
-		integralD += errorD;
-		pre_errorD = errorD;
+		int32_t consigneRotation = (*consigneVitesseLineaire) * demiDistance * (*consigneCourbure);
+// TODO limitation pour la vitesse de rotation
 
-		int32_t resultD = (int32_t)(
-				kp * errorD + ki * integralD + kd * derivativeD);
+		*consigneCourbure = consigneRotation / ((*consigneVitesseLineaire) * demiDistance);
+
+		int32_t errorC = (*consigneCourbure) - (*courbureReelle);
+		derivativeC = errorC - pre_errorC;
+		integralC += errorC;
+		pre_errorC = errorC;
+
+		// Commande pour ajuster la courbure
+		int32_t resultC = (int32_t)(kpC * errorC + kiC * integralC + kdC * derivativeC);
+
+// TODO limitations de la dérivée de la courbure
+
+		// Commande pour ajuster la vitesse de rotation
+		int32_t resultR = resultV * demiDistance * resulC;
+
+// TODO limitations en accélération de rotation
+
+
+		// On en déduit la commande pour chaque moteur
+		int32_t resuldG = resultV - resultR;
+		int32_t resuldD = resultV + resultR;
+
+// TODO limitations de l'accélération de chaque roue
 
 		// saturation
 		if(resultG > PWMmax)
@@ -80,13 +107,22 @@ public:
 		(*commandePWMDroite) = resultD;
 	}
 
-	void setTunings(float kp, float ki, float kd) {
+	void setTuningsV(float kp, float ki, float kd) {
 		if (kp < 0 || ki < 0 || kd < 0)
 			return;
 
-		this->kp = kp;
-		this->ki = ki;
-		this->kd = kd;
+		this->kpV = kp;
+		this->kiV = ki;
+		this->kdV = kd;
+	}
+
+	void setTuningsC(float kp, float ki, float kd) {
+		if (kp < 0 || ki < 0 || kd < 0)
+			return;
+
+		this->kpC = kp;
+		this->kiC = ki;
+		this->kdC = kd;
 	}
 
 	void setEpsilon(int32_t seuil) {
@@ -95,34 +131,49 @@ public:
 		epsilon = seuil;
 	}
 
+	void setEpsilon(int32_t demiDistance) {
+		if(demiDistance < 0)
+			return;
+		this->demiDistance = demiDistance;
+	}
+
 	void resetErrors() {
-		pre_errorG = 0;
-		integralG = 0;
-		pre_errorD = 0;
-		integralD = 0;
+		pre_errorC = 0;
+		derivativeC = 0;
+		integralC = 0;
+		pre_errorV = 0;
+		derivativeV = 0;
+		integralV = 0;
 	}
 private:
 
-	float kp;
-	float ki;
-	float kd;
+	float kpV;
+	float kiV;
+	float kdV;
 
-	volatile int32_t* vitesseGaucheReelle;
-	volatile int32_t* vitesseDroiteReelle;
+	float kpC;
+	float kiC;
+	float kdC;
+
+	volatile int32_t* vitesseLineaireReelle;
+	volatile int32_t* courbureReelle;
 	volatile int32_t* commandePWMGauche;
 	volatile int32_t* commandePWMDroite;
 	volatile int32_t* consigneVitesseGauche;
-	volatile int32_t* consigneVitesseDroite
+	volatile int32_t* consigneCourbure;
 
 	int32_t epsilon;
 
-	int32_t pre_errorG;
-	int32_t derivativeG;
-	int32_t integralG;
+	int32_t pre_errorC;
+	int32_t derivativeC;
+	int32_t integralC;
 
-	int32_t pre_errorD;
-	int32_t derivativeD;
-	int32_t integralD;
+	int32_t pre_errorV;
+	int32_t derivativeV;
+	int32_t integralV;
+
+	// La demi-distance entre les deux roues de propulsion
+	int32_t demiDistance;
 };
 
 #endif
