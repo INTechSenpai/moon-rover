@@ -29,7 +29,7 @@ public:
 
 		setTunings(0, 0, 0);
 		epsilon = 0;
-
+		PMWmax = 1000;
 		pre_errorG = 0;
 		derivativeG = 0;
 		integralG = 0;
@@ -40,6 +40,8 @@ public:
 	}
 
 	void compute() {
+// TODO modification de la consigne afin de respecter les contraintes mécaniques
+// notamment : accélération limitée, vitesse limitée, somme des vitesses limitées, …
 
 		int32_t errorG = (*consigneVitesseGauche) - (*vitesseGaucheReelle);
 		derivativeG = errorG - pre_errorG;
@@ -57,9 +59,16 @@ public:
 		int32_t resultD = (int32_t)(
 				kp * errorD + ki * integralD + kd * derivativeD);
 
-		// TODO saturation
+		// saturation
+		if(resultG > PWMmax)
+			resultG = PWMmax;
+		else if(resultG < -PWMmax)
+			resultG = -PWMmax;
 
-
+		if(resultD > PWMmax)
+			resultD = PWMmax;
+		else if(resultD < -PWMmax)
+			resultD = -PWMmax;
 
 		//Seuillage de la commande
 		if (ABS(resultD) < epsilon)
@@ -67,8 +76,8 @@ public:
 		if (ABS(resultG) < epsilon)
 			resultG = 0;
 
-		(*consigneVitesseGauche) = resultG;
-		(*consigneVitesseDroite) = resultD;
+		(*commandePWMGauche) = resultG;
+		(*commandePWMDroite) = resultD;
 	}
 
 	void setTunings(float kp, float ki, float kd) {
