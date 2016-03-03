@@ -421,7 +421,7 @@ void thread_capteurs(void* p)
 
 
 /**
- * Thread d'odométrie
+ * Thread d'odométrie et d'asservissement
  */
 void thread_odometrie(void* p)
 {
@@ -514,6 +514,9 @@ void thread_odometrie(void* p)
 		x_odo += k*distance*cos_orientation_odo;
 		y_odo += k*distance*sin_orientation_odo;
 		xSemaphoreGive(odo_mutex);
+
+	// TODO calculer la vitesse linéaire et la courbure
+
 
 //		vTaskDelay(1000);
 		vTaskDelay(1000 / FREQUENCE_ODO_ASSER);

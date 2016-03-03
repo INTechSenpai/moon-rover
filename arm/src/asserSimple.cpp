@@ -25,7 +25,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
  * 			autrement les unitées ci-dessus ne seront plus valables.
  */
 
-	int32_t zero = 0;
+	int32_t const zero = 0;
 
 	//	Asservissement en vitesse du moteur droit
 	volatile int32_t rightSpeedSetpoint;	// ticks/seconde
@@ -39,10 +39,18 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	volatile int32_t leftPWM;
 	PID leftSpeedPID(&currentLeftSpeed, &leftPWM, &leftSpeedSetpoint);
 
+	//	Asservissement en vitesse linéaire et en courbure
+	volatile int32_t vitesseLineaireReelle;
+	volatile int32_t courbureReelle;
+	volatile int32_t consigneVitesseGauche;
+	volatile int32_t consigneCourbure;
+	PIDvitesse PIDvit(&vitesseLineaireReelle, &courbureReelle, &leftPWM, &rightPWM, &consigneVitesseLineaire, &consigneCourbure);
+
 	//	Asservissement en position : translation
 	volatile int32_t currentDistance;		// distance à parcourir, en ticks
 	volatile int32_t translationSpeed;		// ticks/seconde
 	PID translationPID(&currentDistance, &translationSpeed, &zero);
+
 	//	Asservissement en position : rotation
 
 	volatile int32_t rotationSetpoint;		// angle absolu visé (en ticks)
@@ -203,14 +211,15 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     {
         currentAngle = (int32_t) orientationMoyTick;
         rotationPID.compute();      // Actualise la valeur de 'rotationSpeed'
+        translationPID.compute();      // Actualise la valeur de 'rotationSpeed'
         // gestion de la symétrie pour les déplacements
+
         if(isSymmetry)
             rotationSpeed = -rotationSpeed;
-        leftSpeedSetpoint = - rotationSpeed;
-        rightSpeedSetpoint = rotationSpeed;
-        
-        // TODO : aussi asserv en position
 
+        leftSpeedSetpoint = translationSpeed - rotationSpeed;
+        rightSpeedSetpoint = translationSpeed + rotationSpeed;
+        
         leftSpeedPID.compute();     // Actualise la valeur de 'leftPWM'
         rightSpeedPID.compute();    // Actualise la valeur de 'rightPWM'
 
@@ -221,12 +230,17 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     void controlTrajectoire()
     {
         // TODO
-
-
-
+	uint32_t xR, yR;
+	projection(&xR, &yR);
+	// calcul orientation en R, courbure en R, distance R-robot
+	// calcul courbureSamson
+	// calcul courbureConsigne
+	// calcul vitesseConsigne
+	// calcul vitesseLineaire avec pidTranslation
+	// asser vitesse + courbure
     }
 
-    // freine le plus rapidement possible
+    // freine le plus rapidement possible. Note : on ne garantit rien sur l'orientation, si une roue freine plus vite que l'autre le robot va tourner.
     void controlStop()
     {
         leftSpeedSetpoint = 0;
