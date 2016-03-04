@@ -415,6 +415,8 @@ void thread_capteurs(void* p)
 		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, 0);
 		vTaskDelay(100);
 
+		sendDebug(x, 0, 0, 0, 0, 0, 0, 0); // debug
+
 	}
 
 }

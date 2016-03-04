@@ -89,6 +89,12 @@ void inline sendXYO(uint16_t x, uint16_t y, uint16_t orientation, uint8_t courbu
 	send(out, 5+7);
 }
 
+void inline sendDebug(uint16_t PWMgauche, uint16_t PWMdroit, int16_t vitesseGauche, int16_t vitesseDroite, int16_t distance, int16_t orientation, int16_t vitesseLineaire, int16_t courbure)
+{
+	unsigned char out[] = {0, 0, 0, 0, OUT_DEBUG_ASSER, PWMgauche >> 8, PWMgauche & 0xFF, PWMdroit >> 8, PWMdroit & 0xFF, vitesseGauche >> 8, vitesseGauche & 0xFF, vitesseDroite >> 8, vitesseDroite & 0xFF, distance >> 8, distance & 0xFF, orientation >> 8, orientation & 0xFF, vitesseLineaire >> 8, vitesseLineaire & 0xFF, courbure >> 8, courbure & 0xFF, 0};
+	send(out, 5+16);
+}
+
 void inline sendCapteur(uint16_t x, uint16_t y, uint16_t orientation, uint8_t courbure, bool marcheAvant, uint16_t c)
 {
 	uint8_t code = OUT_CAPTEURS;
