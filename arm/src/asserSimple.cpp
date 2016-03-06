@@ -1,6 +1,7 @@
 
 #include "Motor.h"
 #include "pid.hpp"
+#include "PIDvitesse.hpp"
 #include "average.hpp"
 #include "global.h"
 #include <cmath>
@@ -25,7 +26,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
  * 			autrement les unitées ci-dessus ne seront plus valables.
  */
 
-	int32_t const zero = 0;
+	int32_t zero = 0;
 
 	//	Asservissement en vitesse du moteur droit
 	volatile int32_t rightSpeedSetpoint;	// ticks/seconde
@@ -42,7 +43,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	//	Asservissement en vitesse linéaire et en courbure
 	volatile int32_t vitesseLineaireReelle;
 	volatile int32_t courbureReelle;
-	volatile int32_t consigneVitesseGauche;
+	volatile int32_t consigneVitesseLineaire;
 	volatile int32_t consigneCourbure;
 	PIDvitesse PIDvit(&vitesseLineaireReelle, &courbureReelle, &leftPWM, &rightPWM, &consigneVitesseLineaire, &consigneCourbure);
 
@@ -231,7 +232,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     {
         // TODO
 	uint32_t xR, yR;
-	projection(&xR, &yR);
+//	projection(&xR, &yR);
 	// calcul orientation en R, courbure en R, distance R-robot
 	// calcul courbureSamson
 	// calcul courbureConsigne

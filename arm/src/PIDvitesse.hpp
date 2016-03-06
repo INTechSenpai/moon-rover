@@ -6,8 +6,8 @@
  * Auteur : Paul BERNIER - bernier.pja@gmail.com
  */
 
-#ifndef PID_HPP
-#define PID_HPP
+#ifndef PID_VITESSE_HPP
+#define PID_VITESSE_HPP
 
 #include <stdint.h>
 #include "utils.h"
@@ -37,7 +37,7 @@ public:
 		setTuningsC(0, 0, 0);
 		setTuningsV(0, 0, 0);
 		epsilon = 0;
-		PMWmax = 1000;
+		PWMmax = 100;
 
 		pre_errorC = 0;
 		derivativeC = 0;
@@ -75,14 +75,14 @@ public:
 // TODO limitations de la dérivée de la courbure
 
 		// Commande pour ajuster la vitesse de rotation
-		int32_t resultR = resultV * demiDistance * resulC;
+		int32_t resultR = resultV * demiDistance * resultC;
 
 // TODO limitations en accélération de rotation
 
 
 		// On en déduit la commande pour chaque moteur
-		int32_t resuldG = resultV - resultR;
-		int32_t resuldD = resultV + resultR;
+		int32_t resultG = resultV - resultR;
+		int32_t resultD = resultV + resultR;
 
 // TODO limitations de l'accélération de chaque roue
 
@@ -131,7 +131,7 @@ public:
 		epsilon = seuil;
 	}
 
-	void setEpsilon(int32_t demiDistance) {
+	void setDemiDistance(int32_t demiDistance) {
 		if(demiDistance < 0)
 			return;
 		this->demiDistance = demiDistance;
@@ -159,9 +159,10 @@ private:
 	volatile int32_t* courbureReelle;
 	volatile int32_t* commandePWMGauche;
 	volatile int32_t* commandePWMDroite;
-	volatile int32_t* consigneVitesseGauche;
+	volatile int32_t* consigneVitesseLineaire;
 	volatile int32_t* consigneCourbure;
 
+	uint32_t PWMmax;
 	int32_t epsilon;
 
 	int32_t pre_errorC;

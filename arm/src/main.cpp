@@ -41,6 +41,7 @@ volatile bool startOdo = false;
 volatile bool matchDemarre = true; // TODO
 Uart<6> serial_ax;
 AX<Uart<6>>* ax12;
+volatile bool ping = false;
 
 /**
  * Thread qui écoute la série
@@ -122,6 +123,7 @@ void thread_ecoute_serie(void* p)
 					serial_rb.read_char(lecture+(++index));
 					// Cas particulier. Pas de checksum
 					sendPong();
+					ping = true;
 				}
 				else if(lecture[COMMANDE] == IN_ACTIONNEURS)
 				{
@@ -361,27 +363,26 @@ void thread_ecoute_serie(void* p)
 void thread_hook(void* p)
 {
 
+	while(!matchDemarre)
+		vTaskDelay(10);
 	while(1)
 	{
 
 
-		if(matchDemarre)
+		for(uint8_t i = 0; i < listeHooks.size(); i++)
 		{
-			for(uint8_t i = 0; i < listeHooks.size(); i++)
-			{
-				Hook* hook = listeHooks[i];
+			Hook* hook = listeHooks[i];
 //				serial_rb.printfln("Eval hook");
-	//			serial_rb.printfln("%d %d %d",(int)x_odo, (int)y_odo, (int)(orientation*1000));
-				if((*hook).evalue())
+//			serial_rb.printfln("%d %d %d",(int)x_odo, (int)y_odo, (int)(orientation*1000));
+			if((*hook).evalue())
+			{
+//				serial_rb.printfln("Execution!");
+				if((*hook).execute()) // suppression demandée
 				{
-	//				serial_rb.printfln("Execution!");
-					if((*hook).execute()) // suppression demandée
-					{
-						vPortFree(hook);
-						listeHooks[i] = listeHooks.back();
-						listeHooks.pop_back();
-						i--;
-					}
+					vPortFree(hook);
+					listeHooks[i] = listeHooks.back();
+					listeHooks.pop_back();
+					i--;
 				}
 			}
 		}
@@ -399,6 +400,8 @@ void thread_hook(void* p)
  */
 void thread_capteurs(void* p)
 {
+	while(!ping)
+		vTaskDelay(10);
 	while(1)
 	{
 		uint16_t x, y, orientation;
@@ -412,10 +415,10 @@ void thread_capteurs(void* p)
 			courbure = (uint8_t) courbure_odo;
 			marcheAvantTmp = marcheAvant;
 		xSemaphoreGive(odo_mutex);
-		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, 0);
-		vTaskDelay(100);
+//		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, 0);
+		vTaskDelay(10);
 
-		sendDebug(x, 0, 0, 0, 0, 0, 0, 0); // debug
+		sendDebug(10, 0, 0, 0, 0, 0, 0, 0); // debug
 
 	}
 
@@ -663,7 +666,7 @@ int main(int argc, char* argv[])
 	 xTaskCreate(thread_hook, (char*)"TH_HOOK", 2048, 0, 1, 0);
 	 xTaskCreate(thread_ecoute_serie, (char*)"TH_LISTEN", 2048, 0, 1, 0);
 	 xTaskCreate(thread_odometrie, (char*)"TH_ODO", 2048, 0, 1, 0);
-//	 xTaskCreate(thread_capteurs, (char*)"TH_CPT", 2048, 0, 1, 0);
+	 xTaskCreate(thread_capteurs, (char*)"TH_CPT", 2048, 0, 1, 0);
 	 vTaskStartScheduler();
 	 while(1)
 	 {

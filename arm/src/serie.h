@@ -4,9 +4,9 @@
 #include "global.h"
 #include "serialProtocol.h"
 
-extern uint16_t idPaquetEnvoi;
+extern volatile uint16_t idPaquetEnvoi;
 extern SemaphoreHandle_t serial_rb_mutex_TX;
-extern unsigned char paquetsEnvoyes[TAILLE_BUFFER_ECRITURE_SERIE][20];
+extern unsigned char paquetsEnvoyes[TAILLE_BUFFER_ECRITURE_SERIE][40];
 extern uint8_t longueurPaquets[TAILLE_BUFFER_ECRITURE_SERIE];
 
 bool inline verifieChecksum(unsigned char* m, uint8_t longueur)
@@ -20,6 +20,7 @@ bool inline verifieChecksum(unsigned char* m, uint8_t longueur)
 
 void inline resend(uint16_t id)
 {
+	while(xSemaphoreTake(serial_rb_mutex_TX, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 	if(id > idPaquetEnvoi - TAILLE_BUFFER_ECRITURE_SERIE)
 	{
 		unsigned char* m = paquetsEnvoyes[id % TAILLE_BUFFER_ECRITURE_SERIE];
@@ -30,17 +31,19 @@ void inline resend(uint16_t id)
 		for(int i = 2; i < longueur-1; i++)
 			c += m[i];
 		*(m+longueur-1) = ~c;
-		while(xSemaphoreTake(serial_rb_mutex_TX, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+//		serial_rb.write((char*)&longueur);
 		serial_rb.write(m, longueur);
 		// étant donné que la source peut être la même que la destination, on utilise memmove à la place de memcpy
 		memmove(paquetsEnvoyes[idPaquetEnvoi % TAILLE_BUFFER_ECRITURE_SERIE], m, longueur);
+		longueurPaquets[idPaquetEnvoi % TAILLE_BUFFER_ECRITURE_SERIE] = longueur;
 		idPaquetEnvoi++;
-		xSemaphoreGive(serial_rb_mutex_TX);
 	}
+	xSemaphoreGive(serial_rb_mutex_TX);
 }
 
 void inline send(unsigned char* m, uint8_t longueur)
 {
+	while(xSemaphoreTake(serial_rb_mutex_TX, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 	*m = 0x55;
 	*(m+1) = 0xAA;
 	*(m+2) = idPaquetEnvoi >> 8;
@@ -49,9 +52,9 @@ void inline send(unsigned char* m, uint8_t longueur)
 	for(int i = 2; i < longueur-1; i++)
 		c += m[i];
 	*(m+longueur-1) = ~c;
-	while(xSemaphoreTake(serial_rb_mutex_TX, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 	serial_rb.write(m, longueur);
 	memcpy(paquetsEnvoyes[idPaquetEnvoi % TAILLE_BUFFER_ECRITURE_SERIE], m, longueur);
+	longueurPaquets[idPaquetEnvoi % TAILLE_BUFFER_ECRITURE_SERIE] = longueur;
 	idPaquetEnvoi++;
 	xSemaphoreGive(serial_rb_mutex_TX);
 }
@@ -77,7 +80,7 @@ void inline sendPong()
 void inline sendElementShoot(uint8_t nbElem)
 {
 	unsigned char out[] = {0, 0, 0, 0, OUT_ELEMENT_SHOOTE, nbElem, 0};
-	send(out, 5+1);
+	send(out, 5+2);
 }
 
 void inline sendXYO(uint16_t x, uint16_t y, uint16_t orientation, uint8_t courbure, bool marcheAvant)
@@ -92,7 +95,7 @@ void inline sendXYO(uint16_t x, uint16_t y, uint16_t orientation, uint8_t courbu
 void inline sendDebug(uint16_t PWMgauche, uint16_t PWMdroit, int16_t vitesseGauche, int16_t vitesseDroite, int16_t distance, int16_t orientation, int16_t vitesseLineaire, int16_t courbure)
 {
 	unsigned char out[] = {0, 0, 0, 0, OUT_DEBUG_ASSER, PWMgauche >> 8, PWMgauche & 0xFF, PWMdroit >> 8, PWMdroit & 0xFF, vitesseGauche >> 8, vitesseGauche & 0xFF, vitesseDroite >> 8, vitesseDroite & 0xFF, distance >> 8, distance & 0xFF, orientation >> 8, orientation & 0xFF, vitesseLineaire >> 8, vitesseLineaire & 0xFF, courbure >> 8, courbure & 0xFF, 0};
-	send(out, 5+16);
+	send(out, 5+17);
 }
 
 void inline sendCapteur(uint16_t x, uint16_t y, uint16_t orientation, uint8_t courbure, bool marcheAvant, uint16_t c)
