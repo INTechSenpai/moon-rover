@@ -1,0 +1,15 @@
+*~
+*.o
+*.so
+*.user
+*.project
+build/
+arm/Debug
+arm/Release
+pc/logs/
+.classpath
+.cproject
+.settings
+project.properties
+*.class
+/bin/
