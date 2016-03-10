@@ -43,6 +43,10 @@ Uart<6> serial_ax;
 AX<Uart<6>>* ax12;
 volatile bool ping = false;
 
+enum MODE_ASSER {ASSER_OFF, PAS_BOUGER, STOP, ROTATION, TRANSLATION, COURBE};
+
+MODE_ASSER modeAsserActuel = ASSER_OFF;
+
 /**
  * Thread qui écoute la série
  */
@@ -133,6 +137,15 @@ void thread_ecoute_serie(void* p)
 					else
 						ax12->goTo(lecture[PARAM]);
 				}
+				else if(lecture[COMMANDE] == IN_STOP)
+				{
+					serial_rb.read_char(lecture+(++index));
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+						modeAsserActuel = STOP;
+				}
+
 				else if(lecture[COMMANDE] == IN_TOURNER)
 				{
 					serial_rb.read_char(lecture+(++index));
@@ -142,8 +155,10 @@ void thread_ecoute_serie(void* p)
 					else
 					{
 						uint16_t angle = (lecture[PARAM] << 8) + lecture[PARAM + 1];
-						vTaskDelay(1000);
-						sendArrive();
+						rotationSetpoint = angle; // TODO : adapter pour prendre le chemin le plus court
+						modeAsserActuel = ROTATION;
+//						vTaskDelay(1000);
+//						sendArrive();
 					}
 				}
 				else if((lecture[COMMANDE] & 0xFE) == IN_AVANCER)
@@ -156,8 +171,10 @@ void thread_ecoute_serie(void* p)
 					{
 						uint16_t distance = (lecture[PARAM] << 8) + lecture[PARAM + 1];
 						bool mur = lecture[COMMANDE] == IN_AVANCER_MUR;
-						vTaskDelay(1000);
-						sendArrive();
+						// TODO : calculer le point d'arriver
+						modeAsserActuel = TRANSLATION;
+//						vTaskDelay(1000);
+//						sendArrive();
 					}
 				}
 				else if(lecture[COMMANDE] == IN_INIT_ODO)
@@ -428,7 +445,7 @@ void thread_capteurs(void* p)
 /**
  * Thread d'odométrie et d'asservissement
  */
-void thread_odometrie(void* p)
+void thread_odometrie_asser(void* p)
 {
 	int16_t positionGauche[MEMOIRE_VITESSE]; // on introduit un effet de mémoire afin de pouvoir mesurer la vitesse sur un intervalle pas trop petit
 	int16_t positionDroite[MEMOIRE_VITESSE];
@@ -457,6 +474,7 @@ void thread_odometrie(void* p)
 	orientationTick = RAD_TO_TICK(orientation_odo);
 	while(1)
 	{
+		// ODOMÉTRIE
 		while(xSemaphoreTake(odo_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 
 		// La formule d'odométrie est corrigée pour tenir compte des trajectoires
@@ -520,8 +538,28 @@ void thread_odometrie(void* p)
 		y_odo += k*distance*sin_orientation_odo;
 		xSemaphoreGive(odo_mutex);
 
-	// TODO calculer la vitesse linéaire et la courbure
+		// TODO calculer la vitesse linéaire et la courbure
 
+		// ASSERVISSEMENT
+		if(modeAsserActuel == PAS_BOUGER)
+			controlRotation(orientationMoyTick);
+		else
+        {
+            if(modeAsserActuel == ROTATION)
+			controlRotation(orientationMoyTick);
+		    else if(modeAsserActuel == STOP)
+			    controlStop();
+		    else if(modeAsserActuel == TRANSLATION)
+			    controlTranslation();
+		    else if(modeAsserActuel == COURBE)
+			    controlTrajectoire();
+            if(checkArrivee()) // gestion de la fin du mouvement
+            {
+                modeAsserActuel = PAS_BOUGER;
+                sendArrive();
+            }
+        }
+		// si ça vaut ASSER_OFF, il n'y a pas d'asser
 
 //		vTaskDelay(1000);
 		vTaskDelay(1000 / FREQUENCE_ODO_ASSER);
@@ -665,7 +703,7 @@ int main(int argc, char* argv[])
 
 	 xTaskCreate(thread_hook, (char*)"TH_HOOK", 2048, 0, 1, 0);
 	 xTaskCreate(thread_ecoute_serie, (char*)"TH_LISTEN", 2048, 0, 1, 0);
-	 xTaskCreate(thread_odometrie, (char*)"TH_ODO", 2048, 0, 1, 0);
+	 xTaskCreate(thread_odometrie_asser, (char*)"TH_ODO_ASR", 2048, 0, 1, 0);
 	 xTaskCreate(thread_capteurs, (char*)"TH_CPT", 2048, 0, 1, 0);
 	 vTaskStartScheduler();
 	 while(1)

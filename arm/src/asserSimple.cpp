@@ -254,6 +254,12 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
         rightMotor.run(rightPWM);
     }
 
+    // Sommes-nous arrivés ?
+    bool checkArrivee()
+    {
+        return ABS(leftPWM) < 5 && ABS(rightPWM) < 5 && ABS(rotationSpeed) < 10 && ABS(translationSpeed) < 10;
+    }
+
     void setVitesseMaxTranslation(int16_t speedTr)
     {
         // TODO
