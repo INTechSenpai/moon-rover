@@ -34,6 +34,18 @@ supprime tous les hooks
     0x10
 supprime certains hooks
     0x11 NB_HOOKS(8) ID1(8) ...
+set pid vitesse gauche
+    0x20 KP(16) KD(16)
+set pid vitesse droite
+    0x21 KP(16) KD(16)
+set pid translation
+    0x22 KP(16) KD(16)
+set pid rotation
+    0x23 KP(16) KD(16)
+set pid courbure
+    0x24 KP(16) KD(16)
+set pid vitesse linéaire
+    0x25 KP(16) KD(16)
 
 Hook : type param ID(8) NB_CALLBACK(8) callback
 

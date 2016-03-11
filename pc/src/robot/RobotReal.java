@@ -51,6 +51,15 @@ public class RobotReal extends Robot
 		double o = config.getDouble(ConfigInfo.O_DEPART);
 		setPositionOrientationCourbureDirection(new Vec2<ReadOnly>(x, y), o, 0, true);
 		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
+		
+		// Envoie des constantes du pid
+		stm.setPIDconstVitesseGauche(config.getDouble(ConfigInfo.CONST_KP_VIT_GAUCHE), config.getDouble(ConfigInfo.CONST_KD_VIT_GAUCHE));
+		stm.setPIDconstVitesseDroite(config.getDouble(ConfigInfo.CONST_KP_VIT_DROITE), config.getDouble(ConfigInfo.CONST_KD_VIT_DROITE));
+		stm.setPIDconstTranslation(config.getDouble(ConfigInfo.CONST_KP_TRANSLATION), config.getDouble(ConfigInfo.CONST_KD_TRANSLATION));
+		stm.setPIDconstRotation(config.getDouble(ConfigInfo.CONST_KP_ROTATION), config.getDouble(ConfigInfo.CONST_KD_ROTATION));
+		stm.setPIDconstCourbure(config.getDouble(ConfigInfo.CONST_KP_COURBURE), config.getDouble(ConfigInfo.CONST_KD_COURBURE));
+		stm.setPIDconstVitesseLineaire(config.getDouble(ConfigInfo.CONST_KP_VIT_LINEAIRE), config.getDouble(ConfigInfo.CONST_KD_VIT_LINEAIRE));
+		
 	}
 		
 	public void setEnMarcheAvance(boolean enMarcheAvant)
