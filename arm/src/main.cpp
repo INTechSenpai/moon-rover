@@ -22,6 +22,7 @@
 #include "ax12.hpp"
 #include "serie.h"
 #include "serialProtocol.h"
+#include "asserSimple.hpp"
 using namespace std;
 
 // ----- main() ---------------------------------------------------------------
@@ -42,8 +43,6 @@ volatile bool matchDemarre = true; // TODO
 Uart<6> serial_ax;
 AX<Uart<6>>* ax12;
 volatile bool ping = false;
-
-enum MODE_ASSER {ASSER_OFF, PAS_BOUGER, STOP, ROTATION, TRANSLATION, COURBE};
 
 MODE_ASSER modeAsserActuel = ASSER_OFF;
 
@@ -172,11 +171,32 @@ void thread_ecoute_serie(void* p)
 						uint16_t distance = (lecture[PARAM] << 8) + lecture[PARAM + 1];
 						bool mur = lecture[COMMANDE] == IN_AVANCER_MUR;
 						// TODO : calculer le point d'arriver
-						modeAsserActuel = TRANSLATION;
-//						vTaskDelay(1000);
-//						sendArrive();
+						modeAsserActuel = VA_AU_POINT;
+						// TODO mutex
+						consigneX = cos_orientation_odo * distance + x_odo;
+						consigneY = sin_orientation_odo * distance + y_odo;
+
 					}
 				}
+				else if(lecture[COMMANDE] == IN_VA_POINT)
+				{
+					serial_rb.read_char(lecture+(++index)); // x
+					serial_rb.read_char(lecture+(++index)); // xy
+					serial_rb.read_char(lecture+(++index)); // y
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+					{
+						int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
+						x -= 1500;
+						int16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
+						modeAsserActuel = VA_AU_POINT;
+						// TODO mutex
+						consigneX = x;
+						consigneY = y;
+					}
+				}
+
 				else if(lecture[COMMANDE] == IN_INIT_ODO)
 				{
 					serial_rb.read_char(lecture+(++index)); // x
@@ -456,7 +476,7 @@ void thread_odometrie_asser(void* p)
 	courbure_odo = 0;
 	vg_odo = 0;
 	vd_odo = 0;
-	uint32_t orientationTick = 0;
+	orientationTick_odo = 0;
 	uint32_t orientationMoyTick = 0;;
 	uint16_t old_tick_gauche = TICK_CODEUR_GAUCHE, old_tick_droit = TICK_CODEUR_DROIT, tmp;
 	int16_t distanceTick, delta_tick_droit, delta_tick_gauche, deltaOrientationTick;
@@ -471,7 +491,7 @@ void thread_odometrie_asser(void* p)
 	// On attend l'initialisation de xyo avant de démarrer l'odo, sinon ça casse tout.
 	while(!startOdo)
 		vTaskDelay(5);
-	orientationTick = RAD_TO_TICK(orientation_odo);
+	orientationTick_odo = RAD_TO_TICK(orientation_odo);
 	while(1)
 	{
 		// ODOMÉTRIE
@@ -491,6 +511,8 @@ void thread_odometrie_asser(void* p)
 		vd_odo = (tmp - positionDroite[indiceMemoire]) / MEMOIRE_VITESSE;
 		positionDroite[indiceMemoire] = tmp;
 
+		vl_odo = (vd_odo + vg_odo) / 2;
+
 		// Calcul issu de Thalès. Position si le robot tourne vers la droite (pour être cohérent avec l'orientation)
 		courbure_odo = 2 / LONGUEUR_CODEUSE_A_CODEUSE_EN_MM * (vg_odo - vd_odo) / (vg_odo + vd_odo);
 
@@ -509,7 +531,7 @@ void thread_odometrie_asser(void* p)
 			deltaOrientationTick = delta_tick_gauche - delta_tick_droit;
 
 		// l'erreur à cause du "/2" ne s'accumule pas
-		orientationMoyTick = orientationTick + deltaOrientationTick/2;
+		orientationMoyTick = orientationTick_odo + deltaOrientationTick/2;
 
 		if(orientationMoyTick > (uint32_t)TICKS_PAR_TOUR_ROBOT)
 		{
@@ -518,7 +540,7 @@ void thread_odometrie_asser(void* p)
 			else
 				orientationMoyTick += (uint32_t)TICKS_PAR_TOUR_ROBOT;
 		}
-		orientationTick += deltaOrientationTick;
+		orientationTick_odo += deltaOrientationTick;
 		deltaOrientation = TICK_TO_RAD(deltaOrientationTick);
 
 //		serial_rb.printfln("TICKS_PAR_TOUR_ROBOT = %d", (int)TICKS_PAR_TOUR_ROBOT);
@@ -530,6 +552,11 @@ void thread_odometrie_asser(void* p)
 		else
 			k = sin(deltaOrientation/2)/(deltaOrientation/2);
 
+		if(distance == 0) //  ça va arriver quand on fait par exemple une rotation sur place.
+			courbure_odo = 0;
+		else
+			courbure_odo = deltaOrientationTick / distance;
+
 		orientation_odo = TICK_TO_RAD(orientationMoyTick);
         cos_orientation_odo = cos(orientation_odo);
         sin_orientation_odo = sin(orientation_odo);
@@ -538,19 +565,20 @@ void thread_odometrie_asser(void* p)
 		y_odo += k*distance*sin_orientation_odo;
 		xSemaphoreGive(odo_mutex);
 
-		// TODO calculer la vitesse linéaire et la courbure
-
 		// ASSERVISSEMENT
 		if(modeAsserActuel == PAS_BOUGER)
-			controlRotation(orientationMoyTick);
+			controlRotation();
 		else
         {
             if(modeAsserActuel == ROTATION)
-			controlRotation(orientationMoyTick);
+            {
+            	updateErrorAngle();
+			controlRotation();
+            }
 		    else if(modeAsserActuel == STOP)
 			    controlStop();
-		    else if(modeAsserActuel == TRANSLATION)
-			    controlTranslation();
+//		    else if(modeAsserActuel == TRANSLATION)
+//			    controlTranslation();
 		    else if(modeAsserActuel == COURBE)
 			    controlTrajectoire();
             if(checkArrivee()) // gestion de la fin du mouvement

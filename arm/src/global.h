@@ -25,7 +25,7 @@
 #define TICK_TO_MM(x) (x * MM_PAR_TICK / 2)
 
 #define MEMOIRE_VITESSE 25
-enum ModeAsser {PAS_ASSER, ASSER_TRANSLATION, ASSER_ROTATION, ASSER_TRAJECTOIRE, ASSER_STOP_ROBOT};
+enum MODE_ASSER {ASSER_OFF, PAS_BOUGER, STOP, ROTATION, VA_AU_POINT, COURBE};
 enum DirectionStrategy {FORCE_BACK_MOTION, FORCE_FORWARD_MOTION, FASTEST};
 
 extern bool isSymmetry;
@@ -39,7 +39,7 @@ extern DirectionStrategy strategy;
 extern double x_odo, y_odo; // abscisse et ordonnée exprimées en mm
 extern double orientation_odo; // exprimé en radians
 extern double cos_orientation_odo, sin_orientation_odo;
-extern double vd_odo, vg_odo; // vitesses exprimées en tick / ms
+extern double vd_odo, vg_odo, vl_odo; // vitesses exprimées en tick / ms
 extern double courbure_odo; // en mm^-1
 
 // MUTEX

@@ -18,11 +18,10 @@ class PID
 public:
 
 
-	PID(volatile int32_t* input, volatile int32_t* output, volatile int32_t* setPoint)
+	PID(volatile int32_t* error, volatile int32_t* output)
 	{
 		this->output = output;
-		this->input = input;
-		this->setPoint = setPoint;
+		this->error = error;
 
 		setOutputLimits(-2147483647, 2147483647);
 		setTunings(0, 0, 0);
@@ -34,7 +33,7 @@ public:
 
 	void compute() {
 
-		int32_t error = (*setPoint) - (*input);
+		int32_t error = *(this->error);
 		derivative = error - pre_error;
 		integral += error;
 		pre_error = error;
@@ -91,9 +90,8 @@ private:
 	float ki;
 	float kd;
 
-	volatile int32_t* input; //valeur actuelle, réelle
+	volatile int32_t* error; //erreur, c'est-à-dire différence entre la consigne et la valeur actuelle
 	volatile int32_t* output; //Output : commande
-	volatile int32_t* setPoint; //Valeur à atteindre, consigne
 
 	int32_t epsilon;
 	int32_t outMin, outMax;
