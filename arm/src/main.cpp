@@ -196,7 +196,21 @@ void thread_ecoute_serie(void* p)
 						consigneY = y;
 					}
 				}
-
+                else if((lecture[COMMANDE] & IN_PID_CONST_MASQUE) == IN_PID_CONST_VIT_GAUCHE)
+				{
+					serial_rb.read_char(lecture+(++index)); // kp
+					serial_rb.read_char(lecture+(++index)); // kp
+					serial_rb.read_char(lecture+(++index)); // kd
+					serial_rb.read_char(lecture+(++index)); // kd
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+					{
+						double kp = ((lecture[PARAM] << 8) + lecture[PARAM + 1])/200.;
+						double kp = ((lecture[PARAM + 2] << 8) + lecture[PARAM + 3])/200.;
+                        // TODO set
+					}
+				}
 				else if(lecture[COMMANDE] == IN_INIT_ODO)
 				{
 					serial_rb.read_char(lecture+(++index)); // x
