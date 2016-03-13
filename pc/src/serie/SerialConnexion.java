@@ -234,7 +234,7 @@ public abstract class SerialConnexion implements SerialPortEventListener
 	{
 		attendSiPing();
 		if(input.available() == 0)
-			Sleep.sleep(1); // On attend un tout petit peu, au cas où
+			Sleep.sleep(5); // On attend un tout petit peu, au cas où
 
 		if(input.available() == 0)
 			throw new MissingCharacterException(); // visiblement on ne recevra rien de plus

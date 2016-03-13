@@ -76,27 +76,31 @@ public class SerialSTM extends SerialConnexion implements Service, SerialInterfa
 				log.debug("Réponse : ");
 				afficheMessage(lu);
 			}
+	
+			int i = 0;
+			while(i < nbLu && lu[i] != (byte)0x55)
+				i++;
 			
 			// le +4 vient du fait qu'on ne vérifie pas l'id du paquet qui arrive ni l'entete
-			if(nbLu != reponse.length + 4)	// vérification du nombre de byte lu
+			if(nbLu - i < reponse.length + 4)	// vérification du nombre de byte lu
 			{
 //				log.debug("Mauvaise taille");
 				return false;
 			}
 
-			if(lu[0] != (byte)0x55 || lu[1] != (byte)0xAA) // vérification de l'entete
+			if(lu[i+1] != (byte)0xAA) // vérification de l'entete
 			{
 //				log.debug("Mauvais entête "+lu[0]+" "+(byte)0x55+" "+lu[1]+" "+(byte)0xAA);
 				return false;
 			}
 			
-			premierID = (((int)lu[2] & 0xFF) << 8) + ((int)lu[3] & 0xFF);
+			premierID = (((int)lu[i+2] & 0xFF) << 8) + ((int)lu[i+3] & 0xFF);
 			
 			// on ne vérifie pas le checksum qui dépend de l'id
-			for(int i = 0; i < reponse.length-1; i++)
-				if(reponse[i] != lu[i+4]) // on ne vérifie pas l'ID
+			for(int j = 0; j < reponse.length-1; j++)
+				if(reponse[j] != lu[i+j+4]) // on ne vérifie pas l'ID
 				{
-						log.debug("Erreur au caractère "+(i+4));
+						log.debug("Erreur au caractère "+(i+j+4));
 					return false;
 				}
 			
