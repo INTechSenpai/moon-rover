@@ -1,3 +1,5 @@
+#ifndef ASSER
+#define ASSER
 
 #include "Motor.h"
 #include "pid.hpp"
@@ -304,3 +306,6 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     		e = -e;
     	errorTranslation = e;
     }
+
+
+#endif

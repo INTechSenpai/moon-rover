@@ -4,6 +4,8 @@
 #include "Uart.hpp"
 #include "FreeRTOS.h"
 #include "semphr.h"
+#include <vector>
+#include "Hook.h"
 
 #define SERIE_TIMEOUT 10
 #define TAILLE_BUFFER_ECRITURE_SERIE	50
@@ -28,10 +30,12 @@
 enum MODE_ASSER {ASSER_OFF, PAS_BOUGER, STOP, ROTATION, VA_AU_POINT, COURBE};
 enum DirectionStrategy {FORCE_BACK_MOTION, FORCE_FORWARD_MOTION, FASTEST};
 
+extern std::vector<Hook*> listeHooks;
 extern bool isSymmetry;
 extern bool marcheAvant;
 extern Uart<2> serial_rb;
 extern DirectionStrategy strategy;
+extern volatile bool ping;
 
 /**
  * x_odo, y_odo et orientation_odo sont exprimés dans le repère symétrisé, qui n'est pas forcément le repère réel
@@ -44,5 +48,14 @@ extern double courbure_odo; // en mm^-1
 
 // MUTEX
 extern SemaphoreHandle_t odo_mutex;
+extern Uart<6> serial_ax;
+extern AX<Uart<6>>* ax12;
+
+extern TIM_Encoder_InitTypeDef encoder, encoder2;
+extern TIM_HandleTypeDef timer, timer2, timer3;
+extern volatile bool startOdo;
+extern volatile bool matchDemarre;
+
+extern MODE_ASSER modeAsserActuel;
 
 #endif

@@ -4,7 +4,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "Uart.hpp"
-#include "global.h"
 #include "ax12.hpp"
 
 class Executable

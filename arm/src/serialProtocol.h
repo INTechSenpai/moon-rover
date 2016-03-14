@@ -1,3 +1,6 @@
+#ifndef PROTOCOLE
+#define PROTOCOLE
+
 #define IN_PING 0x3F
 #define IN_PING_NEW_CONNECTION 0x40
 #define IN_PONG1 0x42
@@ -54,3 +57,5 @@
 #define ID_FAIBLE 0x01
 #define COMMANDE 0x02
 #define PARAM 0x03
+
+#endif
