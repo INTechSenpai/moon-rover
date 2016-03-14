@@ -14,9 +14,9 @@
 #include "Uart.hpp"
 #include "global.h"
 #include "ax12.hpp"
-#include "serie.h"
 #include "serialProtocol.h"
 #include "asserSimple.hpp"
+#include "serie.h"
 
 using namespace std;
 
@@ -125,6 +125,9 @@ void thread_odometrie_asser(void* p)
 		xSemaphoreGive(odo_mutex);
 
 		// ASSERVISSEMENT
+
+		// on empêche toute modification de consigne
+		while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 		if(modeAsserActuel == PAS_BOUGER)
 			controlRotation();
 		else
@@ -140,12 +143,19 @@ void thread_odometrie_asser(void* p)
 //			    controlTranslation();
 		    else if(modeAsserActuel == COURBE)
 			    controlTrajectoire();
+            if(checkBlocageMecanique())
+            {
+                modeAsserActuel = STOP;
+                sendProblemeMeca();
+            }
             if(checkArrivee()) // gestion de la fin du mouvement
             {
                 modeAsserActuel = PAS_BOUGER;
                 sendArrive();
             }
         }
+		xSemaphoreGive(consigneAsser_mutex);
+
 		// si ça vaut ASSER_OFF, il n'y a pas d'asser
 
 //		vTaskDelay(1000);

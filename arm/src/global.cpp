@@ -9,6 +9,7 @@ double cos_orientation_odo, sin_orientation_odo;
 double vd_odo, vg_odo, vl_odo;
 bool asserEnable;
 SemaphoreHandle_t odo_mutex = xSemaphoreCreateMutex();
+SemaphoreHandle_t consigneAsser_mutex = xSemaphoreCreateMutex();
 double courbure_odo;
 std::vector<Hook*> listeHooks;
 Uart<6> serial_ax;

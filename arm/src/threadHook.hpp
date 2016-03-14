@@ -14,9 +14,9 @@
 #include "Uart.hpp"
 #include "global.h"
 #include "ax12.hpp"
-#include "serie.h"
 #include "serialProtocol.h"
 #include "asserSimple.hpp"
+#include "serie.h"
 
 using namespace std;
 

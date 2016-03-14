@@ -1,10 +1,10 @@
-#ifndef __SERIE_h__
-#define __SERIE_h__
+#ifndef SERIE
+#define SERIE
 
 #include "global.h"
 #include "serialProtocol.h"
 
-extern volatile uint16_t idPaquetEnvoi;
+extern uint16_t volatile idPaquetEnvoi;
 extern SemaphoreHandle_t serial_rb_mutex_TX;
 extern unsigned char paquetsEnvoyes[TAILLE_BUFFER_ECRITURE_SERIE][40];
 extern uint8_t longueurPaquets[TAILLE_BUFFER_ECRITURE_SERIE];
@@ -68,6 +68,12 @@ void inline askResend(uint16_t id)
 void inline sendArrive()
 {
 	unsigned char out[] = {0, 0, 0, 0, OUT_ROBOT_ARRIVE, 0};
+	send(out, 5+1);
+}
+
+void inline sendProblemeMeca()
+{
+	unsigned char out[] = {0, 0, 0, 0, OUT_PROBLEME_MECA, 0};
 	send(out, 5+1);
 }
 

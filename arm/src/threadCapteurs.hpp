@@ -10,13 +10,8 @@
 #include "Timer.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "Hook.h"
-#include "Uart.hpp"
 #include "global.h"
-#include "ax12.hpp"
 #include "serie.h"
-#include "serialProtocol.h"
-#include "asserSimple.hpp"
 
 using namespace std;
 
@@ -27,8 +22,13 @@ void thread_capteurs(void* p)
 {
 	while(!ping)
 		vTaskDelay(10);
+	while(!matchDemarre)
+	{
+		// Lecture des boutons : couleur, coquillage, etc
+	}
 	while(1)
 	{
+
 		uint16_t x, y, orientation;
 		uint8_t courbure;
 		bool marcheAvantTmp;

@@ -14,9 +14,9 @@
 #include "Uart.hpp"
 #include "global.h"
 #include "ax12.hpp"
-#include "serie.h"
 #include "serialProtocol.h"
 #include "asserSimple.hpp"
+#include "serie.h"
 
 using namespace std;
 
@@ -128,7 +128,7 @@ void thread_ecoute_serie(void* p)
 					else
 					{
 						uint16_t angle = (lecture[PARAM] << 8) + lecture[PARAM + 1];
-						rotationSetpoint = angle; // TODO : adapter pour prendre le chemin le plus court
+						rotationSetpoint = angle;
 						modeAsserActuel = ROTATION;
 //						vTaskDelay(1000);
 //						sendArrive();
@@ -144,12 +144,12 @@ void thread_ecoute_serie(void* p)
 					{
 						uint16_t distance = (lecture[PARAM] << 8) + lecture[PARAM + 1];
 						bool mur = lecture[COMMANDE] == IN_AVANCER_MUR;
-						// TODO : calculer le point d'arriver
 						modeAsserActuel = VA_AU_POINT;
-						// TODO mutex
+
+						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 						consigneX = cos_orientation_odo * distance + x_odo;
 						consigneY = sin_orientation_odo * distance + y_odo;
-
+						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
 				else if(lecture[COMMANDE] == IN_VA_POINT)
@@ -165,9 +165,10 @@ void thread_ecoute_serie(void* p)
 						x -= 1500;
 						int16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
 						modeAsserActuel = VA_AU_POINT;
-						// TODO mutex
+						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 						consigneX = x;
 						consigneY = y;
+						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
                 else if((lecture[COMMANDE] & IN_PID_CONST_MASQUE) == IN_PID_CONST_VIT_GAUCHE)

@@ -28,22 +28,23 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
  * 			autrement les unitées ci-dessus ne seront plus valables.
  */
 
+	// CONSIGNES MODIFIÉES DEPUIS D'AUTRES THREADS
+
 	// Consigne en position qui permet de calculer les erreurs en distance et en rotation
 	volatile int32_t consigneX;
 	volatile int32_t consigneY;
+	volatile uint32_t rotationSetpoint;		// angle absolu visé (en ticks)
 
 	//	Asservissement en vitesse du moteur droit
-	int32_t rightSpeedSetpoint;	// ticks/seconde
 	int32_t currentRightSpeed;		// ticks/seconde
-	volatile int32_t errorRightSpeed;
-	volatile int32_t rightPWM;
+	int32_t errorRightSpeed;
+	int32_t rightPWM;
 	PID rightSpeedPID(&errorRightSpeed, &rightPWM);
 
 	//	Asservissement en vitesse du moteur gauche
-	int32_t leftSpeedSetpoint;		// ticks/seconde
 	int32_t currentLeftSpeed;		// ticks/seconde
-	volatile int32_t errorLeftSpeed;
-	volatile int32_t leftPWM;
+	int32_t errorLeftSpeed;
+	int32_t leftPWM;
 	PID leftSpeedPID(&errorLeftSpeed, &leftPWM);
 
 	//	Asservissement en vitesse linéaire et en courbure
@@ -55,29 +56,28 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 	//	Asservissement en position : translation
 	int32_t currentDistance;		// distance à parcourir, en ticks
-	volatile int32_t translationSpeed;		// ticks/seconde
-	volatile int32_t errorTranslation;		// ticks/seconde
+	int32_t translationSpeed;		// ticks/seconde
+	int32_t errorTranslation;		// ticks/seconde
 	PID translationPID(&errorTranslation, &translationSpeed);
 
 	//	Asservissement en position : rotation
 
-	uint32_t rotationSetpoint;		// angle absolu visé (en ticks)
 	uint32_t orientationTick_odo = 0;
-	volatile int32_t errorAngle;
-	volatile int32_t rotationSpeed;			// ticks/seconde
+	int32_t errorAngle;
+	int32_t rotationSpeed;			// ticks/seconde
 	PID rotationPID(&errorAngle, &rotationSpeed);
 
 	//	Limitation de vitesses
-	volatile int32_t maxSpeed; 				// definit la vitesse maximal des moteurs du robot
-	volatile int32_t maxSpeedTranslation;	// definit la consigne max de vitesse de translation envoiée au PID (trapèze)
-	volatile int32_t maxSpeedRotation;		// definit la consigne max de vitesse de rotation envoiée au PID (trapèze)
+	int32_t maxSpeed; 				// definit la vitesse maximal des moteurs du robot
+	int32_t maxSpeedTranslation;	// definit la consigne max de vitesse de translation envoiée au PID (trapèze)
+	int32_t maxSpeedRotation;		// definit la consigne max de vitesse de rotation envoiée au PID (trapèze)
 
 	//	Limitation d'accélération
-	volatile int32_t maxAcceleration;
+	int32_t maxAcceleration;
 
 	//	Pour faire de jolies courbes de réponse du système, la vitesse moyenne c'est mieux !
-	Average<int32_t, AVERAGE_SPEED_SIZE> averageLeftSpeed;
-	Average<int32_t, AVERAGE_SPEED_SIZE> averageRightSpeed;
+//	Average<int32_t, AVERAGE_SPEED_SIZE> averageLeftSpeed;
+//	Average<int32_t, AVERAGE_SPEED_SIZE> averageRightSpeed;
 
 	// Variables d'état du mouvement
 	volatile bool moving;
@@ -99,7 +99,53 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	int32_t previousLeftSpeedSetpoint = 0;
 	int32_t previousRightSpeedSetpoint = 0;
 
-	void setRotationSetpoint(int32_t rotationSetpointTmp)
+
+    /**
+     * Utilise consigneX, consigneY, x_odo et y_odo pour calculer rotationSetpoint
+     */
+    void updateRotationSetpoint()
+    {
+    	double tmp = RAD_TO_TICK(atan2(consigneY - y_odo, consigneX - x_odo));
+    	if(tmp >= 0)
+    		rotationSetpoint = (int32_t) tmp;
+    	else
+    		rotationSetpoint = (int32_t) (TICKS_PAR_TOUR_ROBOT - tmp);
+    }
+
+    /**
+     * Utilise rotationSetpoint et orientationTick_odo pour calculer errorAngle
+     */
+    void updateErrorAngle()
+    {
+    	uint32_t e;
+    	if(rotationSetpoint > orientationTick_odo)
+    	{
+    		e = rotationSetpoint - orientationTick_odo;
+    		if(e < TICKS_PAR_TOUR_ROBOT/2)
+    			errorAngle = e;
+    		else
+    			errorAngle = -(TICKS_PAR_TOUR_ROBOT - e);
+    	}
+    	else
+    	{
+    		e = orientationTick_odo - rotationSetpoint;
+    		if(e < TICKS_PAR_TOUR_ROBOT/2)
+    			errorAngle = -e;
+    		else
+    			errorAngle = TICKS_PAR_TOUR_ROBOT - e;
+    	}
+    }
+
+    void updateErrorTranslation()
+    {
+    	int32_t e = (int32_t) hypot(x_odo - consigneX, y_odo - consigneY) * MM_PAR_TICK;
+    	// faut-il aller en marche arrière ?
+    	if(cos_orientation_odo * (consigneX - x_odo) + sin_orientation_odo * (consigneY - y_odo) < 0)
+    		e = -e;
+    	errorTranslation = e;
+    }
+
+/*	void setRotationSetpoint(int32_t rotationSetpointTmp)
 	{
 		// gestion de la rotation (on va au plus court)
 		if(rotationSetpointTmp < orientationTick_odo - TICKS_PAR_TOUR_ROBOT / 2)
@@ -108,7 +154,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 			rotationSetpoint = rotationSetpointTmp - TICKS_PAR_TOUR_ROBOT;
 		else
 			rotationSetpoint = rotationSetpointTmp;
-	}
+	}*/
 
 	void controlTranslation(int16_t delta_tick_droit, int16_t delta_tick_gauche, uint32_t orientationMoyTick)
 	{
@@ -213,15 +259,19 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
     void controlRotation()
     {
+    	// Mise à jour des erreurs
+    	updateErrorAngle();
+    	updateErrorTranslation();
+
         rotationPID.compute();      // Actualise la valeur de 'rotationSpeed'
         translationPID.compute();      // Actualise la valeur de 'rotationSpeed'
-        // gestion de la symétrie pour les déplacements
 
+        // gestion de la symétrie pour les déplacements
         if(isSymmetry)
             rotationSpeed = -rotationSpeed;
 
-        leftSpeedSetpoint = translationSpeed - rotationSpeed;
-        rightSpeedSetpoint = translationSpeed + rotationSpeed;
+        errorLeftSpeed = translationSpeed - rotationSpeed - vg_odo;
+        errorRightSpeed = translationSpeed + rotationSpeed - vd_odo;
         
         leftSpeedPID.compute();     // Actualise la valeur de 'leftPWM'
         rightSpeedPID.compute();    // Actualise la valeur de 'rightPWM'
@@ -246,8 +296,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     // freine le plus rapidement possible. Note : on ne garantit rien sur l'orientation, si une roue freine plus vite que l'autre le robot va tourner.
     void controlStop()
     {
-        leftSpeedSetpoint = 0;
-        rightSpeedSetpoint = 0;
+    	errorRightSpeed = vd_odo;
+    	errorLeftSpeed = vg_odo;
 
         leftSpeedPID.compute();     // Actualise la valeur de 'leftPWM'
         rightSpeedPID.compute();    // Actualise la valeur de 'rightPWM'
@@ -257,55 +307,17 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     }
 
     // Sommes-nous arrivés ?
+    bool checkBlocageMecanique()
+    {
+        return false; // TODO
+    }
+
+    // Sommes-nous arrivés ?
     bool checkArrivee()
     {
-        return ABS(leftPWM) < 5 && ABS(rightPWM) < 5 && ABS(rotationSpeed) < 10 && ABS(translationSpeed) < 10;
+        return ABS(leftPWM) < 5 && ABS(rightPWM) < 5 && ABS(rotationSpeed) < 10 && ABS(translationSpeed) < 10; // TODO
     }
 
-    /**
-     * Utilise consigneX, consigneY, x_odo et y_odo pour calculer rotationSetpoint
-     */
-    void updateRotationSetpoint()
-    {
-    	double tmp = RAD_TO_TICK(atan2(consigneY - y_odo, consigneX - x_odo));
-    	if(tmp >= 0)
-    		rotationSetpoint = (int32_t) tmp;
-    	else
-    		rotationSetpoint = (int32_t) (TICKS_PAR_TOUR_ROBOT - tmp);
-    }
-
-    /**
-     * Utilise rotationSetpoint et orientationTick_odo pour calculer errorAngle
-     */
-    void updateErrorAngle()
-    {
-    	uint32_t e;
-    	if(rotationSetpoint > orientationTick_odo)
-    	{
-    		e = rotationSetpoint - orientationTick_odo;
-    		if(e < TICKS_PAR_TOUR_ROBOT/2)
-    			errorAngle = e;
-    		else
-    			errorAngle = -(TICKS_PAR_TOUR_ROBOT - e);
-    	}
-    	else
-    	{
-    		e = orientationTick_odo - rotationSetpoint;
-    		if(e < TICKS_PAR_TOUR_ROBOT/2)
-    			errorAngle = -e;
-    		else
-    			errorAngle = TICKS_PAR_TOUR_ROBOT - e;
-    	}
-    }
-
-    void updateErrorTranslation()
-    {
-    	int32_t e = (int32_t) hypot(x_odo - consigneX, y_odo - consigneY) * MM_PAR_TICK;
-    	// faut-il aller en marche arrière ?
-    	if(cos_orientation_odo * (consigneX - x_odo) + sin_orientation_odo * (consigneY - y_odo) < 0)
-    		e = -e;
-    	errorTranslation = e;
-    }
 
 
 #endif
