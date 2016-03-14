@@ -6,7 +6,6 @@ Uart<2> serial_rb;
 double x_odo, y_odo; // abscisse et ordonnée exprimées en mm
 double orientation_odo; // exprimé en radians
 double cos_orientation_odo, sin_orientation_odo;
-double vd_odo, vg_odo, vl_odo;
 bool asserEnable;
 SemaphoreHandle_t odo_mutex = xSemaphoreCreateMutex();
 SemaphoreHandle_t consigneAsser_mutex = xSemaphoreCreateMutex();

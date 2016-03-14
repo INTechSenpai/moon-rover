@@ -26,31 +26,36 @@ using namespace std;
  */
 void thread_odometrie_asser(void* p)
 {
-	int16_t positionGauche[MEMOIRE_VITESSE]; // on introduit un effet de mémoire afin de pouvoir mesurer la vitesse sur un intervalle pas trop petit
-	int16_t positionDroite[MEMOIRE_VITESSE];
+	int16_t positionGauche[MEMOIRE_MESURE]; // on introduit un effet de mémoire afin de pouvoir mesurer la vitesse sur un intervalle pas trop petit
+	int16_t positionDroite[MEMOIRE_MESURE];
+	int16_t vitesseGauche[MEMOIRE_MESURE]; // on introduit un effet de mémoire afin de pouvoir mesurer l'accélération sur un intervalle pas trop petit
+	int16_t vitesseDroite[MEMOIRE_MESURE];
 	uint8_t indiceMemoire = 0;
 	x_odo = 0;
 	y_odo = 0;
 	orientation_odo = 0;
 	courbure_odo = 0;
-	vg_odo = 0;
-	vd_odo = 0;
-	orientationTick_odo = 0;
+	currentRightSpeed = 0;
+	currentLeftSpeed = 0;
+	currentAngle = 0;
 	uint32_t orientationMoyTick = 0;;
 	uint16_t old_tick_gauche = TICK_CODEUR_GAUCHE, old_tick_droit = TICK_CODEUR_DROIT, tmp;
 	int16_t distanceTick, delta_tick_droit, delta_tick_gauche, deltaOrientationTick;
 	double k, distance, deltaOrientation;
 
-	for(int i = 0; i < MEMOIRE_VITESSE; i++)
+	for(int i = 0; i < MEMOIRE_MESURE; i++)
 	{
 		positionDroite[i] = old_tick_droit;
 		positionGauche[i] = old_tick_gauche;
+		vitesseDroite[i] = 0;
+		vitesseGauche[i] = 0;
+
 	}
 
 	// On attend l'initialisation de xyo avant de démarrer l'odo, sinon ça casse tout.
 	while(!startOdo)
 		vTaskDelay(5);
-	orientationTick_odo = RAD_TO_TICK(orientation_odo);
+	currentAngle = RAD_TO_TICK(orientation_odo);
 	while(1)
 	{
 		// ODOMÉTRIE
@@ -61,22 +66,26 @@ void thread_odometrie_asser(void* p)
 		tmp = TICK_CODEUR_GAUCHE;
 		delta_tick_gauche = tmp - old_tick_gauche;
 		old_tick_gauche = tmp;
-		vg_odo = (tmp - positionGauche[indiceMemoire]) / MEMOIRE_VITESSE;
+		currentLeftSpeed = (tmp - positionGauche[indiceMemoire]) / MEMOIRE_MESURE;
+		currentLeftAcceleration = (currentLeftSpeed - vitesseGauche[indiceMemoire]) / MEMOIRE_MESURE;
 		positionGauche[indiceMemoire] = tmp;
+		vitesseGauche[indiceMemoire] = currentLeftSpeed;
 
 		tmp = TICK_CODEUR_DROIT;
 		delta_tick_droit = tmp - old_tick_droit;
 		old_tick_droit = tmp;
-		vd_odo = (tmp - positionDroite[indiceMemoire]) / MEMOIRE_VITESSE;
+		currentRightSpeed = (tmp - positionDroite[indiceMemoire]) / MEMOIRE_MESURE;
+		currentRightAcceleration = (currentRightSpeed - vitesseDroite[indiceMemoire]) / MEMOIRE_MESURE;
 		positionDroite[indiceMemoire] = tmp;
+		vitesseDroite[indiceMemoire] = currentLeftSpeed;
 
-		vl_odo = (vd_odo + vg_odo) / 2;
+		vitesseLineaireReelle = (currentRightSpeed + currentLeftSpeed) / 2;
 
 		// Calcul issu de Thalès. Position si le robot tourne vers la droite (pour être cohérent avec l'orientation)
-		courbure_odo = 2 / LONGUEUR_CODEUSE_A_CODEUSE_EN_MM * (vg_odo - vd_odo) / (vg_odo + vd_odo);
+		courbure_odo = 2 / LONGUEUR_CODEUSE_A_CODEUSE_EN_MM * (currentLeftSpeed - currentRightSpeed) / (currentLeftSpeed + currentRightSpeed);
 
 		indiceMemoire++;
-		indiceMemoire %= MEMOIRE_VITESSE;
+		indiceMemoire %= MEMOIRE_MESURE;
 
 		// on évite les formules avec "/ 2", qui font perdre de l'information et qui peuvent s'accumuler
 
@@ -90,7 +99,7 @@ void thread_odometrie_asser(void* p)
 			deltaOrientationTick = delta_tick_gauche - delta_tick_droit;
 
 		// l'erreur à cause du "/2" ne s'accumule pas
-		orientationMoyTick = orientationTick_odo + deltaOrientationTick/2;
+		orientationMoyTick = currentAngle + deltaOrientationTick/2;
 
 		if(orientationMoyTick > (uint32_t)TICKS_PAR_TOUR_ROBOT)
 		{
@@ -99,7 +108,7 @@ void thread_odometrie_asser(void* p)
 			else
 				orientationMoyTick += (uint32_t)TICKS_PAR_TOUR_ROBOT;
 		}
-		orientationTick_odo += deltaOrientationTick;
+		currentAngle += deltaOrientationTick;
 		deltaOrientation = TICK_TO_RAD(deltaOrientationTick);
 
 //		serial_rb.printfln("TICKS_PAR_TOUR_ROBOT = %d", (int)TICKS_PAR_TOUR_ROBOT);

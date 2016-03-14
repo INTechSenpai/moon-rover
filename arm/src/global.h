@@ -12,10 +12,11 @@
 
 #define ATTENTE_MUTEX_MS 10
 #define FREQUENCE_ODO_ASSER 200
+#define MEMOIRE_MESURE 25
 
 #define TICKS_PAR_TOUR_CODEUSE 4000
 #define RAYON_CODEUSE_EN_MM 25
-#define MM_PAR_TICK ((2 * M_PI * RAYON_CODEUSE_EN_MM) / TICKS_PAR_TOUR_CODEUSE)
+#define MM_PAR_TICK ((2 * M_PI * RAYON_CODEUSE_EN_MM) / TICKS_PAR_TOUR_CODEUSE) // 0.039, 1/25 environ
 #define TICK_CODEUR_DROIT TIM5->CNT
 #define TICK_CODEUR_GAUCHE TIM2->CNT
 #define LONGUEUR_CODEUSE_A_CODEUSE_EN_MM 360
@@ -26,7 +27,6 @@
 #define RAD_TO_TICK(x) ((x * TICKS_PAR_TOUR_ROBOT) / (2 * M_PI))
 #define TICK_TO_MM(x) (x * MM_PAR_TICK / 2)
 
-#define MEMOIRE_VITESSE 25
 enum MODE_ASSER {ASSER_OFF, PAS_BOUGER, STOP, ROTATION, VA_AU_POINT, COURBE};
 enum DirectionStrategy {FORCE_BACK_MOTION, FORCE_FORWARD_MOTION, FASTEST};
 
@@ -43,7 +43,6 @@ extern volatile bool ping;
 extern double x_odo, y_odo; // abscisse et ordonnée exprimées en mm
 extern double orientation_odo; // exprimé en radians
 extern double cos_orientation_odo, sin_orientation_odo;
-extern double vd_odo, vg_odo, vl_odo; // vitesses exprimées en tick / ms
 extern double courbure_odo; // en mm^-1
 
 // MUTEX

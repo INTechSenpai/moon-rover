@@ -9,7 +9,12 @@
 #include <cmath>
 #include "math.h"
 
-#define AVERAGE_SPEED_SIZE 10
+#define VITESSE_LINEAIRE_MAX (300 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // vitesse max en tick / appel asser
+#define ACCELERATION_LINEAIRE_MAX (300 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // accélération max en tick / (appel asser)^2
+#define VITESSE_ROTATION_MAX (300 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // vitesse max en tick / appel asser
+#define ACCELERATION_ROTATION_MAX (300 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // accélération max en tick / (appel asser)^2
+#define VITESSE_ROUE_MAX (300 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // vitesse max en tick / appel asser
+#define ACCELERATION_ROUE_MAX (300 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // accélération max en tick / (appel asser)^2
 
 enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
@@ -35,6 +40,9 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	volatile int32_t consigneY;
 	volatile uint32_t rotationSetpoint;		// angle absolu visé (en ticks)
 
+	int32_t currentRightAcceleration;
+	int32_t currentLeftAcceleration;
+
 	//	Asservissement en vitesse du moteur droit
 	int32_t currentRightSpeed;		// ticks/seconde
 	int32_t errorRightSpeed;
@@ -57,23 +65,15 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	//	Asservissement en position : translation
 	int32_t currentDistance;		// distance à parcourir, en ticks
 	int32_t translationSpeed;		// ticks/seconde
-	int32_t errorTranslation;		// ticks/seconde
+	int32_t errorTranslation;		// ticks
 	PID translationPID(&errorTranslation, &translationSpeed);
 
 	//	Asservissement en position : rotation
 
-	uint32_t orientationTick_odo = 0;
+	uint32_t currentAngle = 0;
 	int32_t errorAngle;
 	int32_t rotationSpeed;			// ticks/seconde
 	PID rotationPID(&errorAngle, &rotationSpeed);
-
-	//	Limitation de vitesses
-	int32_t maxSpeed; 				// definit la vitesse maximal des moteurs du robot
-	int32_t maxSpeedTranslation;	// definit la consigne max de vitesse de translation envoiée au PID (trapèze)
-	int32_t maxSpeedRotation;		// definit la consigne max de vitesse de rotation envoiée au PID (trapèze)
-
-	//	Limitation d'accélération
-	int32_t maxAcceleration;
 
 	//	Pour faire de jolies courbes de réponse du système, la vitesse moyenne c'est mieux !
 //	Average<int32_t, AVERAGE_SPEED_SIZE> averageLeftSpeed;
@@ -98,6 +98,9 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 	int32_t previousLeftSpeedSetpoint = 0;
 	int32_t previousRightSpeedSetpoint = 0;
+	int32_t previousTranslationSpeedSetpoint = 0;
+	int32_t previousRotationSpeedSetpoint = 0;
+
 
 
     /**
@@ -105,11 +108,19 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
      */
     void updateRotationSetpoint()
     {
-    	double tmp = RAD_TO_TICK(atan2(consigneY - y_odo, consigneX - x_odo));
+    	int32_t tmp = (int32_t) RAD_TO_TICK(atan2(consigneY - y_odo, consigneX - x_odo));
     	if(tmp >= 0)
-    		rotationSetpoint = (int32_t) tmp;
+    		rotationSetpoint = tmp;
     	else
-    		rotationSetpoint = (int32_t) (TICKS_PAR_TOUR_ROBOT - tmp);
+    		rotationSetpoint = (TICKS_PAR_TOUR_ROBOT + tmp);
+
+		if(!marcheAvant)
+		{
+			// on inverse la consigne (puisqu'on va en marche arrière)
+			rotationSetpoint += TICKS_PAR_TOUR_ROBOT / 2;
+			if(rotationSetpoint > TICKS_PAR_TOUR_ROBOT)
+				rotationSetpoint -= TICKS_PAR_TOUR_ROBOT;
+		}
     }
 
     /**
@@ -118,9 +129,9 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     void updateErrorAngle()
     {
     	uint32_t e;
-    	if(rotationSetpoint > orientationTick_odo)
+    	if(rotationSetpoint > currentAngle)
     	{
-    		e = rotationSetpoint - orientationTick_odo;
+    		e = rotationSetpoint - currentAngle;
     		if(e < TICKS_PAR_TOUR_ROBOT/2)
     			errorAngle = e;
     		else
@@ -128,7 +139,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	}
     	else
     	{
-    		e = orientationTick_odo - rotationSetpoint;
+    		e = currentAngle - rotationSetpoint;
     		if(e < TICKS_PAR_TOUR_ROBOT/2)
     			errorAngle = -e;
     		else
@@ -136,102 +147,99 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	}
     }
 
+    /**
+     * Restreint l'erreur à un demi-tour.
+     * UNUSED
+     */
+    void updateErrorAngleDemiPlan()
+    {
+    	if(errorAngle < TICKS_PAR_TOUR_ROBOT/4)
+    		errorAngle += TICKS_PAR_TOUR_ROBOT/2;
+    	else if(errorAngle > TICKS_PAR_TOUR_ROBOT/4)
+    		errorAngle -= TICKS_PAR_TOUR_ROBOT/2;
+    }
+
     void updateErrorTranslation()
     {
-    	int32_t e = (int32_t) hypot(x_odo - consigneX, y_odo - consigneY) * MM_PAR_TICK;
+    	int32_t e = (int32_t) (hypot(x_odo - consigneX, y_odo - consigneY) / MM_PAR_TICK);
     	// faut-il aller en marche arrière ?
     	if(cos_orientation_odo * (consigneX - x_odo) + sin_orientation_odo * (consigneY - y_odo) < 0)
     		e = -e;
     	errorTranslation = e;
     }
 
-/*	void setRotationSetpoint(int32_t rotationSetpointTmp)
+	void controlTranslation()
 	{
-		// gestion de la rotation (on va au plus court)
-		if(rotationSetpointTmp < orientationTick_odo - TICKS_PAR_TOUR_ROBOT / 2)
-			rotationSetpoint = rotationSetpointTmp + TICKS_PAR_TOUR_ROBOT;
-		else if(rotationSetpointTmp > orientationTick_odo + TICKS_PAR_TOUR_ROBOT / 2)
-			rotationSetpoint = rotationSetpointTmp - TICKS_PAR_TOUR_ROBOT;
-		else
-			rotationSetpoint = rotationSetpointTmp;
-	}*/
+    	updateErrorTranslation();
 
-	void controlTranslation(int16_t delta_tick_droit, int16_t delta_tick_gauche, uint32_t orientationMoyTick)
-	{
-		/*
-		currentAngle = (int32_t) orientationMoyTick;
-
-		currentLeftSpeed = delta_tick_gauche * FREQUENCE_ODO_ASSER; // (nb-de-tick-passés)*(freq_asserv) (ticks/sec)
-		currentRightSpeed = delta_tick_droit * FREQUENCE_ODO_ASSER;
-
-		averageLeftSpeed.add(currentLeftSpeed);
-		averageRightSpeed.add(currentRightSpeed);
-
-		currentLeftSpeed = averageLeftSpeed.value(); // On utilise pour l'asserv la valeur moyenne des dernieres current Speed
-		currentRightSpeed = averageRightSpeed.value();
-
-		// calcul de la consigne en translation et en rotation
-		currentDistance = (int32_t)(hypot(x_odo - x_consigne, y_odo - y_consigne) * (1 / MM_PAR_TICK));
 		translationPID.compute();	// Actualise la valeur de 'translationSpeed'
+		marcheAvant = errorTranslation >= 0;
 
-        if(!marcheAvant)
-            translationSpeed = -translationSpeed;
-
-		// pas de correction de l'orientation si on est très proche (3cm ou moins)
-		if(currentDistance > 30 / MM_PAR_TICK)
+    	// On ne met pas à jour l'orientation si on est à moins de 3 cm de l'arrivée. Sinon, en dépassant la consigne le robot voudra se retourner…
+		if(errorTranslation >= 30/MM_PAR_TICK)
 		{
-			setRotationSetpoint(RAD_TO_TICK(atan2(y_consigne - y_odo, x_consigne - x_odo)));
-            if(!marcheAvant)
-            {
-                // on inverse la consigne (puisqu'on va en marche arrière)
-                rotationSetpoint += TICKS_PAR_TOUR_ROBOT / 2;
-                if(rotationSetpoint > TICKS_PAR_TOUR_ROBOT)
-                    rotationSetpoint -= TICKS_PAR_TOUR_ROBOT;
-            }
-			rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
-			// gestion de la symétrie pour les déplacements
-			if(isSymmetry)
-				rotationSpeed = -rotationSpeed;
+			updateRotationSetpoint(); // gère la marche arrière
+			updateErrorAngle();
 		}
-		else
-			rotationSpeed = 0;
+
+		rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
+
+		// gestion de la symétrie pour les déplacements
+		if(isSymmetry)
+			rotationSpeed = -rotationSpeed;
 
 		// Limitation de la consigne de vitesse en translation
-		if(translationSpeed > maxSpeedTranslation)
-			translationSpeed = maxSpeedTranslation;
-		else if(translationSpeed < -maxSpeedTranslation)
-			translationSpeed = -maxSpeedTranslation;
+		if(translationSpeed > VITESSE_LINEAIRE_MAX)
+			translationSpeed = VITESSE_LINEAIRE_MAX;
+		else if(translationSpeed < -VITESSE_LINEAIRE_MAX)
+			translationSpeed = -VITESSE_LINEAIRE_MAX;
+
+		// Limitation de l'accélération en vitesse linéaire
+		if(translationSpeed - previousTranslationSpeedSetpoint > ACCELERATION_LINEAIRE_MAX)
+			translationSpeed = previousTranslationSpeedSetpoint + ACCELERATION_LINEAIRE_MAX;
+		else if(translationSpeed - previousTranslationSpeedSetpoint < -ACCELERATION_LINEAIRE_MAX)
+			translationSpeed = previousTranslationSpeedSetpoint - ACCELERATION_LINEAIRE_MAX;
+
+		previousTranslationSpeedSetpoint = translationSpeed;
 
 		// Limitation de la consigne de vitesse en rotation
-		if(rotationSpeed > maxSpeedRotation)
-			rotationSpeed = maxSpeedRotation;
-		else if(rotationSpeed < -maxSpeedRotation)
-			rotationSpeed = -maxSpeedRotation;
+		if(rotationSpeed > VITESSE_ROTATION_MAX)
+			rotationSpeed = VITESSE_ROTATION_MAX;
+		else if(rotationSpeed < -VITESSE_ROTATION_MAX)
+			rotationSpeed = -VITESSE_ROTATION_MAX;
 
-		leftSpeedSetpoint = translationSpeed - rotationSpeed;
-		rightSpeedSetpoint = translationSpeed + rotationSpeed;
+		// Limitation de l'accélération en rotation
+		if(rotationSpeed - previousRotationSpeedSetpoint > ACCELERATION_ROTATION_MAX)
+			rotationSpeed = previousRotationSpeedSetpoint + ACCELERATION_ROTATION_MAX;
+		else if(rotationSpeed - previousRotationSpeedSetpoint < -ACCELERATION_ROTATION_MAX)
+			rotationSpeed = previousRotationSpeedSetpoint - ACCELERATION_ROTATION_MAX;
+
+		previousRotationSpeedSetpoint = rotationSpeed;
+
+		int32_t leftSpeedSetpoint = translationSpeed - rotationSpeed;
+		int32_t rightSpeedSetpoint = translationSpeed + rotationSpeed;
 
 		// Limitation de la vitesses
-		if(leftSpeedSetpoint > maxSpeed)
-			leftSpeedSetpoint = maxSpeed;
-		else if(leftSpeedSetpoint < -maxSpeed)
-			leftSpeedSetpoint = -maxSpeed;
-		if(rightSpeedSetpoint > maxSpeed)
-			rightSpeedSetpoint = maxSpeed;
-		else if(rightSpeedSetpoint < -maxSpeed)
-			rightSpeedSetpoint = -maxSpeed;
+		if(leftSpeedSetpoint > VITESSE_ROUE_MAX)
+			leftSpeedSetpoint = VITESSE_ROUE_MAX;
+		else if(leftSpeedSetpoint < -VITESSE_ROUE_MAX)
+			leftSpeedSetpoint = -VITESSE_ROUE_MAX;
+		if(rightSpeedSetpoint > VITESSE_ROUE_MAX)
+			rightSpeedSetpoint = VITESSE_ROUE_MAX;
+		else if(rightSpeedSetpoint < -VITESSE_ROUE_MAX)
+			rightSpeedSetpoint = -VITESSE_ROUE_MAX;
 
 		// Limitation de l'accélération du moteur gauche
-		if(leftSpeedSetpoint - previousLeftSpeedSetpoint > maxAcceleration)
-			leftSpeedSetpoint = previousLeftSpeedSetpoint + maxAcceleration;
-		else if(leftSpeedSetpoint - previousLeftSpeedSetpoint < -maxAcceleration)
-			leftSpeedSetpoint = previousLeftSpeedSetpoint - maxAcceleration;
+		if(leftSpeedSetpoint - previousLeftSpeedSetpoint > ACCELERATION_ROUE_MAX)
+			leftSpeedSetpoint = previousLeftSpeedSetpoint + ACCELERATION_ROUE_MAX;
+		else if(leftSpeedSetpoint - previousLeftSpeedSetpoint < -ACCELERATION_ROUE_MAX)
+			leftSpeedSetpoint = previousLeftSpeedSetpoint - ACCELERATION_ROUE_MAX;
 
 		// Limitation de l'accélération du moteur droit
-		if(rightSpeedSetpoint - previousRightSpeedSetpoint > maxAcceleration)
-			rightSpeedSetpoint = previousRightSpeedSetpoint + maxAcceleration;
-		else if(rightSpeedSetpoint - previousRightSpeedSetpoint < -maxAcceleration)
-			rightSpeedSetpoint = previousRightSpeedSetpoint - maxAcceleration;
+		if(rightSpeedSetpoint - previousRightSpeedSetpoint > ACCELERATION_ROUE_MAX)
+			rightSpeedSetpoint = previousRightSpeedSetpoint + ACCELERATION_ROUE_MAX;
+		else if(rightSpeedSetpoint - previousRightSpeedSetpoint < -ACCELERATION_ROUE_MAX)
+			rightSpeedSetpoint = previousRightSpeedSetpoint - ACCELERATION_ROUE_MAX;
 
 		previousLeftSpeedSetpoint = leftSpeedSetpoint;
 		previousRightSpeedSetpoint = rightSpeedSetpoint;
@@ -245,7 +253,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 		leftMotor.run(leftPWM);
 		rightMotor.run(rightPWM);
-		*/
+
 	}
 
 	/**
@@ -270,8 +278,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
         if(isSymmetry)
             rotationSpeed = -rotationSpeed;
 
-        errorLeftSpeed = translationSpeed - rotationSpeed - vg_odo;
-        errorRightSpeed = translationSpeed + rotationSpeed - vd_odo;
+        errorLeftSpeed = translationSpeed - rotationSpeed - currentLeftSpeed;
+        errorRightSpeed = translationSpeed + rotationSpeed - currentRightSpeed;
         
         leftSpeedPID.compute();     // Actualise la valeur de 'leftPWM'
         rightSpeedPID.compute();    // Actualise la valeur de 'rightPWM'
@@ -296,8 +304,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     // freine le plus rapidement possible. Note : on ne garantit rien sur l'orientation, si une roue freine plus vite que l'autre le robot va tourner.
     void controlStop()
     {
-    	errorRightSpeed = vd_odo;
-    	errorLeftSpeed = vg_odo;
+    	errorRightSpeed = currentRightSpeed;
+    	errorLeftSpeed = currentLeftSpeed;
 
         leftSpeedPID.compute();     // Actualise la valeur de 'leftPWM'
         rightSpeedPID.compute();    // Actualise la valeur de 'rightPWM'
