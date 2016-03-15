@@ -40,8 +40,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	volatile int32_t consigneY;
 	volatile uint32_t rotationSetpoint;		// angle absolu visé (en ticks)
 
-	int32_t currentRightAcceleration;
-	int32_t currentLeftAcceleration;
+//	int32_t currentRightAcceleration;
+//	int32_t currentLeftAcceleration;
 	int32_t leftSpeedSetpoint;
 	int32_t rightSpeedSetpoint;
 
@@ -246,7 +246,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 			rightSpeedSetpoint = currentRightSpeed - ACCELERATION_ROUE_MAX;
 	}
 
-	void controlTranslation()
+	void controlVaAuPoint()
 	{
     	updateErrorTranslation();
 
@@ -324,16 +324,42 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
         computeAndRunPWM();
     }
 
-    // Sommes-nous arrivés ?
-    bool checkBlocageMecanique()
+    int16_t nbErreurs = 0;
+
+    /**
+     * On est physiquement bloqué si l'erreur en vitesse de change pas alors que les moteurs tournent
+     */
+    bool inline isPhysicallyStopped()
     {
-        return false; // TODO
+    	return (ABS(leftPWM) > 5) && (ABS(rightPWM) > 5) && (ABS(leftSpeedPID.getDerivativeError())) < 5 && (ABS(rightSpeedPID.getDerivativeError()) < 5);
     }
 
-    // Sommes-nous arrivés ?
-    bool checkArrivee()
+    // Y a-t-il un problème mécanique ?
+    bool inline checkBlocageMecanique()
     {
-        return ABS(leftPWM) < 5 && ABS(rightPWM) < 5 && ABS(rotationSpeed) < 10 && ABS(translationSpeed) < 10; // TODO
+    	if(isPhysicallyStopped())
+    	{
+    		nbErreurs++;
+			if(nbErreurs >= DELAI_ERREUR_MECA_APPEL)
+			{
+				nbErreurs = 0;
+				return true;
+			}
+    	}
+    	else // pas de blocage, tout va bien
+    		nbErreurs = 0;
+
+        return false;
+    }
+
+    //
+    /**
+     * Sommes-nous arrivés ?
+     * On vérifie que les moteurs ne tournent plus et que le robot est arrêté
+     */
+    bool inline checkArrivee()
+    {
+        return ABS(leftPWM) < 5 && ABS(rightPWM) < 5 && ABS(currentLeftSpeed) < 10 && ABS(currentRightSpeed) < 10;
     }
 
 #endif

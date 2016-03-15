@@ -28,8 +28,8 @@ void thread_odometrie_asser(void* p)
 {
 	int16_t positionGauche[MEMOIRE_MESURE]; // on introduit un effet de mémoire afin de pouvoir mesurer la vitesse sur un intervalle pas trop petit
 	int16_t positionDroite[MEMOIRE_MESURE];
-	int16_t vitesseGauche[MEMOIRE_MESURE]; // on introduit un effet de mémoire afin de pouvoir mesurer l'accélération sur un intervalle pas trop petit
-	int16_t vitesseDroite[MEMOIRE_MESURE];
+//	int16_t vitesseGauche[MEMOIRE_MESURE]; // on introduit un effet de mémoire afin de pouvoir mesurer l'accélération sur un intervalle pas trop petit
+//	int16_t vitesseDroite[MEMOIRE_MESURE];
 	uint8_t indiceMemoire = 0;
 	x_odo = 0;
 	y_odo = 0;
@@ -47,8 +47,8 @@ void thread_odometrie_asser(void* p)
 	{
 		positionDroite[i] = old_tick_droit;
 		positionGauche[i] = old_tick_gauche;
-		vitesseDroite[i] = 0;
-		vitesseGauche[i] = 0;
+//		vitesseDroite[i] = 0;
+//		vitesseGauche[i] = 0;
 
 	}
 
@@ -67,17 +67,17 @@ void thread_odometrie_asser(void* p)
 		delta_tick_gauche = tmp - old_tick_gauche;
 		old_tick_gauche = tmp;
 		currentLeftSpeed = (tmp - positionGauche[indiceMemoire]) / MEMOIRE_MESURE;
-		currentLeftAcceleration = (currentLeftSpeed - vitesseGauche[indiceMemoire]) / MEMOIRE_MESURE;
+//		currentLeftAcceleration = (currentLeftSpeed - vitesseGauche[indiceMemoire]) / MEMOIRE_MESURE;
 		positionGauche[indiceMemoire] = tmp;
-		vitesseGauche[indiceMemoire] = currentLeftSpeed;
+//		vitesseGauche[indiceMemoire] = currentLeftSpeed;
 
 		tmp = TICK_CODEUR_DROIT;
 		delta_tick_droit = tmp - old_tick_droit;
 		old_tick_droit = tmp;
 		currentRightSpeed = (tmp - positionDroite[indiceMemoire]) / MEMOIRE_MESURE;
-		currentRightAcceleration = (currentRightSpeed - vitesseDroite[indiceMemoire]) / MEMOIRE_MESURE;
+//		currentRightAcceleration = (currentRightSpeed - vitesseDroite[indiceMemoire]) / MEMOIRE_MESURE;
 		positionDroite[indiceMemoire] = tmp;
-		vitesseDroite[indiceMemoire] = currentLeftSpeed;
+//		vitesseDroite[indiceMemoire] = currentLeftSpeed;
 
 		vitesseLineaireReelle = (currentRightSpeed + currentLeftSpeed) / 2;
 
@@ -139,35 +139,30 @@ void thread_odometrie_asser(void* p)
 		xSemaphoreGive(odo_mutex);
 
 		// ASSERVISSEMENT
+        if(checkBlocageMecanique())
+        {
+            modeAsserActuel = STOP;
+            sendProblemeMeca();
+        }
 
 		// on empêche toute modification de consigne
 		while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-		if(modeAsserActuel == PAS_BOUGER)
+		if(modeAsserActuel == ROTATION)
 			controlRotation();
-		else
-        {
-            if(modeAsserActuel == ROTATION)
-            {
-            	updateErrorAngle();
-			controlRotation();
-            }
-		    else if(modeAsserActuel == STOP)
-			    controlStop();
-//		    else if(modeAsserActuel == TRANSLATION)
-//			    controlTranslation();
-		    else if(modeAsserActuel == COURBE)
-			    controlTrajectoire();
-            if(checkBlocageMecanique())
-            {
-                modeAsserActuel = STOP;
-                sendProblemeMeca();
-            }
-            if(checkArrivee()) // gestion de la fin du mouvement
-            {
-                modeAsserActuel = PAS_BOUGER;
-                sendArrive();
-            }
-        }
+		else if(modeAsserActuel == STOP)
+			controlStop();
+		else if(modeAsserActuel == VA_AU_POINT)
+			controlVaAuPoint();
+		else if(modeAsserActuel == COURBE)
+			controlTrajectoire();
+		if(checkArrivee()) // gestion de la fin du mouvement
+		{
+			modeAsserActuel = VA_AU_POINT;
+			consigneX = x_odo;
+			consigneY = y_odo;
+			sendArrive();
+		}
+
 		xSemaphoreGive(consigneAsser_mutex);
 
 		// si ça vaut ASSER_OFF, il n'y a pas d'asser

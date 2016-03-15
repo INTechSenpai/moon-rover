@@ -11,7 +11,7 @@
 #define TAILLE_BUFFER_ECRITURE_SERIE	50
 
 #define ATTENTE_MUTEX_MS 10
-#define FREQUENCE_ODO_ASSER 200
+#define FREQUENCE_ODO_ASSER 200 // en appel / s
 #define MEMOIRE_MESURE 25
 
 #define TICKS_PAR_TOUR_CODEUSE 4000
@@ -27,7 +27,14 @@
 #define RAD_TO_TICK(x) ((x * TICKS_PAR_TOUR_ROBOT) / (2 * M_PI))
 #define TICK_TO_MM(x) (x * MM_PAR_TICK / 2)
 
-enum MODE_ASSER {ASSER_OFF, PAS_BOUGER, STOP, ROTATION, VA_AU_POINT, COURBE};
+#define DELAI_ERREUR_MECA_MS	100 // durant combien de ms faut-il qu'il y ait un problème mécanique pour annuler un mouvement ?
+#define DELAI_ERREUR_MECA_APPEL (DELAI_ERREUR_MECA_MS * FREQUENCE_ODO_ASSER)
+
+enum MODE_ASSER {ASSER_OFF, // pas d'asser
+	STOP, // le robot doit s'arrêter le plus vite possible
+	ROTATION, // le robot doit tourner
+	VA_AU_POINT, // le robot doit arriver à un point. Il n'y a aucun asservissement à la trajectoire : mieux vaut utiliser ce mode pour des mouvements rectilignes
+	COURBE}; // le robot est asservi à une trajectoire courbe en clothoïde
 enum DirectionStrategy {FORCE_BACK_MOTION, FORCE_FORWARD_MOTION, FASTEST};
 
 extern std::vector<Hook*> listeHooks;

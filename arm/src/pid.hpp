@@ -31,6 +31,11 @@ public:
 		integral = 0;
 	}
 
+	int32_t getDerivativeError()
+	{
+		return derivative;
+	}
+
 	void compute() {
 
 		int32_t error = *(this->error);
