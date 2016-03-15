@@ -42,6 +42,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 	int32_t currentRightAcceleration;
 	int32_t currentLeftAcceleration;
+	int32_t leftSpeedSetpoint;
+	int32_t rightSpeedSetpoint;
 
 	//	Asservissement en vitesse du moteur droit
 	int32_t currentRightSpeed;		// ticks/seconde
@@ -56,8 +58,9 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	PID leftSpeedPID(&errorLeftSpeed, &leftPWM);
 
 	//	Asservissement en vitesse linéaire et en courbure
-	volatile int32_t vitesseLineaireReelle;
-	volatile int32_t courbureReelle;
+	int32_t vitesseLineaireReelle;
+	int32_t vitesseRotationReelle;
+	int32_t courbureReelle;
 	volatile int32_t consigneVitesseLineaire;
 	volatile int32_t consigneCourbure;
 	PIDvitesse PIDvit(&vitesseLineaireReelle, &courbureReelle, &leftPWM, &rightPWM, &consigneVitesseLineaire, &consigneCourbure);
@@ -95,12 +98,6 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	//Nombre de ticks de tolérance pour considérer qu'on est arrivé à destination
 	int toleranceTranslation;
 	int toleranceRotation;
-
-	int32_t previousLeftSpeedSetpoint = 0;
-	int32_t previousRightSpeedSetpoint = 0;
-	int32_t previousTranslationSpeedSetpoint = 0;
-	int32_t previousRotationSpeedSetpoint = 0;
-
 
 
     /**
@@ -168,6 +165,87 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	errorTranslation = e;
     }
 
+    /**
+     * Utilise les valeurs de errorLeftSpeed et errorRightSpeed pour mettre à jour les moteurs
+     * S'occupe aussi de la symétrisation
+     */
+	void computeAndRunPWM()
+	{
+		leftSpeedPID.compute();		// Actualise la valeur de 'leftPWM'
+		rightSpeedPID.compute();	// Actualise la valeur de 'rightPWM'
+
+		// gestion de la symétrie pour les déplacements
+        if(isSymmetry)
+        {
+			leftMotor.run(rightPWM);
+			rightMotor.run(leftPWM);
+        }
+        else
+        {
+			leftMotor.run(leftPWM);
+			rightMotor.run(rightPWM);
+        }
+	}
+
+	/**
+	 * Limite la vitesse et l'accélération linéaire et en rotation
+	 */
+	void limitTranslationRotationSpeed()
+	{
+
+		// Limitation de la consigne de vitesse en translation
+		if(translationSpeed > VITESSE_LINEAIRE_MAX)
+			translationSpeed = VITESSE_LINEAIRE_MAX;
+		else if(translationSpeed < -VITESSE_LINEAIRE_MAX)
+			translationSpeed = -VITESSE_LINEAIRE_MAX;
+
+		// Limitation de l'accélération en vitesse linéaire
+		if(translationSpeed - vitesseLineaireReelle > ACCELERATION_LINEAIRE_MAX)
+			translationSpeed = vitesseLineaireReelle + ACCELERATION_LINEAIRE_MAX;
+		else if(translationSpeed - vitesseLineaireReelle < -ACCELERATION_LINEAIRE_MAX)
+			translationSpeed = vitesseLineaireReelle - ACCELERATION_LINEAIRE_MAX;
+
+		// Limitation de la consigne de vitesse en rotation
+		if(rotationSpeed > VITESSE_ROTATION_MAX)
+			rotationSpeed = VITESSE_ROTATION_MAX;
+		else if(rotationSpeed < -VITESSE_ROTATION_MAX)
+			rotationSpeed = -VITESSE_ROTATION_MAX;
+
+		// Limitation de l'accélération en rotation
+		if(rotationSpeed - vitesseRotationReelle > ACCELERATION_ROTATION_MAX)
+			rotationSpeed = vitesseRotationReelle + ACCELERATION_ROTATION_MAX;
+		else if(rotationSpeed - vitesseRotationReelle < -ACCELERATION_ROTATION_MAX)
+			rotationSpeed = vitesseRotationReelle - ACCELERATION_ROTATION_MAX;
+	}
+
+	/**
+	 * Limite la vitesse et l'accélération de chaque roue
+	 */
+	void limitLeftRightSpeed()
+	{
+		// Limitation de la vitesses
+		if(leftSpeedSetpoint > VITESSE_ROUE_MAX)
+			leftSpeedSetpoint = VITESSE_ROUE_MAX;
+		else if(leftSpeedSetpoint < -VITESSE_ROUE_MAX)
+			leftSpeedSetpoint = -VITESSE_ROUE_MAX;
+		if(rightSpeedSetpoint > VITESSE_ROUE_MAX)
+			rightSpeedSetpoint = VITESSE_ROUE_MAX;
+		else if(rightSpeedSetpoint < -VITESSE_ROUE_MAX)
+			rightSpeedSetpoint = -VITESSE_ROUE_MAX;
+
+		// Limitation de l'accélération du moteur gauche
+		if(leftSpeedSetpoint - currentLeftSpeed > ACCELERATION_ROUE_MAX)
+			leftSpeedSetpoint = currentLeftSpeed + ACCELERATION_ROUE_MAX;
+		else if(leftSpeedSetpoint - currentLeftSpeed < -ACCELERATION_ROUE_MAX)
+			leftSpeedSetpoint = currentLeftSpeed - ACCELERATION_ROUE_MAX;
+
+		// Limitation de l'accélération du moteur droit
+		if(rightSpeedSetpoint - currentRightSpeed > ACCELERATION_ROUE_MAX)
+			rightSpeedSetpoint = currentRightSpeed + ACCELERATION_ROUE_MAX;
+		else if(rightSpeedSetpoint - currentRightSpeed < -ACCELERATION_ROUE_MAX)
+			rightSpeedSetpoint = currentRightSpeed - ACCELERATION_ROUE_MAX;
+	}
+
 	void controlTranslation()
 	{
     	updateErrorTranslation();
@@ -180,89 +258,22 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		{
 			updateRotationSetpoint(); // gère la marche arrière
 			updateErrorAngle();
+			rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
 		}
+		else // si on est trop proche, on ne tourne plus
+			rotationSpeed = 0;
 
-		rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
+		limitTranslationRotationSpeed();
 
-		// gestion de la symétrie pour les déplacements
-		if(isSymmetry)
-			rotationSpeed = -rotationSpeed;
+		leftSpeedSetpoint = translationSpeed - rotationSpeed;
+		rightSpeedSetpoint = translationSpeed + rotationSpeed;
 
-		// Limitation de la consigne de vitesse en translation
-		if(translationSpeed > VITESSE_LINEAIRE_MAX)
-			translationSpeed = VITESSE_LINEAIRE_MAX;
-		else if(translationSpeed < -VITESSE_LINEAIRE_MAX)
-			translationSpeed = -VITESSE_LINEAIRE_MAX;
+		limitLeftRightSpeed();
 
-		// Limitation de l'accélération en vitesse linéaire
-		if(translationSpeed - previousTranslationSpeedSetpoint > ACCELERATION_LINEAIRE_MAX)
-			translationSpeed = previousTranslationSpeedSetpoint + ACCELERATION_LINEAIRE_MAX;
-		else if(translationSpeed - previousTranslationSpeedSetpoint < -ACCELERATION_LINEAIRE_MAX)
-			translationSpeed = previousTranslationSpeedSetpoint - ACCELERATION_LINEAIRE_MAX;
+        errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
+		errorRightSpeed = rightSpeedSetpoint - currentRightSpeed;
 
-		previousTranslationSpeedSetpoint = translationSpeed;
-
-		// Limitation de la consigne de vitesse en rotation
-		if(rotationSpeed > VITESSE_ROTATION_MAX)
-			rotationSpeed = VITESSE_ROTATION_MAX;
-		else if(rotationSpeed < -VITESSE_ROTATION_MAX)
-			rotationSpeed = -VITESSE_ROTATION_MAX;
-
-		// Limitation de l'accélération en rotation
-		if(rotationSpeed - previousRotationSpeedSetpoint > ACCELERATION_ROTATION_MAX)
-			rotationSpeed = previousRotationSpeedSetpoint + ACCELERATION_ROTATION_MAX;
-		else if(rotationSpeed - previousRotationSpeedSetpoint < -ACCELERATION_ROTATION_MAX)
-			rotationSpeed = previousRotationSpeedSetpoint - ACCELERATION_ROTATION_MAX;
-
-		previousRotationSpeedSetpoint = rotationSpeed;
-
-		int32_t leftSpeedSetpoint = translationSpeed - rotationSpeed;
-		int32_t rightSpeedSetpoint = translationSpeed + rotationSpeed;
-
-		// Limitation de la vitesses
-		if(leftSpeedSetpoint > VITESSE_ROUE_MAX)
-			leftSpeedSetpoint = VITESSE_ROUE_MAX;
-		else if(leftSpeedSetpoint < -VITESSE_ROUE_MAX)
-			leftSpeedSetpoint = -VITESSE_ROUE_MAX;
-		if(rightSpeedSetpoint > VITESSE_ROUE_MAX)
-			rightSpeedSetpoint = VITESSE_ROUE_MAX;
-		else if(rightSpeedSetpoint < -VITESSE_ROUE_MAX)
-			rightSpeedSetpoint = -VITESSE_ROUE_MAX;
-
-		// Limitation de l'accélération du moteur gauche
-		if(leftSpeedSetpoint - previousLeftSpeedSetpoint > ACCELERATION_ROUE_MAX)
-			leftSpeedSetpoint = previousLeftSpeedSetpoint + ACCELERATION_ROUE_MAX;
-		else if(leftSpeedSetpoint - previousLeftSpeedSetpoint < -ACCELERATION_ROUE_MAX)
-			leftSpeedSetpoint = previousLeftSpeedSetpoint - ACCELERATION_ROUE_MAX;
-
-		// Limitation de l'accélération du moteur droit
-		if(rightSpeedSetpoint - previousRightSpeedSetpoint > ACCELERATION_ROUE_MAX)
-			rightSpeedSetpoint = previousRightSpeedSetpoint + ACCELERATION_ROUE_MAX;
-		else if(rightSpeedSetpoint - previousRightSpeedSetpoint < -ACCELERATION_ROUE_MAX)
-			rightSpeedSetpoint = previousRightSpeedSetpoint - ACCELERATION_ROUE_MAX;
-
-		previousLeftSpeedSetpoint = leftSpeedSetpoint;
-		previousRightSpeedSetpoint = rightSpeedSetpoint;
-
-		//serial.printfln("%d",(leftSpeedSetpoint - currentLeftSpeed));
-
-		if(leftSpeedControlled)
-			leftSpeedPID.compute();		// Actualise la valeur de 'leftPWM'
-		if(rightSpeedControlled)
-			rightSpeedPID.compute();	// Actualise la valeur de 'rightPWM'
-
-		leftMotor.run(leftPWM);
-		rightMotor.run(rightPWM);
-
-	}
-
-	/**
-	 * Asservissement, à la fois sur la distance et l'angle
-	 * On suppose que les erreurs sont à jours
-	 */
-	void controlDistanceAngle()
-	{
-
+		computeAndRunPWM();
 	}
 
     void controlRotation()
@@ -272,46 +283,45 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	updateErrorTranslation();
 
         rotationPID.compute();      // Actualise la valeur de 'rotationSpeed'
-        translationPID.compute();      // Actualise la valeur de 'rotationSpeed'
+        translationPID.compute();      // Actualise la valeur de 'translationSpeed'
 
-        // gestion de la symétrie pour les déplacements
-        if(isSymmetry)
-            rotationSpeed = -rotationSpeed;
+        limitTranslationRotationSpeed();
 
-        errorLeftSpeed = translationSpeed - rotationSpeed - currentLeftSpeed;
-        errorRightSpeed = translationSpeed + rotationSpeed - currentRightSpeed;
-        
-        leftSpeedPID.compute();     // Actualise la valeur de 'leftPWM'
-        rightSpeedPID.compute();    // Actualise la valeur de 'rightPWM'
+		leftSpeedSetpoint = translationSpeed - rotationSpeed;
+		rightSpeedSetpoint = translationSpeed + rotationSpeed;
 
-        leftMotor.run(leftPWM);
-        rightMotor.run(rightPWM);
+		limitLeftRightSpeed();
+
+        errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
+		errorRightSpeed = rightSpeedSetpoint - currentRightSpeed;
+
+        computeAndRunPWM();
     }
 
     void controlTrajectoire()
     {
         // TODO
-	uint32_t xR, yR;
-//	projection(&xR, &yR);
-	// calcul orientation en R, courbure en R, distance R-robot
-	// calcul courbureSamson
-	// calcul courbureConsigne
-	// calcul vitesseConsigne
-	// calcul vitesseLineaire avec pidTranslation
-	// asser vitesse + courbure
+		uint32_t xR, yR;
+	//	projection(&xR, &yR);
+		// calcul orientation en R, courbure en R, distance R-robot
+		// calcul courbureSamson
+		// calcul courbureConsigne
+		// calcul vitesseConsigne
+		// calcul vitesseLineaire avec pidTranslation
+		// asser vitesse + courbure
     }
 
     // freine le plus rapidement possible. Note : on ne garantit rien sur l'orientation, si une roue freine plus vite que l'autre le robot va tourner.
     void controlStop()
     {
-    	errorRightSpeed = currentRightSpeed;
-    	errorLeftSpeed = currentLeftSpeed;
+    	leftSpeedSetpoint = 0;
+    	rightSpeedSetpoint = 0;
 
-        leftSpeedPID.compute();     // Actualise la valeur de 'leftPWM'
-        rightSpeedPID.compute();    // Actualise la valeur de 'rightPWM'
-            
-        leftMotor.run(leftPWM);
-        rightMotor.run(rightPWM);
+        limitLeftRightSpeed(); // limite la décélération en modifiant leftSpeedSetpoint et rightSpeedSetpoint
+        errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
+		errorRightSpeed = rightSpeedSetpoint - currentRightSpeed;
+
+        computeAndRunPWM();
     }
 
     // Sommes-nous arrivés ?
@@ -325,7 +335,5 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     {
         return ABS(leftPWM) < 5 && ABS(rightPWM) < 5 && ABS(rotationSpeed) < 10 && ABS(translationSpeed) < 10; // TODO
     }
-
-
 
 #endif

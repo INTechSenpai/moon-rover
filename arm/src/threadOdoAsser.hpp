@@ -81,6 +81,11 @@ void thread_odometrie_asser(void* p)
 
 		vitesseLineaireReelle = (currentRightSpeed + currentLeftSpeed) / 2;
 
+		if(!isSymmetry)
+			vitesseRotationReelle = (currentRightSpeed - currentLeftSpeed) / 2;
+		else
+			vitesseRotationReelle = (currentLeftSpeed - currentRightSpeed) / 2;
+
 		// Calcul issu de Thalès. Position si le robot tourne vers la droite (pour être cohérent avec l'orientation)
 		courbure_odo = 2 / LONGUEUR_CODEUSE_A_CODEUSE_EN_MM * (currentLeftSpeed - currentRightSpeed) / (currentLeftSpeed + currentRightSpeed);
 
@@ -92,7 +97,7 @@ void thread_odometrie_asser(void* p)
 		distanceTick = delta_tick_droit + delta_tick_gauche;
 		distance = TICK_TO_MM(distanceTick);
 
-		// gestion de la symétrie
+		// gestion de la symétrie : en effet, toutes les variables sont symétrisées, y compris l'orientation
 		if(!isSymmetry)
 			deltaOrientationTick = delta_tick_droit - delta_tick_gauche;
 		else
