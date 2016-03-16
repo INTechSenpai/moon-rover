@@ -103,7 +103,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     /**
      * Utilise consigneX, consigneY, x_odo et y_odo pour calculer rotationSetpoint
      */
-    void updateRotationSetpoint()
+    void inline updateRotationSetpoint()
     {
     	int32_t tmp = (int32_t) RAD_TO_TICK(atan2(consigneY - y_odo, consigneX - x_odo));
     	if(tmp >= 0)
@@ -123,7 +123,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     /**
      * Utilise rotationSetpoint et orientationTick_odo pour calculer errorAngle
      */
-    void updateErrorAngle()
+    void inline updateErrorAngle()
     {
     	uint32_t e;
     	if(rotationSetpoint > currentAngle)
@@ -148,7 +148,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
      * Restreint l'erreur à un demi-tour.
      * UNUSED
      */
-    void updateErrorAngleDemiPlan()
+    void inline updateErrorAngleDemiPlan()
     {
     	if(errorAngle < TICKS_PAR_TOUR_ROBOT/4)
     		errorAngle += TICKS_PAR_TOUR_ROBOT/2;
@@ -156,7 +156,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     		errorAngle -= TICKS_PAR_TOUR_ROBOT/2;
     }
 
-    void updateErrorTranslation()
+    void inline updateErrorTranslation()
     {
     	int32_t e = (int32_t) (hypot(x_odo - consigneX, y_odo - consigneY) / MM_PAR_TICK);
     	// faut-il aller en marche arrière ?
@@ -169,7 +169,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
      * Utilise les valeurs de errorLeftSpeed et errorRightSpeed pour mettre à jour les moteurs
      * S'occupe aussi de la symétrisation
      */
-	void computeAndRunPWM()
+	void inline computeAndRunPWM()
 	{
 		leftSpeedPID.compute();		// Actualise la valeur de 'leftPWM'
 		rightSpeedPID.compute();	// Actualise la valeur de 'rightPWM'
@@ -190,7 +190,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	/**
 	 * Limite la vitesse et l'accélération linéaire et en rotation
 	 */
-	void limitTranslationRotationSpeed()
+	void inline limitTranslationRotationSpeed()
 	{
 
 		// Limitation de la consigne de vitesse en translation
@@ -221,7 +221,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	/**
 	 * Limite la vitesse et l'accélération de chaque roue
 	 */
-	void limitLeftRightSpeed()
+	void inline limitLeftRightSpeed()
 	{
 		// Limitation de la vitesses
 		if(leftSpeedSetpoint > VITESSE_ROUE_MAX)
@@ -246,7 +246,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 			rightSpeedSetpoint = currentRightSpeed - ACCELERATION_ROUE_MAX;
 	}
 
-	void controlVaAuPoint()
+	void inline controlVaAuPoint()
 	{
     	updateErrorTranslation();
 
@@ -276,7 +276,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		computeAndRunPWM();
 	}
 
-    void controlRotation()
+    void inline controlRotation()
     {
     	// Mise à jour des erreurs
     	updateErrorAngle();
@@ -298,7 +298,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
         computeAndRunPWM();
     }
 
-    void controlTrajectoire()
+    void inline controlTrajectoire()
     {
         // TODO
 		uint32_t xR, yR;
@@ -312,7 +312,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     }
 
     // freine le plus rapidement possible. Note : on ne garantit rien sur l'orientation, si une roue freine plus vite que l'autre le robot va tourner.
-    void controlStop()
+    void inline controlStop()
     {
     	leftSpeedSetpoint = 0;
     	rightSpeedSetpoint = 0;

@@ -86,7 +86,7 @@ void thread_odometrie_asser(void* p)
 		else
 			vitesseRotationReelle = (currentLeftSpeed - currentRightSpeed) / 2;
 
-		// Calcul issu de Thalès. Position si le robot tourne vers la droite (pour être cohérent avec l'orientation)
+		// Calcul issu de Thalès. Positif si le robot tourne vers la droite (pour être cohérent avec l'orientation)
 		courbure_odo = 2 / LONGUEUR_CODEUSE_A_CODEUSE_EN_MM * (currentLeftSpeed - currentRightSpeed) / (currentLeftSpeed + currentRightSpeed);
 
 		indiceMemoire++;
