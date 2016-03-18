@@ -46,6 +46,10 @@ set pid courbure
     0x24 KP(16) KD(16)
 set pid vitesse linéaire
     0x25 KP(16) KD(16)
+envoie arc trajectoire courbe marche avant
+    0x2E X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE(8)
+envoie arc trajectoire courbe marche arrière
+    0x2F X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE(8)
 
 Hook : type param ID(8) NB_CALLBACK(8) callback
 
