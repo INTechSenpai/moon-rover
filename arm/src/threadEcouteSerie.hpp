@@ -116,7 +116,11 @@ void thread_ecoute_serie(void* p)
 					if(!verifieChecksum(lecture, index))
 						askResend(idPaquet);
 					else
+					{
+						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 						modeAsserActuel = STOP;
+						xSemaphoreGive(consigneAsser_mutex);
+					}
 				}
 
 				else if(lecture[COMMANDE] == IN_TOURNER)
@@ -128,8 +132,11 @@ void thread_ecoute_serie(void* p)
 					else
 					{
 						uint16_t angle = (lecture[PARAM] << 8) + lecture[PARAM + 1];
+
+						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 						rotationSetpoint = angle;
 						modeAsserActuel = ROTATION;
+						xSemaphoreGive(consigneAsser_mutex);
 //						vTaskDelay(1000);
 //						sendArrive();
 					}
@@ -144,9 +151,9 @@ void thread_ecoute_serie(void* p)
 					{
 						uint16_t distance = (lecture[PARAM] << 8) + lecture[PARAM + 1];
 						bool mur = lecture[COMMANDE] == IN_AVANCER_MUR;
-						modeAsserActuel = VA_AU_POINT;
 
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+						modeAsserActuel = VA_AU_POINT;
 						consigneX = cos_orientation_odo * distance + x_odo;
 						consigneY = sin_orientation_odo * distance + y_odo;
 						xSemaphoreGive(consigneAsser_mutex);
@@ -164,10 +171,41 @@ void thread_ecoute_serie(void* p)
 						int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
 						x -= 1500;
 						int16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
-						modeAsserActuel = VA_AU_POINT;
+
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+						modeAsserActuel = VA_AU_POINT;
 						consigneX = x;
 						consigneY = y;
+						xSemaphoreGive(consigneAsser_mutex);
+					}
+				}
+				else if((lecture[COMMANDE] & 0xFE) == IN_ARC_MARCHE_AVANT)
+				{
+					bool marcheAvant = lecture[COMMANDE] & 0xFE == IN_ARC_MARCHE_AVANT; // TODO
+					serial_rb.read_char(lecture+(++index)); // x
+					serial_rb.read_char(lecture+(++index)); // xy
+					serial_rb.read_char(lecture+(++index)); // y
+					serial_rb.read_char(lecture+(++index)); // orientation
+					serial_rb.read_char(lecture+(++index)); // orientation
+					serial_rb.read_char(lecture+(++index)); // courbure
+					serial_rb.read_char(lecture+(++index)); // courbure
+					serial_rb.read_char(lecture+(++index)); // vitesse
+
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+					{
+						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+						modeAsserActuel = COURBE;
+
+						int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
+						x -= 1500;
+						int16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
+						uint16_t angle = (lecture[PARAM + 3] << 8) + lecture[PARAM + 4];
+						double courbure = lecture[PARAM + 3] + lecture[PARAM + 4] / 16.;
+						uint8_t vitesse = lecture[PARAM + 5];
+
+						// TODO
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
@@ -181,9 +219,20 @@ void thread_ecoute_serie(void* p)
 						askResend(idPaquet);
 					else
 					{
-						double kp = ((lecture[PARAM] << 8) + lecture[PARAM + 1])/200.;
-						double kd = ((lecture[PARAM + 2] << 8) + lecture[PARAM + 3])/200.;
-                        // TODO set
+						float kp = ((lecture[PARAM] << 8) + lecture[PARAM + 1])/200.;
+						float kd = ((lecture[PARAM + 2] << 8) + lecture[PARAM + 3])/200.;
+						if(lecture[COMMANDE] == IN_PID_CONST_VIT_GAUCHE)
+							leftSpeedPID.setTunings(kp, 0., kd);
+						else if(lecture[COMMANDE] == IN_PID_CONST_VIT_DROITE)
+							rightSpeedPID.setTunings(kp, 0., kd);
+						else if(lecture[COMMANDE] == IN_PID_CONST_TRANSLATION)
+							translationPID.setTunings(kp, 0., kd);
+						else if(lecture[COMMANDE] == IN_PID_CONST_ROTATION)
+							rotationPID.setTunings(kp, 0., kd);
+						else if(lecture[COMMANDE] == IN_PID_CONST_COURBURE)
+							PIDvit.setTuningsC(kp, 0., kd);
+						else if(lecture[COMMANDE] == IN_PID_CONST_VIT_LINEAIRE)
+							PIDvit.setTuningsV(kp, 0., kd);
 					}
 				}
 				else if(lecture[COMMANDE] == IN_INIT_ODO)
