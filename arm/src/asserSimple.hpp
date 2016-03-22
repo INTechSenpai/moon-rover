@@ -15,6 +15,28 @@
 #define ACCELERATION_ROTATION_MAX (300 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // accélération max en tick / (appel asser)^2
 #define VITESSE_ROUE_MAX (300 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // vitesse max en tick / appel asser
 #define ACCELERATION_ROUE_MAX (300 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // accélération max en tick / (appel asser)^2
+#define RAYON_DE_COURBURE_MIN_EN_MM 500
+#define COURBURE_MAX (1. / RAYON_DE_COURBURE_MIN_EN_MM)
+
+#define TAILLE_MAX_TRAJECTOIRE 256 // et comme ça on utilise un indice sur un uint_8
+
+typedef struct
+{
+int16_t x;
+int16_t y;
+int16_t dir_x;
+int16_t dir_y;
+uint32_t orientation;
+float courbure;
+uint8_t vitesse;
+bool marcheAvant;
+} pointAsserCourbe;
+
+volatile pointAsserCourbe* lastOne = NULL;
+volatile pointAsserCourbe trajectoire[TAILLE_MAX_TRAJECTOIRE];
+volatile int8_t indiceLecture = 0;
+volatile int8_t indiceEcriture = 0;
+
 
 enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
@@ -99,6 +121,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	int toleranceTranslation;
 	int toleranceRotation;
 
+	volatile float k1;
+	volatile float k2;
 
     /**
      * Utilise consigneX, consigneY, x_odo et y_odo pour calculer rotationSetpoint
@@ -298,10 +322,36 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
         computeAndRunPWM();
     }
 
+    float courbureLimite(int32_t vitesse)
+    {
+    	return 5; //TODO
+    }
+
+    float vitesseLimite(float courbure)
+    {
+    	return 5; //TODO
+    }
+
     void inline controlTrajectoire()
     {
-        // TODO
-		uint32_t xR, yR;
+    	// a-t-on dépassé un point ?
+    	if((x_odo - trajectoire[indiceLecture].x) * trajectoire[indiceLecture].dir_x + (y_odo - trajectoire[indiceLecture].y) * trajectoire[indiceLecture].dir_y)
+    		indiceLecture++;
+
+    	int16_t xR = trajectoire[indiceLecture].x;
+    	int16_t yR = trajectoire[indiceLecture].y;
+    	rotationSetpoint = trajectoire[indiceLecture].orientation;
+    	updateErrorAngle();
+    	float kappaS = trajectoire[indiceLecture].courbure - k1*hypot(x_odo - trajectoire[indiceLecture].x, y_odo - trajectoire[indiceLecture].y) - k2*errorAngle;
+    	float kappaC = courbureLimite(vitesseLineaireReelle);
+    	if(kappaC > kappaS)
+    		kappaC = kappaS;
+    	if(kappaC > COURBURE_MAX)
+    		kappaC = COURBURE_MAX;
+    	float vC = vitesseLimite(kappaS);
+    	if(vC > VITESSE_LINEAIRE_MAX)
+    		vC = VITESSE_LINEAIRE_MAX;
+
 	//	projection(&xR, &yR);
 		// calcul orientation en R, courbure en R, distance R-robot
 		// calcul courbureSamson
@@ -352,13 +402,14 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
         return false;
     }
 
-    //
+
     /**
      * Sommes-nous arrivés ?
      * On vérifie que les moteurs ne tournent plus et que le robot est arrêté
      */
     bool inline checkArrivee()
     {
+    	// TODO : vérifier aussi qu'on est bien arrivé à destination...
         return ABS(leftPWM) < 5 && ABS(rightPWM) < 5 && ABS(currentLeftSpeed) < 10 && ABS(currentRightSpeed) < 10;
     }
 

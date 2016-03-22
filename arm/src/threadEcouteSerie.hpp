@@ -181,7 +181,7 @@ void thread_ecoute_serie(void* p)
 				}
 				else if((lecture[COMMANDE] & 0xFE) == IN_ARC_MARCHE_AVANT)
 				{
-					bool marcheAvant = lecture[COMMANDE] & 0xFE == IN_ARC_MARCHE_AVANT; // TODO
+					bool marcheAvant = lecture[COMMANDE] == IN_ARC_MARCHE_AVANT;
 					serial_rb.read_char(lecture+(++index)); // x
 					serial_rb.read_char(lecture+(++index)); // xy
 					serial_rb.read_char(lecture+(++index)); // y
@@ -201,11 +201,19 @@ void thread_ecoute_serie(void* p)
 						int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
 						x -= 1500;
 						int16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
-						uint16_t angle = (lecture[PARAM + 3] << 8) + lecture[PARAM + 4];
-						double courbure = lecture[PARAM + 3] + lecture[PARAM + 4] / 16.;
+						uint32_t angle = (lecture[PARAM + 3] << 8) + lecture[PARAM + 4];
+						float courbure = lecture[PARAM + 3] + lecture[PARAM + 4] / 16.;
 						uint8_t vitesse = lecture[PARAM + 5];
-
-						// TODO
+						trajectoire[indiceEcriture].x = x;
+						trajectoire[indiceEcriture].y = y;
+						trajectoire[indiceEcriture].courbure = courbure;
+						trajectoire[indiceEcriture].orientation = angle; // TODO si marche arrière ajouter PI/2 ?
+						trajectoire[indiceEcriture].vitesse = vitesse;
+						trajectoire[indiceEcriture].dir_x = 1000 * cos(angle);
+						trajectoire[indiceEcriture].dir_y = 1000 * sin(angle);
+						trajectoire[indiceEcriture].marcheAvant = marcheAvant;
+						if(trajectoire[indiceEcriture].vitesse == 0)
+							lastOne = &trajectoire[indiceEcriture];
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
@@ -233,6 +241,11 @@ void thread_ecoute_serie(void* p)
 							PIDvit.setTuningsC(kp, 0., kd);
 						else if(lecture[COMMANDE] == IN_PID_CONST_VIT_LINEAIRE)
 							PIDvit.setTuningsV(kp, 0., kd);
+						else if(lecture[COMMANDE] == IN_CONST_SAMSON)
+						{
+							k1 = kp;
+							k2 = kp;
+						}
 					}
 				}
 				else if(lecture[COMMANDE] == IN_INIT_ODO)
