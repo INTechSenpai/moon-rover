@@ -46,6 +46,7 @@ public class RobotReal extends Robot
 	public void useConfig(Config config)
 	{
 		super.useConfig(config);
+		log.debug("Initialisation de l'odométrie et des constantes d'asservissement");
 		int x = config.getInt(ConfigInfo.X_DEPART);
 		int y = config.getInt(ConfigInfo.Y_DEPART);
 		double o = config.getDouble(ConfigInfo.O_DEPART);
@@ -74,12 +75,13 @@ public class RobotReal extends Robot
 	@Override
     public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
 	{
+		// TODO gestion haut niveau des problèmes
 		try {
 			synchronized(requete)
 			{
 				stm.envoieHooks(hooks);
 				RequeteType type;
-				stm.avancer(distance, mur);
+				stm.avancer(distance);
 				do {
 					if(requete.isEmpty())
 						requete.wait();

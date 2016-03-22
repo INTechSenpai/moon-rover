@@ -12,8 +12,6 @@ pong
     0x42 0x57
 avancer
     0x02 DISTANCE(16)
-avancer dans mur
-    0x03 DISTANCE(16)
 tourner
     0x04 ANGLE(16)
 va au point
@@ -46,9 +44,11 @@ set pid courbure
     0x24 KP(16) KD(16)
 set pid vitesse linéaire
     0x25 KP(16) KD(16)
-envoie arc trajectoire courbe marche avant
+set constante samson
+    0x26 K1(16) K2(16)
+envoie arc trajectoire courbe (vitesse négative et orientation inversée si marche arrière)
     0x2E X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE(8)
-envoie arc trajectoire courbe marche arrière
+envoie arc trajectoire courbe précédé d'un arrêt (vitesse négative et orientation inversée si marche arrière)
     0x2F X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE(8)
 
 Hook : type param ID(8) NB_CALLBACK(8) callback
