@@ -213,7 +213,11 @@ void thread_ecoute_serie(void* p)
 						trajectoire[indiceEcriture].dir_y = 1000 * sin(angle);
 						trajectoire[indiceEcriture].marcheAvant = marcheAvant;
 						if(trajectoire[indiceEcriture].vitesse == 0)
-							lastOne = &trajectoire[indiceEcriture];
+                        {
+                            consigneX = x;
+                            consigneY = y;
+//							lastOne = &trajectoire[indiceEcriture];
+                        }
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}

@@ -20,6 +20,8 @@
 
 #define TAILLE_MAX_TRAJECTOIRE 256 // et comme ça on utilise un indice sur un uint_8
 
+// Tuning de pid : https://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method
+
 typedef struct
 {
 int16_t x;
@@ -343,14 +345,21 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	rotationSetpoint = trajectoire[indiceLecture].orientation;
     	updateErrorAngle();
     	float kappaS = trajectoire[indiceLecture].courbure - k1*hypot(x_odo - trajectoire[indiceLecture].x, y_odo - trajectoire[indiceLecture].y) - k2*errorAngle;
-    	float kappaC = courbureLimite(vitesseLineaireReelle);
-    	if(kappaC > kappaS)
-    		kappaC = kappaS;
-    	if(kappaC > COURBURE_MAX)
+    	float consigneCourbure = courbureLimite(vitesseLineaireReelle);
+    	if(consigneCourbure > kappaS)
+    		consigneCourbure = kappaS;
+    	if(consigneCourbure > COURBURE_MAX)
     		kappaC = COURBURE_MAX;
-    	float vC = vitesseLimite(kappaS);
-    	if(vC > VITESSE_LINEAIRE_MAX)
-    		vC = VITESSE_LINEAIRE_MAX;
+    	float consigneVitesseLineaire = vitesseLimite(kappaS);
+        
+        updateErrorTranslation();
+        limitTranslationRotationSpeed();
+        if(consigneVitesseLineaire > translationSpeed)
+            consigneVitesseLineaire = translationSpeed;
+    	if(consigneVitesseLineaire > VITESSE_LINEAIRE_MAX)
+    		consigneVitesseLineaire = VITESSE_LINEAIRE_MAX;
+        pidVit.compute();
+        computeAndRunPWM();
 
 	//	projection(&xR, &yR);
 		// calcul orientation en R, courbure en R, distance R-robot
