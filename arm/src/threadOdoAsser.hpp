@@ -26,6 +26,8 @@ using namespace std;
  */
 void thread_odometrie_asser(void* p)
 {
+	uint8_t debugCompteur = 0;
+
 	int16_t positionGauche[MEMOIRE_MESURE]; // on introduit un effet de mémoire afin de pouvoir mesurer la vitesse sur un intervalle pas trop petit
 	int16_t positionDroite[MEMOIRE_MESURE];
 //	int16_t vitesseGauche[MEMOIRE_MESURE]; // on introduit un effet de mémoire afin de pouvoir mesurer l'accélération sur un intervalle pas trop petit
@@ -155,14 +157,21 @@ void thread_odometrie_asser(void* p)
 			controlVaAuPoint();
 		else if(modeAsserActuel == COURBE)
 			controlTrajectoire();
-		if(checkArrivee()) // gestion de la fin du mouvement
+		if(needArrive && checkArrivee()) // gestion de la fin du mouvement
 		{
+			needArrive = false;
 			modeAsserActuel = VA_AU_POINT;
 			consigneX = x_odo;
 			consigneY = y_odo;
 			sendArrive();
 		}
 
+		if(debugMode)
+		{
+			if((debugCompteur & 0x0F) == 0)
+				sendDebug(leftPWM, rightPWM, currentLeftSpeed, currentRightSpeed, errorTranslation, errorAngle, vitesseLineaireReelle, courbureReelle);
+			debugCompteur++;
+		}
 		xSemaphoreGive(consigneAsser_mutex);
 
 		// si ça vaut ASSER_OFF, il n'y a pas d'asser

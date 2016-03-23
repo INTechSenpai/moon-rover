@@ -19,6 +19,7 @@
 #define COURBURE_MAX (1. / RAYON_DE_COURBURE_MIN_EN_MM)
 
 #define TAILLE_MAX_TRAJECTOIRE 256 // et comme ça on utilise un indice sur un uint_8
+#define TAILLE_MAX_ARRET 16
 
 // Tuning de pid : https://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method
 
@@ -31,14 +32,16 @@ int16_t dir_y;
 uint32_t orientation;
 float courbure;
 uint8_t vitesse;
-bool marcheAvant;
 } pointAsserCourbe;
 
-volatile pointAsserCourbe* lastOne = NULL;
 volatile pointAsserCourbe trajectoire[TAILLE_MAX_TRAJECTOIRE];
-volatile int8_t indiceLecture = 0;
-volatile int8_t indiceEcriture = 0;
+volatile pointAsserCourbe* arcsArret[TAILLE_MAX_ARRET];
 
+volatile int8_t indiceTrajectoireLecture = 0;
+volatile int8_t indiceTrajectoireEcriture = 0;
+
+volatile int8_t indiceArretLecture = 0;
+volatile int8_t indiceArretEcriture = 0;
 
 enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
@@ -337,28 +340,33 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     void inline controlTrajectoire()
     {
     	// a-t-on dépassé un point ?
-    	if((x_odo - trajectoire[indiceLecture].x) * trajectoire[indiceLecture].dir_x + (y_odo - trajectoire[indiceLecture].y) * trajectoire[indiceLecture].dir_y)
-    		indiceLecture++;
+    	if((x_odo - trajectoire[indiceTrajectoireLecture].x) * trajectoire[indiceTrajectoireLecture].dir_x + (y_odo - trajectoire[indiceTrajectoireLecture].y) * trajectoire[indiceTrajectoireLecture].dir_y)
+    		indiceTrajectoireLecture++;
 
-    	int16_t xR = trajectoire[indiceLecture].x;
-    	int16_t yR = trajectoire[indiceLecture].y;
-    	rotationSetpoint = trajectoire[indiceLecture].orientation;
+    	rotationSetpoint = trajectoire[indiceTrajectoireLecture].orientation;
     	updateErrorAngle();
-    	float kappaS = trajectoire[indiceLecture].courbure - k1*hypot(x_odo - trajectoire[indiceLecture].x, y_odo - trajectoire[indiceLecture].y) - k2*errorAngle;
+
+    	// Produit scalaire. d est algébrique
+    	int d = - (x_odo - trajectoire[indiceTrajectoireLecture].x) * trajectoire[indiceTrajectoireLecture].dir_y + (y_odo - trajectoire[indiceTrajectoireLecture].y) * trajectoire[indiceTrajectoireLecture].dir_x;
+
+    	float kappaS = trajectoire[indiceTrajectoireLecture].courbure - k1*hypot(x_odo - trajectoire[indiceTrajectoireLecture].x, y_odo - trajectoire[indiceTrajectoireLecture].y) - k2*errorAngle;
     	float consigneCourbure = courbureLimite(vitesseLineaireReelle);
     	if(consigneCourbure > kappaS)
     		consigneCourbure = kappaS;
     	if(consigneCourbure > COURBURE_MAX)
-    		kappaC = COURBURE_MAX;
+    		consigneCourbure = COURBURE_MAX;
     	float consigneVitesseLineaire = vitesseLimite(kappaS);
         
+    	// TODO : mettre à jour indiceArretLecture
+    	consigneX = arcsArret[indiceArretLecture]->x;
+    	consigneY = arcsArret[indiceArretLecture]->y;
         updateErrorTranslation();
         limitTranslationRotationSpeed();
         if(consigneVitesseLineaire > translationSpeed)
             consigneVitesseLineaire = translationSpeed;
     	if(consigneVitesseLineaire > VITESSE_LINEAIRE_MAX)
     		consigneVitesseLineaire = VITESSE_LINEAIRE_MAX;
-        pidVit.compute();
+    	PIDvit.compute();
         computeAndRunPWM();
 
 	//	projection(&xR, &yR);

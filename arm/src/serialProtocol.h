@@ -6,7 +6,6 @@
 #define IN_PONG1 0x42
 #define IN_PONG2 0x57
 #define IN_AVANCER 0x02
-#define IN_AVANCER_MUR 0x03
 #define IN_TOURNER 0x04
 #define IN_VA_POINT 0x05
 #define IN_ACTIONNEURS 0x06
@@ -37,7 +36,8 @@
 #define IN_CALLBACK_SCRIPT 0x40
 #define IN_CALLBACK_AX12 0x80
 #define IN_CALLBACK_MASK 0xC0
-#define IN_ARC_MARCHE_AVANT 0x2E
+#define IN_ARC 0x2E
+#define IN_DEBUG_MODE 0x0F
 
 #define OUT_PING 0x3F
 #define OUT_PONG1 0x54

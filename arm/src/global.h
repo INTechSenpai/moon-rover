@@ -62,7 +62,8 @@ extern TIM_Encoder_InitTypeDef encoder, encoder2;
 extern TIM_HandleTypeDef timer, timer2, timer3;
 extern volatile bool startOdo;
 extern volatile bool matchDemarre;
-
+extern bool debugMode;
+extern bool needArrive;
 extern MODE_ASSER modeAsserActuel;
 
 #endif

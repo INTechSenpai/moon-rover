@@ -102,6 +102,14 @@ void thread_ecoute_serie(void* p)
 					sendPong();
 					ping = true;
 				}
+				else if(lecture[COMMANDE] == IN_DEBUG_MODE)
+				{
+					serial_rb.read_char(lecture+(++index));
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+						debugMode = true;
+				}
 				else if(lecture[COMMANDE] == IN_ACTIONNEURS)
 				{
 					serial_rb.read_char(lecture+(++index));
@@ -135,13 +143,14 @@ void thread_ecoute_serie(void* p)
 
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 						rotationSetpoint = angle;
+						needArrive = true;
 						modeAsserActuel = ROTATION;
 						xSemaphoreGive(consigneAsser_mutex);
 //						vTaskDelay(1000);
 //						sendArrive();
 					}
 				}
-				else if((lecture[COMMANDE] & 0xFE) == IN_AVANCER)
+				else if(lecture[COMMANDE] == IN_AVANCER)
 				{
 					serial_rb.read_char(lecture+(++index));
 					serial_rb.read_char(lecture+(++index));
@@ -150,9 +159,9 @@ void thread_ecoute_serie(void* p)
 					else
 					{
 						uint16_t distance = (lecture[PARAM] << 8) + lecture[PARAM + 1];
-						bool mur = lecture[COMMANDE] == IN_AVANCER_MUR;
 
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+						needArrive = true;
 						modeAsserActuel = VA_AU_POINT;
 						consigneX = cos_orientation_odo * distance + x_odo;
 						consigneY = sin_orientation_odo * distance + y_odo;
@@ -173,15 +182,15 @@ void thread_ecoute_serie(void* p)
 						int16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
 
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+						needArrive = true;
 						modeAsserActuel = VA_AU_POINT;
 						consigneX = x;
 						consigneY = y;
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
-				else if((lecture[COMMANDE] & 0xFE) == IN_ARC_MARCHE_AVANT)
+				else if((lecture[COMMANDE] & 0xFE) == IN_ARC)
 				{
-					bool marcheAvant = lecture[COMMANDE] == IN_ARC_MARCHE_AVANT;
 					serial_rb.read_char(lecture+(++index)); // x
 					serial_rb.read_char(lecture+(++index)); // xy
 					serial_rb.read_char(lecture+(++index)); // y
@@ -196,7 +205,6 @@ void thread_ecoute_serie(void* p)
 					else
 					{
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-						modeAsserActuel = COURBE;
 
 						int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
 						x -= 1500;
@@ -204,20 +212,26 @@ void thread_ecoute_serie(void* p)
 						uint32_t angle = (lecture[PARAM + 3] << 8) + lecture[PARAM + 4];
 						float courbure = lecture[PARAM + 3] + lecture[PARAM + 4] / 16.;
 						uint8_t vitesse = lecture[PARAM + 5];
-						trajectoire[indiceEcriture].x = x;
-						trajectoire[indiceEcriture].y = y;
-						trajectoire[indiceEcriture].courbure = courbure;
-						trajectoire[indiceEcriture].orientation = angle; // TODO si marche arrière ajouter PI/2 ?
-						trajectoire[indiceEcriture].vitesse = vitesse;
-						trajectoire[indiceEcriture].dir_x = 1000 * cos(angle);
-						trajectoire[indiceEcriture].dir_y = 1000 * sin(angle);
-						trajectoire[indiceEcriture].marcheAvant = marcheAvant;
-						if(trajectoire[indiceEcriture].vitesse == 0)
-                        {
-                            consigneX = x;
-                            consigneY = y;
-//							lastOne = &trajectoire[indiceEcriture];
-                        }
+						trajectoire[indiceTrajectoireEcriture].x = x;
+						trajectoire[indiceTrajectoireEcriture].y = y;
+						trajectoire[indiceTrajectoireEcriture].courbure = courbure;
+						trajectoire[indiceTrajectoireEcriture].orientation = angle; // TODO si marche arrière ajouter PI/2 ?
+						trajectoire[indiceTrajectoireEcriture].vitesse = vitesse;
+						trajectoire[indiceTrajectoireEcriture].dir_x = 1000 * cos(angle);
+						trajectoire[indiceTrajectoireEcriture].dir_y = 1000 * sin(angle);
+
+						// TODO réinitialiser les indices indiceArretEcriture et indiceArretLecture
+
+						// On conserve l'arc précédent en arc d'arrêt si c'est explicitement demandé et
+						// si l'arc qu'on vient d'obtenir n'est pas le premier
+						if(lecture[COMMANDE] != IN_ARC && modeAsserActuel == COURBE)
+							indiceArretEcriture++;
+
+						// Dans tous les cas, on s'arrête au dernier arc reçu
+						arcsArret[indiceArretEcriture] = &trajectoire[indiceTrajectoireEcriture];
+						needArrive = true;
+
+						modeAsserActuel = COURBE;
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}

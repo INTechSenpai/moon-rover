@@ -50,6 +50,8 @@ envoie arc trajectoire courbe (vitesse négative et orientation inversée si mar
     0x2E X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE(8)
 envoie arc trajectoire courbe précédé d'un arrêt (vitesse négative et orientation inversée si marche arrière)
     0x2F X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE(8)
+active le mode debug
+    0x0F
 
 Hook : type param ID(8) NB_CALLBACK(8) callback
 
