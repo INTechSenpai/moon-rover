@@ -86,16 +86,18 @@ int main(int argc, char* argv[])
 
 	 HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
 	 HAL_NVIC_SetPriority(SysTick_IRQn, 0, 1);
-	 HookTemps::setDateDebutMatch();
+	 HookTemps::setDateDebutMatch(); // TODO
 	 listeHooks.reserve(100);
 
-	 timer.Instance = TIM5;
+	 /**
+	  * Initialisation du codeur 1
+	  */
+
+	 timer.Instance = TIM3;
 	 timer.Init.Period = 0xFFFF;
 	 timer.Init.CounterMode = TIM_COUNTERMODE_UP;
 	 timer.Init.Prescaler = 0;
 	 timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-
-	 HAL_TIM_Encoder_MspInit(&timer);
 
 	 encoder.EncoderMode = TIM_ENCODERMODE_TI12;
 
@@ -109,17 +111,10 @@ int main(int argc, char* argv[])
 	 encoder.IC2Prescaler = TIM_ICPSC_DIV4;
 	 encoder.IC2Selection = TIM_ICSELECTION_DIRECTTI;
 
-/*
-	 if (HAL_TIM_Encoder_Init(&timer, &encoder) != HAL_OK)
-	 {
-		 serial_rb.printfln("Erreur 1");
-	 }
+	 /**
+	  * Initialisation du codeur 2
+	  */
 
-	 if(HAL_TIM_Encoder_Start_IT(&timer,TIM_CHANNEL_1)!=HAL_OK)
-	 {
-		 serial_rb.printfln("Erreur 2");
-	 }
-*/
 	 timer2.Instance = TIM2;
 	 timer2.Init.Period = 0xFFFF;
 	 timer2.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -138,22 +133,17 @@ int main(int argc, char* argv[])
 	 encoder2.IC2Prescaler = TIM_ICPSC_DIV4;
 	 encoder2.IC2Selection = TIM_ICSELECTION_DIRECTTI;
 
-
-/*	 if (HAL_TIM_Encoder_Init(&timer2, &encoder2) != HAL_OK)
-	 {
-		 serial_rb.printfln("Erreur 1");
-	 }
-
-	 if(HAL_TIM_Encoder_Start_IT(&timer2,TIM_CHANNEL_1)!=HAL_OK)
-	 {
-		 serial_rb.printfln("Erreur 2");
-	 }
-*/
+	 /**
+	  * On démarre les timers des deux codeurs
+	  */
 	 HAL_TIM_Encoder_MspInit(0);
-//	 TIM3_Init();
 
 	 __GPIOC_CLK_ENABLE();
 	 __GPIOD_CLK_ENABLE();
+
+	 /**
+	  * Initialisation des pins moteurs
+	  */
 
 	    GPIO_InitTypeDef GPIO_InitStruct;
 	    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
@@ -198,28 +188,27 @@ int main(int argc, char* argv[])
 
 void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim)
 {
- GPIO_InitTypeDef GPIO_InitStructA, GPIO_InitStructA2, GPIO_InitStructB;
+ GPIO_InitTypeDef GPIO_InitStructA, GPIO_InitStructB2, GPIO_InitStructB;
 
- __TIM5_CLK_ENABLE();
+ // Pin B4 et B5 : codeur droit, timer 3
 
- __GPIOA_CLK_ENABLE();
+ GPIO_InitStructB2.Pin = GPIO_PIN_4 | GPIO_PIN_5;
+ GPIO_InitStructB2.Mode = GPIO_MODE_AF_PP;
+ GPIO_InitStructB2.Pull = GPIO_PULLUP;
+ GPIO_InitStructB2.Speed = GPIO_SPEED_HIGH;
+ GPIO_InitStructB2.Alternate = GPIO_AF2_TIM3;
+ HAL_GPIO_Init(GPIOB, &GPIO_InitStructB2);
 
- GPIO_InitStructA.Pin = GPIO_PIN_0 | GPIO_PIN_1;
+ GPIO_InitStructA.Pin = GPIO_PIN_15; // Pin A15 et B3 : codeur gauche, timer 2
  GPIO_InitStructA.Mode = GPIO_MODE_AF_PP;
  GPIO_InitStructA.Pull = GPIO_PULLUP;
  GPIO_InitStructA.Speed = GPIO_SPEED_HIGH;
- GPIO_InitStructA.Alternate = GPIO_AF2_TIM5;
+ GPIO_InitStructA.Alternate = GPIO_AF1_TIM2;
  HAL_GPIO_Init(GPIOA, &GPIO_InitStructA);
 
- GPIO_InitStructA2.Pin = GPIO_PIN_15;
- GPIO_InitStructA2.Mode = GPIO_MODE_AF_PP;
- GPIO_InitStructA2.Pull = GPIO_PULLUP;
- GPIO_InitStructA2.Speed = GPIO_SPEED_HIGH;
- GPIO_InitStructA2.Alternate = GPIO_AF1_TIM2;
- HAL_GPIO_Init(GPIOA, &GPIO_InitStructA2);
+ HAL_NVIC_SetPriority(TIM3_IRQn, 0, 1);
 
- HAL_NVIC_SetPriority(TIM5_IRQn, 0, 1);
-
+ __TIM3_CLK_ENABLE();
  __TIM2_CLK_ENABLE();
 
  __GPIOA_CLK_ENABLE();
