@@ -34,6 +34,9 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
+	TIM_Encoder_InitTypeDef encoder, encoder2;
+	TIM_HandleTypeDef timer, timer2, timer3;
+
 	HAL_Init();
 	SystemClock_Config();
 
@@ -91,84 +94,11 @@ int main(int argc, char* argv[])
 	HAL_TIM_Encoder_Init(&timer2, &encoder2);
 	HAL_TIM_Encoder_Start_IT(&timer2, TIM_CHANNEL_1);
 
-	HAL_TIM_Encoder_MspInit(0);
-
 	/**
-	 * Configuration du PWM des moteurs
+	 * Activation des timers des codeurs
 	 */
 
-	__TIM8_CLK_ENABLE();
-
-	__GPIOC_CLK_ENABLE();
-
-	GPIO_InitTypeDef GPIO_InitStruct; // pins C6 et C7
-	GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
-	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
-	GPIO_InitStruct.Alternate = GPIO_AF3_TIM8;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-
-	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-    // Configure TIM4 for PWM
-	timer3.Instance = TIM8;
-	// Calcul du prescaler qui vient directement d'INTech
-	timer3.Init.Prescaler= (uint16_t)((SystemCoreClock / 2) / 256000) - 1; //le deuxième /2 est dû au changement pour un timer de clock doublée
-	timer3.Init.CounterMode = TIM_COUNTERMODE_UP;
-	timer3.Init.Period = 8000;
-	timer3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-    HAL_TIM_PWM_Init(&timer3);
-
-    TIM_OC_InitTypeDef oc_config;
-    oc_config.OCMode = TIM_OCMODE_PWM1;
-    oc_config.Pulse = 6000;
-    oc_config.OCPolarity = TIM_OCPOLARITY_LOW;
-    oc_config.OCFastMode = TIM_OCFAST_DISABLE;
-
-    HAL_TIM_PWM_ConfigChannel(&timer3, &oc_config, TIM_CHANNEL_1);
-    HAL_TIM_PWM_ConfigChannel(&timer3, &oc_config, TIM_CHANNEL_2);
-
-    HAL_TIM_PWM_Start(&timer3, TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(&timer3, TIM_CHANNEL_2);
-	HAL_NVIC_SetPriority(TIM8_CC_IRQn, 0, 1);
-	__GPIOD_CLK_ENABLE();
-
-	TIM8->CCR1 = 4000;
-	TIM8->CCR2 = 4000;
-
-	/**
-	 * Pins de direction
-	 */
-
-	GPIO_InitTypeDef GPIO_InitStruct2;
-
-	GPIO_InitStruct2.Pin = GPIO_PIN_10 | GPIO_PIN_12;
-	GPIO_InitStruct2.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct2.Speed = GPIO_SPEED_FAST;
-	GPIO_InitStruct2.Pull = GPIO_NOPULL;
-	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct2);
-
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-
-	xTaskCreate(thread_hook, (char*)"TH_HOOK", 2048, 0, 1, 0);
-	xTaskCreate(thread_ecoute_serie, (char*)"TH_LISTEN", 2048, 0, 1, 0);
-	xTaskCreate(thread_odometrie_asser, (char*)"TH_ODO_ASR", 2048, 0, 1, 0);
-	xTaskCreate(thread_capteurs, (char*)"TH_CPT", 2048, 0, 1, 0);
-	vTaskStartScheduler();
-	while(1)
-	{
-		vTaskDelay(1000);
-	}
-
-	return 0;
-}
-
-
-void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim)
-{
 	GPIO_InitTypeDef GPIO_InitStructA, GPIO_InitStructB2, GPIO_InitStructB;
-
 
 	__TIM3_CLK_ENABLE();
 	__TIM2_CLK_ENABLE();
@@ -205,6 +135,78 @@ void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim)
 
 	HAL_NVIC_SetPriority(TIM2_IRQn, 0, 1);
 
+	/**
+	 * Configuration du PWM des moteurs
+	 */
+
+	__TIM8_CLK_ENABLE();
+
+	__GPIOC_CLK_ENABLE();
+
+	GPIO_InitTypeDef GPIO_InitStruct; // pins C6 et C7
+	GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+	GPIO_InitStruct.Alternate = GPIO_AF3_TIM8;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+
+	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+	timer3.Instance = TIM8;
+	// Calcul du prescaler qui vient directement d'INTech
+	timer3.Init.Prescaler= (uint16_t)((SystemCoreClock / 2) / 256000) - 1; //le deuxième /2 est dû au changement pour un timer de clock doublée
+	timer3.Init.CounterMode = TIM_COUNTERMODE_UP;
+	timer3.Init.Period = 8000;
+	timer3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    HAL_TIM_PWM_Init(&timer3);
+
+    TIM_OC_InitTypeDef oc_config;
+    oc_config.OCMode = TIM_OCMODE_PWM1;
+    oc_config.Pulse = 6000;
+    oc_config.OCPolarity = TIM_OCPOLARITY_LOW;
+    oc_config.OCFastMode = TIM_OCFAST_DISABLE;
+
+    HAL_TIM_PWM_ConfigChannel(&timer3, &oc_config, TIM_CHANNEL_1);
+    HAL_TIM_PWM_ConfigChannel(&timer3, &oc_config, TIM_CHANNEL_2);
+
+    HAL_TIM_PWM_Start(&timer3, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&timer3, TIM_CHANNEL_2);
+	HAL_NVIC_SetPriority(TIM8_CC_IRQn, 0, 1);
+	__GPIOD_CLK_ENABLE();
+
+	// TODO
+	TIM8->CCR1 = 4000;
+	TIM8->CCR2 = 4000;
+
+	/**
+	 * Pins de direction
+	 */
+
+	GPIO_InitTypeDef GPIO_InitStruct2;
+
+	GPIO_InitStruct2.Pin = GPIO_PIN_10 | GPIO_PIN_12;
+	GPIO_InitStruct2.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct2.Speed = GPIO_SPEED_FAST;
+	GPIO_InitStruct2.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct2);
+
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+
+	/**
+	 * Initialisation des séries
+	 */
+	serial_rb.init(115200, UART_MODE_TX_RX);
+	serial_ax.init(57600, UART_MODE_TX);
+	ax12 = new AX<Uart<3>>(0, 0, 1023);
+
+	xTaskCreate(thread_hook, (char*)"TH_HOOK", 2048, 0, 1, 0);
+	xTaskCreate(thread_ecoute_serie, (char*)"TH_LISTEN", 2048, 0, 1, 0);
+	xTaskCreate(thread_odometrie_asser, (char*)"TH_ODO_ASR", 2048, 0, 1, 0);
+	xTaskCreate(thread_capteurs, (char*)"TH_CPT", 2048, 0, 1, 0);
+	vTaskStartScheduler();
+	while(1); // on ne devrait jamais arriver ici
+	return 0;
 }
 
 #pragma GCC diagnostic pop

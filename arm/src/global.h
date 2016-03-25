@@ -58,8 +58,6 @@ extern SemaphoreHandle_t consigneAsser_mutex;
 extern Uart<3> serial_ax;
 extern AX<Uart<3>>* ax12;
 
-extern TIM_Encoder_InitTypeDef encoder, encoder2;
-extern TIM_HandleTypeDef timer, timer2, timer3;
 extern volatile bool startOdo;
 extern volatile bool matchDemarre;
 extern bool debugMode;

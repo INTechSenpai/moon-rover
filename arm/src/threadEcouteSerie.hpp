@@ -25,9 +25,6 @@ using namespace std;
  */
 void thread_ecoute_serie(void* p)
 {
-	serial_rb.init(115200, UART_MODE_TX_RX);
-	serial_ax.init(57600, UART_MODE_TX);
-	//	 ax12 = new AX<Uart<3>>(0, 0, 1023);
 	uint16_t idDernierPaquet = -1;
 	Hook* hookActuel;
 	uint8_t nbcallbacks;

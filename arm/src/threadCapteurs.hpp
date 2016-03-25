@@ -29,11 +29,44 @@ void thread_capteurs(void* p)
 			vTaskDelay(300);
 		}
 */
-	while(!ping)
-		vTaskDelay(10);
+
+	GPIO_InitTypeDef GPIO_InitStruct;
+
+	GPIO_InitStruct.Pin = GPIO_PIN_13;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+
+	uint8_t codeCoquillage = 0;
+	bool balisePresente = false;
+	bool symetrie = false; // symétrie false : vert. symétrie true : violet.
+
+	sendBalise(balisePresente);
+	sendCouleur(symetrie);
+	sendCoquillage(codeCoquillage);
+
 	while(!matchDemarre)
 	{
-		// Lecture des boutons : couleur, coquillage, etc
+		/**
+		 * Input :
+		 * - coquillage B13
+		 * - couleur robot B15
+		 * - jumper D13
+		 * - balise présente D15
+		 *
+		 * Output :
+		 * - balise présente C13
+		 * - coquillage 1 (E1) 2 (E2) 3 (E3) 4 (E4) 5 (E5)
+		 * - diode couleur verte B8
+		 * - diode couleur bleue B9
+		 * - batterie (D0 à D4)
+		 * - ping raspberry C15
+		 */
+
+
 	}
 	while(1)
 	{

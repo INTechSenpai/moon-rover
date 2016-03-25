@@ -65,6 +65,38 @@ void inline askResend(uint16_t id)
 	send(out, 5+3);
 }
 
+void inline sendCouleur(bool symetrie)
+{
+	unsigned char out[] = {0, 0, 0, 0, 0, 0};
+	if(symetrie)
+		out[4] = OUT_COULEUR_ROBOT_AVEC_SYMETRIE;
+	else
+		out[4] = OUT_COULEUR_ROBOT_SANS_SYMETRIE;
+	send(out, 5+1);
+}
+
+void inline sendCoquillage(uint8_t code)
+{
+	unsigned char out[] = {0, 0, 0, 0, OUT_CODE_COQUILLAGES, code, 0};
+	send(out, 5+2);
+}
+
+void inline sendBalise(bool present)
+{
+	unsigned char out[] = {0, 0, 0, 0, 0, 0};
+	if(present)
+		out[4] = OUT_BALISE_PRESENTE;
+	else
+		out[4] = OUT_BALISE_NON_PRESENTE;
+	send(out, 5+1);
+}
+
+void inline sendDebutMatch()
+{
+	unsigned char out[] = {0, 0, 0, 0, OUT_DEBUT_MATCH, 0};
+	send(out, 5+1);
+}
+
 void inline sendArrive()
 {
 	unsigned char out[] = {0, 0, 0, 0, OUT_ROBOT_ARRIVE, 0};
