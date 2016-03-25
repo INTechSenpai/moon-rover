@@ -20,7 +20,7 @@ using namespace std;
  */
 void thread_capteurs(void* p)
 {
-
+/*
 	while(1)
 		for(uint32_t i = 0; i < 80; i++)
 		{
@@ -28,7 +28,7 @@ void thread_capteurs(void* p)
 			TIM8->CCR2 = 100*i;
 			vTaskDelay(300);
 		}
-
+*/
 	while(!ping)
 		vTaskDelay(10);
 	while(!matchDemarre)

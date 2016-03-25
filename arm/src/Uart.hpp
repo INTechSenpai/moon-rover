@@ -103,14 +103,15 @@ public:
 			NVIC_SetPriority(USART2_IRQn, 1);
 			NVIC_EnableIRQ(USART2_IRQn);
 
-			HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+			HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 			break;
 
 		case 3: // Série AX12
 			UART.Instance = USART3;
 //			HAL_HalfDuplex_Init(&UART); // si un jour on a le temps de configurer correctement les AX12...
-			GPIO_InitStruct.Pin = GPIO_PIN_10; // Pins C6 (TX) and C7 (RX)
+			GPIO_InitStruct.Pin = GPIO_PIN_10; // Pin B10 (TX)
 			GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
+
 			__HAL_RCC_GPIOB_CLK_ENABLE();
 			__HAL_RCC_USART3_CLK_ENABLE();
 

@@ -13,7 +13,7 @@ SemaphoreHandle_t odo_mutex = xSemaphoreCreateMutex();
 SemaphoreHandle_t consigneAsser_mutex = xSemaphoreCreateMutex();
 double courbure_odo;
 std::vector<Hook*> listeHooks;
-Uart<2> serial_ax;
+Uart<3> serial_ax;
 AX<Uart<3>>* ax12;
 volatile bool ping = false;
 TIM_Encoder_InitTypeDef encoder, encoder2;
