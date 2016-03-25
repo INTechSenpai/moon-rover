@@ -20,6 +20,15 @@ using namespace std;
  */
 void thread_capteurs(void* p)
 {
+
+	while(1)
+		for(uint32_t i = 0; i < 80; i++)
+		{
+			TIM8->CCR1 = 100*i;
+			TIM8->CCR2 = 100*i;
+			vTaskDelay(300);
+		}
+
 	while(!ping)
 		vTaskDelay(10);
 	while(!matchDemarre)

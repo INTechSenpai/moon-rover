@@ -46,10 +46,30 @@ using namespace std;
 // TODO : tester #include "arm_math.h"
 
 
-void TIM3_Init(void)
+int main(int argc, char* argv[])
 {
+	HAL_Init();
+	SystemClock_Config();
+
+	HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+	HAL_NVIC_SetPriority(SysTick_IRQn, 0, 1);
+	HookTemps::setDateDebutMatch(); // TODO
+	listeHooks.reserve(100);
+	__TIM8_CLK_ENABLE();
+
+	__GPIOC_CLK_ENABLE();
+
+	GPIO_InitTypeDef GPIO_InitStruct;
+	GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+	GPIO_InitStruct.Alternate = GPIO_AF3_TIM8;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+
+	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
     // Configure TIM4 for PWM
-	timer3.Instance = TIM3;
+	timer3.Instance = TIM8;
 	// Calcul du prescaler qui vient directement d'INTech
 	timer3.Init.Prescaler= (uint16_t)((SystemCoreClock / 2) / 256000) - 1; //le deuxième /2 est dû au changement pour un timer de clock doublée
 	timer3.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -76,166 +96,34 @@ void TIM3_Init(void)
     // I want to shift channel 1-4 90 degrees apart...
     HAL_TIM_PWM_Start(&timer3, TIM_CHANNEL_1);
     HAL_TIM_PWM_Start(&timer3, TIM_CHANNEL_2);
+	HAL_NVIC_SetPriority(TIM8_CC_IRQn, 0, 1);
+	__GPIOD_CLK_ENABLE();
 
-}
+	/**
+	* Initialisation des pins moteurs
+	*/
 
-int main(int argc, char* argv[])
-{
-	 HAL_Init();
-	 SystemClock_Config();
-
-	 HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
-	 HAL_NVIC_SetPriority(SysTick_IRQn, 0, 1);
-	 HookTemps::setDateDebutMatch(); // TODO
-	 listeHooks.reserve(100);
-
-	 /**
-	  * Initialisation du codeur 1
-	  */
-
-	 timer.Instance = TIM3;
-	 timer.Init.Period = 0xFFFF;
-	 timer.Init.CounterMode = TIM_COUNTERMODE_UP;
-	 timer.Init.Prescaler = 0;
-	 timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-
-	 encoder.EncoderMode = TIM_ENCODERMODE_TI12;
-
-	 encoder.IC1Filter = 0x0F;
-	 encoder.IC1Polarity = TIM_INPUTCHANNELPOLARITY_RISING;
-	 encoder.IC1Prescaler = TIM_ICPSC_DIV4;
-	 encoder.IC1Selection = TIM_ICSELECTION_DIRECTTI;
-
-	 encoder.IC2Filter = 0x0F;
-	 encoder.IC2Polarity = TIM_INPUTCHANNELPOLARITY_FALLING;
-	 encoder.IC2Prescaler = TIM_ICPSC_DIV4;
-	 encoder.IC2Selection = TIM_ICSELECTION_DIRECTTI;
-
-	 /**
-	  * Initialisation du codeur 2
-	  */
-
-	 timer2.Instance = TIM2;
-	 timer2.Init.Period = 0xFFFF;
-	 timer2.Init.CounterMode = TIM_COUNTERMODE_UP;
-	 timer2.Init.Prescaler = 0;
-	 timer2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-
-	 encoder2.EncoderMode = TIM_ENCODERMODE_TI12;
-
-	 encoder2.IC1Filter = 0x0F;
-	 encoder2.IC1Polarity = TIM_INPUTCHANNELPOLARITY_RISING;
-	 encoder2.IC1Prescaler = TIM_ICPSC_DIV4;
-	 encoder2.IC1Selection = TIM_ICSELECTION_DIRECTTI;
-
-	 encoder2.IC2Filter = 0x0F;
-	 encoder2.IC2Polarity = TIM_INPUTCHANNELPOLARITY_FALLING;
-	 encoder2.IC2Prescaler = TIM_ICPSC_DIV4;
-	 encoder2.IC2Selection = TIM_ICSELECTION_DIRECTTI;
-
-	 /**
-	  * On démarre les timers des deux codeurs
-	  */
-	 HAL_TIM_Encoder_MspInit(0);
-
-	 __GPIOC_CLK_ENABLE();
-	 __GPIOD_CLK_ENABLE();
-
-	 /**
-	  * Initialisation des pins moteurs
-	  */
-
-	    GPIO_InitTypeDef GPIO_InitStruct;
-	    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
-	    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
-	    GPIO_InitStruct.Pull = GPIO_NOPULL;
-
-	    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-	    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);
-	    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
-
-	 // Pins de direction moteur
-//	    GPIO_InitTypeDef GPIO_InitStruct;
-	    GPIO_InitStruct.Pin = GPIO_PIN_14 | GPIO_PIN_12;
-	    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
-	    GPIO_InitStruct.Pull = GPIO_NOPULL;
-	    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
-
-	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
-	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-
-//	 TIM3->CCR1 = 150;
-//	 TIM3->CCR2 = 200;
+	TIM8->CCR1 = 4000;
+	TIM8->CCR2 = 4000;
 
 
-	 xTaskCreate(thread_hook, (char*)"TH_HOOK", 2048, 0, 1, 0);
-	 xTaskCreate(thread_ecoute_serie, (char*)"TH_LISTEN", 2048, 0, 1, 0);
-	 xTaskCreate(thread_odometrie_asser, (char*)"TH_ODO_ASR", 2048, 0, 1, 0);
-	 xTaskCreate(thread_capteurs, (char*)"TH_CPT", 2048, 0, 1, 0);
-	 vTaskStartScheduler();
-	 while(1)
-	 {
-		 serial_rb.printfln("ERREUR!!!");
-	//	  vTaskDelay(1000);
-	 }
 
-  return 0;
-}
+	xTaskCreate(thread_capteurs, (char*)"TH_CPT", 2048, 0, 1, 0);
+	vTaskStartScheduler();
 
 
-void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim)
-{
- GPIO_InitTypeDef GPIO_InitStructA, GPIO_InitStructB2, GPIO_InitStructB;
+	/*
+	xTaskCreate(thread_hook, (char*)"TH_HOOK", 2048, 0, 1, 0);
+	xTaskCreate(thread_ecoute_serie, (char*)"TH_LISTEN", 2048, 0, 1, 0);
+	xTaskCreate(thread_odometrie_asser, (char*)"TH_ODO_ASR", 2048, 0, 1, 0);
+	xTaskCreate(thread_capteurs, (char*)"TH_CPT", 2048, 0, 1, 0);
+	vTaskStartScheduler();*/
+	while(1)
+	{
+		vTaskDelay(1000);
+	}
 
- // Pin B4 et B5 : codeur droit, timer 3
-
- GPIO_InitStructB2.Pin = GPIO_PIN_4 | GPIO_PIN_5;
- GPIO_InitStructB2.Mode = GPIO_MODE_AF_PP;
- GPIO_InitStructB2.Pull = GPIO_PULLUP;
- GPIO_InitStructB2.Speed = GPIO_SPEED_HIGH;
- GPIO_InitStructB2.Alternate = GPIO_AF2_TIM3;
- HAL_GPIO_Init(GPIOB, &GPIO_InitStructB2);
-
- GPIO_InitStructA.Pin = GPIO_PIN_15; // Pin A15 et B3 : codeur gauche, timer 2
- GPIO_InitStructA.Mode = GPIO_MODE_AF_PP;
- GPIO_InitStructA.Pull = GPIO_PULLUP;
- GPIO_InitStructA.Speed = GPIO_SPEED_HIGH;
- GPIO_InitStructA.Alternate = GPIO_AF1_TIM2;
- HAL_GPIO_Init(GPIOA, &GPIO_InitStructA);
-
- HAL_NVIC_SetPriority(TIM3_IRQn, 0, 1);
-
- __TIM3_CLK_ENABLE();
- __TIM2_CLK_ENABLE();
-
- __GPIOA_CLK_ENABLE();
- __GPIOB_CLK_ENABLE();
-
- GPIO_InitStructB.Pin = GPIO_PIN_3;
- GPIO_InitStructB.Mode = GPIO_MODE_AF_PP;
- GPIO_InitStructB.Pull = GPIO_PULLUP;
- GPIO_InitStructB.Speed = GPIO_SPEED_HIGH;
- GPIO_InitStructB.Alternate = GPIO_AF1_TIM2;
- HAL_GPIO_Init(GPIOB, &GPIO_InitStructB);
-
- HAL_NVIC_SetPriority(TIM2_IRQn, 0, 1);
-/*
- __TIM3_CLK_ENABLE();
-
- __GPIOC_CLK_ENABLE();
-
- GPIO_InitStructC.Pin = GPIO_PIN_6 | GPIO_PIN_7;
- GPIO_InitStructC.Mode = GPIO_MODE_AF_PP;
- GPIO_InitStructC.Pull = GPIO_NOPULL;
- GPIO_InitStructC.Speed = GPIO_SPEED_HIGH;
- GPIO_InitStructC.Alternate = GPIO_AF2_TIM3;
- HAL_GPIO_Init(GPIOC, &GPIO_InitStructC);
-
- HAL_NVIC_SetPriority(TIM3_IRQn, 0, 1);
-*/
+	return 0;
 }
 
 
