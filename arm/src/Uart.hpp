@@ -91,13 +91,13 @@ public:
 
 			HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 			break;
-		case 2:
+		case 2: // Série raspberry
 			UART.Instance = USART2;
 
-			GPIO_InitStruct.Pin = GPIO_PIN_2 | GPIO_PIN_3; // Pins A2 (TX) and A3 (RX)
+			GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_6; // Pins D5 (TX) and D6 (RX)
 			GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
 
-			__HAL_RCC_GPIOA_CLK_ENABLE();
+			__HAL_RCC_GPIOD_CLK_ENABLE();
 			__HAL_RCC_USART2_CLK_ENABLE();
 
 			NVIC_SetPriority(USART2_IRQn, 1);
@@ -105,18 +105,19 @@ public:
 
 			HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 			break;
-		case 6: // Série AX12
-			UART.Instance = USART6;
+
+		case 3: // Série AX12
+			UART.Instance = USART3;
 //			HAL_HalfDuplex_Init(&UART); // si un jour on a le temps de configurer correctement les AX12...
-			GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7; // Pins C6 (TX) and C7 (RX)
-			GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
-			__HAL_RCC_GPIOC_CLK_ENABLE();
-			__HAL_RCC_USART6_CLK_ENABLE();
+			GPIO_InitStruct.Pin = GPIO_PIN_10; // Pins C6 (TX) and C7 (RX)
+			GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
+			__HAL_RCC_GPIOB_CLK_ENABLE();
+			__HAL_RCC_USART3_CLK_ENABLE();
 
-			NVIC_SetPriority(USART6_IRQn, 1);
-			NVIC_EnableIRQ(USART6_IRQn);
+			NVIC_SetPriority(USART3_IRQn, 1);
+			NVIC_EnableIRQ(USART3_IRQn);
 
-			HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+			HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 			break;
 		}
 

@@ -36,12 +36,12 @@ public:
 class Exec_Act : public Executable
 {
 private:
-	AX<Uart<6>>* m_ax;
+	AX<Uart<3>>* m_ax;
 	uint16_t m_angle;
 public:
 	void execute();
 	~Exec_Act();
-	Exec_Act(AX<Uart<6>>* ax, uint16_t angle);
+	Exec_Act(AX<Uart<3>>* ax, uint16_t angle);
 };
 
 #endif

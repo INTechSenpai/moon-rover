@@ -55,8 +55,8 @@ extern double courbure_odo; // en mm^-1
 // MUTEX
 extern SemaphoreHandle_t odo_mutex;
 extern SemaphoreHandle_t consigneAsser_mutex;
-extern Uart<6> serial_ax;
-extern AX<Uart<6>>* ax12;
+extern Uart<2> serial_ax;
+extern AX<Uart<3>>* ax12;
 
 extern TIM_Encoder_InitTypeDef encoder, encoder2;
 extern TIM_HandleTypeDef timer, timer2, timer3;

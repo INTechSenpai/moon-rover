@@ -43,7 +43,7 @@ void Exec_Script::execute()
 Exec_Act::~Exec_Act()
 {}
 
-Exec_Act::Exec_Act(AX<Uart<6>>* ax, uint16_t angle):m_ax(ax), m_angle(angle)
+Exec_Act::Exec_Act(AX<Uart<3>>* ax, uint16_t angle):m_ax(ax), m_angle(angle)
 {}
 
 void Exec_Act::execute()
