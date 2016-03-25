@@ -107,4 +107,7 @@ resend paquet
     0xFF ID_PAQUET(16)
 élément shooté
     0x0D ID(8)
-
+balise présente
+    0x08
+balise absente
+    0x09
