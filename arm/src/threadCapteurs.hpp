@@ -30,24 +30,81 @@ void thread_capteurs(void* p)
 		}
 */
 
-	GPIO_InitTypeDef GPIO_InitStruct;
+	/**
+	 * Configuration des sorties
+	 */
 
-	GPIO_InitStruct.Pin = GPIO_PIN_13;
+	GPIO_InitTypeDef GPIO_InitStruct;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+
+	GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_15; // C13 et C15
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+	GPIO_InitStruct.Pin = GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5; // E1 E2 E3 E4 E5
+	HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+	GPIO_InitStruct.Pin = GPIO_PIN_8 | GPIO_PIN_9; // B8 et B9
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4; // D0 D1 D2 D3 D4
+	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_15, GPIO_PIN_RESET);
+
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_4, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_5, GPIO_PIN_RESET);
+
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
+
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
+
+	/**
+	 * Configuration des entrées
+	 */
+
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+
+	GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_15; // B13 et B15
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_15; // D13 et D15
+	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
 	uint8_t codeCoquillage = 0;
+	GPIO_PinState coquillageBouton = GPIO_PIN_SET;
 	bool balisePresente = false;
+	GPIO_PinState balisePresenteBouton = GPIO_PIN_SET;
 	bool symetrie = false; // symétrie false : vert. symétrie true : violet.
+	GPIO_PinState symetrieBouton = GPIO_PIN_SET;
+
+	// On attend d'avoir la communication établie avant d'envoyer les paramètres
+	while(!ping)
+		vTaskDelay(10);
+
+	vTaskDelay(200);
 
 	sendBalise(balisePresente);
 	sendCouleur(symetrie);
 	sendCoquillage(codeCoquillage);
 
+	/**
+	 * Les leds : SET pour allumer, RESET pour éteindre
+	 * Interrupteurs : pull-up
+	 */
+	GPIO_PinState tmp;
 	while(!matchDemarre)
 	{
 		/**
@@ -66,8 +123,84 @@ void thread_capteurs(void* p)
 		 * - ping raspberry C15
 		 */
 
+		// coquillage
 
+		tmp = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13);
+		if(tmp != coquillageBouton)
+		{
+			coquillageBouton = tmp;
+			if(coquillageBouton == GPIO_PIN_RESET)
+			{
+				codeCoquillage++;
+				codeCoquillage %= 5;
+				sendCoquillage(codeCoquillage);
+				if(codeCoquillage != 0)
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, GPIO_PIN_RESET);
+				else
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, GPIO_PIN_SET);
+				if(codeCoquillage != 1)
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, GPIO_PIN_RESET);
+				else
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, GPIO_PIN_SET);
+				if(codeCoquillage != 2)
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
+				else
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
+				if(codeCoquillage != 3)
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_4, GPIO_PIN_RESET);
+				else
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_4, GPIO_PIN_SET);
+				if(codeCoquillage != 4)
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_5, GPIO_PIN_RESET);
+				else
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_5, GPIO_PIN_SET);
+			}
+		}
+
+		// couleur
+
+		tmp = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15);
+		if(tmp != symetrieBouton)
+		{
+			symetrieBouton = tmp;
+			if(symetrieBouton == GPIO_PIN_RESET)
+			{
+				symetrie = !symetrie;
+				sendCouleur(symetrie);
+				if(symetrie)
+				{
+					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);
+					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
+				}
+				else
+				{
+					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET);
+					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
+				}
+			}
+		}
+
+		// balise
+
+		tmp = HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_15);
+		if(tmp != balisePresenteBouton)
+		{
+			balisePresenteBouton = tmp;
+			if(balisePresenteBouton == GPIO_PIN_RESET)
+			{
+				balisePresente = !balisePresente;
+				sendBalise(balisePresente);
+				if(balisePresente)
+					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+				else
+					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+			}
+		}
+
+		matchDemarre = HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_13) == GPIO_PIN_RESET;
+		vTaskDelay(50);
 	}
+	sendDebutMatch();
 	while(1)
 	{
 
@@ -82,7 +215,7 @@ void thread_capteurs(void* p)
 			courbure = (uint8_t) courbure_odo;
 			marcheAvantTmp = marcheAvant;
 		xSemaphoreGive(odo_mutex);
-//		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, 0);
+		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, 0);
 		vTaskDelay(10);
 
 //		sendDebug(10, 0, 0, 0, 0, 0, 0, 0); // debug

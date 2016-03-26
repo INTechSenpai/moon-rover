@@ -193,13 +193,6 @@ int main(int argc, char* argv[])
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
 
-	/**
-	 * Initialisation des séries
-	 */
-	serial_rb.init(115200, UART_MODE_TX_RX);
-	serial_ax.init(57600, UART_MODE_TX);
-	ax12 = new AX<Uart<3>>(0, 0, 1023);
-
 	xTaskCreate(thread_hook, (char*)"TH_HOOK", 2048, 0, 1, 0);
 	xTaskCreate(thread_ecoute_serie, (char*)"TH_LISTEN", 2048, 0, 1, 0);
 	xTaskCreate(thread_odometrie_asser, (char*)"TH_ODO_ASR", 2048, 0, 1, 0);

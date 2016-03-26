@@ -25,6 +25,14 @@ using namespace std;
  */
 void thread_ecoute_serie(void* p)
 {
+
+	/**
+	 * Initialisation des séries
+	 */
+	serial_rb.init(115200, UART_MODE_TX_RX);
+	serial_ax.init(57600, UART_MODE_TX);
+	ax12 = new AX<Uart<3>>(0, 0, 1023);
+
 	uint16_t idDernierPaquet = -1;
 	Hook* hookActuel;
 	uint8_t nbcallbacks;
@@ -97,7 +105,11 @@ void thread_ecoute_serie(void* p)
 					serial_rb.read_char(lecture+(++index));
 					// Cas particulier. Pas de checksum
 					sendPong();
-					ping = true;
+					if(ping == false)
+					{
+						ping = true;
+						HAL_GPIO_WritePin(GPIOC, GPIO_PIN_15, GPIO_PIN_SET); // on allume la led de ping C15
+					}
 				}
 				else if(lecture[COMMANDE] == IN_DEBUG_MODE)
 				{
