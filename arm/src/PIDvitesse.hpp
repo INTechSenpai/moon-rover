@@ -162,7 +162,7 @@ private:
 	volatile int32_t* consigneVitesseLineaire;
 	volatile int32_t* consigneCourbure;
 
-	uint32_t PWMmax;
+	int32_t PWMmax;
 	int32_t epsilon;
 
 	int32_t pre_errorC;

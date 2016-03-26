@@ -195,11 +195,13 @@ int main(int argc, char* argv[])
 
 	xTaskCreate(thread_hook, (char*)"TH_HOOK", 2048, 0, 1, 0);
 	xTaskCreate(thread_ecoute_serie, (char*)"TH_LISTEN", 2048, 0, 1, 0);
-	xTaskCreate(thread_odometrie_asser, (char*)"TH_ODO_ASR", 2048, 0, 1, 0);
 	xTaskCreate(thread_capteurs, (char*)"TH_CPT", 2048, 0, 1, 0);
+
+	// Le thread d'odométrie et d'asservissement à une haute priorité car c'est le seul qui est critique
+	xTaskCreate(thread_odometrie_asser, (char*)"TH_ODO_ASR", 2048, 0, 2, 0);
+
 	vTaskStartScheduler();
 	while(1); // on ne devrait jamais arriver ici
-	return 0;
 }
 
 #pragma GCC diagnostic pop

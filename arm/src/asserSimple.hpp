@@ -1,7 +1,6 @@
 #ifndef ASSER
 #define ASSER
 
-#include "Motor.h"
 #include "pid.hpp"
 #include "PIDvitesse.hpp"
 #include "average.hpp"
@@ -18,8 +17,15 @@
 #define RAYON_DE_COURBURE_MIN_EN_MM 500
 #define COURBURE_MAX (1. / RAYON_DE_COURBURE_MIN_EN_MM)
 
+#define FONCTION_VITESSE_MAX(x) (5)
+#define FONCTION_COURBURE_MAX(x) (5)
+
 #define TAILLE_MAX_TRAJECTOIRE 256 // et comme ça on utilise un indice sur un uint_8
 #define TAILLE_MAX_ARRET 16
+
+#define MOTEUR_DROIT (TIM8->CCR1)
+#define MOTEUR_GAUCHE (TIM8->CCR2)
+
 
 // Tuning de pid : https://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method
 
@@ -44,9 +50,6 @@ volatile int8_t indiceArretLecture = 0;
 volatile int8_t indiceArretEcriture = 0;
 
 enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
-
-	Motor leftMotor(MOTOR_LEFT);
-	Motor rightMotor(MOTOR_RIGHT);
 
 /*
  * 		Définition des variables d'état du système (position, vitesse, consigne, ...)
@@ -203,17 +206,46 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		leftSpeedPID.compute();		// Actualise la valeur de 'leftPWM'
 		rightSpeedPID.compute();	// Actualise la valeur de 'rightPWM'
 
+		int32_t tmpRightPWM, tmpLeftPWM;
+
 		// gestion de la symétrie pour les déplacements
         if(isSymmetry)
         {
-			leftMotor.run(rightPWM);
-			rightMotor.run(leftPWM);
+        	tmpRightPWM = leftPWM;
+        	tmpLeftPWM = rightPWM;
         }
         else
         {
-			leftMotor.run(leftPWM);
-			rightMotor.run(rightPWM);
+        	tmpRightPWM = rightPWM;
+        	tmpLeftPWM = leftPWM;
         }
+
+        // gestion marche avant / marche arrière
+		if(tmpRightPWM >= 0)
+		{
+			// marche avant
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+			MOTEUR_DROIT = tmpRightPWM;
+		}
+		else
+		{
+			// marche arrière
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+			MOTEUR_DROIT = -tmpRightPWM;
+		}
+
+		if(tmpLeftPWM >= 0)
+		{
+			// marche avant
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_SET);
+			MOTEUR_GAUCHE = tmpLeftPWM;
+		}
+		else
+		{
+			// marche arrière
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);
+			MOTEUR_GAUCHE = -tmpLeftPWM;
+		}
 	}
 
 	/**
@@ -327,16 +359,6 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
         computeAndRunPWM();
     }
 
-    float courbureLimite(int32_t vitesse)
-    {
-    	return 5; //TODO
-    }
-
-    float vitesseLimite(float courbure)
-    {
-    	return 5; //TODO
-    }
-
     void inline controlTrajectoire()
     {
     	// a-t-on dépassé un point ?
@@ -349,13 +371,13 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	// Produit scalaire. d est algébrique
     	int d = - (x_odo - trajectoire[indiceTrajectoireLecture].x) * trajectoire[indiceTrajectoireLecture].dir_y + (y_odo - trajectoire[indiceTrajectoireLecture].y) * trajectoire[indiceTrajectoireLecture].dir_x;
 
-    	float kappaS = trajectoire[indiceTrajectoireLecture].courbure - k1*hypot(x_odo - trajectoire[indiceTrajectoireLecture].x, y_odo - trajectoire[indiceTrajectoireLecture].y) - k2*errorAngle;
-    	float consigneCourbure = courbureLimite(vitesseLineaireReelle);
+    	float kappaS = trajectoire[indiceTrajectoireLecture].courbure - k1*d - k2*errorAngle;
+    	float consigneCourbure = FONCTION_COURBURE_MAX(vitesseLineaireReelle);
     	if(consigneCourbure > kappaS)
     		consigneCourbure = kappaS;
     	if(consigneCourbure > COURBURE_MAX)
     		consigneCourbure = COURBURE_MAX;
-    	float consigneVitesseLineaire = vitesseLimite(kappaS);
+    	float consigneVitesseLineaire = FONCTION_VITESSE_MAX(kappaS);
         
     	// TODO : mettre à jour indiceArretLecture
     	consigneX = arcsArret[indiceArretLecture]->x;

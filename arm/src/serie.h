@@ -141,8 +141,8 @@ void inline sendCapteur(uint16_t x, uint16_t y, uint16_t orientation, uint8_t co
 	uint8_t code = OUT_CAPTEURS;
 	if(!marcheAvant)
 		code++;
-	unsigned char out[] = {0, 0, 0, 0, code, (uint8_t) ((x+1500) >> 4), (uint8_t) (((x+1500) << 4) + (y >> 8)), (uint8_t) y, (uint8_t) (orientation >> 8), (uint8_t) orientation, courbure, (uint8_t) (c >> 4), (uint8_t) (c << 4), 0};
-	send(out, 5+8);
+	unsigned char out[] = {0, 0, 0, 0, code, (uint8_t) ((x+1500) >> 4), (uint8_t) (((x+1500) << 4) + (y >> 8)), (uint8_t) y, (uint8_t) (orientation >> 8), (uint8_t) orientation, courbure, (uint8_t) (c >> 4), (uint8_t) (c << 4), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	send(out, 5+28);
 }
 
 #endif

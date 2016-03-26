@@ -18,7 +18,7 @@ using namespace std;
 /**
  * Thread des capteurs
  */
-void thread_capteurs(void* p)
+void thread_capteurs(void*)
 {
 /*
 	while(1)
@@ -42,7 +42,7 @@ void thread_capteurs(void* p)
 	GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_15; // C13 et C15
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-	GPIO_InitStruct.Pin = GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5; // E1 E2 E3 E4 E5
+	GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5; // E0 E1 E2 E3 E4 E5
 	HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
 	GPIO_InitStruct.Pin = GPIO_PIN_8 | GPIO_PIN_9; // B8 et B9
@@ -54,6 +54,7 @@ void thread_capteurs(void* p)
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_15, GPIO_PIN_RESET);
 
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
@@ -117,6 +118,7 @@ void thread_capteurs(void* p)
 		 * Output :
 		 * - balise présente C13
 		 * - coquillage 1 (E1) 2 (E2) 3 (E3) 4 (E4) 5 (E5)
+		 * - buzzer (E0)
 		 * - diode couleur verte B8
 		 * - diode couleur bleue B9
 		 * - batterie (D0 à D4)
@@ -216,7 +218,7 @@ void thread_capteurs(void* p)
 			marcheAvantTmp = marcheAvant;
 		xSemaphoreGive(odo_mutex);
 		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, 0);
-		vTaskDelay(10);
+		vTaskDelay(300);
 
 //		sendDebug(10, 0, 0, 0, 0, 0, 0, 0); // debug
 

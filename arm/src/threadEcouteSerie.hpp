@@ -23,7 +23,7 @@ using namespace std;
 /**
  * Thread qui écoute la série
  */
-void thread_ecoute_serie(void* p)
+void thread_ecoute_serie(void*)
 {
 
 	/**
@@ -298,6 +298,10 @@ void thread_ecoute_serie(void* p)
 							y_odo = y;
 							orientation_odo = o/1000.;
 
+							// On l'asservit sur place
+							modeAsserActuel = VA_AU_POINT;
+							consigneX = x;
+							consigneY = y;
 		//					orientationTick = RAD_TO_TICK(parseInt(lecture, &(++index))/1000.);
 	//						serial_rb.printfln("%d",(int)orientationTick);
 	//						serial_rb.printfln("%d",(int)(TICK_TO_RAD(orientationTick)*1000));
@@ -448,9 +452,9 @@ void thread_ecoute_serie(void* p)
 							Exec_Script* tmp = new(pvPortMalloc(sizeof(Exec_Script))) Exec_Script(nbScript);
 							hookActuel->insert(tmp, i);
 						}
-						else if(((lecture[index]) & IN_CALLBACK_MASK) == IN_CALLBACK_SCRIPT)
+						else if(((lecture[index]) & IN_CALLBACK_MASK) == IN_CALLBACK_AX12)
 						{
-							uint8_t nbAct = lecture[index] & ~IN_CALLBACK_MASK;
+//							uint8_t nbAct = lecture[index] & ~IN_CALLBACK_MASK;
 							serial_rb.read_char(lecture+(++index));
 							serial_rb.read_char(lecture+(++index));
 							uint16_t angle = (lecture[index - 1] << 8) + lecture[index];

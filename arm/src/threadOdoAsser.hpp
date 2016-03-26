@@ -24,7 +24,7 @@ using namespace std;
 /**
  * Thread d'odométrie et d'asservissement
  */
-void thread_odometrie_asser(void* p)
+void thread_odometrie_asser(void*)
 {
 	uint8_t debugCompteur = 0;
 
@@ -58,8 +58,15 @@ void thread_odometrie_asser(void* p)
 	while(!startOdo)
 		vTaskDelay(5);
 	currentAngle = RAD_TO_TICK(orientation_odo);
+
+	TickType_t xLastWakeTime;
+	const TickType_t periode = 1000 / FREQUENCE_ODO_ASSER;
+	xLastWakeTime = xTaskGetTickCount();
+
 	while(1)
 	{
+		vTaskDelayUntil(&xLastWakeTime, periode);
+
 		// ODOMÉTRIE
 		while(xSemaphoreTake(odo_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 
@@ -165,6 +172,7 @@ void thread_odometrie_asser(void* p)
 			consigneY = y_odo;
 			sendArrive();
 		}
+		// si ça vaut ASSER_OFF, il n'y a pas d'asser
 
 		if(debugMode)
 		{
@@ -174,10 +182,6 @@ void thread_odometrie_asser(void* p)
 		}
 		xSemaphoreGive(consigneAsser_mutex);
 
-		// si ça vaut ASSER_OFF, il n'y a pas d'asser
-
-//		vTaskDelay(1000);
-		vTaskDelay(1000 / FREQUENCE_ODO_ASSER);
 	}
 }
 

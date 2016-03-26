@@ -23,7 +23,7 @@ using namespace std;
 /**
  * Thread qui vérifie les hooks
  */
-void thread_hook(void* p)
+void thread_hook(void*)
 {
 
 	while(!matchDemarre)
