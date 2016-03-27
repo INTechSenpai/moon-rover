@@ -26,7 +26,7 @@ using namespace std;
 void thread_hook(void*)
 {
 
-	while(!matchDemarre)
+	while(!matchDemarre) // On attends que la date de début de match soit définie
 		vTaskDelay(10);
 	while(1)
 	{

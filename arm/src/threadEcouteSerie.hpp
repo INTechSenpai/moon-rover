@@ -29,7 +29,7 @@ void thread_ecoute_serie(void*)
 	/**
 	 * Initialisation des séries
 	 */
-	serial_rb.init(115200, UART_MODE_TX_RX);
+	serial_rb.init(921600, UART_MODE_TX_RX);
 	serial_ax.init(57600, UART_MODE_TX);
 	ax12 = new AX<Uart<3>>(0, 0, 1023);
 

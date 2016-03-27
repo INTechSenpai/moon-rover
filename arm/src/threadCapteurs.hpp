@@ -15,6 +15,70 @@
 
 using namespace std;
 
+int32_t inline convertIR(uint32_t capteur)
+{
+	float V = capteur * 3.3 / 4096; // la tension. 4096 : <=> 3.3V
+
+	if(V < 2.75) // au-dessus de 8cm
+		return (int32_t) 20.77 / (V - 0.15);
+	else if(V < 3)
+		return (int32_t) 14 / (V - 1);
+	else
+		return (int32_t) 6.3 / (V - 2.1);
+}
+
+void inline ledLipo(uint32_t tensionLipo)
+{
+	if(tensionLipo > 4200)
+	{
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_SET);
+	}
+	else if(tensionLipo > 3400)
+	{
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
+	}
+	else if(tensionLipo > 2600)
+	{
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
+	}
+	else if(tensionLipo > 1800)
+	{
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
+	}
+	else if(tensionLipo > 1000)
+	{
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
+	}
+	else
+	{
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
+	}
+}
+
 /**
  * Thread des capteurs
  */
@@ -29,6 +93,105 @@ void thread_capteurs(void*)
 			vTaskDelay(300);
 		}
 */
+
+	/**
+	 * Configuration des capteurs analogiques
+	 */
+
+    GPIO_InitTypeDef gpioInit;
+
+    __ADC1_CLK_ENABLE();
+
+    // Pin analogiques : A0 A1 A2 A3 A4 A5 A6 A7 B0 B1 C0 C1 C2 C3 C4 C5
+
+    gpioInit.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
+    gpioInit.Mode = GPIO_MODE_ANALOG;
+    gpioInit.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &gpioInit);
+
+    gpioInit.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5;
+    HAL_GPIO_Init(GPIOC, &gpioInit);
+
+    gpioInit.Pin = GPIO_PIN_0 | GPIO_PIN_1;
+    HAL_GPIO_Init(GPIOB, &gpioInit);
+
+    HAL_NVIC_SetPriority(ADC_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(ADC_IRQn);
+
+    ADC_ChannelConfTypeDef adcChannel;
+    ADC_HandleTypeDef g_AdcHandle;
+
+    g_AdcHandle.Instance = ADC1;
+
+    g_AdcHandle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+    g_AdcHandle.Init.Resolution = ADC_RESOLUTION_12B;
+    g_AdcHandle.Init.ScanConvMode = ENABLE;
+    g_AdcHandle.Init.ContinuousConvMode = ENABLE;
+    g_AdcHandle.Init.DiscontinuousConvMode = DISABLE;
+    g_AdcHandle.Init.NbrOfDiscConversion = 0;
+    g_AdcHandle.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+    g_AdcHandle.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC1;
+    g_AdcHandle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+    g_AdcHandle.Init.NbrOfConversion = 16;
+    g_AdcHandle.Init.DMAContinuousRequests = ENABLE;
+    g_AdcHandle.Init.EOCSelection = DISABLE;
+
+    HAL_ADC_Init(&g_AdcHandle);
+
+    adcChannel.Channel = ADC_CHANNEL_0;
+    adcChannel.Rank = 1;
+    adcChannel.SamplingTime = ADC_SAMPLETIME_480CYCLES;
+    adcChannel.Offset = 0;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    adcChannel.Channel = ADC_CHANNEL_1;
+    adcChannel.Rank = 2;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    adcChannel.Channel = ADC_CHANNEL_2;
+    adcChannel.Rank = 3;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    adcChannel.Channel = ADC_CHANNEL_3;
+    adcChannel.Rank = 4;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    adcChannel.Channel = ADC_CHANNEL_4;
+    adcChannel.Rank = 5;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    adcChannel.Channel = ADC_CHANNEL_5;
+    adcChannel.Rank = 6;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    adcChannel.Channel = ADC_CHANNEL_6;
+    adcChannel.Rank = 7;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    adcChannel.Channel = ADC_CHANNEL_7;
+    adcChannel.Rank = 8;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    adcChannel.Channel = ADC_CHANNEL_8;
+    adcChannel.Rank = 9;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    adcChannel.Channel = ADC_CHANNEL_9;
+    adcChannel.Rank = 10;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    adcChannel.Channel = ADC_CHANNEL_10;
+    adcChannel.Rank = 11;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    adcChannel.Channel = ADC_CHANNEL_11;
+    adcChannel.Rank = 12;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    adcChannel.Channel = ADC_CHANNEL_12;
+    adcChannel.Rank = 13;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    adcChannel.Channel = ADC_CHANNEL_13;
+    adcChannel.Rank = 14;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    adcChannel.Channel = ADC_CHANNEL_14;
+    adcChannel.Rank = 15;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    adcChannel.Channel = ADC_CHANNEL_15;
+    adcChannel.Rank = 16;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+
+    HAL_ADC_Start(&g_AdcHandle);
+
+    uint16_t capteurs[14];
 
 	/**
 	 * Configuration des sorties
@@ -199,13 +362,18 @@ void thread_capteurs(void*)
 			}
 		}
 
-		matchDemarre = HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_13) == GPIO_PIN_RESET;
-		vTaskDelay(50);
+		if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_13) == GPIO_PIN_RESET)
+		{
+			HookTemps::setDateDebutMatch();
+			sendDebutMatch();
+			matchDemarre = true;
+		}
+		else
+			vTaskDelay(50);
 	}
-	sendDebutMatch();
+
 	while(1)
 	{
-
 		uint16_t x, y, orientation;
 		uint8_t courbure;
 		bool marcheAvantTmp;
@@ -217,10 +385,18 @@ void thread_capteurs(void*)
 			courbure = (uint8_t) courbure_odo;
 			marcheAvantTmp = marcheAvant;
 		xSemaphoreGive(odo_mutex);
-		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, 0);
-		vTaskDelay(300);
 
-//		sendDebug(10, 0, 0, 0, 0, 0, 0, 0); // debug
+		if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
+			HAL_ADC_GetValue(&g_AdcHandle);// ADC en rab
+		if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
+			ledLipo(HAL_ADC_GetValue(&g_AdcHandle));
+
+		for(int i = 0; i < 14; i++)
+			if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
+				capteurs[i] = convertIR(HAL_ADC_GetValue(&g_AdcHandle));
+
+		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, capteurs);
+		vTaskDelay(300);
 
 	}
 
