@@ -15,18 +15,6 @@
 
 using namespace std;
 
-int32_t inline convertIR(uint32_t capteur)
-{
-	float V = capteur * 3.3 / 4096; // la tension. 4096 : <=> 3.3V
-
-	if(V < 2.75) // au-dessus de 8cm
-		return (int32_t) 20.77 / (V - 0.15);
-	else if(V < 3)
-		return (int32_t) 14 / (V - 1);
-	else
-		return (int32_t) 6.3 / (V - 2.1);
-}
-
 void inline ledLipo(uint32_t tensionLipo)
 {
 	if(tensionLipo > 4200)
@@ -393,7 +381,7 @@ void thread_capteurs(void*)
 
 		for(int i = 0; i < 14; i++)
 			if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
-				capteurs[i] = convertIR(HAL_ADC_GetValue(&g_AdcHandle));
+				capteurs[i] = HAL_ADC_GetValue(&g_AdcHandle);
 
 		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, capteurs);
 		vTaskDelay(300);
