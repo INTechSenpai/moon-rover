@@ -17,6 +17,6 @@ Uart<3> serial_ax;
 AX<Uart<3>>* ax12;
 volatile bool ping = false;
 volatile bool startOdo = false;
-volatile bool matchDemarre = true; // TODO
+volatile bool matchDemarre = false; // TODO
 
 MODE_ASSER modeAsserActuel = ASSER_OFF;

@@ -31,11 +31,11 @@ using namespace std;
 // TODO : les mutex
 // TODO : tester #include "arm_math.h"
 
+TIM_HandleTypeDef timer, timer2, timer3;
 
 int main(int argc, char* argv[])
 {
 	TIM_Encoder_InitTypeDef encoder, encoder2;
-	TIM_HandleTypeDef timer, timer2, timer3;
 
 	HAL_Init();
 	SystemClock_Config();
@@ -172,6 +172,7 @@ int main(int argc, char* argv[])
     HAL_TIM_PWM_Start(&timer3, TIM_CHANNEL_2);
 	HAL_NVIC_SetPriority(TIM8_CC_IRQn, 0, 1);
 	__GPIOD_CLK_ENABLE();
+	__GPIOE_CLK_ENABLE();
 
 	// TODO
 	TIM8->CCR1 = 4000;
@@ -201,6 +202,14 @@ int main(int argc, char* argv[])
 
 	vTaskStartScheduler();
 	while(1); // on ne devrait jamais arriver ici
+}
+
+void TIM3_IRQHandler(void){
+	HAL_TIM_IRQHandler(&timer);
+}
+
+void TIM2_IRQHandler(void){
+	HAL_TIM_IRQHandler(&timer2);
 }
 
 #pragma GCC diagnostic pop

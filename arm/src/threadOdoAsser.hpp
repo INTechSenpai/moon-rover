@@ -177,7 +177,8 @@ void thread_odometrie_asser(void*)
 		if(debugMode)
 		{
 			if((debugCompteur & 0x0F) == 0)
-				sendDebug(leftPWM, rightPWM, currentLeftSpeed, currentRightSpeed, errorTranslation, errorAngle, vitesseLineaireReelle, courbureReelle);
+				sendDebug(TICK_CODEUR_GAUCHE, TICK_CODEUR_DROIT, currentLeftSpeed, currentRightSpeed, errorTranslation, errorAngle, vitesseLineaireReelle, courbureReelle);
+//				sendDebug(leftPWM, rightPWM, currentLeftSpeed, currentRightSpeed, errorTranslation, errorAngle, vitesseLineaireReelle, courbureReelle);
 			debugCompteur++;
 		}
 		xSemaphoreGive(consigneAsser_mutex);

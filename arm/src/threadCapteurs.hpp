@@ -59,6 +59,7 @@ void inline ledLipo(uint32_t tensionLipo)
 	}
 	else
 	{
+		// buzzer
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
@@ -221,6 +222,19 @@ void thread_capteurs(void*)
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
 
+
+	GPIO_InitStruct.Pin = GPIO_PIN_13; // TEST
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+/*
+while(true)
+{
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
+	vTaskDelay(500);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
+	vTaskDelay(500);
+}
+*/
+
 	/**
 	 * Configuration des entrées
 	 */
@@ -257,7 +271,8 @@ void thread_capteurs(void*)
 	 * Interrupteurs : pull-up
 	 */
 	GPIO_PinState tmp;
-	while(!matchDemarre)
+//	while(!matchDemarre)
+	while(false)
 	{
 		/**
 		 * Input :
