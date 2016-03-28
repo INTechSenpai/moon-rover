@@ -17,49 +17,54 @@ using namespace std;
 
 void inline ledLipo(uint32_t tensionLipo)
 {
-	if(tensionLipo > 4200)
+	if(tensionLipo > 3300)
 	{
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_SET);
 	}
-	else if(tensionLipo > 3400)
+	else if(tensionLipo > 3200)
 	{
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
 	}
-	else if(tensionLipo > 2600)
+	else if(tensionLipo > 3000)
 	{
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
 	}
-	else if(tensionLipo > 1800)
+	else if(tensionLipo > 2800)
 	{
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
 	}
-	else if(tensionLipo > 1000)
+	else if(tensionLipo > 2600)
 	{
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
 	}
-	else
+	else // tension trop basse : allumage du buzzer
 	{
-		// buzzer
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
@@ -73,15 +78,14 @@ void inline ledLipo(uint32_t tensionLipo)
  */
 void thread_capteurs(void*)
 {
-/*
 	while(1)
-		for(uint32_t i = 0; i < 80; i++)
+		for(uint32_t i = 0; i < 50; i++)
 		{
-			TIM8->CCR1 = 100*i;
-			TIM8->CCR2 = 100*i;
-			vTaskDelay(300);
+			TIM8->CCR1 = 6*i;
+			TIM8->CCR2 = 6*i;
+			vTaskDelay(100);
 		}
-*/
+
 
 	/**
 	 * Configuration des capteurs analogiques
@@ -111,7 +115,7 @@ void thread_capteurs(void*)
     ADC_HandleTypeDef g_AdcHandle;
 
     g_AdcHandle.Instance = ADC1;
-
+/*
     g_AdcHandle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
     g_AdcHandle.Init.Resolution = ADC_RESOLUTION_12B;
     g_AdcHandle.Init.ScanConvMode = ENABLE;
@@ -121,12 +125,33 @@ void thread_capteurs(void*)
     g_AdcHandle.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
     g_AdcHandle.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC1;
     g_AdcHandle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-    g_AdcHandle.Init.NbrOfConversion = 16;
+    g_AdcHandle.Init.NbrOfConversion = 1; // TODO
+    g_AdcHandle.Init.DMAContinuousRequests = ENABLE;
+    g_AdcHandle.Init.EOCSelection = DISABLE;
+*/
+
+    g_AdcHandle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+    g_AdcHandle.Init.Resolution = ADC_RESOLUTION_12B;
+    g_AdcHandle.Init.ScanConvMode = DISABLE;
+    g_AdcHandle.Init.ContinuousConvMode = ENABLE;
+    g_AdcHandle.Init.DiscontinuousConvMode = DISABLE;
+    g_AdcHandle.Init.NbrOfDiscConversion = 0;
+    g_AdcHandle.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+    g_AdcHandle.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC1;
+    g_AdcHandle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+    g_AdcHandle.Init.NbrOfConversion = 1;
     g_AdcHandle.Init.DMAContinuousRequests = ENABLE;
     g_AdcHandle.Init.EOCSelection = DISABLE;
 
     HAL_ADC_Init(&g_AdcHandle);
 
+    adcChannel.Channel = ADC_CHANNEL_1;
+    adcChannel.Rank = 1;
+    adcChannel.SamplingTime = ADC_SAMPLETIME_480CYCLES;
+    adcChannel.Offset = 0;
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+
+/*
     adcChannel.Channel = ADC_CHANNEL_0;
     adcChannel.Rank = 1;
     adcChannel.SamplingTime = ADC_SAMPLETIME_480CYCLES;
@@ -177,7 +202,7 @@ void thread_capteurs(void*)
     adcChannel.Channel = ADC_CHANNEL_15;
     adcChannel.Rank = 16;
     HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-
+*/
     HAL_ADC_Start(&g_AdcHandle);
 
     uint16_t capteurs[14];
@@ -246,8 +271,8 @@ void thread_capteurs(void*)
 
 
 	// On attend d'avoir la communication établie avant d'envoyer les paramètres
-	while(!ping)
-		vTaskDelay(10);
+//	while(!ping)
+//		vTaskDelay(10);
 
 	vTaskDelay(200);
 
@@ -260,8 +285,7 @@ void thread_capteurs(void*)
 	 * Interrupteurs : pull-up
 	 */
 	GPIO_PinState tmp;
-//	while(!matchDemarre)
-	while(false)
+	while(!matchDemarre)
 	{
 		/**
 		 * Input :
@@ -378,14 +402,22 @@ void thread_capteurs(void*)
 			marcheAvantTmp = marcheAvant;
 		xSemaphoreGive(odo_mutex);
 
-		if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
-			HAL_ADC_GetValue(&g_AdcHandle);// ADC en rab
-		if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
-			ledLipo(HAL_ADC_GetValue(&g_AdcHandle));
+//		if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
+//			HAL_ADC_GetValue(&g_AdcHandle);// ADC en rab
 
-		for(int i = 0; i < 14; i++)
+		uint16_t lipo = 1 << 10;
+		if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
+		{
+			lipo = HAL_ADC_GetValue(&g_AdcHandle);
+			ledLipo(lipo);
+//			ledLipo(HAL_ADC_GetValue(&g_AdcHandle));
+		}
+
+/*		for(int i = 0; i < 14; i++)
 			if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
 				capteurs[i] = HAL_ADC_GetValue(&g_AdcHandle);
+*/
+		sendCoquillage(lipo >> 8);
 
 		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, capteurs);
 		vTaskDelay(300);

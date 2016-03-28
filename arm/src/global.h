@@ -13,13 +13,15 @@
 #define ATTENTE_MUTEX_MS 10
 #define FREQUENCE_ODO_ASSER 200 // en appel / s
 #define MEMOIRE_MESURE 25
+#define FREQUENCE_PWM 10000 // 10 kHz
+#define PWM_MAX 1024
 
 #define TICKS_PAR_TOUR_CODEUSE 4000
 #define RAYON_CODEUSE_EN_MM (32.3/2)
 #define MM_PAR_TICK ((2 * M_PI * RAYON_CODEUSE_EN_MM) / TICKS_PAR_TOUR_CODEUSE) // 0.039, 1/25 environ
 #define TICK_CODEUR_DROIT TIM3->CNT
 #define TICK_CODEUR_GAUCHE TIM2->CNT
-#define LONGUEUR_CODEUSE_A_CODEUSE_EN_MM 150 // TODO
+#define LONGUEUR_CODEUSE_A_CODEUSE_EN_MM 173
 
 #define TICKS_PAR_TOUR_ROBOT ((2 *M_PI * LONGUEUR_CODEUSE_A_CODEUSE_EN_MM) / MM_PAR_TICK)
 #define FRONTIERE_MODULO (TICKS_PAR_TOUR_ROBOT + (4294967296 - TICKS_PAR_TOUR_ROBOT) / 2)
@@ -38,8 +40,8 @@ enum MODE_ASSER {ASSER_OFF, // pas d'asser
 enum DirectionStrategy {FORCE_BACK_MOTION, FORCE_FORWARD_MOTION, FASTEST};
 
 extern std::vector<Hook*> listeHooks;
-extern bool isSymmetry;
-extern bool marcheAvant;
+extern volatile bool isSymmetry;
+extern volatile bool marcheAvant;
 extern Uart<2> serial_rb;
 extern DirectionStrategy strategy;
 extern volatile bool ping;
@@ -47,10 +49,10 @@ extern volatile bool ping;
 /**
  * x_odo, y_odo et orientation_odo sont exprimés dans le repère symétrisé, qui n'est pas forcément le repère réel
  */
-extern double x_odo, y_odo; // abscisse et ordonnée exprimées en mm
-extern double orientation_odo; // exprimé en radians
-extern double cos_orientation_odo, sin_orientation_odo;
-extern double courbure_odo; // en mm^-1
+extern volatile double x_odo, y_odo; // abscisse et ordonnée exprimées en mm
+extern volatile double orientation_odo; // exprimé en radians
+extern volatile double cos_orientation_odo, sin_orientation_odo;
+extern volatile double courbure_odo; // en mm^-1
 
 // MUTEX
 extern SemaphoreHandle_t odo_mutex;
@@ -60,8 +62,8 @@ extern AX<Uart<3>>* ax12;
 
 extern volatile bool startOdo;
 extern volatile bool matchDemarre;
-extern bool debugMode;
-extern bool needArrive;
+extern volatile bool debugMode;
+extern volatile bool needArrive;
 extern MODE_ASSER modeAsserActuel;
 
 #endif

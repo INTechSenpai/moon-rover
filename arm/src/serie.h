@@ -120,7 +120,7 @@ void inline sendElementShoot(uint8_t nbElem)
 	unsigned char out[] = {0, 0, 0, 0, OUT_ELEMENT_SHOOTE, nbElem, 0};
 	send(out, 5+2);
 }
-
+/*
 void inline sendXYO(uint16_t x, uint16_t y, uint16_t orientation, uint8_t courbure, bool marcheAvant)
 {
 	uint8_t code = OUT_XYO;
@@ -128,7 +128,7 @@ void inline sendXYO(uint16_t x, uint16_t y, uint16_t orientation, uint8_t courbu
 		code++;
 	unsigned char out[] = {0, 0, 0, 0, code, (uint8_t) ((x+1500) >> 4), (uint8_t)  (((x+1500) << 4) + (y >> 8)), (uint8_t)  y, (uint8_t) (orientation >> 8), (uint8_t) orientation, courbure, 0};
 	send(out, 5+7);
-}
+}*/
 
 void inline sendDebug(uint16_t PWMgauche, uint16_t PWMdroit, int16_t vitesseGauche, int16_t vitesseDroite, int16_t distance, int16_t orientation, int16_t vitesseLineaire, int16_t courbure)
 {

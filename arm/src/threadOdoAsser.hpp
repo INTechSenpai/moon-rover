@@ -203,6 +203,8 @@ void thread_odometrie_asser(void*)
 		y_odo += k*distance*sin_orientation_odo;
 		xSemaphoreGive(odo_mutex);
 
+		continue;
+
 		// ASSERVISSEMENT
         if(checkBlocageMecanique())
         {

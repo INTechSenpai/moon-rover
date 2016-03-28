@@ -59,20 +59,20 @@ int main(int argc, char* argv[])
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 	timer3.Instance = TIM8;
-	// Calcul du prescaler qui vient directement d'INTech
-	timer3.Init.Prescaler= (uint16_t)((SystemCoreClock / 2) / 256000) - 1; //le deuxième /2 est dû au changement pour un timer de clock doublée
+	// 10kHz
+	timer3.Init.Prescaler =  (uint16_t)((SystemCoreClock / 2) / (FREQUENCE_PWM * PWM_MAX)) - 1; //le deuxième /2 est dû au changement pour un timer de clock doublée
 	timer3.Init.CounterMode = TIM_COUNTERMODE_UP;
-	timer3.Init.Period = 8000;
+	timer3.Init.Period = PWM_MAX;
 	timer3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     HAL_TIM_PWM_Init(&timer3);
 
     TIM_OC_InitTypeDef oc_config;
     oc_config.OCMode = TIM_OCMODE_PWM1;
-    oc_config.Pulse = 6000;
-    oc_config.OCPolarity = TIM_OCPOLARITY_LOW;
+    oc_config.Pulse = 0; // valeur initiale
+    oc_config.OCPolarity = TIM_OCPOLARITY_HIGH;
     oc_config.OCIdleState = TIM_OCIDLESTATE_RESET;
     oc_config.OCFastMode = TIM_OCFAST_DISABLE;
-    oc_config.OCNPolarity = TIM_OCNPOLARITY_LOW;
+    oc_config.OCNPolarity = TIM_OCNPOLARITY_HIGH;
     oc_config.OCNIdleState = TIM_OCNIDLESTATE_RESET;
 
     HAL_TIM_PWM_ConfigChannel(&timer3, &oc_config, TIM_CHANNEL_1);
@@ -83,10 +83,6 @@ int main(int argc, char* argv[])
 	HAL_NVIC_SetPriority(TIM8_CC_IRQn, 0, 1);
 	__GPIOD_CLK_ENABLE();
 	__GPIOE_CLK_ENABLE();
-
-	// TODO
-	TIM8->CCR1 = 4000;
-	TIM8->CCR2 = 4000;
 
 	/**
 	 * Pins de direction
