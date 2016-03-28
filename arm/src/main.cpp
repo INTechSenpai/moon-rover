@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 	/**
 	 * Initialisation du codeur 1
 	 */
-
+/*
 	timer.Instance = TIM3;
 	timer.Init.Period = 0xFFFF;
 	timer.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -67,11 +67,11 @@ int main(int argc, char* argv[])
 
 	HAL_TIM_Encoder_Init(&timer, &encoder);
 	HAL_TIM_Encoder_Start_IT(&timer, TIM_CHANNEL_1);
-
+*/
 	/**
 	 * Initialisation du codeur 2
 	 */
-
+/*
 	timer2.Instance = TIM2;
 	timer2.Init.Period = 0xFFFF;
 	timer2.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
 
 	HAL_TIM_Encoder_Init(&timer2, &encoder2);
 	HAL_TIM_Encoder_Start_IT(&timer2, TIM_CHANNEL_1);
-
+*/
 	/**
 	 * Activation des timers des codeurs
 	 */
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
 	__GPIOB_CLK_ENABLE();
 
 	// Pin B4 et B5 : codeur droit, timer 3
-
+/*
 	GPIO_InitStructB2.Pin = GPIO_PIN_4 | GPIO_PIN_5;
 	GPIO_InitStructB2.Mode = GPIO_MODE_AF_PP;
 	GPIO_InitStructB2.Pull = GPIO_PULLUP;
@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStructB);
 
 	HAL_NVIC_SetPriority(TIM2_IRQn, 0, 1);
-
+*/
 	/**
 	 * Configuration du PWM des moteurs
 	 */
