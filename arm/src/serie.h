@@ -141,14 +141,14 @@ void inline sendCapteur(uint16_t x, uint16_t y, uint16_t orientation, uint8_t co
 	uint8_t code = OUT_CAPTEURS;
 	if(!marcheAvant)
 		code++;
-	unsigned char out[] = {0, 0, 0, 0, code, (uint8_t) ((x+1500) >> 4), (uint8_t) (((x+1500) << 4) + (y >> 8)), (uint8_t) y, (uint8_t) (orientation >> 8), (uint8_t) orientation, courbure,
-			(uint8_t) (c[0] >> 4), (uint8_t) ((c[0] << 4) & (c[1] >> 8)), (uint8_t) (c[1]),
-			(uint8_t) (c[2] >> 4), (uint8_t) ((c[2] << 4) & (c[3] >> 8)), (uint8_t) (c[3]),
-			(uint8_t) (c[4] >> 4), (uint8_t) ((c[4] << 4) & (c[5] >> 8)), (uint8_t) (c[5]),
-			(uint8_t) (c[6] >> 4), (uint8_t) ((c[6] << 4) & (c[7] >> 8)), (uint8_t) (c[7]),
-			(uint8_t) (c[8] >> 4), (uint8_t) ((c[8] << 4) & (c[9] >> 8)), (uint8_t) (c[9]),
-			(uint8_t) (c[10] >> 4), (uint8_t) ((c[10] << 4) & (c[11] >> 8)), (uint8_t) (c[11]),
-			(uint8_t) (c[12] >> 4), (uint8_t) ((c[12] << 4) & (c[13] >> 8)), (uint8_t) (c[13]),
+	unsigned char out[] = {0, 0, 0, 0, code, (uint8_t) (x >> 4), (uint8_t) ((x << 4) | (y >> 8)), (uint8_t) y, (uint8_t) (orientation >> 8), (uint8_t) orientation, courbure,
+			(uint8_t) (c[0] >> 4), (uint8_t) ((c[0] << 4) | (c[1] >> 8)), (uint8_t) (c[1]),
+			(uint8_t) (c[2] >> 4), (uint8_t) ((c[2] << 4) | (c[3] >> 8)), (uint8_t) (c[3]),
+			(uint8_t) (c[4] >> 4), (uint8_t) ((c[4] << 4) | (c[5] >> 8)), (uint8_t) (c[5]),
+			(uint8_t) (c[6] >> 4), (uint8_t) ((c[6] << 4) | (c[7] >> 8)), (uint8_t) (c[7]),
+			(uint8_t) (c[8] >> 4), (uint8_t) ((c[8] << 4) | (c[9] >> 8)), (uint8_t) (c[9]),
+			(uint8_t) (c[10] >> 4), (uint8_t) ((c[10] << 4) | (c[11] >> 8)), (uint8_t) (c[11]),
+			(uint8_t) (c[12] >> 4), (uint8_t) ((c[12] << 4) | (c[13] >> 8)), (uint8_t) (c[13]),
 			0};
 	send(out, 5+28);
 }

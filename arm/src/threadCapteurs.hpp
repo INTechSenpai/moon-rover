@@ -241,7 +241,7 @@ void thread_capteurs(void*)
 	GPIO_PinState coquillageBouton = GPIO_PIN_SET;
 	bool balisePresente = false;
 	GPIO_PinState balisePresenteBouton = GPIO_PIN_SET;
-	bool symetrie = false; // symétrie false : vert. symétrie true : violet.
+//	bool symetrie = false; // symétrie false : vert. symétrie true : violet.
 	GPIO_PinState symetrieBouton = GPIO_PIN_SET;
 
 
@@ -252,7 +252,7 @@ void thread_capteurs(void*)
 	vTaskDelay(200);
 
 	sendBalise(balisePresente);
-	sendCouleur(symetrie);
+	sendCouleur(isSymmetry);
 	sendCoquillage(codeCoquillage);
 
 	/**
@@ -261,7 +261,7 @@ void thread_capteurs(void*)
 	 */
 	GPIO_PinState tmp;
 //	while(!matchDemarre)
-	while(true)
+	while(false)
 	{
 		/**
 		 * Input :
@@ -322,9 +322,9 @@ void thread_capteurs(void*)
 			symetrieBouton = tmp;
 			if(symetrieBouton == GPIO_PIN_RESET)
 			{
-				symetrie = !symetrie;
-				sendCouleur(symetrie);
-				if(symetrie)
+				isSymmetry = !isSymmetry;
+				sendCouleur(isSymmetry);
+				if(isSymmetry)
 				{
 					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);
 					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
@@ -371,9 +371,9 @@ void thread_capteurs(void*)
 		bool marcheAvantTmp;
 		// l'envoi série n'est pas fait quand on a le mutex d'odo afin d'éviter de ralentir le thread d'odo
 		while(xSemaphoreTake(odo_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-			x = (uint16_t) x_odo;
+			x = (uint16_t) (x_odo + 1500);
 			y = (uint16_t) y_odo;
-			orientation = (uint16_t) orientation_odo;
+			orientation = (orientation_odo*1000);
 			courbure = (uint8_t) courbure_odo;
 			marcheAvantTmp = marcheAvant;
 		xSemaphoreGive(odo_mutex);

@@ -54,9 +54,62 @@ void thread_odometrie_asser(void*)
 
 	}
 
+	TIM_Encoder_InitTypeDef encoder, encoder2;
+	TIM_HandleTypeDef timer, timer2;
+
+	/**
+	 * Initialisation du codeur 1
+	 */
+
+	timer.Instance = TIM3;
+	timer.Init.Period = 0xFFFF;
+	timer.Init.CounterMode = TIM_COUNTERMODE_UP;
+	timer.Init.Prescaler = 0;
+	timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+
+	encoder.EncoderMode = TIM_ENCODERMODE_TI12;
+	encoder.IC1Filter = 0x0F;
+	encoder.IC1Polarity = TIM_INPUTCHANNELPOLARITY_RISING;
+	encoder.IC1Prescaler = TIM_ICPSC_DIV4;
+	encoder.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+
+	encoder.IC2Filter = 0x0F;
+	encoder.IC2Polarity = TIM_INPUTCHANNELPOLARITY_FALLING;
+	encoder.IC2Prescaler = TIM_ICPSC_DIV4;
+	encoder.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+
+	HAL_TIM_Encoder_Init(&timer, &encoder);
+	HAL_TIM_Encoder_Start_IT(&timer, TIM_CHANNEL_1);
+
+	/**
+	 * Initialisation du codeur 2
+	 */
+
+	timer2.Instance = TIM2;
+	timer2.Init.Period = 0xFFFF;
+	timer2.Init.CounterMode = TIM_COUNTERMODE_UP;
+	timer2.Init.Prescaler = 0;
+	timer2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+
+	encoder2.EncoderMode = TIM_ENCODERMODE_TI12;
+
+	encoder2.IC1Filter = 0x0F;
+	encoder2.IC1Polarity = TIM_INPUTCHANNELPOLARITY_RISING;
+	encoder2.IC1Prescaler = TIM_ICPSC_DIV4;
+	encoder2.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+
+	encoder2.IC2Filter = 0x0F;
+	encoder2.IC2Polarity = TIM_INPUTCHANNELPOLARITY_FALLING;
+	encoder2.IC2Prescaler = TIM_ICPSC_DIV4;
+	encoder2.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+
+	HAL_TIM_Encoder_Init(&timer2, &encoder2);
+	HAL_TIM_Encoder_Start_IT(&timer2, TIM_CHANNEL_1);
+
+
 	// On attend l'initialisation de xyo avant de démarrer l'odo, sinon ça casse tout.
-//	while(!startOdo)
-//		vTaskDelay(5);
+	while(!startOdo)
+		vTaskDelay(5);
 	currentAngle = RAD_TO_TICK(orientation_odo);
 
 	TickType_t xLastWakeTime;
@@ -88,9 +141,8 @@ void thread_odometrie_asser(void*)
 		positionDroite[indiceMemoire] = tmp;
 //		vitesseDroite[indiceMemoire] = currentLeftSpeed;
 
-		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, TICK_CODEUR_DROIT & 1 ? GPIO_PIN_SET : GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, TICK_CODEUR_GAUCHE & 1 ? GPIO_PIN_SET : GPIO_PIN_RESET);
-
+//		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, TICK_CODEUR_DROIT & 1 ? GPIO_PIN_SET : GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, TICK_CODEUR_GAUCHE & 1 ? GPIO_PIN_SET : GPIO_PIN_RESET);
 
 		vitesseLineaireReelle = (currentRightSpeed + currentLeftSpeed) / 2;
 

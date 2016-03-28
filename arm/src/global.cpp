@@ -1,6 +1,6 @@
 #include "global.h"
 
-bool isSymmetry;
+bool isSymmetry = false;
 bool marcheAvant;
 Uart<2> serial_rb;
 double x_odo, y_odo; // abscisse et ordonnée exprimées en mm

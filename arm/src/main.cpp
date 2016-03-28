@@ -31,67 +31,15 @@ using namespace std;
 // TODO : les mutex
 // TODO : tester #include "arm_math.h"
 
-TIM_HandleTypeDef timer, timer2, timer3;
-
 int main(int argc, char* argv[])
 {
-	TIM_Encoder_InitTypeDef encoder, encoder2;
-
+	TIM_HandleTypeDef timer3;
 	HAL_Init();
 	SystemClock_Config();
 
 	HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
 	HAL_NVIC_SetPriority(SysTick_IRQn, 0, 1);
 	listeHooks.reserve(100);
-
-	/**
-	 * Initialisation du codeur 1
-	 */
-
-	timer.Instance = TIM3;
-	timer.Init.Period = 0xFFFF;
-	timer.Init.CounterMode = TIM_COUNTERMODE_UP;
-	timer.Init.Prescaler = 0;
-	timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-
-	encoder.EncoderMode = TIM_ENCODERMODE_TI12;
-	encoder.IC1Filter = 0x0F;
-	encoder.IC1Polarity = TIM_INPUTCHANNELPOLARITY_RISING;
-	encoder.IC1Prescaler = TIM_ICPSC_DIV4;
-	encoder.IC1Selection = TIM_ICSELECTION_DIRECTTI;
-
-	encoder.IC2Filter = 0x0F;
-	encoder.IC2Polarity = TIM_INPUTCHANNELPOLARITY_FALLING;
-	encoder.IC2Prescaler = TIM_ICPSC_DIV4;
-	encoder.IC2Selection = TIM_ICSELECTION_DIRECTTI;
-
-	HAL_TIM_Encoder_Init(&timer, &encoder);
-	HAL_TIM_Encoder_Start_IT(&timer, TIM_CHANNEL_1);
-
-	/**
-	 * Initialisation du codeur 2
-	 */
-
-	timer2.Instance = TIM2;
-	timer2.Init.Period = 0xFFFF;
-	timer2.Init.CounterMode = TIM_COUNTERMODE_UP;
-	timer2.Init.Prescaler = 0;
-	timer2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-
-	encoder2.EncoderMode = TIM_ENCODERMODE_TI12;
-
-	encoder2.IC1Filter = 0x0F;
-	encoder2.IC1Polarity = TIM_INPUTCHANNELPOLARITY_RISING;
-	encoder2.IC1Prescaler = TIM_ICPSC_DIV4;
-	encoder2.IC1Selection = TIM_ICSELECTION_DIRECTTI;
-
-	encoder2.IC2Filter = 0x0F;
-	encoder2.IC2Polarity = TIM_INPUTCHANNELPOLARITY_FALLING;
-	encoder2.IC2Prescaler = TIM_ICPSC_DIV4;
-	encoder2.IC2Selection = TIM_ICSELECTION_DIRECTTI;
-
-	HAL_TIM_Encoder_Init(&timer2, &encoder2);
-	HAL_TIM_Encoder_Start_IT(&timer2, TIM_CHANNEL_1);
 
 	/**
 	 * Configuration du PWM des moteurs
@@ -122,7 +70,10 @@ int main(int argc, char* argv[])
     oc_config.OCMode = TIM_OCMODE_PWM1;
     oc_config.Pulse = 6000;
     oc_config.OCPolarity = TIM_OCPOLARITY_LOW;
+    oc_config.OCIdleState = TIM_OCIDLESTATE_RESET;
     oc_config.OCFastMode = TIM_OCFAST_DISABLE;
+    oc_config.OCNPolarity = TIM_OCNPOLARITY_LOW;
+    oc_config.OCNIdleState = TIM_OCNIDLESTATE_RESET;
 
     HAL_TIM_PWM_ConfigChannel(&timer3, &oc_config, TIM_CHANNEL_1);
     HAL_TIM_PWM_ConfigChannel(&timer3, &oc_config, TIM_CHANNEL_2);
@@ -163,9 +114,13 @@ int main(int argc, char* argv[])
 	while(1); // on ne devrait jamais arriver ici
 }
 
+/**
+ * Fonction appelée automatiquement lors de l'initialisation des encodeurs
+ */
 void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim)
 {
 	GPIO_InitTypeDef GPIO_InitStructA, GPIO_InitStructB2, GPIO_InitStructB;
+
 	/**
 	 * Activation des timers des codeurs
 	 */
@@ -183,9 +138,6 @@ void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim)
 		GPIO_InitStructB2.Speed = GPIO_SPEED_HIGH;
 		GPIO_InitStructB2.Alternate = GPIO_AF2_TIM3;
 		HAL_GPIO_Init(GPIOB, &GPIO_InitStructB2);
-
-	//	HAL_NVIC_SetPriority(TIM3_IRQn, 0, 1);
-	//	HAL_NVIC_EnableIRQ(TIM3_IRQn);
 	}
 	else if(htim->Instance == TIM2)
 	{
@@ -207,18 +159,7 @@ void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim)
 		GPIO_InitStructB.Speed = GPIO_SPEED_HIGH;
 		GPIO_InitStructB.Alternate = GPIO_AF1_TIM2;
 		HAL_GPIO_Init(GPIOB, &GPIO_InitStructB);
-
-	//	HAL_NVIC_SetPriority(TIM2_IRQn, 0, 1);
-	//	HAL_NVIC_EnableIRQ(TIM2_IRQn);
 	}
 }
-/*
-void TIM3_IRQHandler(void){
-	HAL_TIM_IRQHandler(&timer);
-}
 
-void TIM2_IRQHandler(void){
-	HAL_TIM_IRQHandler(&timer2);
-}
-*/
 #pragma GCC diagnostic pop
