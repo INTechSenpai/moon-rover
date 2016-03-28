@@ -55,8 +55,8 @@ void thread_odometrie_asser(void*)
 	}
 
 	// On attend l'initialisation de xyo avant de démarrer l'odo, sinon ça casse tout.
-	while(!startOdo)
-		vTaskDelay(5);
+//	while(!startOdo)
+//		vTaskDelay(5);
 	currentAngle = RAD_TO_TICK(orientation_odo);
 
 	TickType_t xLastWakeTime;
@@ -87,6 +87,10 @@ void thread_odometrie_asser(void*)
 //		currentRightAcceleration = (currentRightSpeed - vitesseDroite[indiceMemoire]) / MEMOIRE_MESURE;
 		positionDroite[indiceMemoire] = tmp;
 //		vitesseDroite[indiceMemoire] = currentLeftSpeed;
+
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, TICK_CODEUR_DROIT & 1 ? GPIO_PIN_SET : GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, TICK_CODEUR_GAUCHE & 1 ? GPIO_PIN_SET : GPIO_PIN_RESET);
+
 
 		vitesseLineaireReelle = (currentRightSpeed + currentLeftSpeed) / 2;
 

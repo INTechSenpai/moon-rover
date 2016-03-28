@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 	/**
 	 * Initialisation du codeur 1
 	 */
-/*
+
 	timer.Instance = TIM3;
 	timer.Init.Period = 0xFFFF;
 	timer.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -67,11 +67,11 @@ int main(int argc, char* argv[])
 
 	HAL_TIM_Encoder_Init(&timer, &encoder);
 	HAL_TIM_Encoder_Start_IT(&timer, TIM_CHANNEL_1);
-*/
+
 	/**
 	 * Initialisation du codeur 2
 	 */
-/*
+
 	timer2.Instance = TIM2;
 	timer2.Init.Period = 0xFFFF;
 	timer2.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -92,48 +92,7 @@ int main(int argc, char* argv[])
 
 	HAL_TIM_Encoder_Init(&timer2, &encoder2);
 	HAL_TIM_Encoder_Start_IT(&timer2, TIM_CHANNEL_1);
-*/
-	/**
-	 * Activation des timers des codeurs
-	 */
 
-	GPIO_InitTypeDef GPIO_InitStructA, GPIO_InitStructB2, GPIO_InitStructB;
-
-	__TIM3_CLK_ENABLE();
-	__TIM2_CLK_ENABLE();
-
-	__GPIOA_CLK_ENABLE();
-	__GPIOB_CLK_ENABLE();
-
-	// Pin B4 et B5 : codeur droit, timer 3
-/*
-	GPIO_InitStructB2.Pin = GPIO_PIN_4 | GPIO_PIN_5;
-	GPIO_InitStructB2.Mode = GPIO_MODE_AF_PP;
-	GPIO_InitStructB2.Pull = GPIO_PULLUP;
-	GPIO_InitStructB2.Speed = GPIO_SPEED_HIGH;
-	GPIO_InitStructB2.Alternate = GPIO_AF2_TIM3;
-	HAL_GPIO_Init(GPIOB, &GPIO_InitStructB2);
-
-	HAL_NVIC_SetPriority(TIM3_IRQn, 0, 1);
-
-	// Pin A15 et B3 : codeur gauche, timer 2
-
-	GPIO_InitStructA.Pin = GPIO_PIN_15;
-	GPIO_InitStructA.Mode = GPIO_MODE_AF_PP;
-	GPIO_InitStructA.Pull = GPIO_PULLUP;
-	GPIO_InitStructA.Speed = GPIO_SPEED_HIGH;
-	GPIO_InitStructA.Alternate = GPIO_AF1_TIM2;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStructA);
-
-	GPIO_InitStructB.Pin = GPIO_PIN_3;
-	GPIO_InitStructB.Mode = GPIO_MODE_AF_PP;
-	GPIO_InitStructB.Pull = GPIO_PULLUP;
-	GPIO_InitStructB.Speed = GPIO_SPEED_HIGH;
-	GPIO_InitStructB.Alternate = GPIO_AF1_TIM2;
-	HAL_GPIO_Init(GPIOB, &GPIO_InitStructB);
-
-	HAL_NVIC_SetPriority(TIM2_IRQn, 0, 1);
-*/
 	/**
 	 * Configuration du PWM des moteurs
 	 */
@@ -204,6 +163,56 @@ int main(int argc, char* argv[])
 	while(1); // on ne devrait jamais arriver ici
 }
 
+void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim)
+{
+	GPIO_InitTypeDef GPIO_InitStructA, GPIO_InitStructB2, GPIO_InitStructB;
+	/**
+	 * Activation des timers des codeurs
+	 */
+	if(htim->Instance == TIM3)
+	{
+		__TIM3_CLK_ENABLE();
+
+		__GPIOB_CLK_ENABLE();
+
+		// Pin B4 et B5 : codeur droit, timer 3
+
+		GPIO_InitStructB2.Pin = GPIO_PIN_4 | GPIO_PIN_5;
+		GPIO_InitStructB2.Mode = GPIO_MODE_AF_PP;
+		GPIO_InitStructB2.Pull = GPIO_PULLUP;
+		GPIO_InitStructB2.Speed = GPIO_SPEED_HIGH;
+		GPIO_InitStructB2.Alternate = GPIO_AF2_TIM3;
+		HAL_GPIO_Init(GPIOB, &GPIO_InitStructB2);
+
+	//	HAL_NVIC_SetPriority(TIM3_IRQn, 0, 1);
+	//	HAL_NVIC_EnableIRQ(TIM3_IRQn);
+	}
+	else if(htim->Instance == TIM2)
+	{
+		// Pin A15 et B3 : codeur gauche, timer 2
+		__TIM2_CLK_ENABLE();
+		__GPIOA_CLK_ENABLE();
+		__GPIOB_CLK_ENABLE();
+
+		GPIO_InitStructA.Pin = GPIO_PIN_15;
+		GPIO_InitStructA.Mode = GPIO_MODE_AF_PP;
+		GPIO_InitStructA.Pull = GPIO_PULLUP;
+		GPIO_InitStructA.Speed = GPIO_SPEED_HIGH;
+		GPIO_InitStructA.Alternate = GPIO_AF1_TIM2;
+		HAL_GPIO_Init(GPIOA, &GPIO_InitStructA);
+
+		GPIO_InitStructB.Pin = GPIO_PIN_3;
+		GPIO_InitStructB.Mode = GPIO_MODE_AF_PP;
+		GPIO_InitStructB.Pull = GPIO_PULLUP;
+		GPIO_InitStructB.Speed = GPIO_SPEED_HIGH;
+		GPIO_InitStructB.Alternate = GPIO_AF1_TIM2;
+		HAL_GPIO_Init(GPIOB, &GPIO_InitStructB);
+
+	//	HAL_NVIC_SetPriority(TIM2_IRQn, 0, 1);
+	//	HAL_NVIC_EnableIRQ(TIM2_IRQn);
+	}
+}
+/*
 void TIM3_IRQHandler(void){
 	HAL_TIM_IRQHandler(&timer);
 }
@@ -211,5 +220,5 @@ void TIM3_IRQHandler(void){
 void TIM2_IRQHandler(void){
 	HAL_TIM_IRQHandler(&timer2);
 }
-
+*/
 #pragma GCC diagnostic pop

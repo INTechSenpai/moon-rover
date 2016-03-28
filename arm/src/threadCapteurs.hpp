@@ -223,18 +223,6 @@ void thread_capteurs(void*)
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
 
 
-	GPIO_InitStruct.Pin = GPIO_PIN_13; // TEST
-    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
-/*
-while(true)
-{
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
-	vTaskDelay(500);
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
-	vTaskDelay(500);
-}
-*/
-
 	/**
 	 * Configuration des entrées
 	 */
@@ -256,20 +244,6 @@ while(true)
 	bool symetrie = false; // symétrie false : vert. symétrie true : violet.
 	GPIO_PinState symetrieBouton = GPIO_PIN_SET;
 
-/*
-	GPIO_InitStruct.Pin = GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_3; // B13 et B15
-	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-	GPIO_InitStruct.Pin = GPIO_PIN_15; // B13 et B15
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-	while(true)
-	{
-		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3));
-		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_4));
-		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5));
-		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_4, HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_15));
-	}
-*/
 
 	// On attend d'avoir la communication établie avant d'envoyer les paramètres
 	while(!ping)
@@ -287,7 +261,7 @@ while(true)
 	 */
 	GPIO_PinState tmp;
 //	while(!matchDemarre)
-	while(false)
+	while(true)
 	{
 		/**
 		 * Input :
