@@ -41,7 +41,7 @@ void thread_odometrie_asser(void*)
 	currentLeftSpeed = 0;
 	currentAngle = 0;
 	uint32_t orientationMoyTick = 0;;
-	uint16_t old_tick_gauche = TICK_CODEUR_GAUCHE, old_tick_droit = TICK_CODEUR_DROIT, tmp;
+	int16_t old_tick_gauche = TICK_CODEUR_GAUCHE, old_tick_droit = TICK_CODEUR_DROIT, tmp;
 	int16_t distanceTick, delta_tick_droit, delta_tick_gauche, deltaOrientationTick;
 	double k, distance, deltaOrientation;
 
@@ -105,42 +105,6 @@ void thread_odometrie_asser(void*)
 
 	HAL_TIM_Encoder_Init(&timer2, &encoder2);
 	HAL_TIM_Encoder_Start_IT(&timer2, TIM_CHANNEL_1);
-
-/*
-	while(1)
-	{
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-		for(uint32_t i = 0; i < 50; i++)
-		{
-			TIM8->CCR1 = 6*i;
-			TIM8->CCR2 = 6*i;
-			vTaskDelay(10);
-		}
-		for(uint32_t i = 50; i > 0; i--)
-		{
-			TIM8->CCR1 = 6*i;
-			TIM8->CCR2 = 6*i;
-			vTaskDelay(10);
-		}
-
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
-		for(uint32_t i = 0; i < 50; i++)
-		{
-			TIM8->CCR1 = 6*i;
-			TIM8->CCR2 = 6*i;
-			vTaskDelay(10);
-		}
-		for(uint32_t i = 50; i > 0; i--)
-		{
-			TIM8->CCR1 = 6*i;
-			TIM8->CCR2 = 6*i;
-			vTaskDelay(10);
-		}
-	}
-*/
-
 
 	// On attend l'initialisation de xyo avant de démarrer l'odo, sinon ça casse tout.
 	while(!startOdo)
