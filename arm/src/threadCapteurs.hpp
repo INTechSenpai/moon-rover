@@ -15,9 +15,17 @@
 
 using namespace std;
 
+/**
+ * Correspondance entre la tension et la valeur de l'ADC
+ * valeur lue = 1341*V+24
+ */
+
+uint8_t delay = 0;
+
 void inline ledLipo(uint32_t tensionLipo)
 {
-	if(tensionLipo > 3300)
+	delay++;
+	if(tensionLipo > 3528) // 24V
 	{
 		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
@@ -26,7 +34,19 @@ void inline ledLipo(uint32_t tensionLipo)
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_SET);
 	}
-	else if(tensionLipo > 3200)
+	else if(tensionLipo > 3455) // 23.5V
+	{
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_SET);
+		if((delay & 0x02) == 0)
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_SET);
+		else
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
+	}
+	else if(tensionLipo > 3382) // 23V
 	{
 		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
@@ -35,7 +55,19 @@ void inline ledLipo(uint32_t tensionLipo)
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
 	}
-	else if(tensionLipo > 3000)
+	else if(tensionLipo > 3309) // 22.5V
+	{
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET);
+		if((delay & 0x02) == 0)
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_SET);
+		else
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
+	}
+	else if(tensionLipo > 3236) // 22V
 	{
 		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
@@ -44,7 +76,19 @@ void inline ledLipo(uint32_t tensionLipo)
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
 	}
-	else if(tensionLipo > 2800)
+	else if(tensionLipo > 3163) // 21.5V
+	{
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
+		if((delay & 0x02) == 0)
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET);
+		else
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
+	}
+	else if(tensionLipo > 3090) // 21V
 	{
 		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
@@ -53,7 +97,19 @@ void inline ledLipo(uint32_t tensionLipo)
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
 	}
-	else if(tensionLipo > 2600)
+	else if(tensionLipo > 3017) // 20.5V
+	{
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
+		if((delay & 0x02) == 0)
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
+		else
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
+	}
+	else if(tensionLipo > 2944) // 20V
 	{
 		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
@@ -62,15 +118,50 @@ void inline ledLipo(uint32_t tensionLipo)
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
 	}
-	else // tension trop basse : allumage du buzzer
+	else if(tensionLipo > 1484) // tension trop basse : allumage du buzzer
 	{
-		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
+		if((delay & 0x02) == 0)
+		{
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_SET);
+		}
+		else
+		{
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
+		}
 	}
+	else // pas de lipo branchée
+	{
+		if((delay & 0x02) == 0)
+		{
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_SET);
+		}
+		else
+		{
+			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
+		}
+	}
+
+
 }
 
 /**
@@ -78,14 +169,6 @@ void inline ledLipo(uint32_t tensionLipo)
  */
 void thread_capteurs(void*)
 {
-	while(1)
-		for(uint32_t i = 0; i < 50; i++)
-		{
-			TIM8->CCR1 = 6*i;
-			TIM8->CCR2 = 6*i;
-			vTaskDelay(100);
-		}
-
 
 	/**
 	 * Configuration des capteurs analogiques
@@ -232,8 +315,8 @@ void thread_capteurs(void*)
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_15, GPIO_PIN_RESET);
 
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_4, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_5, GPIO_PIN_RESET);
@@ -244,9 +327,8 @@ void thread_capteurs(void*)
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
 
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
-
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
 
 	/**
 	 * Configuration des entrées
@@ -259,19 +341,18 @@ void thread_capteurs(void*)
 	GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_15; // B13 et B15
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-	GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_15; // D13 et D15
+	GPIO_InitStruct.Pin = GPIO_PIN_11 | GPIO_PIN_13 | GPIO_PIN_15; // D11, D13 et D15
 	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
 	uint8_t codeCoquillage = 0;
 	GPIO_PinState coquillageBouton = GPIO_PIN_SET;
 	bool balisePresente = false;
 	GPIO_PinState balisePresenteBouton = GPIO_PIN_SET;
-//	bool symetrie = false; // symétrie false : vert. symétrie true : violet.
 	GPIO_PinState symetrieBouton = GPIO_PIN_SET;
 
 
 	// On attend d'avoir la communication établie avant d'envoyer les paramètres
-//	while(!ping)
+//	while(!ping) // TODO
 //		vTaskDelay(10);
 
 	vTaskDelay(200);
@@ -316,25 +397,25 @@ void thread_capteurs(void*)
 				codeCoquillage %= 5;
 				sendCoquillage(codeCoquillage);
 				if(codeCoquillage != 0)
-					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, GPIO_PIN_RESET);
-				else
-					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, GPIO_PIN_SET);
-				if(codeCoquillage != 1)
 					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, GPIO_PIN_RESET);
 				else
 					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, GPIO_PIN_SET);
+				if(codeCoquillage != 1)
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_5, GPIO_PIN_RESET);
+				else
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_5, GPIO_PIN_SET);
 				if(codeCoquillage != 2)
 					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
 				else
 					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
 				if(codeCoquillage != 3)
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, GPIO_PIN_RESET);
+				else
+					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, GPIO_PIN_SET);
+				if(codeCoquillage != 4)
 					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_4, GPIO_PIN_RESET);
 				else
 					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_4, GPIO_PIN_SET);
-				if(codeCoquillage != 4)
-					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_5, GPIO_PIN_RESET);
-				else
-					HAL_GPIO_WritePin(GPIOE, GPIO_PIN_5, GPIO_PIN_SET);
 			}
 		}
 
@@ -350,13 +431,13 @@ void thread_capteurs(void*)
 				sendCouleur(isSymmetry);
 				if(isSymmetry)
 				{
-					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);
-					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
+					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
+					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET);
 				}
 				else
 				{
-					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET);
-					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
+					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
+					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);
 				}
 			}
 		}
@@ -378,6 +459,7 @@ void thread_capteurs(void*)
 			}
 		}
 
+		// Jumper
 		if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_13) == GPIO_PIN_RESET)
 		{
 			HookTemps::setDateDebutMatch();
@@ -386,6 +468,33 @@ void thread_capteurs(void*)
 		}
 		else
 			vTaskDelay(50);
+
+
+		// Bouton en rab. Initialise l'odo et démarre le match
+		if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_11) == GPIO_PIN_RESET)
+		{
+			if(!startOdo)
+			{
+				x_odo = 0;
+				y_odo = 1000;
+				orientation_odo = 0.;
+
+				// On l'asservit sur place
+				modeAsserActuel = VA_AU_POINT;
+				consigneX = 0;
+				consigneY = 1000;
+
+				startOdo = true;
+			}
+			HookTemps::setDateDebutMatch();
+			sendDebutMatch();
+			matchDemarre = true;
+		}
+
+		// Affichage lipo
+		if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
+			ledLipo(HAL_ADC_GetValue(&g_AdcHandle));
+
 	}
 
 	while(1)
@@ -405,20 +514,13 @@ void thread_capteurs(void*)
 //		if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
 //			HAL_ADC_GetValue(&g_AdcHandle);// ADC en rab
 
-		uint16_t lipo = 1 << 10;
 		if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
-		{
-			lipo = HAL_ADC_GetValue(&g_AdcHandle);
-			ledLipo(lipo);
-//			ledLipo(HAL_ADC_GetValue(&g_AdcHandle));
-		}
+			ledLipo(HAL_ADC_GetValue(&g_AdcHandle));
 
 /*		for(int i = 0; i < 14; i++)
 			if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
 				capteurs[i] = HAL_ADC_GetValue(&g_AdcHandle);
 */
-		sendCoquillage(lipo >> 8);
-
 		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, capteurs);
 		vTaskDelay(300);
 

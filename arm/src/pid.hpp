@@ -18,7 +18,7 @@ class PID
 public:
 
 
-	PID(volatile int32_t* error, volatile int32_t* output)
+	PID(volatile float* error, volatile int32_t* output)
 	{
 		this->output = output;
 		this->error = error;
@@ -38,7 +38,7 @@ public:
 
 	void compute() {
 
-		int32_t error = *(this->error);
+		float error = *(this->error);
 		derivative = error - pre_error;
 		integral += error;
 		pre_error = error;
@@ -47,12 +47,12 @@ public:
 				kp * error + ki * integral + kd * derivative);
 
 		//Saturation
-		if (result > outMax) {
+/*		if (result > outMax) {
 			result = outMax;
 		} else if (result < outMin) {
 			result = outMin;
 		}
-
+*/
 
 
 		//Seuillage de la commande
@@ -95,7 +95,7 @@ private:
 	float ki;
 	float kd;
 
-	volatile int32_t* error; //erreur, c'est-à-dire différence entre la consigne et la valeur actuelle
+	volatile float* error; //erreur, c'est-à-dire différence entre la consigne et la valeur actuelle
 	volatile int32_t* output; //Output : commande
 
 	int32_t epsilon;

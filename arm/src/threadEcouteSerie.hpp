@@ -254,8 +254,8 @@ void thread_ecoute_serie(void*)
 						askResend(idPaquet);
 					else
 					{
-						float kp = ((lecture[PARAM] << 8) + lecture[PARAM + 1])/200.;
-						float kd = ((lecture[PARAM + 2] << 8) + lecture[PARAM + 3])/200.;
+						float kp = ((lecture[PARAM] << 8) + lecture[PARAM + 1])/1000.;
+						float kd = ((lecture[PARAM + 2] << 8) + lecture[PARAM + 3])/1000.;
 						if(lecture[COMMANDE] == IN_PID_CONST_VIT_GAUCHE)
 							leftSpeedPID.setTunings(kp, 0., kd);
 						else if(lecture[COMMANDE] == IN_PID_CONST_VIT_DROITE)

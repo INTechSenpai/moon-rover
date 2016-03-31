@@ -28,8 +28,8 @@ void thread_odometrie_asser(void*)
 {
 	uint8_t debugCompteur = 0;
 
-	int16_t positionGauche[MEMOIRE_MESURE]; // on introduit un effet de mémoire afin de pouvoir mesurer la vitesse sur un intervalle pas trop petit
-	int16_t positionDroite[MEMOIRE_MESURE];
+	int16_t positionGauche[MEMOIRE_MESURE_INT]; // on introduit un effet de mémoire afin de pouvoir mesurer la vitesse sur un intervalle pas trop petit
+	int16_t positionDroite[MEMOIRE_MESURE_INT];
 //	int16_t vitesseGauche[MEMOIRE_MESURE]; // on introduit un effet de mémoire afin de pouvoir mesurer l'accélération sur un intervalle pas trop petit
 //	int16_t vitesseDroite[MEMOIRE_MESURE];
 	uint8_t indiceMemoire = 0;
@@ -45,7 +45,7 @@ void thread_odometrie_asser(void*)
 	int16_t distanceTick, delta_tick_droit, delta_tick_gauche, deltaOrientationTick;
 	double k, distance, deltaOrientation;
 
-	for(int i = 0; i < MEMOIRE_MESURE; i++)
+	for(int i = 0; i < MEMOIRE_MESURE_INT; i++)
 	{
 		positionDroite[i] = old_tick_droit;
 		positionGauche[i] = old_tick_gauche;
@@ -106,10 +106,46 @@ void thread_odometrie_asser(void*)
 	HAL_TIM_Encoder_Init(&timer2, &encoder2);
 	HAL_TIM_Encoder_Start_IT(&timer2, TIM_CHANNEL_1);
 
+/*
+	while(1)
+	{
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+		for(uint32_t i = 0; i < 50; i++)
+		{
+			TIM8->CCR1 = 6*i;
+			TIM8->CCR2 = 6*i;
+			vTaskDelay(10);
+		}
+		for(uint32_t i = 50; i > 0; i--)
+		{
+			TIM8->CCR1 = 6*i;
+			TIM8->CCR2 = 6*i;
+			vTaskDelay(10);
+		}
+
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+		for(uint32_t i = 0; i < 50; i++)
+		{
+			TIM8->CCR1 = 6*i;
+			TIM8->CCR2 = 6*i;
+			vTaskDelay(10);
+		}
+		for(uint32_t i = 50; i > 0; i--)
+		{
+			TIM8->CCR1 = 6*i;
+			TIM8->CCR2 = 6*i;
+			vTaskDelay(10);
+		}
+	}
+*/
+
 
 	// On attend l'initialisation de xyo avant de démarrer l'odo, sinon ça casse tout.
 	while(!startOdo)
 		vTaskDelay(5);
+
 	currentAngle = RAD_TO_TICK(orientation_odo);
 
 	TickType_t xLastWakeTime;
@@ -141,8 +177,8 @@ void thread_odometrie_asser(void*)
 		positionDroite[indiceMemoire] = tmp;
 //		vitesseDroite[indiceMemoire] = currentLeftSpeed;
 
-//		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, TICK_CODEUR_DROIT & 1 ? GPIO_PIN_SET : GPIO_PIN_RESET);
-//		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, TICK_CODEUR_GAUCHE & 1 ? GPIO_PIN_SET : GPIO_PIN_RESET);
+		// Test jumper
+//		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_13));
 
 		vitesseLineaireReelle = (currentRightSpeed + currentLeftSpeed) / 2;
 
@@ -155,7 +191,7 @@ void thread_odometrie_asser(void*)
 		courbure_odo = 2 / LONGUEUR_CODEUSE_A_CODEUSE_EN_MM * (currentLeftSpeed - currentRightSpeed) / (currentLeftSpeed + currentRightSpeed);
 
 		indiceMemoire++;
-		indiceMemoire %= MEMOIRE_MESURE;
+		indiceMemoire %= MEMOIRE_MESURE_INT;
 
 		// on évite les formules avec "/ 2", qui font perdre de l'information et qui peuvent s'accumuler
 
@@ -203,7 +239,14 @@ void thread_odometrie_asser(void*)
 		y_odo += k*distance*sin_orientation_odo;
 		xSemaphoreGive(odo_mutex);
 
-		continue;
+
+		if(debugMode)
+		{
+			if((debugCompteur & 0x07) == 0)
+				sendDebug(leftPWM, rightPWM, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int32_t)(errorLeftSpeed*100), (int32_t)(errorRightSpeed*100), vitesseLineaireReelle, courbureReelle);
+//				sendDebug(leftPWM, rightPWM, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), errorTranslation, errorAngle, vitesseLineaireReelle, courbureReelle);
+			debugCompteur++;
+		}
 
 		// ASSERVISSEMENT
         if(checkBlocageMecanique())
@@ -211,6 +254,8 @@ void thread_odometrie_asser(void*)
             modeAsserActuel = STOP;
             sendProblemeMeca();
         }
+
+        modeAsserActuel = ASSER_VITESSE;
 
 		// on empêche toute modification de consigne
 		while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
@@ -222,6 +267,8 @@ void thread_odometrie_asser(void*)
 			controlVaAuPoint();
 		else if(modeAsserActuel == COURBE)
 			controlTrajectoire();
+		else if(modeAsserActuel == ASSER_VITESSE)
+			controlVitesse();
 		if(needArrive && checkArrivee()) // gestion de la fin du mouvement
 		{
 			needArrive = false;
@@ -231,14 +278,6 @@ void thread_odometrie_asser(void*)
 			sendArrive();
 		}
 		// si ça vaut ASSER_OFF, il n'y a pas d'asser
-
-		if(debugMode)
-		{
-			if((debugCompteur & 0x0F) == 0)
-				sendDebug(TICK_CODEUR_GAUCHE, TICK_CODEUR_DROIT, currentLeftSpeed, currentRightSpeed, errorTranslation, errorAngle, vitesseLineaireReelle, courbureReelle);
-//				sendDebug(leftPWM, rightPWM, currentLeftSpeed, currentRightSpeed, errorTranslation, errorAngle, vitesseLineaireReelle, courbureReelle);
-			debugCompteur++;
-		}
 		xSemaphoreGive(consigneAsser_mutex);
 
 	}

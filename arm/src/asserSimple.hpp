@@ -76,15 +76,15 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	int32_t rightSpeedSetpoint;
 
 	//	Asservissement en vitesse du moteur droit
-	int32_t currentRightSpeed;		// ticks/seconde
-	int32_t errorRightSpeed;
-	int32_t rightPWM;
+	float currentRightSpeed;		// ticks/seconde
+	float errorRightSpeed;
+	int32_t rightPWM = 0;
 	PID rightSpeedPID(&errorRightSpeed, &rightPWM);
 
 	//	Asservissement en vitesse du moteur gauche
-	int32_t currentLeftSpeed;		// ticks/seconde
-	int32_t errorLeftSpeed;
-	int32_t leftPWM;
+	float currentLeftSpeed;		// ticks/seconde
+	float errorLeftSpeed;
+	int32_t leftPWM = 0;
 	PID leftSpeedPID(&errorLeftSpeed, &leftPWM);
 
 	//	Asservissement en vitesse linéaire et en courbure
@@ -98,13 +98,13 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	//	Asservissement en position : translation
 	int32_t currentDistance;		// distance à parcourir, en ticks
 	int32_t translationSpeed;		// ticks/seconde
-	int32_t errorTranslation;		// ticks
+	float errorTranslation;		// ticks
 	PID translationPID(&errorTranslation, &translationSpeed);
 
 	//	Asservissement en position : rotation
 
 	uint32_t currentAngle = 0;
-	int32_t errorAngle;
+	float errorAngle;
 	int32_t rotationSpeed;			// ticks/seconde
 	PID rotationPID(&errorAngle, &rotationSpeed);
 
@@ -197,15 +197,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	errorTranslation = e;
     }
 
-    /**
-     * Utilise les valeurs de errorLeftSpeed et errorRightSpeed pour mettre à jour les moteurs
-     * S'occupe aussi de la symétrisation
-     */
-	void inline computeAndRunPWM()
-	{
-		leftSpeedPID.compute();		// Actualise la valeur de 'leftPWM'
-		rightSpeedPID.compute();	// Actualise la valeur de 'rightPWM'
-
+    void inline runPWM()
+    {
 		int32_t tmpRightPWM, tmpLeftPWM;
 
 		// gestion de la symétrie pour les déplacements
@@ -225,12 +218,16 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		{
 			// marche avant
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+			if(tmpRightPWM >= 200)
+				tmpRightPWM = 200;
 			MOTEUR_DROIT = tmpRightPWM;
 		}
 		else
 		{
 			// marche arrière
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+			if(-tmpRightPWM >= 200)
+				tmpRightPWM = -200;
 			MOTEUR_DROIT = -tmpRightPWM;
 		}
 
@@ -238,14 +235,30 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		{
 			// marche avant
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_SET);
+			if(tmpLeftPWM >= 200)
+				tmpLeftPWM = 200;
 			MOTEUR_GAUCHE = tmpLeftPWM;
 		}
 		else
 		{
 			// marche arrière
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);
+			if(-tmpLeftPWM >= 200)
+				tmpLeftPWM = -200;
 			MOTEUR_GAUCHE = -tmpLeftPWM;
 		}
+    }
+
+    /**
+     * Utilise les valeurs de errorLeftSpeed et errorRightSpeed pour mettre à jour les moteurs
+     * S'occupe aussi de la symétrisation
+     */
+	void inline computeAndRunPWM()
+	{
+		leftSpeedPID.compute();		// Actualise la valeur de 'leftPWM'
+		rightSpeedPID.compute();	// Actualise la valeur de 'rightPWM'
+
+		runPWM();
 	}
 
 	/**
@@ -353,6 +366,18 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 		limitLeftRightSpeed();
 
+        errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
+		errorRightSpeed = rightSpeedSetpoint - currentRightSpeed;
+
+        computeAndRunPWM();
+    }
+
+    void inline controlVitesse()
+    {
+    	leftSpeedSetpoint = 10;
+    	rightSpeedSetpoint = 10;
+
+//        limitLeftRightSpeed();
         errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
 		errorRightSpeed = rightSpeedSetpoint - currentRightSpeed;
 

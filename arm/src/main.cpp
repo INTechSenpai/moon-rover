@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 	timer3.Instance = TIM8;
-	// 10kHz
+
 	timer3.Init.Prescaler =  (uint16_t)((SystemCoreClock / 2) / (FREQUENCE_PWM * PWM_MAX)) - 1; //le deuxième /2 est dû au changement pour un timer de clock doublée
 	timer3.Init.CounterMode = TIM_COUNTERMODE_UP;
 	timer3.Init.Period = PWM_MAX;

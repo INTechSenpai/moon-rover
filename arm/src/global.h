@@ -12,13 +12,14 @@
 
 #define ATTENTE_MUTEX_MS 10
 #define FREQUENCE_ODO_ASSER 200 // en appel / s
-#define MEMOIRE_MESURE 25
+#define MEMOIRE_MESURE 25.
+#define MEMOIRE_MESURE_INT 25
 #define FREQUENCE_PWM 10000 // 10 kHz
 #define PWM_MAX 1024
 
 #define TICKS_PAR_TOUR_CODEUSE 4000
 #define RAYON_CODEUSE_EN_MM (32.3/2)
-#define MM_PAR_TICK ((2 * M_PI * RAYON_CODEUSE_EN_MM) / TICKS_PAR_TOUR_CODEUSE) // 0.039, 1/25 environ
+#define MM_PAR_TICK ((2 * M_PI * RAYON_CODEUSE_EN_MM) / TICKS_PAR_TOUR_CODEUSE) // 0.025, 1/40 environ
 #define TICK_CODEUR_DROIT TIM3->CNT
 #define TICK_CODEUR_GAUCHE TIM2->CNT
 #define LONGUEUR_CODEUSE_A_CODEUSE_EN_MM 173
@@ -36,6 +37,7 @@ enum MODE_ASSER {ASSER_OFF, // pas d'asser
 	STOP, // le robot doit s'arrêter le plus vite possible
 	ROTATION, // le robot doit tourner
 	VA_AU_POINT, // le robot doit arriver à un point. Il n'y a aucun asservissement à la trajectoire : mieux vaut utiliser ce mode pour des mouvements rectilignes
+	ASSER_VITESSE, // le robot doit avancer à vitesse constante. utilisé pour debugger l'asser en vitesse
 	COURBE}; // le robot est asservi à une trajectoire courbe en clothoïde
 enum DirectionStrategy {FORCE_BACK_MOTION, FORCE_FORWARD_MOTION, FASTEST};
 
