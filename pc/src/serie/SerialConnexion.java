@@ -241,7 +241,7 @@ public abstract class SerialConnexion implements SerialPortEventListener
  
 		byte out = (byte) input.read();
 
-		if(Config.debugSerie)
+		if(Config.debugSerieTrame)
 		{
 			String s = Integer.toHexString(out).toUpperCase();
 			if(s.length() == 1)

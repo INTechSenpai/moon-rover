@@ -60,7 +60,7 @@ public class SerialSTM extends SerialConnexion implements Service, SerialInterfa
 			//ping
 			output.write(question);
 
-			if(Config.debugSerie)
+			if(Config.debugSerieTrame)
 			{
 				log.debug("Question : ");
 				afficheMessage(question);
@@ -71,7 +71,7 @@ public class SerialSTM extends SerialConnexion implements Service, SerialInterfa
 			
 			byte[] lu = new byte[input.available()];
 			int nbLu = input.read(lu);
-			if(Config.debugSerie)
+			if(Config.debugSerieTrame)
 			{
 				log.debug("Réponse : ");
 				afficheMessage(lu);
@@ -163,7 +163,7 @@ public class SerialSTM extends SerialConnexion implements Service, SerialInterfa
 		
 		try
 		{
-			if(Config.debugSerie)
+			if(Config.debugSerieTrame)
 				afficheMessage(out);
 
 			output.write(0x55);
