@@ -101,9 +101,9 @@ private:
 	int32_t epsilon;
 	int32_t outMin, outMax;
 
-	int32_t pre_error;
-	int32_t derivative;
-	int32_t integral;
+	float pre_error;
+	float derivative;
+	float integral;
 };
 
 #endif
