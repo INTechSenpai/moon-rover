@@ -159,7 +159,7 @@ void thread_ecoute_serie(void*)
 //						sendArrive();
 					}
 				}
-				else if(lecture[COMMANDE] == IN_AVANCER)
+				else if((lecture[COMMANDE] & 0xFE) == IN_AVANCER)
 				{
 					serial_rb.read_char(lecture+(++index));
 					serial_rb.read_char(lecture+(++index));
@@ -167,7 +167,9 @@ void thread_ecoute_serie(void*)
 						askResend(idPaquet);
 					else
 					{
-						uint16_t distance = (lecture[PARAM] << 8) + lecture[PARAM + 1];
+						int16_t distance = (lecture[PARAM] << 8) + lecture[PARAM + 1];
+						if(lecture[COMMANDE] != IN_AVANCER)
+							distance = -distance;
 
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 						needArrive = true;
@@ -248,6 +250,8 @@ void thread_ecoute_serie(void*)
 				{
 					serial_rb.read_char(lecture+(++index)); // kp
 					serial_rb.read_char(lecture+(++index)); // kp
+					serial_rb.read_char(lecture+(++index)); // ki
+					serial_rb.read_char(lecture+(++index)); // ki
 					serial_rb.read_char(lecture+(++index)); // kd
 					serial_rb.read_char(lecture+(++index)); // kd
 					if(!verifieChecksum(lecture, index))
@@ -255,23 +259,24 @@ void thread_ecoute_serie(void*)
 					else
 					{
 						float kp = ((lecture[PARAM] << 8) + lecture[PARAM + 1])/1000.;
-						float kd = ((lecture[PARAM + 2] << 8) + lecture[PARAM + 3])/1000.;
+						float ki = ((lecture[PARAM + 2] << 8) + lecture[PARAM + 3])/1000./FREQUENCE_ODO_ASSER;
+						float kd = ((lecture[PARAM + 4] << 8) + lecture[PARAM + 5])/1000.*FREQUENCE_ODO_ASSER;
 						if(lecture[COMMANDE] == IN_PID_CONST_VIT_GAUCHE)
-							leftSpeedPID.setTunings(kp, 0., kd);
+							leftSpeedPID.setTunings(kp, ki, kd);
 						else if(lecture[COMMANDE] == IN_PID_CONST_VIT_DROITE)
-							rightSpeedPID.setTunings(kp, 0., kd);
+							rightSpeedPID.setTunings(kp, ki, kd);
 						else if(lecture[COMMANDE] == IN_PID_CONST_TRANSLATION)
-							translationPID.setTunings(kp, 0., kd);
+							translationPID.setTunings(kp, ki, kd);
 						else if(lecture[COMMANDE] == IN_PID_CONST_ROTATION)
-							rotationPID.setTunings(kp, 0., kd);
+							rotationPID.setTunings(kp, ki, kd);
 						else if(lecture[COMMANDE] == IN_PID_CONST_COURBURE)
-							PIDvit.setTuningsC(kp, 0., kd);
+							PIDvit.setTuningsC(kp, ki, kd);
 						else if(lecture[COMMANDE] == IN_PID_CONST_VIT_LINEAIRE)
-							PIDvit.setTuningsV(kp, 0., kd);
+							PIDvit.setTuningsV(kp, ki, kd);
 						else if(lecture[COMMANDE] == IN_CONST_SAMSON)
 						{
 							k1 = kp;
-							k2 = kp;
+							k2 = ki;
 						}
 					}
 				}

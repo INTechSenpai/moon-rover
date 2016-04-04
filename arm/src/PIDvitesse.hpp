@@ -25,7 +25,7 @@ class PIDvitesse
 {
 public:
 
-	PIDvitesse(volatile int32_t* vitesseLineaireReelle, volatile int32_t* courbureReelle, volatile int32_t* commandePWMGauche, volatile int32_t* commandePWMDroite, volatile int32_t* consigneVitesseLineaire, volatile int32_t* consigneCourbure)
+	PIDvitesse(volatile float* vitesseLineaireReelle, volatile float* courbureReelle, volatile float* commandePWMGauche, volatile float* commandePWMDroite, volatile float* consigneVitesseLineaire, volatile float* consigneCourbure)
 	{
 		this->vitesseLineaireReelle = vitesseLineaireReelle;
 		this->courbureReelle = courbureReelle;
@@ -49,40 +49,40 @@ public:
 
 	void compute() {
 	// On suppose que consigneVitesseLineaire et consigneCourbure ont déjà été limitées
-		int32_t errorV = (*consigneVitesseLineaire) - (*vitesseLineaireReelle);
+		float errorV = (*consigneVitesseLineaire) - (*vitesseLineaireReelle);
 		derivativeV = errorV - pre_errorV;
 		integralV += errorV;
 		pre_errorV = errorV;
 
 		// Commande pour ajuster la vitesse linéaire
-		int32_t resultV = (int32_t)(kpV * errorV + kiV * integralV + kdV * derivativeV);
+		float resultV = (int32_t)(kpV * errorV + kiV * integralV + kdV * derivativeV);
 
 // TODO limitations en accélération linéaire
 
-		int32_t consigneRotation = (*consigneVitesseLineaire) * demiDistance * (*consigneCourbure);
+		float consigneRotation = (*consigneVitesseLineaire) * demiDistance * (*consigneCourbure);
 // TODO limitation pour la vitesse de rotation
 
 		*consigneCourbure = consigneRotation / ((*consigneVitesseLineaire) * demiDistance);
 
-		int32_t errorC = (*consigneCourbure) - (*courbureReelle);
+		float errorC = (*consigneCourbure) - (*courbureReelle);
 		derivativeC = errorC - pre_errorC;
 		integralC += errorC;
 		pre_errorC = errorC;
 
 		// Commande pour ajuster la courbure
-		int32_t resultC = (int32_t)(kpC * errorC + kiC * integralC + kdC * derivativeC);
+		float resultC = (int32_t)(kpC * errorC + kiC * integralC + kdC * derivativeC);
 
 // TODO limitations de la dérivée de la courbure
 
 		// Commande pour ajuster la vitesse de rotation
-		int32_t resultR = resultV * demiDistance * resultC;
+		float resultR = resultV * demiDistance * resultC;
 
 // TODO limitations en accélération de rotation
 
 
 		// On en déduit la commande pour chaque moteur
-		int32_t resultG = resultV - resultR;
-		int32_t resultD = resultV + resultR;
+		float resultG = resultV - resultR;
+		float resultD = resultV + resultR;
 
 // TODO limitations de l'accélération de chaque roue
 
@@ -125,13 +125,13 @@ public:
 		this->kdC = kd;
 	}
 
-	void setEpsilon(int32_t seuil) {
+	void setEpsilon(float seuil) {
 		if(seuil < 0)
 			return;
 		epsilon = seuil;
 	}
 
-	void setDemiDistance(int32_t demiDistance) {
+	void setDemiDistance(float demiDistance) {
 		if(demiDistance < 0)
 			return;
 		this->demiDistance = demiDistance;
@@ -155,26 +155,26 @@ private:
 	float kiC;
 	float kdC;
 
-	volatile int32_t* vitesseLineaireReelle;
-	volatile int32_t* courbureReelle;
-	volatile int32_t* commandePWMGauche;
-	volatile int32_t* commandePWMDroite;
-	volatile int32_t* consigneVitesseLineaire;
-	volatile int32_t* consigneCourbure;
+	volatile float* vitesseLineaireReelle;
+	volatile float* courbureReelle;
+	volatile float* commandePWMGauche;
+	volatile float* commandePWMDroite;
+	volatile float* consigneVitesseLineaire;
+	volatile float* consigneCourbure;
 
-	int32_t PWMmax;
-	int32_t epsilon;
+	float PWMmax;
+	float epsilon;
 
-	int32_t pre_errorC;
-	int32_t derivativeC;
-	int32_t integralC;
+	float pre_errorC;
+	float derivativeC;
+	float integralC;
 
-	int32_t pre_errorV;
-	int32_t derivativeV;
-	int32_t integralV;
+	float pre_errorV;
+	float derivativeV;
+	float integralV;
 
 	// La demi-distance entre les deux roues de propulsion
-	int32_t demiDistance;
+	float demiDistance;
 };
 
 #endif

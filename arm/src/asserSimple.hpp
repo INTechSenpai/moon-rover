@@ -72,41 +72,41 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 //	int32_t currentRightAcceleration;
 //	int32_t currentLeftAcceleration;
-	int32_t leftSpeedSetpoint;
-	int32_t rightSpeedSetpoint;
+	float leftSpeedSetpoint;
+	float rightSpeedSetpoint;
 
 	//	Asservissement en vitesse du moteur droit
 	float currentRightSpeed;		// ticks/seconde
 	float errorRightSpeed;
-	int32_t rightPWM = 0;
-	PID rightSpeedPID(&errorRightSpeed, &rightPWM);
+	float rightPWM = 0;
+	PID rightSpeedPID(&errorRightSpeed, &rightPWM, 5);
 
 	//	Asservissement en vitesse du moteur gauche
 	float currentLeftSpeed;		// ticks/seconde
 	float errorLeftSpeed;
-	int32_t leftPWM = 0;
-	PID leftSpeedPID(&errorLeftSpeed, &leftPWM);
+	float leftPWM = 0;
+	PID leftSpeedPID(&errorLeftSpeed, &leftPWM, 5);
 
 	//	Asservissement en vitesse linéaire et en courbure
-	int32_t vitesseLineaireReelle;
-	int32_t vitesseRotationReelle;
-	int32_t courbureReelle;
-	volatile int32_t consigneVitesseLineaire;
-	volatile int32_t consigneCourbure;
+	float vitesseLineaireReelle;
+	float vitesseRotationReelle;
+	float courbureReelle;
+	volatile float consigneVitesseLineaire;
+	volatile float consigneCourbure;
 	PIDvitesse PIDvit(&vitesseLineaireReelle, &courbureReelle, &leftPWM, &rightPWM, &consigneVitesseLineaire, &consigneCourbure);
 
 	//	Asservissement en position : translation
-	int32_t currentDistance;		// distance à parcourir, en ticks
-	int32_t translationSpeed;		// ticks/seconde
+	float currentDistance;		// distance à parcourir, en ticks
+	float translationSpeed;		// ticks/seconde
 	float errorTranslation;		// ticks
-	PID translationPID(&errorTranslation, &translationSpeed);
+	PID translationPID(&errorTranslation, &translationSpeed, 10);
 
 	//	Asservissement en position : rotation
 
-	uint32_t currentAngle = 0;
+	float currentAngle = 0;
 	float errorAngle;
-	int32_t rotationSpeed;			// ticks/seconde
-	PID rotationPID(&errorAngle, &rotationSpeed);
+	float rotationSpeed;			// ticks/seconde
+	PID rotationPID(&errorAngle, &rotationSpeed, 0);
 
 	//	Pour faire de jolies courbes de réponse du système, la vitesse moyenne c'est mieux !
 //	Average<int32_t, AVERAGE_SPEED_SIZE> averageLeftSpeed;
@@ -137,7 +137,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
      */
     void inline updateRotationSetpoint()
     {
-    	int32_t tmp = (int32_t) RAD_TO_TICK(atan2(consigneY - y_odo, consigneX - x_odo));
+    	float tmp = RAD_TO_TICK(atan2(consigneY - y_odo, consigneX - x_odo));
     	if(tmp >= 0)
     		rotationSetpoint = tmp;
     	else
@@ -157,7 +157,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
      */
     void inline updateErrorAngle()
     {
-    	uint32_t e;
+    	float e;
     	if(rotationSetpoint > currentAngle)
     	{
     		e = rotationSetpoint - currentAngle;
@@ -190,16 +190,23 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
     void inline updateErrorTranslation()
     {
-    	int32_t e = (int32_t) (hypot(x_odo - consigneX, y_odo - consigneY) / MM_PAR_TICK);
-    	// faut-il aller en marche arrière ?
-    	if(cos_orientation_odo * (consigneX - x_odo) + sin_orientation_odo * (consigneY - y_odo) < 0)
-    		e = -e;
-    	errorTranslation = e;
+    	// gère aussi la marche arrière
+    	errorTranslation = (cos_orientation_odo * (consigneX - x_odo) + sin_orientation_odo * (consigneY - y_odo)) / MM_PAR_TICK;
     }
 
     void inline runPWM()
     {
 		int32_t tmpRightPWM, tmpLeftPWM;
+
+		if(leftPWM > PWM_MAX)
+			leftPWM = PWM_MAX;
+		else if(leftPWM < -PWM_MAX)
+			leftPWM = -PWM_MAX;
+
+		if(rightPWM > PWM_MAX)
+			rightPWM = PWM_MAX;
+		else if(rightPWM < -PWM_MAX)
+			rightPWM = -PWM_MAX;
 
 		// gestion de la symétrie pour les déplacements
         if(isSymmetry)
@@ -218,16 +225,12 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		{
 			// marche avant
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-			if(tmpRightPWM >= 200)
-				tmpRightPWM = 200;
 			MOTEUR_DROIT = tmpRightPWM;
 		}
 		else
 		{
 			// marche arrière
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
-			if(-tmpRightPWM >= 200)
-				tmpRightPWM = -200;
 			MOTEUR_DROIT = -tmpRightPWM;
 		}
 
@@ -235,16 +238,12 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		{
 			// marche avant
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_SET);
-			if(tmpLeftPWM >= 200)
-				tmpLeftPWM = 200;
 			MOTEUR_GAUCHE = tmpLeftPWM;
 		}
 		else
 		{
 			// marche arrière
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);
-			if(-tmpLeftPWM >= 200)
-				tmpLeftPWM = -200;
 			MOTEUR_GAUCHE = -tmpLeftPWM;
 		}
     }
@@ -330,19 +329,23 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	// On ne met pas à jour l'orientation si on est à moins de 3 cm de l'arrivée. Sinon, en dépassant la consigne le robot voudra se retourner…
 		if(errorTranslation >= 30/MM_PAR_TICK)
 		{
-			updateRotationSetpoint(); // gère la marche arrière
-			updateErrorAngle();
-			rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
+//			updateRotationSetpoint(); // gère la marche arrière
+//			updateErrorAngle();
+//			rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
 		}
 		else // si on est trop proche, on ne tourne plus
-			rotationSpeed = 0;
+		{
+//			translationSpeed = 0;
+//			rotationSpeed = 0;
+		}
+		rotationSpeed = 0;
 
-		limitTranslationRotationSpeed();
+//		limitTranslationRotationSpeed();
 
 		leftSpeedSetpoint = translationSpeed - rotationSpeed;
 		rightSpeedSetpoint = translationSpeed + rotationSpeed;
 
-		limitLeftRightSpeed();
+//		limitLeftRightSpeed();
 
         errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
 		errorRightSpeed = rightSpeedSetpoint - currentRightSpeed;
@@ -374,8 +377,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
     void inline controlVitesse()
     {
-    	leftSpeedSetpoint = 10;
-    	rightSpeedSetpoint = 10;
+    	leftSpeedSetpoint = 0;
+    	rightSpeedSetpoint = 100;
 
 //        limitLeftRightSpeed();
         errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
@@ -394,7 +397,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	updateErrorAngle();
 
     	// Produit scalaire. d est algébrique
-    	int d = - (x_odo - trajectoire[indiceTrajectoireLecture].x) * trajectoire[indiceTrajectoireLecture].dir_y + (y_odo - trajectoire[indiceTrajectoireLecture].y) * trajectoire[indiceTrajectoireLecture].dir_x;
+    	int16_t d = - (x_odo - trajectoire[indiceTrajectoireLecture].x) * trajectoire[indiceTrajectoireLecture].dir_y + (y_odo - trajectoire[indiceTrajectoireLecture].y) * trajectoire[indiceTrajectoireLecture].dir_x;
 
     	float kappaS = trajectoire[indiceTrajectoireLecture].courbure - k1*d - k2*errorAngle;
     	float consigneCourbure = FONCTION_COURBURE_MAX(vitesseLineaireReelle);
@@ -438,7 +441,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
         computeAndRunPWM();
     }
 
-    int16_t nbErreurs = 0;
+    uint16_t nbErreurs = 0;
 
     /**
      * On est physiquement bloqué si l'erreur en vitesse de change pas alors que les moteurs tournent

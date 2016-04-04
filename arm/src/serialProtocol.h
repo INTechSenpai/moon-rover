@@ -6,6 +6,7 @@
 #define IN_PONG1 0x42
 #define IN_PONG2 0x57
 #define IN_AVANCER 0x02
+#define IN_AVANCER_NEG 0x03
 #define IN_TOURNER 0x04
 #define IN_VA_POINT 0x05
 #define IN_ACTIONNEURS 0x06

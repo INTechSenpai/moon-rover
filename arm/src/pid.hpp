@@ -11,27 +11,27 @@
 
 #include <stdint.h>
 #include "utils.h"
-
+#include "serie.h"
 
 class PID
 {
 public:
 
 
-	PID(volatile float* error, volatile int32_t* output)
+	PID(volatile float* error, volatile float* output, float epsilon)
 	{
 		this->output = output;
 		this->error = error;
 
-		setOutputLimits(-2147483647, 2147483647);
+//		setOutputLimits(-2147483647, 2147483647);
 		setTunings(0, 0, 0);
-		epsilon = 0;
+		this->epsilon = epsilon;
 		pre_error = 0;
 		derivative = 0;
 		integral = 0;
 	}
 
-	int32_t getDerivativeError()
+	float getDerivativeError()
 	{
 		return derivative;
 	}
@@ -43,9 +43,9 @@ public:
 		integral += error;
 		pre_error = error;
 
-		int32_t result = (int32_t)(
-				kp * error + ki * integral + kd * derivative);
-
+		float result = kp * error + ki * integral + kd * derivative;
+//		sendCoquillage((uint8_t)(error));
+//		sendCoquillage((uint8_t)(derivative*256));
 		//Saturation
 /*		if (result > outMax) {
 			result = outMax;
@@ -70,20 +70,20 @@ public:
 		this->ki = ki;
 		this->kd = kd;
 	}
-
+/*
 	void setOutputLimits(int32_t min, int32_t max) {
 		if (min >= max)
 			return;
 
 		outMin = min;
 		outMax = max;
-	}
-
-	void setEpsilon(int32_t seuil) {
+	}*/
+/*
+	void setEpsilon(float seuil) {
 		if(seuil < 0)
 			return;
 		epsilon = seuil;
-	}
+	}*/
 
 	void resetErrors() {
 		pre_error = 0;
@@ -96,10 +96,10 @@ private:
 	float kd;
 
 	volatile float* error; //erreur, c'est-à-dire différence entre la consigne et la valeur actuelle
-	volatile int32_t* output; //Output : commande
+	volatile float* output; //Output : commande
 
-	int32_t epsilon;
-	int32_t outMin, outMax;
+	float epsilon;
+//	int32_t outMin, outMax;
 
 	float pre_error;
 	float derivative;
