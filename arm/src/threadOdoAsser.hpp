@@ -221,7 +221,7 @@ void thread_odometrie_asser(void*)
         }
 
         modeAsserActuel = ASSER_VITESSE;
-23V
+
 		// on empêche toute modification de consigne
 		while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 		if(modeAsserActuel == ROTATION)
