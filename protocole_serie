@@ -12,6 +12,8 @@ pong
     0x42 0x57
 avancer
     0x02 DISTANCE(16)
+avancer distance négative
+    0x03 -DISTANCE(16)
 tourner
     0x04 ANGLE(16)
 va au point
