@@ -148,12 +148,14 @@ void thread_ecoute_serie(void*)
 						askResend(idPaquet);
 					else
 					{
-						uint16_t angle = (lecture[PARAM] << 8) + lecture[PARAM + 1];
+						float angle = ((lecture[PARAM] << 8) + lecture[PARAM + 1]) / 1000.;
 
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-						rotationSetpoint = angle;
+						rotationSetpoint = RAD_TO_TICK(angle);
 						needArrive = true;
 						modeAsserActuel = ROTATION;
+						consigneX = x_odo;
+						consigneY = y_odo;
 						xSemaphoreGive(consigneAsser_mutex);
 //						vTaskDelay(1000);
 //						sendArrive();

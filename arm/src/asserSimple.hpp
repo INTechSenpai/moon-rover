@@ -8,13 +8,18 @@
 #include <cmath>
 #include "math.h"
 
-#define VITESSE_LINEAIRE_MAX (300 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // vitesse max en tick / appel asser
-#define ACCELERATION_LINEAIRE_MAX (300 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // accélération max en tick / (appel asser)^2
-#define VITESSE_ROTATION_MAX (300 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // vitesse max en tick / appel asser
-#define ACCELERATION_ROTATION_MAX (300 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // accélération max en tick / (appel asser)^2
-#define VITESSE_ROUE_MAX (300 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // vitesse max en tick / appel asser
-#define ACCELERATION_ROUE_MAX (300 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // accélération max en tick / (appel asser)^2
-#define RAYON_DE_COURBURE_MIN_EN_MM 500
+// Vitesses et accélérations max
+// Angulaire 60 rad/s, 70 rad/s^2
+// Linéaire 3 m/s, 3.5m/s^2
+// Par roue : 3 m/s, 3.5m/s^2
+
+#define VITESSE_LINEAIRE_MAX (3000 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 600 // vitesse max en tick / appel asser
+#define ACCELERATION_LINEAIRE_MAX (3500 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 700 // accélération max en tick / (appel asser)^2
+#define VITESSE_ROTATION_MAX (60 / RAD_PAR_TICK / FREQUENCE_ODO_ASSER) // 2100 // vitesse max en tick / appel asser
+#define ACCELERATION_ROTATION_MAX (70 / RAD_PAR_TICK / FREQUENCE_ODO_ASSER) // 2400 // accélération max en tick / (appel asser)^2
+#define VITESSE_ROUE_MAX (3000 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 600 // vitesse max en tick / appel asser
+#define ACCELERATION_ROUE_MAX (3500 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 700 // accélération max en tick / (appel asser)^2
+#define RAYON_DE_COURBURE_MIN_EN_MM 100 // en fait, on peut descendre virtuellement aussi bas qu'on veut. A condition d'aller suffisamment lentement, on peut avoir n'importe quelle courbure.
 #define COURBURE_MAX (1. / RAYON_DE_COURBURE_MIN_EN_MM)
 
 #define FONCTION_VITESSE_MAX(x) (5)
@@ -103,7 +108,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 	//	Asservissement en position : rotation
 
-	float currentAngle = 0;
+	uint32_t currentAngle = 0; // en tick
 	float errorAngle;
 	float rotationSpeed;			// ticks/seconde
 	PID rotationPID(&errorAngle, &rotationSpeed, 0);
@@ -367,7 +372,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		leftSpeedSetpoint = translationSpeed - rotationSpeed;
 		rightSpeedSetpoint = translationSpeed + rotationSpeed;
 
-		limitLeftRightSpeed();
+//		limitLeftRightSpeed();
 
         errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
 		errorRightSpeed = rightSpeedSetpoint - currentRightSpeed;
@@ -377,8 +382,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
     void inline controlVitesse()
     {
-    	leftSpeedSetpoint = 0;
-    	rightSpeedSetpoint = 100;
+    	leftSpeedSetpoint = 10;
+    	rightSpeedSetpoint = -10;
 
 //        limitLeftRightSpeed();
         errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;

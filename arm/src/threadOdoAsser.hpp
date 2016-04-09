@@ -128,15 +128,16 @@ void thread_odometrie_asser(void*)
 		delta_tick_gauche = tmp - old_tick_gauche;
 		old_tick_gauche = tmp;
 		speed = tmp - positionGauche[indiceMemoire];
-		currentLeftSpeed = speed / MEMOIRE_MESURE;
+		currentLeftSpeed = speed / MEMOIRE_MESURE_FLOAT;
 //		currentLeftAcceleration = (currentLeftSpeed - vitesseGauche[indiceMemoire]) / MEMOIRE_MESURE;
 		positionGauche[indiceMemoire] = tmp;
 //		vitesseGauche[indiceMemoire] = currentLeftSpeed;
 
 		tmp = TICK_CODEUR_DROIT;
+		delta_tick_droit = tmp - old_tick_droit;
 		old_tick_droit = tmp;
 		speed = tmp - positionDroite[indiceMemoire];
-		currentRightSpeed = speed / MEMOIRE_MESURE;
+		currentRightSpeed = speed / MEMOIRE_MESURE_FLOAT;
 //		currentRightAcceleration = (currentRightSpeed - vitesseDroite[indiceMemoire]) / MEMOIRE_MESURE;
 		positionDroite[indiceMemoire] = tmp;
 //		vitesseDroite[indiceMemoire] = currentLeftSpeed;
@@ -171,6 +172,7 @@ void thread_odometrie_asser(void*)
 		// l'erreur à cause du "/2" ne s'accumule pas
 		orientationMoyTick = currentAngle + deltaOrientationTick/2;
 
+		// modulo
 		if(orientationMoyTick > (uint32_t)TICKS_PAR_TOUR_ROBOT)
 		{
 			if(orientationMoyTick < (uint32_t)FRONTIERE_MODULO)
@@ -179,6 +181,16 @@ void thread_odometrie_asser(void*)
 				orientationMoyTick += (uint32_t)TICKS_PAR_TOUR_ROBOT;
 		}
 		currentAngle += deltaOrientationTick;
+
+		// modulo
+		if(currentAngle > (uint32_t)TICKS_PAR_TOUR_ROBOT)
+		{
+			if(currentAngle < (uint32_t)FRONTIERE_MODULO)
+				currentAngle -= (uint32_t)TICKS_PAR_TOUR_ROBOT;
+			else
+				currentAngle += (uint32_t)TICKS_PAR_TOUR_ROBOT;
+		}
+
 		deltaOrientation = TICK_TO_RAD(deltaOrientationTick);
 
 //		serial_rb.printfln("TICKS_PAR_TOUR_ROBOT = %d", (int)TICKS_PAR_TOUR_ROBOT);
@@ -207,8 +219,9 @@ void thread_odometrie_asser(void*)
 		if(debugMode)
 		{
 			if((debugCompteur & 0x07) == 0)
-				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int32_t)(errorLeftSpeed*100), (int32_t)(errorRightSpeed*100), vitesseLineaireReelle, courbureReelle);
+//				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int32_t)(errorLeftSpeed*100), (int32_t)(errorRightSpeed*100), vitesseLineaireReelle, courbureReelle);
 //				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int16_t)(errorTranslation), (uint16_t)(errorAngle), vitesseLineaireReelle, courbureReelle);
+				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(errorRightSpeed*100), (int16_t)(orientationMoyTick), (uint16_t)(errorAngle), vitesseLineaireReelle, courbureReelle);
 //				sendDebug(leftPWM, rightPWM, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), errorTranslation, errorAngle, vitesseLineaireReelle, courbureReelle);
 			debugCompteur++;
 		}
@@ -220,7 +233,7 @@ void thread_odometrie_asser(void*)
             sendProblemeMeca();
         }
 
-        modeAsserActuel = ASSER_VITESSE;
+//        modeAsserActuel = ASSER_VITESSE;
 
 		// on empêche toute modification de consigne
 		while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
