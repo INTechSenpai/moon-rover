@@ -35,19 +35,19 @@ supprime tous les hooks
 supprime certains hooks
     0x11 NB_HOOKS(8) ID1(8) ...
 set pid vitesse gauche
-    0x20 KP(16) KD(16)
+    0x20 KP(24) KI(24) KD(24)
 set pid vitesse droite
-    0x21 KP(16) KD(16)
+    0x21 KP(24) KI(24) KD(24)
 set pid translation
-    0x22 KP(16) KD(16)
+    0x22 KP(24) KI(24) KD(24)
 set pid rotation
-    0x23 KP(16) KD(16)
+    0x23 KP(24) KI(24) KD(24)
 set pid courbure
-    0x24 KP(16) KD(16)
+    0x24 KP(24) KI(24) KD(24)
 set pid vitesse linéaire
-    0x25 KP(16) KD(16)
+    0x25 KP(24) KI(24) KD(24)
 set constante samson
-    0x26 K1(16) K2(16)
+    0x26 K1(24) K2(24) 0(24)
 envoie arc trajectoire courbe (vitesse négative et orientation inversée si marche arrière)
     0x2E X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE(8)
 envoie arc trajectoire courbe précédé d'un arrêt (vitesse négative et orientation inversée si marche arrière)

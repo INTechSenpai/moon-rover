@@ -252,17 +252,20 @@ void thread_ecoute_serie(void*)
 				{
 					serial_rb.read_char(lecture+(++index)); // kp
 					serial_rb.read_char(lecture+(++index)); // kp
+					serial_rb.read_char(lecture+(++index)); // kp
 					serial_rb.read_char(lecture+(++index)); // ki
 					serial_rb.read_char(lecture+(++index)); // ki
+					serial_rb.read_char(lecture+(++index)); // ki
+					serial_rb.read_char(lecture+(++index)); // kd
 					serial_rb.read_char(lecture+(++index)); // kd
 					serial_rb.read_char(lecture+(++index)); // kd
 					if(!verifieChecksum(lecture, index))
 						askResend(idPaquet);
 					else
 					{
-						float kp = ((lecture[PARAM] << 8) + lecture[PARAM + 1])/1000.;
-						float ki = ((lecture[PARAM + 2] << 8) + lecture[PARAM + 3])/1000./FREQUENCE_ODO_ASSER;
-						float kd = ((lecture[PARAM + 4] << 8) + lecture[PARAM + 5])/1000.*FREQUENCE_ODO_ASSER;
+						float kp = ((lecture[PARAM] << 16) + (lecture[PARAM + 1] << 8) + lecture[PARAM + 2])/1000.;
+						float ki = ((lecture[PARAM + 3] << 16) + (lecture[PARAM + 4] << 8) + lecture[PARAM + 5])/1000./FREQUENCE_ODO_ASSER;
+						float kd = ((lecture[PARAM + 6] << 16) + (lecture[PARAM + 7] << 8) + lecture[PARAM + 8])/1000.*FREQUENCE_ODO_ASSER;
 						if(lecture[COMMANDE] == IN_PID_CONST_VIT_GAUCHE)
 							leftSpeedPID.setTunings(kp, ki, kd);
 						else if(lecture[COMMANDE] == IN_PID_CONST_VIT_DROITE)

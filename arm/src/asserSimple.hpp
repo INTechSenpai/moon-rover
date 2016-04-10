@@ -13,13 +13,14 @@
 // Linéaire 3 m/s, 3.5m/s^2
 // Par roue : 3 m/s, 3.5m/s^2
 
-#define VITESSE_LINEAIRE_MAX (3000 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 600 // vitesse max en tick / appel asser
-#define ACCELERATION_LINEAIRE_MAX (3500 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 700 // accélération max en tick / (appel asser)^2
-#define VITESSE_ROTATION_MAX (60 / RAD_PAR_TICK / FREQUENCE_ODO_ASSER) // 2100 // vitesse max en tick / appel asser
-#define ACCELERATION_ROTATION_MAX (70 / RAD_PAR_TICK / FREQUENCE_ODO_ASSER) // 2400 // accélération max en tick / (appel asser)^2
-#define VITESSE_ROUE_MAX (3000 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 600 // vitesse max en tick / appel asser
-#define ACCELERATION_ROUE_MAX (3500 / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 700 // accélération max en tick / (appel asser)^2
-#define RAYON_DE_COURBURE_MIN_EN_MM 100 // en fait, on peut descendre virtuellement aussi bas qu'on veut. A condition d'aller suffisamment lentement, on peut avoir n'importe quelle courbure.
+#define VITESSE_LINEAIRE_MAX (3000. / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 600 // vitesse max en tick / appel asser
+#define ACCELERATION_LINEAIRE_MAX (3500. / MM_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 3.5 // accélération max en tick / (appel asser)^2
+//#define VITESSE_ROTATION_MAX (60. / RAD_PAR_TICK / FREQUENCE_ODO_ASSER) // 2100 // vitesse max en tick / appel asser
+#define VITESSE_ROTATION_MAX 600 // vitesse max en tick / appel asser
+#define ACCELERATION_ROTATION_MAX (70. / RAD_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 12 // accélération max en tick / (appel asser)^2
+#define VITESSE_ROUE_MAX (3000. / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 600 // vitesse max en tick / appel asser
+#define ACCELERATION_ROUE_MAX (3500. / MM_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 3.5 // accélération max en tick / (appel asser)^2
+#define RAYON_DE_COURBURE_MIN_EN_MM 100. // en fait, on peut descendre virtuellement aussi bas qu'on veut. A condition d'aller suffisamment lentement, on peut avoir n'importe quelle courbure.
 #define COURBURE_MAX (1. / RAYON_DE_COURBURE_MIN_EN_MM)
 
 #define FONCTION_VITESSE_MAX(x) (5)
@@ -77,8 +78,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 //	int32_t currentRightAcceleration;
 //	int32_t currentLeftAcceleration;
-	float leftSpeedSetpoint;
-	float rightSpeedSetpoint;
+	float leftSpeedSetpoint, oldLeftSpeedSetpoint = 0;
+	float rightSpeedSetpoint, oldRightSpeedSetpoint = 0;
 
 	//	Asservissement en vitesse du moteur droit
 	float currentRightSpeed;		// ticks/seconde
@@ -102,7 +103,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 	//	Asservissement en position : translation
 	float currentDistance;		// distance à parcourir, en ticks
-	float translationSpeed;		// ticks/seconde
+	float translationSpeed, oldTranslationSpeed = 0;		// ticks/seconde
 	float errorTranslation;		// ticks
 	PID translationPID(&errorTranslation, &translationSpeed, 10);
 
@@ -110,7 +111,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 	uint32_t currentAngle = 0; // en tick
 	float errorAngle;
-	float rotationSpeed;			// ticks/seconde
+	float rotationSpeed, oldRotationSpeed = 0;			// ticks/seconde
 	PID rotationPID(&errorAngle, &rotationSpeed, 0);
 
 	//	Pour faire de jolies courbes de réponse du système, la vitesse moyenne c'est mieux !
@@ -278,10 +279,12 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 			translationSpeed = -VITESSE_LINEAIRE_MAX;
 
 		// Limitation de l'accélération en vitesse linéaire
-		if(translationSpeed - vitesseLineaireReelle > ACCELERATION_LINEAIRE_MAX)
-			translationSpeed = vitesseLineaireReelle + ACCELERATION_LINEAIRE_MAX;
-		else if(translationSpeed - vitesseLineaireReelle < -ACCELERATION_LINEAIRE_MAX)
-			translationSpeed = vitesseLineaireReelle - ACCELERATION_LINEAIRE_MAX;
+		if(translationSpeed - oldTranslationSpeed > ACCELERATION_LINEAIRE_MAX)
+			translationSpeed = oldTranslationSpeed + ACCELERATION_LINEAIRE_MAX;
+		else if(translationSpeed - oldTranslationSpeed < -ACCELERATION_LINEAIRE_MAX)
+			translationSpeed = oldTranslationSpeed - ACCELERATION_LINEAIRE_MAX;
+
+		oldTranslationSpeed = translationSpeed;
 
 		// Limitation de la consigne de vitesse en rotation
 		if(rotationSpeed > VITESSE_ROTATION_MAX)
@@ -290,10 +293,12 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 			rotationSpeed = -VITESSE_ROTATION_MAX;
 
 		// Limitation de l'accélération en rotation
-		if(rotationSpeed - vitesseRotationReelle > ACCELERATION_ROTATION_MAX)
-			rotationSpeed = vitesseRotationReelle + ACCELERATION_ROTATION_MAX;
-		else if(rotationSpeed - vitesseRotationReelle < -ACCELERATION_ROTATION_MAX)
-			rotationSpeed = vitesseRotationReelle - ACCELERATION_ROTATION_MAX;
+		if(rotationSpeed - oldRotationSpeed > ACCELERATION_ROTATION_MAX)
+			rotationSpeed = oldRotationSpeed + ACCELERATION_ROTATION_MAX;
+		else if(rotationSpeed - oldRotationSpeed < -ACCELERATION_ROTATION_MAX)
+			rotationSpeed = oldRotationSpeed - ACCELERATION_ROTATION_MAX;
+
+		oldRotationSpeed = rotationSpeed;
 	}
 
 	/**
@@ -306,22 +311,29 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 			leftSpeedSetpoint = VITESSE_ROUE_MAX;
 		else if(leftSpeedSetpoint < -VITESSE_ROUE_MAX)
 			leftSpeedSetpoint = -VITESSE_ROUE_MAX;
+
 		if(rightSpeedSetpoint > VITESSE_ROUE_MAX)
 			rightSpeedSetpoint = VITESSE_ROUE_MAX;
 		else if(rightSpeedSetpoint < -VITESSE_ROUE_MAX)
 			rightSpeedSetpoint = -VITESSE_ROUE_MAX;
 
+		// ATTENTION : la limitation de l'accélération ne prend pas en compte la vitesse actuelle du robot
+		// Donc il est possible que le robot dépasse cette accélération !
+
 		// Limitation de l'accélération du moteur gauche
-		if(leftSpeedSetpoint - currentLeftSpeed > ACCELERATION_ROUE_MAX)
-			leftSpeedSetpoint = currentLeftSpeed + ACCELERATION_ROUE_MAX;
-		else if(leftSpeedSetpoint - currentLeftSpeed < -ACCELERATION_ROUE_MAX)
-			leftSpeedSetpoint = currentLeftSpeed - ACCELERATION_ROUE_MAX;
+		if(leftSpeedSetpoint - oldLeftSpeedSetpoint > ACCELERATION_ROUE_MAX)
+			leftSpeedSetpoint = oldLeftSpeedSetpoint + ACCELERATION_ROUE_MAX;
+		else if(leftSpeedSetpoint - oldLeftSpeedSetpoint < -ACCELERATION_ROUE_MAX)
+			leftSpeedSetpoint = oldLeftSpeedSetpoint - ACCELERATION_ROUE_MAX;
 
 		// Limitation de l'accélération du moteur droit
-		if(rightSpeedSetpoint - currentRightSpeed > ACCELERATION_ROUE_MAX)
-			rightSpeedSetpoint = currentRightSpeed + ACCELERATION_ROUE_MAX;
-		else if(rightSpeedSetpoint - currentRightSpeed < -ACCELERATION_ROUE_MAX)
-			rightSpeedSetpoint = currentRightSpeed - ACCELERATION_ROUE_MAX;
+		if(rightSpeedSetpoint - oldRightSpeedSetpoint > ACCELERATION_ROUE_MAX)
+			rightSpeedSetpoint = oldRightSpeedSetpoint + ACCELERATION_ROUE_MAX;
+		else if(rightSpeedSetpoint - oldRightSpeedSetpoint < -ACCELERATION_ROUE_MAX)
+			rightSpeedSetpoint = oldRightSpeedSetpoint - ACCELERATION_ROUE_MAX;
+
+		oldLeftSpeedSetpoint = leftSpeedSetpoint;
+		oldRightSpeedSetpoint = rightSpeedSetpoint;
 	}
 
 	void inline controlVaAuPoint()
@@ -334,23 +346,23 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	// On ne met pas à jour l'orientation si on est à moins de 3 cm de l'arrivée. Sinon, en dépassant la consigne le robot voudra se retourner…
 		if(errorTranslation >= 30/MM_PAR_TICK)
 		{
-//			updateRotationSetpoint(); // gère la marche arrière
-//			updateErrorAngle();
-//			rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
+			updateRotationSetpoint(); // gère la marche arrière
+			updateErrorAngle();
+			rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
 		}
 		else // si on est trop proche, on ne tourne plus
 		{
 //			translationSpeed = 0;
-//			rotationSpeed = 0;
+			rotationSpeed = 0;
 		}
-		rotationSpeed = 0;
+//		rotationSpeed = 0;
 
-//		limitTranslationRotationSpeed();
+		limitTranslationRotationSpeed();
 
 		leftSpeedSetpoint = translationSpeed - rotationSpeed;
 		rightSpeedSetpoint = translationSpeed + rotationSpeed;
 
-//		limitLeftRightSpeed();
+		limitLeftRightSpeed();
 
         errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
 		errorRightSpeed = rightSpeedSetpoint - currentRightSpeed;
@@ -362,17 +374,17 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     {
     	// Mise à jour des erreurs
     	updateErrorAngle();
-    	updateErrorTranslation();
+//    	updateErrorTranslation();
 
         rotationPID.compute();      // Actualise la valeur de 'rotationSpeed'
-        translationPID.compute();      // Actualise la valeur de 'translationSpeed'
+//        translationPID.compute();      // Actualise la valeur de 'translationSpeed'
 
-        limitTranslationRotationSpeed();
-
+//        limitTranslationRotationSpeed();
+        translationSpeed = 0;
 		leftSpeedSetpoint = translationSpeed - rotationSpeed;
 		rightSpeedSetpoint = translationSpeed + rotationSpeed;
 
-//		limitLeftRightSpeed();
+		limitLeftRightSpeed();
 
         errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
 		errorRightSpeed = rightSpeedSetpoint - currentRightSpeed;
@@ -382,10 +394,10 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
     void inline controlVitesse()
     {
-    	leftSpeedSetpoint = 10;
-    	rightSpeedSetpoint = -10;
+    	leftSpeedSetpoint = 50;
+    	rightSpeedSetpoint = -50;
 
-//        limitLeftRightSpeed();
+        limitLeftRightSpeed();
         errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
 		errorRightSpeed = rightSpeedSetpoint - currentRightSpeed;
 

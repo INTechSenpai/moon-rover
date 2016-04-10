@@ -221,7 +221,7 @@ void thread_odometrie_asser(void*)
 			if((debugCompteur & 0x07) == 0)
 //				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int32_t)(errorLeftSpeed*100), (int32_t)(errorRightSpeed*100), vitesseLineaireReelle, courbureReelle);
 //				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int16_t)(errorTranslation), (uint16_t)(errorAngle), vitesseLineaireReelle, courbureReelle);
-				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(errorRightSpeed*100), (int16_t)(orientationMoyTick), (uint16_t)(errorAngle), vitesseLineaireReelle, courbureReelle);
+				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(errorRightSpeed*100), (int16_t)(leftSpeedSetpoint - currentLeftSpeed), (uint16_t)(errorAngle), vitesseLineaireReelle, courbureReelle);
 //				sendDebug(leftPWM, rightPWM, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), errorTranslation, errorAngle, vitesseLineaireReelle, courbureReelle);
 			debugCompteur++;
 		}
