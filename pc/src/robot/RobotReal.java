@@ -14,7 +14,9 @@ import pathfinding.dstarlite.GridSpace;
 import permissions.ReadOnly;
 import requete.RequeteSTM;
 import requete.RequeteType;
+import exceptions.FinMatchException;
 import exceptions.UnableToMoveException;
+import exceptions.UnexpectedObstacleOnPathException;
 
 /**
  * Effectue le lien entre le code et la réalité (permet de parler à la stm, d'interroger les capteurs, etc.)
@@ -52,7 +54,7 @@ public class RobotReal extends Robot
 		double o = config.getDouble(ConfigInfo.O_DEPART);
 		setPositionOrientationCourbureDirection(new Vec2<ReadOnly>(x, y), o, 0, true);
 		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
-		
+		/*
 		// Envoie des constantes du pid
 		stm.setPIDconstVitesseGauche(config.getDouble(ConfigInfo.CONST_KP_VIT_GAUCHE), config.getDouble(ConfigInfo.CONST_KD_VIT_GAUCHE));
 		stm.setPIDconstVitesseDroite(config.getDouble(ConfigInfo.CONST_KP_VIT_DROITE), config.getDouble(ConfigInfo.CONST_KD_VIT_DROITE));
@@ -60,7 +62,7 @@ public class RobotReal extends Robot
 		stm.setPIDconstRotation(config.getDouble(ConfigInfo.CONST_KP_ROTATION), config.getDouble(ConfigInfo.CONST_KD_ROTATION));
 		stm.setPIDconstCourbure(config.getDouble(ConfigInfo.CONST_KP_COURBURE), config.getDouble(ConfigInfo.CONST_KD_COURBURE));
 		stm.setPIDconstVitesseLineaire(config.getDouble(ConfigInfo.CONST_KP_VIT_LINEAIRE), config.getDouble(ConfigInfo.CONST_KD_VIT_LINEAIRE));
-		
+		*/
 	}
 		
 	public void setEnMarcheAvance(boolean enMarcheAvant)
@@ -166,7 +168,6 @@ public class RobotReal extends Robot
 				} while(type != RequeteType.TRAJET_FINI);
 			}
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }
@@ -209,5 +210,124 @@ public class RobotReal extends Robot
 			e.printStackTrace();
 		}*/
 	}
+
+    /**
+     * Gère les exceptions, c'est-à-dire les rencontres avec l'ennemi et les câlins avec un mur.
+     * @param hooks
+     * @param trajectoire_courbe
+     * @param marche_arriere
+     * @param insiste
+     * @throws UnableToMoveException 
+     * @throws FinMatchException 
+     * @throws ScriptHookException 
+     * @throws ChangeDirectionException 
+     */
+    private void gestionExceptions(Vec2<ReadOnly> consigne, Vec2<ReadOnly> intermediaire, int differenceDistance, boolean marcheAvant, boolean mur) throws UnableToMoveException, FinMatchException
+    {
+        int nb_iterations_deblocage = 2; // combien de fois on réessaye si on se prend un mur
+        boolean recommence;
+        do {
+            recommence = false;
+            try
+            {
+            	attendStatus();
+            } catch (UnableToMoveException e)
+            {
+                nb_iterations_deblocage--;
+                stm.immobilise();
+                /*
+                 * En cas de blocage, on recule (si on allait tout droit) ou on avance.
+                 */
+                // Si on s'attendait à un mur, c'est juste normal de se le prendre.
+                if(!mur)
+                {
+                    try
+                    {
+                        log.warning("On n'arrive plus à avancer. On se dégage");
+                        if(marcheAvant)
+                            deplacements.moveLengthwise(-distance_degagement_robot);
+                        else
+                            deplacements.moveLengthwise(distance_degagement_robot);
+                        while(!deplacements.isMouvementFini());
+                    	recommence = true; // si on est arrivé ici c'est qu'aucune exception n'a été levée
+                    	// on peut donc relancer le mouvement
+                    } catch (SerialConnexionException e1)
+                    {
+                        e1.printStackTrace();
+                    } catch (BlockedException e1) {
+                    	immobilise();
+                        log.critical("On n'arrive pas à se dégager.");
+					}
+                    if(!recommence && nb_iterations_deblocage == 0)
+                        throw new UnableToMoveException();
+                }
+            } catch (UnexpectedObstacleOnPathException e)
+            {
+            	immobilise();
+            	long dateAvant = System.currentTimeMillis();
+                log.critical("Détection d'un ennemi! Abandon du mouvement.");
+            	while(System.currentTimeMillis() - dateAvant < attente_ennemi_max)
+            	{
+            		try {
+            			detectEnemy(marcheAvant);
+            			recommence = true; // si aucune détection
+            			break;
+            		}
+            		catch(UnexpectedObstacleOnPathException e2)
+            		{}
+            	}
+                if(!recommence)
+                    throw new UnableToMoveException();
+            } catch (WallCollisionDetectedException e) {
+            	immobilise();
+                if(seulementAngle)
+                	throw new UnableToMoveException();
+                else
+				try {
+                	if(marcheAvant)
+						deplacements.moveLengthwise(-distance_degagement_robot);
+					else
+	                    deplacements.moveLengthwise(distance_degagement_robot);
+                    try {
+						while(!deplacements.isMouvementFini());
+					} catch (BlockedException e1) {
+						throw new UnableToMoveException();
+					}
+                	recommence = true;
+				} catch (SerialConnexionException e1) {
+					e1.printStackTrace();
+				}
+                	
+			}
+
+        } while(recommence); // on recommence tant qu'il le faut
+
+    // Tout s'est bien passé
+    }
+
+    /**
+     * Bloque jusqu'à ce que la STM donne un status.
+     * - Soit le robot a fini le mouvement, et la méthode se termine
+     * - Soit le robot est bloqué, et la méthod lève une exception
+     * ATTENTION ! Il faut que cette méthode soit appelée dans un synchronized(requete)
+     * @throws UnableToMoveException
+     */
+    void attendStatus() throws UnableToMoveException
+    {
+		try {
+			RequeteType type;
+			do {
+				if(requete.isEmpty())
+					requete.wait();
+
+				type = requete.get();
+				if(type == RequeteType.BLOCAGE_MECANIQUE)
+					throw new UnableToMoveException();
+			} while(type != RequeteType.TRAJET_FINI);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+    }
 
 }
