@@ -27,7 +27,7 @@ using namespace std;
 void thread_odometrie_asser(void*)
 {
 	uint8_t debugCompteur = 0;
-
+	float currentLeftAcceleration, currentRightAcceleration;
 	uint16_t positionGauche[MEMOIRE_MESURE_INT]; // on introduit un effet de mémoire afin de pouvoir mesurer la vitesse sur un intervalle pas trop petit
 	uint16_t positionDroite[MEMOIRE_MESURE_INT];
 //	int16_t vitesseGauche[MEMOIRE_MESURE]; // on introduit un effet de mémoire afin de pouvoir mesurer l'accélération sur un intervalle pas trop petit
@@ -117,10 +117,12 @@ void thread_odometrie_asser(void*)
 
 	while(1)
 	{
+		// Ce delay permet d'avoir un appel bien régulier
 		vTaskDelayUntil(&xLastWakeTime, periode);
 
 		// ODOMÉTRIE
 		while(xSemaphoreTake(odo_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+		currentLeftAcceleration = -currentLeftSpeed;
 
 		// La formule d'odométrie est corrigée pour tenir compte des trajectoires
 		// (au lieu d'avoir une approximation linéaire, on a une approximation circulaire)
@@ -129,15 +131,18 @@ void thread_odometrie_asser(void*)
 		old_tick_gauche = tmp;
 		speed = tmp - positionGauche[indiceMemoire];
 		currentLeftSpeed = speed / MEMOIRE_MESURE_FLOAT;
-//		currentLeftAcceleration = (currentLeftSpeed - vitesseGauche[indiceMemoire]) / MEMOIRE_MESURE;
+		currentLeftAcceleration += currentLeftSpeed;
 		positionGauche[indiceMemoire] = tmp;
 //		vitesseGauche[indiceMemoire] = currentLeftSpeed;
+
+		currentRightAcceleration = -currentRightSpeed;
 
 		tmp = TICK_CODEUR_DROIT;
 		delta_tick_droit = tmp - old_tick_droit;
 		old_tick_droit = tmp;
 		speed = tmp - positionDroite[indiceMemoire];
 		currentRightSpeed = speed / MEMOIRE_MESURE_FLOAT;
+		currentRightAcceleration += currentRightSpeed;
 //		currentRightAcceleration = (currentRightSpeed - vitesseDroite[indiceMemoire]) / MEMOIRE_MESURE;
 		positionDroite[indiceMemoire] = tmp;
 //		vitesseDroite[indiceMemoire] = currentLeftSpeed;
@@ -215,13 +220,12 @@ void thread_odometrie_asser(void*)
 		y_odo += k*distance*sin_orientation_odo;
 		xSemaphoreGive(odo_mutex);
 
-
 		if(debugMode)
 		{
 			if((debugCompteur & 0x07) == 0)
 //				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int32_t)(errorLeftSpeed*100), (int32_t)(errorRightSpeed*100), vitesseLineaireReelle, courbureReelle);
 //				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int16_t)(errorTranslation), (uint16_t)(errorAngle), vitesseLineaireReelle, courbureReelle);
-				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(errorRightSpeed*100), (int16_t)(leftSpeedSetpoint - currentLeftSpeed), (uint16_t)(errorAngle), vitesseLineaireReelle, courbureReelle);
+				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftAcceleration*1000), (int32_t)(currentRightAcceleration*1000), (int16_t)(errorTranslation), (int16_t)(errorAngle), vitesseLineaireReelle, courbureReelle);
 //				sendDebug(leftPWM, rightPWM, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), errorTranslation, errorAngle, vitesseLineaireReelle, courbureReelle);
 			debugCompteur++;
 		}
@@ -229,11 +233,12 @@ void thread_odometrie_asser(void*)
 		// ASSERVISSEMENT
         if(checkBlocageMecanique())
         {
-            modeAsserActuel = STOP;
+        	changeModeAsserActuel(STOP);
+//            modeAsserActuel = ASSER_OFF;
             sendProblemeMeca();
         }
 
-//        modeAsserActuel = ASSER_VITESSE;
+//       modeAsserActuel = ASSER_OFF;
 
 		// on empêche toute modification de consigne
 		while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
@@ -247,10 +252,16 @@ void thread_odometrie_asser(void*)
 			controlTrajectoire();
 		else if(modeAsserActuel == ASSER_VITESSE)
 			controlVitesse();
+		else if(modeAsserActuel == ASSER_OFF)
+		{
+			MOTEUR_DROIT = 0;
+			MOTEUR_GAUCHE = 0;
+		}
+
 		if(needArrive && checkArrivee()) // gestion de la fin du mouvement
 		{
 			needArrive = false;
-			modeAsserActuel = VA_AU_POINT;
+			changeModeAsserActuel(VA_AU_POINT);
 			consigneX = x_odo;
 			consigneY = y_odo;
 			sendArrive();

@@ -113,7 +113,6 @@ void thread_ecoute_serie(void*)
 				}
 				else if(lecture[COMMANDE] == IN_DEBUG_MODE)
 				{
-					serial_rb.read_char(lecture+(++index));
 					if(!verifieChecksum(lecture, index))
 						askResend(idPaquet);
 					else
@@ -135,7 +134,7 @@ void thread_ecoute_serie(void*)
 					else
 					{
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-						modeAsserActuel = STOP;
+						changeModeAsserActuel(STOP);
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
@@ -153,15 +152,34 @@ void thread_ecoute_serie(void*)
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 						rotationSetpoint = RAD_TO_TICK(angle);
 						needArrive = true;
-						modeAsserActuel = ROTATION;
+						changeModeAsserActuel(ROTATION);
 						consigneX = x_odo;
 						consigneY = y_odo;
 						xSemaphoreGive(consigneAsser_mutex);
-//						vTaskDelay(1000);
-//						sendArrive();
 					}
 				}
-				else if((lecture[COMMANDE] & 0xFE) == IN_AVANCER)
+
+				else if(lecture[COMMANDE] == IN_VITESSE)
+				{
+					serial_rb.read_char(lecture+(++index));
+					serial_rb.read_char(lecture+(++index));
+					serial_rb.read_char(lecture+(++index));
+					serial_rb.read_char(lecture+(++index));
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+					{
+						asserVitesseGauche = (lecture[PARAM] << 8) + lecture[PARAM + 1];
+						asserVitesseDroite	 = (lecture[PARAM + 2] << 8) + lecture[PARAM + 3];
+
+						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+
+						changeModeAsserActuel(ASSER_VITESSE);
+						xSemaphoreGive(consigneAsser_mutex);
+					}
+				}
+
+				else if((lecture[COMMANDE] & IN_AVANCER_MASQUE) == IN_AVANCER)
 				{
 					serial_rb.read_char(lecture+(++index));
 					serial_rb.read_char(lecture+(++index));
@@ -170,17 +188,23 @@ void thread_ecoute_serie(void*)
 					else
 					{
 						int16_t distance = (lecture[PARAM] << 8) + lecture[PARAM + 1];
-						if(lecture[COMMANDE] != IN_AVANCER)
+
+						if(lecture[COMMANDE] == IN_AVANCER_NEG)
+							distance = -distance;
+						else if(lecture[COMMANDE] == IN_AVANCER_IDEM && !marcheAvant)
+							distance = -distance;
+						else if(lecture[COMMANDE] == IN_AVANCER_REVERSE && marcheAvant)
 							distance = -distance;
 
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 						needArrive = true;
-						modeAsserActuel = VA_AU_POINT;
+						changeModeAsserActuel(VA_AU_POINT);
 						consigneX = cos_orientation_odo * distance + x_odo;
 						consigneY = sin_orientation_odo * distance + y_odo;
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
+
 				else if(lecture[COMMANDE] == IN_VA_POINT)
 				{
 					serial_rb.read_char(lecture+(++index)); // x
@@ -196,7 +220,7 @@ void thread_ecoute_serie(void*)
 
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 						needArrive = true;
-						modeAsserActuel = VA_AU_POINT;
+						changeModeAsserActuel(VA_AU_POINT);
 						consigneX = x;
 						consigneY = y;
 						xSemaphoreGive(consigneAsser_mutex);
@@ -244,7 +268,7 @@ void thread_ecoute_serie(void*)
 						arcsArret[indiceArretEcriture] = &trajectoire[indiceTrajectoireEcriture];
 						needArrive = true;
 
-						modeAsserActuel = COURBE;
+						changeModeAsserActuel(COURBE);
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
@@ -285,6 +309,13 @@ void thread_ecoute_serie(void*)
 						}
 					}
 				}
+                else if(lecture[COMMANDE] == IN_ASSER_OFF)
+                {
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+						changeModeAsserActuel(ASSER_OFF);
+                }
 				else if(lecture[COMMANDE] == IN_INIT_ODO)
 				{
 					serial_rb.read_char(lecture+(++index)); // x
@@ -309,7 +340,7 @@ void thread_ecoute_serie(void*)
 							orientation_odo = o/1000.;
 
 							// On l'asservit sur place
-							modeAsserActuel = VA_AU_POINT;
+							changeModeAsserActuel(VA_AU_POINT);
 							consigneX = x;
 							consigneY = y;
 		//					orientationTick = RAD_TO_TICK(parseInt(lecture, &(++index))/1000.);

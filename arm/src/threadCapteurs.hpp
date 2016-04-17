@@ -480,7 +480,7 @@ void thread_capteurs(void*)
 				orientation_odo = 0.;
 
 				// On l'asservit sur place
-				modeAsserActuel = VA_AU_POINT;
+				changeModeAsserActuel(VA_AU_POINT);
 				consigneX = 0;
 				consigneY = 1000;
 

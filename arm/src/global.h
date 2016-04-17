@@ -31,8 +31,8 @@
 #define RAD_TO_TICK(x) ((x * TICKS_PAR_TOUR_ROBOT) / (2 * M_PI))
 #define TICK_TO_MM(x) (x * MM_PAR_TICK / 2)
 
-#define DELAI_ERREUR_MECA_MS	100 // durant combien de ms faut-il qu'il y ait un problème mécanique pour annuler un mouvement ?
-#define DELAI_ERREUR_MECA_APPEL (DELAI_ERREUR_MECA_MS * FREQUENCE_ODO_ASSER)
+#define DELAI_ERREUR_MECA_MS	3000 // durant combien de ms faut-il qu'il y ait un problème mécanique pour annuler un mouvement ?
+#define DELAI_ERREUR_MECA_APPEL ((DELAI_ERREUR_MECA_MS * FREQUENCE_ODO_ASSER) / 1000) // 1000 pour passer des ms aux s
 
 enum MODE_ASSER {ASSER_OFF, // pas d'asser
 	STOP, // le robot doit s'arrêter le plus vite possible
@@ -56,6 +56,9 @@ extern volatile double x_odo, y_odo; // abscisse et ordonnée exprimées en mm
 extern volatile double orientation_odo; // exprimé en radians
 extern volatile double cos_orientation_odo, sin_orientation_odo;
 extern volatile double courbure_odo; // en mm^-1
+
+extern volatile int16_t asserVitesseGauche;
+extern volatile int16_t asserVitesseDroite;
 
 // MUTEX
 extern SemaphoreHandle_t odo_mutex;

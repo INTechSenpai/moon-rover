@@ -11,9 +11,15 @@ ping nouvelle connexion
 pong
     0x42 0x57
 avancer
-    0x02 DISTANCE(16)
+    0x0C DISTANCE(16)
 avancer distance négative
-    0x03 -DISTANCE(16)
+    0x0D -DISTANCE(16)
+avancer dans la même direction
+    0x0E DISTANCE(16)
+avancer dans la direction opposée
+    0x0F DISTANCE(16)
+asser vitesse
+    0x03 VITESSE_GAUCHE(16) VITESSE_DROITE(16)
 tourner
     0x04 ANGLE(16)
 va au point
@@ -54,6 +60,8 @@ set pid vitesse linéaire
     0x25 KP(24) KI(24) KD(24)
 set constante samson
     0x26 K1(24) K2(24) 0(24)
+désasservi le robot
+    0x28
 envoie arc trajectoire courbe (vitesse négative et orientation inversée si marche arrière)
     0x2E X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE(8)
 envoie arc trajectoire courbe précédé d'un arrêt (vitesse négative et orientation inversée si marche arrière)

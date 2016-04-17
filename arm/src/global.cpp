@@ -19,6 +19,9 @@ volatile bool needArrive = false;
 SemaphoreHandle_t odo_mutex = xSemaphoreCreateMutex();
 SemaphoreHandle_t consigneAsser_mutex = xSemaphoreCreateMutex();
 
+volatile int16_t asserVitesseGauche;
+volatile int16_t asserVitesseDroite;
+
 std::vector<Hook*> listeHooks;
 
 volatile bool ping = false;

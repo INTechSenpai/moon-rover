@@ -14,7 +14,7 @@
 // Par roue : 3 m/s, 3.5m/s^2
 
 #define VITESSE_LINEAIRE_MAX (3000. / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 600 // vitesse max en tick / appel asser
-#define ACCELERATION_LINEAIRE_MAX (3500. / MM_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 3.5 // accélération max en tick / (appel asser)^2
+#define ACCELERATION_LINEAIRE_MAX (3500. / MM_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 3.44 // accélération max en tick / (appel asser)^2
 //#define VITESSE_ROTATION_MAX (60. / RAD_PAR_TICK / FREQUENCE_ODO_ASSER) // 2100 // vitesse max en tick / appel asser
 #define VITESSE_ROTATION_MAX 600 // vitesse max en tick / appel asser
 #define ACCELERATION_ROTATION_MAX (70. / RAD_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 12 // accélération max en tick / (appel asser)^2
@@ -32,9 +32,11 @@
 #define MOTEUR_DROIT (TIM8->CCR1)
 #define MOTEUR_GAUCHE (TIM8->CCR2)
 
-
-// Tuning de pid : https://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method
-
+/**
+ * Ordre de grandeur :
+ * avancer, tourner : 30000 ticks
+ * vitesse max : 600 ticks par seconde
+ */
 typedef struct
 {
 int16_t x;
@@ -68,6 +70,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
  * 			si l'on souhaite changer la fréquence d'asservissement il faut adapter le calcul de la vitesse
  * 			autrement les unitées ci-dessus ne seront plus valables.
  */
+
 
 	// CONSIGNES MODIFIÉES DEPUIS D'AUTRES THREADS
 
@@ -346,16 +349,16 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	// On ne met pas à jour l'orientation si on est à moins de 3 cm de l'arrivée. Sinon, en dépassant la consigne le robot voudra se retourner…
 		if(errorTranslation >= 30/MM_PAR_TICK)
 		{
-			updateRotationSetpoint(); // gère la marche arrière
-			updateErrorAngle();
-			rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
+//			updateRotationSetpoint(); // gère la marche arrière
+//			updateErrorAngle();
+//			rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
 		}
 		else // si on est trop proche, on ne tourne plus
 		{
 //			translationSpeed = 0;
 			rotationSpeed = 0;
 		}
-//		rotationSpeed = 0;
+		rotationSpeed = 0;
 
 		limitTranslationRotationSpeed();
 
@@ -374,12 +377,12 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     {
     	// Mise à jour des erreurs
     	updateErrorAngle();
-//    	updateErrorTranslation();
+    	updateErrorTranslation();
 
         rotationPID.compute();      // Actualise la valeur de 'rotationSpeed'
-//        translationPID.compute();      // Actualise la valeur de 'translationSpeed'
+        translationPID.compute();      // Actualise la valeur de 'translationSpeed'
 
-//        limitTranslationRotationSpeed();
+        limitTranslationRotationSpeed();
         translationSpeed = 0;
 		leftSpeedSetpoint = translationSpeed - rotationSpeed;
 		rightSpeedSetpoint = translationSpeed + rotationSpeed;
@@ -394,8 +397,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
     void inline controlVitesse()
     {
-    	leftSpeedSetpoint = 50;
-    	rightSpeedSetpoint = -50;
+    	leftSpeedSetpoint = asserVitesseGauche;
+    	rightSpeedSetpoint = asserVitesseDroite;
 
         limitLeftRightSpeed();
         errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
@@ -465,7 +468,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
      */
     bool inline isPhysicallyStopped()
     {
-    	return (ABS(leftPWM) > 5) && (ABS(rightPWM) > 5) && (ABS(leftSpeedPID.getDerivativeError())) < 5 && (ABS(rightSpeedPID.getDerivativeError()) < 5);
+    	return (MOTEUR_DROIT > 5) && (MOTEUR_GAUCHE > 5) && (ABS(currentLeftSpeed)) < 10 && (ABS(currentRightSpeed) < 10);
     }
 
     // Y a-t-il un problème mécanique ?
@@ -495,6 +498,20 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     {
     	// TODO : vérifier aussi qu'on est bien arrivé à destination...
         return ABS(leftPWM) < 5 && ABS(rightPWM) < 5 && ABS(currentLeftSpeed) < 10 && ABS(currentRightSpeed) < 10;
+    }
+
+    void inline changeModeAsserActuel(MODE_ASSER mode)
+    {
+    	modeAsserActuel = mode;
+    	rightSpeedPID.resetErrors();
+    	leftSpeedPID.resetErrors();
+    	translationPID.resetErrors();
+    	rotationPID.resetErrors();
+    	PIDvit.resetErrors();
+    	oldLeftSpeedSetpoint = currentLeftSpeed; // pour l'asser en trapèze
+    	oldRightSpeedSetpoint = currentRightSpeed;
+		oldTranslationSpeed = translationSpeed;
+		oldRotationSpeed = rotationSpeed;
     }
 
 #endif
