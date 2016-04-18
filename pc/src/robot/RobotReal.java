@@ -28,7 +28,8 @@ public class RobotReal extends Robot
 {
 	private DataForSerialOutput stm;
 	private RequeteSTM requete;
-		
+	private int distanceDegagement;
+	private int tempsAttente;
 	// Constructeur
 	public RobotReal(DataForSerialOutput stm, Log log, RequeteSTM requete)
  	{
@@ -48,6 +49,8 @@ public class RobotReal extends Robot
 	public void useConfig(Config config)
 	{
 		super.useConfig(config);
+		distanceDegagement = config.getInt(ConfigInfo.DISTANCE_DEGAGEMENT_ROBOT);
+		tempsAttente = config.getInt(ConfigInfo.ATTENTE_ENNEMI_PART);
 		log.debug("Initialisation de l'odométrie et des constantes d'asservissement");
 		int x = config.getInt(ConfigInfo.X_DEPART);
 		int y = config.getInt(ConfigInfo.Y_DEPART);
@@ -77,27 +80,17 @@ public class RobotReal extends Robot
 	@Override
     public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
 	{
-		// TODO gestion haut niveau des problèmes
 		try {
 			synchronized(requete)
 			{
 				stm.envoieHooks(hooks);
-				RequeteType type;
 				stm.avancer(distance);
-				do {
-					if(requete.isEmpty())
-						requete.wait();
-					type = requete.get();
-					if(type == RequeteType.BLOCAGE_MECANIQUE)
-					{
-						stm.deleteHooks(hooks);
-						throw new UnableToMoveException();
-					}
-				} while(type != RequeteType.TRAJET_FINI);
-				stm.deleteHooks(hooks);
+				gestionExceptions(mur);
 			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		}
+		finally
+		{
+			stm.deleteHooks(hooks);
 		}
 	}	
 
@@ -136,39 +129,16 @@ public class RobotReal extends Robot
 		stm.deleteHooks(hooks);
 	}
 
-    @Override
-    public void stopper()
-    {
-        try {
-			stm.immobilise();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
-
     /**
      * Tourne, quoi. L'angle est absolu
      */
     @Override
     public void tourner(double angle) throws UnableToMoveException
     {
-		try {
-			synchronized(requete)
-			{
-				RequeteType type;
-				stm.turn(angle);
-				do {
-					if(requete.isEmpty())
-						requete.wait();
-
-					type = requete.get();
-					if(type == RequeteType.BLOCAGE_MECANIQUE)
-						throw new UnableToMoveException();
-				} while(type != RequeteType.TRAJET_FINI);
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		synchronized(requete)
+		{
+			stm.turn(angle);
+			gestionExceptions(false);
 		}
     }
 
@@ -194,35 +164,13 @@ public class RobotReal extends Robot
 	public void useActuator(ActuatorOrder order)
 	{
 		stm.utiliseActionneurs(order);
-/*		try {
-			synchronized(requete)
-			{
-				if(symetrie)
-					order = order.getSymmetry();
-				stm.utiliseActionneurs(order);
-				do {
-					requete.wait();
-					// TODO gérer le cas du problème d'actionneurs
-				} while(requete.type != RequeteType.ACTIONNEURS_FINI);
-			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
 	}
 
     /**
      * Gère les exceptions, c'est-à-dire les rencontres avec l'ennemi et les câlins avec un mur.
-     * @param hooks
-     * @param trajectoire_courbe
-     * @param marche_arriere
-     * @param insiste
-     * @throws UnableToMoveException 
-     * @throws FinMatchException 
-     * @throws ScriptHookException 
-     * @throws ChangeDirectionException 
+     * Cette méthode NE GÈRE PAS les exceptions lors des trajectoires courbes
      */
-    private void gestionExceptions(Vec2<ReadOnly> consigne, Vec2<ReadOnly> intermediaire, int differenceDistance, boolean marcheAvant, boolean mur) throws UnableToMoveException, FinMatchException
+    private void gestionExceptions(boolean mur) throws UnableToMoveException
     {
         int nb_iterations_deblocage = 2; // combien de fois on réessaye si on se prend un mur
         boolean recommence;
@@ -235,27 +183,23 @@ public class RobotReal extends Robot
             {
                 nb_iterations_deblocage--;
                 stm.immobilise();
-                /*
-                 * En cas de blocage, on recule (si on allait tout droit) ou on avance.
-                 */
+
                 // Si on s'attendait à un mur, c'est juste normal de se le prendre.
                 if(!mur)
                 {
                     try
                     {
+                        /*
+                         * En cas de blocage, on recule (si on allait tout droit) ou on avance.
+                         */
+
                         log.warning("On n'arrive plus à avancer. On se dégage");
-                        if(marcheAvant)
-                            deplacements.moveLengthwise(-distance_degagement_robot);
-                        else
-                            deplacements.moveLengthwise(distance_degagement_robot);
-                        while(!deplacements.isMouvementFini());
+                        stm.avancerMemeSens(-distanceDegagement);
+                        attendStatus();
                     	recommence = true; // si on est arrivé ici c'est qu'aucune exception n'a été levée
                     	// on peut donc relancer le mouvement
-                    } catch (SerialConnexionException e1)
-                    {
-                        e1.printStackTrace();
-                    } catch (BlockedException e1) {
-                    	immobilise();
+                    } catch (UnableToMoveException e1) {
+                    	stm.immobilise();
                         log.critical("On n'arrive pas à se dégager.");
 					}
                     if(!recommence && nb_iterations_deblocage == 0)
@@ -263,13 +207,14 @@ public class RobotReal extends Robot
                 }
             } catch (UnexpectedObstacleOnPathException e)
             {
-            	immobilise();
+            	stm.immobilise();
             	long dateAvant = System.currentTimeMillis();
                 log.critical("Détection d'un ennemi! Abandon du mouvement.");
-            	while(System.currentTimeMillis() - dateAvant < attente_ennemi_max)
+            	while(System.currentTimeMillis() - dateAvant < tempsAttente)
             	{
             		try {
-            			detectEnemy(marcheAvant);
+// TODO            			détection
+//            			detectEnemy(marcheAvant);
             			recommence = true; // si aucune détection
             			break;
             		}
@@ -278,28 +223,7 @@ public class RobotReal extends Robot
             	}
                 if(!recommence)
                     throw new UnableToMoveException();
-            } catch (WallCollisionDetectedException e) {
-            	immobilise();
-                if(seulementAngle)
-                	throw new UnableToMoveException();
-                else
-				try {
-                	if(marcheAvant)
-						deplacements.moveLengthwise(-distance_degagement_robot);
-					else
-	                    deplacements.moveLengthwise(distance_degagement_robot);
-                    try {
-						while(!deplacements.isMouvementFini());
-					} catch (BlockedException e1) {
-						throw new UnableToMoveException();
-					}
-                	recommence = true;
-				} catch (SerialConnexionException e1) {
-					e1.printStackTrace();
-				}
-                	
-			}
-
+            }
         } while(recommence); // on recommence tant qu'il le faut
 
     // Tout s'est bien passé
