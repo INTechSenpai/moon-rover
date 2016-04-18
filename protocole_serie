@@ -20,7 +20,7 @@ va au point
     0x05 X+(12) Y(12)
 utilise actionneurs
     0x06 NB_ORDRE(8)
-stop le robot
+arrêt d'urgence (met la vitesse à 0)
     0x07
 set xyo (init odométrie)
     0x08 X+(12) Y(12) ORIENTATION(16)
@@ -28,6 +28,12 @@ get xyo (test uniquement)
     0x09
 set vitesse
     0x0A PWM_ROT(8) PWM_TR(8)
+reprend mouvement (rotation ou translation)
+    0x0B
+met en pause le mouvement
+    0x0C
+asser à la position actuelle
+    0x0D
 resend paquet
     0xFF ID_PAQUET(16)
 supprime tous les hooks

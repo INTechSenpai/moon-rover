@@ -14,7 +14,6 @@ import pathfinding.dstarlite.GridSpace;
 import permissions.ReadOnly;
 import requete.RequeteSTM;
 import requete.RequeteType;
-import exceptions.FinMatchException;
 import exceptions.UnableToMoveException;
 import exceptions.UnexpectedObstacleOnPathException;
 
@@ -173,17 +172,15 @@ public class RobotReal extends Robot
     private void gestionExceptions(boolean mur) throws UnableToMoveException
     {
         int nb_iterations_deblocage = 2; // combien de fois on réessaye si on se prend un mur
-        boolean recommence;
-        do {
-            recommence = false;
+        int nb_iterations_ennemi = 2000 / tempsAttente; // 2 secondes max
+        while(true)
+        {
             try
             {
             	attendStatus();
+            	return; // tout s'est bien passé
             } catch (UnableToMoveException e)
             {
-                nb_iterations_deblocage--;
-                stm.immobilise();
-
                 // Si on s'attendait à un mur, c'est juste normal de se le prendre.
                 if(!mur)
                 {
@@ -196,35 +193,29 @@ public class RobotReal extends Robot
                         log.warning("On n'arrive plus à avancer. On se dégage");
                         stm.avancerMemeSens(-distanceDegagement);
                         attendStatus();
-                    	recommence = true; // si on est arrivé ici c'est qu'aucune exception n'a été levée
-                    	// on peut donc relancer le mouvement
                     } catch (UnableToMoveException e1) {
-                    	stm.immobilise();
                         log.critical("On n'arrive pas à se dégager.");
+					} catch (UnexpectedObstacleOnPathException e1) {
+						stm.immobilise();
+						e1.printStackTrace();
 					}
-                    if(!recommence && nb_iterations_deblocage == 0)
+                    if(nb_iterations_deblocage-- == 0)
                         throw new UnableToMoveException();
-                }
+                }           
+                else
+                	return; // on s'est pris un mur, on s'attendait à un mur : tout va bien
             } catch (UnexpectedObstacleOnPathException e)
             {
-            	stm.immobilise();
-            	long dateAvant = System.currentTimeMillis();
-                log.critical("Détection d'un ennemi! Abandon du mouvement.");
-            	while(System.currentTimeMillis() - dateAvant < tempsAttente)
-            	{
-            		try {
-// TODO            			détection
-//            			detectEnemy(marcheAvant);
-            			recommence = true; // si aucune détection
-            			break;
-            		}
-            		catch(UnexpectedObstacleOnPathException e2)
-            		{}
-            	}
-                if(!recommence)
+            	stm.suspendMouvement();
+            	Sleep.sleep(tempsAttente);
+            	// on ne s'est jamais arrêté à cause d'un problème mécanique, on peut donc relancer le mouvement
+            	stm.reprendMouvement();
+            	//attendStatus();
+                if(nb_iterations_ennemi-- == 0)
                     throw new UnableToMoveException();
             }
-        } while(recommence); // on recommence tant qu'il le faut
+            
+        }
 
     // Tout s'est bien passé
     }
@@ -236,7 +227,7 @@ public class RobotReal extends Robot
      * ATTENTION ! Il faut que cette méthode soit appelée dans un synchronized(requete)
      * @throws UnableToMoveException
      */
-    void attendStatus() throws UnableToMoveException
+    void attendStatus() throws UnableToMoveException, UnexpectedObstacleOnPathException
     {
 		try {
 			RequeteType type;
@@ -247,6 +238,8 @@ public class RobotReal extends Robot
 				type = requete.get();
 				if(type == RequeteType.BLOCAGE_MECANIQUE)
 					throw new UnableToMoveException();
+				else if(type == RequeteType.ENNEMI_SUR_CHEMIN)
+					throw new UnexpectedObstacleOnPathException();
 			} while(type != RequeteType.TRAJET_FINI);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
