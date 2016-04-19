@@ -56,7 +56,7 @@ public class RobotReal extends Robot
 		double o = config.getDouble(ConfigInfo.O_DEPART);
 		setPositionOrientationCourbureDirection(new Vec2<ReadOnly>(x, y), o, 0, true);
 		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
-		/*
+		/*// TODO envoyer le pid quand les valeurs sont trouvées
 		// Envoie des constantes du pid
 		stm.setPIDconstVitesseGauche(config.getDouble(ConfigInfo.CONST_KP_VIT_GAUCHE), config.getDouble(ConfigInfo.CONST_KD_VIT_GAUCHE));
 		stm.setPIDconstVitesseDroite(config.getDouble(ConfigInfo.CONST_KP_VIT_DROITE), config.getDouble(ConfigInfo.CONST_KD_VIT_DROITE));

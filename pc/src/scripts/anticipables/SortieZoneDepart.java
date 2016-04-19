@@ -58,7 +58,7 @@ public class SortieZoneDepart extends ScriptAnticipable {
 	@Override
 	public int point_sortie(int id)
 	{
-		// TODO Auto-generated method stub
+		// TODO point de sortie
 		return 0;
 	}
 	

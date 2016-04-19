@@ -27,7 +27,7 @@ set xyo (init odométrie)
 get xyo (test uniquement)
     0x09
 set vitesse
-    0x0A PWM_ROT(8) PWM_TR(8)
+    0x0A VIT_MAX(16)
 reprend mouvement (rotation ou translation)
     0x0B
 met en pause le mouvement
