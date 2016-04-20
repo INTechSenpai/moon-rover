@@ -36,7 +36,7 @@ public class RobotReal extends Robot
 		this.stm = stm;
 		this.requete = requete;
 		// On envoie à la STM la vitesse par défaut
-		setVitesse(vitesse);
+		setVitesse(cinematique.vitesse);
 //		stm.envoieActionneurs();
 	}
 	
@@ -69,7 +69,7 @@ public class RobotReal extends Robot
 		
 	public void setEnMarcheAvance(boolean enMarcheAvant)
 	{
-		this.enMarcheAvant = enMarcheAvant;
+		cinematique.enMarcheAvant = enMarcheAvant;
 	}
 
 	/**
@@ -106,10 +106,10 @@ public class RobotReal extends Robot
 
 	public void setPositionOrientationCourbureDirection(Vec2<ReadOnly> position, double orientation, double courbure, boolean enMarcheAvant)
 	{
-		Vec2.copy(position, this.position);
-		this.orientation = orientation;
-		this.courbure = courbure;
-		this.enMarcheAvant = enMarcheAvant;
+		Vec2.copy(position, cinematique.position);
+		cinematique.orientation = orientation;
+		cinematique.courbure = courbure;
+		cinematique.enMarcheAvant = enMarcheAvant;
 	}
 
 	public void updatePositionOrientation()
@@ -144,7 +144,7 @@ public class RobotReal extends Robot
 	@Override
 	public int getPositionGridSpace()
 	{
-		return GridSpace.computeGridPoint(position.getReadOnly());
+		return GridSpace.computeGridPoint(cinematique.position.getReadOnly());
 	}
 	
 	@Override
