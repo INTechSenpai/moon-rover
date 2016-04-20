@@ -14,8 +14,10 @@ import hook.HookFactory;
 import hook.methods.UtiliseActionneur;
 import hook.types.HookDate;
 import robot.ActuatorOrder;
+import robot.Cinematique;
 import robot.Robot;
 import robot.RobotChrono;
+import robot.Speed;
 import scripts.ScriptAnticipable;
 import table.Table;
 import utils.Log;
@@ -47,8 +49,8 @@ public class SortieZoneDepart extends ScriptAnticipable {
 		Hook hook = new HookDate(log, 2000);
 		hook.ajouter_callback(new UtiliseActionneur(ActuatorOrder.TEST));
 		hooks.add(hook);
-		robot.tourner(Math.PI);
-		robot.avancer(500, hooks);
+		robot.tourner(Math.PI, Speed.STANDARD);
+		robot.avancer(500, hooks, Speed.STANDARD);
 	}
 
 	@Override
@@ -60,6 +62,13 @@ public class SortieZoneDepart extends ScriptAnticipable {
 	{
 		// TODO point de sortie
 		return 0;
+	}
+
+	@Override
+	public Cinematique pointEntree(int version)
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

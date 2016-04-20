@@ -8,6 +8,7 @@ import hook.HookFactory;
 
 import java.util.ArrayList;
 
+import robot.Cinematique;
 import robot.Robot;
 import exceptions.FinMatchException;
 import exceptions.ScriptException;
@@ -24,7 +25,7 @@ public abstract class ScriptAnticipable
 	protected HookFactory hookfactory;
 	protected Log log;
 	
-	private int squared_tolerance_depart_script = 400; // 2cm
+//	private int squared_tolerance_depart_script = 400; // 2cm
 	protected volatile boolean symetrie;
 	
 	/**
@@ -33,6 +34,8 @@ public abstract class ScriptAnticipable
 	 */
 	public abstract ArrayList<Integer> getVersions(Table table, Robot robot);
 
+	public abstract Cinematique pointEntree(int version);
+	
 	public ScriptAnticipable(HookFactory hookgenerator, Log log)
 	{
 		this.hookfactory = hookgenerator;
@@ -108,8 +111,6 @@ public abstract class ScriptAnticipable
 	public void useConfig(Config config)
 	{
 		positionTolerancy = config.getInt(ConfigInfo.HOOKS_TOLERANCE_MM);		
-		squared_tolerance_depart_script = config.getInt(ConfigInfo.TOLERANCE_DEPART_SCRIPT);
-		squared_tolerance_depart_script *= squared_tolerance_depart_script; // on en utilise le carré
 	}
 
 }

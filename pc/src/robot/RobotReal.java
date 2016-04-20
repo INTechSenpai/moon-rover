@@ -36,7 +36,7 @@ public class RobotReal extends Robot
 		this.stm = stm;
 		this.requete = requete;
 		// On envoie à la STM la vitesse par défaut
-		setVitesse(cinematique.vitesse);
+//		setVitesse(cinematique.vitesse);
 //		stm.envoieActionneurs();
 	}
 	
@@ -77,13 +77,13 @@ public class RobotReal extends Robot
 	 * @throws UnableToMoveException 
 	 */
 	@Override
-    public void avancer(int distance, ArrayList<Hook> hooks, boolean mur) throws UnableToMoveException
+    public void avancer(int distance, ArrayList<Hook> hooks, boolean mur, Speed vitesse) throws UnableToMoveException
 	{
 		try {
 			synchronized(requete)
 			{
 				stm.envoieHooks(hooks);
-				stm.avancer(distance);
+				stm.avancer(distance, vitesse);
 				gestionExceptions(mur);
 			}
 		}
@@ -92,17 +92,6 @@ public class RobotReal extends Robot
 			stm.deleteHooks(hooks);
 		}
 	}	
-
-	/**
-	 * Modifie la vitesse de translation
-	 * @param Speed : l'une des vitesses indexées dans enums.
-	 */
-	@Override
-	public void setVitesse(Speed vitesse)
-	{
-		stm.setSpeed(vitesse);
-		log.debug("Modification de la vitesse: "+vitesse);
-	}
 
 	public void setPositionOrientationCourbureDirection(Vec2<ReadOnly> position, double orientation, double courbure, boolean enMarcheAvant)
 	{
@@ -132,11 +121,11 @@ public class RobotReal extends Robot
      * Tourne, quoi. L'angle est absolu
      */
     @Override
-    public void tourner(double angle) throws UnableToMoveException
+    public void tourner(double angle, Speed vitesse) throws UnableToMoveException
     {
 		synchronized(requete)
 		{
-			stm.turn(angle);
+			stm.turn(angle, vitesse);
 			gestionExceptions(false);
 		}
     }
@@ -191,7 +180,7 @@ public class RobotReal extends Robot
                          */
 
                         log.warning("On n'arrive plus à avancer. On se dégage");
-                        stm.avancerMemeSens(-distanceDegagement);
+                        stm.avancerMemeSens(-distanceDegagement, Speed.SLOW);
                         attendStatus();
                     } catch (UnableToMoveException e1) {
                         log.critical("On n'arrive pas à se dégager.");

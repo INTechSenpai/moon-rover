@@ -2,7 +2,11 @@
 BIG ENDIAN (octet de poids fort en premier)
 Checksum sur 8bits : somme des octets, puis non logique (comme AX12)
 
-Java vers STM
+Jc void test_speed() throws Exception
+    {
+        robot.setVitesse(Speed.BETWEEN_SCRIPTS);
+    }
+ava vers STM
 
 ping
     0x3F
@@ -11,19 +15,17 @@ ping nouvelle connexion
 pong
     0x42 0x57
 avancer
-    0x0C DISTANCE(16)
+    0x0C DISTANCE(16) VITESSE_TRANSLATION_MAX(16)
 avancer distance négative
-    0x0D -DISTANCE(16)
+    0x0D -DISTANCE(16) VITESSE_TRANSLATION_MAX(16)
 avancer dans la même direction
-    0x0E DISTANCE(16)
+    0x0E DISTANCE(16) VITESSE_TRANSLATION_MAX(16)
 avancer dans la direction opposée
-    0x0F DISTANCE(16)
-asser vitesse
-    0x03 VITESSE_GAUCHE(16) VITESSE_DROITE(16)
+    0x0F DISTANCE(16) VITESSE_TRANSLATION_MAX(16)
 tourner
-    0x04 ANGLE(16)
+    0x04 ANGLE(16) VITESSE_ROTATION_MAX(16)
 va au point
-    0x05 X+(12) Y(12)
+    0x05 X+(12) Y(12) VITESSE_TRANSLATION_MAX(16) VITESSE_ROTATION_MAX(16)
 utilise actionneurs
     0x06 NB_ORDRE(8)
 arrêt d'urgence (met la vitesse à 0)
@@ -32,8 +34,6 @@ set xyo (init odométrie)
     0x08 X+(12) Y(12) ORIENTATION(16)
 get xyo (test uniquement)
     0x09
-set vitesse
-    0x0A VIT_MAX(16)
 reprend mouvement (rotation ou translation)
     0x0B
 met en pause le mouvement
@@ -63,9 +63,9 @@ set constante samson
 désasservi le robot
     0x28
 envoie arc trajectoire courbe (vitesse négative et orientation inversée si marche arrière)
-    0x2E X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE(8)
+    0x2E X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE(16)
 envoie arc trajectoire courbe précédé d'un arrêt (vitesse négative et orientation inversée si marche arrière)
-    0x2F X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE(8)
+    0x2F X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE(16)
 active le mode debug
     0x0F
 
