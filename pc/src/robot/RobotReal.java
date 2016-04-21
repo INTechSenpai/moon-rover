@@ -54,7 +54,7 @@ public class RobotReal extends Robot
 		int x = config.getInt(ConfigInfo.X_DEPART);
 		int y = config.getInt(ConfigInfo.Y_DEPART);
 		double o = config.getDouble(ConfigInfo.O_DEPART);
-		setPositionOrientationCourbureDirection(new Vec2<ReadOnly>(x, y), o, 0, true);
+		cinematique = new CinematiqueSansVitesse(x, y, o, true, 0.);
 		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
 		/*// TODO envoyer le pid quand les valeurs sont trouvées
 		// Envoie des constantes du pid
@@ -93,19 +93,6 @@ public class RobotReal extends Robot
 		}
 	}	
 
-	public void setPositionOrientationCourbureDirection(Vec2<ReadOnly> position, double orientation, double courbure, boolean enMarcheAvant)
-	{
-		Vec2.copy(position, cinematique.getPositionEcriture());
-		cinematique.orientation = orientation;
-		cinematique.courbure = courbure;
-		cinematique.enMarcheAvant = enMarcheAvant;
-	}
-/*
-	public void updatePositionOrientation()
-	{
-	    stm.getPositionOrientation();
-	}
- */  
     /**
 	 * Méthode sleep utilisée par les scripts
 	 */
@@ -235,5 +222,10 @@ public class RobotReal extends Robot
 		}
 
     }
+
+	public void setCinematique(CinematiqueSansVitesse cinematique)
+	{
+		cinematique.copy(cinematique);
+	}
 
 }
