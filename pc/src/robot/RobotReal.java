@@ -5,15 +5,15 @@ import utils.Config;
 import utils.ConfigInfo;
 import utils.Sleep;
 import utils.Vec2;
+import utils.permissions.ReadOnly;
 import hook.Hook;
 
 import java.util.ArrayList;
 
-import buffer.DataForSerialOutput;
 import pathfinding.dstarlite.GridSpace;
-import permissions.ReadOnly;
-import requete.RequeteSTM;
-import requete.RequeteType;
+import robot.requete.RequeteSTM;
+import robot.requete.RequeteType;
+import serie.DataForSerialOutput;
 import exceptions.UnableToMoveException;
 import exceptions.UnexpectedObstacleOnPathException;
 

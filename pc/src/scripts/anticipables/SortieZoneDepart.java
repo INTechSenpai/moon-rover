@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import pathfinding.ChronoGameState;
 import pathfinding.GameState;
 import pathfinding.dstarlite.GridSpace;
-import permissions.ReadOnly;
-import permissions.ReadWrite;
 import exceptions.FinMatchException;
 import exceptions.UnableToMoveException;
 import hook.Hook;
@@ -21,6 +19,8 @@ import robot.Speed;
 import scripts.ScriptAnticipable;
 import table.Table;
 import utils.Log;
+import utils.permissions.ReadOnly;
+import utils.permissions.ReadWrite;
 
 /**
  * Test

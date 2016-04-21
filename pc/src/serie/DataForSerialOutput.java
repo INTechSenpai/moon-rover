@@ -1,4 +1,4 @@
-package buffer;
+package serie;
 
 import hook.Hook;
 
@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import pathfinding.astarCourbe.ArcCourbe;
-import permissions.ReadOnly;
 import robot.ActuatorOrder;
 import robot.Speed;
 import container.Service;
@@ -14,6 +13,7 @@ import enums.SerialProtocol;
 import utils.Config;
 import utils.Log;
 import utils.Vec2;
+import utils.permissions.ReadOnly;
 
 /**
  * Classe qui contient les ordres à envoyer à la série

@@ -1,8 +1,8 @@
 package threads;
 
 import obstacles.Capteurs;
-import buffer.IncomingData;
-import buffer.IncomingDataBuffer;
+import obstacles.IncomingData;
+import obstacles.IncomingDataBuffer;
 import utils.Config;
 import utils.Log;
 import container.Service;
