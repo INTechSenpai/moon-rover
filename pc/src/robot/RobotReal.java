@@ -95,17 +95,17 @@ public class RobotReal extends Robot
 
 	public void setPositionOrientationCourbureDirection(Vec2<ReadOnly> position, double orientation, double courbure, boolean enMarcheAvant)
 	{
-		Vec2.copy(position, cinematique.position);
+		Vec2.copy(position, cinematique.getPositionEcriture());
 		cinematique.orientation = orientation;
 		cinematique.courbure = courbure;
 		cinematique.enMarcheAvant = enMarcheAvant;
 	}
-
+/*
 	public void updatePositionOrientation()
 	{
 	    stm.getPositionOrientation();
 	}
-    
+ */  
     /**
 	 * Méthode sleep utilisée par les scripts
 	 */
@@ -133,7 +133,7 @@ public class RobotReal extends Robot
 	@Override
 	public int getPositionGridSpace()
 	{
-		return GridSpace.computeGridPoint(cinematique.position.getReadOnly());
+		return GridSpace.computeGridPoint(cinematique.getPosition());
 	}
 	
 	@Override

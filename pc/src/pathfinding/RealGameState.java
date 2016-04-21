@@ -49,7 +49,7 @@ public class RealGameState extends GameState implements Service
     public final void copyAStarCourbe(ChronoGameState modified)
     {
     	table.copy(modified.table);
-        robot.copyThetaStar((RobotChrono) modified.robot);
+        robot.copy((RobotChrono) modified.robot);
         modified.iterator.init(System.currentTimeMillis());
     }
 
