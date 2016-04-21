@@ -73,6 +73,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 
 	// CONSIGNES MODIFIÉES DEPUIS D'AUTRES THREADS
+    volatile float maxTranslationSpeed = VITESSE_LINEAIRE_MAX;
+    volatile float maxRotationSpeed = VITESSE_ROTATION_MAX;
 
 	// Consigne en position qui permet de calculer les erreurs en distance et en rotation
 	volatile int32_t consigneX;
@@ -276,10 +278,10 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	{
 
 		// Limitation de la consigne de vitesse en translation
-		if(translationSpeed > VITESSE_LINEAIRE_MAX)
-			translationSpeed = VITESSE_LINEAIRE_MAX;
-		else if(translationSpeed < -VITESSE_LINEAIRE_MAX)
-			translationSpeed = -VITESSE_LINEAIRE_MAX;
+		if(translationSpeed > maxTranslationSpeed)
+			translationSpeed = maxTranslationSpeed;
+		else if(translationSpeed < -maxTranslationSpeed)
+			translationSpeed = -maxTranslationSpeed;
 
 		// Limitation de l'accélération en vitesse linéaire
 		if(translationSpeed - oldTranslationSpeed > ACCELERATION_LINEAIRE_MAX)
@@ -290,10 +292,10 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		oldTranslationSpeed = translationSpeed;
 
 		// Limitation de la consigne de vitesse en rotation
-		if(rotationSpeed > VITESSE_ROTATION_MAX)
-			rotationSpeed = VITESSE_ROTATION_MAX;
-		else if(rotationSpeed < -VITESSE_ROTATION_MAX)
-			rotationSpeed = -VITESSE_ROTATION_MAX;
+		if(rotationSpeed > maxRotationSpeed)
+			rotationSpeed = maxRotationSpeed;
+		else if(rotationSpeed < -maxRotationSpeed)
+			rotationSpeed = -maxRotationSpeed;
 
 		// Limitation de l'accélération en rotation
 		if(rotationSpeed - oldRotationSpeed > ACCELERATION_ROTATION_MAX)

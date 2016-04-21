@@ -8,7 +8,7 @@ Checksum sur 8bits : somme des octets, puis non logique (comme AX12)
 tourner
     0x04 ANGLE(16) VITESSE_ROTATION_MAX(16)
 va au point
-    0x05 X+(12) Y(12) VITESSE_TRANSLATION_MAX(16) VITESSE_ROTATION_MAX(16)
+    0x05 X+(12) Y(12) VITESSE_TRANSLATION_MAX(16)
 utilise actionneurs
     0x06 NB_ORDRE(8)
 arrêt d'urgence (met la vitesse à 0)

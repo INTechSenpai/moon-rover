@@ -141,8 +141,10 @@ void thread_ecoute_serie(void*)
 
 				else if(lecture[COMMANDE] == IN_TOURNER)
 				{
-					serial_rb.read_char(lecture+(++index));
-					serial_rb.read_char(lecture+(++index));
+					serial_rb.read_char(lecture+(++index)); // angle
+					serial_rb.read_char(lecture+(++index)); // angle
+					serial_rb.read_char(lecture+(++index)); // v
+					serial_rb.read_char(lecture+(++index)); // v
 					if(!verifieChecksum(lecture, index))
 						askResend(idPaquet);
 					else
@@ -155,10 +157,13 @@ void thread_ecoute_serie(void*)
 						changeModeAsserActuel(ROTATION);
 						consigneX = x_odo;
 						consigneY = y_odo;
+                        maxTranslationSpeed = VITESSE_LINEAIRE_MAX;
+                        maxRotationSpeed = (lecture[PARAM + 2] << 8) + lecture[PARAM + 3];
+
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
-
+/*
 				else if(lecture[COMMANDE] == IN_VITESSE)
 				{
 					serial_rb.read_char(lecture+(++index));
@@ -178,11 +183,13 @@ void thread_ecoute_serie(void*)
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
-
+*/
 				else if((lecture[COMMANDE] & IN_AVANCER_MASQUE) == IN_AVANCER)
 				{
-					serial_rb.read_char(lecture+(++index));
-					serial_rb.read_char(lecture+(++index));
+					serial_rb.read_char(lecture+(++index)); // d
+					serial_rb.read_char(lecture+(++index)); // d
+					serial_rb.read_char(lecture+(++index)); // v
+					serial_rb.read_char(lecture+(++index)); // v
 					if(!verifieChecksum(lecture, index))
 						askResend(idPaquet);
 					else
@@ -201,6 +208,8 @@ void thread_ecoute_serie(void*)
 						changeModeAsserActuel(VA_AU_POINT);
 						consigneX = cos_orientation_odo * distance + x_odo;
 						consigneY = sin_orientation_odo * distance + y_odo;
+                        maxRotationSpeed = VITESSE_ROTATION_MAX;
+                        maxTranslationSpeed = (lecture[PARAM + 2] << 8) + lecture[PARAM + 3];
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
@@ -210,6 +219,9 @@ void thread_ecoute_serie(void*)
 					serial_rb.read_char(lecture+(++index)); // x
 					serial_rb.read_char(lecture+(++index)); // xy
 					serial_rb.read_char(lecture+(++index)); // y
+                    serial_rb.read_char(lecture+(++index)); // v
+                    serial_rb.read_char(lecture+(++index)); // v
+
 					if(!verifieChecksum(lecture, index))
 						askResend(idPaquet);
 					else
@@ -223,6 +235,8 @@ void thread_ecoute_serie(void*)
 						changeModeAsserActuel(VA_AU_POINT);
 						consigneX = x;
 						consigneY = y;
+                        maxRotationSpeed = VITESSE_ROTATION_MAX;
+                        maxTranslationSpeed = (lecture[PARAM + 3] << 8) + lecture[PARAM + 4];
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
@@ -353,13 +367,6 @@ void thread_ecoute_serie(void*)
 //						serial_rb.printfln("ERR_ODO",(int)orientationTick);
 				}
 
-				// POUR TEST UNIQUEMENT
-				else if(lecture[COMMANDE] == IN_GET_XYO)
-				{
-// TODO
-					if(!verifieChecksum(lecture, index))
-						askResend(idPaquet);
-				}
 				else if(lecture[COMMANDE] == IN_RESEND_PACKET)
 				{
 					serial_rb.read_char(lecture+(++index)); // id
