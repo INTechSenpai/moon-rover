@@ -133,13 +133,15 @@ public class DataForSerialOutput implements Service
 	
 	public synchronized void initOdoSTM(Vec2<ReadOnly> pos, double angle)
 	{
+		int x = (int)pos.x;
+		int y = (int)pos.y;
 		if(Config.debugSerie)
 			log.debug("Initialisation de l'odométrie à "+pos+", angle "+angle);
 		byte[] out = new byte[2+6];
 		out[COMMANDE] = SerialProtocol.OUT_INIT_ODO.code;
-		out[PARAM] = (byte) ((pos.x+1500) >> 4);
-		out[PARAM+1] = (byte) (((pos.x+1500) << 4) + (pos.y >> 8));
-		out[PARAM+2] = (byte) (pos.y);
+		out[PARAM] = (byte) ((x+1500) >> 4);
+		out[PARAM+1] = (byte) (((x+1500) << 4) + (y >> 8));
+		out[PARAM+2] = (byte) (y);
 		out[PARAM+3] = (byte) (Math.round(angle*1000) >> 8);
 		out[PARAM+4] = (byte) (Math.round(angle*1000) & 0xFF);
 		bufferBassePriorite.add(out);
@@ -148,17 +150,17 @@ public class DataForSerialOutput implements Service
 
 	public synchronized void vaAuPoint(Vec2<ReadOnly> pos, Speed vitesse)
 	{
+		int x = (int)pos.x;
+		int y = (int)pos.y;
 		if(Config.debugSerie)
 			log.debug("Va au point "+pos);
-		byte[] out = new byte[2+8];
+		byte[] out = new byte[2+6];
 		out[COMMANDE] = SerialProtocol.OUT_VA_AU_POINT.code;
-		out[PARAM] = (byte) ((pos.x+1500) >> 4);
-		out[PARAM+1] = (byte) (((pos.x+1500) << 4) + (pos.y >> 8));
-		out[PARAM+2] = (byte) (pos.y);
+		out[PARAM] = (byte) ((x+1500) >> 4);
+		out[PARAM+1] = (byte) (((x+1500) << 4) + (y >> 8));
+		out[PARAM+2] = (byte) (y);
 		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed) >> 8);
 		out[PARAM+4] = (byte) ((int)(vitesse.translationalSpeed) & 0xFF);
-		out[PARAM+5] = (byte) ((int)(vitesse.rotationalSpeed) >> 8);
-		out[PARAM+6] = (byte) ((int)(vitesse.rotationalSpeed) & 0xFF);
 		bufferBassePriorite.add(out);
 		notify();
 	}
@@ -431,9 +433,9 @@ public class DataForSerialOutput implements Service
 				out[COMMANDE] = SerialProtocol.OUT_SEND_ARC_ARRET.code;
 			else
 				out[COMMANDE] = SerialProtocol.OUT_SEND_ARC.code;
-			out[PARAM] = (byte) ((arc.arcselems[i].getPosition().x+1500) >> 4);
-			out[PARAM+1] = (byte) (((arc.arcselems[i].getPosition().x+1500) << 4) + (arc.arcselems[i].getPosition().y >> 8));
-			out[PARAM+2] = (byte) (arc.arcselems[i].getPosition().y);
+			out[PARAM] = (byte) (((int)(arc.arcselems[i].getPosition().x)+1500) >> 4);
+			out[PARAM+1] = (byte) ((((int)(arc.arcselems[i].getPosition().x)+1500) << 4) + ((int)(arc.arcselems[i].getPosition().y) >> 8));
+			out[PARAM+2] = (byte) ((int)(arc.arcselems[i].getPosition().y));
 			double angle = arc.arcselems[i].orientation;
 			if(!arc.arcselems[0].enMarcheAvant)
 				angle += Math.PI;
