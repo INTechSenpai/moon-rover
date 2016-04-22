@@ -159,8 +159,8 @@ public class DataForSerialOutput implements Service
 		out[PARAM] = (byte) ((x+1500) >> 4);
 		out[PARAM+1] = (byte) (((x+1500) << 4) + (y >> 8));
 		out[PARAM+2] = (byte) (y);
-		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed) >> 8);
-		out[PARAM+4] = (byte) ((int)(vitesse.translationalSpeed) & 0xFF);
+		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
+		out[PARAM+4] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
 		bufferBassePriorite.add(out);
 		notify();
 	}
@@ -239,8 +239,9 @@ public class DataForSerialOutput implements Service
 		}
 		out[PARAM] = (byte) (distance >> 8);
 		out[PARAM+1] = (byte) (distance);
-		out[PARAM+2] = (byte) ((int)(vitesse.translationalSpeed) >> 8);
-		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed) & 0xFF);
+		out[PARAM+2] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
+		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
+		log.debug("Vitesse : "+vitesse.translationalSpeed*1000);
 		bufferBassePriorite.add(out);
 		notify();
 	}
@@ -264,8 +265,8 @@ public class DataForSerialOutput implements Service
 		}
 		out[PARAM] = (byte) (distance >> 8);
 		out[PARAM+1] = (byte) (distance);
-		out[PARAM+2] = (byte) ((int)(vitesse.translationalSpeed) >> 8);
-		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed) & 0xFF);
+		out[PARAM+2] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
+		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
 		bufferBassePriorite.add(out);
 		notify();
 	}
@@ -295,8 +296,8 @@ public class DataForSerialOutput implements Service
 		out[COMMANDE] = SerialProtocol.OUT_TOURNER.code;
 		out[PARAM] = (byte) (Math.round(angle*1000) >> 8);
 		out[PARAM+1] = (byte) (Math.round(angle*1000));
-		out[PARAM+2] = (byte) ((int)(vitesse.rotationalSpeed) >> 8);
-		out[PARAM+3] = (byte) ((int)(vitesse.rotationalSpeed) & 0xFF);
+		out[PARAM+2] = (byte) ((int)(vitesse.rotationalSpeed*1000*1000) >> 8);
+		out[PARAM+3] = (byte) ((int)(vitesse.rotationalSpeed*1000*1000) & 0xFF);
 		bufferBassePriorite.add(out);
 		notify();
 	}
@@ -360,7 +361,6 @@ public class DataForSerialOutput implements Service
 		out[COMMANDE] = SerialProtocol.OUT_ASSER_POS_ACTUELLE.code;
 		bufferBassePriorite.add(out);
 		notify();
-
 	}
 
 	/**
@@ -454,9 +454,9 @@ public class DataForSerialOutput implements Service
 			
 			// TODO envoi de trajectoire courbe
 			if(arc.getPoint(0).enMarcheAvant)
-				out[PARAM+7] = (byte) (Math.round(arc.getPoint(i).vitesseTranslation));
+				out[PARAM+7] = (byte) (Math.round(arc.getPoint(i).vitesseTranslation*1000));
 			else
-				out[PARAM+7] = (byte) (Math.round(-arc.getPoint(i).vitesseTranslation));
+				out[PARAM+7] = (byte) (Math.round(-arc.getPoint(i).vitesseTranslation*1000));
 			
 			bufferTrajectoireCourbe.add(out);
 		}
