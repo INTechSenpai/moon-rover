@@ -1,11 +1,11 @@
 package serie;
 
 import hook.Hook;
+import pathfinding.astarCourbe.arcs.ArcCourbe;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import pathfinding.astarCourbe.ArcCourbe;
 import robot.ActuatorOrder;
 import robot.Speed;
 import container.Service;
@@ -423,21 +423,21 @@ public class DataForSerialOutput implements Service
 	public synchronized void envoieArcCourbe(ArcCourbe arc)
 	{
 		if(Config.debugSerie)
-			log.debug("Envoi d'un arc "+arc.arcselems[0]);
+			log.debug("Envoi d'un arc "+arc.getPoint(0));
 
-		for(int i = 0; i < arc.arcselems.length; i++)
+		for(int i = 0; i < arc.getNbPoints(); i++)
 		{
 			log.debug(i);
 			byte[] out = new byte[2+9];
-			if(i != 0 && arc.arcselems[i].enMarcheAvant != arc.arcselems[i - 1].enMarcheAvant)
+			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
 				out[COMMANDE] = SerialProtocol.OUT_SEND_ARC_ARRET.code;
 			else
 				out[COMMANDE] = SerialProtocol.OUT_SEND_ARC.code;
-			out[PARAM] = (byte) (((int)(arc.arcselems[i].getPosition().x)+1500) >> 4);
-			out[PARAM+1] = (byte) ((((int)(arc.arcselems[i].getPosition().x)+1500) << 4) + ((int)(arc.arcselems[i].getPosition().y) >> 8));
-			out[PARAM+2] = (byte) ((int)(arc.arcselems[i].getPosition().y));
-			double angle = arc.arcselems[i].orientation;
-			if(!arc.arcselems[0].enMarcheAvant)
+			out[PARAM] = (byte) (((int)(arc.getPoint(i).getPosition().x)+1500) >> 4);
+			out[PARAM+1] = (byte) ((((int)(arc.getPoint(i).getPosition().x)+1500) << 4) + ((int)(arc.getPoint(i).getPosition().y) >> 8));
+			out[PARAM+2] = (byte) ((int)(arc.getPoint(i).getPosition().y));
+			double angle = arc.getPoint(i).orientation;
+			if(!arc.getPoint(0).enMarcheAvant)
 				angle += Math.PI;
 		
 			angle %= 2*Math.PI;
@@ -448,15 +448,15 @@ public class DataForSerialOutput implements Service
 
 			out[PARAM+3] = (byte) (theta >> 8);
 			out[PARAM+3] = (byte) theta;
-			out[PARAM+4] = (byte) (Math.round(arc.arcselems[i].orientation*1000));
-			out[PARAM+5] = (byte) (Math.round(arc.arcselems[i].courbure*1000) >> 8);
-			out[PARAM+6] = (byte) (Math.round(arc.arcselems[i].courbure*1000));
+			out[PARAM+4] = (byte) (Math.round(arc.getPoint(i).orientation*1000));
+			out[PARAM+5] = (byte) (Math.round(arc.getPoint(i).courbure*1000) >> 8);
+			out[PARAM+6] = (byte) (Math.round(arc.getPoint(i).courbure*1000));
 			
 			// TODO envoi de trajectoire courbe
-			if(arc.arcselems[0].enMarcheAvant)
-				out[PARAM+7] = (byte) (Math.round(arc.arcselems[i].vitesseTranslation));
+			if(arc.getPoint(0).enMarcheAvant)
+				out[PARAM+7] = (byte) (Math.round(arc.getPoint(i).vitesseTranslation));
 			else
-				out[PARAM+7] = (byte) (Math.round(-arc.arcselems[i].vitesseTranslation));
+				out[PARAM+7] = (byte) (Math.round(-arc.getPoint(i).vitesseTranslation));
 			
 			bufferTrajectoireCourbe.add(out);
 		}
