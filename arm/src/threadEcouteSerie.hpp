@@ -128,13 +128,36 @@ void thread_ecoute_serie(void*)
 				}
 				else if(lecture[COMMANDE] == IN_STOP)
 				{
-					serial_rb.read_char(lecture+(++index));
 					if(!verifieChecksum(lecture, index))
 						askResend(idPaquet);
 					else
 					{
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 						changeModeAsserActuel(STOP);
+						xSemaphoreGive(consigneAsser_mutex);
+					}
+				}
+
+				else if(lecture[COMMANDE] == IN_PAUSE_MOVE)
+				{
+					// TODO
+				}
+
+				else if(lecture[COMMANDE] == IN_RESUME_MOVE)
+				{
+					// TODO
+				}
+
+				else if(lecture[COMMANDE] == IN_ASSER_POS_ACTUELLE)
+				{
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+					{
+						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+						changeModeAsserActuel(VA_AU_POINT);
+						consigneX = x_odo;
+						consigneY = y_odo;
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
@@ -158,7 +181,7 @@ void thread_ecoute_serie(void*)
 						consigneX = x_odo;
 						consigneY = y_odo;
                         maxTranslationSpeed = VITESSE_LINEAIRE_MAX;
-                        maxRotationSpeed = (lecture[PARAM + 2] << 8) + lecture[PARAM + 3];
+                        maxRotationSpeed = ((lecture[PARAM + 2] << 8) + lecture[PARAM + 3]) *1. / 1000. / RAD_PAR_TICK / FREQUENCE_ODO_ASSER;
 
 						xSemaphoreGive(consigneAsser_mutex);
 					}
@@ -209,7 +232,8 @@ void thread_ecoute_serie(void*)
 						consigneX = cos_orientation_odo * distance + x_odo;
 						consigneY = sin_orientation_odo * distance + y_odo;
                         maxRotationSpeed = VITESSE_ROTATION_MAX;
-                        maxTranslationSpeed = (lecture[PARAM + 2] << 8) + lecture[PARAM + 3];
+                        maxTranslationSpeed = ((lecture[PARAM + 2] << 8) + lecture[PARAM + 3]) * 1. / MM_PAR_TICK / FREQUENCE_ODO_ASSER;
+                        maxTranslationSpeed = VITESSE_LINEAIRE_MAX; // TODO : à retirer !
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
@@ -236,7 +260,7 @@ void thread_ecoute_serie(void*)
 						consigneX = x;
 						consigneY = y;
                         maxRotationSpeed = VITESSE_ROTATION_MAX;
-                        maxTranslationSpeed = (lecture[PARAM + 3] << 8) + lecture[PARAM + 4];
+                        maxTranslationSpeed = ((lecture[PARAM + 3] << 8) + lecture[PARAM + 4]) * 1. / MM_PAR_TICK / FREQUENCE_ODO_ASSER;
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}

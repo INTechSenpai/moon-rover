@@ -131,3 +131,7 @@ pong
     0x54 0x33
 resend paquet
     0xFF ID_PAQUET(16)
+
+
+Les vitesses linéaires sont transmises en mm par s
+Les vitesses de rotation sont transmises en mrad par s

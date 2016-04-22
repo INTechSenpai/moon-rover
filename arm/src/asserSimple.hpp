@@ -499,7 +499,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     bool inline checkArrivee()
     {
     	// TODO : vérifier aussi qu'on est bien arrivé à destination...
-        return ABS(leftPWM) < 5 && ABS(rightPWM) < 5 && ABS(currentLeftSpeed) < 10 && ABS(currentRightSpeed) < 10;
+        return ABS(leftPWM) < 5 && ABS(rightPWM) < 5 && ABS(currentLeftSpeed) < 10 && ABS(currentRightSpeed) < 10 && ABS(x_odo - consigneX) < 20 && ABS(y_odo - consigneY) < 20;
     }
 
     void inline changeModeAsserActuel(MODE_ASSER mode)

@@ -352,8 +352,8 @@ void thread_capteurs(void*)
 
 
 	// On attend d'avoir la communication établie avant d'envoyer les paramètres
-//	while(!ping) // TODO
-//		vTaskDelay(10);
+	while(!ping)
+		vTaskDelay(10);
 
 	vTaskDelay(200);
 
@@ -521,7 +521,7 @@ void thread_capteurs(void*)
 			if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
 				capteurs[i] = HAL_ADC_GetValue(&g_AdcHandle);
 */
-		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, capteurs);
+		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, (int16_t) vitesseLineaireReelle, (int16_t) vitesseRotationReelle, capteurs);
 		vTaskDelay(300);
 
 	}

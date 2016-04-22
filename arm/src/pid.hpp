@@ -23,7 +23,6 @@ public:
 		this->output = output;
 		this->error = error;
 
-//		setOutputLimits(-2147483647, 2147483647);
 		setTunings(0, 0, 0);
 		this->epsilon = epsilon;
 		pre_error = 0;
@@ -39,30 +38,26 @@ public:
 	void compute() {
 
 		float error = *(this->error);
-		derivative = error - pre_error;
-		integral += error;
-		pre_error = error;
 
-		float result = kp * error + ki * integral + kd * derivative;
-//		sendCoquillage((uint8_t)(error));
-//		sendCoquillage((uint8_t)(derivative*256));
-		//Saturation
-/*		if (result > outMax) {
-			result = outMax;
-		} else if (result < outMin) {
-			result = outMin;
+		// Seuillage de l'erreur. Particulièrement important si Ki n'est pas nul
+		if(ABS(error) < epsilon)
+		{
+			pre_error = error;
+			(*output) = 0;
 		}
-*/
+		else
+		{
+			derivative = error - pre_error;
+			integral += error;
+			pre_error = error;
 
-
-		//Seuillage de la commande
-		if (ABS(result) < epsilon)
-			result = 0;
-
-		(*output) = result;
+			float result = kp * error + ki * integral + kd * derivative;
+			(*output) = result;
+		}
 	}
 
-	void setTunings(float kp, float ki, float kd) {
+	void setTunings(float kp, float ki, float kd)
+	{
 		if (kp < 0 || ki < 0 || kd < 0)
 			return;
 
@@ -70,25 +65,13 @@ public:
 		this->ki = ki;
 		this->kd = kd;
 	}
-/*
-	void setOutputLimits(int32_t min, int32_t max) {
-		if (min >= max)
-			return;
 
-		outMin = min;
-		outMax = max;
-	}*/
-/*
-	void setEpsilon(float seuil) {
-		if(seuil < 0)
-			return;
-		epsilon = seuil;
-	}*/
-
-	void resetErrors() {
+	void resetErrors()
+	{
 		pre_error = 0;
 		integral = 0;
 	}
+
 private:
 
 	float kp;
@@ -99,7 +82,6 @@ private:
 	volatile float* output; //Output : commande
 
 	float epsilon;
-//	int32_t outMin, outMax;
 
 	float pre_error;
 	float derivative;
