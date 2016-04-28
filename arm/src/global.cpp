@@ -7,8 +7,8 @@ Uart<2> serial_rb;
 Uart<3> serial_ax;
 AX<Uart<3>>* ax12;
 
-volatile double x_odo, y_odo; // abscisse et ordonnée exprimées en mm
-volatile double orientation_odo; // exprimé en radians
+volatile double x_odo, y_odo; // abscisse et ordonnï¿½e exprimï¿½es en mm
+volatile double orientation_odo; // exprimï¿½ en radians
 volatile double cos_orientation_odo, sin_orientation_odo;
 volatile double courbure_odo;
 

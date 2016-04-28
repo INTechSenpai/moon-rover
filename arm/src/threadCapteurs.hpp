@@ -139,7 +139,7 @@ void inline ledLipo(uint32_t tensionLipo)
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET);
 		}
 	}
-	else // pas de lipo branchée
+	else // pas de lipo branchï¿½e
 	{
 		if((delay & 0x02) == 0)
 		{
@@ -178,7 +178,7 @@ void thread_capteurs(void*)
 
     __ADC1_CLK_ENABLE();
 
-    // Pin analogiques : A0 A1 A2 A3 A4 A5 A6 A7 B0 B1 C0 C1 C2 C3 C4 C5
+    // Pin analogiques :ï¿½A0 A1 A2 A3 A4 A5 A6 A7 B0 B1 C0 C1 C2 C3 C4 C5
 
     gpioInit.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
     gpioInit.Mode = GPIO_MODE_ANALOG;
@@ -331,7 +331,7 @@ void thread_capteurs(void*)
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
 
 	/**
-	 * Configuration des entrées
+	 * Configuration des entrï¿½es
 	 */
 
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -351,9 +351,9 @@ void thread_capteurs(void*)
 	GPIO_PinState symetrieBouton = GPIO_PIN_SET;
 
 
-	// On attend d'avoir la communication établie avant d'envoyer les paramètres
-	while(!ping)
-		vTaskDelay(10);
+	// On attend d'avoir la communication ï¿½tablie avant d'envoyer les paramï¿½tres
+//	while(!ping)
+//		vTaskDelay(10);
 
 	vTaskDelay(200);
 
@@ -362,8 +362,8 @@ void thread_capteurs(void*)
 	sendCoquillage(codeCoquillage);
 
 	/**
-	 * Les leds : SET pour allumer, RESET pour éteindre
-	 * Interrupteurs : pull-up
+	 * Les leds : SET pour allumer, RESET pour ï¿½teindre
+	 * Interrupteurs :ï¿½pull-up
 	 */
 	GPIO_PinState tmp;
 	while(!matchDemarre)
@@ -373,15 +373,15 @@ void thread_capteurs(void*)
 		 * - coquillage B13
 		 * - couleur robot B15
 		 * - jumper D13
-		 * - balise présente D15
+		 * - balise prï¿½sente D15
 		 *
 		 * Output :
-		 * - balise présente C13
+		 * - balise prï¿½sente C13
 		 * - coquillage 1 (E1) 2 (E2) 3 (E3) 4 (E4) 5 (E5)
 		 * - buzzer (E0)
 		 * - diode couleur verte B8
 		 * - diode couleur bleue B9
-		 * - batterie (D0 à D4)
+		 * - batterie (D0 ï¿½ D4)
 		 * - ping raspberry C15
 		 */
 
@@ -459,7 +459,7 @@ void thread_capteurs(void*)
 			}
 		}
 
-		// Jumper
+		//ï¿½Jumper
 		if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_13) == GPIO_PIN_RESET)
 		{
 			HookTemps::setDateDebutMatch();
@@ -470,7 +470,7 @@ void thread_capteurs(void*)
 			vTaskDelay(50);
 
 
-		// Bouton en rab. Initialise l'odo et démarre le match
+		// Bouton en rab. Initialise l'odo et dï¿½marre le match
 		if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_11) == GPIO_PIN_RESET)
 		{
 			if(!startOdo)
@@ -502,7 +502,7 @@ void thread_capteurs(void*)
 		uint16_t x, y, orientation;
 		uint8_t courbure;
 		bool marcheAvantTmp;
-		// l'envoi série n'est pas fait quand on a le mutex d'odo afin d'éviter de ralentir le thread d'odo
+		// l'envoi sï¿½rie n'est pas fait quand on a le mutex d'odo afin d'ï¿½viter de ralentir le thread d'odo
 		while(xSemaphoreTake(odo_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 			x = (uint16_t) (x_odo + 1500);
 			y = (uint16_t) y_odo;

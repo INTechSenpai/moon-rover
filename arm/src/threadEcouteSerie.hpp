@@ -21,16 +21,17 @@
 using namespace std;
 
 /**
- * Thread qui écoute la série
+ * Thread qui ï¿½coute la sï¿½rie
  */
 void thread_ecoute_serie(void*)
 {
 
 	/**
-	 * Initialisation des séries
+	 * Initialisation des sï¿½ries
 	 */
 	serial_rb.init(460800, UART_MODE_TX_RX);
 	serial_ax.init(57600, UART_MODE_TX);
+
 	ax12 = new AX<Uart<3>>(0, 0, 1023);
 
 	uint16_t idDernierPaquet = -1;
@@ -45,7 +46,7 @@ void thread_ecoute_serie(void*)
 				unsigned char lecture[50];
 				unsigned char entete;
 				uint8_t index = 0;
-				// Vérification de l'entête
+				// Vï¿½rification de l'entï¿½te
 
 //				sendPong();
 //				askResend(0);
@@ -69,7 +70,7 @@ void thread_ecoute_serie(void*)
 //			   serial_rb.send_char(0x11);
 
 //				serial_rb.send_char(0x10);
-				// Récupération de l'id
+				// Rï¿½cupï¿½ration de l'id
 				serial_rb.read_char(lecture); // id point fort
 //				serial_rb.send_char(0x11);
 				serial_rb.read_char(lecture+(++index)); // id point faible
@@ -79,12 +80,12 @@ void thread_ecoute_serie(void*)
 				// On redemande les paquets manquants si besoin est
 				if(idPaquet > idDernierPaquet)
 				{
-					idDernierPaquet++; // id paquet théoriquement reçu
+					idDernierPaquet++; // id paquet thï¿½oriquement reï¿½u
 					while(idPaquet > idDernierPaquet)
 						askResend(idDernierPaquet++);
 				}
 
-				// Si on reçoit un ID ancien… on fait comme si de rien n'était
+				// Si on reï¿½oit un ID ancienï¿½ on fait comme si de rien n'ï¿½tait
 
 				serial_rb.read_char(lecture+(++index)); // lecture de la commande
 
@@ -96,7 +97,7 @@ void thread_ecoute_serie(void*)
 						askResend(idPaquet);
 					else
 					{
-						idDernierPaquet = idPaquet; // on réinitialise le numéro des paquets
+						idDernierPaquet = idPaquet; // on rï¿½initialise le numï¿½ro des paquets
 						sendPong();
 					}
 				}
@@ -233,7 +234,7 @@ void thread_ecoute_serie(void*)
 						consigneY = sin_orientation_odo * distance + y_odo;
                         maxRotationSpeed = VITESSE_ROTATION_MAX;
                         maxTranslationSpeed = ((lecture[PARAM + 2] << 8) + lecture[PARAM + 3]) * 1. / MM_PAR_TICK / FREQUENCE_ODO_ASSER;
-                        maxTranslationSpeed = VITESSE_LINEAIRE_MAX; // TODO : à retirer !
+                        maxTranslationSpeed = VITESSE_LINEAIRE_MAX; // TODOï¿½: ï¿½ retirer !
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
@@ -290,19 +291,19 @@ void thread_ecoute_serie(void*)
 						trajectoire[indiceTrajectoireEcriture].x = x;
 						trajectoire[indiceTrajectoireEcriture].y = y;
 						trajectoire[indiceTrajectoireEcriture].courbure = courbure;
-						trajectoire[indiceTrajectoireEcriture].orientation = angle; // TODO si marche arrière ajouter PI/2 ?
+						trajectoire[indiceTrajectoireEcriture].orientation = angle; // TODOï¿½si marche arriï¿½re ajouter PI/2 ?
 						trajectoire[indiceTrajectoireEcriture].vitesse = vitesse;
 						trajectoire[indiceTrajectoireEcriture].dir_x = 1000 * cos(angle);
 						trajectoire[indiceTrajectoireEcriture].dir_y = 1000 * sin(angle);
 
-						// TODO réinitialiser les indices indiceArretEcriture et indiceArretLecture
+						// TODO rï¿½initialiser les indices indiceArretEcriture et indiceArretLecture
 
-						// On conserve l'arc précédent en arc d'arrêt si c'est explicitement demandé et
+						// On conserve l'arc prï¿½cï¿½dent en arc d'arrï¿½t si c'est explicitement demandï¿½ et
 						// si l'arc qu'on vient d'obtenir n'est pas le premier
 						if(lecture[COMMANDE] != IN_ARC && modeAsserActuel == COURBE)
 							indiceArretEcriture++;
 
-						// Dans tous les cas, on s'arrête au dernier arc reçu
+						// Dans tous les cas, on s'arrï¿½te au dernier arc reï¿½u
 						arcsArret[indiceArretEcriture] = &trajectoire[indiceTrajectoireEcriture];
 						needArrive = true;
 
@@ -539,7 +540,7 @@ void thread_ecoute_serie(void*)
 
 				//					serial_rb.printfln("color rouge");
 
-			else // on n'attend que s'il n'y avait rien. Ainsi, si la série prend du retard elle n'attend pas pour traiter toutes les données entrantes suivantes
+			else // on n'attend que s'il n'y avait rien. Ainsi, si la sï¿½rie prend du retard elle n'attend pas pour traiter toutes les donnï¿½es entrantes suivantes
 			{
 //				vTaskDelay(1);
 			}
