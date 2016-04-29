@@ -182,7 +182,6 @@ void thread_ecoute_serie(void*)
 						consigneY = y_odo;
                         maxTranslationSpeed = VITESSE_LINEAIRE_MAX;
                         maxRotationSpeed = ((lecture[PARAM + 2] << 8) + lecture[PARAM + 3]) *1. / 1000. / RAD_PAR_TICK / FREQUENCE_ODO_ASSER;
-//                        maxRotationSpeed = VITESSE_ROTATION_MAX;
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
@@ -272,6 +271,7 @@ void thread_ecoute_serie(void*)
 					serial_rb.read_char(lecture+(++index)); // courbure
 					serial_rb.read_char(lecture+(++index)); // courbure
 					serial_rb.read_char(lecture+(++index)); // vitesse
+					serial_rb.read_char(lecture+(++index)); // vitesse
 
 					if(!verifieChecksum(lecture, index))
 						askResend(idPaquet);
@@ -284,7 +284,7 @@ void thread_ecoute_serie(void*)
 						int16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
 						uint32_t angle = (lecture[PARAM + 3] << 8) + lecture[PARAM + 4];
 						float courbure = lecture[PARAM + 3] + lecture[PARAM + 4] / 16.;
-						uint8_t vitesse = lecture[PARAM + 5];
+                        float vitesse = ((lecture[PARAM + 5] << 8) + lecture[PARAM + 6]) * 1. / MM_PAR_TICK / FREQUENCE_ODO_ASSER;
 						trajectoire[indiceTrajectoireEcriture].x = x;
 						trajectoire[indiceTrajectoireEcriture].y = y;
 						trajectoire[indiceTrajectoireEcriture].courbure = courbure;

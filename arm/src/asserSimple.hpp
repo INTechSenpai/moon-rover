@@ -45,7 +45,7 @@ int16_t dir_x;
 int16_t dir_y;
 uint32_t orientation;
 float courbure;
-uint8_t vitesse;
+float vitesse;
 } pointAsserCourbe;
 
 volatile pointAsserCourbe trajectoire[TAILLE_MAX_TRAJECTOIRE];

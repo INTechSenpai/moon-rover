@@ -241,7 +241,7 @@ public class DataForSerialOutput implements Service
 		out[PARAM+1] = (byte) (distance);
 		out[PARAM+2] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
 		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
-		log.debug("Vitesse : "+vitesse.translationalSpeed*1000);
+//		log.debug("Vitesse : "+vitesse.translationalSpeed*1000);
 		bufferBassePriorite.add(out);
 		notify();
 	}
@@ -288,7 +288,7 @@ public class DataForSerialOutput implements Service
 		if(Config.debugSerie)
 			log.debug("Tourne à "+angle);
 		byte[] out = new byte[2+5];
-
+//		log.debug("Vitesse : "+vitesse.rotationalSpeed*1000*1000);
 		angle %= 2*Math.PI;
 		if(angle < 0)
 			angle += 2*Math.PI; // il faut toujours envoyer des nombres positifs
@@ -428,7 +428,7 @@ public class DataForSerialOutput implements Service
 		for(int i = 0; i < arc.getNbPoints(); i++)
 		{
 			log.debug(i);
-			byte[] out = new byte[2+9];
+			byte[] out = new byte[2+10];
 			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
 				out[COMMANDE] = SerialProtocol.OUT_SEND_ARC_ARRET.code;
 			else
@@ -447,16 +447,13 @@ public class DataForSerialOutput implements Service
 			long theta = (long) (angle*1000);
 
 			out[PARAM+3] = (byte) (theta >> 8);
-			out[PARAM+3] = (byte) theta;
-			out[PARAM+4] = (byte) (Math.round(arc.getPoint(i).orientation*1000));
+			out[PARAM+4] = (byte) theta;
+			
 			out[PARAM+5] = (byte) (Math.round(arc.getPoint(i).courbure*1000) >> 8);
 			out[PARAM+6] = (byte) (Math.round(arc.getPoint(i).courbure*1000));
 			
-			// TODO envoi de trajectoire courbe
-			if(arc.getPoint(0).enMarcheAvant)
-				out[PARAM+7] = (byte) (Math.round(arc.getPoint(i).vitesseTranslation*1000));
-			else
-				out[PARAM+7] = (byte) (Math.round(-arc.getPoint(i).vitesseTranslation*1000));
+			out[PARAM+7] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) >> 8);
+			out[PARAM+8] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) & 0xFF);
 			
 			bufferTrajectoireCourbe.add(out);
 		}

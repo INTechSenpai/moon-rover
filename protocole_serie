@@ -50,9 +50,9 @@ désasservi le robot
     0x28
 
 envoie arc trajectoire courbe (vitesse négative et orientation inversée si marche arrière)
-    0x2E X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE(16)
+    0x2E X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE_TRANSLATION(16)
 envoie arc trajectoire courbe précédé d'un arrêt (vitesse négative et orientation inversée si marche arrière)
-    0x2F X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE(16)
+    0x2F X+_POINT(12) Y_POINT(12) ORIENTATION(16) COURBURE(16) VITESSE_TRANSLATION(16)
 
 met en pause le mouvement
     0x30
