@@ -177,13 +177,12 @@ void thread_ecoute_serie(void*)
 
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 						rotationSetpoint = RAD_TO_TICK(angle);
-						needArrive = true;
 						changeModeAsserActuel(ROTATION);
 						consigneX = x_odo;
 						consigneY = y_odo;
                         maxTranslationSpeed = VITESSE_LINEAIRE_MAX;
                         maxRotationSpeed = ((lecture[PARAM + 2] << 8) + lecture[PARAM + 3]) *1. / 1000. / RAD_PAR_TICK / FREQUENCE_ODO_ASSER;
-
+//                        maxRotationSpeed = VITESSE_ROTATION_MAX;
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
@@ -228,13 +227,12 @@ void thread_ecoute_serie(void*)
 							distance = -distance;
 
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-						needArrive = true;
 						changeModeAsserActuel(VA_AU_POINT);
 						consigneX = cos_orientation_odo * distance + x_odo;
 						consigneY = sin_orientation_odo * distance + y_odo;
                         maxRotationSpeed = VITESSE_ROTATION_MAX;
                         maxTranslationSpeed = ((lecture[PARAM + 2] << 8) + lecture[PARAM + 3]) * 1. / MM_PAR_TICK / FREQUENCE_ODO_ASSER;
-                        maxTranslationSpeed = VITESSE_LINEAIRE_MAX; // TODO�: � retirer !
+//                        maxTranslationSpeed = VITESSE_LINEAIRE_MAX; // TODO�: � retirer !
 						xSemaphoreGive(consigneAsser_mutex);
 					}
 				}
@@ -256,7 +254,6 @@ void thread_ecoute_serie(void*)
 						int16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
 
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-						needArrive = true;
 						changeModeAsserActuel(VA_AU_POINT);
 						consigneX = x;
 						consigneY = y;
@@ -305,7 +302,6 @@ void thread_ecoute_serie(void*)
 
 						// Dans tous les cas, on s'arr�te au dernier arc re�u
 						arcsArret[indiceArretEcriture] = &trajectoire[indiceTrajectoireEcriture];
-						needArrive = true;
 
 						changeModeAsserActuel(COURBE);
 						xSemaphoreGive(consigneAsser_mutex);

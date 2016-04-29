@@ -8,25 +8,25 @@
 #include <cmath>
 #include "math.h"
 
-// Vitesses et accélérations max
+// Vitesses et accï¿½lï¿½rations max
 // Angulaire 60 rad/s, 70 rad/s^2
-// Linéaire 3 m/s, 3.5m/s^2
+// Linï¿½aire 3 m/s, 3.5m/s^2
 // Par roue : 3 m/s, 3.5m/s^2
 
 #define VITESSE_LINEAIRE_MAX (3000. / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 600 // vitesse max en tick / appel asser
-#define ACCELERATION_LINEAIRE_MAX (3500. / MM_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 3.44 // accélération max en tick / (appel asser)^2
+#define ACCELERATION_LINEAIRE_MAX (3500. / MM_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 3.44 // accï¿½lï¿½ration max en tick / (appel asser)^2
 //#define VITESSE_ROTATION_MAX (60. / RAD_PAR_TICK / FREQUENCE_ODO_ASSER) // 2100 // vitesse max en tick / appel asser
 #define VITESSE_ROTATION_MAX 600 // vitesse max en tick / appel asser
-#define ACCELERATION_ROTATION_MAX (70. / RAD_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 12 // accélération max en tick / (appel asser)^2
+#define ACCELERATION_ROTATION_MAX (70. / RAD_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 12 // accï¿½lï¿½ration max en tick / (appel asser)^2
 #define VITESSE_ROUE_MAX (3000. / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 600 // vitesse max en tick / appel asser
-#define ACCELERATION_ROUE_MAX (3500. / MM_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 3.5 // accélération max en tick / (appel asser)^2
+#define ACCELERATION_ROUE_MAX (3500. / MM_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 3.5 // accï¿½lï¿½ration max en tick / (appel asser)^2
 #define RAYON_DE_COURBURE_MIN_EN_MM 100. // en fait, on peut descendre virtuellement aussi bas qu'on veut. A condition d'aller suffisamment lentement, on peut avoir n'importe quelle courbure.
 #define COURBURE_MAX (1. / RAYON_DE_COURBURE_MIN_EN_MM)
 
 #define FONCTION_VITESSE_MAX(x) (5)
 #define FONCTION_COURBURE_MAX(x) (5)
 
-#define TAILLE_MAX_TRAJECTOIRE 256 // et comme ça on utilise un indice sur un uint_8
+#define TAILLE_MAX_TRAJECTOIRE 256 // et comme ï¿½a on utilise un indice sur un uint_8
 #define TAILLE_MAX_ARRET 16
 
 #define MOTEUR_DROIT (TIM8->CCR1)
@@ -60,26 +60,28 @@ volatile int8_t indiceArretEcriture = 0;
 enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 /*
- * 		Définition des variables d'état du système (position, vitesse, consigne, ...)
+ * 		Dï¿½finition des variables d'ï¿½tat du systï¿½me (position, vitesse, consigne, ...)
  *
- * 		Les unités sont :
+ * 		Les unitï¿½s sont :
  * 			Pour les distances		: ticks
  * 			Pour les vitesses		: ticks/seconde
- * 			Pour les accélérations	: ticks/seconde^2
- * 			Ces unités seront vraies pour une fréquence d'asservissement de 2kHz,
- * 			si l'on souhaite changer la fréquence d'asservissement il faut adapter le calcul de la vitesse
- * 			autrement les unitées ci-dessus ne seront plus valables.
+ * 			Pour les accï¿½lï¿½rations	: ticks/seconde^2
+ * 			Ces unitï¿½s seront vraies pour une frï¿½quence d'asservissement de 2kHz,
+ * 			si l'on souhaite changer la frï¿½quence d'asservissement il faut adapter le calcul de la vitesse
+ * 			autrement les unitï¿½es ci-dessus ne seront plus valables.
  */
 
 
-	// CONSIGNES MODIFIÉES DEPUIS D'AUTRES THREADS
+	// CONSIGNES MODIFIï¿½ES DEPUIS D'AUTRES THREADS
     volatile float maxTranslationSpeed = VITESSE_LINEAIRE_MAX;
     volatile float maxRotationSpeed = VITESSE_ROTATION_MAX;
 
 	// Consigne en position qui permet de calculer les erreurs en distance et en rotation
 	volatile int32_t consigneX;
 	volatile int32_t consigneY;
-	volatile uint32_t rotationSetpoint;		// angle absolu visé (en ticks)
+	volatile uint32_t rotationSetpoint;		// angle absolu visï¿½ (en ticks)
+
+	float currentLeftAcceleration, currentRightAcceleration;
 
 //	int32_t currentRightAcceleration;
 //	int32_t currentLeftAcceleration;
@@ -98,7 +100,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	float leftPWM = 0;
 	PID leftSpeedPID(&errorLeftSpeed, &leftPWM, 5);
 
-	//	Asservissement en vitesse linéaire et en courbure
+	//	Asservissement en vitesse linï¿½aire et en courbure
 	float vitesseLineaireReelle;
 	float vitesseRotationReelle;
 	float courbureReelle;
@@ -107,7 +109,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	PIDvitesse PIDvit(&vitesseLineaireReelle, &courbureReelle, &leftPWM, &rightPWM, &consigneVitesseLineaire, &consigneCourbure);
 
 	//	Asservissement en position : translation
-	float currentDistance;		// distance à parcourir, en ticks
+	float currentDistance;		// distance ï¿½ parcourir, en ticks
 	float translationSpeed, oldTranslationSpeed = 0;		// ticks/seconde
 	float errorTranslation;		// ticks
 	PID translationPID(&errorTranslation, &translationSpeed, 10);
@@ -119,24 +121,24 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	float rotationSpeed, oldRotationSpeed = 0;			// ticks/seconde
 	PID rotationPID(&errorAngle, &rotationSpeed, 0);
 
-	//	Pour faire de jolies courbes de réponse du système, la vitesse moyenne c'est mieux !
+	//	Pour faire de jolies courbes de rï¿½ponse du systï¿½me, la vitesse moyenne c'est mieux !
 //	Average<int32_t, AVERAGE_SPEED_SIZE> averageLeftSpeed;
 //	Average<int32_t, AVERAGE_SPEED_SIZE> averageRightSpeed;
 
-	// Variables d'état du mouvement
+	// Variables d'ï¿½tat du mouvement
 	volatile bool moving;
 	volatile MOVING_DIRECTION direction;
 	volatile bool moveAbnormal;
 
-	// Variables d'activation des différents PID
+	// Variables d'activation des diffï¿½rents PID
 	volatile bool translationControlled;
 	volatile bool rotationControlled;
 	volatile bool leftSpeedControlled;
 	volatile bool rightSpeedControlled;
 
-	// Variables de réglage de la détection de blocage physique
+	// Variables de rï¿½glage de la dï¿½tection de blocage physique
 	unsigned int delayToStop;//En ms
-	//Nombre de ticks de tolérance pour considérer qu'on est arrivé à destination
+	//Nombre de ticks de tolï¿½rance pour considï¿½rer qu'on est arrivï¿½ ï¿½ destination
 	int toleranceTranslation;
 	int toleranceRotation;
 
@@ -156,7 +158,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 		if(!marcheAvant)
 		{
-			// on inverse la consigne (puisqu'on va en marche arrière)
+			// on inverse la consigne (puisqu'on va en marche arriï¿½re)
 			rotationSetpoint += TICKS_PAR_TOUR_ROBOT / 2;
 			if(rotationSetpoint > TICKS_PAR_TOUR_ROBOT)
 				rotationSetpoint -= TICKS_PAR_TOUR_ROBOT;
@@ -188,7 +190,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     }
 
     /**
-     * Restreint l'erreur à un demi-tour.
+     * Restreint l'erreur ï¿½ un demi-tour.
      * UNUSED
      */
     void inline updateErrorAngleDemiPlan()
@@ -201,7 +203,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
     void inline updateErrorTranslation()
     {
-    	// gère aussi la marche arrière
+    	// gï¿½re aussi la marche arriï¿½re
     	errorTranslation = (cos_orientation_odo * (consigneX - x_odo) + sin_orientation_odo * (consigneY - y_odo)) / MM_PAR_TICK;
     }
 
@@ -219,7 +221,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		else if(rightPWM < -PWM_MAX)
 			rightPWM = -PWM_MAX;
 
-		// gestion de la symétrie pour les déplacements
+		// gestion de la symï¿½trie pour les dï¿½placements
         if(isSymmetry)
         {
         	tmpRightPWM = leftPWM;
@@ -231,7 +233,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
         	tmpLeftPWM = leftPWM;
         }
 
-        // gestion marche avant / marche arrière
+        // gestion marche avant / marche arriï¿½re
 		if(tmpRightPWM >= 0)
 		{
 			// marche avant
@@ -240,7 +242,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		}
 		else
 		{
-			// marche arrière
+			// marche arriï¿½re
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
 			MOTEUR_DROIT = -tmpRightPWM;
 		}
@@ -253,15 +255,15 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		}
 		else
 		{
-			// marche arrière
+			// marche arriï¿½re
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);
 			MOTEUR_GAUCHE = -tmpLeftPWM;
 		}
     }
 
     /**
-     * Utilise les valeurs de errorLeftSpeed et errorRightSpeed pour mettre à jour les moteurs
-     * S'occupe aussi de la symétrisation
+     * Utilise les valeurs de errorLeftSpeed et errorRightSpeed pour mettre ï¿½ jour les moteurs
+     * S'occupe aussi de la symï¿½trisation
      */
 	void inline computeAndRunPWM()
 	{
@@ -272,7 +274,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	}
 
 	/**
-	 * Limite la vitesse et l'accélération linéaire et en rotation
+	 * Limite la vitesse et l'accï¿½lï¿½ration linï¿½aire et en rotation
 	 */
 	void inline limitTranslationRotationSpeed()
 	{
@@ -283,7 +285,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		else if(translationSpeed < -maxTranslationSpeed)
 			translationSpeed = -maxTranslationSpeed;
 
-		// Limitation de l'accélération en vitesse linéaire
+		// Limitation de l'accï¿½lï¿½ration en vitesse linï¿½aire
 		if(translationSpeed - oldTranslationSpeed > ACCELERATION_LINEAIRE_MAX)
 			translationSpeed = oldTranslationSpeed + ACCELERATION_LINEAIRE_MAX;
 		else if(translationSpeed - oldTranslationSpeed < -ACCELERATION_LINEAIRE_MAX)
@@ -297,7 +299,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		else if(rotationSpeed < -maxRotationSpeed)
 			rotationSpeed = -maxRotationSpeed;
 
-		// Limitation de l'accélération en rotation
+		// Limitation de l'accï¿½lï¿½ration en rotation
 		if(rotationSpeed - oldRotationSpeed > ACCELERATION_ROTATION_MAX)
 			rotationSpeed = oldRotationSpeed + ACCELERATION_ROTATION_MAX;
 		else if(rotationSpeed - oldRotationSpeed < -ACCELERATION_ROTATION_MAX)
@@ -307,7 +309,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	}
 
 	/**
-	 * Limite la vitesse et l'accélération de chaque roue
+	 * Limite la vitesse et l'accï¿½lï¿½ration de chaque roue
 	 */
 	void inline limitLeftRightSpeed()
 	{
@@ -322,16 +324,16 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		else if(rightSpeedSetpoint < -VITESSE_ROUE_MAX)
 			rightSpeedSetpoint = -VITESSE_ROUE_MAX;
 
-		// ATTENTION : la limitation de l'accélération ne prend pas en compte la vitesse actuelle du robot
-		// Donc il est possible que le robot dépasse cette accélération !
+		// ATTENTION : la limitation de l'accï¿½lï¿½ration ne prend pas en compte la vitesse actuelle du robot
+		// Donc il est possible que le robot dï¿½passe cette accï¿½lï¿½ration !
 
-		// Limitation de l'accélération du moteur gauche
+		// Limitation de l'accï¿½lï¿½ration du moteur gauche
 		if(leftSpeedSetpoint - oldLeftSpeedSetpoint > ACCELERATION_ROUE_MAX)
 			leftSpeedSetpoint = oldLeftSpeedSetpoint + ACCELERATION_ROUE_MAX;
 		else if(leftSpeedSetpoint - oldLeftSpeedSetpoint < -ACCELERATION_ROUE_MAX)
 			leftSpeedSetpoint = oldLeftSpeedSetpoint - ACCELERATION_ROUE_MAX;
 
-		// Limitation de l'accélération du moteur droit
+		// Limitation de l'accï¿½lï¿½ration du moteur droit
 		if(rightSpeedSetpoint - oldRightSpeedSetpoint > ACCELERATION_ROUE_MAX)
 			rightSpeedSetpoint = oldRightSpeedSetpoint + ACCELERATION_ROUE_MAX;
 		else if(rightSpeedSetpoint - oldRightSpeedSetpoint < -ACCELERATION_ROUE_MAX)
@@ -348,19 +350,18 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		translationPID.compute();	// Actualise la valeur de 'translationSpeed'
 		marcheAvant = errorTranslation >= 0;
 
-    	// On ne met pas à jour l'orientation si on est à moins de 3 cm de l'arrivée. Sinon, en dépassant la consigne le robot voudra se retourner…
+    	// On ne met pas ï¿½ jour l'orientation si on est ï¿½ moins de 3 cm de l'arrivï¿½e. Sinon, en dï¿½passant la consigne le robot voudra se retournerï¿½
 		if(errorTranslation >= 30/MM_PAR_TICK)
 		{
-//			updateRotationSetpoint(); // gère la marche arrière
-//			updateErrorAngle();
-//			rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
+			updateRotationSetpoint(); // gï¿½re la marche arriï¿½re
+			updateErrorAngle();
+			rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
 		}
 		else // si on est trop proche, on ne tourne plus
 		{
 //			translationSpeed = 0;
 			rotationSpeed = 0;
 		}
-		rotationSpeed = 0;
 
 		limitTranslationRotationSpeed();
 
@@ -377,7 +378,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
     void inline controlRotation()
     {
-    	// Mise à jour des erreurs
+    	// Mise ï¿½ jour des erreurs
     	updateErrorAngle();
     	updateErrorTranslation();
 
@@ -411,14 +412,14 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
     void inline controlTrajectoire()
     {
-    	// a-t-on dépassé un point ?
+    	// a-t-on dï¿½passï¿½ un point ?
     	if((x_odo - trajectoire[indiceTrajectoireLecture].x) * trajectoire[indiceTrajectoireLecture].dir_x + (y_odo - trajectoire[indiceTrajectoireLecture].y) * trajectoire[indiceTrajectoireLecture].dir_y)
     		indiceTrajectoireLecture++;
 
     	rotationSetpoint = trajectoire[indiceTrajectoireLecture].orientation;
     	updateErrorAngle();
 
-    	// Produit scalaire. d est algébrique
+    	// Produit scalaire. d est algï¿½brique
     	int16_t d = - (x_odo - trajectoire[indiceTrajectoireLecture].x) * trajectoire[indiceTrajectoireLecture].dir_y + (y_odo - trajectoire[indiceTrajectoireLecture].y) * trajectoire[indiceTrajectoireLecture].dir_x;
 
     	float kappaS = trajectoire[indiceTrajectoireLecture].courbure - k1*d - k2*errorAngle;
@@ -429,7 +430,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     		consigneCourbure = COURBURE_MAX;
     	float consigneVitesseLineaire = FONCTION_VITESSE_MAX(kappaS);
         
-    	// TODO : mettre à jour indiceArretLecture
+    	// TODO : mettre ï¿½ jour indiceArretLecture
     	consigneX = arcsArret[indiceArretLecture]->x;
     	consigneY = arcsArret[indiceArretLecture]->y;
         updateErrorTranslation();
@@ -456,7 +457,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	leftSpeedSetpoint = 0;
     	rightSpeedSetpoint = 0;
 
-        limitLeftRightSpeed(); // limite la décélération en modifiant leftSpeedSetpoint et rightSpeedSetpoint
+        limitLeftRightSpeed(); // limite la dï¿½cï¿½lï¿½ration en modifiant leftSpeedSetpoint et rightSpeedSetpoint
         errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
 		errorRightSpeed = rightSpeedSetpoint - currentRightSpeed;
 
@@ -466,17 +467,31 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     uint16_t nbErreurs = 0;
 
     /**
-     * On est physiquement bloqué si l'erreur en vitesse de change pas alors que les moteurs tournent
+     * On est physiquement bloquï¿½ si l'erreur en vitesse de change pas alors que les moteurs tournent
      */
-    bool inline isPhysicallyStopped()
+    bool inline isPhysicallyStoppedVitesse()
     {
-    	return (MOTEUR_DROIT > 5) && (MOTEUR_GAUCHE > 5) && (ABS(currentLeftSpeed)) < 10 && (ABS(currentRightSpeed) < 10);
+    	return (MOTEUR_DROIT > 5)
+    			&& (MOTEUR_GAUCHE > 5)
+    			&& ABS(currentLeftSpeed) < 10
+				&& ABS(currentRightSpeed) < 10;
     }
 
-    // Y a-t-il un problème mécanique ?
+    bool inline isPhysicallyStoppedAcc()
+    {
+    	return (ABS(currentRightAcceleration) > 5000
+						|| ABS(currentLeftAcceleration) > 5000);
+    }
+
+    // Y a-t-il un problï¿½me mï¿½canique ?
     bool inline checkBlocageMecanique()
     {
-    	if(isPhysicallyStopped())
+    	if(isPhysicallyStoppedAcc())
+    	{
+			nbErreurs = 0;
+			return true;
+    	}
+    	else if(isPhysicallyStoppedVitesse())
     	{
     		nbErreurs++;
 			if(nbErreurs >= DELAI_ERREUR_MECA_APPEL)
@@ -491,26 +506,36 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
         return false;
     }
 
+	bool inline checkArriveePosition()
+	{
+		return ABS(x_odo - consigneX) < 20 && ABS(y_odo - consigneY) < 20;
+	}
+
+	bool inline checkArriveeAngle()
+	{
+		return ABS(errorAngle) < 500;
+	}
 
     /**
-     * Sommes-nous arrivés ?
-     * On vérifie que les moteurs ne tournent plus et que le robot est arrêté
+     * Sommes-nous arrivï¿½s ?
+     * On vï¿½rifie que les moteurs ne tournent plus et que le robot est arrï¿½tï¿½
      */
     bool inline checkArrivee()
     {
-    	// TODO : vérifier aussi qu'on est bien arrivé à destination...
-        return ABS(leftPWM) < 5 && ABS(rightPWM) < 5 && ABS(currentLeftSpeed) < 10 && ABS(currentRightSpeed) < 10 && ABS(x_odo - consigneX) < 20 && ABS(y_odo - consigneY) < 20;
+        return ABS(leftPWM) < 5 && ABS(rightPWM) < 5 && ABS(currentLeftSpeed) < 10 && ABS(currentRightSpeed) < 10;
     }
 
     void inline changeModeAsserActuel(MODE_ASSER mode)
     {
+    	if(mode == ROTATION || mode == VA_AU_POINT || mode == COURBE)
+    		needArrive = true;
     	modeAsserActuel = mode;
     	rightSpeedPID.resetErrors();
     	leftSpeedPID.resetErrors();
     	translationPID.resetErrors();
     	rotationPID.resetErrors();
     	PIDvit.resetErrors();
-    	oldLeftSpeedSetpoint = currentLeftSpeed; // pour l'asser en trapèze
+    	oldLeftSpeedSetpoint = currentLeftSpeed; // pour l'asser en trapï¿½ze
     	oldRightSpeedSetpoint = currentRightSpeed;
 		oldTranslationSpeed = translationSpeed;
 		oldRotationSpeed = rotationSpeed;

@@ -22,15 +22,14 @@ using namespace std;
 
 
 /**
- * Thread d'odométrie et d'asservissement
+ * Thread d'odomï¿½trie et d'asservissement
  */
 void thread_odometrie_asser(void*)
 {
 	uint8_t debugCompteur = 0;
-	float currentLeftAcceleration, currentRightAcceleration;
-	uint16_t positionGauche[MEMOIRE_MESURE_INT]; // on introduit un effet de mémoire afin de pouvoir mesurer la vitesse sur un intervalle pas trop petit
+	uint16_t positionGauche[MEMOIRE_MESURE_INT]; // on introduit un effet de mï¿½moire afin de pouvoir mesurer la vitesse sur un intervalle pas trop petit
 	uint16_t positionDroite[MEMOIRE_MESURE_INT];
-//	int16_t vitesseGauche[MEMOIRE_MESURE]; // on introduit un effet de mémoire afin de pouvoir mesurer l'accélération sur un intervalle pas trop petit
+//	int16_t vitesseGauche[MEMOIRE_MESURE]; // on introduit un effet de mï¿½moire afin de pouvoir mesurer l'accï¿½lï¿½ration sur un intervalle pas trop petit
 //	int16_t vitesseDroite[MEMOIRE_MESURE];
 	uint8_t indiceMemoire = 0;
 	x_odo = 0;
@@ -105,7 +104,7 @@ void thread_odometrie_asser(void*)
 	HAL_TIM_Encoder_Init(&timer2, &encoder2);
 	HAL_TIM_Encoder_Start_IT(&timer2, TIM_CHANNEL_1);
 
-	// On attend l'initialisation de xyo avant de démarrer l'odo, sinon ça casse tout.
+	// On attend l'initialisation de xyo avant de dï¿½marrer l'odo, sinon ï¿½a casse tout.
 	while(!startOdo)
 		vTaskDelay(5);
 
@@ -117,15 +116,15 @@ void thread_odometrie_asser(void*)
 
 	while(1)
 	{
-		// Ce delay permet d'avoir un appel bien régulier
+		// Ce delay permet d'avoir un appel bien rï¿½gulier
 		vTaskDelayUntil(&xLastWakeTime, periode);
 
-		// ODOMÉTRIE
+		// ODOMï¿½TRIE
 		while(xSemaphoreTake(odo_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 		currentLeftAcceleration = -currentLeftSpeed;
 
-		// La formule d'odométrie est corrigée pour tenir compte des trajectoires
-		// (au lieu d'avoir une approximation linéaire, on a une approximation circulaire)
+		// La formule d'odomï¿½trie est corrigï¿½e pour tenir compte des trajectoires
+		// (au lieu d'avoir une approximation linï¿½aire, on a une approximation circulaire)
 		tmp = TICK_CODEUR_GAUCHE;
 		delta_tick_gauche = tmp - old_tick_gauche;
 		old_tick_gauche = tmp;
@@ -157,24 +156,24 @@ void thread_odometrie_asser(void*)
 		else
 			vitesseRotationReelle = (currentLeftSpeed - currentRightSpeed) / 2;
 
-		// Calcul issu de Thalès. Positif si le robot tourne vers la droite (pour être cohérent avec l'orientation)
+		// Calcul issu de Thalï¿½s. Positif si le robot tourne vers la droite (pour ï¿½tre cohï¿½rent avec l'orientation)
 //		courbureReelle = 2 / LONGUEUR_CODEUSE_A_CODEUSE_EN_MM * (currentLeftSpeed - currentRightSpeed) / (currentLeftSpeed + currentRightSpeed);
 
 		indiceMemoire++;
 		indiceMemoire %= MEMOIRE_MESURE_INT;
 
-		// on évite les formules avec "/ 2", qui font perdre de l'information et qui peuvent s'accumuler
+		// on ï¿½vite les formules avec "/ 2", qui font perdre de l'information et qui peuvent s'accumuler
 
 		distanceTick = delta_tick_droit + delta_tick_gauche;
 		distance = TICK_TO_MM(distanceTick);
 
-		// gestion de la symétrie : en effet, toutes les variables sont symétrisées, y compris l'orientation
+		// gestion de la symï¿½trie : en effet, toutes les variables sont symï¿½trisï¿½es, y compris l'orientation
 		if(!isSymmetry)
 			deltaOrientationTick = delta_tick_droit - delta_tick_gauche;
 		else
 			deltaOrientationTick = delta_tick_gauche - delta_tick_droit;
 
-		// l'erreur à cause du "/2" ne s'accumule pas
+		// l'erreur ï¿½ cause du "/2" ne s'accumule pas
 		orientationMoyTick = currentAngle + deltaOrientationTick/2;
 
 		// modulo
@@ -202,12 +201,12 @@ void thread_odometrie_asser(void*)
 //		serial_rb.printfln("orientationMoyTick = %d", orientationMoyTick);
 //		serial_rb.printfln("orientation = %d", (int)(orientation_odo*1000));
 
-		if(deltaOrientationTick == 0) // afin d'éviter la division par 0
+		if(deltaOrientationTick == 0) // afin d'ï¿½viter la division par 0
 			k = 1.;
 		else
 			k = sin(deltaOrientation/2)/(deltaOrientation/2);
 
-		if(distance == 0) //  ça va arriver quand on fait par exemple une rotation sur place.
+		if(distance == 0) //  ï¿½a va arriver quand on fait par exemple une rotation sur place.
 			courbureReelle = 0;
 		else
 			courbureReelle = deltaOrientationTick / distance;
@@ -230,7 +229,7 @@ void thread_odometrie_asser(void*)
 			debugCompteur++;
 		}
 
-		// ASSERVISSEMENT
+		//ï¿½ASSERVISSEMENT
         if(checkBlocageMecanique())
         {
         	changeModeAsserActuel(STOP);
@@ -240,14 +239,22 @@ void thread_odometrie_asser(void*)
 
 //       modeAsserActuel = ASSER_OFF;
 
-		// on empêche toute modification de consigne
+        bool check = true;
+
+		// on empï¿½che toute modification de consigne
 		while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 		if(modeAsserActuel == ROTATION)
+		{
 			controlRotation();
+			check = checkArriveeAngle();
+		}
 		else if(modeAsserActuel == STOP)
 			controlStop();
 		else if(modeAsserActuel == VA_AU_POINT)
+		{
 			controlVaAuPoint();
+			check = checkArriveePosition();
+		}
 		else if(modeAsserActuel == COURBE)
 			controlTrajectoire();
 		else if(modeAsserActuel == ASSER_VITESSE)
@@ -258,15 +265,15 @@ void thread_odometrie_asser(void*)
 			MOTEUR_GAUCHE = 0;
 		}
 
-		if(needArrive && checkArrivee()) // gestion de la fin du mouvement
+		if(needArrive && check && checkArrivee()) // gestion de la fin du mouvement
 		{
-			needArrive = false;
 			changeModeAsserActuel(VA_AU_POINT);
+			needArrive = false;
 			consigneX = x_odo;
 			consigneY = y_odo;
 			sendArrive();
 		}
-		// si ça vaut ASSER_OFF, il n'y a pas d'asser
+		// si ï¿½a vaut ASSER_OFF, il n'y a pas d'asser
 		xSemaphoreGive(consigneAsser_mutex);
 
 	}
