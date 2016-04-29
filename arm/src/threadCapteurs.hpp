@@ -179,6 +179,7 @@ void thread_capteurs(void*)
     __ADC1_CLK_ENABLE();
 
     // Pin analogiques :�A0 A1 A2 A3 A4 A5 A6 A7 B0 B1 C0 C1 C2 C3 C4 C5
+    // (A0 n'est pas utilisé)
 
     gpioInit.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
     gpioInit.Mode = GPIO_MODE_ANALOG;
@@ -198,20 +199,6 @@ void thread_capteurs(void*)
     ADC_HandleTypeDef g_AdcHandle;
 
     g_AdcHandle.Instance = ADC1;
-/*
-    g_AdcHandle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
-    g_AdcHandle.Init.Resolution = ADC_RESOLUTION_12B;
-    g_AdcHandle.Init.ScanConvMode = ENABLE;
-    g_AdcHandle.Init.ContinuousConvMode = ENABLE;
-    g_AdcHandle.Init.DiscontinuousConvMode = DISABLE;
-    g_AdcHandle.Init.NbrOfDiscConversion = 0;
-    g_AdcHandle.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-    g_AdcHandle.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC1;
-    g_AdcHandle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-    g_AdcHandle.Init.NbrOfConversion = 1; // TODO
-    g_AdcHandle.Init.DMAContinuousRequests = ENABLE;
-    g_AdcHandle.Init.EOCSelection = DISABLE;
-*/
 
     g_AdcHandle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
     g_AdcHandle.Init.Resolution = ADC_RESOLUTION_12B;
@@ -228,65 +215,26 @@ void thread_capteurs(void*)
 
     HAL_ADC_Init(&g_AdcHandle);
 
-    adcChannel.Channel = ADC_CHANNEL_1;
     adcChannel.Rank = 1;
     adcChannel.SamplingTime = ADC_SAMPLETIME_480CYCLES;
     adcChannel.Offset = 0;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
 
-/*
-    adcChannel.Channel = ADC_CHANNEL_0;
-    adcChannel.Rank = 1;
-    adcChannel.SamplingTime = ADC_SAMPLETIME_480CYCLES;
-    adcChannel.Offset = 0;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-    adcChannel.Channel = ADC_CHANNEL_1;
-    adcChannel.Rank = 2;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-    adcChannel.Channel = ADC_CHANNEL_2;
-    adcChannel.Rank = 3;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-    adcChannel.Channel = ADC_CHANNEL_3;
-    adcChannel.Rank = 4;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-    adcChannel.Channel = ADC_CHANNEL_4;
-    adcChannel.Rank = 5;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-    adcChannel.Channel = ADC_CHANNEL_5;
-    adcChannel.Rank = 6;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-    adcChannel.Channel = ADC_CHANNEL_6;
-    adcChannel.Rank = 7;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-    adcChannel.Channel = ADC_CHANNEL_7;
-    adcChannel.Rank = 8;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-    adcChannel.Channel = ADC_CHANNEL_8;
-    adcChannel.Rank = 9;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-    adcChannel.Channel = ADC_CHANNEL_9;
-    adcChannel.Rank = 10;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-    adcChannel.Channel = ADC_CHANNEL_10;
-    adcChannel.Rank = 11;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-    adcChannel.Channel = ADC_CHANNEL_11;
-    adcChannel.Rank = 12;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-    adcChannel.Channel = ADC_CHANNEL_12;
-    adcChannel.Rank = 13;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-    adcChannel.Channel = ADC_CHANNEL_13;
-    adcChannel.Rank = 14;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-    adcChannel.Channel = ADC_CHANNEL_14;
-    adcChannel.Rank = 15;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-    adcChannel.Channel = ADC_CHANNEL_15;
-    adcChannel.Rank = 16;
-    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
-*/
-    HAL_ADC_Start(&g_AdcHandle);
+    uint32_t canaux[] = {
+    		ADC_CHANNEL_1, // Lipo
+			ADC_CHANNEL_2, // IR
+			ADC_CHANNEL_3,
+			ADC_CHANNEL_4,
+			ADC_CHANNEL_5,
+			ADC_CHANNEL_6,
+			ADC_CHANNEL_7,
+			ADC_CHANNEL_8,
+			ADC_CHANNEL_9,
+			ADC_CHANNEL_10,
+			ADC_CHANNEL_11,
+			ADC_CHANNEL_12,
+			ADC_CHANNEL_13,
+			ADC_CHANNEL_14,
+			ADC_CHANNEL_15};
 
     uint16_t capteurs[14];
 
@@ -366,6 +314,11 @@ void thread_capteurs(void*)
 	 * Interrupteurs :�pull-up
 	 */
 	GPIO_PinState tmp;
+
+    adcChannel.Channel = canaux[0];
+    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+    HAL_ADC_Start(&g_AdcHandle);
+
 	while(!matchDemarre)
 	{
 		/**
@@ -497,6 +450,8 @@ void thread_capteurs(void*)
 
 	}
 
+    HAL_ADC_Stop(&g_AdcHandle);
+
 	while(1)
 	{
 		uint16_t x, y, orientation;
@@ -511,16 +466,28 @@ void thread_capteurs(void*)
 			marcheAvantTmp = marcheAvant;
 		xSemaphoreGive(odo_mutex);
 
-//		if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
-//			HAL_ADC_GetValue(&g_AdcHandle);// ADC en rab
+	    adcChannel.Channel = canaux[0];
+//	    adcChannel.Channel = ADC_CHANNEL_11;
+	    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+	    HAL_ADC_Start(&g_AdcHandle);
 
 		if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
 			ledLipo(HAL_ADC_GetValue(&g_AdcHandle));
 
-/*		for(int i = 0; i < 14; i++)
+	    HAL_ADC_Stop(&g_AdcHandle);
+
+		for(int i = 0; i < 14; i++)
+		{
+		    adcChannel.Channel = canaux[i+1];
+		    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
+		    HAL_ADC_Start(&g_AdcHandle);
+
 			if(HAL_ADC_PollForConversion(&g_AdcHandle, 1000000) == HAL_OK)
 				capteurs[i] = HAL_ADC_GetValue(&g_AdcHandle);
-*/
+
+		    HAL_ADC_Stop(&g_AdcHandle);
+		}
+
 		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, (int16_t) vitesseLineaireReelle, (int16_t) vitesseRotationReelle, capteurs);
 		vTaskDelay(300);
 
