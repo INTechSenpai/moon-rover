@@ -54,7 +54,7 @@ public class RobotReal extends Robot
 		int x = config.getInt(ConfigInfo.X_DEPART);
 		int y = config.getInt(ConfigInfo.Y_DEPART);
 		double o = config.getDouble(ConfigInfo.O_DEPART);
-		cinematique = new Cinematique(x, y, o, true, 0, 0, 0);
+		cinematique = new Cinematique(x, y, o, true, 0, 0, 0, Speed.STANDARD);
 		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
 		/*// TODO envoyer le pid quand les valeurs sont trouvées
 		// Envoie des constantes du pid
