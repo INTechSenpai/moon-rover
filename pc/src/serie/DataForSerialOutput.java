@@ -380,9 +380,23 @@ public class DataForSerialOutput implements Service
 	 */
 	public synchronized void utiliseActionneurs(ActuatorOrder elem)
 	{
-		byte[] out = new byte[2+2];
+		byte[] out = new byte[2+4];
 		out[COMMANDE] = SerialProtocol.OUT_ACTIONNEUR.code;
-		out[PARAM] = (byte) (0); // TODO protocole AX12
+		out[PARAM] = (byte) (elem.id);
+		out[PARAM + 1] = (byte) (elem.angle >> 8);
+		out[PARAM + 2] = (byte) (elem.angle & 0xFF);
+		bufferBassePriorite.add(out);
+		notify();
+	}
+	
+	// TODO utilisé pour le debug uniquement
+	public synchronized void utiliseActionneurs(int id, int angle)
+	{
+		byte[] out = new byte[2+4];
+		out[COMMANDE] = SerialProtocol.OUT_ACTIONNEUR.code;
+		out[PARAM] = (byte) (id);
+		out[PARAM + 1] = (byte) (angle >> 8);
+		out[PARAM + 2] = (byte) (angle & 0xFF);
 		bufferBassePriorite.add(out);
 		notify();
 	}

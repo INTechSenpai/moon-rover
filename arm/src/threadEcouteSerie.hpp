@@ -25,17 +25,44 @@ using namespace std;
  */
 void thread_ecoute_serie(void*)
 {
-
 	/**
 	 * Initialisation des s�ries
 	 */
 	serial_rb.init(460800, UART_MODE_TX_RX);
-//	serial_ax.init(57600, UART_MODE_TX);
-	serial_ax.init(9600, UART_MODE_TX);
+	serial_ax.init(57600, UART_MODE_TX);
 
-	ax12 = new AX<Uart<3>>(0, 0, 1023);
-	vTaskDelay(1000);
-	ax12->goTo(300);
+	for(uint8_t i = 0; i < NB_AX12; i++)
+		ax12[i] = new AX<Uart<3>>(i, 0, 1023);
+/*
+	uint8_t idax = 3;
+
+	serial_ax.init(1000000, UART_MODE_TX);
+	AX<Uart<3>>* ax = new AX<Uart<3>>(idax, 0, 1023);
+	vTaskDelay(200);
+	serial_ax.send_char(0xFF); // set baudrate
+	serial_ax.send_char(0xFF);
+	serial_ax.send_char(0xFE);
+	serial_ax.send_char(0x04);
+	serial_ax.send_char(0x03);
+	serial_ax.send_char(0x04);
+	serial_ax.send_char(0x22);
+	serial_ax.send_char(0xD4);
+
+	vTaskDelay(200);
+	serial_ax.init(57600, UART_MODE_TX);
+	vTaskDelay(200);
+	serial_ax.send_char(0xFF); // set id
+	serial_ax.send_char(0xFF);
+	serial_ax.send_char(0xFE);
+	serial_ax.send_char(0x04);
+	serial_ax.send_char(0x03);
+	serial_ax.send_char(0x03);
+	serial_ax.send_char(idax);
+	serial_ax.send_char(0xF7-idax);
+
+	vTaskDelay(200);
+	ax->goTo(300);	// test.*/
+
 	uint16_t idDernierPaquet = -1;
 	Hook* hookActuel;
 	uint8_t nbcallbacks;
@@ -123,11 +150,13 @@ void thread_ecoute_serie(void*)
 				}
 				else if(lecture[COMMANDE] == IN_ACTIONNEURS)
 				{
-					serial_rb.read_char(lecture+(++index));
+					serial_rb.read_char(lecture+(++index)); // id
+					serial_rb.read_char(lecture+(++index)); // ordre
+					serial_rb.read_char(lecture+(++index)); // ordre
 					if(!verifieChecksum(lecture, index))
 						askResend(idPaquet);
 					else
-						ax12->goTo(lecture[PARAM]);
+						ax12[lecture[PARAM]]->goTo((lecture[PARAM + 1] << 8) + lecture[PARAM + 2]);
 				}
 				else if(lecture[COMMANDE] == IN_STOP)
 				{
@@ -531,7 +560,7 @@ void thread_ecoute_serie(void*)
 							serial_rb.read_char(lecture+(++index));
 							serial_rb.read_char(lecture+(++index));
 							uint16_t angle = (lecture[index - 1] << 8) + lecture[index];
-							Exec_Act* tmp = new(pvPortMalloc(sizeof(Exec_Act))) Exec_Act(ax12, angle);
+							Exec_Act* tmp = new(pvPortMalloc(sizeof(Exec_Act))) Exec_Act(ax12[0], angle);
 							hookActuel->insert(tmp, i);
 						}
 					}

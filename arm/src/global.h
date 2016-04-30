@@ -10,6 +10,19 @@
 #define SERIE_TIMEOUT 10
 #define TAILLE_BUFFER_ECRITURE_SERIE	50
 
+#define AX12_AVANT_GAUCHE 4
+#define AX12_AVANT_DROIT 3
+#define AX12_ARRIERE_GAUCHE 1
+#define AX12_ARRIERE_DROIT 2
+#define AX12_PORTE_CANNE 5
+#define AX12_LACHE_POISSON 6
+
+#define AX12_GROS_1 0
+#define AX12_GROS_2 7
+#define AX12_GROS_3 8
+
+#define NB_AX12 9
+
 #define ATTENTE_MUTEX_MS 1
 #define FREQUENCE_ODO_ASSER 200 // en appel / s
 #define MEMOIRE_MESURE_FLOAT 25.
@@ -65,7 +78,7 @@ extern volatile int16_t asserVitesseDroite;
 extern SemaphoreHandle_t odo_mutex;
 extern SemaphoreHandle_t consigneAsser_mutex;
 extern Uart<3> serial_ax;
-extern AX<Uart<3>>* ax12;
+extern AX<Uart<3>>* ax12[NB_AX12];
 
 extern volatile bool startOdo;
 extern volatile bool matchDemarre;
