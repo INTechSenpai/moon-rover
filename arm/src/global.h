@@ -31,15 +31,16 @@
 #define RAD_TO_TICK(x) ((x * TICKS_PAR_TOUR_ROBOT) / (2 * M_PI))
 #define TICK_TO_MM(x) (x * MM_PAR_TICK / 2)
 
-#define DELAI_ERREUR_MECA_MS	3000 // durant combien de ms faut-il qu'il y ait un problème mécanique pour annuler un mouvement ?
+#define DELAI_ERREUR_MECA_MS	150 // durant combien de ms faut-il qu'il y ait un problï¿½me mï¿½canique pour annuler un mouvement ?
 #define DELAI_ERREUR_MECA_APPEL ((DELAI_ERREUR_MECA_MS * FREQUENCE_ODO_ASSER) / 1000) // 1000 pour passer des ms aux s
 
 enum MODE_ASSER {ASSER_OFF, // pas d'asser
-	STOP, // le robot doit s'arrêter le plus vite possible
+	STOP, // le robot doit s'arrï¿½ter le plus vite possible
 	ROTATION, // le robot doit tourner
-	VA_AU_POINT, // le robot doit arriver à un point. Il n'y a aucun asservissement à la trajectoire : mieux vaut utiliser ce mode pour des mouvements rectilignes
-	ASSER_VITESSE, // le robot doit avancer à vitesse constante. utilisé pour debugger l'asser en vitesse
-	COURBE}; // le robot est asservi à une trajectoire courbe en clothoïde
+	VA_AU_POINT, // le robot doit arriver ï¿½ un point. Il n'y a aucun asservissement ï¿½ la trajectoire : mieux vaut utiliser ce mode pour des mouvements rectilignes
+	SUR_PLACE, // asservissement sur place
+	ASSER_VITESSE, // le robot doit avancer ï¿½ vitesse constante. utilisï¿½ pour debugger l'asser en vitesse
+	COURBE}; // le robot est asservi ï¿½ une trajectoire courbe en clothoï¿½de
 enum DirectionStrategy {FORCE_BACK_MOTION, FORCE_FORWARD_MOTION, FASTEST};
 
 extern std::vector<Hook*> listeHooks;
@@ -50,10 +51,10 @@ extern DirectionStrategy strategy;
 extern volatile bool ping;
 
 /**
- * x_odo, y_odo et orientation_odo sont exprimés dans le repère symétrisé, qui n'est pas forcément le repère réel
+ * x_odo, y_odo et orientation_odo sont exprimï¿½s dans le repï¿½re symï¿½trisï¿½, qui n'est pas forcï¿½ment le repï¿½re rï¿½el
  */
-extern volatile double x_odo, y_odo; // abscisse et ordonnée exprimées en mm
-extern volatile double orientation_odo; // exprimé en radians
+extern volatile double x_odo, y_odo; // abscisse et ordonnï¿½e exprimï¿½es en mm
+extern volatile double orientation_odo; // exprimï¿½ en radians
 extern volatile double cos_orientation_odo, sin_orientation_odo;
 extern volatile double courbure_odo; // en mm^-1
 

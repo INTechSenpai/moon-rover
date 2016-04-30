@@ -121,7 +121,9 @@ void thread_odometrie_asser(void*)
 
 		// ODOM�TRIE
 		while(xSemaphoreTake(odo_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+
 		currentLeftAcceleration = -currentLeftSpeed;
+//		impulsionLeft = -currentLeftAcceleration;
 
 		// La formule d'odom�trie est corrig�e pour tenir compte des trajectoires
 		// (au lieu d'avoir une approximation lin�aire, on a une approximation circulaire)
@@ -131,17 +133,21 @@ void thread_odometrie_asser(void*)
 		speed = tmp - positionGauche[indiceMemoire];
 		currentLeftSpeed = speed / MEMOIRE_MESURE_FLOAT;
 		currentLeftAcceleration += currentLeftSpeed;
+//		impulsionLeft += currentLeftAcceleration;
+
 		positionGauche[indiceMemoire] = tmp;
 //		vitesseGauche[indiceMemoire] = currentLeftSpeed;
 
+//		impulsionRight = -currentRightAcceleration;
 		currentRightAcceleration = -currentRightSpeed;
-
 		tmp = TICK_CODEUR_DROIT;
 		delta_tick_droit = tmp - old_tick_droit;
 		old_tick_droit = tmp;
 		speed = tmp - positionDroite[indiceMemoire];
 		currentRightSpeed = speed / MEMOIRE_MESURE_FLOAT;
 		currentRightAcceleration += currentRightSpeed;
+//		impulsionRight += currentRightAcceleration;
+
 //		currentRightAcceleration = (currentRightSpeed - vitesseDroite[indiceMemoire]) / MEMOIRE_MESURE;
 		positionDroite[indiceMemoire] = tmp;
 //		vitesseDroite[indiceMemoire] = currentLeftSpeed;
@@ -223,21 +229,21 @@ void thread_odometrie_asser(void*)
 		{
 			if((debugCompteur & 0x07) == 0)
 //				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int32_t)(errorLeftSpeed*100), (int32_t)(errorRightSpeed*100), vitesseLineaireReelle, courbureReelle);
-//				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int16_t)(errorTranslation), (uint16_t)(errorAngle), vitesseLineaireReelle, courbureReelle);
-				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftAcceleration*1000), (int32_t)(currentRightAcceleration*1000), (int16_t)(errorTranslation), (int16_t)(errorAngle), vitesseLineaireReelle, courbureReelle);
+				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int16_t)(errorTranslation), (uint16_t)(errorAngle), vitesseLineaireReelle, courbureReelle);
+//				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(leftSpeedSetpoint*100), (int32_t)(currentLeftAcceleration*1000), (int32_t)(currentRightAcceleration*1000), vitesseLineaireReelle, courbureReelle);
 //				sendDebug(leftPWM, rightPWM, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), errorTranslation, errorAngle, vitesseLineaireReelle, courbureReelle);
 			debugCompteur++;
 		}
 
 		//�ASSERVISSEMENT
-        if(checkBlocageMecanique())
+		// FIXME
+/*        if(needArrive && checkBlocageMecanique())
         {
-        	changeModeAsserActuel(STOP);
-//            modeAsserActuel = ASSER_OFF;
+        	changeModeAsserActuel(SUR_PLACE);
+			consigneX = x_odo;
+			consigneY = y_odo;
             sendProblemeMeca();
-        }
-
-//       modeAsserActuel = ASSER_OFF;
+        }*/
 
         bool check = true;
 
@@ -250,6 +256,8 @@ void thread_odometrie_asser(void*)
 		}
 		else if(modeAsserActuel == STOP)
 			controlStop();
+		else if(modeAsserActuel == SUR_PLACE)
+			controlVaAuPoint();
 		else if(modeAsserActuel == VA_AU_POINT)
 		{
 			controlVaAuPoint();
@@ -265,13 +273,13 @@ void thread_odometrie_asser(void*)
 			MOTEUR_GAUCHE = 0;
 		}
 
-		if(needArrive && check && checkArrivee()) // gestion de la fin du mouvement
+		if(check && checkArrivee()) // gestion de la fin du mouvement
 		{
-			changeModeAsserActuel(VA_AU_POINT);
-			needArrive = false;
+			if(needArrive)
+				sendArrive();
+			changeModeAsserActuel(SUR_PLACE);
 			consigneX = x_odo;
 			consigneY = y_odo;
-			sendArrive();
 		}
 		// si �a vaut ASSER_OFF, il n'y a pas d'asser
 		xSemaphoreGive(consigneAsser_mutex);

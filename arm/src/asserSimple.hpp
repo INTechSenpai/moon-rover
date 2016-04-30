@@ -71,7 +71,6 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
  * 			autrement les unit�es ci-dessus ne seront plus valables.
  */
 
-
 	// CONSIGNES MODIFI�ES DEPUIS D'AUTRES THREADS
     volatile float maxTranslationSpeed = VITESSE_LINEAIRE_MAX;
     volatile float maxRotationSpeed = VITESSE_ROTATION_MAX;
@@ -82,6 +81,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	volatile uint32_t rotationSetpoint;		// angle absolu vis� (en ticks)
 
 	float currentLeftAcceleration, currentRightAcceleration;
+//	float impulsionLeft, impulsionRight;
 
 //	int32_t currentRightAcceleration;
 //	int32_t currentLeftAcceleration;
@@ -89,13 +89,13 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	float rightSpeedSetpoint, oldRightSpeedSetpoint = 0;
 
 	//	Asservissement en vitesse du moteur droit
-	float currentRightSpeed;		// ticks/seconde
+	float currentRightSpeed;		// ticks / appel
 	float errorRightSpeed;
 	float rightPWM = 0;
 	PID rightSpeedPID(&errorRightSpeed, &rightPWM, 5);
 
 	//	Asservissement en vitesse du moteur gauche
-	float currentLeftSpeed;		// ticks/seconde
+	float currentLeftSpeed;		// ticks / appel
 	float errorLeftSpeed;
 	float leftPWM = 0;
 	PID leftSpeedPID(&errorLeftSpeed, &leftPWM, 5);
@@ -156,13 +156,6 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	else
     		rotationSetpoint = (TICKS_PAR_TOUR_ROBOT + tmp);
 
-		if(!marcheAvant)
-		{
-			// on inverse la consigne (puisqu'on va en marche arri�re)
-			rotationSetpoint += TICKS_PAR_TOUR_ROBOT / 2;
-			if(rotationSetpoint > TICKS_PAR_TOUR_ROBOT)
-				rotationSetpoint -= TICKS_PAR_TOUR_ROBOT;
-		}
     }
 
     /**
@@ -348,12 +341,20 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	updateErrorTranslation();
 
 		translationPID.compute();	// Actualise la valeur de 'translationSpeed'
-		marcheAvant = errorTranslation >= 0;
 
     	// On ne met pas � jour l'orientation si on est � moins de 3 cm de l'arriv�e. Sinon, en d�passant la consigne le robot voudra se retourner�
 		if(errorTranslation >= 30/MM_PAR_TICK)
 		{
-			updateRotationSetpoint(); // g�re la marche arri�re
+			updateRotationSetpoint();
+
+			if(errorTranslation < 0) // gestion de la marche arrière
+			{
+				// on inverse la consigne (puisqu'on va en marche arri�re)
+				rotationSetpoint += TICKS_PAR_TOUR_ROBOT / 2;
+				if(rotationSetpoint > TICKS_PAR_TOUR_ROBOT)
+					rotationSetpoint -= TICKS_PAR_TOUR_ROBOT;
+			}
+
 			updateErrorAngle();
 			rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
 		}
@@ -471,16 +472,16 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
      */
     bool inline isPhysicallyStoppedVitesse()
     {
-    	return (MOTEUR_DROIT > 5)
-    			&& (MOTEUR_GAUCHE > 5)
-    			&& ABS(currentLeftSpeed) < 10
-				&& ABS(currentRightSpeed) < 10;
+    	return MOTEUR_DROIT > 5
+    			&& MOTEUR_GAUCHE > 5
+    			&& ABS(leftSpeedSetpoint) > 10 && ABS(leftSpeedSetpoint - currentLeftSpeed) > 0.5*leftSpeedSetpoint
+				&& ABS(rightSpeedSetpoint) > 10 && ABS(rightSpeedSetpoint - currentRightSpeed) > 0.5*rightSpeedSetpoint;
     }
 
     bool inline isPhysicallyStoppedAcc()
     {
-    	return (ABS(currentRightAcceleration) > 5000
-						|| ABS(currentLeftAcceleration) > 5000);
+    	return ABS(currentRightAcceleration) > 8
+						|| ABS(currentLeftAcceleration) > 8;
     }
 
     // Y a-t-il un probl�me m�canique ?
@@ -529,6 +530,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     {
     	if(mode == ROTATION || mode == VA_AU_POINT || mode == COURBE)
     		needArrive = true;
+    	else
+    		needArrive = false;
     	modeAsserActuel = mode;
     	rightSpeedPID.resetErrors();
     	leftSpeedPID.resetErrors();

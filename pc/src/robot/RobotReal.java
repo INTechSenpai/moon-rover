@@ -56,6 +56,8 @@ public class RobotReal extends Robot
 		double o = config.getDouble(ConfigInfo.O_DEPART);
 		cinematique = new Cinematique(x, y, o, true, 0, 0, 0, Speed.STANDARD);
 		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
+		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
+		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
 		/*// TODO envoyer le pid quand les valeurs sont trouvées
 		// Envoie des constantes du pid
 		stm.setPIDconstVitesseGauche(config.getDouble(ConfigInfo.CONST_KP_VIT_GAUCHE), config.getDouble(ConfigInfo.CONST_KD_VIT_GAUCHE));
@@ -209,9 +211,14 @@ public class RobotReal extends Robot
 			RequeteType type;
 			do {
 				if(requete.isEmpty())
-					requete.wait();
+				{
+					// Si au bout de 3s le robot n'a toujours rien répondu,
+					// on suppose un blocage mécanique
+					requete.set(RequeteType.BLOCAGE_MECANIQUE);
+					requete.wait(3000);
+				}
 
-				type = requete.get();
+				type = requete.getAndClear();
 				if(type == RequeteType.BLOCAGE_MECANIQUE)
 					throw new UnableToMoveException();
 				else if(type == RequeteType.ENNEMI_SUR_CHEMIN)
@@ -226,6 +233,12 @@ public class RobotReal extends Robot
 	public void setCinematique(Cinematique cinematique)
 	{
 		cinematique.copy(cinematique);
+	}
+
+	// TODO à virer (utilisé uniquement pour les tests)
+	public Cinematique getCinematique()
+	{
+		return cinematique;
 	}
 
 }

@@ -30,10 +30,12 @@ void thread_ecoute_serie(void*)
 	 * Initialisation des s�ries
 	 */
 	serial_rb.init(460800, UART_MODE_TX_RX);
-	serial_ax.init(57600, UART_MODE_TX);
+//	serial_ax.init(57600, UART_MODE_TX);
+	serial_ax.init(9600, UART_MODE_TX);
 
 	ax12 = new AX<Uart<3>>(0, 0, 1023);
-
+	vTaskDelay(1000);
+	ax12->goTo(300);
 	uint16_t idDernierPaquet = -1;
 	Hook* hookActuel;
 	uint8_t nbcallbacks;
@@ -156,7 +158,7 @@ void thread_ecoute_serie(void*)
 					else
 					{
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
-						changeModeAsserActuel(VA_AU_POINT);
+						changeModeAsserActuel(SUR_PLACE);
 						consigneX = x_odo;
 						consigneY = y_odo;
 						xSemaphoreGive(consigneAsser_mutex);
@@ -224,6 +226,8 @@ void thread_ecoute_serie(void*)
 							distance = -distance;
 						else if(lecture[COMMANDE] == IN_AVANCER_REVERSE && marcheAvant)
 							distance = -distance;
+
+						marcheAvant = distance >= 0;
 
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 						changeModeAsserActuel(VA_AU_POINT);
@@ -375,7 +379,7 @@ void thread_ecoute_serie(void*)
 							orientation_odo = o/1000.;
 
 							// On l'asservit sur place
-							changeModeAsserActuel(VA_AU_POINT);
+							changeModeAsserActuel(SUR_PLACE);
 							consigneX = x;
 							consigneY = y;
 		//					orientationTick = RAD_TO_TICK(parseInt(lecture, &(++index))/1000.);
