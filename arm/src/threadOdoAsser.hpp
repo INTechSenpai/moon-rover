@@ -247,9 +247,9 @@ void thread_odometrie_asser(void*)
 
         bool check = true;
 
-/*        MOTEUR_DROIT = 150;
+        MOTEUR_DROIT = 150;
         MOTEUR_GAUCHE = 150;
-        continue;*/
+        continue;
 		// on emp�che toute modification de consigne
 		while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 		if(pauseAsser)

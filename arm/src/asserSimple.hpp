@@ -345,16 +345,17 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		if(ABS(errorTranslation) >= 30/MM_PAR_TICK)
 		{
 			updateRotationSetpoint();
-
+/*
 			if(errorTranslation < 0) // gestion de la marche arrière
 			{
 				// on inverse la consigne (puisqu'on va en marche arri�re)
 				rotationSetpoint += TICKS_PAR_TOUR_ROBOT / 2;
 				if(rotationSetpoint > TICKS_PAR_TOUR_ROBOT)
 					rotationSetpoint -= TICKS_PAR_TOUR_ROBOT;
-			}
+			}*/
 
 			updateErrorAngle();
+			updateErrorAngleDemiPlan();
 			rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
 		}
 		else // si on est trop proche, on ne tourne plus
