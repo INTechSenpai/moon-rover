@@ -155,7 +155,6 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     		rotationSetpoint = tmp;
     	else
     		rotationSetpoint = (TICKS_PAR_TOUR_ROBOT + tmp);
-
     }
 
     /**
@@ -343,7 +342,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		translationPID.compute();	// Actualise la valeur de 'translationSpeed'
 
     	// On ne met pas � jour l'orientation si on est � moins de 3 cm de l'arriv�e. Sinon, en d�passant la consigne le robot voudra se retourner�
-		if(errorTranslation >= 30/MM_PAR_TICK)
+		if(ABS(errorTranslation) >= 30/MM_PAR_TICK)
 		{
 			updateRotationSetpoint();
 
@@ -360,7 +359,6 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		}
 		else // si on est trop proche, on ne tourne plus
 		{
-//			translationSpeed = 0;
 			rotationSpeed = 0;
 		}
 

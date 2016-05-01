@@ -11,11 +11,11 @@ import hook.Hook;
 import hook.HookFactory;
 import hook.methods.UtiliseActionneur;
 import hook.types.HookDate;
-import robot.ActuatorOrder;
 import robot.Cinematique;
 import robot.Robot;
 import robot.RobotChrono;
 import robot.Speed;
+import robot.actuator.ActuatorOrder;
 import scripts.ScriptAnticipable;
 import table.Table;
 import utils.Log;
@@ -47,7 +47,7 @@ public class SortieZoneDepart extends ScriptAnticipable {
 	{
 		ArrayList<Hook> hooks = new ArrayList<Hook>();
 		Hook hook = new HookDate(log, 2000);
-		hook.ajouter_callback(new UtiliseActionneur(ActuatorOrder.TEST));
+		hook.ajouter_callback(new UtiliseActionneur(ActuatorOrder.AX12_ARRIERE_DROIT_90));
 		hooks.add(hook);
 		robot.tourner(Math.PI, Speed.STANDARD);
 		robot.avancer(500, hooks, Speed.STANDARD);

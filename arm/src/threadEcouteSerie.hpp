@@ -33,6 +33,23 @@ void thread_ecoute_serie(void*)
 
 	for(uint8_t i = 0; i < NB_AX12; i++)
 		ax12[i] = new AX<Uart<3>>(i, 0, 1023);
+
+//	ax12[0]->goToB(60);
+//	vTaskDelay(3000);
+//	ax12[0]->goToB(145);
+
+	/*
+	ax12[0]->goToB(300-0);
+	vTaskDelay(3000);
+	ax12[0]->goToB(300-45);
+	vTaskDelay(3000);
+	ax12[0]->goToB(300-100);
+	vTaskDelay(3000);
+	ax12[0]->goToB(300-135);
+	vTaskDelay(3000);
+	ax12[0]->goToB(300-210);
+	vTaskDelay(3000);
+	ax12[0]->goToB(300-216);*/
 /*
 	uint8_t idax = 3;
 

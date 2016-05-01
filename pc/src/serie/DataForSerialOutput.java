@@ -6,8 +6,8 @@ import pathfinding.astarCourbe.arcs.ArcCourbe;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import robot.ActuatorOrder;
 import robot.Speed;
+import robot.actuator.ActuatorOrder;
 import container.Service;
 import enums.SerialProtocol;
 import utils.Config;
@@ -34,6 +34,8 @@ public class DataForSerialOutput implements Service
 		this.log = log;
 	}
 		
+	private boolean symetrie;
+	
 	private int nbPaquet = 0; // numéro du prochain paquet
 	private static final int NB_BUFFER_SAUVEGARDE = 50; // on a de la place de toute façon…
 	private volatile byte[][] derniersEnvois = new byte[NB_BUFFER_SAUVEGARDE][];
@@ -380,26 +382,16 @@ public class DataForSerialOutput implements Service
 	 */
 	public synchronized void utiliseActionneurs(ActuatorOrder elem)
 	{
+		ActuatorOrder elem2 = elem.getSymetrie(symetrie);
 		byte[] out = new byte[2+4];
 		out[COMMANDE] = SerialProtocol.OUT_ACTIONNEUR.code;
-		out[PARAM] = (byte) (elem.id);
-		out[PARAM + 1] = (byte) (elem.angle >> 8);
-		out[PARAM + 2] = (byte) (elem.angle & 0xFF);
+		out[PARAM] = (byte) (elem2.id);
+		out[PARAM + 1] = (byte) (elem2.angle >> 8);
+		out[PARAM + 2] = (byte) (elem2.angle & 0xFF);
 		bufferBassePriorite.add(out);
 		notify();
 	}
 	
-	// TODO utilisé pour le debug uniquement
-	public synchronized void utiliseActionneurs(int id, int angle)
-	{
-		byte[] out = new byte[2+4];
-		out[COMMANDE] = SerialProtocol.OUT_ACTIONNEUR.code;
-		out[PARAM] = (byte) (id);
-		out[PARAM + 1] = (byte) (angle >> 8);
-		out[PARAM + 2] = (byte) (angle & 0xFF);
-		bufferBassePriorite.add(out);
-		notify();
-	}
 /*
 	public synchronized void asserVitesse(int vitesseMax)
 	{
@@ -428,7 +420,9 @@ public class DataForSerialOutput implements Service
 
 	@Override
 	public void useConfig(Config config)
-	{}
+	{
+		symetrie = config.getSymmetry();
+	}
 	
 	/**
 	 * Envoi de tous les arcs élémentaires d'un arc courbe
