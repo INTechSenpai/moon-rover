@@ -15,7 +15,7 @@ bool inline verifieChecksum(unsigned char* m, uint8_t longueur)
 	for(uint8_t i = 0; i <= longueur; i++)
 		c += m[i];
 	serial_rb.read_char(&lu);
-	return (~c & 0xFF) == lu; // c est casté en int avant de faire ~, donc il faut vérifier uniquement l'octet de poids faible
+	return (~c & 0xFF) == lu; // c est castï¿½ en int avant de faire ~, donc il faut vï¿½rifier uniquement l'octet de poids faible
 }
 
 void inline resend(uint16_t id)
@@ -33,7 +33,7 @@ void inline resend(uint16_t id)
 		*(m+longueur-1) = ~c;
 //		serial_rb.write((char*)&longueur);
 		serial_rb.write(m, longueur);
-		// étant donné que la source peut être la même que la destination, on utilise memmove à la place de memcpy
+		// ï¿½tant donnï¿½ que la source peut ï¿½tre la mï¿½me que la destination, on utilise memmove ï¿½ la place de memcpy
 		memmove(paquetsEnvoyes[idPaquetEnvoi % TAILLE_BUFFER_ECRITURE_SERIE], m, longueur);
 		longueurPaquets[idPaquetEnvoi % TAILLE_BUFFER_ECRITURE_SERIE] = longueur;
 		idPaquetEnvoi++;
@@ -148,11 +148,8 @@ void inline sendCapteur(uint16_t x, uint16_t y, uint16_t orientation, uint8_t co
 			(uint8_t) (c[2] >> 4), (uint8_t) ((c[2] << 4) | (c[3] >> 8)), (uint8_t) (c[3]),
 			(uint8_t) (c[4] >> 4), (uint8_t) ((c[4] << 4) | (c[5] >> 8)), (uint8_t) (c[5]),
 			(uint8_t) (c[6] >> 4), (uint8_t) ((c[6] << 4) | (c[7] >> 8)), (uint8_t) (c[7]),
-			(uint8_t) (c[8] >> 4), (uint8_t) ((c[8] << 4) | (c[9] >> 8)), (uint8_t) (c[9]),
-			(uint8_t) (c[10] >> 4), (uint8_t) ((c[10] << 4) | (c[11] >> 8)), (uint8_t) (c[11]),
-			(uint8_t) (c[12] >> 4), (uint8_t) ((c[12] << 4) | (c[13] >> 8)), (uint8_t) (c[13]),
 			0};
-	send(out, 5+32);
+	send(out, 5+11+12);
 }
 
 #endif

@@ -221,22 +221,16 @@ void thread_capteurs(void*)
 
     uint32_t canaux[] = {
     		ADC_CHANNEL_1, // Lipo
-			ADC_CHANNEL_2, // IR
-			ADC_CHANNEL_3,
-			ADC_CHANNEL_4,
-			ADC_CHANNEL_5,
-			ADC_CHANNEL_6,
-			ADC_CHANNEL_7,
-			ADC_CHANNEL_8,
-			ADC_CHANNEL_9,
-			ADC_CHANNEL_10,
-			ADC_CHANNEL_11,
-			ADC_CHANNEL_12,
-			ADC_CHANNEL_13,
-			ADC_CHANNEL_14,
-			ADC_CHANNEL_15};
+			ADC_CHANNEL_9, // IR avant droite
+			ADC_CHANNEL_14, // IR avant gauche
+			ADC_CHANNEL_4, // IR arrière droit
+			ADC_CHANNEL_5, // IR arrière gauche
+			ADC_CHANNEL_6, // IR objet devant
+			ADC_CHANNEL_7, // IR objet devant
+			ADC_CHANNEL_8, // IR objet arrière
+			ADC_CHANNEL_9}; // IR objet arrière
 
-    uint16_t capteurs[14];
+    uint16_t capteurs[8];
 
 	/**
 	 * Configuration des sorties
@@ -476,7 +470,7 @@ void thread_capteurs(void*)
 
 	    HAL_ADC_Stop(&g_AdcHandle);
 
-		for(int i = 0; i < 14; i++)
+		for(uint8_t i = 0; i < 8; i++)
 		{
 		    adcChannel.Channel = canaux[i+1];
 		    HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);

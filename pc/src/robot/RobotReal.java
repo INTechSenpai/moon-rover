@@ -30,6 +30,10 @@ public class RobotReal extends Robot
 	private RequeteSTM requete;
 	private int distanceDegagement;
 	private int tempsAttente;
+	
+	private boolean sableDevant = false;
+	private boolean sableDerriere = false;
+	
 	// Constructeur
 	public RobotReal(DataForSerialOutput stm, Log log, RequeteSTM requete)
  	{
@@ -240,6 +244,22 @@ public class RobotReal extends Robot
 	public Cinematique getCinematique()
 	{
 		return cinematique;
+	}
+	
+	public void setSable(boolean devant, boolean arriere)
+	{
+		sableDevant = devant;
+		sableDevant = arriere;
+	}
+
+	public boolean getSableDevant()
+	{
+		return sableDevant;
+	}
+
+	public boolean getSableDerriere()
+	{
+		return sableDerriere;
 	}
 
 }
