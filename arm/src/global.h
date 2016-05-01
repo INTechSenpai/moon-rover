@@ -81,6 +81,7 @@ extern Uart<3> serial_ax;
 extern AX<Uart<3>>* ax12[NB_AX12];
 
 extern volatile bool startOdo;
+extern volatile bool pauseAsser;
 extern volatile bool matchDemarre;
 extern volatile bool debugMode;
 extern volatile bool needArrive;

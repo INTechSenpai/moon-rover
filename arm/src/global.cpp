@@ -27,5 +27,6 @@ std::vector<Hook*> listeHooks;
 volatile bool ping = false;
 volatile bool startOdo = false;
 volatile bool matchDemarre = true; // TODO
+volatile bool pauseAsser = false;
 
 MODE_ASSER modeAsserActuel = ASSER_OFF;

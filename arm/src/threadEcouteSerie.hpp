@@ -189,12 +189,18 @@ void thread_ecoute_serie(void*)
 
 				else if(lecture[COMMANDE] == IN_PAUSE_MOVE)
 				{
-					// TODO
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+						pauseAsser = true;
 				}
 
 				else if(lecture[COMMANDE] == IN_RESUME_MOVE)
 				{
-					// TODO
+					if(!verifieChecksum(lecture, index))
+						askResend(idPaquet);
+					else
+						pauseAsser = false;
 				}
 
 				else if(lecture[COMMANDE] == IN_ASSER_POS_ACTUELLE)
@@ -573,11 +579,11 @@ void thread_ecoute_serie(void*)
 						}
 						else if(((lecture[index]) & IN_CALLBACK_MASK) == IN_CALLBACK_AX12)
 						{
-//							uint8_t nbAct = lecture[index] & ~IN_CALLBACK_MASK;
+							uint8_t nbAct = lecture[index] & ~IN_CALLBACK_MASK;
 							serial_rb.read_char(lecture+(++index));
 							serial_rb.read_char(lecture+(++index));
 							uint16_t angle = (lecture[index - 1] << 8) + lecture[index];
-							Exec_Act* tmp = new(pvPortMalloc(sizeof(Exec_Act))) Exec_Act(ax12[0], angle);
+							Exec_Act* tmp = new(pvPortMalloc(sizeof(Exec_Act))) Exec_Act(ax12[nbAct], angle);
 							hookActuel->insert(tmp, i);
 						}
 					}
