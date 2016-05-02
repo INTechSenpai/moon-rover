@@ -225,7 +225,7 @@ void thread_odometrie_asser(void*)
 		else
 			k = sin(deltaOrientation/2)/(deltaOrientation/2);
 
-		if(ABS(distanceTotale) < 20) //  �a va arriver quand on fait par exemple une rotation sur place.
+		if(ABS(distanceTotale) == 0 || modeAsserActuel == ROTATION) //  �a va arriver quand on fait par exemple une rotation sur place.
 			courbureReelle = 0;
 		else
 			courbureReelle = 1000. * deltaOrientationTotale / distanceTotale;
@@ -245,7 +245,7 @@ void thread_odometrie_asser(void*)
 		{
 			if((debugCompteur & 0x07) == 0)
 //				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int32_t)(errorLeftSpeed*100), (int32_t)(errorRightSpeed*100), (int16_t) ((rotationSetpoint * 6.28) / TICKS_PAR_TOUR_ROBOT), courbureReelle);
-				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int16_t)(errorTranslation), (uint16_t)(errorAngle), consigneVitesseLineaire - vitesseLineaireReelle, courbureReelle*100);
+				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)((consigneVitesseLineaire) - (vitesseLineaireReelle)), (int32_t)(currentRightSpeed*100), (int16_t)(errorTranslation), (uint16_t)(errorAngle), courbureReelle*100, consigneCourbure*100);
 //				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(leftSpeedSetpoint*100), (int32_t)(currentLeftAcceleration*1000), (int32_t)(currentRightAcceleration*1000), vitesseLineaireReelle, courbureReelle);
 //				sendDebug(leftPWM, rightPWM, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), errorTranslation, errorAngle, vitesseLineaireReelle, courbureReelle);
 			debugCompteur++;
@@ -289,7 +289,8 @@ void thread_odometrie_asser(void*)
 			check = checkArriveePosition();
 		}
 		else if(modeAsserActuel == COURBE)
-			controlTrajectoire();
+			controlCourbure();
+//			controlTrajectoire();
 		else if(modeAsserActuel == ASSER_VITESSE)
 			controlVitesse();
 		else if(modeAsserActuel == ASSER_OFF)
@@ -297,7 +298,7 @@ void thread_odometrie_asser(void*)
 			MOTEUR_DROIT = 0;
 			MOTEUR_GAUCHE = 0;
 		}
-/*
+
 		if(check && checkArrivee()) // gestion de la fin du mouvement
 		{
 			if(needArrive)
@@ -305,7 +306,7 @@ void thread_odometrie_asser(void*)
 			changeModeAsserActuel(SUR_PLACE);
 			consigneX = x_odo;
 			consigneY = y_odo;
-		}*/
+		}
 		// si �a vaut ASSER_OFF, il n'y a pas d'asser
 		xSemaphoreGive(consigneAsser_mutex);
 

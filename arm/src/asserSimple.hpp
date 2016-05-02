@@ -142,8 +142,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	int toleranceTranslation;
 	int toleranceRotation;
 
-	volatile float k1;
-	volatile float k2;
+	volatile float k1 = 0;
+	volatile float k2 = 0;
 
     /**
      * Utilise consigneX, consigneY, x_odo et y_odo pour calculer rotationSetpoint
@@ -413,13 +413,21 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
         computeAndRunPWM();
     }
 
+    void inline controlCourbure()
+    {
+		consigneCourbure = 0;
+		consigneVitesseLineaire = 100;
+		PIDvit.compute();
+		runPWM();
+    }
+
     void inline controlTrajectoire()
     {
-/*    	int16_t x_odo_int = (int16_t) x_odo;
+    	int16_t x_odo_int = (int16_t) x_odo;
     	int16_t y_odo_int = (int16_t) y_odo;
 
     	// a-t-on d�pass� un point ?
-    	if((trajectoire[indiceTrajectoireLecture].x - x_odo_int) * trajectoire[indiceTrajectoireLecture].dir_x
+/*    	if((trajectoire[indiceTrajectoireLecture].x - x_odo_int) * trajectoire[indiceTrajectoireLecture].dir_x
     			+ (trajectoire[indiceTrajectoireLecture].y - y_odo_int) * trajectoire[indiceTrajectoireLecture].dir_y
 				< 0)
     	{
@@ -427,7 +435,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     		indiceTrajectoireLecture++;
     	}*/
 
-/*    	rotationSetpoint = trajectoire[indiceTrajectoireLecture].orientation;
+    	rotationSetpoint = trajectoire[indiceTrajectoireLecture].orientation;
     	updateErrorAngle();
 
     	// Produit scalaire. d est alg�brique
@@ -440,7 +448,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	if(consigneCourbure > kappaS)
     		consigneCourbure = kappaS;
     	if(consigneCourbure > COURBURE_MAX)
-    		consigneCourbure = COURBURE_MAX;*/
+    		consigneCourbure = COURBURE_MAX;
     	consigneVitesseLineaire = trajectoire[indiceTrajectoireLecture].vitesse; //FONCTION_VITESSE_MAX(kappaS);
         
     	// TODO : mettre � jour indiceArretLecture

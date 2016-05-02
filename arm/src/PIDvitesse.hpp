@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 #include "utils.h"
+#include "global.h"
 
 /**
  *
@@ -36,7 +37,7 @@ public:
 
 		setTuningsC(0, 0, 0);
 		setTuningsV(0, 0, 0);
-		epsilon = 0;
+
 		PWMmax = 100;
 
 		pre_errorC = 0;
@@ -51,10 +52,6 @@ public:
 	// On suppose que consigneVitesseLineaire et consigneCourbure ont déjà été limitées
 		float errorV = (*consigneVitesseLineaire) - (*vitesseLineaireReelle);
 		float resultV;
-
-		kpV = 6;
-		kiV = 0.2;
-		kdV = 0.2;
 
 		// Seuillage de l'erreur. Particuli�rement important si Ki n'est pas nul
 /*		if(ABS(errorV) < epsilon)
@@ -72,29 +69,34 @@ public:
 			resultV = (int32_t)(kpV * errorV + kiV * integralV + kdV * derivativeV);
 		}
 
-		(*commandePWMGauche) = resultV;
-		(*commandePWMDroite) = resultV;
-		return;
-
 // TODO limitations en accélération linéaire
 
-		float consigneRotation = (*consigneVitesseLineaire) * demiDistance * (*consigneCourbure);
+//		float consigneRotation = (*consigneVitesseLineaire) * DEMI_DISTANCE_ROUES_PROPU_EN_MM * (*consigneCourbure);
 // TODO limitation pour la vitesse de rotation
 
-		*consigneCourbure = consigneRotation / ((*consigneVitesseLineaire) * demiDistance);
+//		*consigneCourbure = consigneRotation / ((*consigneVitesseLineaire) * DEMI_DISTANCE_ROUES_PROPU_EN_MM);
 
 		float errorC = (*consigneCourbure) - (*courbureReelle);
-		derivativeC = errorC - pre_errorC;
-		integralC += errorC;
-		pre_errorC = errorC;
+		float resultC;
+		if(ABS(errorC) < epsilonC)
+		{
+			pre_errorC = errorC;
+			resultC = 0;
+		}
+		else
+		{
+			derivativeC = errorC - pre_errorC;
+			integralC += errorC;
+			pre_errorC = errorC;
+			resultC = (int32_t)(kpC * errorC + kiC * integralC + kdC * derivativeC);
+		}
 
 		// Commande pour ajuster la courbure
-		float resultC = (int32_t)(kpC * errorC + kiC * integralC + kdC * derivativeC);
 
 // TODO limitations de la dérivée de la courbure
 
 		// Commande pour ajuster la vitesse de rotation
-		float resultR = resultV * demiDistance * resultC;
+		float resultR = resultV * resultC;
 
 // TODO limitations en accélération de rotation
 
@@ -104,23 +106,13 @@ public:
 		float resultD = resultV + resultR;
 
 // TODO limitations de l'accélération de chaque roue
-
-		// saturation
-		if(resultG > PWMmax)
-			resultG = PWMmax;
-		else if(resultG < -PWMmax)
-			resultG = -PWMmax;
-
-		if(resultD > PWMmax)
-			resultD = PWMmax;
-		else if(resultD < -PWMmax)
-			resultD = -PWMmax;
+/*
 
 		//Seuillage de la commande
 		if (ABS(resultD) < epsilon)
 			resultD = 0;
 		if (ABS(resultG) < epsilon)
-			resultG = 0;
+			resultG = 0;*/
 
 		(*commandePWMGauche) = resultG;
 		(*commandePWMDroite) = resultD;
@@ -142,18 +134,6 @@ public:
 		this->kpC = kp;
 		this->kiC = ki;
 		this->kdC = kd;
-	}
-
-	void setEpsilon(float seuil) {
-		if(seuil < 0)
-			return;
-		epsilon = seuil;
-	}
-
-	void setDemiDistance(float demiDistance) {
-		if(demiDistance < 0)
-			return;
-		this->demiDistance = demiDistance;
 	}
 
 	void resetErrors() {
@@ -182,7 +162,8 @@ private:
 	volatile float* consigneCourbure;
 
 	float PWMmax;
-	float epsilon;
+	float epsilonC = 0.02;
+	float epsilonV = 5;
 
 	float pre_errorC;
 	float derivativeC;
@@ -191,9 +172,6 @@ private:
 	float pre_errorV;
 	float derivativeV;
 	float integralV;
-
-	// La demi-distance entre les deux roues de propulsion
-	float demiDistance;
 };
 
 #endif
