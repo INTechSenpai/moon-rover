@@ -1,7 +1,7 @@
 package scripts;
 
 import hook.HookFactory;
-import scripts.anticipables.SortieZoneDepart;
+import scripts.anticipables.Poissons;
 import utils.Log;
 import utils.Config;
 import container.Service;
@@ -20,7 +20,7 @@ public class ScriptManager implements Service
 	public ScriptManager(HookFactory hookfactory, Log log) throws UnknownScriptException
 	{
 		// DEPENDS_ON_RULES
-		instancesScriptsAnticipables[ScriptAnticipableNames.SORTIE_ZONE_DEPART.ordinal()] = new SortieZoneDepart(hookfactory, log);
+		instancesScriptsAnticipables[ScriptAnticipableNames.SORTIE_ZONE_DEPART.ordinal()] = new Poissons(hookfactory, log);
 
 		for(int i = 0; i < ScriptAnticipableNames.values().length; i++)
 			if(instancesScriptsAnticipables[i] == null)

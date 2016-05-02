@@ -119,7 +119,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	uint32_t currentAngle = 0; // en tick
 	float errorAngle;
 	float rotationSpeed, oldRotationSpeed = 0;			// ticks/seconde
-	PID rotationPID(&errorAngle, &rotationSpeed, 0);
+	PID rotationPID(&errorAngle, &rotationSpeed, 10);
 
 	//	Pour faire de jolies courbes de r�ponse du syst�me, la vitesse moyenne c'est mieux !
 //	Average<int32_t, AVERAGE_SPEED_SIZE> averageLeftSpeed;
@@ -345,17 +345,17 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		if(ABS(errorTranslation) >= 30/MM_PAR_TICK)
 		{
 			updateRotationSetpoint();
-/*
+
 			if(errorTranslation < 0) // gestion de la marche arrière
 			{
 				// on inverse la consigne (puisqu'on va en marche arri�re)
 				rotationSetpoint += TICKS_PAR_TOUR_ROBOT / 2;
 				if(rotationSetpoint > TICKS_PAR_TOUR_ROBOT)
 					rotationSetpoint -= TICKS_PAR_TOUR_ROBOT;
-			}*/
+			}
 
 			updateErrorAngle();
-			updateErrorAngleDemiPlan();
+
 			rotationPID.compute();		// Actualise la valeur de 'rotationSpeed'
 		}
 		else // si on est trop proche, on ne tourne plus
@@ -400,10 +400,13 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
     void inline controlVitesse()
     {
-    	leftSpeedSetpoint = asserVitesseGauche;
-    	rightSpeedSetpoint = asserVitesseDroite;
+//    	leftSpeedSetpoint = asserVitesseGauche;
+//    	rightSpeedSetpoint = asserVitesseDroite;
 
-        limitLeftRightSpeed();
+    	leftSpeedSetpoint = 200;
+    	rightSpeedSetpoint = -200;
+
+//        limitLeftRightSpeed();
         errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
 		errorRightSpeed = rightSpeedSetpoint - currentRightSpeed;
 

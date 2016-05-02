@@ -140,6 +140,7 @@ void thread_odometrie_asser(void*)
 
 //		impulsionRight = -currentRightAcceleration;
 		currentRightAcceleration = -currentRightSpeed;
+
 		tmp = TICK_CODEUR_DROIT;
 		delta_tick_droit = tmp - old_tick_droit;
 		old_tick_droit = tmp;
@@ -247,8 +248,14 @@ void thread_odometrie_asser(void*)
 
         bool check = true;
 
+//        HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, (TICK_CODEUR_DROIT & 1) ? GPIO_PIN_RESET : GPIO_PIN_SET);
+//        HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, (TICK_CODEUR_GAUCHE & 1) ? GPIO_PIN_RESET : GPIO_PIN_SET);
+
 		// on emp�che toute modification de consigne
 		while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
+
+//		modeAsserActuel = ASSER_VITESSE;
+
 		if(pauseAsser)
 		{
 			MOTEUR_DROIT = 0;

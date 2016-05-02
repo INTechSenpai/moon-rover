@@ -27,8 +27,8 @@ using namespace std;
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
-// TODO : les volatile
-// TODO : les mutex
+//ï¿½TODOï¿½: les volatile
+// TODOï¿½: les mutex
 // TODO : tester #include "arm_math.h"
 
 int main(int argc, char* argv[])
@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 
 	timer3.Instance = TIM8;
 
-	timer3.Init.Prescaler =  (uint16_t)((SystemCoreClock / 2) / (FREQUENCE_PWM * PWM_MAX)) - 1; //le deuxième /2 est dû au changement pour un timer de clock doublée
+	timer3.Init.Prescaler =  (uint16_t)((SystemCoreClock / 2) / (FREQUENCE_PWM * PWM_MAX)) - 1; //le deuxiï¿½me /2 est dï¿½ au changement pour un timer de clock doublï¿½e
 	timer3.Init.CounterMode = TIM_COUNTERMODE_UP;
 	timer3.Init.Period = PWM_MAX;
 	timer3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
 	xTaskCreate(thread_ecoute_serie, (char*)"TH_LISTEN", 2048, 0, 1, 0);
 	xTaskCreate(thread_capteurs, (char*)"TH_CPT", 2048, 0, 1, 0);
 
-	// Le thread d'odométrie et d'asservissement à une haute priorité car c'est le seul qui est critique
+	// Le thread d'odomï¿½trie et d'asservissement ï¿½ une haute prioritï¿½ car c'est le seul qui est critique
 	xTaskCreate(thread_odometrie_asser, (char*)"TH_ODO_ASR", 2048, 0, 2, 0);
 
 	vTaskStartScheduler();
@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
 }
 
 /**
- * Fonction appelée automatiquement lors de l'initialisation des encodeurs
+ * Fonction appelï¿½e automatiquement lors de l'initialisation des encodeurs
  */
 void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim)
 {
