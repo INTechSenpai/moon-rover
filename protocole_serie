@@ -99,7 +99,7 @@ resend paquet
 
 robot arrivé
     0x02
-problème meca
+problème meca (vitesse)
     0x03
 debut match
     0x04
@@ -113,7 +113,6 @@ balise présente
     0x08
 balise absente
     0x09
-
 info capteurs. Le robot est en marche avant
     0x0A X+(12) Y(12) ORIENTATION(16) COURBURE(8) VIT_LIN(16) VIT_ROT(16) CPT1(12) CPT2(12) …
 info capteurs. Le robot est en marche arrière
@@ -122,8 +121,11 @@ code coquillages
     0x0C CODE(8)
 élément shooté
     0x0D ID(8)
+
 debug asser
     0x10 PWMgauche(16) PWMdroit(16) vitesseGauche(16) vitesseDroite(16) distance(16) orientation(16) vitesseLineaire(16) courbure(16)
+problème meca (accélération)
+    0x11
 
 ping
     0x3F

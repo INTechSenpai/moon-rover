@@ -174,7 +174,7 @@ public class RobotReal extends Robot
                          */
 
                         log.warning("On n'arrive plus à avancer. On se dégage");
-                        stm.avancerMemeSens(-distanceDegagement, Speed.SLOW);
+                        stm.avancerMemeSens(-distanceDegagement, Speed.STANDARD);
                         attendStatus();
                     } catch (UnableToMoveException e1) {
                         log.critical("On n'arrive pas à se dégager.");

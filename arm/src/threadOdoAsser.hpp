@@ -237,14 +237,12 @@ void thread_odometrie_asser(void*)
 		}
 
 		//�ASSERVISSEMENT
-		// FIXME
-/*        if(needArrive && checkBlocageMecanique())
+        if(needArrive && checkBlocageMecanique())
         {
         	changeModeAsserActuel(SUR_PLACE);
 			consigneX = x_odo;
 			consigneY = y_odo;
-            sendProblemeMeca();
-        }*/
+        }
 
         bool check = true;
 

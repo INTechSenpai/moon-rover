@@ -103,9 +103,15 @@ void inline sendArrive()
 	send(out, 5+1);
 }
 
-void inline sendProblemeMeca()
+void inline sendProblemeMecaVitesse()
 {
-	unsigned char out[] = {0, 0, 0, 0, OUT_PROBLEME_MECA, 0};
+	unsigned char out[] = {0, 0, 0, 0, OUT_PROBLEME_MECA_VITESSE, 0};
+	send(out, 5+1);
+}
+
+void inline sendProblemeMecaAcceleration()
+{
+	unsigned char out[] = {0, 0, 0, 0, OUT_PROBLEME_MECA_ACC, 0};
 	send(out, 5+1);
 }
 

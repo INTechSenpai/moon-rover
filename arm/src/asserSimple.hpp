@@ -476,14 +476,14 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     {
     	return MOTEUR_DROIT > 5
     			&& MOTEUR_GAUCHE > 5
-    			&& ABS(leftSpeedSetpoint) > 10 && ABS(leftSpeedSetpoint - currentLeftSpeed) > 0.5*leftSpeedSetpoint
-				&& ABS(rightSpeedSetpoint) > 10 && ABS(rightSpeedSetpoint - currentRightSpeed) > 0.5*rightSpeedSetpoint;
+    			&& ABS(leftSpeedSetpoint) > 15 && ABS(leftSpeedSetpoint - currentLeftSpeed) > 0.7*leftSpeedSetpoint
+				&& ABS(rightSpeedSetpoint) > 15 && ABS(rightSpeedSetpoint - currentRightSpeed) > 0.7*rightSpeedSetpoint;
     }
 
     bool inline isPhysicallyStoppedAcc()
     {
-    	return ABS(currentRightAcceleration) > 8
-						|| ABS(currentLeftAcceleration) > 8;
+    	return ABS(currentRightAcceleration) > 6
+						|| ABS(currentLeftAcceleration) > 6;
     }
 
     // Y a-t-il un probl�me m�canique ?
@@ -492,6 +492,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	if(isPhysicallyStoppedAcc())
     	{
 			nbErreurs = 0;
+			sendProblemeMecaAcceleration();
 			return true;
     	}
     	else if(isPhysicallyStoppedVitesse())
@@ -500,6 +501,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 			if(nbErreurs >= DELAI_ERREUR_MECA_APPEL)
 			{
 				nbErreurs = 0;
+				sendProblemeMecaVitesse();
 				return true;
 			}
     	}

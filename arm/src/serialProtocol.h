@@ -35,7 +35,7 @@
 #define IN_PID_CONST_COURBURE 0x24
 #define IN_PID_CONST_VIT_LINEAIRE 0x25
 #define IN_CONST_SAMSON 0x26
-// 0x27 est réservé pour un pid (cf masque)
+// 0x27 est rï¿½servï¿½ pour un pid (cf masque)
 
 #define IN_ASSER_OFF 0x28
 #define IN_RESEND_PACKET 0xFF
@@ -46,7 +46,7 @@
 #define IN_HOOK_POSITION_UNIQUE 0x47
 #define IN_HOOK_CONTACT 0x48
 #define IN_HOOK_CONTACT_UNIQUE 0x49
-// reste des 0x4X est réservé pour les hooks
+// reste des 0x4X est rï¿½servï¿½ pour les hooks
 
 #define IN_HOOK_MASK 0xF0
 #define IN_HOOK_GROUP 0x40
@@ -60,7 +60,7 @@
 #define OUT_PONG1 0x54
 #define OUT_PONG2 0x33
 #define OUT_ROBOT_ARRIVE 0x02
-#define OUT_PROBLEME_MECA 0x03
+#define OUT_PROBLEME_MECA_VITESSE 0x03
 #define OUT_DEBUT_MATCH 0x04
 #define OUT_FIN_MATCH 0x05
 #define OUT_COULEUR_ROBOT_SANS_SYMETRIE 0x06
@@ -72,7 +72,7 @@
 #define OUT_DEBUG_ASSER 0x10
 #define OUT_RESEND_PACKET 0xFF
 #define OUT_ELEMENT_SHOOTE 0x0D
-
+#define OUT_PROBLEME_MECA_ACC 0x11
 #define ID_FORT 0x00
 #define ID_FAIBLE 0x01
 #define COMMANDE 0x02
