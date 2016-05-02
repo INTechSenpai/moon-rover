@@ -20,7 +20,7 @@
 #define VITESSE_ROUE_MAX (3000. / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 600 // vitesse max en tick / appel asser
 #define ACCELERATION_ROUE_MAX (3500. / MM_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 3.5 // acc�l�ration max en tick / (appel asser)^2
 #define RAYON_DE_COURBURE_MIN_EN_MM 100. // en fait, on peut descendre virtuellement aussi bas qu'on veut. A condition d'aller suffisamment lentement, on peut avoir n'importe quelle courbure.
-#define COURBURE_MAX (1. / RAYON_DE_COURBURE_MIN_EN_MM)
+#define COURBURE_MAX 10
 
 #define FONCTION_VITESSE_MAX(x) (sqrt(0.6*9.81/x)*0.8)
 #define FONCTION_COURBURE_MAX(x) (0.8*0.6*9.81/(x*x))
@@ -107,7 +107,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	volatile float consigneCourbure;
 //	PIDvitesse PIDvit(&vitesseLineaireReelle, &courbureReelle, &leftSpeedSetpoint, &rightSpeedSetpoint, &consigneVitesseLineaire, &consigneCourbure);
 
-	float errorCourbure, diffSpeed;
+	float errorCourbure, diffSpeed, previousSpeed = 0;
 	PID courburePID(&errorCourbure, &diffSpeed, 0);
 
 	//	Asservissement en position : translation
@@ -120,6 +120,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 	uint32_t currentAngle = 0; // en tick
 	float errorAngle;
+	float distanceToClotho;
 	float rotationSpeed, oldRotationSpeed = 0;			// ticks/seconde
 	PID rotationPID(&errorAngle, &rotationSpeed, 10);
 
@@ -420,13 +421,14 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		consigneCourbure = 5;
     	errorCourbure = consigneCourbure - courbureReelle;
 		consigneVitesseLineaire = 100;
-		if(vitesseLineaireReelle > 10)
+		if(vitesseLineaireReelle > 5)
+		{
 			courburePID.compute();
-		else
-			diffSpeed = 0;
+			previousSpeed += diffSpeed;
+		}
 
-		leftSpeedSetpoint = consigneVitesseLineaire*(1 - diffSpeed);
-		rightSpeedSetpoint = consigneVitesseLineaire*(1 + diffSpeed);
+		leftSpeedSetpoint = consigneVitesseLineaire*(1 - previousSpeed);
+		rightSpeedSetpoint = consigneVitesseLineaire*(1 + previousSpeed);
 
         errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
 		errorRightSpeed = rightSpeedSetpoint - currentRightSpeed;
@@ -436,50 +438,64 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
     void inline controlTrajectoire()
     {
-    	int16_t x_odo_int = (int16_t) x_odo;
-    	int16_t y_odo_int = (int16_t) y_odo;
-
     	// a-t-on d�pass� un point ?
-/*    	if((trajectoire[indiceTrajectoireLecture].x - x_odo_int) * trajectoire[indiceTrajectoireLecture].dir_x
-    			+ (trajectoire[indiceTrajectoireLecture].y - y_odo_int) * trajectoire[indiceTrajectoireLecture].dir_y
+    	if((trajectoire[indiceTrajectoireLecture].x - x_odo) * trajectoire[indiceTrajectoireLecture].dir_x
+    			+ (trajectoire[indiceTrajectoireLecture].y - y_odo) * trajectoire[indiceTrajectoireLecture].dir_y
 				< 0)
     	{
-    		sendProblemeMecaAcceleration();
     		indiceTrajectoireLecture++;
-    	}*/
+    	}
 
     	rotationSetpoint = trajectoire[indiceTrajectoireLecture].orientation;
     	updateErrorAngle();
 
     	// Produit scalaire. d est alg�brique
-    	int16_t d = (- (x_odo_int - trajectoire[indiceTrajectoireLecture].x) * trajectoire[indiceTrajectoireLecture].dir_y
-    			+ (y_odo_int - trajectoire[indiceTrajectoireLecture].y) * trajectoire[indiceTrajectoireLecture].dir_x)
+    	distanceToClotho = (- (x_odo - trajectoire[indiceTrajectoireLecture].x) * trajectoire[indiceTrajectoireLecture].dir_y
+    			+ (y_odo - trajectoire[indiceTrajectoireLecture].y) * trajectoire[indiceTrajectoireLecture].dir_x)
     					/ 1000; // dir a une norme de 1000
 
-    	float kappaS = trajectoire[indiceTrajectoireLecture].courbure - k1*d + k2*errorAngle;
-    	float consigneCourbure = FONCTION_COURBURE_MAX(vitesseLineaireReelle);
-    	if(consigneCourbure > kappaS)
+		consigneX = arcsArret[indiceArretLecture]->x;
+		consigneY = arcsArret[indiceArretLecture]->y;
+
+		updateErrorTranslation();
+        translationPID.compute();
+		translationSpeed = 100;
+		limitTranslationRotationSpeed();
+
+    	float kappaS = trajectoire[indiceTrajectoireLecture].courbure - k1*distanceToClotho + k2*errorAngle;
+
+//		consigneCourbure = FONCTION_COURBURE_MAX(vitesseLineaireReelle);
+//    	if(ABS(consigneCourbure) > ABS(kappaS))
     		consigneCourbure = kappaS;
     	if(consigneCourbure > COURBURE_MAX)
     		consigneCourbure = COURBURE_MAX;
-    	consigneVitesseLineaire = trajectoire[indiceTrajectoireLecture].vitesse; //FONCTION_VITESSE_MAX(kappaS);
-        
-    	// TODO : mettre � jour indiceArretLecture
-/*    	consigneX = arcsArret[indiceArretLecture]->x;
-    	consigneY = arcsArret[indiceArretLecture]->y;
-        updateErrorTranslation();
-        limitTranslationRotationSpeed();
-//        if(consigneVitesseLineaire > translationSpeed)
- //           consigneVitesseLineaire = translationSpeed;
-    	if(consigneVitesseLineaire > VITESSE_LINEAIRE_MAX)
-    		consigneVitesseLineaire = VITESSE_LINEAIRE_MAX;
-    	else if(consigneVitesseLineaire < -VITESSE_LINEAIRE_MAX)
-    		consigneVitesseLineaire = -VITESSE_LINEAIRE_MAX;
-//    	sendElementShoot(indiceArretLecture);
-*/
+    	else if(consigneCourbure < -COURBURE_MAX)
+    		consigneCourbure = -COURBURE_MAX;
 
-//    	PIDvit.compute();
-        runPWM();
+//    	consigneCourbure = trajectoire[indiceTrajectoireLecture].courbure;
+
+    	// On limite la vitesse par celle imposée par la courbure
+//    	float tmp = FONCTION_VITESSE_MAX(kappaS);
+//    	if(ABS(tmp) < ABS(translationSpeed))
+//    		translationSpeed = tmp;
+
+    	errorCourbure = consigneCourbure - courbureReelle;
+
+		if(translationSpeed > 5)
+		{
+			courburePID.compute();
+			previousSpeed += diffSpeed;
+		}
+
+		leftSpeedSetpoint = translationSpeed*(1 - previousSpeed);
+		rightSpeedSetpoint = translationSpeed*(1 + previousSpeed);
+
+		limitLeftRightSpeed();
+
+        errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
+		errorRightSpeed = rightSpeedSetpoint - currentRightSpeed;
+
+        computeAndRunPWM();
     }
 
     // freine le plus rapidement possible. Note : on ne garantit rien sur l'orientation, si une roue freine plus vite que l'autre le robot va tourner.
@@ -519,13 +535,13 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     // Y a-t-il un probl�me m�canique ?
     bool inline checkBlocageMecanique()
     {
-    	if(isPhysicallyStoppedAcc())
+/*    	if(isPhysicallyStoppedAcc())
     	{
 			nbErreurs = 0;
 			sendProblemeMecaAcceleration();
 			return true;
     	}
-    	else if(isPhysicallyStoppedVitesse())
+    	else */if(isPhysicallyStoppedVitesse())
     	{
     		nbErreurs++;
 			if(nbErreurs >= DELAI_ERREUR_MECA_APPEL)
@@ -549,6 +565,11 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	bool inline checkArriveeAngle()
 	{
 		return ABS(errorAngle) < 500;
+	}
+
+	bool inline checkArriveeCourbe()
+	{
+		return indiceTrajectoireEcriture == indiceTrajectoireLecture;
 	}
 
     /**

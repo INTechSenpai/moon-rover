@@ -340,12 +340,13 @@ void thread_ecoute_serie(void*)
 						x -= 1500;
 						int16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
 						float angle = ((lecture[PARAM + 3] << 8) + lecture[PARAM + 4]) / 1000.;
+
 						float courbure = ((lecture[PARAM + 5] << 8) + lecture[PARAM + 6]) / 1000.;
                         float vitesse = ((lecture[PARAM + 7] << 8) + lecture[PARAM + 8]) * 1. / MM_PAR_TICK / FREQUENCE_ODO_ASSER;
 						trajectoire[indiceTrajectoireEcriture].x = x;
 						trajectoire[indiceTrajectoireEcriture].y = y;
-						trajectoire[indiceTrajectoireEcriture].courbure = courbure;
-						trajectoire[indiceTrajectoireEcriture].orientation = angle; // TODO�si marche arri�re ajouter PI/2 ?
+						trajectoire[indiceTrajectoireEcriture].courbure = courbure - 20;
+						trajectoire[indiceTrajectoireEcriture].orientation = RAD_TO_TICK(angle);
 						trajectoire[indiceTrajectoireEcriture].vitesse = vitesse;
 						trajectoire[indiceTrajectoireEcriture].dir_x = 1000 * cos(angle);
 						trajectoire[indiceTrajectoireEcriture].dir_y = 1000 * sin(angle);
@@ -393,7 +394,7 @@ void thread_ecoute_serie(void*)
 						else if(lecture[COMMANDE] == IN_PID_CONST_ROTATION)
 							rotationPID.setTunings(kp, ki, kd);
 						else if(lecture[COMMANDE] == IN_PID_CONST_COURBURE)
-							courburePID.setTunings(kp, ki, kd);
+							courburePID.setTunings(kp/1000., ki/1000., kd/1000.);
 						else if(lecture[COMMANDE] == IN_CONST_SAMSON)
 						{
 							k1 = kp;

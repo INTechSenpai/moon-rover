@@ -438,9 +438,15 @@ public class DataForSerialOutput implements Service
 //			log.debug(i);
 			byte[] out = new byte[2+10];
 			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
+			{
+//				log.debug("ARC ARRET");
 				out[COMMANDE] = SerialProtocol.OUT_SEND_ARC_ARRET.code;
+			}
 			else
+			{
+//				log.debug("ARC");
 				out[COMMANDE] = SerialProtocol.OUT_SEND_ARC.code;
+			}
 			out[PARAM] = (byte) (((int)(arc.getPoint(i).getPosition().x)+1500) >> 4);
 			out[PARAM+1] = (byte) ((((int)(arc.getPoint(i).getPosition().x)+1500) << 4) + ((int)(arc.getPoint(i).getPosition().y) >> 8));
 			out[PARAM+2] = (byte) ((int)(arc.getPoint(i).getPosition().y));
@@ -457,8 +463,8 @@ public class DataForSerialOutput implements Service
 			out[PARAM+3] = (byte) (theta >> 8);
 			out[PARAM+4] = (byte) theta;
 			
-			out[PARAM+5] = (byte) (Math.round(arc.getPoint(i).courbure*1000) >> 8);
-			out[PARAM+6] = (byte) (Math.round(arc.getPoint(i).courbure*1000));
+			out[PARAM+5] = (byte) ((Math.round(arc.getPoint(i).courbure+20)*1000) >> 8);
+			out[PARAM+6] = (byte) ((Math.round(arc.getPoint(i).courbure+20)*1000) & 0xFF);
 			
 			out[PARAM+7] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) >> 8);
 			out[PARAM+8] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) & 0xFF);
