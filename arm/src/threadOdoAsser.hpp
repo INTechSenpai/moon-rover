@@ -29,6 +29,8 @@ void thread_odometrie_asser(void*)
 	uint8_t debugCompteur = 0;
 	uint16_t positionGauche[MEMOIRE_MESURE_INT]; // on introduit un effet de m�moire afin de pouvoir mesurer la vitesse sur un intervalle pas trop petit
 	uint16_t positionDroite[MEMOIRE_MESURE_INT];
+	double deltaOrientationMemoire[MEMOIRE_MESURE_INT];
+	double distanceMemoire[MEMOIRE_MESURE_INT];
 //	int16_t vitesseGauche[MEMOIRE_MESURE]; // on introduit un effet de m�moire afin de pouvoir mesurer l'acc�l�ration sur un intervalle pas trop petit
 //	int16_t vitesseDroite[MEMOIRE_MESURE];
 	uint8_t indiceMemoire = 0;
@@ -42,11 +44,15 @@ void thread_odometrie_asser(void*)
 	uint16_t old_tick_gauche = TICK_CODEUR_GAUCHE, old_tick_droit = TICK_CODEUR_DROIT, tmp;
 	int16_t distanceTick, delta_tick_droit, delta_tick_gauche, deltaOrientationTick, speed;
 	double k, distance, deltaOrientation;
+	double distanceTotale = 0;
+	double deltaOrientationTotale = 0;
 
 	for(int i = 0; i < MEMOIRE_MESURE_INT; i++)
 	{
 		positionDroite[i] = old_tick_droit;
 		positionGauche[i] = old_tick_gauche;
+		distanceMemoire[i] = 0;
+		deltaOrientationMemoire[i] = 0;
 //		vitesseDroite[i] = 0;
 //		vitesseGauche[i] = 0;
 
@@ -166,9 +172,6 @@ void thread_odometrie_asser(void*)
 		// Calcul issu de Thal�s. Positif si le robot tourne vers la droite (pour �tre coh�rent avec l'orientation)
 //		courbureReelle = 2 / LONGUEUR_CODEUSE_A_CODEUSE_EN_MM * (currentLeftSpeed - currentRightSpeed) / (currentLeftSpeed + currentRightSpeed);
 
-		indiceMemoire++;
-		indiceMemoire %= MEMOIRE_MESURE_INT;
-
 		// on �vite les formules avec "/ 2", qui font perdre de l'information et qui peuvent s'accumuler
 
 		distanceTick = delta_tick_droit + delta_tick_gauche;
@@ -204,6 +207,15 @@ void thread_odometrie_asser(void*)
 
 		deltaOrientation = TICK_TO_RAD(deltaOrientationTick);
 
+		distanceTotale -= distanceMemoire[indiceMemoire];
+		distanceTotale += distance;
+
+		deltaOrientationTotale -= deltaOrientationMemoire[indiceMemoire];
+		deltaOrientationTotale += deltaOrientation;
+
+		deltaOrientationMemoire[indiceMemoire] = deltaOrientation;
+		distanceMemoire[indiceMemoire] = distance;
+
 //		serial_rb.printfln("TICKS_PAR_TOUR_ROBOT = %d", (int)TICKS_PAR_TOUR_ROBOT);
 //		serial_rb.printfln("orientationMoyTick = %d", orientationMoyTick);
 //		serial_rb.printfln("orientation = %d", (int)(orientation_odo*1000));
@@ -213,10 +225,10 @@ void thread_odometrie_asser(void*)
 		else
 			k = sin(deltaOrientation/2)/(deltaOrientation/2);
 
-		if(distance == 0) //  �a va arriver quand on fait par exemple une rotation sur place.
+		if(ABS(distanceTotale) < 20) //  �a va arriver quand on fait par exemple une rotation sur place.
 			courbureReelle = 0;
 		else
-			courbureReelle = deltaOrientationTick / distance;
+			courbureReelle = 1000. * deltaOrientationTotale / distanceTotale;
 
 		orientation_odo = TICK_TO_RAD(orientationMoyTick);
         cos_orientation_odo = cos(orientation_odo);
@@ -226,11 +238,14 @@ void thread_odometrie_asser(void*)
 		y_odo += k*distance*sin_orientation_odo;
 		xSemaphoreGive(odo_mutex);
 
+		indiceMemoire++;
+		indiceMemoire %= MEMOIRE_MESURE_INT;
+
 		if(debugMode)
 		{
 			if((debugCompteur & 0x07) == 0)
 //				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int32_t)(errorLeftSpeed*100), (int32_t)(errorRightSpeed*100), (int16_t) ((rotationSetpoint * 6.28) / TICKS_PAR_TOUR_ROBOT), courbureReelle);
-				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int16_t)(errorTranslation), (uint16_t)(errorAngle), vitesseLineaireReelle, courbureReelle);
+				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int16_t)(errorTranslation), (uint16_t)(errorAngle), consigneVitesseLineaire - vitesseLineaireReelle, courbureReelle*100);
 //				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(leftSpeedSetpoint*100), (int32_t)(currentLeftAcceleration*1000), (int32_t)(currentRightAcceleration*1000), vitesseLineaireReelle, courbureReelle);
 //				sendDebug(leftPWM, rightPWM, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), errorTranslation, errorAngle, vitesseLineaireReelle, courbureReelle);
 			debugCompteur++;
@@ -282,7 +297,7 @@ void thread_odometrie_asser(void*)
 			MOTEUR_DROIT = 0;
 			MOTEUR_GAUCHE = 0;
 		}
-
+/*
 		if(check && checkArrivee()) // gestion de la fin du mouvement
 		{
 			if(needArrive)
@@ -290,7 +305,7 @@ void thread_odometrie_asser(void*)
 			changeModeAsserActuel(SUR_PLACE);
 			consigneX = x_odo;
 			consigneY = y_odo;
-		}
+		}*/
 		// si �a vaut ASSER_OFF, il n'y a pas d'asser
 		xSemaphoreGive(consigneAsser_mutex);
 

@@ -1,7 +1,7 @@
 /**
  * pid.hpp
  *
- * Classe PID : implémente un régulateur PID (proportionnel intégral dérivé)
+ * Classe PID : implï¿½mente un rï¿½gulateur PID (proportionnel intï¿½gral dï¿½rivï¿½)
  *
  * Auteur : Paul BERNIER - bernier.pja@gmail.com
  */
@@ -39,7 +39,7 @@ public:
 
 		float error = *(this->error);
 
-		// Seuillage de l'erreur. Particulièrement important si Ki n'est pas nul
+		// Seuillage de l'erreur. Particuliï¿½rement important si Ki n'est pas nul
 		if(ABS(error) < epsilon)
 		{
 			pre_error = error;
@@ -74,11 +74,11 @@ public:
 
 private:
 
-	float kp;
-	float ki;
-	float kd;
+	volatile float kp;
+	volatile float ki;
+	volatile float kd;
 
-	volatile float* error; //erreur, c'est-à-dire différence entre la consigne et la valeur actuelle
+	volatile float* error; //erreur, c'est-ï¿½-dire diffï¿½rence entre la consigne et la valeur actuelle
 	volatile float* output; //Output : commande
 
 	float epsilon;

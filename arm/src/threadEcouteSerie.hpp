@@ -338,9 +338,9 @@ void thread_ecoute_serie(void*)
 						int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
 						x -= 1500;
 						int16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
-						uint32_t angle = (lecture[PARAM + 3] << 8) + lecture[PARAM + 4];
-						float courbure = lecture[PARAM + 3] + lecture[PARAM + 4] / 16.;
-                        float vitesse = ((lecture[PARAM + 5] << 8) + lecture[PARAM + 6]) * 1. / MM_PAR_TICK / FREQUENCE_ODO_ASSER;
+						float angle = ((lecture[PARAM + 3] << 8) + lecture[PARAM + 4]) / 1000.;
+						float courbure = ((lecture[PARAM + 5] << 8) + lecture[PARAM + 6]) / 1000.;
+                        float vitesse = ((lecture[PARAM + 7] << 8) + lecture[PARAM + 8]) * 1. / MM_PAR_TICK / FREQUENCE_ODO_ASSER;
 						trajectoire[indiceTrajectoireEcriture].x = x;
 						trajectoire[indiceTrajectoireEcriture].y = y;
 						trajectoire[indiceTrajectoireEcriture].courbure = courbure;
@@ -358,6 +358,8 @@ void thread_ecoute_serie(void*)
 
 						// Dans tous les cas, on s'arr�te au dernier arc re�u
 						arcsArret[indiceArretEcriture] = &trajectoire[indiceTrajectoireEcriture];
+
+						indiceTrajectoireEcriture++;
 
 						changeModeAsserActuel(COURBE);
 						xSemaphoreGive(consigneAsser_mutex);

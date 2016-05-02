@@ -50,12 +50,31 @@ public:
 	void compute() {
 	// On suppose que consigneVitesseLineaire et consigneCourbure ont déjà été limitées
 		float errorV = (*consigneVitesseLineaire) - (*vitesseLineaireReelle);
-		derivativeV = errorV - pre_errorV;
-		integralV += errorV;
-		pre_errorV = errorV;
+		float resultV;
 
-		// Commande pour ajuster la vitesse linéaire
-		float resultV = (int32_t)(kpV * errorV + kiV * integralV + kdV * derivativeV);
+		kpV = 6;
+		kiV = 0.2;
+		kdV = 0.2;
+
+		// Seuillage de l'erreur. Particuli�rement important si Ki n'est pas nul
+/*		if(ABS(errorV) < epsilon)
+		{
+			pre_errorV = errorV;
+			resultV = 0;
+		}
+		else*/
+		{
+			derivativeV = errorV - pre_errorV;
+			integralV += errorV;
+			pre_errorV = errorV;
+
+			// Commande pour ajuster la vitesse linéaire
+			resultV = (int32_t)(kpV * errorV + kiV * integralV + kdV * derivativeV);
+		}
+
+		(*commandePWMGauche) = resultV;
+		(*commandePWMDroite) = resultV;
+		return;
 
 // TODO limitations en accélération linéaire
 
@@ -147,13 +166,13 @@ public:
 	}
 private:
 
-	float kpV;
-	float kiV;
-	float kdV;
+	volatile float kpV;
+	volatile float kiV;
+	volatile float kdV;
 
-	float kpC;
-	float kiC;
-	float kdC;
+	volatile float kpC;
+	volatile float kiC;
+	volatile float kdC;
 
 	volatile float* vitesseLineaireReelle;
 	volatile float* courbureReelle;

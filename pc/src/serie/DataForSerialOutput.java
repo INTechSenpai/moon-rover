@@ -435,7 +435,7 @@ public class DataForSerialOutput implements Service
 
 		for(int i = 0; i < arc.getNbPoints(); i++)
 		{
-			log.debug(i);
+//			log.debug(i);
 			byte[] out = new byte[2+10];
 			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
 				out[COMMANDE] = SerialProtocol.OUT_SEND_ARC_ARRET.code;

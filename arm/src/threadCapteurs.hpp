@@ -218,17 +218,18 @@ void thread_capteurs(void*)
     adcChannel.Rank = 1;
     adcChannel.SamplingTime = ADC_SAMPLETIME_480CYCLES;
     adcChannel.Offset = 0;
+    // Pin analogiques :�A0 A1 A2 A3 A4 A5 A6 A7 B0 B1 C0 C1 C2 C3 C4 C5
 
     uint32_t canaux[] = {
     		ADC_CHANNEL_1, // Lipo
-			ADC_CHANNEL_9, // IR avant droite
-			ADC_CHANNEL_14, // IR avant gauche
+			ADC_CHANNEL_11, // IR avant droite
+			ADC_CHANNEL_15, // IR avant gauche
 			ADC_CHANNEL_4, // IR arrière droit
 			ADC_CHANNEL_5, // IR arrière gauche
-			ADC_CHANNEL_6, // IR objet devant
-			ADC_CHANNEL_7, // IR objet devant
-			ADC_CHANNEL_8, // IR objet arrière
-			ADC_CHANNEL_9}; // IR objet arrière
+			ADC_CHANNEL_9, // IR objet devant
+			ADC_CHANNEL_10, // IR objet devant
+			ADC_CHANNEL_6, // IR objet arrière
+			ADC_CHANNEL_7}; // IR objet arrière
 
     uint16_t capteurs[8];
 

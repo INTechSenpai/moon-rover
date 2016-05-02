@@ -63,6 +63,12 @@ public class RobotReal extends Robot
 		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
 		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
 		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
+		stm.utiliseActionneurs(ActuatorOrder.AX12_ARRIERE_DROIT_FERME);
+		stm.utiliseActionneurs(ActuatorOrder.AX12_ARRIERE_DROIT_FERME);
+		stm.utiliseActionneurs(ActuatorOrder.AX12_AVANT_GAUCHE_FERME);
+		stm.utiliseActionneurs(ActuatorOrder.AX12_ARRIERE_GAUCHE_FERME);
+		stm.utiliseActionneurs(ActuatorOrder.AX12_POISSON_HAUT);
+		stm.utiliseActionneurs(ActuatorOrder.AX12_AVANT_DROIT_FERME);
 		/*// TODO envoyer le pid quand les valeurs sont trouvées
 		// Envoie des constantes du pid
 		stm.setPIDconstVitesseGauche(config.getDouble(ConfigInfo.CONST_KP_VIT_GAUCHE), config.getDouble(ConfigInfo.CONST_KD_VIT_GAUCHE));
@@ -154,8 +160,9 @@ public class RobotReal extends Robot
      */
     private void gestionExceptions(boolean mur) throws UnableToMoveException
     {
-        int nb_iterations_deblocage = 2; // combien de fois on réessaye si on se prend un mur
+//        int nb_iterations_deblocage = 1; // combien de fois on réessaye si on se prend un mur
         int nb_iterations_ennemi = 2000 / tempsAttente; // 2 secondes max
+
         while(true)
         {
             try
@@ -172,7 +179,7 @@ public class RobotReal extends Robot
                         /*
                          * En cas de blocage, on recule (si on allait tout droit) ou on avance.
                          */
-
+                    	Sleep.sleep(500);
                         log.warning("On n'arrive plus à avancer. On se dégage");
                         stm.avancerMemeSens(-distanceDegagement, Speed.STANDARD);
                         attendStatus();
@@ -182,7 +189,7 @@ public class RobotReal extends Robot
 						stm.immobilise();
 						e1.printStackTrace();
 					}
-                    if(nb_iterations_deblocage-- == 0)
+//                    if(nb_iterations_deblocage-- == 0)
                         throw new UnableToMoveException();
                 }           
                 else

@@ -44,7 +44,7 @@
 #define RAD_TO_TICK(x) ((x * TICKS_PAR_TOUR_ROBOT) / (2 * M_PI))
 #define TICK_TO_MM(x) (x * MM_PAR_TICK / 2)
 
-#define DELAI_ERREUR_MECA_MS	150 // durant combien de ms faut-il qu'il y ait un probl�me m�canique pour annuler un mouvement ?
+#define DELAI_ERREUR_MECA_MS	250 // durant combien de ms faut-il qu'il y ait un probl�me m�canique pour annuler un mouvement ?
 #define DELAI_ERREUR_MECA_APPEL ((DELAI_ERREUR_MECA_MS * FREQUENCE_ODO_ASSER) / 1000) // 1000 pour passer des ms aux s
 
 enum MODE_ASSER {ASSER_OFF, // pas d'asser
