@@ -2,7 +2,6 @@
 #define ASSER
 
 #include "pid.hpp"
-#include "PIDvitesse.hpp"
 #include "average.hpp"
 #include "global.h"
 #include <cmath>
@@ -106,7 +105,10 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	volatile float courbureReelle;
 	volatile float consigneVitesseLineaire;
 	volatile float consigneCourbure;
-	PIDvitesse PIDvit(&vitesseLineaireReelle, &courbureReelle, &leftPWM, &rightPWM, &consigneVitesseLineaire, &consigneCourbure);
+//	PIDvitesse PIDvit(&vitesseLineaireReelle, &courbureReelle, &leftSpeedSetpoint, &rightSpeedSetpoint, &consigneVitesseLineaire, &consigneCourbure);
+
+	float errorCourbure, diffSpeed;
+	PID courburePID(&errorCourbure, &diffSpeed, 0);
 
 	//	Asservissement en position : translation
 	float currentDistance;		// distance � parcourir, en ticks
@@ -415,10 +417,21 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
     void inline controlCourbure()
     {
-		consigneCourbure = 0;
+		consigneCourbure = 5;
+    	errorCourbure = consigneCourbure - courbureReelle;
 		consigneVitesseLineaire = 100;
-		PIDvit.compute();
-		runPWM();
+		if(vitesseLineaireReelle > 10)
+			courburePID.compute();
+		else
+			diffSpeed = 0;
+
+		leftSpeedSetpoint = consigneVitesseLineaire*(1 - diffSpeed);
+		rightSpeedSetpoint = consigneVitesseLineaire*(1 + diffSpeed);
+
+        errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;
+		errorRightSpeed = rightSpeedSetpoint - currentRightSpeed;
+
+        computeAndRunPWM();
     }
 
     void inline controlTrajectoire()
@@ -465,7 +478,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 //    	sendElementShoot(indiceArretLecture);
 */
 
-    	PIDvit.compute();
+//    	PIDvit.compute();
         runPWM();
     }
 
@@ -558,7 +571,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     	leftSpeedPID.resetErrors();
     	translationPID.resetErrors();
     	rotationPID.resetErrors();
-    	PIDvit.resetErrors();
+    	courburePID.resetErrors();
     	oldLeftSpeedSetpoint = currentLeftSpeed; // pour l'asser en trap�ze
     	oldRightSpeedSetpoint = currentRightSpeed;
 		oldTranslationSpeed = translationSpeed;

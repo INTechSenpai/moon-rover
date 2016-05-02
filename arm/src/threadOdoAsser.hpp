@@ -10,12 +10,13 @@
 #include "Timer.h"
 #include "FreeRTOS.h"
 #include "task.h"
+
+#include "asser.hpp"
 #include "Hook.h"
 #include "Uart.hpp"
 #include "global.h"
 #include "ax12.hpp"
 #include "serialProtocol.h"
-#include "asserSimple.hpp"
 #include "serie.h"
 
 using namespace std;
@@ -245,7 +246,7 @@ void thread_odometrie_asser(void*)
 		{
 			if((debugCompteur & 0x07) == 0)
 //				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int32_t)(errorLeftSpeed*100), (int32_t)(errorRightSpeed*100), (int16_t) ((rotationSetpoint * 6.28) / TICKS_PAR_TOUR_ROBOT), courbureReelle);
-				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)((consigneVitesseLineaire) - (vitesseLineaireReelle)), (int32_t)(currentRightSpeed*100), (int16_t)(errorTranslation), (uint16_t)(errorAngle), courbureReelle*100, consigneCourbure*100);
+				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)((consigneVitesseLineaire) - (vitesseLineaireReelle)), (int32_t)(currentRightSpeed*100), (int16_t)(errorTranslation), (uint16_t)(errorAngle), courbureReelle*100, (consigneCourbure-courbureReelle)*100);
 //				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(leftSpeedSetpoint*100), (int32_t)(currentLeftAcceleration*1000), (int32_t)(currentRightAcceleration*1000), vitesseLineaireReelle, courbureReelle);
 //				sendDebug(leftPWM, rightPWM, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), errorTranslation, errorAngle, vitesseLineaireReelle, courbureReelle);
 			debugCompteur++;

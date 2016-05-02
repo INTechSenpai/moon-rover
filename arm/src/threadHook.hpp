@@ -10,23 +10,24 @@
 #include "Timer.h"
 #include "FreeRTOS.h"
 #include "task.h"
+
+#include "asser.hpp"
 #include "Hook.h"
 #include "Uart.hpp"
 #include "global.h"
 #include "ax12.hpp"
 #include "serialProtocol.h"
-#include "asserSimple.hpp"
 #include "serie.h"
 
 using namespace std;
 
 /**
- * Thread qui vérifie les hooks
+ * Thread qui vï¿½rifie les hooks
  */
 void thread_hook(void*)
 {
 
-	while(!matchDemarre) // On attends que la date de début de match soit définie
+	while(!matchDemarre) // On attends que la date de dï¿½but de match soit dï¿½finie
 		vTaskDelay(10);
 	while(1)
 	{
@@ -40,7 +41,7 @@ void thread_hook(void*)
 			if((*hook).evalue())
 			{
 //				serial_rb.printfln("Execution!");
-				if((*hook).execute()) // suppression demandée
+				if((*hook).execute()) // suppression demandï¿½e
 				{
 					vPortFree(hook);
 					listeHooks[i] = listeHooks.back();

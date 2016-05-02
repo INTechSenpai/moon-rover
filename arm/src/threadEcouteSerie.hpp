@@ -10,12 +10,13 @@
 #include "Timer.h"
 #include "FreeRTOS.h"
 #include "task.h"
+
+#include "asser.hpp"
 #include "Hook.h"
 #include "Uart.hpp"
 #include "global.h"
 #include "ax12.hpp"
 #include "serialProtocol.h"
-#include "asserSimple.hpp"
 #include "serie.h"
 
 using namespace std;
@@ -392,9 +393,7 @@ void thread_ecoute_serie(void*)
 						else if(lecture[COMMANDE] == IN_PID_CONST_ROTATION)
 							rotationPID.setTunings(kp, ki, kd);
 						else if(lecture[COMMANDE] == IN_PID_CONST_COURBURE)
-							PIDvit.setTuningsC(kp, ki, kd);
-						else if(lecture[COMMANDE] == IN_PID_CONST_VIT_LINEAIRE)
-							PIDvit.setTuningsV(kp, ki, kd);
+							courburePID.setTunings(kp, ki, kd);
 						else if(lecture[COMMANDE] == IN_CONST_SAMSON)
 						{
 							k1 = kp;
