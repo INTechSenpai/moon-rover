@@ -360,7 +360,7 @@ void thread_ecoute_serie(void*)
 
 						// Dans tous les cas, on s'arr�te au dernier arc re�u
 						arcsArret[indiceArretEcriture] = &trajectoire[indiceTrajectoireEcriture];
-
+						arcsArret[indiceArretEcriture]->indiceAssocie = indiceTrajectoireEcriture;
 						indiceTrajectoireEcriture++;
 
 						changeModeAsserActuel(COURBE);

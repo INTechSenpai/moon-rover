@@ -117,6 +117,18 @@ public class RobotReal extends Robot
 		stm.deleteHooks(hooks);
 	}
 
+	public void vaAuPoint(Vec2<ReadOnly> point, Speed vitesse) throws UnableToMoveException
+	{
+		if(symetrie)
+			point.x = -point.x;
+		int distance = (int)cinematique.position.distance(point);
+		if(distance > 20)
+			tourner(Math.atan2(point.y-cinematique.position.y, 
+					point.x-cinematique.position.x), vitesse);
+		avancer(distance, false, vitesse);
+		
+	}
+	
     /**
      * Tourne, quoi. L'angle est absolu
      */
@@ -125,6 +137,8 @@ public class RobotReal extends Robot
     {
 		synchronized(requete)
 		{
+			if(symetrie)
+				angle = 2*cinematique.orientation - angle;
 			stm.turn(angle, vitesse);
 			gestionExceptions(false);
 		}

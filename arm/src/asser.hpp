@@ -20,9 +20,9 @@
 #define VITESSE_ROUE_MAX (3000. / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 600 // vitesse max en tick / appel asser
 #define ACCELERATION_ROUE_MAX (3500. / MM_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 3.5 // acc�l�ration max en tick / (appel asser)^2
 #define RAYON_DE_COURBURE_MIN_EN_MM 100. // en fait, on peut descendre virtuellement aussi bas qu'on veut. A condition d'aller suffisamment lentement, on peut avoir n'importe quelle courbure.
-#define COURBURE_MAX 10
+#define COURBURE_MAX 5
 
-#define FONCTION_VITESSE_MAX(x) (sqrt(0.6*9.81/x)*0.8)
+#define FONCTION_VITESSE_MAX(x) (sqrt(0.6*9.81/ABS(x))*0.8)
 #define FONCTION_COURBURE_MAX(x) (0.8*0.6*9.81/(x*x))
 
 #define TAILLE_MAX_TRAJECTOIRE 256 // et comme �a on utilise un indice sur un uint_8
@@ -42,6 +42,7 @@ int16_t x;
 int16_t y;
 int16_t dir_x;
 int16_t dir_y;
+uint8_t indiceAssocie;
 uint32_t orientation;
 float courbure;
 float vitesse;
@@ -104,7 +105,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	volatile float vitesseRotationReelle;
 	volatile float courbureReelle;
 	volatile float consigneVitesseLineaire;
-	volatile float consigneCourbure;
+	volatile float consigneCourbure = 0;
 //	PIDvitesse PIDvit(&vitesseLineaireReelle, &courbureReelle, &leftSpeedSetpoint, &rightSpeedSetpoint, &consigneVitesseLineaire, &consigneCourbure);
 
 	float errorCourbure, diffSpeed, previousSpeed = 0;
@@ -217,12 +218,12 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 			rightPWM = -PWM_MAX;
 
 		// gestion de la sym�trie pour les d�placements
-        if(isSymmetry)
+/*        if(isSymmetry)
         {
         	tmpRightPWM = leftPWM;
         	tmpLeftPWM = rightPWM;
         }
-        else
+        else*/
         {
         	tmpRightPWM = rightPWM;
         	tmpLeftPWM = leftPWM;
@@ -420,8 +421,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     {
 		consigneCourbure = 5;
     	errorCourbure = consigneCourbure - courbureReelle;
-		consigneVitesseLineaire = 100;
-		if(vitesseLineaireReelle > 5)
+		consigneVitesseLineaire = FONCTION_VITESSE_MAX(consigneCourbure) * 1000. / MM_PAR_TICK / FREQUENCE_ODO_ASSER;
+		if(vitesseLineaireReelle > 10)
 		{
 			courburePID.compute();
 			previousSpeed += diffSpeed;
@@ -457,27 +458,51 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 		consigneX = arcsArret[indiceArretLecture]->x;
 		consigneY = arcsArret[indiceArretLecture]->y;
 
+		float tmpError = 20.*(arcsArret[indiceArretLecture]->indiceAssocie - indiceTrajectoireLecture + 1) / MM_PAR_TICK;
+
 		updateErrorTranslation();
+		if(errorTranslation < tmpError)
+			errorTranslation = tmpError;
+
         translationPID.compute();
-		translationSpeed = 100;
+
 		limitTranslationRotationSpeed();
 
-    	float kappaS = trajectoire[indiceTrajectoireLecture].courbure - k1*distanceToClotho + k2*errorAngle;
+		float diviseur = vitesseLineaireReelle;
+		if(diviseur < 70)
+			diviseur = 70;
+    	float kappaS = trajectoire[indiceTrajectoireLecture].courbure + (- k1*distanceToClotho + k2*errorAngle) / diviseur;
 
-//		consigneCourbure = FONCTION_COURBURE_MAX(vitesseLineaireReelle);
-//    	if(ABS(consigneCourbure) > ABS(kappaS))
+//		consigneCourbure = FONCTION_COURBURE_MAX(translationSpeed * MM_PAR_TICK * FREQUENCE_ODO_ASSER / 1000.);
+//		if(kappaS < 0)
+//			consigneCourbure = -consigneCourbure;
+
+    	float oldConsigneCourbure = consigneCourbure;
+
+    	consigneCourbure = kappaS;
+    	if(ABS(consigneCourbure) > ABS(kappaS))
     		consigneCourbure = kappaS;
     	if(consigneCourbure > COURBURE_MAX)
     		consigneCourbure = COURBURE_MAX;
     	else if(consigneCourbure < -COURBURE_MAX)
     		consigneCourbure = -COURBURE_MAX;
+    	if(consigneCourbure - oldConsigneCourbure > 0.2)
+    		consigneCourbure = oldConsigneCourbure + 0.2;
+    	if(consigneCourbure - oldConsigneCourbure < -0.2)
+    		consigneCourbure = oldConsigneCourbure - 0.2;
 
 //    	consigneCourbure = trajectoire[indiceTrajectoireLecture].courbure;
 
     	// On limite la vitesse par celle imposée par la courbure
-//    	float tmp = FONCTION_VITESSE_MAX(kappaS);
-//    	if(ABS(tmp) < ABS(translationSpeed))
-//    		translationSpeed = tmp;
+    	if(ABS(consigneCourbure) > 0.1)
+    	{
+			float tmp = FONCTION_VITESSE_MAX(consigneCourbure) * 1000. / MM_PAR_TICK / FREQUENCE_ODO_ASSER;
+			float tmp2 = FONCTION_VITESSE_MAX(courbureReelle) * 1000. / MM_PAR_TICK / FREQUENCE_ODO_ASSER;
+			if(ABS(tmp) < ABS(translationSpeed))
+				translationSpeed = tmp;
+			if(ABS(tmp2) < ABS(translationSpeed))
+				translationSpeed = tmp2;
+    	}
 
     	errorCourbure = consigneCourbure - courbureReelle;
 
