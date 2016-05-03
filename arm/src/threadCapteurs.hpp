@@ -293,10 +293,9 @@ void thread_capteurs(void*)
 	GPIO_PinState balisePresenteBouton = GPIO_PIN_SET;
 	GPIO_PinState symetrieBouton = GPIO_PIN_SET;
 
-
 	// On attend d'avoir la communication �tablie avant d'envoyer les param�tres
-//	while(!ping)
-//		vTaskDelay(10);
+	while(!ping)
+		vTaskDelay(10);
 
 	vTaskDelay(200);
 
@@ -313,6 +312,8 @@ void thread_capteurs(void*)
     adcChannel.Channel = canaux[0];
     HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel);
     HAL_ADC_Start(&g_AdcHandle);
+
+    bool rabEnvoye = false;
 
 	while(!matchDemarre)
 	{
@@ -417,26 +418,11 @@ void thread_capteurs(void*)
 		else
 			vTaskDelay(50);
 
-
-		// Bouton en rab. Initialise l'odo et d�marre le match
-		if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_11) == GPIO_PIN_RESET)
+		// Bouton en rab. Initialise l'odo
+		if(!rabEnvoye && HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_11) == GPIO_PIN_RESET)
 		{
-			if(!startOdo)
-			{
-				x_odo = 0;
-				y_odo = 1000;
-				orientation_odo = 0.;
-
-				// On l'asservit sur place
-				changeModeAsserActuel(SUR_PLACE);
-				consigneX = 0;
-				consigneY = 1000;
-
-				startOdo = true;
-			}
-			HookTemps::setDateDebutMatch();
-			sendDebutMatch();
-			matchDemarre = true;
+			rabEnvoye = true;
+			sendRab();
 		}
 
 		// Affichage lipo

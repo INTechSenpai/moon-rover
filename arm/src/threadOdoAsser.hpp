@@ -110,12 +110,23 @@ void thread_odometrie_asser(void*)
 
 	HAL_TIM_Encoder_Init(&timer2, &encoder2);
 	HAL_TIM_Encoder_Start_IT(&timer2, TIM_CHANNEL_1);
+/*
+	while(1)
+	{
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2, TICK_CODEUR_GAUCHE & 1 ? GPIO_PIN_RESET : GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_1, TICK_CODEUR_DROIT & 1 ? GPIO_PIN_RESET : GPIO_PIN_SET);
+	}
+*/
 
 	// On attend l'initialisation de xyo avant de d�marrer l'odo, sinon �a casse tout.
 	while(!startOdo)
 		vTaskDelay(5);
 
 	currentAngle = RAD_TO_TICK(orientation_odo);
+
+	changeModeAsserActuel(SUR_PLACE);
+	consigneX = x_odo;
+	consigneY = y_odo;
 
 	TickType_t xLastWakeTime;
 	const TickType_t periode = 1000 / FREQUENCE_ODO_ASSER;
@@ -165,10 +176,10 @@ void thread_odometrie_asser(void*)
 
 		vitesseLineaireReelle = (currentRightSpeed + currentLeftSpeed) / 2;
 
-		if(!isSymmetry)
+//		if(!isSymmetry)
 			vitesseRotationReelle = (currentRightSpeed - currentLeftSpeed) / 2;
-		else
-			vitesseRotationReelle = (currentLeftSpeed - currentRightSpeed) / 2;
+//		else
+//			vitesseRotationReelle = (currentLeftSpeed - currentRightSpeed) / 2;
 
 		// Calcul issu de Thal�s. Positif si le robot tourne vers la droite (pour �tre coh�rent avec l'orientation)
 //		courbureReelle = 2 / LONGUEUR_CODEUSE_A_CODEUSE_EN_MM * (currentLeftSpeed - currentRightSpeed) / (currentLeftSpeed + currentRightSpeed);
@@ -179,10 +190,10 @@ void thread_odometrie_asser(void*)
 		distance = TICK_TO_MM(distanceTick);
 
 		// gestion de la sym�trie : en effet, toutes les variables sont sym�tris�es, y compris l'orientation
-		if(!isSymmetry)
+//		if(!isSymmetry)
 			deltaOrientationTick = delta_tick_droit - delta_tick_gauche;
-		else
-			deltaOrientationTick = delta_tick_gauche - delta_tick_droit;
+//		else
+//			deltaOrientationTick = delta_tick_gauche - delta_tick_droit;
 
 		// l'erreur � cause du "/2" ne s'accumule pas
 		orientationMoyTick = currentAngle + deltaOrientationTick/2;
@@ -246,7 +257,7 @@ void thread_odometrie_asser(void*)
 		{
 			if((debugCompteur & 0x07) == 0)
 //				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int32_t)(errorLeftSpeed*100), (int32_t)(errorRightSpeed*100), (int16_t) ((rotationSetpoint * 6.28) / TICKS_PAR_TOUR_ROBOT), courbureReelle);
-				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)((consigneVitesseLineaire) - (vitesseLineaireReelle)), (int32_t)(currentRightSpeed*100), (int16_t)(distanceToClotho), (uint16_t)(errorAngle), consigneCourbure*100, (consigneCourbure-courbureReelle)*100);
+				sendDebug(indiceTrajectoireLecture, translationSpeed * MM_PAR_TICK * FREQUENCE_ODO_ASSER, (int32_t)((consigneVitesseLineaire) - (vitesseLineaireReelle)), (int32_t)(errorTranslation), (int16_t)(distanceToClotho), (uint16_t)(errorAngle), consigneCourbure*100, (consigneCourbure-courbureReelle)*100);
 //				sendDebug(indiceTrajectoireEcriture, indiceTrajectoireLecture, (trajectoire[indiceTrajectoireLecture].x - x_odo) * trajectoire[indiceTrajectoireLecture].dir_x
 //		    			+ (trajectoire[indiceTrajectoireLecture].y - y_odo) * trajectoire[indiceTrajectoireLecture].dir_y, (int32_t)(currentRightSpeed*100), (int16_t)(errorTranslation), modeAsserActuel, (trajectoire[indiceTrajectoireLecture].x - x_odo), trajectoire[indiceTrajectoireLecture].dir_x);
 //				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(leftSpeedSetpoint*100), (int32_t)(currentLeftAcceleration*1000), (int32_t)(currentRightAcceleration*1000), vitesseLineaireReelle, courbureReelle);

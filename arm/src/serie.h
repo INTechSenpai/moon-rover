@@ -91,6 +91,12 @@ void inline sendBalise(bool present)
 	send(out, 5+1);
 }
 
+void inline sendRab()
+{
+	unsigned char out[] = {0, 0, 0, 0, OUT_RAB, 0};
+	send(out, 5+1);
+}
+
 void inline sendDebutMatch()
 {
 	unsigned char out[] = {0, 0, 0, 0, OUT_DEBUT_MATCH, 0};

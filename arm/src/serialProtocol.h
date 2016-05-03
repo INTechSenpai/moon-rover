@@ -73,6 +73,7 @@
 #define OUT_RESEND_PACKET 0xFF
 #define OUT_ELEMENT_SHOOTE 0x0D
 #define OUT_PROBLEME_MECA_ACC 0x11
+#define OUT_RAB 0x12
 #define ID_FORT 0x00
 #define ID_FAIBLE 0x01
 #define COMMANDE 0x02

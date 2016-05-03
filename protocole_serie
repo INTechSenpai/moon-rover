@@ -126,6 +126,8 @@ debug asser
     0x10 PWMgauche(16) PWMdroit(16) vitesseGauche(16) vitesseDroite(16) distance(16) orientation(16) vitesseLineaire(16) courbure(16)
 problème meca (accélération)
     0x11
+bouton rab
+    0x12
 
 ping
     0x3F

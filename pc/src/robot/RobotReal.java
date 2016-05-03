@@ -60,24 +60,22 @@ public class RobotReal extends Robot
 		int y = config.getInt(ConfigInfo.Y_DEPART);
 		double o = config.getDouble(ConfigInfo.O_DEPART);
 		cinematique = new Cinematique(x, y, o, true, 0, 0, 0, Speed.STANDARD);
+/*		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
 		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
-		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
-		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
+		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);*/
 		stm.utiliseActionneurs(ActuatorOrder.AX12_ARRIERE_DROIT_FERME);
 		stm.utiliseActionneurs(ActuatorOrder.AX12_ARRIERE_DROIT_FERME);
 		stm.utiliseActionneurs(ActuatorOrder.AX12_AVANT_GAUCHE_FERME);
 		stm.utiliseActionneurs(ActuatorOrder.AX12_ARRIERE_GAUCHE_FERME);
 		stm.utiliseActionneurs(ActuatorOrder.AX12_POISSON_HAUT);
 		stm.utiliseActionneurs(ActuatorOrder.AX12_AVANT_DROIT_FERME);
-		/*// TODO envoyer le pid quand les valeurs sont trouvées
 		// Envoie des constantes du pid
-		stm.setPIDconstVitesseGauche(config.getDouble(ConfigInfo.CONST_KP_VIT_GAUCHE), config.getDouble(ConfigInfo.CONST_KD_VIT_GAUCHE));
-		stm.setPIDconstVitesseDroite(config.getDouble(ConfigInfo.CONST_KP_VIT_DROITE), config.getDouble(ConfigInfo.CONST_KD_VIT_DROITE));
-		stm.setPIDconstTranslation(config.getDouble(ConfigInfo.CONST_KP_TRANSLATION), config.getDouble(ConfigInfo.CONST_KD_TRANSLATION));
-		stm.setPIDconstRotation(config.getDouble(ConfigInfo.CONST_KP_ROTATION), config.getDouble(ConfigInfo.CONST_KD_ROTATION));
-		stm.setPIDconstCourbure(config.getDouble(ConfigInfo.CONST_KP_COURBURE), config.getDouble(ConfigInfo.CONST_KD_COURBURE));
-		stm.setPIDconstVitesseLineaire(config.getDouble(ConfigInfo.CONST_KP_VIT_LINEAIRE), config.getDouble(ConfigInfo.CONST_KD_VIT_LINEAIRE));
-		*/
+		stm.setPIDconstVitesseGauche(config.getDouble(ConfigInfo.CONST_KP_VIT_GAUCHE), config.getDouble(ConfigInfo.CONST_KI_VIT_GAUCHE), config.getDouble(ConfigInfo.CONST_KD_VIT_GAUCHE));
+		stm.setPIDconstVitesseDroite(config.getDouble(ConfigInfo.CONST_KP_VIT_DROITE), config.getDouble(ConfigInfo.CONST_KI_VIT_DROITE), config.getDouble(ConfigInfo.CONST_KD_VIT_DROITE));
+		stm.setPIDconstTranslation(config.getDouble(ConfigInfo.CONST_KP_TRANSLATION), config.getDouble(ConfigInfo.CONST_KI_TRANSLATION), config.getDouble(ConfigInfo.CONST_KD_TRANSLATION));
+		stm.setPIDconstRotation(config.getDouble(ConfigInfo.CONST_KP_ROTATION), config.getDouble(ConfigInfo.CONST_KI_ROTATION), config.getDouble(ConfigInfo.CONST_KD_ROTATION));
+		stm.setPIDconstCourbure(config.getDouble(ConfigInfo.CONST_KP_COURBURE), config.getDouble(ConfigInfo.CONST_KI_COURBURE), config.getDouble(ConfigInfo.CONST_KD_COURBURE));
+		stm.setPIDconstVitesseLineaire(config.getDouble(ConfigInfo.CONST_KP_VIT_LINEAIRE), config.getDouble(ConfigInfo.CONST_KI_VIT_LINEAIRE), config.getDouble(ConfigInfo.CONST_KD_VIT_LINEAIRE));
 	}
 		
 	public void setEnMarcheAvance(boolean enMarcheAvant)
@@ -119,11 +117,13 @@ public class RobotReal extends Robot
 
 	public void vaAuPoint(Vec2<ReadOnly> point, Speed vitesse) throws UnableToMoveException
 	{
+		log.debug("position actuelle : "+cinematique.position);
+		log.debug("position cible : "+point);
 		if(symetrie)
 			point.x = -point.x;
 		int distance = (int)cinematique.position.distance(point);
 		if(distance > 20)
-			tourner(Math.atan2(point.y-cinematique.position.y, 
+			tournerSansSym(Math.atan2(point.y-cinematique.position.y, 
 					point.x-cinematique.position.x), vitesse);
 		avancer(distance, false, vitesse);
 		
@@ -138,7 +138,18 @@ public class RobotReal extends Robot
 		synchronized(requete)
 		{
 			if(symetrie)
-				angle = 2*cinematique.orientation - angle;
+				angle = Math.PI - angle;
+			stm.turn(angle, vitesse);
+			gestionExceptions(false);
+		}
+    }
+
+    private void tournerSansSym(double angle, Speed vitesse) throws UnableToMoveException
+    {
+		synchronized(requete)
+		{
+//			if(symetrie)
+//				angle = 2*cinematique.orientation - angle;
 			stm.turn(angle, vitesse);
 			gestionExceptions(false);
 		}
