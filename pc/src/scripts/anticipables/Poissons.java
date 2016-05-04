@@ -48,28 +48,6 @@ public class Poissons extends ScriptAnticipable {
 	protected void execute(int id_version, Table table, Robot robot)
 			throws UnableToMoveException, FinMatchException
 	{
-		robot.tourner(Math.PI, Speed.STANDARD);
-		ArrayList<Hook> hooks = new ArrayList<Hook>();
-		Hook hookBaisse = new HookDemiPlan(log, new Vec2<ReadOnly>(1000, 120), new Vec2<ReadOnly>(-10, 0));
-		Hook hookMilieu = new HookDemiPlan(log, new Vec2<ReadOnly>(700, 120), new Vec2<ReadOnly>(-10, 0));
-		Hook hookOuvre = new HookDemiPlan(log, new Vec2<ReadOnly>(500, 120), new Vec2<ReadOnly>(-10, 0));
-		Hook hookFerme = new HookDemiPlan(log, new Vec2<ReadOnly>(450, 120), new Vec2<ReadOnly>(-10, 0));
-		Hook hookLeve = new HookDemiPlan(log, new Vec2<ReadOnly>(400, 120), new Vec2<ReadOnly>(-10, 0));
-
-		hookBaisse.ajouter_callback(new UtiliseActionneur(ActuatorOrder.AX12_POISSON_BAS));
-		hookMilieu.ajouter_callback(new UtiliseActionneur(ActuatorOrder.AX12_POISSON_MILIEU));
-		hookOuvre.ajouter_callback(new UtiliseActionneur(ActuatorOrder.AX12_POISSON_OUVRE));
-		hookFerme.ajouter_callback(new UtiliseActionneur(ActuatorOrder.AX12_POISSON_FERME));
-		hookLeve.ajouter_callback(new UtiliseActionneur(ActuatorOrder.AX12_POISSON_HAUT));
-
-		hooks.add(hookBaisse);
-		hooks.add(hookMilieu);
-		hooks.add(hookOuvre);
-		hooks.add(hookFerme);
-		hooks.add(hookLeve);
-
-		robot.tourner(Math.PI, Speed.STANDARD);
-		robot.avancer(700, hooks, Speed.STANDARD);
 	}
 
 	@Override

@@ -371,7 +371,7 @@ void thread_capteurs(void*)
 		// couleur
 
 		tmp = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15);
-		if(tmp != symetrieBouton)
+		if(!rabEnvoye && tmp != symetrieBouton)
 		{
 			symetrieBouton = tmp;
 			if(symetrieBouton == GPIO_PIN_RESET)
@@ -409,7 +409,7 @@ void thread_capteurs(void*)
 		}
 
 		//�Jumper
-		if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_13) == GPIO_PIN_RESET)
+		if(rabEnvoye && HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_13) == GPIO_PIN_RESET)
 		{
 			HookTemps::setDateDebutMatch();
 			sendDebutMatch();
@@ -421,6 +421,7 @@ void thread_capteurs(void*)
 		// Bouton en rab. Initialise l'odo
 		if(!rabEnvoye && HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_11) == GPIO_PIN_RESET)
 		{
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_15, GPIO_PIN_SET);
 			rabEnvoye = true;
 			sendRab();
 		}
@@ -470,7 +471,7 @@ void thread_capteurs(void*)
 		}
 
 		sendCapteur(x, y, orientation, courbure, marcheAvantTmp, (int16_t) vitesseLineaireReelle, (int16_t) vitesseRotationReelle, capteurs);
-		vTaskDelay(300);
+		vTaskDelay(50);
 
 	}
 

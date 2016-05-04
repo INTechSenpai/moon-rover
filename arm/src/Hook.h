@@ -5,7 +5,7 @@
 #include "Executable.h"
 
 /**
- * Classe mère abstraite des Hooks.
+ * Classe mï¿½re abstraite des Hooks.
  */
 
 
@@ -16,7 +16,7 @@ public:
 	virtual bool evalue() = 0;
 	Hook(uint8_t id, bool isUnique, uint8_t nbCallback);
 	virtual ~Hook();
-	void insert(Executable* f, uint8_t indice); // n'est pas surchargé, donc pas besoin de la mettre en virtuel
+	void insert(Executable* f, uint8_t indice); // n'est pas surchargï¿½, donc pas besoin de la mettre en virtuel
 	bool execute(); // idem
 	uint16_t getId(); // idem
 
@@ -68,13 +68,13 @@ public:
 class HookDemiPlan : public Hook
 {
 private:
-	uint16_t m_x;
-	uint16_t m_y;
-	uint16_t m_direction_x;
-	uint16_t m_direction_y;
+	float m_x;
+	float m_y;
+	float m_direction_x;
+	float m_direction_y;
 
 public:
-	HookDemiPlan(uint8_t id, uint8_t nbCallback, uint16_t x, uint16_t y, uint16_t direction_x, uint16_t direction_y);
+	HookDemiPlan(uint8_t id, uint8_t nbCallback, float x, float y, float direction_x, float direction_y);
 	bool evalue();
 };
 

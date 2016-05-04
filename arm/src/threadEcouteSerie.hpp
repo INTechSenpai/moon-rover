@@ -156,7 +156,7 @@ void thread_ecoute_serie(void*)
 					if(ping == false)
 					{
 						ping = true;
-						HAL_GPIO_WritePin(GPIOC, GPIO_PIN_15, GPIO_PIN_SET); // on allume la led de ping C15
+//						HAL_GPIO_WritePin(GPIOC, GPIO_PIN_15, GPIO_PIN_SET); // on allume la led de ping C15
 					}
 				}
 				else if(lecture[COMMANDE] == IN_DEBUG_MODE)
@@ -308,6 +308,8 @@ void thread_ecoute_serie(void*)
 						int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
 						x -= 1500;
 						int16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
+
+						marcheAvant = (x - x_odo) * cos_orientation_odo + (y - y_odo) * sin_orientation_odo > 0;
 
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 						changeModeAsserActuel(VA_AU_POINT);
@@ -531,13 +533,14 @@ void thread_ecoute_serie(void*)
 						serial_rb.read_char(lecture+(++index)); // id
 						serial_rb.read_char(lecture+(++index)); // nb_callback
 
-						int16_t x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
+						float x = (lecture[PARAM] << 4) + (lecture[PARAM + 1] >> 4);
 						x -= 1500;
-						uint16_t y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
+						float y = ((lecture[PARAM + 1] & 0x0F) << 8) + lecture[PARAM + 2];
 
-						int16_t dir_x = (lecture[PARAM + 3] << 4) + (lecture[PARAM + 4] >> 4);
+						float dir_x = (lecture[PARAM + 3] << 4) + (lecture[PARAM + 4] >> 4);
 						dir_x -= 1500;
-						uint16_t dir_y = ((lecture[PARAM + 4] & 0x0F) << 8) + lecture[PARAM + 5];
+						float dir_y = ((lecture[PARAM + 4] & 0x0F) << 8) + lecture[PARAM + 5];
+						dir_y -= 1500;
 						id = lecture[PARAM + 6];
 						nbcallbacks = lecture[PARAM + 7];
 						hookActuel = new(pvPortMalloc(sizeof(HookDemiPlan))) HookDemiPlan(id, nbcallbacks, x, y, dir_x, dir_y);

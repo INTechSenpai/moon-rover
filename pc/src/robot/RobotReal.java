@@ -63,12 +63,13 @@ public class RobotReal extends Robot
 /*		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
 		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
 		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);*/
-		stm.utiliseActionneurs(ActuatorOrder.AX12_ARRIERE_DROIT_FERME);
-		stm.utiliseActionneurs(ActuatorOrder.AX12_ARRIERE_DROIT_FERME);
+		
+		stm.utiliseActionneurs(ActuatorOrder.AX12_ARRIERE_GAUCHE_VERR2);
+		stm.utiliseActionneurs(ActuatorOrder.AX12_ARRIERE_DROIT_VERR2);
 		stm.utiliseActionneurs(ActuatorOrder.AX12_AVANT_GAUCHE_FERME);
-		stm.utiliseActionneurs(ActuatorOrder.AX12_ARRIERE_GAUCHE_FERME);
-		stm.utiliseActionneurs(ActuatorOrder.AX12_POISSON_HAUT);
 		stm.utiliseActionneurs(ActuatorOrder.AX12_AVANT_DROIT_FERME);
+		stm.utiliseActionneurs(ActuatorOrder.AX12_POISSON_HAUT);
+		stm.utiliseActionneurs(ActuatorOrder.AX12_POISSON_FERME);
 		// Envoie des constantes du pid
 		stm.setPIDconstVitesseGauche(config.getDouble(ConfigInfo.CONST_KP_VIT_GAUCHE), config.getDouble(ConfigInfo.CONST_KI_VIT_GAUCHE), config.getDouble(ConfigInfo.CONST_KD_VIT_GAUCHE));
 		stm.setPIDconstVitesseDroite(config.getDouble(ConfigInfo.CONST_KP_VIT_DROITE), config.getDouble(ConfigInfo.CONST_KI_VIT_DROITE), config.getDouble(ConfigInfo.CONST_KD_VIT_DROITE));
@@ -83,6 +84,20 @@ public class RobotReal extends Robot
 		cinematique.enMarcheAvant = enMarcheAvant;
 	}
 
+    public void avancerB(int distance, boolean mur, Speed vitesse)
+    {
+    	try {
+    		avancer(distance, new ArrayList<Hook>(), mur, vitesse);
+		} catch (UnableToMoveException e) {}	
+    }
+
+    public void avancerB(int distance, ArrayList<Hook> hooks, Speed vitesse)
+    {
+    	try {
+    		avancer(distance, hooks, false, vitesse);
+		} catch (UnableToMoveException e) {}	
+    }
+
 	/**
 	 * Avance d'une certaine distance donnée en mm (méthode bloquante), gestion des hooks
 	 * @throws UnableToMoveException 
@@ -94,7 +109,7 @@ public class RobotReal extends Robot
 			synchronized(requete)
 			{
 				stm.envoieHooks(hooks);
-				stm.avancer(distance, vitesse);
+				stm.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
 				gestionExceptions(mur);
 			}
 		}
@@ -104,6 +119,22 @@ public class RobotReal extends Robot
 		}
 	}	
 
+    public void vaAuPointBasNiveau(Vec2<ReadOnly> point, ArrayList<Hook> hooks, Speed vitesse) throws UnableToMoveException
+	{
+		try {
+			synchronized(requete)
+			{
+				stm.envoieHooks(hooks);
+				stm.vaAuPoint(point, vitesse);
+				gestionExceptions(true);
+			}
+		}
+		finally
+		{
+			stm.deleteHooks(hooks);
+		}
+	}	
+    
     /**
 	 * Méthode sleep utilisée par les scripts
 	 */
@@ -115,19 +146,54 @@ public class RobotReal extends Robot
 		stm.deleteHooks(hooks);
 	}
 
-	public void vaAuPoint(Vec2<ReadOnly> point, Speed vitesse) throws UnableToMoveException
+	public void vaAuPointB(Vec2<ReadOnly> point, ArrayList<Hook> hooks, Speed vitesse, boolean marcheAvant)
 	{
-		log.debug("position actuelle : "+cinematique.position);
-		log.debug("position cible : "+point);
-		if(symetrie)
-			point.x = -point.x;
-		int distance = (int)cinematique.position.distance(point);
-		if(distance > 20)
-			tournerSansSym(Math.atan2(point.y-cinematique.position.y, 
-					point.x-cinematique.position.x), vitesse);
-		avancer(distance, false, vitesse);
+    	try {
+    		vaAuPoint(point, hooks, vitesse, marcheAvant);
+		} catch (UnableToMoveException e) {}	
+	}
+
+	public void vaAuPointB(Vec2<ReadOnly> point, Speed vitesse, boolean marcheAvant)
+	{
+    	try {
+    		vaAuPoint(point, new ArrayList<Hook>(), vitesse, marcheAvant);
+		} catch (UnableToMoveException e) {}	
+	}
+
+	public void vaAuPoint(Vec2<ReadOnly> point, ArrayList<Hook> hooks, Speed vitesse, boolean marcheAvant) throws UnableToMoveException
+	{
+		int distance;
+		double angle;
+		synchronized(cinematique)
+		{
+			if(symetrie)
+				point.x = -point.x;
+			log.debug("position actuelle : "+cinematique.position);
+			log.debug("position cible : "+point);
+
+			distance = (int)cinematique.position.distance(point);
+			if(!marcheAvant)
+				distance = -distance;
+			
+			angle = Math.atan2(point.y-cinematique.position.y, 
+					point.x-cinematique.position.x);
+			if(!marcheAvant)
+				angle += Math.PI;
+		}
+		if(Math.abs(distance) > 20)
+			tournerSansSym(angle, vitesse);
+		Sleep.sleep(200);
+		vaAuPointBasNiveau(point, hooks, vitesse);
 		
 	}
+	
+    public void tournerB(double angle, Speed vitesse)
+    {
+    	try {
+			tourner(angle, vitesse);
+		} catch (UnableToMoveException e) {}
+    }
+
 	
     /**
      * Tourne, quoi. L'angle est absolu
@@ -251,13 +317,18 @@ public class RobotReal extends Robot
 				{
 					// Si au bout de 3s le robot n'a toujours rien répondu,
 					// on suppose un blocage mécanique
-					requete.set(RequeteType.BLOCAGE_MECANIQUE);
-					requete.wait(3000);
+					requete.set(RequeteType.BLOCAGE_MECANIQUE_VITESSE);
+					requete.wait(7000);
 				}
 
 				type = requete.getAndClear();
-				if(type == RequeteType.BLOCAGE_MECANIQUE)
+				if(type == RequeteType.BLOCAGE_MECANIQUE_VITESSE)
 					throw new UnableToMoveException();
+				else if(type == RequeteType.BLOCAGE_MECANIQUE_ACCELERATION)
+				{
+					Sleep.sleep(1000);
+					throw new UnableToMoveException();
+				}
 				else if(type == RequeteType.ENNEMI_SUR_CHEMIN)
 					throw new UnexpectedObstacleOnPathException();
 			} while(type != RequeteType.TRAJET_FINI);
@@ -269,7 +340,7 @@ public class RobotReal extends Robot
 
 	public void setCinematique(Cinematique cinematique)
 	{
-		cinematique.copy(cinematique);
+		cinematique.copy(this.cinematique);
 	}
 
 	// TODO à virer (utilisé uniquement pour les tests)

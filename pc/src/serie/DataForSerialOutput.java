@@ -311,6 +311,7 @@ public class DataForSerialOutput implements Service
 
 		for(Hook h : hooks)
 		{
+//			log.debug("Envoi hook");
 			ArrayList<Byte> list = h.toSerial();
 			byte[] out = new byte[list.size()+3];
 		    for (int i = 0; i < list.size(); i++)

@@ -35,7 +35,7 @@ uint16_t Hook::getId()
 }
 
 /**
- * HOOK DE TEMPS
+ * HOOKï¿½DEï¿½TEMPS
  */
 
 uint32_t HookTemps::m_dateDebutMatch;
@@ -54,7 +54,7 @@ HookTemps::HookTemps(uint8_t id, uint8_t nbCallback, uint32_t dateExecution):Hoo
 {}
 
 /**
- * HOOK DE CONTACT
+ * HOOKï¿½DEï¿½CONTACT
  */
 
 bool HookContact::evalue()
@@ -67,7 +67,7 @@ HookContact::HookContact(uint8_t id, bool isUnique, uint8_t nbCallback, uint8_t 
 {}
 
 /**
- * HOOK DE POSITION
+ * HOOKï¿½DEï¿½POSITION
  */
 
 bool HookPosition::evalue()
@@ -79,7 +79,7 @@ HookPosition::HookPosition(uint8_t id, uint8_t nbCallback, uint16_t x, uint16_t 
 {}
 
 /**
- * HOOK DE DEMI-PLAN
+ * HOOKï¿½DEï¿½DEMI-PLAN
  */
 
 bool HookDemiPlan::evalue()
@@ -87,5 +87,5 @@ bool HookDemiPlan::evalue()
 	return (x_odo - m_x) * m_direction_x + (y_odo - m_y) * m_direction_y > 0;
 }
 
-HookDemiPlan::HookDemiPlan(uint8_t id, uint8_t nbCallback, uint16_t x, uint16_t y, uint16_t direction_x, uint16_t direction_y):Hook(id, true, nbCallback), m_x(x), m_y(y), m_direction_x(direction_x), m_direction_y(direction_y)
+HookDemiPlan::HookDemiPlan(uint8_t id, uint8_t nbCallback, float x, float y, float direction_x, float direction_y):Hook(id, true, nbCallback), m_x(x), m_y(y), m_direction_x(direction_x), m_direction_y(direction_y)
 {}

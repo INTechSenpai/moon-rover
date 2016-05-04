@@ -560,13 +560,24 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
     // Y a-t-il un probl�me m�canique ?
     bool inline checkBlocageMecanique()
     {
-/*    	if(isPhysicallyStoppedAcc())
+    	if(modeAsserActuel == VA_AU_POINT)
+    	{
+    	    if((marcheAvant && errorTranslation < -50/MM_PAR_TICK)
+    	    				|| (!marcheAvant && errorTranslation > 50/MM_PAR_TICK))
+    	    {
+    	    	nbErreurs = 0;
+    	    	return true;
+    	    }
+    	}
+
+    	if(isPhysicallyStoppedAcc())
     	{
 			nbErreurs = 0;
 			sendProblemeMecaAcceleration();
 			return true;
     	}
-    	else */if(isPhysicallyStoppedVitesse())
+
+    	if(isPhysicallyStoppedVitesse())
     	{
     		nbErreurs++;
 			if(nbErreurs >= DELAI_ERREUR_MECA_APPEL)
@@ -584,12 +595,12 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 	bool inline checkArriveePosition()
 	{
-		return ABS(x_odo - consigneX) < 20 && ABS(y_odo - consigneY) < 20;
+		return ABS(x_odo - consigneX) < 5 && ABS(y_odo - consigneY) < 5;
 	}
 
 	bool inline checkArriveeAngle()
 	{
-		return ABS(errorAngle) < 500;
+		return ABS(errorAngle) < 300;
 	}
 
 	bool inline checkArriveeCourbe()
