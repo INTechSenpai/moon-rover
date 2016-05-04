@@ -157,11 +157,8 @@ void inline sendCapteur(uint16_t x, uint16_t y, uint16_t orientation, uint8_t co
 			(uint8_t) (vitesseLineaireReelle >> 8), (uint8_t) (vitesseLineaireReelle & 0xFF),
 			(uint8_t) (vitesseRotationReelle >> 8), (uint8_t) (vitesseRotationReelle & 0xFF),
 			(uint8_t) (c[0] >> 4), (uint8_t) ((c[0] << 4) | (c[1] >> 8)), (uint8_t) (c[1]),
-			(uint8_t) (c[2] >> 4), (uint8_t) ((c[2] << 4) | (c[3] >> 8)), (uint8_t) (c[3]),
-			(uint8_t) (c[4] >> 4), (uint8_t) ((c[4] << 4) | (c[5] >> 8)), (uint8_t) (c[5]),
-			(uint8_t) (c[6] >> 4), (uint8_t) ((c[6] << 4) | (c[7] >> 8)), (uint8_t) (c[7]),
 			0};
-	send(out, 5+11+12);
+	send(out, 5+14);
 }
 
 #endif

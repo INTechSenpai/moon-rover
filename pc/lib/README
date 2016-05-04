@@ -13,6 +13,7 @@ Copier les fichiers dans les lib de votre machine virtuelle
 sudo cp librxtxSerial.so /usr/lib/jvm/java-7-openjdk-i386/jre/lib/i386/
 sudo cp RXTXcomm.jar /usr/lib/jvm/java-7-openjdk-i386/jre/lib/ext/
 
+(sudo cp /usr/lib/jni/librxtxSerial.so "$JAVA_HOME/jre/lib/i386/")
 
 Exulter de joie si ça marche
 ----------------------------

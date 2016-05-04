@@ -31,9 +31,6 @@ public class RobotReal extends Robot
 	private int distanceDegagement;
 	private int tempsAttente;
 	
-	private boolean sableDevant = false;
-	private boolean sableDerriere = false;
-	
 	// Constructeur
 	public RobotReal(DataForSerialOutput stm, Log log, RequeteSTM requete)
  	{
@@ -60,9 +57,6 @@ public class RobotReal extends Robot
 		int y = config.getInt(ConfigInfo.Y_DEPART);
 		double o = config.getDouble(ConfigInfo.O_DEPART);
 		cinematique = new Cinematique(x, y, o, true, 0, 0, 0, Speed.STANDARD);
-/*		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
-		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);
-		stm.initOdoSTM(new Vec2<ReadOnly>(x, y), o);*/
 		
 		stm.utiliseActionneurs(ActuatorOrder.AX12_ARRIERE_GAUCHE_VERR2);
 		stm.utiliseActionneurs(ActuatorOrder.AX12_ARRIERE_DROIT_VERR2);
@@ -110,7 +104,15 @@ public class RobotReal extends Robot
 			{
 				stm.envoieHooks(hooks);
 				stm.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
-				gestionExceptions(mur);
+				try {
+					gestionExceptions(mur);
+				} catch (UnexpectedObstacleOnPathException e) {
+					stm.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
+					try {
+						gestionExceptions(mur);
+					} catch (UnexpectedObstacleOnPathException e1) {
+					}
+				}
 			}
 		}
 		finally
@@ -126,7 +128,15 @@ public class RobotReal extends Robot
 			{
 				stm.envoieHooks(hooks);
 				stm.vaAuPoint(point, vitesse);
-				gestionExceptions(true);
+				try {
+					gestionExceptions(true);
+				} catch (UnexpectedObstacleOnPathException e) {
+					stm.vaAuPoint(point, vitesse);
+					try {
+						gestionExceptions(true);
+					} catch (UnexpectedObstacleOnPathException e1) {
+					}
+				}
 			}
 		}
 		finally
@@ -206,7 +216,15 @@ public class RobotReal extends Robot
 			if(symetrie)
 				angle = Math.PI - angle;
 			stm.turn(angle, vitesse);
-			gestionExceptions(false);
+			try {
+				gestionExceptions(false);
+			} catch (UnexpectedObstacleOnPathException e) {
+				stm.turn(angle, vitesse);
+				try {
+					gestionExceptions(false);
+				} catch (UnexpectedObstacleOnPathException e1) {
+				}
+			}
 		}
     }
 
@@ -217,7 +235,15 @@ public class RobotReal extends Robot
 //			if(symetrie)
 //				angle = 2*cinematique.orientation - angle;
 			stm.turn(angle, vitesse);
-			gestionExceptions(false);
+			try {
+				gestionExceptions(false);
+			} catch (UnexpectedObstacleOnPathException e) {
+				stm.turn(angle, vitesse);
+				try {
+					gestionExceptions(false);
+				} catch (UnexpectedObstacleOnPathException e1) {
+				}
+			}
 		}
     }
 
@@ -248,11 +274,12 @@ public class RobotReal extends Robot
     /**
      * Gère les exceptions, c'est-à-dire les rencontres avec l'ennemi et les câlins avec un mur.
      * Cette méthode NE GÈRE PAS les exceptions lors des trajectoires courbes
+     * @throws UnexpectedObstacleOnPathException 
      */
-    private void gestionExceptions(boolean mur) throws UnableToMoveException
+    private void gestionExceptions(boolean mur) throws UnableToMoveException, UnexpectedObstacleOnPathException
     {
 //        int nb_iterations_deblocage = 1; // combien de fois on réessaye si on se prend un mur
-        int nb_iterations_ennemi = 2000 / tempsAttente; // 2 secondes max
+//        int nb_iterations_ennemi = 2000 / tempsAttente; // 2 secondes max
 
         while(true)
         {
@@ -285,16 +312,18 @@ public class RobotReal extends Robot
                 }           
                 else
                 	return; // on s'est pris un mur, on s'attendait à un mur : tout va bien
-            } catch (UnexpectedObstacleOnPathException e)
+            }/* catch (UnexpectedObstacleOnPathException e)
             {
             	stm.suspendMouvement();
+
             	Sleep.sleep(tempsAttente);
             	// on ne s'est jamais arrêté à cause d'un problème mécanique, on peut donc relancer le mouvement
+
             	stm.reprendMouvement();
             	//attendStatus();
                 if(nb_iterations_ennemi-- == 0)
                     throw new UnableToMoveException();
-            }
+            }*/
             
         }
 
@@ -330,7 +359,12 @@ public class RobotReal extends Robot
 					throw new UnableToMoveException();
 				}
 				else if(type == RequeteType.ENNEMI_SUR_CHEMIN)
+				{
+					log.critical("Ennemi sur le chemin !");
+					stm.immobilise();
+					Sleep.sleep(4000);
 					throw new UnexpectedObstacleOnPathException();
+				}
 			} while(type != RequeteType.TRAJET_FINI);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -347,22 +381,6 @@ public class RobotReal extends Robot
 	public Cinematique getCinematique()
 	{
 		return cinematique;
-	}
-	
-	public void setSable(boolean devant, boolean arriere)
-	{
-		sableDevant = devant;
-		sableDevant = arriere;
-	}
-
-	public boolean getSableDevant()
-	{
-		return sableDevant;
-	}
-
-	public boolean getSableDerriere()
-	{
-		return sableDerriere;
 	}
 
 }
