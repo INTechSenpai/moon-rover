@@ -256,8 +256,8 @@ void thread_odometrie_asser(void*)
 		if(debugMode)
 		{
 			if((debugCompteur & 0x07) == 0)
-//				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int32_t)(errorLeftSpeed*100), (int32_t)(errorRightSpeed*100), (int16_t) ((rotationSetpoint * 6.28) / TICKS_PAR_TOUR_ROBOT), courbureReelle);
-				sendDebug(indiceTrajectoireLecture, translationSpeed * MM_PAR_TICK * FREQUENCE_ODO_ASSER, (int32_t)((consigneVitesseLineaire) - (vitesseLineaireReelle)), (int32_t)(errorTranslation), (int16_t)(distanceToClotho), (uint16_t)(errorAngle), consigneCourbure*100, (consigneCourbure-courbureReelle)*100);
+				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(currentRightSpeed*100), (int32_t)(errorLeftSpeed*100), (int16_t)(errorAngle), (int16_t) ((rotationSetpoint * 6.28) / TICKS_PAR_TOUR_ROBOT), courbureReelle);
+//				sendDebug(indiceTrajectoireLecture, translationSpeed * MM_PAR_TICK * FREQUENCE_ODO_ASSER, (int32_t)((consigneVitesseLineaire) - (vitesseLineaireReelle)), (int32_t)(errorTranslation), (int16_t)(distanceToClotho), (uint16_t)(errorAngle), consigneCourbure*100, (consigneCourbure-courbureReelle)*100);
 //				sendDebug(indiceTrajectoireEcriture, indiceTrajectoireLecture, (trajectoire[indiceTrajectoireLecture].x - x_odo) * trajectoire[indiceTrajectoireLecture].dir_x
 //		    			+ (trajectoire[indiceTrajectoireLecture].y - y_odo) * trajectoire[indiceTrajectoireLecture].dir_y, (int32_t)(currentRightSpeed*100), (int16_t)(errorTranslation), modeAsserActuel, (trajectoire[indiceTrajectoireLecture].x - x_odo), trajectoire[indiceTrajectoireLecture].dir_x);
 //				sendDebug(MOTEUR_GAUCHE, MOTEUR_DROIT, (int32_t)(currentLeftSpeed*100), (int32_t)(leftSpeedSetpoint*100), (int32_t)(currentLeftAcceleration*1000), (int32_t)(currentRightAcceleration*1000), vitesseLineaireReelle, courbureReelle);
@@ -272,6 +272,8 @@ void thread_odometrie_asser(void*)
 			consigneX = x_odo;
 			consigneY = y_odo;
         }
+
+//        modeAsserActuel = ASSER_VITESSE;
 
         bool check = checkArrivee();
 

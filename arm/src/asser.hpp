@@ -2,7 +2,6 @@
 #define ASSER
 
 #include "pid.hpp"
-#include "average.hpp"
 #include "global.h"
 #include <cmath>
 #include "math.h"
@@ -600,7 +599,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 	bool inline checkArriveeAngle()
 	{
-		return ABS(errorAngle) < 300;
+		return ABS(errorAngle) < 10;
 	}
 
 	bool inline checkArriveeCourbe()
