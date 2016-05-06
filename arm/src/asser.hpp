@@ -12,7 +12,8 @@
 // Par roue : 3 m/s, 3.5m/s^2
 
 #define VITESSE_LINEAIRE_MAX (3000. / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 600 // vitesse max en tick / appel asser
-#define ACCELERATION_LINEAIRE_MAX (3500. / MM_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 3.44 // acc�l�ration max en tick / (appel asser)^2
+//#define ACCELERATION_LINEAIRE_MAX (3500. / MM_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 3.44 // acc�l�ration max en tick / (appel asser)^2
+#define ACCELERATION_LINEAIRE_MAX (2000. / MM_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 3.44 // acc�l�ration max en tick / (appel asser)^2
 //#define VITESSE_ROTATION_MAX (60. / RAD_PAR_TICK / FREQUENCE_ODO_ASSER) // 2100 // vitesse max en tick / appel asser
 #define VITESSE_ROTATION_MAX 600 // vitesse max en tick / appel asser
 #define ACCELERATION_ROTATION_MAX (70. / RAD_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 12 // acc�l�ration max en tick / (appel asser)^2
@@ -599,7 +600,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 	bool inline checkArriveeAngle()
 	{
-		return ABS(errorAngle) < 10;
+		return ABS(errorAngle) < 200;
 	}
 
 	bool inline checkArriveeCourbe()
@@ -613,7 +614,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
      */
     bool inline checkArrivee()
     {
-        return ABS(leftPWM) < 5 && ABS(rightPWM) < 5 && ABS(currentLeftSpeed) < 10 && ABS(currentRightSpeed) < 10;
+        return ABS(leftPWM) < 30 && ABS(rightPWM) < 30;// && ABS(currentLeftSpeed) < 10 && ABS(currentRightSpeed) < 10;
     }
 
     void inline changeModeAsserActuel(MODE_ASSER mode)

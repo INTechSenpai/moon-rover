@@ -212,6 +212,8 @@ void thread_ecoute_serie(void*)
 					{
 						while(xSemaphoreTake(consigneAsser_mutex, (TickType_t) (ATTENTE_MUTEX_MS / portTICK_PERIOD_MS)) != pdTRUE);
 						changeModeAsserActuel(SUR_PLACE);
+                        maxTranslationSpeed = 100;
+                        maxRotationSpeed = 100;
 						consigneX = x_odo;
 						consigneY = y_odo;
 						xSemaphoreGive(consigneAsser_mutex);
@@ -438,6 +440,8 @@ void thread_ecoute_serie(void*)
 							changeModeAsserActuel(SUR_PLACE);
 							consigneX = x;
 							consigneY = y;
+	                        maxTranslationSpeed = 100;
+	                        maxRotationSpeed = 100;
 		//					orientationTick = RAD_TO_TICK(parseInt(lecture, &(++index))/1000.);
 	//						serial_rb.printfln("%d",(int)orientationTick);
 	//						serial_rb.printfln("%d",(int)(TICK_TO_RAD(orientationTick)*1000));
