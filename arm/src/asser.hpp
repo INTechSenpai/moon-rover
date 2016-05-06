@@ -407,7 +407,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 //    	rightSpeedSetpoint = asserVitesseDroite;
 
     	leftSpeedSetpoint = 200;
-    	rightSpeedSetpoint = -200;
+    	rightSpeedSetpoint = 200;
 
 //        limitLeftRightSpeed();
         errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;

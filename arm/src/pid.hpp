@@ -40,12 +40,12 @@ public:
 		float error = *(this->error);
 
 		// Seuillage de l'erreur. Particuli�rement important si Ki n'est pas nul
-		if(ABS(error) < epsilon)
+/*		if(ABS(error) < epsilon)
 		{
 			pre_error = error;
 			(*output) = 0;
 		}
-		else
+		else*/
 		{
 			derivative = error - pre_error;
 			integral += error;
