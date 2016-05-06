@@ -39,21 +39,17 @@ public:
 
 		float error = *(this->error);
 
-		// Seuillage de l'erreur. Particuli�rement important si Ki n'est pas nul
-/*		if(ABS(error) < epsilon)
-		{
-			pre_error = error;
-			(*output) = 0;
-		}
-		else*/
-		{
-			derivative = error - pre_error;
-			integral += error;
-			pre_error = error;
+		derivative = error - pre_error;
+		integral += error;
+		pre_error = error;
 
-			float result = kp * error + ki * integral + kd * derivative;
-			(*output) = result;
-		}
+		// Seuillage de l'erreur. Particuli�rement important si Ki n'est pas nul
+		float result = kp * error + ki * integral + kd * derivative;
+
+		if(ABS(result) < epsilon)
+			(*output) = 0;
+
+		(*output) = result;
 	}
 
 	void setTunings(float kp, float ki, float kd)

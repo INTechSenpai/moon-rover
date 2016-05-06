@@ -16,7 +16,8 @@
 #define ACCELERATION_LINEAIRE_MAX (2000. / MM_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 3.44 // acc�l�ration max en tick / (appel asser)^2
 //#define VITESSE_ROTATION_MAX (60. / RAD_PAR_TICK / FREQUENCE_ODO_ASSER) // 2100 // vitesse max en tick / appel asser
 #define VITESSE_ROTATION_MAX 600 // vitesse max en tick / appel asser
-#define ACCELERATION_ROTATION_MAX (70. / RAD_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 12 // acc�l�ration max en tick / (appel asser)^2
+//#define ACCELERATION_ROTATION_MAX (70. / RAD_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 12 // acc�l�ration max en tick / (appel asser)^2
+#define ACCELERATION_ROTATION_MAX 200
 #define VITESSE_ROUE_MAX (3000. / MM_PAR_TICK / FREQUENCE_ODO_ASSER) // 600 // vitesse max en tick / appel asser
 #define ACCELERATION_ROUE_MAX (3500. / MM_PAR_TICK / FREQUENCE_ODO_ASSER / FREQUENCE_ODO_ASSER) // 3.5 // acc�l�ration max en tick / (appel asser)^2
 #define RAYON_DE_COURBURE_MIN_EN_MM 100. // en fait, on peut descendre virtuellement aussi bas qu'on veut. A condition d'aller suffisamment lentement, on peut avoir n'importe quelle courbure.
@@ -115,7 +116,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	float currentDistance;		// distance � parcourir, en ticks
 	float translationSpeed, oldTranslationSpeed = 0;		// ticks/seconde
 	float errorTranslation;		// ticks
-	PID translationPID(&errorTranslation, &translationSpeed, 10);
+	PID translationPID(&errorTranslation, &translationSpeed, 0);
 
 	//	Asservissement en position : rotation
 
@@ -123,7 +124,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	float errorAngle;
 	float distanceToClotho;
 	float rotationSpeed, oldRotationSpeed = 0;			// ticks/seconde
-	PID rotationPID(&errorAngle, &rotationSpeed, 10);
+	PID rotationPID(&errorAngle, &rotationSpeed, 5);
 
 	//	Pour faire de jolies courbes de r�ponse du syst�me, la vitesse moyenne c'est mieux !
 //	Average<int32_t, AVERAGE_SPEED_SIZE> averageLeftSpeed;
@@ -391,7 +392,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
         limitTranslationRotationSpeed();
         translationSpeed = 0;
-		leftSpeedSetpoint = translationSpeed - rotationSpeed;
+
+        leftSpeedSetpoint = translationSpeed - rotationSpeed;
 		rightSpeedSetpoint = translationSpeed + rotationSpeed;
 
 		limitLeftRightSpeed();
@@ -407,8 +409,8 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 //    	leftSpeedSetpoint = asserVitesseGauche;
 //    	rightSpeedSetpoint = asserVitesseDroite;
 
-    	leftSpeedSetpoint = 200;
-    	rightSpeedSetpoint = 200;
+    	leftSpeedSetpoint = 100;
+    	rightSpeedSetpoint = 100;
 
 //        limitLeftRightSpeed();
         errorLeftSpeed = leftSpeedSetpoint - currentLeftSpeed;

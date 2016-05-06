@@ -292,14 +292,14 @@ public class RobotReal extends Robot
                 // Si on s'attendait à un mur, c'est juste normal de se le prendre.
                 if(!mur)
                 {
-                    try
-                    {
+//                    try
+//                    {
                         /*
                          * En cas de blocage, on recule (si on allait tout droit) ou on avance.
                          */
-                    	Sleep.sleep(500);
+/*                    	Sleep.sleep(500);
                         log.warning("On n'arrive plus à avancer. On se dégage");
-                        stm.avancerMemeSens(-distanceDegagement, Speed.STANDARD);
+//                        stm.avancerMemeSens(-distanceDegagement, Speed.STANDARD);
                         attendStatus();
                     } catch (UnableToMoveException e1) {
                         log.critical("On n'arrive pas à se dégager.");
@@ -307,7 +307,7 @@ public class RobotReal extends Robot
 						stm.immobilise();
 						e1.printStackTrace();
 					}
-//                    if(nb_iterations_deblocage-- == 0)
+//                    if(nb_iterations_deblocage-- == 0)*/
                         throw new UnableToMoveException();
                 }           
                 else
@@ -347,7 +347,7 @@ public class RobotReal extends Robot
 					// Si au bout de 3s le robot n'a toujours rien répondu,
 					// on suppose un blocage mécanique
 					requete.set(RequeteType.BLOCAGE_MECANIQUE_VITESSE);
-					requete.wait(7000);
+					requete.wait(15000);
 				}
 
 				type = requete.getAndClear();
