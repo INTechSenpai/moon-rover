@@ -93,13 +93,13 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 	float currentRightSpeed;		// ticks / appel
 	float errorRightSpeed;
 	float rightPWM = 0;
-	PID rightSpeedPID(&errorRightSpeed, &rightPWM, 5);
+	PID rightSpeedPID(&errorRightSpeed, &rightPWM, 0);
 
 	//	Asservissement en vitesse du moteur gauche
 	float currentLeftSpeed;		// ticks / appel
 	float errorLeftSpeed;
 	float leftPWM = 0;
-	PID leftSpeedPID(&errorLeftSpeed, &leftPWM, 5);
+	PID leftSpeedPID(&errorLeftSpeed, &leftPWM, 0);
 
 	//	Asservissement en vitesse lin�aire et en courbure
 	volatile float vitesseLineaireReelle;
@@ -597,7 +597,7 @@ enum MOVING_DIRECTION {FORWARD, BACKWARD, NONE};
 
 	bool inline checkArriveePosition()
 	{
-		return ABS(x_odo - consigneX) < 5 && ABS(y_odo - consigneY) < 5;
+		return ABS(x_odo - consigneX) < 10 && ABS(y_odo - consigneY) < 10;
 	}
 
 	bool inline checkArriveeAngle()
