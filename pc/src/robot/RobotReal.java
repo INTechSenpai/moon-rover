@@ -34,9 +34,6 @@ public class RobotReal extends Robot
 		super(log);
 		this.stm = stm;
 		this.requete = requete;
-		// On envoie à la STM la vitesse par défaut
-//		setVitesse(cinematique.vitesse);
-//		stm.envoieActionneurs();
 	}
 	
 	/*
@@ -107,40 +104,6 @@ public class RobotReal extends Robot
 	public void sleep(long duree)
 	{
 		Sleep.sleep(duree);
-	}
-
-	public void vaAuPointB(Vec2<ReadOnly> point, Speed vitesse, boolean marcheAvant)
-	{
-    	try {
-    		vaAuPoint(point, vitesse, marcheAvant);
-		} catch (UnableToMoveException e) {}	
-	}
-
-	public void vaAuPoint(Vec2<ReadOnly> point, Speed vitesse, boolean marcheAvant) throws UnableToMoveException
-	{
-		int distance;
-		double angle;
-		synchronized(cinematique)
-		{
-			if(symetrie)
-				point.x = -point.x;
-			log.debug("position actuelle : "+cinematique.position);
-			log.debug("position cible : "+point);
-
-			distance = (int)cinematique.position.distance(point);
-			if(!marcheAvant)
-				distance = -distance;
-			
-			angle = Math.atan2(point.y-cinematique.position.y, 
-					point.x-cinematique.position.x);
-			if(!marcheAvant)
-				angle += Math.PI;
-		}
-//		if(Math.abs(distance) > 20)
-//			tournerSansSym(angle, vitesse);
-		Sleep.sleep(200);
-		vaAuPointBasNiveau(point, vitesse);
-		
 	}
 
 	@Override
@@ -233,7 +196,7 @@ public class RobotReal extends Robot
      * ATTENTION ! Il faut que cette méthode soit appelée dans un synchronized(requete)
      * @throws UnableToMoveException
      */
-    void attendStatus() throws UnableToMoveException, UnexpectedObstacleOnPathException
+    private void attendStatus() throws UnableToMoveException, UnexpectedObstacleOnPathException
     {
 		try {
 			RequeteType type;
@@ -273,10 +236,10 @@ public class RobotReal extends Robot
 		cinematique.copy(this.cinematique);
 	}
 
-	// TODO à virer (utilisé uniquement pour les tests)
+/*	// TODO à virer (utilisé uniquement pour les tests)
 	public Cinematique getCinematique()
 	{
 		return cinematique;
 	}
-
+*/
 }
