@@ -6,7 +6,6 @@ import utils.ConfigInfo;
 import utils.Sleep;
 import utils.Vec2;
 import utils.permissions.ReadOnly;
-import hook.Hook;
 
 import java.util.ArrayList;
 
@@ -81,14 +80,7 @@ public class RobotReal extends Robot
     public void avancerB(int distance, boolean mur, Speed vitesse)
     {
     	try {
-    		avancer(distance, new ArrayList<Hook>(), mur, vitesse);
-		} catch (UnableToMoveException e) {}	
-    }
-
-    public void avancerB(int distance, ArrayList<Hook> hooks, Speed vitesse)
-    {
-    	try {
-    		avancer(distance, hooks, false, vitesse);
+    		avancer(distance, mur, vitesse);
 		} catch (UnableToMoveException e) {}	
     }
 
@@ -97,12 +89,10 @@ public class RobotReal extends Robot
 	 * @throws UnableToMoveException 
 	 */
 	@Override
-    public void avancer(int distance, ArrayList<Hook> hooks, boolean mur, Speed vitesse) throws UnableToMoveException
+    public void avancer(int distance, boolean mur, Speed vitesse) throws UnableToMoveException
 	{
-		try {
 			synchronized(requete)
 			{
-				stm.envoieHooks(hooks);
 				stm.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
 				try {
 					gestionExceptions(mur);
@@ -114,19 +104,12 @@ public class RobotReal extends Robot
 					}
 				}
 			}
-		}
-		finally
-		{
-			stm.deleteHooks(hooks);
-		}
 	}	
 
-    public void vaAuPointBasNiveau(Vec2<ReadOnly> point, ArrayList<Hook> hooks, Speed vitesse) throws UnableToMoveException
+    public void vaAuPointBasNiveau(Vec2<ReadOnly> point, Speed vitesse) throws UnableToMoveException
 	{
-		try {
 			synchronized(requete)
 			{
-				stm.envoieHooks(hooks);
 				stm.vaAuPoint(point, vitesse);
 				try {
 					gestionExceptions(true);
@@ -138,39 +121,25 @@ public class RobotReal extends Robot
 					}
 				}
 			}
-		}
-		finally
-		{
-			stm.deleteHooks(hooks);
-		}
 	}	
     
     /**
 	 * Méthode sleep utilisée par les scripts
 	 */
 	@Override	
-	public void sleep(long duree, ArrayList<Hook> hooks)
+	public void sleep(long duree)
 	{
-		stm.envoieHooks(hooks);
 		Sleep.sleep(duree);
-		stm.deleteHooks(hooks);
-	}
-
-	public void vaAuPointB(Vec2<ReadOnly> point, ArrayList<Hook> hooks, Speed vitesse, boolean marcheAvant)
-	{
-    	try {
-    		vaAuPoint(point, hooks, vitesse, marcheAvant);
-		} catch (UnableToMoveException e) {}	
 	}
 
 	public void vaAuPointB(Vec2<ReadOnly> point, Speed vitesse, boolean marcheAvant)
 	{
     	try {
-    		vaAuPoint(point, new ArrayList<Hook>(), vitesse, marcheAvant);
+    		vaAuPoint(point, vitesse, marcheAvant);
 		} catch (UnableToMoveException e) {}	
 	}
 
-	public void vaAuPoint(Vec2<ReadOnly> point, ArrayList<Hook> hooks, Speed vitesse, boolean marcheAvant) throws UnableToMoveException
+	public void vaAuPoint(Vec2<ReadOnly> point, Speed vitesse, boolean marcheAvant) throws UnableToMoveException
 	{
 		int distance;
 		double angle;
@@ -193,7 +162,7 @@ public class RobotReal extends Robot
 		if(Math.abs(distance) > 20)
 			tournerSansSym(angle, vitesse);
 		Sleep.sleep(200);
-		vaAuPointBasNiveau(point, hooks, vitesse);
+		vaAuPointBasNiveau(point, vitesse);
 		
 	}
 	

@@ -1,6 +1,5 @@
 package serie;
 
-import hook.Hook;
 import pathfinding.astarCourbe.arcs.ArcCourbe;
 
 import java.util.ArrayList;
@@ -304,48 +303,6 @@ public class DataForSerialOutput implements Service
 		notify();
 	}
 
-	public synchronized void envoieHooks(ArrayList<Hook> hooks)
-	{
-		if(hooks.isEmpty())
-			return;
-
-		for(Hook h : hooks)
-		{
-//			log.debug("Envoi hook");
-			ArrayList<Byte> list = h.toSerial();
-			byte[] out = new byte[list.size()+3];
-		    for (int i = 0; i < list.size(); i++)
-		    {
-		        out[i+2] = list.get(i).byteValue();
-		    }
-			bufferBassePriorite.add(out);
-		}
-		
-		notify();
-	}
-
-	public synchronized void deleteHooks(ArrayList<Hook> hooks)
-	{
-		if(hooks.isEmpty())
-			return;
-		
-		int size = hooks.size();
-		byte[] out = new byte[2+2+size];
-		out[COMMANDE] = SerialProtocol.OUT_REMOVE_SOME_HOOKS.code;
-		out[PARAM] = (byte) (size);
-		for(int i = 0; i < size; i++)
-			out[4+i] = (byte) (hooks.get(i).getNum());
-		bufferBassePriorite.add(out);
-		notify();
-	}
-	
-	public synchronized void deleteAllHooks()
-	{
-		byte[] out = new byte[2+1];
-		out[COMMANDE] = SerialProtocol.OUT_REMOVE_ALL_HOOKS.code;
-		bufferBassePriorite.add(out);
-		notify();
-	}
 
 	public synchronized void suspendMouvement()
 	{
