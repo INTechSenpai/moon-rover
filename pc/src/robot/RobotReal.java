@@ -61,13 +61,6 @@ public class RobotReal extends Robot
 		cinematique.enMarcheAvant = enMarcheAvant;
 	}
 
-    public void avancerB(int distance, boolean mur, Speed vitesse)
-    {
-    	try {
-    		avancer(distance, mur, vitesse);
-		} catch (UnableToMoveException e) {}	
-    }
-
 	/**
 	 * Avance d'une certaine distance donnée en mm (méthode bloquante), gestion des hooks
 	 * @throws UnableToMoveException 
@@ -143,62 +136,12 @@ public class RobotReal extends Robot
 			if(!marcheAvant)
 				angle += Math.PI;
 		}
-		if(Math.abs(distance) > 20)
-			tournerSansSym(angle, vitesse);
+//		if(Math.abs(distance) > 20)
+//			tournerSansSym(angle, vitesse);
 		Sleep.sleep(200);
 		vaAuPointBasNiveau(point, vitesse);
 		
 	}
-	
-    public void tournerB(double angle, Speed vitesse)
-    {
-    	try {
-			tourner(angle, vitesse);
-		} catch (UnableToMoveException e) {}
-    }
-
-	
-    /**
-     * Tourne, quoi. L'angle est absolu
-     */
-    @Override
-    public void tourner(double angle, Speed vitesse) throws UnableToMoveException
-    {
-		synchronized(requete)
-		{
-			if(symetrie)
-				angle = Math.PI - angle;
-			stm.turn(angle, vitesse);
-			try {
-				gestionExceptions(false);
-			} catch (UnexpectedObstacleOnPathException e) {
-				stm.turn(angle, vitesse);
-				try {
-					gestionExceptions(false);
-				} catch (UnexpectedObstacleOnPathException e1) {
-				}
-			}
-		}
-    }
-
-    private void tournerSansSym(double angle, Speed vitesse) throws UnableToMoveException
-    {
-		synchronized(requete)
-		{
-//			if(symetrie)
-//				angle = 2*cinematique.orientation - angle;
-			stm.turn(angle, vitesse);
-			try {
-				gestionExceptions(false);
-			} catch (UnexpectedObstacleOnPathException e) {
-				stm.turn(angle, vitesse);
-				try {
-					gestionExceptions(false);
-				} catch (UnexpectedObstacleOnPathException e1) {
-				}
-			}
-		}
-    }
 
 	@Override
 	public int getPositionGridSpace()
