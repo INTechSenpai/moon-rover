@@ -2,7 +2,6 @@ package serie;
 
 import pathfinding.astarCourbe.arcs.ArcCourbe;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import robot.Speed;
@@ -163,62 +162,6 @@ public class DataForSerialOutput implements Service
 		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
 		out[PARAM+4] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
 		bufferBassePriorite.add(out);
-		notify();
-	}
-	
-	public synchronized void setPIDconstVitesseGauche(double kp, double ki, double kd)
-	{
-		setPIDconst(SerialProtocol.OUT_PID_CONST_VIT_GAUCHE, kp, ki, kd);
-	}
-
-	public synchronized void setPIDconstVitesseDroite(double kp, double ki, double kd)
-	{
-		setPIDconst(SerialProtocol.OUT_PID_CONST_VIT_DROITE, kp, ki, kd);
-	}
-	
-	public synchronized void setPIDconstTranslation(double kp, double ki, double kd)
-	{
-		setPIDconst(SerialProtocol.OUT_PID_CONST_TRANSLATION, kp, ki, kd);
-	}
-	
-	public synchronized void setPIDconstRotation(double kp, double ki, double kd)
-	{
-		setPIDconst(SerialProtocol.OUT_PID_CONST_ROTATION, kp, ki, kd);
-	}
-	
-	public synchronized void setPIDconstCourbure(double kp, double ki, double kd)
-	{
-		setPIDconst(SerialProtocol.OUT_PID_CONST_COURBURE, kp, ki, kd);
-	}
-	
-	public synchronized void setPIDconstVitesseLineaire(double kp, double ki, double kd)
-	{
-		setPIDconst(SerialProtocol.OUT_PID_CONST_VIT_LINEAIRE, kp, ki, kd);
-	}
-	
-	public synchronized void setConstSamson(double k1, double k2)
-	{
-		setPIDconst(SerialProtocol.OUT_CONST_SAMSON, k1, k2, 0);
-	}
-	
-	private synchronized void setPIDconst(SerialProtocol code, double kp, double ki, double kd)
-	{
-		if(Config.debugSerie)
-			log.debug("Envoi des constantes pour "+code+" : "+kp+", "+ki+" et "+kd);
-
-		byte[] out = new byte[2+10];
-		out[COMMANDE] = code.code;
-		out[PARAM] = (byte) (((int)(kp*1000) >> 16) & 0xFF);
-		out[PARAM+1] = (byte) (((int)(kp*1000) >> 8) & 0xFF);
-		out[PARAM+2] = (byte) ((int)(kp*1000) & 0xFF);
-		out[PARAM+3] = (byte) (((int)(ki*1000) >> 16) & 0xFF);
-		out[PARAM+4] = (byte) (((int)(ki*1000) >> 8) & 0xFF);
-		out[PARAM+5] = (byte) ((int)(ki*1000) & 0xFF);
-		out[PARAM+6] = (byte) (((int)(kd*1000) >> 16) & 0xFF);
-		out[PARAM+7] = (byte) (((int)(kd*1000) >> 8) & 0xFF);
-		out[PARAM+8] = (byte) ((int)(kd*1000) & 0xFF);
-		bufferBassePriorite.add(out);
-
 		notify();
 	}
 	

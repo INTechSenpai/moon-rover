@@ -7,8 +7,6 @@ import utils.Sleep;
 import utils.Vec2;
 import utils.permissions.ReadOnly;
 
-import java.util.ArrayList;
-
 import pathfinding.dstarlite.GridSpace;
 import robot.actuator.ActuatorOrder;
 import robot.requete.RequeteSTM;
@@ -27,8 +25,8 @@ public class RobotReal extends Robot
 {
 	private DataForSerialOutput stm;
 	private RequeteSTM requete;
-	private int distanceDegagement;
-	private int tempsAttente;
+//	private int distanceDegagement;
+//	private int tempsAttente;
 	
 	// Constructeur
 	public RobotReal(DataForSerialOutput stm, Log log, RequeteSTM requete)
@@ -49,27 +47,13 @@ public class RobotReal extends Robot
 	public void useConfig(Config config)
 	{
 		super.useConfig(config);
-		distanceDegagement = config.getInt(ConfigInfo.DISTANCE_DEGAGEMENT_ROBOT);
-		tempsAttente = config.getInt(ConfigInfo.ATTENTE_ENNEMI_PART);
+//		distanceDegagement = config.getInt(ConfigInfo.DISTANCE_DEGAGEMENT_ROBOT);
+//		tempsAttente = config.getInt(ConfigInfo.ATTENTE_ENNEMI_PART);
 		log.debug("Initialisation de l'odométrie et des constantes d'asservissement");
 		int x = config.getInt(ConfigInfo.X_DEPART);
 		int y = config.getInt(ConfigInfo.Y_DEPART);
 		double o = config.getDouble(ConfigInfo.O_DEPART);
 		cinematique = new Cinematique(x, y, o, true, 0, 0, 0, Speed.STANDARD);
-		
-		stm.utiliseActionneurs(ActuatorOrder.AX12_ARRIERE_GAUCHE_VERR2);
-		stm.utiliseActionneurs(ActuatorOrder.AX12_ARRIERE_DROIT_VERR2);
-		stm.utiliseActionneurs(ActuatorOrder.AX12_AVANT_GAUCHE_FERME);
-		stm.utiliseActionneurs(ActuatorOrder.AX12_AVANT_DROIT_FERME);
-		stm.utiliseActionneurs(ActuatorOrder.AX12_POISSON_HAUT);
-		stm.utiliseActionneurs(ActuatorOrder.AX12_POISSON_FERME);
-		// Envoie des constantes du pid
-		stm.setPIDconstVitesseGauche(config.getDouble(ConfigInfo.CONST_KP_VIT_GAUCHE), config.getDouble(ConfigInfo.CONST_KI_VIT_GAUCHE), config.getDouble(ConfigInfo.CONST_KD_VIT_GAUCHE));
-		stm.setPIDconstVitesseDroite(config.getDouble(ConfigInfo.CONST_KP_VIT_DROITE), config.getDouble(ConfigInfo.CONST_KI_VIT_DROITE), config.getDouble(ConfigInfo.CONST_KD_VIT_DROITE));
-		stm.setPIDconstTranslation(config.getDouble(ConfigInfo.CONST_KP_TRANSLATION), config.getDouble(ConfigInfo.CONST_KI_TRANSLATION), config.getDouble(ConfigInfo.CONST_KD_TRANSLATION));
-		stm.setPIDconstRotation(config.getDouble(ConfigInfo.CONST_KP_ROTATION), config.getDouble(ConfigInfo.CONST_KI_ROTATION), config.getDouble(ConfigInfo.CONST_KD_ROTATION));
-		stm.setPIDconstCourbure(config.getDouble(ConfigInfo.CONST_KP_COURBURE), config.getDouble(ConfigInfo.CONST_KI_COURBURE), config.getDouble(ConfigInfo.CONST_KD_COURBURE));
-		stm.setPIDconstVitesseLineaire(config.getDouble(ConfigInfo.CONST_KP_VIT_LINEAIRE), config.getDouble(ConfigInfo.CONST_KI_VIT_LINEAIRE), config.getDouble(ConfigInfo.CONST_KD_VIT_LINEAIRE));
 	}
 		
 	public void setEnMarcheAvance(boolean enMarcheAvant)
