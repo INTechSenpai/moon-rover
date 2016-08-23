@@ -1,0 +1,185 @@
+\documentclass[a4paper, 12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais,english]{babel}
+\usepackage{hyperref}
+\title{Ordres entre le bas niveau et le haut niveau}
+ 
+\author{Moon-rover}
+
+\date{}
+\setlength\parindent{0pt} 
+\begin{document}
+
+\selectlanguage{francais}
+\maketitle
+
+\pagestyle{plain}
+
+\tableofcontents
+
+
+\section{Introduction}
+
+Ces ordres sont indépendants de la couche protocole, qui est plus basse.
+Ils prennent place dans le champ "données" dudit protocole.
+
+La structure d'un ordre est la suivante : un code sur un octet, puis des données. La taille de chaque donnée est donnée en bit à côté de son nom.
+
+\section{Haut niveau vers bas niveau}
+
+\subsection{Utilise actionneurs}
+\texttt{0x06 ID(8) ANGLE(16)}
+
+L'ID est l'ID de l'AX-12.
+
+L'angle est l'angle à fournir à l'AX-12 (entre 0 et 300).
+
+\subsection{Arrêt du robot}
+\texttt{0x07}
+   
+Le robot doit s'arrêter (asservissement sur place).
+
+\subsection{Avancer}
+
+\subsubsection{Avancer, avec une distance positive, avec une vitesse de translation maximale}
+    \texttt{0x0C DISTANCE(16) VITESSE  TRANSLATION  MAX(16)}
+
+\subsubsection{Avancer, avec une distance négative, avec une vitesse de translation maximale}
+
+    \texttt{0x0D |DISTANCE|(16) VITESSE  TRANSLATION  MAX(16)}
+    
+\subsubsection{Avancer dans la même direction que précédemment}
+
+    \texttt{0x0E DISTANCE(16) VITESSE  TRANSLATION  MAX(16)}
+    
+Probablement pas utilisé.
+
+\subsubsection{Avancer dans la direction opposée à précédemment}
+
+    \texttt{0x0F DISTANCE(16) VITESSE  TRANSLATION  MAX(16)}
+
+Utilisé pour se dégager.
+
+\subsection{Désasservissement}
+    \texttt{0x28}
+
+Le robot doit se désasservir.
+
+\subsection{Trajectoire courbe}
+
+Remarque : le dernier bit de l'octet d'ordre permet de savoir s'il faut ou non effacer tous les arcs reçus.
+
+En cas de marche arrière, il sera envoyé l'orientation voulue du robot + $2\pi$. Autrement dit, l'orientation envoyée sera toujours l'orientation vers laquelle avance le robot.
+
+\subsubsection{Ajoute un arc de TC}
+
+    \texttt{0x2E X+ POINT(12) Y POINT(12) ORIENTATION(16) COURBURE(16) VITESSE  TRANSLATION(16)}
+    
+\subsubsection{Ajoute arc trajectoire courbe précédé d'un arrêt}
+
+    \texttt{0x2C X+ POINT(12) Y POINT(12) ORIENTATION(16) COURBURE(16) VITESSE TRANSLATION(16)}
+
+\subsubsection{Efface tous les arcs reçus et rajoute cet arc}
+
+    \texttt{0x2F X+ POINT(12) Y POINT(12) ORIENTATION(16) COURBURE(16) VITESSE TRANSLATION(16)}
+    
+\subsubsection{Efface tous les arcs reçus et rajoute cet arc, précédé d'un arrêt} 
+
+\texttt{0x2D X+ POINT(12) Y POINT(12) ORIENTATION(16) COURBURE(16) VITESSE TRANSLATION(16)}
+    
+\subsection{Start capteurs}
+\texttt{0x10}
+    
+Le bas niveau doit démarrer le stream des capteurs.
+    
+\subsection{Ping}
+    \texttt{0x5A}
+    
+    Parce que je suis un 5A et que c'est moi qui donne les valeurs.
+    
+    Une réponse "pong" est attendue.
+
+\section{Bas niveau vers haut niveau}
+
+\subsection{Robot arrivé}
+    \texttt{0x02}
+    
+Le mouvement est terminé, le robot est arrivé à destination.
+    
+\subsection{Problème mécanique}
+    \texttt{0x03}
+    
+Le robot n'a pas pu finir son mouvement à cause d'une erreur mécanique (collision).
+    
+\subsection{Début match}
+    \texttt{0x04}
+
+Le match vient de commencer.
+    
+\subsection{Match fini}
+    \texttt{0x05}
+    
+Le match vient de finir.
+    
+\subsection{Couleur robot}
+    \texttt{0x06}
+    
+    si côté gauche de la table (côté extérieur à INTech)
+    
+    \texttt{0x07}
+    
+    si côté droite de la table (côté Minet à INTech)
+    
+\subsection{Stream capteurs}
+
+Le bas niveau ne doit commencer à streamer ces valeurs qu'après en avoir reçu l'ordre.
+
+Les capteurs renvoient chacun une distance en $mm$.
+
+\subsubsection{Le robot est en marche avant}
+    \texttt{0x0A X+(12) Y(12) ORIENTATION(16) COURBURE(8) VIT  LIN(16) VIT  ROT(16) CPT1(12) CPT2(12) …}
+    
+\subsubsection{Le robot est en marche arrière}
+    \texttt{0x0B X+(12) Y(12) ORIENTATION(16) COURBURE(8) VIT  LIN(16) VIT  ROT(16) CPT1(12) CPT2(12) …}
+
+\subsection{Pong}
+     \texttt{0x0C}
+
+Doit être envoyé après réception d'un ping.
+
+\section{Codage des valeurs}
+
+\subsection{Endianness}
+
+Les valeurs sur plusieurs octets sont écrites en \textbf{big endian} : l'octet de poids fort en tête.
+
+\subsection{Valeurs non signées}
+
+Toutes les valeurs sont envoyées non-signées, ce qui signifie qu'elles sont toutes positives.
+
+\subsection{Repère}
+
+Le repère utilisé est le repère classique d'INTech : l'axe X est le côté long de la table, et va de -1500mm à +1500mm. L'axe Y est le côté court de la table, et va de 0mm à 2000mm.
+
+L'orientation est toujours donnée de manière absolue, par rapport au cercle trigonométrique usuelle (le 0 est dans la direction de l'axe X positif)
+
+\subsection{Unités}
+
+Sauf mention contraires, les unités utilisés par défaut sont le $mm$ pour les distances, la $ms$ pour les durée et le $mrad$ pour les angles.
+
+Exceptions :
+\begin{itemize}
+\item La courbure est toujours envoyée en $m^{-1}$.
+\item Les vitesses linéaires sont transmises en $mm \cdot s^{-1}$.
+\item Les vitesses de rotation sont transmises en $mrad \cdot s^{-1}$.
+\end{itemize}
+
+Ces unités ont été toutes choisies afin de pouvoir envoyer les valeurs comme des entiers représentables sur un nombre limités de bits.
+
+\subsection{Codage d'une position}
+
+Les positions (x,y) sont toujours envoyées sur 3 octets, X puis Y (chacun sur 12 bits). Il est important que remarquer que puisque la valeur de X à envoyer doit être positive, il faudra envoyer la valeur X+1500. C'est pour cela que dans les ordres, il est écrit X+.
+
+\end{document}
