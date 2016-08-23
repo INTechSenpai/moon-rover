@@ -8,11 +8,8 @@ package serie.trame;
 
 public abstract class Frame
 {
-	public enum Code
+	public enum IncomingCode
 	{
-		NEW_ORDER(0xFF),
-		END_ORDER(0xFE),
-		VALUE_REQUEST(0xFD),
 		EXECUTION_BEGIN(0xFC),
 		EXECUTION_END(0xFB),
 		STATUS_UPDATE(0xFA),
@@ -21,7 +18,23 @@ public abstract class Frame
 		public final byte code;
 		public final int codeInt;
 		
-		private Code(int code)
+		private IncomingCode(int code)
+		{
+			this.code = (byte) code;
+			codeInt = code;
+		}
+	}
+
+	public enum OutgoingCode
+	{
+		NEW_ORDER(0xFF),
+		END_ORDER(0xFE),
+		VALUE_REQUEST(0xFD);
+		
+		public final byte code;
+		public final int codeInt;
+		
+		private OutgoingCode(int code)
 		{
 			this.code = (byte) code;
 			codeInt = code;
@@ -30,20 +43,7 @@ public abstract class Frame
 
 	public byte id;
 	public byte compteur;
-	public long deathDate; // date d'envoi + timeout (toutes les trames provenant du haut niveau doivent être acquittées)
-	public Code code;
 	
 	protected static byte compteurReference = 0;
-	protected static int timeout;
-	
-	public static void setTimeout(int timeout_p)
-	{
-		timeout = timeout_p;
-	}
-	
-	public boolean needResend()
-	{
-		return deathDate < System.currentTimeMillis();
-	}
-	
+		
 }

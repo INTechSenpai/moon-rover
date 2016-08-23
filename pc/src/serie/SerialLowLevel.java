@@ -2,10 +2,11 @@ package serie;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import container.Service;
 import exceptions.MissingCharacterException;
-import serie.trame.Frame;
+import serie.trame.Frame.IncomingCode;
 import serie.trame.IncomingFrame;
 import serie.trame.Order;
 import serie.trame.OutgoingFrame;
@@ -35,8 +36,13 @@ public class SerialLowLevel implements Service
 		this.serie = serie;
 	}
 		
+	/**
+	 * Demande l'envoi d'un ordre
+	 * @param o
+	 */
 	public void sendOrder(Order o)
 	{
+		serie.communiquer(o.message);
 		waitingFrames.add(new OutgoingFrame(o));
 	}
 	
@@ -46,21 +52,81 @@ public class SerialLowLevel implements Service
 	 */
 	public int[] readData()
 	{
-		try {
-			readFrame();
-		} catch (MissingCharacterException e) {
-			System.out.println(e);
-		}
-		return null;
+		IncomingFrame f = null;
+		boolean restart;
+		do {
+			restart = false;
+			try {
+				f = readFrame();
+				OutgoingFrame original = retrieveOriginalFrame(f);
+
+			} catch (MissingCharacterException e) {
+				System.out.println(e);
+				restart = true;
+			}
+		} while(restart);
+		return f.message;
 	}
 	
+	public OutgoingFrame retrieveOriginalFrame(IncomingFrame f)
+	{
+		Iterator<OutgoingFrame> it = waitingFrames.iterator();
+		while(it.hasNext())
+		{
+			OutgoingFrame waiting = it.next();
+			if(waiting.compteur == f.compteur)
+			{
+				// On a le EXECUTION_BEGIN d'une frame qui l'attendait
+				if(f.code == IncomingCode.EXECUTION_BEGIN)
+				{
+					it.remove();
+					pendingLongFrames.add(waiting);
+					return waiting;
+				}
+				else
+				{
+					log.warning(f.code+" reçu à la place de EXECUTION_BEGIN !");
+					return null;
+				}
+			}
+		}
+		
+		it = pendingLongFrames.iterator();
+		while(it.hasNext())
+		{
+			OutgoingFrame pending = it.next();
+			if(pending.compteur == f.compteur)
+			{
+				// On a le EXECUTION_END d'une frame
+				if(f.code == IncomingCode.EXECUTION_END)
+				{
+					it.remove();
+					return pending;
+				}
+				else if(f.code == IncomingCode.STATUS_UPDATE)
+				{
+					return pending;
+				}
+				else
+				{
+					log.warning(f.code+" reçu à la place de EXECUTION_END ou STATUS_UPDATE !");
+					return null;
+				}
+			}
+		}
+		
+		log.warning("Compteur inconnu : "+f.compteur);
+		return null;
+		
+	}
+
 	/**
 	 * Lit une frame depuis la série
 	 * @return
 	 * @throws MissingCharacterException 
 	 * @throws IOException 
 	 */
-	private Frame readFrame() throws MissingCharacterException
+	private IncomingFrame readFrame() throws MissingCharacterException
 	{
 		synchronized(serie)
 		{
@@ -83,7 +149,7 @@ public class SerialLowLevel implements Service
 	public void useConfig(Config config)
 	{
 		timeout = config.getInt(ConfigInfo.SERIAL_TIMEOUT);
-		Frame.setTimeout(timeout);
+		OutgoingFrame.setTimeout(timeout);
 	}
 
 	/**
@@ -111,7 +177,7 @@ public class SerialLowLevel implements Service
 	{
 		int out = timeout;
 		if(!waitingFrames.isEmpty())
-			out = (int) (waitingFrames.get(0).deathDate - System.currentTimeMillis());
+			out = (int) (waitingFrames.get(0).timeBeforeDeath());
 		return out;
 	}
 

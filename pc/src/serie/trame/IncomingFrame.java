@@ -8,6 +8,7 @@ package serie.trame;
 
 public class IncomingFrame extends Frame
 {
+	public IncomingCode code;
 
 	public int[] message;
 
@@ -17,7 +18,7 @@ public class IncomingFrame extends Frame
 	 */
 	public IncomingFrame(int code, int id, int compteur, int checksum, int[] message) throws IllegalArgumentException
 	{
-		for(Code c : Code.values())
+		for(IncomingCode c : IncomingCode.values())
 		{
 			if(code == c.codeInt)
 				this.code = c;

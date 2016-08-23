@@ -78,7 +78,7 @@ public class DataForSerialOutput implements Service
 	 * Ajout d'une demande d'ordre d'avancer pour la série
 	 * @param elem
 	 */
-	public synchronized void avancer(int distance, Speed vitesse)
+	public synchronized Ticket avancer(int distance, Speed vitesse)
 	{
 		if(Config.debugSerie)
 			log.debug("Avance de "+distance);

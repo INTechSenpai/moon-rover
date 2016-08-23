@@ -6,12 +6,10 @@ import utils.ConfigInfo;
 import utils.Sleep;
 import utils.Vec2;
 import utils.permissions.ReadOnly;
-
 import pathfinding.dstarlite.GridSpace;
 import robot.actuator.ActuatorOrder;
-import robot.requete.RequeteSTM;
-import robot.requete.RequeteType;
 import serie.DataForSerialOutput;
+import serie.Ticket;
 import exceptions.UnableToMoveException;
 import exceptions.UnexpectedObstacleOnPathException;
 
@@ -24,16 +22,14 @@ import exceptions.UnexpectedObstacleOnPathException;
 public class RobotReal extends Robot
 {
 	private DataForSerialOutput stm;
-	private RequeteSTM requete;
 //	private int distanceDegagement;
 //	private int tempsAttente;
 	
 	// Constructeur
-	public RobotReal(DataForSerialOutput stm, Log log, RequeteSTM requete)
+	public RobotReal(DataForSerialOutput stm, Log log)
  	{
 		super(log);
 		this.stm = stm;
-		this.requete = requete;
 	}
 	
 	/*
@@ -65,19 +61,19 @@ public class RobotReal extends Robot
 	@Override
     public void avancer(int distance, boolean mur, Speed vitesse) throws UnableToMoveException
 	{
-			synchronized(requete)
-			{
+		Ticket t = stm.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
+		synchronized(t)
+		{
+			try {
+				gestionExceptions(mur);
+			} catch (UnexpectedObstacleOnPathException e) {
 				stm.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
 				try {
 					gestionExceptions(mur);
-				} catch (UnexpectedObstacleOnPathException e) {
-					stm.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
-					try {
-						gestionExceptions(mur);
-					} catch (UnexpectedObstacleOnPathException e1) {
-					}
+				} catch (UnexpectedObstacleOnPathException e1) {
 				}
 			}
+		}
 	}	
 
     
