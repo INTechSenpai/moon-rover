@@ -23,7 +23,11 @@ public class SerialLowLevel implements Service
 		this.serie = serie;
 	}
 	
-	public void sendOrder(Order message)
+	/**
+	 * Cette méthode est synchronized car deux threads peuvent l'utiliser : ThreadSerialOutput et ThreadSerialOutputTimeout
+	 * @param message
+	 */
+	public synchronized void sendOrder(Order message)
 	{}
 	
 	private byte[] addChecksum(byte[] msg)
@@ -63,6 +67,16 @@ public class SerialLowLevel implements Service
 	 */
 	public void close()
 	{
+		
+	}
+
+	public int timeBeforeRetry()
+	{
+		return 10;
+	}
+
+	public void retry() {
+		// TODO Auto-generated method stub
 		
 	}
 	

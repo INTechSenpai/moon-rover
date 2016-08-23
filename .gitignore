@@ -13,3 +13,8 @@ pc/logs/
 project.properties
 *.class
 /bin/
+*.aux
+*.log
+*.out
+*.gz
+*.toc
