@@ -95,8 +95,10 @@ public class DataForSerialOutput implements Service
 		out[PARAM+2] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
 		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
 //		log.debug("Vitesse : "+vitesse.translationalSpeed*1000);
-		bufferBassePriorite.add(new Order(out, Order.Type.LONG));
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(out, Order.Type.LONG, t));
 		notify();
+		return t;
 	}
 
 	/**
@@ -104,7 +106,7 @@ public class DataForSerialOutput implements Service
 	 * Si on avançait précédement, on va avancer. Si on reculait, on va reculer.
 	 * @param elem
 	 */
-	public synchronized void avancerMemeSens(int distance, Speed vitesse)
+	public synchronized Ticket avancerMemeSens(int distance, Speed vitesse)
 	{
 		if(Config.debugSerie)
 			log.debug("Avance (même sens) de "+distance);
@@ -120,8 +122,10 @@ public class DataForSerialOutput implements Service
 		out[PARAM+1] = (byte) (distance);
 		out[PARAM+2] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
 		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
-		bufferBassePriorite.add(new Order(out, Order.Type.LONG));
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(out, Order.Type.LONG, t));
 		notify();
+		return t;
 	}
 
 	/**
@@ -139,7 +143,7 @@ public class DataForSerialOutput implements Service
 	 * Ajout d'une demande d'ordre d'actionneurs pour la série
 	 * @param elem
 	 */
-	public synchronized void utiliseActionneurs(ActuatorOrder elem)
+	public synchronized Ticket utiliseActionneurs(ActuatorOrder elem)
 	{
 		ActuatorOrder elem2 = elem.getSymetrie(symetrie);
 		byte[] out = new byte[4];
@@ -147,8 +151,10 @@ public class DataForSerialOutput implements Service
 		out[PARAM] = (byte) (elem2.id);
 		out[PARAM + 1] = (byte) (elem2.angle >> 8);
 		out[PARAM + 2] = (byte) (elem2.angle & 0xFF);
-		bufferBassePriorite.add(new Order(out, Order.Type.LONG));
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(out, Order.Type.LONG, t));
 		notify();
+		return t;
 	}
 	
 	/**

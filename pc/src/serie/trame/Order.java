@@ -26,5 +26,10 @@ public class Order
 		this.orderType = orderType;
 		this.ticket = ticket;
 	}
-	
+
+	public Order(byte[] message, Type orderType)
+	{
+		this(message, orderType, new Ticket());
+	}
+
 }

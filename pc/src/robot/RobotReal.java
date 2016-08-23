@@ -4,12 +4,11 @@ import utils.Log;
 import utils.Config;
 import utils.ConfigInfo;
 import utils.Sleep;
-import utils.Vec2;
-import utils.permissions.ReadOnly;
 import pathfinding.dstarlite.GridSpace;
 import robot.actuator.ActuatorOrder;
 import serie.DataForSerialOutput;
 import serie.Ticket;
+import enums.SerialProtocol;
 import exceptions.UnableToMoveException;
 import exceptions.UnexpectedObstacleOnPathException;
 
@@ -65,11 +64,11 @@ public class RobotReal extends Robot
 		synchronized(t)
 		{
 			try {
-				gestionExceptions(mur);
+				gestionExceptions(mur, t);
 			} catch (UnexpectedObstacleOnPathException e) {
-				serialOutput.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
+				t = serialOutput.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
 				try {
-					gestionExceptions(mur);
+					gestionExceptions(mur, t);
 				} catch (UnexpectedObstacleOnPathException e1) {
 				}
 			}
@@ -115,7 +114,7 @@ public class RobotReal extends Robot
      * Cette méthode NE GÈRE PAS les exceptions lors des trajectoires courbes
      * @throws UnexpectedObstacleOnPathException 
      */
-    private void gestionExceptions(boolean mur) throws UnableToMoveException, UnexpectedObstacleOnPathException
+    private void gestionExceptions(boolean mur, Ticket t) throws UnableToMoveException, UnexpectedObstacleOnPathException
     {
 //        int nb_iterations_deblocage = 1; // combien de fois on réessaye si on se prend un mur
 //        int nb_iterations_ennemi = 2000 / tempsAttente; // 2 secondes max
@@ -124,7 +123,7 @@ public class RobotReal extends Robot
         {
             try
             {
-            	attendStatus();
+            	attendStatus(t);
             	return; // tout s'est bien passé
             } catch (UnableToMoveException e)
             {
@@ -176,35 +175,30 @@ public class RobotReal extends Robot
      * ATTENTION ! Il faut que cette méthode soit appelée dans un synchronized(requete)
      * @throws UnableToMoveException
      */
-    private void attendStatus() throws UnableToMoveException, UnexpectedObstacleOnPathException
+    private void attendStatus(Ticket t) throws UnableToMoveException, UnexpectedObstacleOnPathException
     {
 		try {
-			RequeteType type;
+			SerialProtocol o;
 			do {
-				if(requete.isEmpty())
+				if(t.isEmpty())
 				{
 					// Si au bout de 3s le robot n'a toujours rien répondu,
 					// on suppose un blocage mécanique
-					requete.set(RequeteType.BLOCAGE_MECANIQUE_VITESSE);
-					requete.wait(15000);
+					t.set(SerialProtocol.IN_PB_DEPLACEMENT);
+					t.wait(15000);
 				}
 
-				type = requete.getAndClear();
-				if(type == RequeteType.BLOCAGE_MECANIQUE_VITESSE)
+				o = t.getAndClear();
+				if(o == SerialProtocol.IN_PB_DEPLACEMENT)
 					throw new UnableToMoveException();
-				else if(type == RequeteType.BLOCAGE_MECANIQUE_ACCELERATION)
-				{
-					Sleep.sleep(1000);
-					throw new UnableToMoveException();
-				}
-				else if(type == RequeteType.ENNEMI_SUR_CHEMIN)
+/*				else if(o == SerialProtocol.ENNEMI_SUR_CHEMIN)
 				{
 					log.critical("Ennemi sur le chemin !");
 					serialOutput.immobilise();
 					Sleep.sleep(4000);
 					throw new UnexpectedObstacleOnPathException();
-				}
-			} while(type != RequeteType.TRAJET_FINI);
+				}*/
+			} while(o != SerialProtocol.IN_ROBOT_ARRIVE);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
