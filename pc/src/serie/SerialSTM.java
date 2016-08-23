@@ -4,7 +4,6 @@ import utils.Config;
 import utils.Log;
 import utils.Sleep;
 import container.Service;
-import enums.SerialProtocol;
 
 /**
  * Série de la STM
@@ -18,23 +17,6 @@ import enums.SerialProtocol;
 public class SerialSTM extends SerialConnexion implements Service, SerialInterface
 {
 	private static byte[] question, reponse;
-	private int premierID;
-	// Il faut qu'ils soient définis avant l'appel au constructeur…
-	static
-	{
-		question = new byte[6];
-		question[0] = (byte) 0x55;
-		question[1] = (byte) 0xAA;
-		question[2] = 0;
-		question[3] = 0;
-		question[4] = SerialProtocol.OUT_PING_NEW_CONNECTION.code;
-		question[5] = (byte) ~question[4]; // checksum
-		
-		reponse = new byte[3];
-		reponse[0] = SerialProtocol.IN_PONG1.code;
-		reponse[1] = SerialProtocol.IN_PONG2.code;
-		reponse[2] = 0;
-	}
 	
 	public SerialSTM(Log log, int baudrate) {
 		super(log, baudrate);
@@ -94,7 +76,7 @@ public class SerialSTM extends SerialConnexion implements Service, SerialInterfa
 				return false;
 			}
 			
-			premierID = (((int)lu[i+2] & 0xFF) << 8) + ((int)lu[i+3] & 0xFF);
+//			premierID = (((int)lu[i+2] & 0xFF) << 8) + ((int)lu[i+3] & 0xFF);
 			
 			// on ne vérifie pas le checksum qui dépend de l'id
 			for(int j = 0; j < reponse.length-1; j++)
@@ -166,19 +148,7 @@ public class SerialSTM extends SerialConnexion implements Service, SerialInterfa
 			if(Config.debugSerieTrame)
 				afficheMessage(out);
 
-			output.write(0x55);
-			output.write(0xAA);
 			output.write(out);
-			// calcul du checksum
-			int c = 0;
-			for(int i = 0; i < out.length; i++)
-				c += out[i];
-/*			if((new Random()).nextInt(5) == 0)
-			{
-				log.debug("Erreur d'envoi simulée");
-				c = 1;
-			}*/
-			output.write((byte)~c);
 		}
 		catch (Exception e)
 		{
@@ -205,11 +175,5 @@ public class SerialSTM extends SerialConnexion implements Service, SerialInterfa
 	@Override
 	public void updateConfig(Config config)
 	{}
-
-	@Override
-	public int getFirstID()
-	{
-		return premierID;
-	}
 
 }

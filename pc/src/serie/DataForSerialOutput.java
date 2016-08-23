@@ -10,8 +10,6 @@ import container.Service;
 import enums.SerialProtocol;
 import utils.Config;
 import utils.Log;
-import utils.Vec2;
-import utils.permissions.ReadOnly;
 
 /**
  * Classe qui contient les ordres à envoyer à la série
@@ -34,21 +32,13 @@ public class DataForSerialOutput implements Service
 		
 	private boolean symetrie;
 	
-	private int nbPaquet = 0; // numéro du prochain paquet
-	private static final int NB_BUFFER_SAUVEGARDE = 50; // on a de la place de toute façon…
-	private volatile byte[][] derniersEnvois = new byte[NB_BUFFER_SAUVEGARDE][];
-	private volatile boolean[] derniersEnvoisPriority = new boolean[NB_BUFFER_SAUVEGARDE];
-	
 	// priorité 0 = priorité minimale
-	private volatile LinkedList<byte[]> bufferBassePriorite = new LinkedList<byte[]>();
-	private volatile LinkedList<byte[]> bufferTrajectoireCourbe = new LinkedList<byte[]>();
+	private volatile LinkedList<Order> bufferBassePriorite = new LinkedList<Order>();
+	private volatile LinkedList<Order> bufferTrajectoireCourbe = new LinkedList<Order>();
 	private volatile boolean stop = false;
+	private final static int PARAM = 1;
+	private final static int COMMANDE = 0;
 	
-	private final static int ID_FORT = 0;
-	private final static int ID_FAIBLE = 1;
-	private final static int COMMANDE = 2;
-	private final static int PARAM = 3;
-
 	/**
 	 * Le buffer est-il vide?
 	 * @return
@@ -58,111 +48,29 @@ public class DataForSerialOutput implements Service
 		return bufferBassePriorite.isEmpty() && bufferTrajectoireCourbe.isEmpty() && !stop;
 	}
 
-	private synchronized void completePaquet(byte[] out)
-	{
-		out[ID_FORT] = (byte) ((nbPaquet>>8) & 0xFF);
-		out[ID_FAIBLE] = (byte) (nbPaquet & 0xFF);
-		nbPaquet++;
-	}
-	
 	/**
 	 * Retire un élément du buffer
 	 * @return
 	 */
-	public synchronized byte[] poll()
+	public synchronized Order poll()
 	{
 		byte[] out;
 		if(stop)
 		{
 			stop = false;
 			bufferTrajectoireCourbe.clear(); // on annule tout mouvement
-			out = new byte[2+1];
+			out = new byte[1];
 			out[COMMANDE] = SerialProtocol.OUT_STOP.code;
-			completePaquet(out);
-			return out;
+			return new Order(out, Order.Type.SHORT);
 		}
 		else if(!bufferTrajectoireCourbe.isEmpty())
 		{
-			out = bufferTrajectoireCourbe.poll();
-			derniersEnvois[nbPaquet % NB_BUFFER_SAUVEGARDE] = out;
-			derniersEnvoisPriority[nbPaquet % NB_BUFFER_SAUVEGARDE] = true;
-			completePaquet(out);
-			return out;
+			return bufferTrajectoireCourbe.poll();
 		}
 		else
 		{
-			out = bufferBassePriorite.poll();
-			derniersEnvois[nbPaquet % NB_BUFFER_SAUVEGARDE] = out;
-			derniersEnvoisPriority[nbPaquet % NB_BUFFER_SAUVEGARDE] = false;
-			completePaquet(out);
-			return out;
+			return bufferBassePriorite.poll();
 		}
-	}
-	
-	/**
-	 * Réenvoie un paquet à partir de son id
-	 * Comme on ne conserve pas tous les précédents paquets, on n'est pas sûr de l'avoir encore…
-	 * La priorité est rétablie et le message est envoyé aussi tôt que possible afin de bousculer le moins possible l'ordre
-	 * @param id
-	 */
-	public synchronized void resend(int id)
-	{
-		if(id <= nbPaquet - NB_BUFFER_SAUVEGARDE)
-			log.critical("Réenvoie de message impossible : message trop vieux");
-		else if(id >= nbPaquet)
-			log.critical("Réenvoie de message impossible : message demandé pas encore envoyé");
-		else
-		{
-			if(derniersEnvoisPriority[id % NB_BUFFER_SAUVEGARDE]) // on redonne la bonne priorité
-				bufferTrajectoireCourbe.addFirst(derniersEnvois[id % NB_BUFFER_SAUVEGARDE]);
-			else
-				bufferBassePriorite.addFirst(derniersEnvois[id % NB_BUFFER_SAUVEGARDE]);
-			notify();
-		}
-	}
-	
-	public synchronized void askResend(int id)
-	{
-		byte[] out = new byte[2+3];
-		out[COMMANDE] = SerialProtocol.OUT_RESEND_PACKET.code;
-		out[PARAM] = (byte) (id >> 8);
-		out[PARAM+1] = (byte) (id & 0xFF);
-		bufferBassePriorite.addFirst(out);
-		notify();
-	}
-	
-	public synchronized void initOdoSTM(Vec2<ReadOnly> pos, double angle)
-	{
-		int x = (int)pos.x;
-		int y = (int)pos.y;
-		if(Config.debugSerie)
-			log.debug("Initialisation de l'odométrie à "+pos+", angle "+angle);
-		byte[] out = new byte[2+6];
-		out[COMMANDE] = SerialProtocol.OUT_INIT_ODO.code;
-		out[PARAM] = (byte) ((x+1500) >> 4);
-		out[PARAM+1] = (byte) (((x+1500) << 4) + (y >> 8));
-		out[PARAM+2] = (byte) (y);
-		out[PARAM+3] = (byte) (Math.round(angle*1000) >> 8);
-		out[PARAM+4] = (byte) (Math.round(angle*1000) & 0xFF);
-		bufferBassePriorite.add(out);
-		notify();
-	}
-
-	public synchronized void vaAuPoint(Vec2<ReadOnly> pos, Speed vitesse)
-	{
-		int x = (int)pos.x;
-		int y = (int)pos.y;
-		if(Config.debugSerie)
-			log.debug("Va au point "+pos);
-		byte[] out = new byte[2+6];
-		out[COMMANDE] = SerialProtocol.OUT_VA_AU_POINT.code;
-		out[PARAM] = (byte) ((x+1500) >> 4);
-		out[PARAM+1] = (byte) (((x+1500) << 4) + (y >> 8));
-		out[PARAM+2] = (byte) (y);
-		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
-		out[PARAM+4] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
-		bufferBassePriorite.add(out);
-		notify();
 	}
 	
 	/**
@@ -173,7 +81,7 @@ public class DataForSerialOutput implements Service
 	{
 		if(Config.debugSerie)
 			log.debug("Avance de "+distance);
-		byte[] out = new byte[2+5];
+		byte[] out = new byte[5];
 		if(distance >= 0)
 			out[COMMANDE] = SerialProtocol.OUT_AVANCER.code;
 		else
@@ -186,7 +94,7 @@ public class DataForSerialOutput implements Service
 		out[PARAM+2] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
 		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
 //		log.debug("Vitesse : "+vitesse.translationalSpeed*1000);
-		bufferBassePriorite.add(out);
+		bufferBassePriorite.add(new Order(out, Order.Type.LONG));
 		notify();
 	}
 
@@ -199,7 +107,7 @@ public class DataForSerialOutput implements Service
 	{
 		if(Config.debugSerie)
 			log.debug("Avance (même sens) de "+distance);
-		byte[] out = new byte[2+5];
+		byte[] out = new byte[5];
 		if(distance >= 0)
 			out[COMMANDE] = SerialProtocol.OUT_AVANCER_IDEM.code;
 		else
@@ -211,65 +119,14 @@ public class DataForSerialOutput implements Service
 		out[PARAM+1] = (byte) (distance);
 		out[PARAM+2] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
 		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
-		bufferBassePriorite.add(out);
-		notify();
-	}
-	
-	public synchronized void reprendMouvement()
-	{
-		byte[] out = new byte[2+1];
-		out[COMMANDE] = SerialProtocol.OUT_RESUME_MOVE.code;
-		bufferBassePriorite.add(out);
-		notify();
-	}
-	
-	/**
-	 * Ajout d'une demande d'ordre de tourner pour la série
-	 * @param elem
-	 */
-	public synchronized void turn(double angle, Speed vitesse)
-	{
-		if(Config.debugSerie)
-			log.debug("Tourne à "+angle);
-		byte[] out = new byte[2+5];
-//		log.debug("Vitesse : "+vitesse.rotationalSpeed*1000*1000);
-		angle %= 2*Math.PI;
-		if(angle < 0)
-			angle += 2*Math.PI; // il faut toujours envoyer des nombres positifs
-
-		out[COMMANDE] = SerialProtocol.OUT_TOURNER.code;
-		out[PARAM] = (byte) (Math.round(angle*1000) >> 8);
-		out[PARAM+1] = (byte) (Math.round(angle*1000));
-		out[PARAM+2] = (byte) ((int)(vitesse.rotationalSpeed*1000*1000) >> 8);
-		out[PARAM+3] = (byte) ((int)(vitesse.rotationalSpeed*1000*1000) & 0xFF);
-		bufferBassePriorite.add(out);
+		bufferBassePriorite.add(new Order(out, Order.Type.LONG));
 		notify();
 	}
 
-
-	public synchronized void suspendMouvement()
-	{
-		byte[] out = new byte[2+1];
-		out[COMMANDE] = SerialProtocol.OUT_SUSPEND_MOVE.code;
-		bufferBassePriorite.add(out);
-		notify();
-	}
-	
 	/**
 	 * Ajout d'une demande d'ordre de s'arrêter
 	 */
 	public synchronized void immobilise()
-	{
-		byte[] out = new byte[2+1];
-		out[COMMANDE] = SerialProtocol.OUT_ASSER_POS_ACTUELLE.code;
-		bufferBassePriorite.add(out);
-		notify();
-	}
-
-	/**
-	 * Ajout d'une demande d'ordre de s'arrêter
-	 */
-	public synchronized void immobiliseUrgence()
 	{
 		if(Config.debugSerie)
 			log.debug("Stop !");
@@ -284,34 +141,23 @@ public class DataForSerialOutput implements Service
 	public synchronized void utiliseActionneurs(ActuatorOrder elem)
 	{
 		ActuatorOrder elem2 = elem.getSymetrie(symetrie);
-		byte[] out = new byte[2+4];
+		byte[] out = new byte[4];
 		out[COMMANDE] = SerialProtocol.OUT_ACTIONNEUR.code;
 		out[PARAM] = (byte) (elem2.id);
 		out[PARAM + 1] = (byte) (elem2.angle >> 8);
 		out[PARAM + 2] = (byte) (elem2.angle & 0xFF);
-		bufferBassePriorite.add(out);
+		bufferBassePriorite.add(new Order(out, Order.Type.LONG));
 		notify();
 	}
-	
-/*
-	public synchronized void asserVitesse(int vitesseMax)
-	{
-		byte[] out = new byte[2+3];
-		out[COMMANDE] = SerialProtocol.OUT_VITESSE.code;
-		out[PARAM] = (byte) (vitesseMax >> 8);
-		out[PARAM + 1] = (byte) (vitesseMax & 0xFF);
-		bufferBassePriorite.add(out);
-		notify();
-	}*/
 	
 	/**
 	 * Désasservit le robot
 	 */
 	public synchronized void asserOff()
 	{
-		byte[] out = new byte[2+1];
+		byte[] out = new byte[1];
 		out[COMMANDE] = SerialProtocol.OUT_ASSER_OFF.code;
-		bufferBassePriorite.add(out);
+		bufferBassePriorite.add(new Order(out, Order.Type.SHORT));
 		notify();
 	}
 
@@ -337,7 +183,7 @@ public class DataForSerialOutput implements Service
 		for(int i = 0; i < arc.getNbPoints(); i++)
 		{
 //			log.debug(i);
-			byte[] out = new byte[2+10];
+			byte[] out = new byte[10];
 			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
 			{
 //				log.debug("ARC ARRET");
@@ -370,33 +216,9 @@ public class DataForSerialOutput implements Service
 			out[PARAM+7] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) >> 8);
 			out[PARAM+8] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) & 0xFF);
 			
-			bufferTrajectoireCourbe.add(out);
+			bufferTrajectoireCourbe.add(new Order(out, Order.Type.SHORT));
 		}
 		notify();			
-	}
-
-	public synchronized void activeDebugMode()
-	{
-		byte[] out = new byte[2+1];
-		out[COMMANDE] = SerialProtocol.OUT_DEBUG_MODE.code;
-		bufferBassePriorite.add(out);
-		notify();
-	}
-
-	public synchronized void sendPong()
-	{
-		byte[] out = new byte[2+2];
-		out[COMMANDE] = SerialProtocol.OUT_PONG1.code;
-		out[COMMANDE+1] = SerialProtocol.OUT_PONG2.code;
-		bufferBassePriorite.add(out);
-		notify();
-	}
-
-	public synchronized void addPing()
-	{
-		byte[] out = new byte[2+1];
-		out[COMMANDE] = SerialProtocol.OUT_PING.code;
-		bufferBassePriorite.add(out);
 	}
 
 }

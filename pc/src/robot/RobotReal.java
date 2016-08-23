@@ -80,22 +80,6 @@ public class RobotReal extends Robot
 			}
 	}	
 
-    public void vaAuPointBasNiveau(Vec2<ReadOnly> point, Speed vitesse) throws UnableToMoveException
-	{
-			synchronized(requete)
-			{
-				stm.vaAuPoint(point, vitesse);
-				try {
-					gestionExceptions(true);
-				} catch (UnexpectedObstacleOnPathException e) {
-					stm.vaAuPoint(point, vitesse);
-					try {
-						gestionExceptions(true);
-					} catch (UnexpectedObstacleOnPathException e1) {
-					}
-				}
-			}
-	}	
     
     /**
 	 * Méthode sleep utilisée par les scripts
