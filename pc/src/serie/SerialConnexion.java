@@ -216,12 +216,17 @@ public abstract class SerialConnexion implements SerialPortEventListener
 		}
 	}
 	
-	public boolean available() throws IOException
+	public boolean available()
 	{
 		// tant qu'on est occupé, on dit qu'on ne reçoit rien
 		if(busy)
 			return false;
-		return input.available() != 0;
+		try {
+			return input.available() != 0;
+		} catch (IOException e) {
+			e.printStackTrace(); // Cette exception a lieu si la série est fermée
+			return false;
+		}
 	}
 	
 	/**
@@ -230,27 +235,34 @@ public abstract class SerialConnexion implements SerialPortEventListener
 	 * @throws IOException
 	 * @throws MissingCharacterException
 	 */
-	public int read() throws IOException, MissingCharacterException
+	public int read() throws MissingCharacterException
 	{
 		attendSiPing();
-		if(input.available() == 0)
-			Sleep.sleep(10); // On attend un tout petit peu, au cas où
-
-		if(input.available() == 0)
-			throw new MissingCharacterException(); // visiblement on ne recevra rien de plus
- 
-		byte out = (byte) input.read();
-
-		if(Config.debugSerieTrame)
+		try
 		{
-			String s = Integer.toHexString(out).toUpperCase();
-			if(s.length() == 1)
-				log.debug("Reçu : "+"0"+s);
-			else
-				log.debug("Reçu : "+s.substring(s.length()-2, s.length()));	
-		}
+			if(input.available() == 0)
+				Sleep.sleep(10); // On attend un tout petit peu, au cas où
+	
+			if(input.available() == 0)
+				throw new MissingCharacterException(); // visiblement on ne recevra rien de plus
+	 
+			byte out = (byte) input.read();
+			if(Config.debugSerieTrame)
+			{
+				String s = Integer.toHexString(out).toUpperCase();
+				if(s.length() == 1)
+					log.debug("Reçu : "+"0"+s);
+				else
+					log.debug("Reçu : "+s.substring(s.length()-2, s.length()));	
+			}
+			return out & 0xFF;
 
-		return out & 0xFF;
+		}
+		catch(IOException e)
+		{
+			System.out.println(e);
+			throw new MissingCharacterException();
+		}
 	}
 	
 	protected abstract boolean ping();

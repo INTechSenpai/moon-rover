@@ -1,6 +1,14 @@
 package serie;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import container.Service;
+import exceptions.MissingCharacterException;
+import serie.trame.Frame;
+import serie.trame.IncomingFrame;
+import serie.trame.Order;
+import serie.trame.OutgoingFrame;
 import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
@@ -12,8 +20,12 @@ import utils.Log;
  */
 
 public class SerialLowLevel implements Service
-{
+{	
+	private ArrayList<OutgoingFrame> waitingFrames = new ArrayList<OutgoingFrame>();
+	private ArrayList<OutgoingFrame> pendingLongFrames = new ArrayList<OutgoingFrame>();
+	
 	private int timeout;
+	
 	private Log log;
 	private SerialInterface serie;
 	
@@ -22,26 +34,46 @@ public class SerialLowLevel implements Service
 		this.log = log;
 		this.serie = serie;
 	}
+		
+	public void sendOrder(Order o)
+	{
+		waitingFrames.add(new OutgoingFrame(o));
+	}
 	
 	/**
-	 * Cette méthode est synchronized car deux threads peuvent l'utiliser : ThreadSerialOutput et ThreadSerialOutputTimeout
-	 * @param message
+	 * Renvoie les données de la couche ordre (haut niveau)
+	 * @return
 	 */
-	public synchronized void sendOrder(Order message)
-	{}
-	
-	private byte[] addChecksum(byte[] msg)
-	{
-		int c = 0;
-		for(int i = 0; i < msg.length; i++)
-			c += msg[i];
-		return msg;
-	}
-	
 	public int[] readData()
 	{
+		try {
+			readFrame();
+		} catch (MissingCharacterException e) {
+			System.out.println(e);
+		}
 		return null;
 	}
+	
+	/**
+	 * Lit une frame depuis la série
+	 * @return
+	 * @throws MissingCharacterException 
+	 * @throws IOException 
+	 */
+	private Frame readFrame() throws MissingCharacterException
+	{
+		synchronized(serie)
+		{
+			int[] message = new int[0];
+			int code = serie.read();
+			int id = serie.read();
+			int compteur = serie.read();
+			int checksum = serie.read();
+			// TODO lire le reste !
+			return new IncomingFrame(code, id, compteur, checksum, message);
+		}
+	}
+	
 	
 	@Override
 	public void updateConfig(Config config)
@@ -51,6 +83,7 @@ public class SerialLowLevel implements Service
 	public void useConfig(Config config)
 	{
 		timeout = config.getInt(ConfigInfo.SERIAL_TIMEOUT);
+		Frame.setTimeout(timeout);
 	}
 
 	/**
@@ -70,14 +103,25 @@ public class SerialLowLevel implements Service
 		
 	}
 
+	/**
+	 * Renvoie le temps avant qu'une trame doive être renvoyée (timeout sinon)
+	 * @return
+	 */
 	public int timeBeforeRetry()
 	{
-		return 10;
+		int out = timeout;
+		if(!waitingFrames.isEmpty())
+			out = (int) (waitingFrames.get(0).deathDate - System.currentTimeMillis());
+		return out;
 	}
 
-	public void retry() {
-		// TODO Auto-generated method stub
-		
+	/**
+	 * Renvoie la trame la plus vieille qui n'a pas été 
+	 */
+	public void retry()
+	{
+		if(!waitingFrames.isEmpty() && waitingFrames.get(0).needResend())
+			serie.communiquer(waitingFrames.get(0).message);
 	}
 	
 	

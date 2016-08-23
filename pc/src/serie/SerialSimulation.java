@@ -54,13 +54,13 @@ public class SerialSimulation implements SerialInterface, Service {
 	{}
 
 	@Override
-	public boolean available() throws IOException
+	public boolean available()
 	{
 		return false;
 	}
 
 	@Override
-	public int read() throws IOException, MissingCharacterException
+	public int read() throws MissingCharacterException
 	{
 		return 0;
 	}

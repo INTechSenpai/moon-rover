@@ -129,7 +129,11 @@ public class SerialSTM extends SerialConnexion implements Service, SerialInterfa
 		log.debug(m);
 	}
 	
-	public void communiquer(byte[] out)
+	/**
+	 * Cette méthode est synchronized car deux threads peuvent l'utiliser : ThreadSerialOutput et ThreadSerialOutputTimeout
+	 * @param message
+	 */
+	public synchronized void communiquer(byte[] out)
 	{
 		/**
 		 * Un appel à une série fermée ne devrait jamais être effectué.

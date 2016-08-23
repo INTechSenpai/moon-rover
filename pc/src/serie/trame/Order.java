@@ -1,4 +1,4 @@
-package serie;
+package serie.trame;
 
 /**
  * Un ordre à envoyer sur la série
