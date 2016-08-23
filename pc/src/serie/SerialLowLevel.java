@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import container.Service;
 import exceptions.IncorrectChecksumException;
 import exceptions.MissingCharacterException;
+import exceptions.ProtocolException;
 import serie.trame.Frame.IncomingCode;
 import serie.trame.Frame.OutgoingCode;
 import serie.trame.IncomingFrame;
@@ -60,28 +61,30 @@ public class SerialLowLevel implements Service
 	 * Renvoie les données de la couche ordre (haut niveau)
 	 * @return
 	 */
-	public int[] readData()
+	public Paquet readData()
 	{
 		IncomingFrame f = null;
+		Ticket t = null;
 		boolean restart;
 		do {
 			restart = false;
 			try {
 				f = readFrame();
-				processFrame(f);
+				t = processFrame(f);
 			} catch (Exception e) {
 				log.warning(e);
 				restart = true;
 			}
 		} while(restart);
-		return f.message;
+		return new Paquet(f.message, t);
 	}
 	
 	/**
 	 * S'occupe du protocole : répond si besoin est, vérifie la cohérence, etc.
+	 * Renvoie le ticket associé à la trame
 	 * @param f
 	 */
-	public void processFrame(IncomingFrame f)
+	public Ticket processFrame(IncomingFrame f) throws ProtocolException
 	{
 		Iterator<OutgoingFrame> it = waitingFrames.iterator();
 		while(it.hasNext())
@@ -96,12 +99,12 @@ public class SerialLowLevel implements Service
 					{
 						it.remove();
 						pendingLongFrames.add(waiting);
-						return;
+						return waiting.ticket;
 					}
 					else
 					{
 						log.warning("EXECUTION_BEGIN pour un trame originale de type "+waiting.code);
-						return;
+						throw new ProtocolException();
 					}
 				}
 				else if(f.code == IncomingCode.VALUE_ANSWER)
@@ -110,18 +113,18 @@ public class SerialLowLevel implements Service
 					{
 						// L'ordre court a reçu un acquittement et ne passe pas par la case "pending"
 						it.remove();
-						return;
+						return waiting.ticket;
 					}
 					else
 					{
 						log.warning("VALUE_ANSWER pour un trame originale de type "+waiting.code);
-						return;
+						throw new ProtocolException();
 					}
 				}
 				else
 				{
 					log.warning(f.code+" reçu à la place de EXECUTION_BEGIN ou VALUE_ANSWER !");
-					return;
+					throw new ProtocolException();
 				}
 			}
 		}
@@ -142,19 +145,20 @@ public class SerialLowLevel implements Service
 					serie.communiquer(new OutgoingFrame(f.compteur).getBytes());
 					// et on retire la trame des trames en cours
 					it.remove();
-					return;
+					return pending.ticket;
 				}
 				else if(f.code == IncomingCode.STATUS_UPDATE)
-					return;
+					return pending.ticket;
 				else
 				{
 					log.warning(f.code+" reçu à la place de EXECUTION_END ou STATUS_UPDATE !");
-					return;
+					throw new ProtocolException();
 				}
 			}
 		}
 		
 		log.warning("Compteur inconnu : "+f.compteur);		
+		throw new ProtocolException();
 	}
 	
 	/**
