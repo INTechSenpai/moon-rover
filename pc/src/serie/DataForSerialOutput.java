@@ -158,6 +158,39 @@ public class DataForSerialOutput implements Service
 	}
 	
 	/**
+	 * Demande la couleur au bas niveau
+	 */
+	public synchronized void demandeCouleur()
+	{
+		byte[] out = new byte[1];
+		out[COMMANDE] = SerialProtocol.OUT_ASK_COLOR.code;
+		bufferBassePriorite.add(new Order(out, Order.Type.SHORT));
+		notify();
+	}
+
+	/**
+	 * Demande à être notifié du début du match
+	 */
+	public synchronized void demandeNotifDebutMatch()
+	{
+		byte[] out = new byte[1];
+		out[COMMANDE] = SerialProtocol.OUT_MATCH_BEGIN.code;
+		bufferBassePriorite.add(new Order(out, Order.Type.SHORT));
+		notify();
+	}
+
+	/**
+	 * Demande à être notifié de la fin du match
+	 */
+	public synchronized void demandeNotifFinMatch()
+	{
+		byte[] out = new byte[1];
+		out[COMMANDE] = SerialProtocol.OUT_MATCH_END.code;
+		bufferBassePriorite.add(new Order(out, Order.Type.SHORT));
+		notify();
+	}
+
+	/**
 	 * Désasservit le robot
 	 */
 	public synchronized void asserOff()
@@ -226,6 +259,18 @@ public class DataForSerialOutput implements Service
 			bufferTrajectoireCourbe.add(new Order(out, Order.Type.SHORT));
 		}
 		notify();			
+	}
+
+	/**
+	 * Renvoie un ping
+	 * @return
+	 */
+	public Order getPing()
+	{
+		byte[] out = new byte[1];
+		out[0] = SerialProtocol.OUT_PING.code;
+		Order message = new Order(out, Order.Type.SHORT);
+		return message;
 	}
 
 }

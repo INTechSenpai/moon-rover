@@ -88,6 +88,22 @@ En cas de marche arrière, il sera envoyé l'orientation voulue du robot + $2\pi
 \subsubsection{Efface tous les arcs reçus et rajoute cet arc, précédé d'un arrêt} 
 
 \texttt{0x2D X+ POINT(12) Y POINT(12) ORIENTATION(16) COURBURE(16) VITESSE TRANSLATION(16)}
+   
+\subsection{Demande notification début match}
+    \texttt{0x11}
+
+Le bas niveau préviendra du début du match.
+   
+   \subsection{Demande notification fin match}
+       \texttt{0x12}
+   
+   Le bas niveau préviendra de la fin du match.
+   
+\subsection{Demande couleur}
+    \texttt{0x13}
+
+Le bas niveau doit renvoyer la couleur du robot pour ce match.
+
     
 \subsection{Start capteurs}
 \texttt{0x10}
