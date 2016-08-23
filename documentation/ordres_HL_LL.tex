@@ -39,7 +39,7 @@ L'angle est l'angle à fournir à l'AX-12 (entre 0 et 300).
 \subsection{Arrêt du robot}
 \texttt{0x07}
    
-Le robot doit s'arrêter (asservissement sur place).
+Le robot doit s'arrêter (asservissement sur place). Le bas niveau doit arrêter les ordres longs en cours en rapport avec les déplacements.
 
 \subsection{Avancer}
 
@@ -112,6 +112,11 @@ Le mouvement est terminé, le robot est arrivé à destination.
     \texttt{0x03}
     
 Le robot n'a pas pu finir son mouvement à cause d'une erreur mécanique (collision).
+
+\subsection{Arrêt demandé par le haut niveau}
+    \texttt{0x08}
+    
+Lorsque le haut niveau demande une immobilisation du robot, le bas niveau doit arrêter les ordres longs en cours en rapport avec les déplacements et fournir ce code.
     
 \subsection{Début match}
     \texttt{0x04}
