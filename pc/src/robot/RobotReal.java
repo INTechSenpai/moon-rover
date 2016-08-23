@@ -14,22 +14,22 @@ import exceptions.UnableToMoveException;
 import exceptions.UnexpectedObstacleOnPathException;
 
 /**
- * Effectue le lien entre le code et la réalité (permet de parler à la stm, d'interroger les capteurs, etc.)
+ * Effectue le lien entre le code et la réalité (permet de parler à la carte bas niveau, d'interroger les capteurs, etc.)
  * @author pf
  *
  */
 
 public class RobotReal extends Robot
 {
-	private DataForSerialOutput stm;
+	private DataForSerialOutput serialOutput;
 //	private int distanceDegagement;
 //	private int tempsAttente;
 	
 	// Constructeur
-	public RobotReal(DataForSerialOutput stm, Log log)
+	public RobotReal(DataForSerialOutput serialOutput, Log log)
  	{
 		super(log);
-		this.stm = stm;
+		this.serialOutput = serialOutput;
 	}
 	
 	/*
@@ -61,13 +61,13 @@ public class RobotReal extends Robot
 	@Override
     public void avancer(int distance, boolean mur, Speed vitesse) throws UnableToMoveException
 	{
-		Ticket t = stm.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
+		Ticket t = serialOutput.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
 		synchronized(t)
 		{
 			try {
 				gestionExceptions(mur);
 			} catch (UnexpectedObstacleOnPathException e) {
-				stm.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
+				serialOutput.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
 				try {
 					gestionExceptions(mur);
 				} catch (UnexpectedObstacleOnPathException e1) {
@@ -107,7 +107,7 @@ public class RobotReal extends Robot
 	 */
 	public void useActuator(ActuatorOrder order)
 	{
-		stm.utiliseActionneurs(order);
+		serialOutput.utiliseActionneurs(order);
 	}
 
     /**
@@ -138,12 +138,12 @@ public class RobotReal extends Robot
                          */
 /*                    	Sleep.sleep(500);
                         log.warning("On n'arrive plus à avancer. On se dégage");
-//                        stm.avancerMemeSens(-distanceDegagement, Speed.STANDARD);
+//                        serialOutput.avancerMemeSens(-distanceDegagement, Speed.STANDARD);
                         attendStatus();
                     } catch (UnableToMoveException e1) {
                         log.critical("On n'arrive pas à se dégager.");
 					} catch (UnexpectedObstacleOnPathException e1) {
-						stm.immobilise();
+						serialOutput.immobilise();
 						e1.printStackTrace();
 					}
 //                    if(nb_iterations_deblocage-- == 0)*/
@@ -153,12 +153,12 @@ public class RobotReal extends Robot
                 	return; // on s'est pris un mur, on s'attendait à un mur : tout va bien
             }/* catch (UnexpectedObstacleOnPathException e)
             {
-            	stm.suspendMouvement();
+            	serialOutput.suspendMouvement();
 
             	Sleep.sleep(tempsAttente);
             	// on ne s'est jamais arrêté à cause d'un problème mécanique, on peut donc relancer le mouvement
 
-            	stm.reprendMouvement();
+            	serialOutput.reprendMouvement();
             	//attendStatus();
                 if(nb_iterations_ennemi-- == 0)
                     throw new UnableToMoveException();
@@ -170,7 +170,7 @@ public class RobotReal extends Robot
     }
 
     /**
-     * Bloque jusqu'à ce que la STM donne un status.
+     * Bloque jusqu'à ce que la carte donne un status.
      * - Soit le robot a fini le mouvement, et la méthode se termine
      * - Soit le robot est bloqué, et la méthod lève une exception
      * ATTENTION ! Il faut que cette méthode soit appelée dans un synchronized(requete)
@@ -200,7 +200,7 @@ public class RobotReal extends Robot
 				else if(type == RequeteType.ENNEMI_SUR_CHEMIN)
 				{
 					log.critical("Ennemi sur le chemin !");
-					stm.immobilise();
+					serialOutput.immobilise();
 					Sleep.sleep(4000);
 					throw new UnexpectedObstacleOnPathException();
 				}

@@ -13,18 +13,19 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
+import container.Service;
 import utils.Config;
 import utils.Log;
 import utils.Sleep;
 import exceptions.MissingCharacterException;
 
 /**
- * La connexion série vers la STM ou la XBEE
+ * La connexion série
  * @author pf
  *
  */
 
-public abstract class SerialConnexion implements SerialPortEventListener
+public class SerialConnexion implements SerialPortEventListener, Service
 {
 	private SerialPort serialPort;
 	protected Log log;
@@ -90,7 +91,7 @@ public abstract class SerialConnexion implements SerialPortEventListener
 			
 			if(ping())
 			{
-				log.debug("STM sur " + port.getName());
+				log.debug("Carte sur " + port.getName());
 				if(shouldEstimateLatency)
 				{
 					shouldEstimateLatency = false;
@@ -162,8 +163,6 @@ public abstract class SerialConnexion implements SerialPortEventListener
 	{
 		communiquer(out.getBytes());
 	}
-	
-	public abstract void communiquer(byte[] out);
 	
 	protected void attendSiPing()
 	{
@@ -265,8 +264,134 @@ public abstract class SerialConnexion implements SerialPortEventListener
 		}
 	}
 	
-	protected abstract boolean ping();
-	protected abstract void estimeLatence();
-	protected abstract void afficheMessage(byte[] out);
+	/**
+	 * Ping de la carte.
+	 * @return l'id de la carte
+	 */
+	protected boolean ping()
+	{
+		try
+		{
+			//Evacuation de l'éventuel buffer indésirable
+			output.flush();
+
+			//ping
+			output.write(null);
+
+			if(Config.debugSerieTrame)
+			{
+				log.debug("Question : ");
+				afficheMessage(null);
+			}
+
+			// on laisse le temps au périphérique de réagir
+			Sleep.sleep(100);
+			
+			byte[] lu = new byte[input.available()];
+			int nbLu = input.read(lu);
+			if(Config.debugSerieTrame)
+			{
+				log.debug("Réponse : ");
+				afficheMessage(lu);
+			}
+	
+			int i = 0;
+			while(i < nbLu && lu[i] != (byte)0x55)
+				i++;
+			
+			
+			log.debug("Série trouvée.");
+			return true;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	protected void estimeLatence()
+	{
+/*		try {
+			log.debug("Estimation de la latence…");
+			long avant = System.currentTimeMillis();
+			for(int i = 0; i < 10; i++)
+			{
+				output.write(question);
+				while(input.available() == 0);
+				input.skip(input.available());
+			}
+			log.debug("Latence de la série : "+((System.currentTimeMillis() - avant)*50)+" ns.");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}*/
+	}
+
+	protected void afficheMessage(byte[] out)
+	{
+		String m = "";
+		for(int i = 0; i < out.length; i++)
+		{
+			String s = Integer.toHexString(out[i]).toUpperCase();
+			if(s.length() == 1)
+				m += "0"+s+" ";
+			else
+				m += s.substring(s.length()-2, s.length())+" ";
+		}
+		log.debug(m);
+	}
+	
+	/**
+	 * Cette méthode est synchronized car deux threads peuvent l'utiliser : ThreadSerialOutput et ThreadSerialOutputTimeout
+	 * @param message
+	 */
+	public synchronized void communiquer(byte[] out)
+	{
+		/**
+		 * Un appel à une série fermée ne devrait jamais être effectué.
+		 */
+		if(isClosed)
+		{
+			log.debug("La série est fermée et ne peut envoyer :");
+			afficheMessage(out);
+			return;
+		}
+
+		attendSiPing();
+		
+		try
+		{
+			if(Config.debugSerieTrame)
+				afficheMessage(out);
+
+			output.write(out);
+		}
+		catch (Exception e)
+		{
+			/**
+			 * Si la carte ne répond vraiment pas, on recommence de manière infinie.
+			 * De toute façon, on n'a pas d'autre choix...
+			 */
+			log.critical("Ne peut pas parler à la carte. Tentative de reconnexion.");
+			while(!searchPort())
+			{
+				log.critical("Pas trouvé... On recommence");
+				// On laisse la série respirer un peu
+				Sleep.sleep(200);
+			}
+			// On a retrouvé la série, on renvoie le message
+			communiquer(out);
+		}
+	}
+
+	@Override
+	public void updateConfig(Config config)
+	{}
+
+	@Override
+	public void useConfig(Config config)
+	{}
 
 }

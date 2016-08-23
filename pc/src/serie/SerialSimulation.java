@@ -1,14 +1,12 @@
 package serie;
 
-import java.io.IOException;
-
 import container.Service;
 import exceptions.MissingCharacterException;
 import utils.Config;
 import utils.Log;
 
 /**
- * Série STM simulée.
+ * Série simulée.
  * @author pf
  *
  */
