@@ -11,7 +11,6 @@ import enums.SerialProtocol;
 
 public class Ticket
 {
-
 	private volatile SerialProtocol type;
 	
 	public synchronized SerialProtocol getAndClear()

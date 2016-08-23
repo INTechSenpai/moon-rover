@@ -11,31 +11,47 @@ import serie.Ticket;
 public class OutgoingFrame extends Frame
 {
 	public OutgoingCode code;
-	public byte[] message;
+	public byte[] message, trame;
 	private long deathDate; // date d'envoi + timeout (toutes les trames provenant du haut niveau doivent être acquittées)
-	public final Ticket ticket = new Ticket();
+	public final Ticket ticket;
 	
 	/**
-	 * Constructeur d'une trame à envoyer
+	 * Trame de END_ORDER
+	 */
+	public OutgoingFrame(byte compteur)
+	{
+		ticket = null;
+		deathDate = 0;
+		this.compteur = compteur;
+		code = OutgoingCode.END_ORDER;
+		message = new byte[0];
+	}
+	
+	/**
+	 * Constructeur d'une trame à envoyer (NEW_ORDER ou VALUE_REQUEST)
 	 * @param o
 	 */
 	public OutgoingFrame(Order o)
 	{
-		this.deathDate = System.currentTimeMillis() + timeout;
+		ticket = o.ticket;
+		deathDate = System.currentTimeMillis() + timeout;
 		compteur = compteurReference;
 		compteurReference++;
 		
 		code = o.orderType == Order.Type.LONG ? OutgoingCode.NEW_ORDER : OutgoingCode.VALUE_REQUEST;
-		message = new byte[o.message.length + 5];
-		message[0] = code.code;
-		message[1] = id;
-		message[2] = compteur;
+		trame = new byte[o.message.length + 5];
+		trame[0] = code.code;
+		trame[1] = id;
+		trame[2] = compteur;
+		
+		for(int i = 0; i < message.length; i++)
+			trame[i+4] = message[i];
 		
 		int c = 0;
-		for(int i = 0; i < message.length; i++)
+		for(int i = 0; i < trame.length; i++)
 			if(i != 3)
-				c += message[i];
-		message[3] = (byte) (c);
+				c += trame[i];
+		trame[3] = (byte) (c);
 	}
 
 	protected static int timeout;
@@ -61,6 +77,15 @@ public class OutgoingFrame extends Frame
 	public int timeBeforeDeath()
 	{
 		return (int) (deathDate - System.currentTimeMillis());
+	}
+
+	/**
+	 * La trame sous forme de byte[], prête à être envoyée
+	 * @return
+	 */
+	public byte[] getBytes()
+	{
+		return trame;
 	}
 
 }

@@ -1,12 +1,14 @@
 package serie;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import container.Service;
+import exceptions.IncorrectChecksumException;
 import exceptions.MissingCharacterException;
 import serie.trame.Frame.IncomingCode;
+import serie.trame.Frame.OutgoingCode;
 import serie.trame.IncomingFrame;
 import serie.trame.Order;
 import serie.trame.OutgoingFrame;
@@ -22,7 +24,15 @@ import utils.Log;
 
 public class SerialLowLevel implements Service
 {	
-	private ArrayList<OutgoingFrame> waitingFrames = new ArrayList<OutgoingFrame>();
+	/**
+	 * Liste des trames dont on attend un acquittement
+	 * Les trames de cette liste sont toujours triées par date de mort (de la plus proche à la plus éloignée)
+	 */
+	private LinkedList<OutgoingFrame> waitingFrames = new LinkedList<OutgoingFrame>();
+	
+	/**
+	 * Liste des trames d'ordre long acquittées dont on attend la fin
+	 */
 	private ArrayList<OutgoingFrame> pendingLongFrames = new ArrayList<OutgoingFrame>();
 	
 	private int timeout;
@@ -58,17 +68,20 @@ public class SerialLowLevel implements Service
 			restart = false;
 			try {
 				f = readFrame();
-				OutgoingFrame original = retrieveOriginalFrame(f);
-
-			} catch (MissingCharacterException e) {
-				System.out.println(e);
+				processFrame(f);
+			} catch (Exception e) {
+				log.warning(e);
 				restart = true;
 			}
 		} while(restart);
 		return f.message;
 	}
 	
-	public OutgoingFrame retrieveOriginalFrame(IncomingFrame f)
+	/**
+	 * S'occupe du protocole : répond si besoin est, vérifie la cohérence, etc.
+	 * @param f
+	 */
+	public void processFrame(IncomingFrame f)
 	{
 		Iterator<OutgoingFrame> it = waitingFrames.iterator();
 		while(it.hasNext())
@@ -79,17 +92,42 @@ public class SerialLowLevel implements Service
 				// On a le EXECUTION_BEGIN d'une frame qui l'attendait
 				if(f.code == IncomingCode.EXECUTION_BEGIN)
 				{
-					it.remove();
-					pendingLongFrames.add(waiting);
-					return waiting;
+					if(waiting.code == OutgoingCode.NEW_ORDER)
+					{
+						it.remove();
+						pendingLongFrames.add(waiting);
+						return;
+					}
+					else
+					{
+						log.warning("EXECUTION_BEGIN pour un trame originale de type "+waiting.code);
+						return;
+					}
+				}
+				else if(f.code == IncomingCode.VALUE_ANSWER)
+				{
+					if(waiting.code == OutgoingCode.VALUE_REQUEST)
+					{
+						// L'ordre court a reçu un acquittement et ne passe pas par la case "pending"
+						it.remove();
+						return;
+					}
+					else
+					{
+						log.warning("VALUE_ANSWER pour un trame originale de type "+waiting.code);
+						return;
+					}
 				}
 				else
 				{
-					log.warning(f.code+" reçu à la place de EXECUTION_BEGIN !");
-					return null;
+					log.warning(f.code+" reçu à la place de EXECUTION_BEGIN ou VALUE_ANSWER !");
+					return;
 				}
 			}
 		}
+		
+		// Cette valeur n'a pas été trouvée dans les trames en attente
+		// On va donc chercher dans les trames en cours
 		
 		it = pendingLongFrames.iterator();
 		while(it.hasNext())
@@ -100,33 +138,32 @@ public class SerialLowLevel implements Service
 				// On a le EXECUTION_END d'une frame
 				if(f.code == IncomingCode.EXECUTION_END)
 				{
+					// on envoie un END_ORDER
+					serie.communiquer(new OutgoingFrame(f.compteur).getBytes());
+					// et on retire la trame des trames en cours
 					it.remove();
-					return pending;
+					return;
 				}
 				else if(f.code == IncomingCode.STATUS_UPDATE)
-				{
-					return pending;
-				}
+					return;
 				else
 				{
 					log.warning(f.code+" reçu à la place de EXECUTION_END ou STATUS_UPDATE !");
-					return null;
+					return;
 				}
 			}
 		}
 		
-		log.warning("Compteur inconnu : "+f.compteur);
-		return null;
-		
+		log.warning("Compteur inconnu : "+f.compteur);		
 	}
-
+	
 	/**
 	 * Lit une frame depuis la série
 	 * @return
-	 * @throws MissingCharacterException 
-	 * @throws IOException 
+	 * @throws MissingCharacterException
+	 * @throws IncorrectChecksumException
 	 */
-	private IncomingFrame readFrame() throws MissingCharacterException
+	private IncomingFrame readFrame() throws MissingCharacterException, IncorrectChecksumException
 	{
 		synchronized(serie)
 		{
@@ -166,7 +203,7 @@ public class SerialLowLevel implements Service
 	 */
 	public void close()
 	{
-		
+		serie.close();
 	}
 
 	/**
@@ -175,20 +212,26 @@ public class SerialLowLevel implements Service
 	 */
 	public int timeBeforeRetry()
 	{
-		int out = timeout;
+		int out;
 		if(!waitingFrames.isEmpty())
-			out = (int) (waitingFrames.get(0).timeBeforeDeath());
-		return out;
+			out = (int) (waitingFrames.getFirst().timeBeforeDeath());
+		else
+			out = timeout;
+		return Math.max(out,0); // il faut envoyer un temps positif
 	}
 
 	/**
-	 * Renvoie la trame la plus vieille qui n'a pas été 
+	 * Renvoie la trame la plus vieille qui en a besoin
 	 */
 	public void retry()
 	{
-		if(!waitingFrames.isEmpty() && waitingFrames.get(0).needResend())
-			serie.communiquer(waitingFrames.get(0).message);
+		while(!waitingFrames.isEmpty() && waitingFrames.getFirst().needResend())
+		{
+			OutgoingFrame trame = waitingFrames.poll();
+			// On remet à la fin
+			waitingFrames.add(trame);
+			serie.communiquer(trame.message);
+		}
 	}
-	
-	
+
 }

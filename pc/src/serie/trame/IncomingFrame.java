@@ -1,5 +1,7 @@
 package serie.trame;
 
+import exceptions.IncorrectChecksumException;
+
 /**
  * Une trame qu'on a reçue
  * @author pf
@@ -16,7 +18,7 @@ public class IncomingFrame extends Frame
 	 * Constructeur d'une trame reçue
 	 * @return
 	 */
-	public IncomingFrame(int code, int id, int compteur, int checksum, int[] message) throws IllegalArgumentException
+	public IncomingFrame(int code, int id, int compteur, int checksum, int[] message) throws IncorrectChecksumException
 	{
 		for(IncomingCode c : IncomingCode.values())
 		{
