@@ -130,7 +130,7 @@ Le mouvement est terminé, le robot est arrivé à destination.
 Le robot n'a pas pu finir son mouvement à cause d'une erreur mécanique (collision).
 
 \subsection{Arrêt demandé par le haut niveau}
-    \texttt{0x08}
+    \texttt{0x01}
     
 Lorsque le haut niveau demande une immobilisation du robot, le bas niveau doit arrêter les ordres longs en cours en rapport avec les déplacements et fournir ce code.
     
@@ -145,13 +145,18 @@ Le match vient de commencer.
 Le match vient de finir.
     
 \subsection{Couleur robot}
-    \texttt{0x06}
+\subsubsection{Côté gauche}
+\texttt{0x06}
     
-    si côté gauche de la table (côté extérieur à INTech)
+Côté gauche de la table (côté arbre-sur-lequel-les-gens-bourrés-grimpent dans le local INTech)
+\subsubsection{Côté droit}
+\texttt{0x07}
     
-    \texttt{0x07}
+Côté droite de la table (côté Minet dans le local INTech)
+\subsubsection{Inconnue}
+\texttt{0x08}
     
-    si côté droite de la table (côté Minet à INTech)
+La couleur n'est pas encore connue
     
 \subsection{Stream capteurs}
 
