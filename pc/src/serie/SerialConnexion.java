@@ -96,7 +96,8 @@ public class SerialConnexion implements SerialPortEventListener, Service
 				log.debug("Port "+port+" trouvé !");
 				if(!initialize(port, baudrate))
 					break;
-
+//				int z = 0;
+//				z = 1/z;
 				waitPing = false; // voilà, les threads peuvent parler
 				portOuvert = true;
 				return true;
@@ -277,7 +278,7 @@ public class SerialConnexion implements SerialPortEventListener, Service
 			if(Config.debugSerieTrame)
 				out.afficheMessage();
 
-			output.write(out.message);
+			output.write(out.trame);
 		}
 		catch (Exception e)
 		{

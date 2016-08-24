@@ -9,7 +9,7 @@ package serie.trame;
 public class OutgoingFrame extends Frame
 {
 	public OutgoingCode code;
-	public byte[] message, trame;
+	public byte[] trame;
 	public Order.Type type;
 	/**
 	 * Trame de END_ORDER
@@ -18,11 +18,11 @@ public class OutgoingFrame extends Frame
 	{
 		this.compteur = compteur;
 		code = OutgoingCode.END_ORDER;
-		message = new byte[4];
-		message[0] = OutgoingCode.END_ORDER.code;
-		message[1] = 4; // longueur de la trame
-		message[2] = compteur;
-		message[3] = (byte) (message[0] + message[1] + message[2]);
+		trame = new byte[4];
+		trame[0] = OutgoingCode.END_ORDER.code;
+		trame[1] = 4; // longueur de la trame
+		trame[2] = compteur;
+		trame[3] = (byte) (trame[0] + trame[1] + trame[2]);
 	}
 	
 	/**
@@ -42,8 +42,8 @@ public class OutgoingFrame extends Frame
 		trame[1] = (byte) (longueur);
 		trame[2] = compteur;
 		
-		for(int i = 0; i < message.length; i++)
-			trame[i+3] = message[i];
+		for(int i = 0; i < o.message.length; i++)
+			trame[i+3] = o.message[i];
 		
 		int c = 0;
 		for(int i = 0; i < trame.length-1; i++)
@@ -55,9 +55,9 @@ public class OutgoingFrame extends Frame
 	public void afficheMessage()
 	{
 		String m = "";
-		for(int i = 0; i < message.length; i++)
+		for(int i = 0; i < trame.length; i++)
 		{
-			String s = Integer.toHexString(message[i]).toUpperCase();
+			String s = Integer.toHexString(trame[i]).toUpperCase();
 			if(s.length() == 1)
 				m += "0"+s+" ";
 			else

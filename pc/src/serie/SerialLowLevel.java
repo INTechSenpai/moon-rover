@@ -59,7 +59,7 @@ public class SerialLowLevel implements Service
 	 * Renvoie le prochain ID disponible
 	 * @return
 	 */
-	private byte getNextAvailableID()
+	private synchronized byte getNextAvailableID()
 	{
 		boolean ok;
 		byte initialID = dernierIDutilise;
@@ -109,7 +109,7 @@ public class SerialLowLevel implements Service
 	 * Demande l'envoi d'un ordre
 	 * @param o
 	 */
-	public void sendOrder(Order o)
+	public synchronized void sendOrder(Order o)
 	{
 		Conversation f = new Conversation(o, getNextAvailableID());
 		serie.communiquer(f.firstFrame);
@@ -145,7 +145,7 @@ public class SerialLowLevel implements Service
 	 * Renvoie le ticket associé à la conversation
 	 * @param f
 	 */
-	public Ticket processFrame(IncomingFrame f) throws ProtocolException
+	public synchronized Ticket processFrame(IncomingFrame f) throws ProtocolException
 	{
 		Iterator<Conversation> it = waitingFrames.iterator();
 		while(it.hasNext())
@@ -234,6 +234,7 @@ public class SerialLowLevel implements Service
 	
 	/**
 	 * Lit une frame depuis la série
+	 * Cette méthode est bloquante
 	 * @return
 	 * @throws MissingCharacterException
 	 * @throws IncorrectChecksumException
@@ -242,8 +243,20 @@ public class SerialLowLevel implements Service
 	{
 		synchronized(serie)
 		{
+			// Attente des données…
+			if(!serie.available())
+				try {
+					serie.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			
 			int code = serie.read();
 			int longueur = serie.read();
+
+			if(longueur < 4 || longueur > 255)
+				throw new IllegalArgumentException("Mauvaise longueur : "+longueur);
+
 			int compteur = serie.read();
 			int[] message = new int[longueur-4];
 			for(int i = 0; i < message.length; i++)
@@ -263,20 +276,11 @@ public class SerialLowLevel implements Service
 		timeout = config.getInt(ConfigInfo.SERIAL_TIMEOUT);
 		Conversation.setTimeout(timeout);
 	}
-
-	/**
-	 * Un message est-il disponible ?
-	 * @return
-	 */
-	public boolean available()
-	{
-		return false;
-	}
 	
 	/**
 	 * Fermeture de la série
 	 */
-	public void close()
+	public synchronized void close()
 	{
 		serie.close();
 	}
@@ -285,7 +289,7 @@ public class SerialLowLevel implements Service
 	 * Renvoie le temps avant qu'une trame doive être renvoyée (timeout sinon)
 	 * @return
 	 */
-	public int timeBeforeResend()
+	public synchronized int timeBeforeResend()
 	{
 		int out;
 		if(!waitingFrames.isEmpty())
@@ -299,7 +303,7 @@ public class SerialLowLevel implements Service
 	 * Renvoie le temps avant qu'une trame fermée soit vraiment détruite
 	 * @return
 	 */
-	public int timeBeforeDeath()
+	public synchronized int timeBeforeDeath()
 	{
 		int out;
 		if(!closedFrames.isEmpty())
@@ -312,7 +316,7 @@ public class SerialLowLevel implements Service
 	/**
 	 * Renvoie la trame la plus vieille qui en a besoin (possiblement aucune)
 	 */
-	public void resend()
+	public synchronized void resend()
 	{
 		if(!waitingFrames.isEmpty() && waitingFrames.getFirst().needResend())
 		{
@@ -327,7 +331,7 @@ public class SerialLowLevel implements Service
 	/**
 	 * Tue les vieilles trames
 	 */
-	public void kill()
+	public synchronized void kill()
 	{
 		while(!closedFrames.isEmpty() && closedFrames.getFirst().needDeath())
 			closedFrames.removeFirst();
