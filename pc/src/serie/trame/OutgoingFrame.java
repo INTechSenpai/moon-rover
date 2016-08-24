@@ -10,7 +10,7 @@ public class OutgoingFrame extends Frame
 {
 	public OutgoingCode code;
 	public byte[] message, trame;
-	
+	public Order.Type type;
 	/**
 	 * Trame de END_ORDER
 	 */
@@ -37,7 +37,7 @@ public class OutgoingFrame extends Frame
 		int longueur = o.message.length + 4;
 		if(longueur > 255)
 			throw new IllegalArgumentException("La trame est trop grande ! ("+longueur+" octets)");
-		
+		type = o.orderType;
 		code = o.orderType == Order.Type.LONG ? OutgoingCode.NEW_ORDER : OutgoingCode.VALUE_REQUEST;
 		trame = new byte[longueur];
 		trame[0] = code.code;

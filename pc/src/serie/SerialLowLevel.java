@@ -38,9 +38,9 @@ public class SerialLowLevel implements Service
 	private ArrayList<Conversation> pendingLongFrames = new ArrayList<Conversation>();
 
 	/**
-	 * Liste des trames d'ordre long dont on a reçu EXECUTION_END
+	 * Liste des trames d'ordre dont on a reçu la fin (EXECUTION_END ou REQUEST_ANSWER)
 	 */
-	private LinkedList<Conversation> closedLongFrames = new LinkedList<Conversation>();
+	private LinkedList<Conversation> closedFrames = new LinkedList<Conversation>();
 
 	private int timeout;
 	
@@ -105,25 +105,27 @@ public class SerialLowLevel implements Service
 				// On a le EXECUTION_BEGIN d'une frame qui l'attendait
 				if(f.code == IncomingCode.EXECUTION_BEGIN)
 				{
-					if(waitingF.code == OutgoingCode.NEW_ORDER)
+					if(waitingF.type == Order.Type.LONG)
 					{
 						it.remove();
 						pendingLongFrames.add(waitingC);
 						return null;
 					}
 					else
-						throw new ProtocolException("EXECUTION_BEGIN pour un trame originale de type "+waitingF.code);
+						throw new ProtocolException(f.code+" reçu pour un ordre "+waitingF.type);
 				}
 				else if(f.code == IncomingCode.VALUE_ANSWER)
 				{
-					if(waitingF.code == OutgoingCode.VALUE_REQUEST)
+					if(waitingF.type == Order.Type.SHORT)
 					{
 						// L'ordre court a reçu un acquittement et ne passe pas par la case "pending"
 						it.remove();
+						waitingC.setDeathDate(); // tes jours sont comptés…
+						closedFrames.add(waitingC);
 						return waitingC.ticket;
 					}
 					else
-						throw new ProtocolException("VALUE_ANSWER pour un trame originale de type "+waitingF.code);
+						throw new ProtocolException(f.code+" reçu pour un ordre "+waitingF.type);
 				}
 				else
 					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_BEGIN ou VALUE_ANSWER !");
@@ -148,7 +150,7 @@ public class SerialLowLevel implements Service
 					serie.communiquer(new OutgoingFrame(f.compteur));
 					// et on retire la trame des trames en cours
 					it.remove();
-					closedLongFrames.add(pendingC);
+					closedFrames.add(pendingC);
 					return pendingC.ticket;
 				}
 				else if(f.code == IncomingCode.STATUS_UPDATE)
@@ -160,17 +162,18 @@ public class SerialLowLevel implements Service
 		
 		// On cherche parmi les trames récemment fermées
 		
-		it = closedLongFrames.iterator();
+		it = closedFrames.iterator();
 		while(it.hasNext())
 		{
 			OutgoingFrame closed = it.next().firstFrame;
 			if(closed.compteur == f.compteur)
 			{
 				// On avait déjà reçu l'EXECUTION_END. On ignore ce message
-				if(f.code == IncomingCode.EXECUTION_END)
+				if(f.code == IncomingCode.EXECUTION_END && closed.type == Order.Type.LONG)
 					return null;
+				// on ne peut pas recevoir de VALUE_ANSWER
 				else
-					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_END !");
+					throw new ProtocolException(f.code+" reçu pour une trame "+closed.type+" finie !");
 			}
 		}
 		
@@ -247,8 +250,8 @@ public class SerialLowLevel implements Service
 	public int timeBeforeDeath()
 	{
 		int out;
-		if(!closedLongFrames.isEmpty())
-			out = (int) (closedLongFrames.getFirst().timeBeforeDeath());
+		if(!closedFrames.isEmpty())
+			out = (int) (closedFrames.getFirst().timeBeforeDeath());
 		else
 			out = 2*timeout;
 		return Math.max(out,0); // il faut envoyer un temps positif
@@ -274,7 +277,7 @@ public class SerialLowLevel implements Service
 	 */
 	public void kill()
 	{
-		while(!closedLongFrames.isEmpty() && closedLongFrames.getFirst().needDeath())
-			closedLongFrames.removeFirst();
+		while(!closedFrames.isEmpty() && closedFrames.getFirst().needDeath())
+			closedFrames.removeFirst();
 	}
 }
