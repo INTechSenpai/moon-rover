@@ -27,7 +27,7 @@ import exceptions.MissingCharacterException;
  *
  */
 
-public class SerialConnexion implements SerialPortEventListener, Service
+public class SerialConnexion implements SerialPortEventListener, Service, SerialInterface
 {
 	private SerialPort serialPort;
 	protected Log log;
