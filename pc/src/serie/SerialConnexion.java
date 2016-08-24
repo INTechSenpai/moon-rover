@@ -43,7 +43,10 @@ public class SerialConnexion implements SerialPortEventListener, Service
 	/** The output stream to the port */
 	protected OutputStream output;
 
-	protected boolean busy = false;
+	// Permet d'ouvrir le port à la première utilisation de la série
+	protected boolean portOuvert = false;
+	
+	protected boolean waitPing = false;
 	
 	/** Milliseconds to block while waiting for port open */
 	private static final int TIME_OUT = 2000;
@@ -56,6 +59,10 @@ public class SerialConnexion implements SerialPortEventListener, Service
 	{
 		this.log = log;
 		this.baudrate = baudrate;
+	}
+
+	protected void openPort()
+	{
 		if(!searchPort())
 		{
 			/**
@@ -72,13 +79,13 @@ public class SerialConnexion implements SerialPortEventListener, Service
 				log.critical("Port série non trouvé, réessaie dans 500 ms");
 				Sleep.sleep(500);
 			}
-		}		
+		}
 	}
-
+	
 	protected synchronized boolean searchPort()
 	{
-		busy = true;
-		log.debug("Recherche de la série à "+baudrate+" baud");
+		waitPing = true;
+		log.debug("Recherche de la série sur "+portName+" à "+baudrate+" baud");
 		Enumeration<?> ports = CommPortIdentifier.getPortIdentifiers();
 		
 		while(ports.hasMoreElements())
@@ -90,12 +97,14 @@ public class SerialConnexion implements SerialPortEventListener, Service
 				if(!initialize(port, baudrate))
 					break;
 
-				serialPort.notifyOnDataAvailable(true);
-				busy = false; // voilà, les threads peuvent parler
+				waitPing = false; // voilà, les threads peuvent parler
+				portOuvert = true;
 				return true;
 			}
 		}
 
+		log.warning("Port "+portName+" introuvable.");
+		portOuvert = false;
 		return false;
 	}
 	
@@ -110,7 +119,7 @@ public class SerialConnexion implements SerialPortEventListener, Service
 	{
 		try
 		{
-			serialPort = (SerialPort) portId.open("TechTheTroll", TIME_OUT);
+			serialPort = (SerialPort) portId.open("MoonRover", TIME_OUT);
 			// set port parameters
 			serialPort.setSerialPortParams(baudrate,
 					SerialPort.DATABITS_8,
@@ -120,14 +129,10 @@ public class SerialConnexion implements SerialPortEventListener, Service
 //			serialPort.setOutputBufferSize(100);
 //			serialPort.enableReceiveTimeout(100);
 //			serialPort.enableReceiveThreshold(1);
-			serialPort.notifyOnDataAvailable(false); // on désactive le listener qui pourrait paniquer avec le ping
+			serialPort.notifyOnDataAvailable(true); // activation du listener
 
 			// Configuration du Listener
-			try {
-				serialPort.addEventListener(this);
-			} catch (TooManyListenersException e) {
-				e.printStackTrace();
-			}
+			serialPort.addEventListener(this);
 
 			// open the streams
 			input = serialPort.getInputStream();
@@ -136,7 +141,7 @@ public class SerialConnexion implements SerialPortEventListener, Service
 			isClosed = false;
 			return true;
 		}
-		catch (PortInUseException | UnsupportedCommOperationException | IOException e2)
+		catch (TooManyListenersException | PortInUseException | UnsupportedCommOperationException | IOException e2)
 		{
 			log.critical(e2);
 			return false;
@@ -145,9 +150,8 @@ public class SerialConnexion implements SerialPortEventListener, Service
 	
 	protected void attendSiPing()
 	{
-//		log.debug("busy : "+busy);
 		// Si la série est occupée, on attend sagement
-		if(busy)
+		if(waitPing)
 			synchronized(this)
 			{
 				log.debug("Attente du ping");
@@ -166,7 +170,7 @@ public class SerialConnexion implements SerialPortEventListener, Service
 	 */
 	public void close()
 	{
-		if (!isClosed && serialPort != null)
+		if (!isClosed && portOuvert)
 		{
 			log.debug("Fermeture de la carte");
 			serialPort.close();
@@ -196,8 +200,10 @@ public class SerialConnexion implements SerialPortEventListener, Service
 	
 	public boolean available()
 	{
+		if(!portOuvert)
+			openPort();
 		// tant qu'on est occupé, on dit qu'on ne reçoit rien
-		if(busy)
+		if(waitPing)
 			return false;
 		try {
 			return input.available() != 0;
@@ -215,6 +221,8 @@ public class SerialConnexion implements SerialPortEventListener, Service
 	 */
 	public int read() throws MissingCharacterException
 	{
+		if(!portOuvert)
+			openPort();
 		attendSiPing();
 		try
 		{
@@ -249,6 +257,9 @@ public class SerialConnexion implements SerialPortEventListener, Service
 	 */
 	public synchronized void communiquer(OutgoingFrame out)
 	{
+		if(!portOuvert)
+			openPort();
+
 		/**
 		 * Un appel à une série fermée ne devrait jamais être effectué.
 		 */

@@ -42,10 +42,7 @@ public class RobotReal extends Robot
 //		distanceDegagement = config.getInt(ConfigInfo.DISTANCE_DEGAGEMENT_ROBOT);
 //		tempsAttente = config.getInt(ConfigInfo.ATTENTE_ENNEMI_PART);
 		log.debug("Initialisation de l'odométrie et des constantes d'asservissement");
-		int x = config.getInt(ConfigInfo.X_DEPART);
-		int y = config.getInt(ConfigInfo.Y_DEPART);
-		double o = config.getDouble(ConfigInfo.O_DEPART);
-		cinematique = new Cinematique(x, y, o, true, 0, 0, 0, Speed.STANDARD);
+		cinematique = new Cinematique(0, 0, 0, true, 0, 0, 0, Speed.STANDARD);
 	}
 		
 	public void setEnMarcheAvance(boolean enMarcheAvant)

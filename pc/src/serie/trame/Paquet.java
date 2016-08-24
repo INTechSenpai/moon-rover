@@ -1,4 +1,6 @@
-package serie;
+package serie.trame;
+
+import serie.Ticket;
 
 /**
  * Paquet série haut niveau reçu

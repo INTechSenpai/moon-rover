@@ -10,11 +10,11 @@ public class Conversation
 	public OutgoingFrame firstFrame;
 	protected static int timeout;
 	
-	public Conversation(Order o)
+	public Conversation(Order o, byte compteur)
 	{
 		ticket = o.ticket;
 		resendDate = System.currentTimeMillis() + timeout;
-		firstFrame = new OutgoingFrame(o);
+		firstFrame = new OutgoingFrame(o, compteur);
 	}
 	
 	public void setDeathDate()

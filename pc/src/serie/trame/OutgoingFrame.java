@@ -29,11 +29,9 @@ public class OutgoingFrame extends Frame
 	 * Constructeur d'une trame à envoyer (NEW_ORDER ou VALUE_REQUEST)
 	 * @param o
 	 */
-	public OutgoingFrame(Order o)
+	public OutgoingFrame(Order o, byte compteur)
 	{
-		compteur = compteurReference;
-		compteurReference++;
-		
+		this.compteur = compteur;
 		int longueur = o.message.length + 4;
 		if(longueur > 255)
 			throw new IllegalArgumentException("La trame est trop grande ! ("+longueur+" octets)");

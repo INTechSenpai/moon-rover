@@ -10,13 +10,14 @@ import exceptions.MissingCharacterException;
 import exceptions.ProtocolException;
 import serie.trame.Conversation;
 import serie.trame.Frame.IncomingCode;
-import serie.trame.Frame.OutgoingCode;
 import serie.trame.IncomingFrame;
 import serie.trame.Order;
 import serie.trame.OutgoingFrame;
+import serie.trame.Paquet;
 import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
+import utils.Sleep;
 
 /**
  * Implémentation du protocole bas niveau série
@@ -43,6 +44,7 @@ public class SerialLowLevel implements Service
 	private LinkedList<Conversation> closedFrames = new LinkedList<Conversation>();
 
 	private int timeout;
+	private byte dernierIDutilise = 0; // dernier ID utilisé
 	
 	private Log log;
 	private SerialInterface serie;
@@ -52,6 +54,56 @@ public class SerialLowLevel implements Service
 		this.log = log;
 		this.serie = serie;
 	}
+	
+	/**
+	 * Renvoie le prochain ID disponible
+	 * @return
+	 */
+	private byte getNextAvailableID()
+	{
+		boolean ok;
+		byte initialID = dernierIDutilise;
+		dernierIDutilise++;
+		do {
+			if(initialID == dernierIDutilise) // on a fait un tour complet…
+			{
+				log.critical("Aucun ID disponible : attente");
+				Sleep.sleep(1);
+			}
+			ok = true;
+			
+			for(Conversation c : waitingFrames)
+				if(c.firstFrame.compteur == dernierIDutilise)
+				{
+					ok = false;
+					dernierIDutilise++;
+					break;
+				}
+			
+			if(!ok)
+				continue;
+
+			for(Conversation c : pendingLongFrames)
+				if(c.firstFrame.compteur == dernierIDutilise)
+				{
+					ok = false;
+					dernierIDutilise++;
+					break;
+				}
+			
+			if(!ok)
+				continue;
+			
+			for(Conversation c : closedFrames)
+				if(c.firstFrame.compteur == dernierIDutilise)
+				{
+					ok = false;
+					dernierIDutilise++;
+					break;
+				}
+		} while(!ok);
+		return dernierIDutilise;
+	}
 
 	/**
 	 * Demande l'envoi d'un ordre
@@ -59,7 +111,7 @@ public class SerialLowLevel implements Service
 	 */
 	public void sendOrder(Order o)
 	{
-		Conversation f = new Conversation(o);
+		Conversation f = new Conversation(o, getNextAvailableID());
 		serie.communiquer(f.firstFrame);
 		waitingFrames.add(f);
 	}
