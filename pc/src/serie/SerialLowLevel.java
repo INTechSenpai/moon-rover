@@ -46,15 +46,16 @@ public class SerialLowLevel implements Service
 		this.log = log;
 		this.serie = serie;
 	}
-		
+
 	/**
 	 * Demande l'envoi d'un ordre
 	 * @param o
 	 */
 	public void sendOrder(Order o)
 	{
-		serie.communiquer(o.message);
-		waitingFrames.add(new OutgoingFrame(o));
+		OutgoingFrame f = new OutgoingFrame(o);
+		serie.communiquer(f);
+		waitingFrames.add(f);
 	}
 	
 	/**
@@ -81,7 +82,7 @@ public class SerialLowLevel implements Service
 	
 	/**
 	 * S'occupe du protocole : répond si besoin est, vérifie la cohérence, etc.
-	 * Renvoie le ticket associé à la trame
+	 * Renvoie le ticket associé à la conversation
 	 * @param f
 	 */
 	public Ticket processFrame(IncomingFrame f) throws ProtocolException
@@ -102,10 +103,7 @@ public class SerialLowLevel implements Service
 						return waiting.ticket;
 					}
 					else
-					{
-						log.warning("EXECUTION_BEGIN pour un trame originale de type "+waiting.code);
-						throw new ProtocolException();
-					}
+						throw new ProtocolException("EXECUTION_BEGIN pour un trame originale de type "+waiting.code);
 				}
 				else if(f.code == IncomingCode.VALUE_ANSWER)
 				{
@@ -116,16 +114,10 @@ public class SerialLowLevel implements Service
 						return waiting.ticket;
 					}
 					else
-					{
-						log.warning("VALUE_ANSWER pour un trame originale de type "+waiting.code);
-						throw new ProtocolException();
-					}
+						throw new ProtocolException("VALUE_ANSWER pour un trame originale de type "+waiting.code);
 				}
 				else
-				{
-					log.warning(f.code+" reçu à la place de EXECUTION_BEGIN ou VALUE_ANSWER !");
-					throw new ProtocolException();
-				}
+					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_BEGIN ou VALUE_ANSWER !");
 			}
 		}
 		
@@ -142,7 +134,7 @@ public class SerialLowLevel implements Service
 				if(f.code == IncomingCode.EXECUTION_END)
 				{
 					// on envoie un END_ORDER
-					serie.communiquer(new OutgoingFrame(f.compteur).getBytes());
+					serie.communiquer(new OutgoingFrame(f.compteur));
 					// et on retire la trame des trames en cours
 					it.remove();
 					return pending.ticket;
@@ -150,15 +142,11 @@ public class SerialLowLevel implements Service
 				else if(f.code == IncomingCode.STATUS_UPDATE)
 					return pending.ticket;
 				else
-				{
-					log.warning(f.code+" reçu à la place de EXECUTION_END ou STATUS_UPDATE !");
-					throw new ProtocolException();
-				}
+					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_END ou STATUS_UPDATE !");
 			}
 		}
 		
-		log.warning("Compteur inconnu : "+f.compteur);		
-		throw new ProtocolException();
+		throw new ProtocolException("Compteur inconnu : "+f.compteur);
 	}
 	
 	/**
@@ -171,16 +159,17 @@ public class SerialLowLevel implements Service
 	{
 		synchronized(serie)
 		{
-			int[] message = new int[0];
+			// TODO vérifier l'ordre
 			int code = serie.read();
-			int id = serie.read();
 			int compteur = serie.read();
 			int checksum = serie.read();
-			// TODO lire le reste !
-			return new IncomingFrame(code, id, compteur, checksum, message);
+			int longueur = serie.read();
+			int[] message = new int[longueur-5];
+			for(int i = 0; i < message.length; i++)
+				message[i] = serie.read();
+			return new IncomingFrame(code, compteur, checksum, longueur, message);
 		}
 	}
-	
 	
 	@Override
 	public void updateConfig(Config config)
@@ -234,7 +223,7 @@ public class SerialLowLevel implements Service
 			OutgoingFrame trame = waitingFrames.poll();
 			// On remet à la fin
 			waitingFrames.add(trame);
-			serie.communiquer(trame.message);
+			serie.communiquer(trame);
 		}
 	}
 

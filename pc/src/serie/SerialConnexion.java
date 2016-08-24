@@ -6,6 +6,7 @@ import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 import gnu.io.UnsupportedCommOperationException;
+import serie.trame.OutgoingFrame;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -142,11 +143,6 @@ public class SerialConnexion implements SerialPortEventListener, Service
 		}
 	}
 	
-	public void communiquer(String out)
-	{
-		communiquer(out.getBytes());
-	}
-	
 	protected void attendSiPing()
 	{
 //		log.debug("busy : "+busy);
@@ -246,26 +242,12 @@ public class SerialConnexion implements SerialPortEventListener, Service
 			throw new MissingCharacterException();
 		}
 	}
-
-	protected void afficheMessage(byte[] out)
-	{
-		String m = "";
-		for(int i = 0; i < out.length; i++)
-		{
-			String s = Integer.toHexString(out[i]).toUpperCase();
-			if(s.length() == 1)
-				m += "0"+s+" ";
-			else
-				m += s.substring(s.length()-2, s.length())+" ";
-		}
-		log.debug(m);
-	}
 	
 	/**
 	 * Cette méthode est synchronized car deux threads peuvent l'utiliser : ThreadSerialOutput et ThreadSerialOutputTimeout
 	 * @param message
 	 */
-	public synchronized void communiquer(byte[] out)
+	public synchronized void communiquer(OutgoingFrame out)
 	{
 		/**
 		 * Un appel à une série fermée ne devrait jamais être effectué.
@@ -273,7 +255,7 @@ public class SerialConnexion implements SerialPortEventListener, Service
 		if(isClosed)
 		{
 			log.debug("La série est fermée et ne peut envoyer :");
-			afficheMessage(out);
+			out.afficheMessage();
 			return;
 		}
 
@@ -282,9 +264,9 @@ public class SerialConnexion implements SerialPortEventListener, Service
 		try
 		{
 			if(Config.debugSerieTrame)
-				afficheMessage(out);
+				out.afficheMessage();
 
-			output.write(out);
+			output.write(out.message);
 		}
 		catch (Exception e)
 		{

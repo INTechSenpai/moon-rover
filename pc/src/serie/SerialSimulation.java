@@ -2,6 +2,7 @@ package serie;
 
 import container.Service;
 import exceptions.MissingCharacterException;
+import serie.trame.OutgoingFrame;
 import utils.Config;
 import utils.Log;
 
@@ -41,10 +42,10 @@ public class SerialSimulation implements SerialInterface, Service {
 		log.debug(m);
 	}
 	
-	public synchronized void communiquer(byte[] out)
+	public synchronized void communiquer(OutgoingFrame out)
 	{
 		if(Config.debugSerie)
-			afficheMessage(out);
+			out.afficheMessage();
 	}
 
 	@Override

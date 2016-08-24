@@ -18,7 +18,7 @@ public class IncomingFrame extends Frame
 	 * Constructeur d'une trame reçue
 	 * @return
 	 */
-	public IncomingFrame(int code, int id, int compteur, int checksum, int[] message) throws IncorrectChecksumException
+	public IncomingFrame(int code, int compteur, int checksum, int longueur, int[] message) throws IncorrectChecksumException
 	{
 		for(IncomingCode c : IncomingCode.values())
 		{
@@ -26,13 +26,32 @@ public class IncomingFrame extends Frame
 				this.code = c;
 		}
 		if(this.code == null)
-		{
-			System.out.println("Type de trame inconnu : "+code);
-			throw new IllegalArgumentException();
-		}
+			throw new IllegalArgumentException("Type de trame inconnu : "+code);
+
 		this.compteur = (byte) compteur;
 		this.message = message;
-		// TODO vérifier checksum
+		
+		int c = code + compteur + longueur;
+		for(int i = 0; i < message.length; i++)
+			c += message[i];
+		c = c & 0xFF;
+		if(c != checksum)
+			throw new IncorrectChecksumException("Checksum attendu : "+checksum+", checksum calculé : "+c);
+	}
+
+	@Override
+	public void afficheMessage()
+	{
+		String m = "";
+		for(int i = 0; i < message.length; i++)
+		{
+			String s = Integer.toHexString(message[i]).toUpperCase();
+			if(s.length() == 1)
+				m += "0"+s+" ";
+			else
+				m += s.substring(s.length()-2, s.length())+" ";
+		}
+		System.out.println("Incoming : "+m);
 	}
 	
 }

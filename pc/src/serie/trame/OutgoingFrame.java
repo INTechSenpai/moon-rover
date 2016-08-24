@@ -38,10 +38,15 @@ public class OutgoingFrame extends Frame
 		compteur = compteurReference;
 		compteurReference++;
 		
+		// TODO : vérifier avec le protocole
+		int longueur = o.message.length + 4;
+		if(longueur > 255)
+			throw new IllegalArgumentException("La trame est trop grande ! ("+longueur+" octets)");
+		
 		code = o.orderType == Order.Type.LONG ? OutgoingCode.NEW_ORDER : OutgoingCode.VALUE_REQUEST;
-		trame = new byte[o.message.length + 5];
+		trame = new byte[longueur];
 		trame[0] = code.code;
-		trame[1] = id;
+		trame[0] = (byte) (longueur);
 		trame[2] = compteur;
 		
 		for(int i = 0; i < message.length; i++)
@@ -79,13 +84,19 @@ public class OutgoingFrame extends Frame
 		return (int) (deathDate - System.currentTimeMillis());
 	}
 
-	/**
-	 * La trame sous forme de byte[], prête à être envoyée
-	 * @return
-	 */
-	public byte[] getBytes()
+	@Override
+	public void afficheMessage()
 	{
-		return trame;
+		String m = "";
+		for(int i = 0; i < message.length; i++)
+		{
+			String s = Integer.toHexString(message[i]).toUpperCase();
+			if(s.length() == 1)
+				m += "0"+s+" ";
+			else
+				m += s.substring(s.length()-2, s.length())+" ";
+		}
+		System.out.println("Outgoing : "+m);
 	}
-
+	
 }
