@@ -8,6 +8,7 @@ import container.Service;
 import exceptions.IncorrectChecksumException;
 import exceptions.MissingCharacterException;
 import exceptions.ProtocolException;
+import serie.trame.Conversation;
 import serie.trame.Frame.IncomingCode;
 import serie.trame.Frame.OutgoingCode;
 import serie.trame.IncomingFrame;
@@ -29,13 +30,18 @@ public class SerialLowLevel implements Service
 	 * Liste des trames dont on attend un acquittement
 	 * Les trames de cette liste sont toujours triées par date de mort (de la plus proche à la plus éloignée)
 	 */
-	private LinkedList<OutgoingFrame> waitingFrames = new LinkedList<OutgoingFrame>();
+	private LinkedList<Conversation> waitingFrames = new LinkedList<Conversation>();
 	
 	/**
 	 * Liste des trames d'ordre long acquittées dont on attend la fin
 	 */
-	private ArrayList<OutgoingFrame> pendingLongFrames = new ArrayList<OutgoingFrame>();
-	
+	private ArrayList<Conversation> pendingLongFrames = new ArrayList<Conversation>();
+
+	/**
+	 * Liste des trames d'ordre long dont on a reçu EXECUTION_END
+	 */
+	private LinkedList<Conversation> closedLongFrames = new LinkedList<Conversation>();
+
 	private int timeout;
 	
 	private Log log;
@@ -53,8 +59,8 @@ public class SerialLowLevel implements Service
 	 */
 	public void sendOrder(Order o)
 	{
-		OutgoingFrame f = new OutgoingFrame(o);
-		serie.communiquer(f);
+		Conversation f = new Conversation(o);
+		serie.communiquer(f.firstFrame);
 		waitingFrames.add(f);
 	}
 	
@@ -72,6 +78,8 @@ public class SerialLowLevel implements Service
 			try {
 				f = readFrame();
 				t = processFrame(f);
+				if(t == null) // c'est une trame de signalisation
+					restart = true;
 			} catch (Exception e) {
 				log.warning(e);
 				restart = true;
@@ -87,34 +95,35 @@ public class SerialLowLevel implements Service
 	 */
 	public Ticket processFrame(IncomingFrame f) throws ProtocolException
 	{
-		Iterator<OutgoingFrame> it = waitingFrames.iterator();
+		Iterator<Conversation> it = waitingFrames.iterator();
 		while(it.hasNext())
 		{
-			OutgoingFrame waiting = it.next();
-			if(waiting.compteur == f.compteur)
+			Conversation waitingC = it.next();
+			OutgoingFrame waitingF = waitingC.firstFrame;
+			if(waitingF.compteur == f.compteur)
 			{
 				// On a le EXECUTION_BEGIN d'une frame qui l'attendait
 				if(f.code == IncomingCode.EXECUTION_BEGIN)
 				{
-					if(waiting.code == OutgoingCode.NEW_ORDER)
+					if(waitingF.code == OutgoingCode.NEW_ORDER)
 					{
 						it.remove();
-						pendingLongFrames.add(waiting);
-						return waiting.ticket;
+						pendingLongFrames.add(waitingC);
+						return null;
 					}
 					else
-						throw new ProtocolException("EXECUTION_BEGIN pour un trame originale de type "+waiting.code);
+						throw new ProtocolException("EXECUTION_BEGIN pour un trame originale de type "+waitingF.code);
 				}
 				else if(f.code == IncomingCode.VALUE_ANSWER)
 				{
-					if(waiting.code == OutgoingCode.VALUE_REQUEST)
+					if(waitingF.code == OutgoingCode.VALUE_REQUEST)
 					{
 						// L'ordre court a reçu un acquittement et ne passe pas par la case "pending"
 						it.remove();
-						return waiting.ticket;
+						return waitingC.ticket;
 					}
 					else
-						throw new ProtocolException("VALUE_ANSWER pour un trame originale de type "+waiting.code);
+						throw new ProtocolException("VALUE_ANSWER pour un trame originale de type "+waitingF.code);
 				}
 				else
 					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_BEGIN ou VALUE_ANSWER !");
@@ -127,26 +136,45 @@ public class SerialLowLevel implements Service
 		it = pendingLongFrames.iterator();
 		while(it.hasNext())
 		{
-			OutgoingFrame pending = it.next();
-			if(pending.compteur == f.compteur)
+			Conversation pendingC = it.next();
+			OutgoingFrame pendingF = pendingC.firstFrame;
+			if(pendingF.compteur == f.compteur)
 			{
 				// On a le EXECUTION_END d'une frame
 				if(f.code == IncomingCode.EXECUTION_END)
 				{
+					pendingC.setDeathDate(); // tes jours sont comptés…
 					// on envoie un END_ORDER
 					serie.communiquer(new OutgoingFrame(f.compteur));
 					// et on retire la trame des trames en cours
 					it.remove();
-					return pending.ticket;
+					closedLongFrames.add(pendingC);
+					return pendingC.ticket;
 				}
 				else if(f.code == IncomingCode.STATUS_UPDATE)
-					return pending.ticket;
+					return pendingC.ticket;
 				else
 					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_END ou STATUS_UPDATE !");
 			}
 		}
 		
-		throw new ProtocolException("Compteur inconnu : "+f.compteur);
+		// On cherche parmi les trames récemment fermées
+		
+		it = closedLongFrames.iterator();
+		while(it.hasNext())
+		{
+			OutgoingFrame closed = it.next().firstFrame;
+			if(closed.compteur == f.compteur)
+			{
+				// On avait déjà reçu l'EXECUTION_END. On ignore ce message
+				if(f.code == IncomingCode.EXECUTION_END)
+					return null;
+				else
+					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_END !");
+			}
+		}
+		
+		throw new ProtocolException("ID conversation inconnu : "+f.compteur);
 	}
 	
 	/**
@@ -159,14 +187,13 @@ public class SerialLowLevel implements Service
 	{
 		synchronized(serie)
 		{
-			// TODO vérifier l'ordre
 			int code = serie.read();
-			int compteur = serie.read();
-			int checksum = serie.read();
 			int longueur = serie.read();
-			int[] message = new int[longueur-5];
+			int compteur = serie.read();
+			int[] message = new int[longueur-4];
 			for(int i = 0; i < message.length; i++)
 				message[i] = serie.read();
+			int checksum = serie.read();
 			return new IncomingFrame(code, compteur, checksum, longueur, message);
 		}
 	}
@@ -179,7 +206,7 @@ public class SerialLowLevel implements Service
 	public void useConfig(Config config)
 	{
 		timeout = config.getInt(ConfigInfo.SERIAL_TIMEOUT);
-		OutgoingFrame.setTimeout(timeout);
+		Conversation.setTimeout(timeout);
 	}
 
 	/**
@@ -203,28 +230,51 @@ public class SerialLowLevel implements Service
 	 * Renvoie le temps avant qu'une trame doive être renvoyée (timeout sinon)
 	 * @return
 	 */
-	public int timeBeforeRetry()
+	public int timeBeforeResend()
 	{
 		int out;
 		if(!waitingFrames.isEmpty())
-			out = (int) (waitingFrames.getFirst().timeBeforeDeath());
+			out = (int) (waitingFrames.getFirst().timeBeforeResend());
 		else
 			out = timeout;
 		return Math.max(out,0); // il faut envoyer un temps positif
 	}
+	
+	/**
+	 * Renvoie le temps avant qu'une trame fermée soit vraiment détruite
+	 * @return
+	 */
+	public int timeBeforeDeath()
+	{
+		int out;
+		if(!closedLongFrames.isEmpty())
+			out = (int) (closedLongFrames.getFirst().timeBeforeDeath());
+		else
+			out = 2*timeout;
+		return Math.max(out,0); // il faut envoyer un temps positif
+	}
 
 	/**
-	 * Renvoie la trame la plus vieille qui en a besoin
+	 * Renvoie la trame la plus vieille qui en a besoin (possiblement aucune)
 	 */
-	public void retry()
+	public void resend()
 	{
-		while(!waitingFrames.isEmpty() && waitingFrames.getFirst().needResend())
+		if(!waitingFrames.isEmpty() && waitingFrames.getFirst().needResend())
 		{
-			OutgoingFrame trame = waitingFrames.poll();
+			Conversation trame = waitingFrames.poll();
 			// On remet à la fin
 			waitingFrames.add(trame);
-			serie.communiquer(trame);
+			serie.communiquer(trame.firstFrame);
+			trame.updateResendDate(); // on remet la date de renvoi à plus tard
 		}
 	}
 
+	/**
+	 * Tue les vieilles trames
+	 */
+	public void kill()
+	{
+		while(!closedLongFrames.isEmpty() && closedLongFrames.getFirst().needDeath())
+			closedLongFrames.removeFirst();
+	}
 }
