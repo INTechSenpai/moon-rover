@@ -75,15 +75,19 @@ En cas de marche arrière, il sera envoyé l'orientation voulue du robot + $2\pi
 
 \subsubsection{Ajoute un arc de TC}
 
-    \texttt{0x2E X+ POINT(12) Y POINT(12) ORIENTATION(16) COURBURE(16) VITESSE  TRANSLATION(16)}
+\texttt{0x2E ID(8) X+ POINT(12) Y POINT(12) ORIENTATION(16) COURBURE(16) VITESSE  TRANSLATION(16)}
+    
+ID : l'ordre de l'arc dans la liste des arcs. Nécessaire si l'ordre d'arrivée des trames est perturbé (si une trame doit être renvoyée par exemple)
     
 \subsubsection{Ajoute arc trajectoire courbe précédé d'un arrêt}
 
-    \texttt{0x2C X+ POINT(12) Y POINT(12) ORIENTATION(16) COURBURE(16) VITESSE TRANSLATION(16)}
+\texttt{0x2C ID(8) X+ POINT(12) Y POINT(12) ORIENTATION(16) COURBURE(16) VITESSE TRANSLATION(16)}
 
 \subsubsection{Efface tous les arcs reçus et rajoute cet arc}
 
-    \texttt{0x2F X+ POINT(12) Y POINT(12) ORIENTATION(16) COURBURE(16) VITESSE TRANSLATION(16)}
+\texttt{0x2F X+ POINT(12) Y POINT(12) ORIENTATION(16) COURBURE(16) VITESSE TRANSLATION(16)}
+    
+ID = 0 est sous-entendu (cet arc est le premier)
     
 \subsubsection{Efface tous les arcs reçus et rajoute cet arc, précédé d'un arrêt} 
 
