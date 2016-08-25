@@ -2,13 +2,11 @@ package robot;
 
 import utils.Log;
 import utils.Config;
-import utils.ConfigInfo;
 import utils.Sleep;
 import pathfinding.dstarlite.GridSpace;
 import robot.actuator.ActuatorOrder;
 import serie.DataForSerialOutput;
 import serie.Ticket;
-import enums.SerialProtocol;
 import exceptions.UnableToMoveException;
 import exceptions.UnexpectedObstacleOnPathException;
 
@@ -175,18 +173,18 @@ public class RobotReal extends Robot
     private void attendStatus(Ticket t) throws UnableToMoveException, UnexpectedObstacleOnPathException
     {
 		try {
-			SerialProtocol o;
+			Ticket.State o;
 			do {
 				if(t.isEmpty())
 				{
 					// Si au bout de 3s le robot n'a toujours rien répondu,
 					// on suppose un blocage mécanique
-					t.set(SerialProtocol.IN_PB_DEPLACEMENT);
+					t.set(Ticket.State.KO);
 					t.wait(15000);
 				}
 
 				o = t.getAndClear();
-				if(o == SerialProtocol.IN_PB_DEPLACEMENT)
+				if(o == Ticket.State.KO)
 					throw new UnableToMoveException();
 /*				else if(o == SerialProtocol.ENNEMI_SUR_CHEMIN)
 				{
@@ -195,7 +193,7 @@ public class RobotReal extends Robot
 					Sleep.sleep(4000);
 					throw new UnexpectedObstacleOnPathException();
 				}*/
-			} while(o != SerialProtocol.IN_ROBOT_ARRIVE);
+			} while(o != Ticket.State.OK);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

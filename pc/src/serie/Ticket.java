@@ -1,7 +1,5 @@
 package serie;
 
-import enums.SerialProtocol;
-
 /**
  * Un ticket. Tu tires un numéro et tu attends ton tour.
  * Utilisé par la série pour notifier des infos.
@@ -11,11 +9,16 @@ import enums.SerialProtocol;
 
 public class Ticket
 {
-	private volatile SerialProtocol type;
-	
-	public synchronized SerialProtocol getAndClear()
+	public enum State
 	{
-		SerialProtocol out = type;
+		OK, KO;
+	}
+
+	private volatile State type;
+	
+	public synchronized State getAndClear()
+	{
+		State out = type;
 		type = null;
 		return out;
 	}
@@ -25,7 +28,7 @@ public class Ticket
 		return type == null;
 	}
 	
-	public synchronized void set(SerialProtocol type)
+	public synchronized void set(State type)
 	{
 		this.type = type;
 		notify();

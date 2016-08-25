@@ -160,12 +160,14 @@ public class DataForSerialOutput implements Service
 	/**
 	 * Demande la couleur au bas niveau
 	 */
-	public synchronized void demandeCouleur()
+	public synchronized Ticket demandeCouleur()
 	{
 		byte[] out = new byte[1];
 		out[COMMANDE] = SerialProtocol.OUT_ASK_COLOR.code;
-		bufferBassePriorite.add(new Order(out, Order.Type.SHORT));
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(out, Order.Type.SHORT, t));
 		notify();
+		return t;
 	}
 
 	/**
