@@ -266,8 +266,7 @@ public class SerialConnexion implements SerialPortEventListener, Service, Serial
 		 */
 		if(isClosed)
 		{
-			log.debug("La série est fermée et ne peut envoyer :");
-			out.afficheMessage();
+			log.debug("La série est fermée et ne peut envoyer :"+out);
 			return;
 		}
 
@@ -276,7 +275,7 @@ public class SerialConnexion implements SerialPortEventListener, Service, Serial
 		try
 		{
 			if(Config.debugSerieTrame)
-				out.afficheMessage();
+				log.debug(out);
 
 			output.write(out.trame);
 		}

@@ -40,9 +40,9 @@ public class IncomingFrame extends Frame
 	}
 
 	@Override
-	public void afficheMessage()
+	public String toString()
 	{
-		String m = "";
+		String m = "Incoming : "+code+" // ";
 		for(int i = 0; i < message.length; i++)
 		{
 			String s = Integer.toHexString(message[i]).toUpperCase();
@@ -51,7 +51,7 @@ public class IncomingFrame extends Frame
 			else
 				m += s.substring(s.length()-2, s.length())+" ";
 		}
-		System.out.println("Incoming : "+m);
+		return m;
 	}
 	
 }

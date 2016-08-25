@@ -52,9 +52,9 @@ public class OutgoingFrame extends Frame
 	}
 
 	@Override
-	public void afficheMessage()
+	public String toString()
 	{
-		String m = "";
+		String m = "Outgoing : "+code+" // ";
 		for(int i = 0; i < trame.length; i++)
 		{
 			String s = Integer.toHexString(trame[i]).toUpperCase();
@@ -63,7 +63,7 @@ public class OutgoingFrame extends Frame
 			else
 				m += s.substring(s.length()-2, s.length())+" ";
 		}
-		System.out.println("Outgoing : "+m);
+		return m;
 	}
 	
 }

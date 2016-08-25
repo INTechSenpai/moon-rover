@@ -44,7 +44,5 @@ public abstract class Frame
 	public byte compteur;
 	
 	protected static byte compteurReference = 0;
-			
-	public abstract void afficheMessage();
 	
 }

@@ -159,6 +159,8 @@ public class SerialLowLevel implements Service
 				{
 					if(waitingF.type == Order.Type.LONG)
 					{
+						if(Config.debugSerie)
+							log.debug("EXECUTION_BEGIN reçu");
 						it.remove();
 						pendingLongFrames.add(waitingC);
 						return null;
@@ -170,6 +172,9 @@ public class SerialLowLevel implements Service
 				{
 					if(waitingF.type == Order.Type.SHORT)
 					{
+						if(Config.debugSerie)
+							log.debug("VALUE_ANSWER reçu");
+
 						// L'ordre court a reçu un acquittement et ne passe pas par la case "pending"
 						it.remove();
 						waitingC.setDeathDate(); // tes jours sont comptés…
@@ -197,6 +202,9 @@ public class SerialLowLevel implements Service
 				// On a le EXECUTION_END d'une frame
 				if(f.code == IncomingCode.EXECUTION_END)
 				{
+					if(Config.debugSerie)
+						log.debug("EXECUTION_END reçu");
+
 					pendingC.setDeathDate(); // tes jours sont comptés…
 					// on envoie un END_ORDER
 					serie.communiquer(new OutgoingFrame(f.compteur));
@@ -206,7 +214,12 @@ public class SerialLowLevel implements Service
 					return pendingC.ticket;
 				}
 				else if(f.code == IncomingCode.STATUS_UPDATE)
+				{
+					if(Config.debugSerie)
+						log.debug("STATUS_UPDATE reçu");
+					
 					return pendingC.ticket;
+				}
 				else
 					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_END ou STATUS_UPDATE !");
 			}
@@ -222,7 +235,11 @@ public class SerialLowLevel implements Service
 			{
 				// On avait déjà reçu l'EXECUTION_END. On ignore ce message
 				if(f.code == IncomingCode.EXECUTION_END && closed.type == Order.Type.LONG)
+				{
+					if(Config.debugSerie)
+						log.warning("EXECUTION_END déjà reçu");
 					return null;
+				}
 				// on ne peut pas recevoir de VALUE_ANSWER
 				else
 					throw new ProtocolException(f.code+" reçu pour une trame "+closed.type+" finie !");
