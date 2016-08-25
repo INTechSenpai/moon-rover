@@ -112,6 +112,10 @@ public class SerialLowLevel implements Service
 	public synchronized void sendOrder(Order o)
 	{
 		Conversation f = new Conversation(o, getNextAvailableID());
+
+		if(Config.debugSerie)
+			log.warning("Envoi d'une nouvelle trame");
+
 		serie.communiquer(f.firstFrame);
 		waitingFrames.add(f);
 	}
@@ -203,7 +207,7 @@ public class SerialLowLevel implements Service
 				if(f.code == IncomingCode.EXECUTION_END)
 				{
 					if(Config.debugSerie)
-						log.debug("EXECUTION_END reçu");
+						log.debug("EXECUTION_END reçu. On répond par un END_ORDER.");
 
 					pendingC.setDeathDate(); // tes jours sont comptés…
 					// on envoie un END_ORDER
@@ -273,6 +277,9 @@ public class SerialLowLevel implements Service
 
 			if(longueur < 4 || longueur > 255)
 				throw new IllegalArgumentException("Mauvaise longueur : "+longueur);
+			else if(longueur > 4 && code == IncomingCode.EXECUTION_BEGIN.codeInt)
+				throw new IllegalArgumentException("Trame EXECUTION_BEGIN de longueur incorrecte ("+longueur+")");
+				
 
 			int compteur = serie.read();
 			int[] message = new int[longueur-4];
@@ -340,6 +347,10 @@ public class SerialLowLevel implements Service
 			Conversation trame = waitingFrames.poll();
 			// On remet à la fin
 			waitingFrames.add(trame);
+
+			if(Config.debugSerie)
+				log.warning("Une trame est renvoyée");
+
 			serie.communiquer(trame.firstFrame);
 			trame.updateResendDate(); // on remet la date de renvoi à plus tard
 		}
