@@ -262,14 +262,13 @@ public class DataForSerialOutput implements Service
 	}
 
 	/**
-	 * Envoi le ping initial dans un ordre long
+	 * Retourne le ping initial dans un ordre long
 	 */
-	public synchronized void longPing()
+	public synchronized Order getInitialLongPing()
 	{
 		byte[] out = new byte[1];
 		out[COMMANDE] = SerialProtocol.OUT_PING.code;
-		bufferBassePriorite.add(new Order(out, Order.Type.LONG));
-		notify();
+		return new Order(out, Order.Type.LONG);
 	}
 	
 	/**

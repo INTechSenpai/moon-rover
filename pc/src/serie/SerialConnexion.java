@@ -46,8 +46,6 @@ public class SerialConnexion implements SerialPortEventListener, Service, Serial
 	// Permet d'ouvrir le port à la première utilisation de la série
 	protected boolean portOuvert = false;
 	
-	protected boolean waitPing = false;
-	
 	/** Milliseconds to block while waiting for port open */
 	private static final int TIME_OUT = 2000;
 
@@ -84,7 +82,6 @@ public class SerialConnexion implements SerialPortEventListener, Service, Serial
 	
 	protected synchronized boolean searchPort()
 	{
-		waitPing = true;
 		log.debug("Recherche de la série sur "+portName+" à "+baudrate+" baud");
 		Enumeration<?> ports = CommPortIdentifier.getPortIdentifiers();
 		
@@ -98,7 +95,6 @@ public class SerialConnexion implements SerialPortEventListener, Service, Serial
 				if(!initialize(port, baudrate))
 					break;
 
-				waitPing = false; // voilà, les threads peuvent parler
 				portOuvert = true;
 				return true;
 			}
@@ -149,23 +145,6 @@ public class SerialConnexion implements SerialPortEventListener, Service, Serial
 		}
 	}
 	
-	protected void attendSiPing()
-	{
-		// Si la série est occupée, on attend sagement
-		if(waitPing)
-			synchronized(this)
-			{
-				log.debug("Attente du ping");
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				log.debug("Attente du ping finie");
-			}
-	}
-
-
 	/**
 	 * Doit être appelé quand on arrête de se servir de la série
 	 */
@@ -192,6 +171,7 @@ public class SerialConnexion implements SerialPortEventListener, Service, Serial
 		try {
 			if(input.available() > 0)
 				notify();
+
 //			else
 //				log.debug("Fausse alerte");
 		} catch (IOException e) {
@@ -204,8 +184,6 @@ public class SerialConnexion implements SerialPortEventListener, Service, Serial
 		if(!portOuvert)
 			openPort();
 		// tant qu'on est occupé, on dit qu'on ne reçoit rien
-		if(waitPing)
-			return false;
 		try {
 			return input.available() != 0;
 		} catch (IOException e) {
@@ -222,9 +200,6 @@ public class SerialConnexion implements SerialPortEventListener, Service, Serial
 	 */
 	public int read() throws MissingCharacterException
 	{
-		if(!portOuvert)
-			openPort();
-		attendSiPing();
 		try
 		{
 			if(input.available() == 0)
@@ -269,8 +244,6 @@ public class SerialConnexion implements SerialPortEventListener, Service, Serial
 			log.debug("La série est fermée et ne peut envoyer :"+out);
 			return;
 		}
-
-		attendSiPing();
 		
 		try
 		{

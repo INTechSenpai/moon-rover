@@ -119,7 +119,7 @@ public class SerialLowLevel implements Service
 		serie.communiquer(f.firstFrame);
 		waitingFrames.add(f);
 	}
-	
+
 	/**
 	 * Renvoie les données de la couche ordre (haut niveau)
 	 * @return
@@ -272,6 +272,7 @@ public class SerialLowLevel implements Service
 					e.printStackTrace();
 				}
 			
+			notify(); // on reçoit un truc
 			int code = serie.read();
 			int longueur = serie.read();
 
