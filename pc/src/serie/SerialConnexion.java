@@ -91,13 +91,13 @@ public class SerialConnexion implements SerialPortEventListener, Service, Serial
 		while(ports.hasMoreElements())
 		{
 			CommPortIdentifier port = (CommPortIdentifier) ports.nextElement();
+
 			if(port.getName().equals(portName))
 			{
-				log.debug("Port "+port+" trouvé !");
+				log.debug("Port "+port.getName()+" trouvé !");
 				if(!initialize(port, baudrate))
 					break;
-//				int z = 0;
-//				z = 1/z;
+
 				waitPing = false; // voilà, les threads peuvent parler
 				portOuvert = true;
 				return true;
