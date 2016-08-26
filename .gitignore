@@ -4,8 +4,6 @@
 *.user
 *.project
 build/
-arm/Debug
-arm/Release
 pc/logs/
 .classpath
 .cproject
@@ -18,3 +16,10 @@ project.properties
 *.out
 *.gz
 *.toc
+/**/.idea/
+/**/.vs/
+/teensy/**/Debug/
+*.sln
+/**/__vm/
+*.vcxproj
+*.vcxproj.filters
