@@ -14,11 +14,11 @@ import serie.trame.Paquet;
  *
  */
 
-public class PaquetBuffer implements Service
+public class BufferIncomingOrder implements Service
 {
 	protected Log log;
 	
-	public PaquetBuffer(Log log)
+	public BufferIncomingOrder(Log log)
 	{
 		this.log = log;
 	}

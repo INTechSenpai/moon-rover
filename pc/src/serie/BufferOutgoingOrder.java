@@ -22,11 +22,11 @@ import utils.Log;
  *
  */
 
-public class DataForSerialOutput implements Service
+public class BufferOutgoingOrder implements Service
 {
 	protected Log log;
 	
-	public DataForSerialOutput(Log log)
+	public BufferOutgoingOrder(Log log)
 	{
 		this.log = log;
 	}

@@ -18,7 +18,7 @@ public class IncomingFrame extends Frame
 	 * Constructeur d'une trame reçue
 	 * @return
 	 */
-	public IncomingFrame(int code, int compteur, int checksum, int longueur, int[] message) throws IncorrectChecksumException
+	public IncomingFrame(int code, int id, int checksum, int longueur, int[] message) throws IncorrectChecksumException
 	{
 		for(IncomingCode c : IncomingCode.values())
 		{
@@ -28,10 +28,10 @@ public class IncomingFrame extends Frame
 		if(this.code == null)
 			throw new IllegalArgumentException("Type de trame inconnu : "+code);
 
-		this.compteur = (byte) compteur;
+		this.id = (byte) id;
 		this.message = message;
 		
-		int c = code + compteur + longueur;
+		int c = code + id + longueur;
 		for(int i = 0; i < message.length; i++)
 			c += message[i];
 		c = c & 0xFF;

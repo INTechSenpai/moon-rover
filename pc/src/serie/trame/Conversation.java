@@ -7,14 +7,16 @@ public class Conversation
 	private long deathDate; // date d'envoi + 2*timeout
 	private long resendDate; // date d'envoi + timeout
 	public final Ticket ticket;
-	public OutgoingFrame firstFrame;
+	private OutgoingFrame firstFrame;
+	public final Order.Type type;
 	protected static int timeout;
 	
-	public Conversation(Order o, byte compteur)
+	public Conversation(Order o, int id)
 	{
 		ticket = o.ticket;
 		resendDate = System.currentTimeMillis() + timeout;
-		firstFrame = new OutgoingFrame(o, compteur);
+		type = o.orderType;
+		firstFrame = new OutgoingFrame(o, id);
 	}
 	
 	public void setDeathDate()
@@ -63,9 +65,18 @@ public class Conversation
 		return (int) (deathDate - System.currentTimeMillis());
 	}
 
+	public int getID()
+	{
+		return firstFrame.id;
+	}
 	
 	public static void setTimeout(int timeout_p)
 	{
 		timeout = timeout_p;
+	}
+
+	public OutgoingFrame getFirstTrame()
+	{
+		return firstFrame;
 	}
 }

@@ -5,7 +5,7 @@ import utils.Config;
 import utils.Sleep;
 import pathfinding.dstarlite.GridSpace;
 import robot.actuator.ActuatorOrder;
-import serie.DataForSerialOutput;
+import serie.BufferOutgoingOrder;
 import serie.Ticket;
 import exceptions.UnableToMoveException;
 import exceptions.UnexpectedObstacleOnPathException;
@@ -18,12 +18,12 @@ import exceptions.UnexpectedObstacleOnPathException;
 
 public class RobotReal extends Robot
 {
-	private DataForSerialOutput serialOutput;
+	private BufferOutgoingOrder serialOutput;
 //	private int distanceDegagement;
 //	private int tempsAttente;
 	
 	// Constructeur
-	public RobotReal(DataForSerialOutput serialOutput, Log log)
+	public RobotReal(BufferOutgoingOrder serialOutput, Log log)
  	{
 		super(log);
 		this.serialOutput = serialOutput;

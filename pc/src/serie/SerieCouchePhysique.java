@@ -27,7 +27,7 @@ import exceptions.MissingCharacterException;
  *
  */
 
-public class SerialConnexion implements SerialPortEventListener, Service, SerialInterface
+public class SerieCouchePhysique implements SerialPortEventListener, Service, SerialInterface
 {
 	private SerialPort serialPort;
 	protected Log log;
@@ -53,7 +53,7 @@ public class SerialConnexion implements SerialPortEventListener, Service, Serial
 	 * Constructeur pour la série de test
 	 * @param log
 	 */
-	public SerialConnexion(Log log, int baudrate)
+	public SerieCouchePhysique(Log log, int baudrate)
 	{
 		this.log = log;
 		this.baudrate = baudrate;

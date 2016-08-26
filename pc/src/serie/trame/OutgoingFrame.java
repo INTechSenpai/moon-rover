@@ -8,20 +8,20 @@ package serie.trame;
 
 public class OutgoingFrame extends Frame
 {
-	public OutgoingCode code;
-	public byte[] trame;
-	public Order.Type type;
+	public final OutgoingCode code;
+	public final byte[] trame;
+
 	/**
 	 * Trame de END_ORDER
 	 */
-	public OutgoingFrame(byte compteur)
+	public OutgoingFrame(int compteur)
 	{
-		this.compteur = compteur;
+		this.id = compteur;
 		code = OutgoingCode.END_ORDER;
 		trame = new byte[4];
 		trame[0] = OutgoingCode.END_ORDER.code;
 		trame[1] = 4; // longueur de la trame
-		trame[2] = compteur;
+		trame[2] = (byte) compteur;
 		trame[3] = (byte) (trame[0] + trame[1] + trame[2]);
 	}
 	
@@ -29,18 +29,17 @@ public class OutgoingFrame extends Frame
 	 * Constructeur d'une trame à envoyer (NEW_ORDER ou VALUE_REQUEST)
 	 * @param o
 	 */
-	public OutgoingFrame(Order o, byte compteur)
+	public OutgoingFrame(Order o, int id)
 	{
-		this.compteur = compteur;
+		this.id = id;
 		int longueur = o.message.length + 4;
 		if(longueur > 255)
 			throw new IllegalArgumentException("La trame est trop grande ! ("+longueur+" octets)");
-		type = o.orderType;
 		code = o.orderType == Order.Type.LONG ? OutgoingCode.NEW_ORDER : OutgoingCode.VALUE_REQUEST;
 		trame = new byte[longueur];
 		trame[0] = code.code;
 		trame[1] = (byte) (longueur);
-		trame[2] = compteur;
+		trame[2] = (byte) id;
 		
 		for(int i = 0; i < o.message.length; i++)
 			trame[i+3] = o.message[i];

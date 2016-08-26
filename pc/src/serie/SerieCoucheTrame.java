@@ -25,8 +25,13 @@ import utils.Sleep;
  *
  */
 
-public class SerialLowLevel implements Service
+public class SerieCoucheTrame implements Service
 {	
+	/**
+	 * Tableau qui permet de savoir quel id est utilisé ou non
+	 */
+	private boolean[] IDutilises = new boolean[256];
+	
 	/**
 	 * Liste des trames dont on attend un acquittement
 	 * Les trames de cette liste sont toujours triées par date de mort (de la plus proche à la plus éloignée)
@@ -44,64 +49,44 @@ public class SerialLowLevel implements Service
 	private LinkedList<Conversation> closedFrames = new LinkedList<Conversation>();
 
 	private int timeout;
-	private byte dernierIDutilise = 0; // dernier ID utilisé
+	private int dernierIDutilise = 0; // dernier ID utilisé
 	
 	private Log log;
 	private SerialInterface serie;
 	
-	public SerialLowLevel(Log log, SerialInterface serie)
+	public SerieCoucheTrame(Log log, SerialInterface serie)
 	{
 		this.log = log;
 		this.serie = serie;
+		for(int i = 0; i < 256; i++)
+			IDutilises[i] = false; // tous les ID sont dispo
 	}
 	
 	/**
-	 * Renvoie le prochain ID disponible
+	 * Renvoie le prochain ID disponible.
+	 * Cette méthode vérifie les ID actuellement utilisés et donne le prochain qui est libre.
 	 * @return
 	 */
-	private synchronized byte getNextAvailableID()
+	private synchronized int getNextAvailableID()
 	{
-		boolean ok;
-		byte initialID = dernierIDutilise;
+		int initialID = dernierIDutilise;
 		dernierIDutilise++;
-		do {
+		while(true)
+		{
 			if(initialID == dernierIDutilise) // on a fait un tour complet…
 			{
 				log.critical("Aucun ID disponible : attente");
 				Sleep.sleep(1);
 			}
-			ok = true;
 			
-			for(Conversation c : waitingFrames)
-				if(c.firstFrame.compteur == dernierIDutilise)
-				{
-					ok = false;
-					dernierIDutilise++;
-					break;
-				}
-			
-			if(!ok)
-				continue;
-
-			for(Conversation c : pendingLongFrames)
-				if(c.firstFrame.compteur == dernierIDutilise)
-				{
-					ok = false;
-					dernierIDutilise++;
-					break;
-				}
-			
-			if(!ok)
-				continue;
-			
-			for(Conversation c : closedFrames)
-				if(c.firstFrame.compteur == dernierIDutilise)
-				{
-					ok = false;
-					dernierIDutilise++;
-					break;
-				}
-		} while(!ok);
+			if(IDutilises[dernierIDutilise])
+			{
+				dernierIDutilise++;
+				dernierIDutilise &= 0xFF;
+			}
+			else
+				break;
+		}
 		return dernierIDutilise;
 	}
 
@@ -116,7 +101,8 @@ public class SerialLowLevel implements Service
 		if(Config.debugSerie)
 			log.warning("Envoi d'une nouvelle trame");
 
-		serie.communiquer(f.firstFrame);
+		serie.communiquer(f.getFirstTrame());
+		IDutilises[f.getID()] = true; // cet ID est maintenant utilisé
 		waitingFrames.add(f);
 	}
 
@@ -155,13 +141,12 @@ public class SerialLowLevel implements Service
 		while(it.hasNext())
 		{
 			Conversation waitingC = it.next();
-			OutgoingFrame waitingF = waitingC.firstFrame;
-			if(waitingF.compteur == f.compteur)
+			if(waitingC.getID() == f.id)
 			{
 				// On a le EXECUTION_BEGIN d'une frame qui l'attendait
 				if(f.code == IncomingCode.EXECUTION_BEGIN)
 				{
-					if(waitingF.type == Order.Type.LONG)
+					if(waitingC.type == Order.Type.LONG)
 					{
 						if(Config.debugSerie)
 							log.debug("EXECUTION_BEGIN reçu");
@@ -170,11 +155,11 @@ public class SerialLowLevel implements Service
 						return null;
 					}
 					else
-						throw new ProtocolException(f.code+" reçu pour un ordre "+waitingF.type);
+						throw new ProtocolException(f.code+" reçu pour un ordre "+waitingC.type);
 				}
 				else if(f.code == IncomingCode.VALUE_ANSWER)
 				{
-					if(waitingF.type == Order.Type.SHORT)
+					if(waitingC.type == Order.Type.SHORT)
 					{
 						if(Config.debugSerie)
 							log.debug("VALUE_ANSWER reçu");
@@ -186,7 +171,7 @@ public class SerialLowLevel implements Service
 						return waitingC.ticket;
 					}
 					else
-						throw new ProtocolException(f.code+" reçu pour un ordre "+waitingF.type);
+						throw new ProtocolException(f.code+" reçu pour un ordre "+waitingC.type);
 				}
 				else
 					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_BEGIN ou VALUE_ANSWER !");
@@ -200,8 +185,7 @@ public class SerialLowLevel implements Service
 		while(it.hasNext())
 		{
 			Conversation pendingC = it.next();
-			OutgoingFrame pendingF = pendingC.firstFrame;
-			if(pendingF.compteur == f.compteur)
+			if(pendingC.getID() == f.id)
 			{
 				// On a le EXECUTION_END d'une frame
 				if(f.code == IncomingCode.EXECUTION_END)
@@ -211,7 +195,7 @@ public class SerialLowLevel implements Service
 
 					pendingC.setDeathDate(); // tes jours sont comptés…
 					// on envoie un END_ORDER
-					serie.communiquer(new OutgoingFrame(f.compteur));
+					serie.communiquer(new OutgoingFrame(f.id));
 					// et on retire la trame des trames en cours
 					it.remove();
 					closedFrames.add(pendingC);
@@ -234,8 +218,8 @@ public class SerialLowLevel implements Service
 		it = closedFrames.iterator();
 		while(it.hasNext())
 		{
-			OutgoingFrame closed = it.next().firstFrame;
-			if(closed.compteur == f.compteur)
+			Conversation closed = it.next();
+			if(closed.getID() == f.id)
 			{
 				// On avait déjà reçu l'EXECUTION_END. On ignore ce message
 				if(f.code == IncomingCode.EXECUTION_END && closed.type == Order.Type.LONG)
@@ -250,7 +234,7 @@ public class SerialLowLevel implements Service
 			}
 		}
 		
-		throw new ProtocolException("ID conversation inconnu : "+f.compteur);
+		throw new ProtocolException("ID conversation inconnu : "+f.id);
 	}
 	
 	/**
@@ -282,12 +266,12 @@ public class SerialLowLevel implements Service
 				throw new IllegalArgumentException("Trame EXECUTION_BEGIN de longueur incorrecte ("+longueur+")");
 				
 
-			int compteur = serie.read();
+			int id = serie.read();
 			int[] message = new int[longueur-4];
 			for(int i = 0; i < message.length; i++)
 				message[i] = serie.read();
 			int checksum = serie.read();
-			return new IncomingFrame(code, compteur, checksum, longueur, message);
+			return new IncomingFrame(code, id, checksum, longueur, message);
 		}
 	}
 	
@@ -352,7 +336,7 @@ public class SerialLowLevel implements Service
 			if(Config.debugSerie)
 				log.warning("Une trame est renvoyée");
 
-			serie.communiquer(trame.firstFrame);
+			serie.communiquer(trame.getFirstTrame());
 			trame.updateResendDate(); // on remet la date de renvoi à plus tard
 		}
 	}
@@ -363,6 +347,9 @@ public class SerialLowLevel implements Service
 	public synchronized void kill()
 	{
 		while(!closedFrames.isEmpty() && closedFrames.getFirst().needDeath())
+		{
+			IDutilises[closedFrames.getFirst().getID()] = true;  // cet ID est maintenant libre
 			closedFrames.removeFirst();
+		}
 	}
 }
