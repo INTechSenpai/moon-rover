@@ -27,7 +27,7 @@ Ils prennent place dans le champ "données" dudit protocole.
 
 La structure d'un ordre est la suivante : un code sur un octet, puis des données. La taille de chaque donnée est donnée en bit à côté de son nom.
 
-\section{Haut niveau vers bas niveau}
+\section{Haut niveau vers bas niveau -- ordres longs}
 
 \subsection{Utilise actionneurs}
 \texttt{0x06 ID(8) ANGLE(16)}
@@ -36,10 +36,6 @@ L'ID est l'ID de l'AX-12.
 
 L'angle est l'angle à fournir à l'AX-12 (entre 0 et 300).
 
-\subsection{Arrêt du robot}
-\texttt{0x07}
-   
-Le robot doit s'arrêter (asservissement sur place). Le bas niveau doit arrêter les ordres longs en cours en rapport avec les déplacements.
 
 \subsection{Avancer}
 
@@ -61,6 +57,36 @@ Probablement pas utilisé.
     \texttt{0x0F DISTANCE(16) VITESSE  TRANSLATION  MAX(16)}
 
 Utilisé pour se dégager.
+
+
+\subsection{Demande notification début match}
+    \texttt{0x11}
+
+Le bas niveau préviendra du début du match.
+   
+   \subsection{Demande notification fin match}
+       \texttt{0x12}
+   
+   Le bas niveau préviendra de la fin du match.
+  
+    
+\subsection{Start capteurs}
+\texttt{0x10}
+    
+Le bas niveau doit démarrer le stream des capteurs.
+    
+\section{Haut niveau vers bas niveau -- ordres courts}
+    
+\subsection{Demande couleur}
+    \texttt{0x13}
+
+Le bas niveau doit renvoyer la couleur du robot pour ce match.
+
+    
+\subsection{Arrêt du robot}
+\texttt{0x07}
+   
+Le robot doit s'arrêter (asservissement sur place). Le bas niveau doit arrêter les ordres longs en cours en rapport avec les déplacements.
 
 \subsection{Désasservissement}
     \texttt{0x28}
@@ -92,27 +118,6 @@ ID = 0 est sous-entendu (cet arc est le premier)
 \subsubsection{Efface tous les arcs reçus et rajoute cet arc, précédé d'un arrêt} 
 
 \texttt{0x2D X+ POINT(12) Y POINT(12) ORIENTATION(16) COURBURE(16) VITESSE TRANSLATION(16)}
-   
-\subsection{Demande notification début match}
-    \texttt{0x11}
-
-Le bas niveau préviendra du début du match.
-   
-   \subsection{Demande notification fin match}
-       \texttt{0x12}
-   
-   Le bas niveau préviendra de la fin du match.
-   
-\subsection{Demande couleur}
-    \texttt{0x13}
-
-Le bas niveau doit renvoyer la couleur du robot pour ce match.
-
-    
-\subsection{Start capteurs}
-\texttt{0x10}
-    
-Le bas niveau doit démarrer le stream des capteurs.
     
 \subsection{Ping}
     \texttt{0x5A}

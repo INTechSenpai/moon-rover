@@ -64,8 +64,8 @@ public class BufferOutgoingOrder implements Service
 			stop = false;
 			bufferTrajectoireCourbe.clear(); // on annule tout mouvement
 			out = new byte[1];
-			out[COMMANDE] = SerialProtocol.OUT_STOP.code;
-			return new Order(out, Order.Type.SHORT);
+			out[COMMANDE] = SerialProtocol.OutOrder.STOP.code;
+			return new Order(out, SerialProtocol.OutOrder.STOP.type);
 		}
 		else if(!bufferTrajectoireCourbe.isEmpty())
 		{
@@ -87,10 +87,10 @@ public class BufferOutgoingOrder implements Service
 			log.debug("Avance de "+distance);
 		byte[] out = new byte[5];
 		if(distance >= 0)
-			out[COMMANDE] = SerialProtocol.OUT_AVANCER.code;
+			out[COMMANDE] = SerialProtocol.OutOrder.AVANCER.code;
 		else
 		{
-			out[COMMANDE] = SerialProtocol.OUT_AVANCER_NEG.code;
+			out[COMMANDE] = SerialProtocol.OutOrder.AVANCER_NEG.code;
 			distance = -distance;
 		}
 		out[PARAM] = (byte) (distance >> 8);
@@ -99,7 +99,7 @@ public class BufferOutgoingOrder implements Service
 		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
 //		log.debug("Vitesse : "+vitesse.translationalSpeed*1000);
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(out, Order.Type.LONG, t));
+		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.AVANCER.type, t));
 		notify();
 		return t;
 	}
@@ -115,10 +115,10 @@ public class BufferOutgoingOrder implements Service
 			log.debug("Avance (même sens) de "+distance);
 		byte[] out = new byte[5];
 		if(distance >= 0)
-			out[COMMANDE] = SerialProtocol.OUT_AVANCER_IDEM.code;
+			out[COMMANDE] = SerialProtocol.OutOrder.AVANCER_IDEM.code;
 		else
 		{
-			out[COMMANDE] = SerialProtocol.OUT_AVANCER_REVERSE.code;
+			out[COMMANDE] = SerialProtocol.OutOrder.AVANCER_REVERSE.code;
 			distance = -distance;
 		}
 		out[PARAM] = (byte) (distance >> 8);
@@ -126,7 +126,7 @@ public class BufferOutgoingOrder implements Service
 		out[PARAM+2] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
 		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(out, Order.Type.LONG, t));
+		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.AVANCER_REVERSE.type, t));
 		notify();
 		return t;
 	}
@@ -150,12 +150,12 @@ public class BufferOutgoingOrder implements Service
 	{
 		ActuatorOrder elem2 = elem.getSymetrie(symetrie);
 		byte[] out = new byte[4];
-		out[COMMANDE] = SerialProtocol.OUT_ACTIONNEUR.code;
+		out[COMMANDE] = SerialProtocol.OutOrder.ACTIONNEUR.code;
 		out[PARAM] = (byte) (elem2.id);
 		out[PARAM + 1] = (byte) (elem2.angle >> 8);
 		out[PARAM + 2] = (byte) (elem2.angle & 0xFF);
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(out, Order.Type.LONG, t));
+		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.ACTIONNEUR.type, t));
 		notify();
 		return t;
 	}
@@ -166,9 +166,9 @@ public class BufferOutgoingOrder implements Service
 	public synchronized Ticket demandeCouleur()
 	{
 		byte[] out = new byte[1];
-		out[COMMANDE] = SerialProtocol.OUT_ASK_COLOR.code;
+		out[COMMANDE] = SerialProtocol.OutOrder.ASK_COLOR.code;
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(out, Order.Type.SHORT, t));
+		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.ASK_COLOR.type, t));
 		notify();
 		return t;
 	}
@@ -179,8 +179,8 @@ public class BufferOutgoingOrder implements Service
 	public synchronized void demandeNotifDebutMatch()
 	{
 		byte[] out = new byte[1];
-		out[COMMANDE] = SerialProtocol.OUT_MATCH_BEGIN.code;
-		bufferBassePriorite.add(new Order(out, Order.Type.SHORT));
+		out[COMMANDE] = SerialProtocol.OutOrder.MATCH_BEGIN.code;
+		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.MATCH_BEGIN.type));
 		notify();
 	}
 
@@ -190,8 +190,8 @@ public class BufferOutgoingOrder implements Service
 	public synchronized void demandeNotifFinMatch()
 	{
 		byte[] out = new byte[1];
-		out[COMMANDE] = SerialProtocol.OUT_MATCH_END.code;
-		bufferBassePriorite.add(new Order(out, Order.Type.SHORT));
+		out[COMMANDE] = SerialProtocol.OutOrder.MATCH_END.code;
+		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.MATCH_END.type));
 		notify();
 	}
 
@@ -201,8 +201,8 @@ public class BufferOutgoingOrder implements Service
 	public synchronized void asserOff()
 	{
 		byte[] out = new byte[1];
-		out[COMMANDE] = SerialProtocol.OUT_ASSER_OFF.code;
-		bufferBassePriorite.add(new Order(out, Order.Type.SHORT));
+		out[COMMANDE] = SerialProtocol.OutOrder.ASSER_OFF.code;
+		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.ASSER_OFF.type));
 		notify();
 	}
 
@@ -232,12 +232,12 @@ public class BufferOutgoingOrder implements Service
 			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
 			{
 //				log.debug("ARC ARRET");
-				out[COMMANDE] = SerialProtocol.OUT_SEND_ARC_ARRET.code;
+				out[COMMANDE] = SerialProtocol.OutOrder.SEND_ARC_ARRET.code;
 			}
 			else
 			{
 //				log.debug("ARC");
-				out[COMMANDE] = SerialProtocol.OUT_SEND_ARC.code;
+				out[COMMANDE] = SerialProtocol.OutOrder.SEND_ARC.code;
 			}
 			out[PARAM] = (byte) (((int)(arc.getPoint(i).getPosition().x)+1500) >> 4);
 			out[PARAM+1] = (byte) ((((int)(arc.getPoint(i).getPosition().x)+1500) << 4) + ((int)(arc.getPoint(i).getPosition().y) >> 8));
@@ -261,21 +261,11 @@ public class BufferOutgoingOrder implements Service
 			out[PARAM+7] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) >> 8);
 			out[PARAM+8] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) & 0xFF);
 			
-			bufferTrajectoireCourbe.add(new Order(out, Order.Type.SHORT));
+			bufferTrajectoireCourbe.add(new Order(out, SerialProtocol.OutOrder.SEND_ARC.type));
 		}
 		notify();			
 	}
 
-	/**
-	 * Retourne le ping initial dans un ordre long
-	 */
-	public synchronized Order getInitialLongPing()
-	{
-		byte[] out = new byte[1];
-		out[COMMANDE] = SerialProtocol.OUT_PING.code;
-		return new Order(out, Order.Type.LONG);
-	}
-	
 	/**
 	 * Renvoie un ping
 	 * @return
@@ -283,8 +273,8 @@ public class BufferOutgoingOrder implements Service
 	public Order getPing()
 	{
 		byte[] out = new byte[1];
-		out[0] = SerialProtocol.OUT_PING.code;
-		Order message = new Order(out, Order.Type.SHORT);
+		out[0] = SerialProtocol.OutOrder.PING.code;
+		Order message = new Order(out, SerialProtocol.OutOrder.PING.type);
 		return message;
 	}
 
