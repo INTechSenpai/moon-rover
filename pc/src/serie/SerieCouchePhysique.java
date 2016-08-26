@@ -53,10 +53,9 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	 * Constructeur pour la série de test
 	 * @param log
 	 */
-	public SerieCouchePhysique(Log log, int baudrate)
+	public SerieCouchePhysique(Log log)
 	{
 		this.log = log;
-		this.baudrate = baudrate;
 	}
 
 	protected void openPort()
@@ -275,6 +274,7 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	public void useConfig(Config config)
 	{
 		portName = config.getString(ConfigInfo.SERIAL_PORT);
+		baudrate = config.getInt(ConfigInfo.BAUDRATE);
 	}
 
 }
