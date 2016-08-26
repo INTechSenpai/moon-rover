@@ -55,6 +55,9 @@ public class BufferOutgoingOrder implements Service
 	 */
 	public synchronized Order poll()
 	{
+		if(bufferTrajectoireCourbe.size() + bufferBassePriorite.size() > 10)
+			log.warning("On n'arrive pas à envoyer les ordres assez vites (ordres TC en attente : "+bufferTrajectoireCourbe.size()+", autres en attente : "+bufferBassePriorite.size()+")");
+		
 		byte[] out;
 		if(stop)
 		{

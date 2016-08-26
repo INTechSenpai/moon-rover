@@ -20,7 +20,7 @@ import utils.Log;
 import utils.Sleep;
 
 /**
- * Implémentation du protocole bas niveau série
+ * Implémentation du protocole série couche trame
  * @author pf
  *
  */
@@ -54,6 +54,11 @@ public class SerieCoucheTrame implements Service
 	private Log log;
 	private SerialInterface serie;
 	
+	/**
+	 * Constructeur classique
+	 * @param log
+	 * @param serie
+	 */
 	public SerieCoucheTrame(Log log, SerialInterface serie)
 	{
 		this.log = log;
@@ -63,8 +68,13 @@ public class SerieCoucheTrame implements Service
 	}
 	
 	/**
+	 * GESTION DE LA CRÉATION ET DE L'ENVOI DE TRAMES
+	 */
+	
+	/**
 	 * Renvoie le prochain ID disponible.
 	 * Cette méthode vérifie les ID actuellement utilisés et donne le prochain qui est libre.
+	 * Si tous les ID sont occupés, attend 1ms et recherche.
 	 * @return
 	 */
 	private synchronized int getNextAvailableID()
@@ -106,6 +116,10 @@ public class SerieCoucheTrame implements Service
 		waitingFrames.add(f);
 	}
 
+	/**
+	 * GESTION DE LA RÉCEPTION DES TRAMES
+	 */
+	
 	/**
 	 * Renvoie les données de la couche ordre (haut niveau)
 	 * @return
@@ -244,7 +258,7 @@ public class SerieCoucheTrame implements Service
 	 * @throws MissingCharacterException
 	 * @throws IncorrectChecksumException
 	 */
-	private IncomingFrame readFrame() throws MissingCharacterException, IncorrectChecksumException
+	private IncomingFrame readFrame() throws MissingCharacterException, IncorrectChecksumException, IllegalArgumentException
 	{
 		synchronized(serie)
 		{
@@ -293,6 +307,10 @@ public class SerieCoucheTrame implements Service
 	{
 		serie.close();
 	}
+	
+	/**
+	 * GESTION DES RENVOIS ET DES DESTRUCTIONS DE TRAMES
+	 */
 
 	/**
 	 * Renvoie le temps avant qu'une trame doive être renvoyée (timeout sinon)

@@ -42,10 +42,8 @@ public class BufferIncomingOrder implements Service
 	{
 		buffer.add(elem);
 		if(buffer.size() > 5)
-		{
-			buffer.poll(); // on évacue une ancienne valeur
-			log.critical("Paquet traités trop lentement !");
-		}
+			log.critical("Ordres entrants traités trop lentement !");
+
 		notify();
 	}
 	

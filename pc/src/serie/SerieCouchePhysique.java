@@ -32,7 +32,7 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	private SerialPort serialPort;
 	protected Log log;
 	
-	protected boolean isClosed;
+	protected volatile boolean isClosed;
 	private int baudrate;
 	
 	private String portName;
@@ -44,7 +44,7 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	protected OutputStream output;
 
 	// Permet d'ouvrir le port à la première utilisation de la série
-	protected boolean portOuvert = false;
+	protected volatile boolean portOuvert = false;
 	
 	/** Milliseconds to block while waiting for port open */
 	private static final int TIME_OUT = 2000;
@@ -167,13 +167,10 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	 */
 	public synchronized void serialEvent(SerialPortEvent oEvent)
 	{
-//		log.debug("SerialEvent !");
 		try {
 			if(input.available() > 0)
 				notify();
 
-//			else
-//				log.debug("Fausse alerte");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -183,7 +180,7 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	{
 		if(!portOuvert)
 			openPort();
-		// tant qu'on est occupé, on dit qu'on ne reçoit rien
+
 		try {
 			return input.available() != 0;
 		} catch (IOException e) {
@@ -193,7 +190,7 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	}
 	
 	/**
-	 * Lit un byte. On sait qu'il doit y en a avoir un.
+	 * Lit un byte. On sait qu'il doit y en a avoir un du fait du protocole trame
 	 * @return
 	 * @throws IOException
 	 * @throws MissingCharacterException
