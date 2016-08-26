@@ -121,7 +121,8 @@ public class SerieCoucheTrame implements Service
 	 */
 	
 	/**
-	 * Renvoie les données de la couche ordre (haut niveau)
+	 * Renvoi les données de la couche ordre (haut niveau)
+	 * C'est cette méthode qui s'occupe de commander la signalisation.
 	 * @return
 	 */
 	public Paquet readData()
