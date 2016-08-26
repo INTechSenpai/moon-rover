@@ -1,0 +1,94 @@
+\documentclass[a4paper, 12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais,english]{babel}
+\usepackage{hyperref}
+\usepackage{alltt}
+\title{Documentation du code HL de gestion de la série}
+ 
+\author{Moon-rover}
+
+\date{}
+
+\begin{document}
+
+\selectlanguage{francais}
+\maketitle
+
+\pagestyle{plain}
+
+\section{Fichiers}
+
+Code haut niveau – série
+Documentation
+
+Les fichiers qui interviennent dans la gestion de la série sont :
+\begin{description}
+\item[src/serie/]
+le code de gestion de la série
+\item[src/serie/trame]
+des structures de données, pas de code
+\item[src/thread/ThreadSerialInputCoucheTrame.java]
+thread qui appelle la gestion bas niveau des trames entrantes
+\item[src/thread/ThreadSerialInputCoucheOrdre.java]
+thread qui appelle la gestion haut niveau (couche ordre) des trames entrantes
+\item[src/thread/ThreadSerialOutput.java]
+thread qui envoie de nouvelles trames
+\item[src/thread/ThreadSerialOutputTimeout.java]
+thread qui s'occupe des renvois de trames
+\end{description}
+
+De plus, tu peux ignorer les fichiers \textbf{src/serie/SerialInterface.java} et \textbf{src/serie/SerialSimulation.java} qui sont utilisés pour simuler une série.
+
+Enfin, il y des variables de configuration, situées dans \textbf{src/utils/Config.java} :
+\begin{description}
+\item[\texttt{debugSerie}] permet un debug de la série en affichant des infos sur la communication en cours
+\item[\texttt{debugSerieTrame}] permet un debug de la série en affichant le contenu hexadécimal de toutes les trames envoyées et reçues
+\end{description}
+
+Par défaut, j'ai mis les deux à \texttt{true} ; si ça spamme trop, modifie-les.
+
+\section{Exemple d'un envoi d'ordre : ce qui se passe}
+
+Voici un exemple complet de l'utilisation de l'architecture dans le cas de l'envoi d'un ordre.
+
+Pour envoyer un ordre, il faut appeler une méthode de \textbf{src/serie/BufferOutgoingOrder.java}. Cette classe a des méthodes du genre "avancer", "demande la couleur", etc.
+
+Dans notre exemple, on va faire une demande de couleur. Dans un \texttt{main} ou un test, on mets alors :
+
+\begin{alltt}
+// Récupération de data par le container
+BufferOutgoingOrder data = (BufferOutgoingOrder) container.getService(ServiceNames.SERIAL_OUTPUT_BUFFER);
+data.demandeCouleur();
+\end{alltt}
+
+\texttt{BufferOutgoingOrder} s'occupe de construire l'ordre et fait un \texttt{notify} qui appelle le thread \textbf{src/thread/ThreadSerialOutput.java}.
+
+Le rôle de ce thread est juste de passer cet ordre à \textbf{src/serie/SerieCoucheTrame.java} qui va s'occuper de son envoi.
+
+On arrive du coup dans \textbf{src/serie/SerieCoucheTrame.java}, le fichier le plus important de la série car c'est lui qui implémente le protocole des trames.
+
+Dans cette méthode, on peut trouver des listes:
+
+\begin{description}
+\item[\texttt{waitingFrames}] : contient les trames dont on n'a pas encore reçu un acquittement. Elles sont susceptibles d'être renvoyées.
+\item[\texttt{pendingLongFrames}] : contient les ordres longs qui ne sont pas encore terminés.
+\item[\texttt{closedFrames}] : contient les ordres qui sont finis (\texttt{VALUE\_ANSWER} ou \texttt{EXECUTION\_END}) mais qu'on doit garder encore un peu avant de les détruire.
+\end{description}
+
+Quand on envoie un nouvel ordre, on l'ajoute à \texttt{waitingFrames} et on demande à la série de la couche physique d'effectuer l'envoi.
+
+\section{Réception d'une trame}
+
+
+
+\section{Dernières infos}
+
+Le code de \textbf{src/serie/SerieCoucheTrame.java} est normalement bien documenté. Quelques autres endroits utiles :
+
+\begin{description}
+\item[src/serie/trame/OutgoingFrame.java] là où une trame sortante est construite
+\item[src/serie/trame/IncomingFrame.java] là où on vérifie le checksum d'une trame entrante
+\end{description}
+\end{document}
