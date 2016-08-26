@@ -20,15 +20,20 @@ public class IncomingFrame extends Frame
 	 */
 	public IncomingFrame(int code, int id, int checksum, int longueur, int[] message) throws IncorrectChecksumException
 	{
+		/**
+		 * On cherche à quel type de trame correspond la valeur reçue
+		 */
 		for(IncomingCode c : IncomingCode.values())
-		{
 			if(code == c.codeInt)
+			{
 				this.code = c;
-		}
+				break;
+			}
+
 		if(this.code == null)
 			throw new IllegalArgumentException("Type de trame inconnu : "+code);
 
-		this.id = (byte) id;
+		this.id = id;
 		this.message = message;
 		
 		int c = code + id + longueur;

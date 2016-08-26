@@ -58,6 +58,9 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 		this.log = log;
 	}
 
+	/**
+	 * Ouverture du port
+	 */
 	protected void openPort()
 	{
 		if(!searchPort())
@@ -79,6 +82,10 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 		}
 	}
 	
+	/**
+	 * Recherche du port
+	 * @return
+	 */
 	protected synchronized boolean searchPort()
 	{
 		log.debug("Recherche de la série sur "+portName+" à "+baudrate+" baud");
@@ -174,7 +181,10 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 			e.printStackTrace();
 		}
 	}
-	
+
+	/**
+	 * Retourne "true" ssi un octet est lisible en utilisant "read"
+	 */
 	public boolean available()
 	{
 		if(!portOuvert)
@@ -189,7 +199,8 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	}
 	
 	/**
-	 * Lit un byte. On sait qu'il doit y en a avoir un du fait du protocole trame
+	 * Lit un octet
+	 * On sait qu'un octet doit s'y trouver ; soit parce que available() retourne "true", soit parce que le protocole l'impose.
 	 * @return
 	 * @throws IOException
 	 * @throws MissingCharacterException
@@ -224,6 +235,7 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	}
 	
 	/**
+	 * Envoie une frame sur la série
 	 * Cette méthode est synchronized car deux threads peuvent l'utiliser : ThreadSerialOutput et ThreadSerialOutputTimeout
 	 * @param message
 	 */

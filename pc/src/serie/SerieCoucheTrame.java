@@ -271,7 +271,6 @@ public class SerieCoucheTrame implements Service
 					e.printStackTrace();
 				}
 			
-			notify(); // on reçoit un truc
 			int code = serie.read();
 			int longueur = serie.read();
 
@@ -279,8 +278,7 @@ public class SerieCoucheTrame implements Service
 				throw new IllegalArgumentException("Mauvaise longueur : "+longueur);
 			else if(longueur > 4 && code == IncomingCode.EXECUTION_BEGIN.codeInt)
 				throw new IllegalArgumentException("Trame EXECUTION_BEGIN de longueur incorrecte ("+longueur+")");
-				
-
+			
 			int id = serie.read();
 			int[] message = new int[longueur-4];
 			for(int i = 0; i < message.length; i++)
