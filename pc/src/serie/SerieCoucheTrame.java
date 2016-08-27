@@ -9,10 +9,10 @@ import exceptions.IncorrectChecksumException;
 import exceptions.MissingCharacterException;
 import exceptions.ProtocolException;
 import serie.trame.Conversation;
+import serie.trame.EndOrderFrame;
 import serie.trame.Frame.IncomingCode;
 import serie.trame.IncomingFrame;
 import serie.trame.Order;
-import serie.trame.OutgoingFrame;
 import serie.trame.Paquet;
 import utils.Config;
 import utils.ConfigInfo;
@@ -28,28 +28,31 @@ import utils.Sleep;
 public class SerieCoucheTrame implements Service
 {	
 	/**
-	 * Tableau qui permet de savoir quel id est utilisé ou non
+	 * Toutes les conversations
 	 */
-	private boolean[] IDutilises = new boolean[256];
+	private Conversation[] conversations = new Conversation[256];
 	
 	/**
 	 * Liste des trames dont on attend un acquittement
 	 * Les trames de cette liste sont toujours triées par date de mort (de la plus proche à la plus éloignée)
 	 */
-	private LinkedList<Conversation> waitingFrames = new LinkedList<Conversation>();
+	private LinkedList<Integer> waitingFrames = new LinkedList<Integer>();
 	
 	/**
 	 * Liste des trames d'ordre long acquittées dont on attend la fin
 	 */
-	private ArrayList<Conversation> pendingLongFrames = new ArrayList<Conversation>();
+	private ArrayList<Integer> pendingLongFrames = new ArrayList<Integer>();
 
 	/**
 	 * Liste des trames d'ordre dont on a reçu la fin (EXECUTION_END ou REQUEST_ANSWER)
 	 */
-	private LinkedList<Conversation> closedFrames = new LinkedList<Conversation>();
+	private LinkedList<Integer> closedFrames = new LinkedList<Integer>();
 
 	private int timeout;
 	private int dernierIDutilise = 0; // dernier ID utilisé
+	
+	// Afin d'éviter de la créer à chaque fois
+	private EndOrderFrame endOrderFrame = new EndOrderFrame();
 	
 	private Log log;
 	private SerialInterface serie;
@@ -64,7 +67,7 @@ public class SerieCoucheTrame implements Service
 		this.log = log;
 		this.serie = serie;
 		for(int i = 0; i < 256; i++)
-			IDutilises[i] = false; // tous les ID sont dispo
+			conversations[i] = new Conversation(i);
 	}
 	
 	/**
@@ -72,12 +75,12 @@ public class SerieCoucheTrame implements Service
 	 */
 	
 	/**
-	 * Renvoie le prochain ID disponible.
+	 * Renvoie la prochaine conversation disponible, basée sur l'ID.
 	 * Cette méthode vérifie les ID actuellement utilisés et donne le prochain qui est libre.
-	 * Si tous les ID sont occupés, attend 1ms et recherche.
+	 * Si tous les ID sont occupés, attend 1ms et re-cherche.
 	 * @return
 	 */
-	private synchronized int getNextAvailableID()
+	private synchronized Conversation getNextAvailableConversation()
 	{
 		int initialID = dernierIDutilise;
 		dernierIDutilise++;
@@ -89,7 +92,7 @@ public class SerieCoucheTrame implements Service
 				Sleep.sleep(1);
 			}
 			
-			if(IDutilises[dernierIDutilise])
+			if(!conversations[dernierIDutilise].libre)
 			{
 				dernierIDutilise++;
 				dernierIDutilise &= 0xFF;
@@ -97,7 +100,9 @@ public class SerieCoucheTrame implements Service
 			else
 				break;
 		}
-		return dernierIDutilise;
+		conversations[dernierIDutilise].libre = false;
+		waitingFrames.add(dernierIDutilise);
+		return conversations[dernierIDutilise];
 	}
 
 	/**
@@ -106,14 +111,13 @@ public class SerieCoucheTrame implements Service
 	 */
 	public synchronized void sendOrder(Order o)
 	{
-		Conversation f = new Conversation(o, getNextAvailableID());
+		Conversation f = getNextAvailableConversation();
+		f.update(o);
 
 		if(Config.debugSerie)
-			log.warning("Envoi d'une nouvelle trame");
+			log.debug("Envoi d'une nouvelle trame");
 
 		serie.communiquer(f.getFirstTrame());
-		IDutilises[f.getID()] = true; // cet ID est maintenant utilisé
-		waitingFrames.add(f);
 	}
 
 	/**
@@ -152,41 +156,42 @@ public class SerieCoucheTrame implements Service
 	 */
 	public synchronized Ticket processFrame(IncomingFrame f) throws ProtocolException
 	{
-		Iterator<Conversation> it = waitingFrames.iterator();
+		Iterator<Integer> it = waitingFrames.iterator();
 		while(it.hasNext())
 		{
-			Conversation waitingC = it.next();
-			if(waitingC.getID() == f.id)
+			Integer id = it.next();
+			Conversation waiting = conversations[id];
+			if(id == f.id)
 			{
 				// On a le EXECUTION_BEGIN d'une frame qui l'attendait
 				if(f.code == IncomingCode.EXECUTION_BEGIN)
 				{
-					if(waitingC.type == Order.Type.LONG)
+					if(waiting.type == Order.Type.LONG)
 					{
 						if(Config.debugSerie)
 							log.debug("EXECUTION_BEGIN reçu");
 						it.remove();
-						pendingLongFrames.add(waitingC);
+						pendingLongFrames.add(id);
 						return null;
 					}
 					else
-						throw new ProtocolException(f.code+" reçu pour un ordre "+waitingC.type);
+						throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.type);
 				}
 				else if(f.code == IncomingCode.VALUE_ANSWER)
 				{
-					if(waitingC.type == Order.Type.SHORT)
+					if(waiting.type == Order.Type.SHORT)
 					{
 						if(Config.debugSerie)
 							log.debug("VALUE_ANSWER reçu");
 
 						// L'ordre court a reçu un acquittement et ne passe pas par la case "pending"
 						it.remove();
-						waitingC.setDeathDate(); // tes jours sont comptés…
-						closedFrames.add(waitingC);
-						return waitingC.ticket;
+						waiting.setDeathDate(); // tes jours sont comptés…
+						closedFrames.add(id);
+						return waiting.ticket;
 					}
 					else
-						throw new ProtocolException(f.code+" reçu pour un ordre "+waitingC.type);
+						throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.type);
 				}
 				else
 					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_BEGIN ou VALUE_ANSWER !");
@@ -199,8 +204,9 @@ public class SerieCoucheTrame implements Service
 		it = pendingLongFrames.iterator();
 		while(it.hasNext())
 		{
-			Conversation pendingC = it.next();
-			if(pendingC.getID() == f.id)
+			Integer id = it.next();
+			Conversation pending = conversations[id];
+			if(id == f.id)
 			{
 				// On a le EXECUTION_END d'une frame
 				if(f.code == IncomingCode.EXECUTION_END)
@@ -208,20 +214,21 @@ public class SerieCoucheTrame implements Service
 					if(Config.debugSerie)
 						log.debug("EXECUTION_END reçu. On répond par un END_ORDER.");
 
-					pendingC.setDeathDate(); // tes jours sont comptés…
+					pending.setDeathDate(); // tes jours sont comptés…
 					// on envoie un END_ORDER
-					serie.communiquer(new OutgoingFrame(f.id));
+					endOrderFrame.updateId(f.id);
+					serie.communiquer(endOrderFrame);
 					// et on retire la trame des trames en cours
 					it.remove();
-					closedFrames.add(pendingC);
-					return pendingC.ticket;
+					closedFrames.add(id);
+					return pending.ticket;
 				}
 				else if(f.code == IncomingCode.STATUS_UPDATE)
 				{
 					if(Config.debugSerie)
 						log.debug("STATUS_UPDATE reçu");
 					
-					return pendingC.ticket;
+					return pending.ticket;
 				}
 				else
 					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_END ou STATUS_UPDATE !");
@@ -233,8 +240,9 @@ public class SerieCoucheTrame implements Service
 		it = closedFrames.iterator();
 		while(it.hasNext())
 		{
-			Conversation closed = it.next();
-			if(closed.getID() == f.id)
+			Integer id = it.next();
+			Conversation closed = conversations[id];
+			if(id == f.id)
 			{
 				// On avait déjà reçu l'EXECUTION_END. On ignore ce message
 				if(f.code == IncomingCode.EXECUTION_END && closed.type == Order.Type.LONG)
@@ -319,7 +327,7 @@ public class SerieCoucheTrame implements Service
 	{
 		int out;
 		if(!waitingFrames.isEmpty())
-			out = (int) (waitingFrames.getFirst().timeBeforeResend());
+			out = (int) conversations[waitingFrames.getFirst()].timeBeforeResend();
 		else
 			out = timeout;
 		return Math.max(out,0); // il faut envoyer un temps positif
@@ -333,7 +341,7 @@ public class SerieCoucheTrame implements Service
 	{
 		int out;
 		if(!closedFrames.isEmpty())
-			out = (int) (closedFrames.getFirst().timeBeforeDeath());
+			out = (int) conversations[closedFrames.getFirst()].timeBeforeDeath();
 		else
 			out = 2*timeout;
 		return Math.max(out,0); // il faut envoyer un temps positif
@@ -344,14 +352,15 @@ public class SerieCoucheTrame implements Service
 	 */
 	public synchronized void resend()
 	{
-		if(!waitingFrames.isEmpty() && waitingFrames.getFirst().needResend())
+		if(!waitingFrames.isEmpty() && conversations[waitingFrames.getFirst()].needResend())
 		{
-			Conversation trame = waitingFrames.poll();
+			int id = waitingFrames.poll();
+			Conversation trame = conversations[id];
 			// On remet à la fin
-			waitingFrames.add(trame);
+			waitingFrames.add(id);
 
 			if(Config.debugSerie)
-				log.warning("Une trame est renvoyée");
+				log.debug("Une trame est renvoyée");
 
 			serie.communiquer(trame.getFirstTrame());
 			trame.updateResendDate(); // on remet la date de renvoi à plus tard
@@ -363,9 +372,10 @@ public class SerieCoucheTrame implements Service
 	 */
 	public synchronized void kill()
 	{
-		while(!closedFrames.isEmpty() && closedFrames.getFirst().needDeath())
+		while(!closedFrames.isEmpty() && conversations[closedFrames.getFirst()].needDeath())
 		{
-			IDutilises[closedFrames.getFirst().getID()] = true;  // cet ID est maintenant libre
+			int id = closedFrames.getFirst();
+			conversations[id].libre = true;  // cet ID est maintenant libre
 			closedFrames.removeFirst();
 		}
 	}

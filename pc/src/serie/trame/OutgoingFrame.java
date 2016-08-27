@@ -8,53 +8,31 @@ package serie.trame;
 
 public class OutgoingFrame extends Frame
 {
-	public final OutgoingCode code;
-	public final byte[] trame;
+	public OutgoingCode code;
+	public final byte[] trame = new byte[256]; // la taille maximale
+	public int tailleTrame;
 
-	/**
-	 * Trame de END_ORDER
-	 */
-	public OutgoingFrame(int compteur)
+	protected OutgoingFrame()
 	{
-		this.id = compteur;
 		code = OutgoingCode.END_ORDER;
-		trame = new byte[4];
-		trame[0] = OutgoingCode.END_ORDER.code;
-		trame[1] = 4; // longueur de la trame
-		trame[2] = (byte) compteur;
-		trame[3] = (byte) (trame[0] + trame[1] + trame[2]);
+		tailleTrame = 4;
 	}
 	
 	/**
 	 * Constructeur d'une trame à envoyer (NEW_ORDER ou VALUE_REQUEST)
 	 * @param o
 	 */
-	public OutgoingFrame(Order o, int id)
+	public OutgoingFrame(int id)
 	{
 		this.id = id;
-		int longueur = o.message.length + 4;
-		if(longueur > 255)
-			throw new IllegalArgumentException("La trame est trop grande ! ("+longueur+" octets)");
-		code = o.orderType == Order.Type.LONG ? OutgoingCode.NEW_ORDER : OutgoingCode.VALUE_REQUEST;
-		trame = new byte[longueur];
-		trame[0] = code.code;
-		trame[1] = (byte) (longueur);
 		trame[2] = (byte) id;
-		
-		for(int i = 0; i < o.message.length; i++)
-			trame[i+3] = o.message[i];
-		
-		int c = 0;
-		for(int i = 0; i < trame.length-1; i++)
-			c += trame[i];
-		trame[trame.length-1] = (byte) (c);
 	}
 
 	@Override
 	public String toString()
 	{
 		String m = "Outgoing : "+code+" // ";
-		for(int i = 0; i < trame.length; i++)
+		for(int i = 0; i < tailleTrame; i++)
 		{
 			String s = Integer.toHexString(trame[i]).toUpperCase();
 			if(s.length() == 1)
@@ -64,5 +42,30 @@ public class OutgoingFrame extends Frame
 		}
 		return m;
 	}
-	
+
+	/**
+	 * Met à jour la trame à envoyer (NEW_ORDER ou VALUE_REQUEST)
+	 * @param o
+	 */
+	public void update(Order o)
+	{
+		tailleTrame = o.message.length + 4;
+		if(tailleTrame > 255)
+			throw new IllegalArgumentException("La trame est trop grande ! ("+tailleTrame+" octets)");
+		code = o.orderType == Order.Type.LONG ? OutgoingCode.NEW_ORDER : OutgoingCode.VALUE_REQUEST;
+		trame[0] = code.code;
+		trame[1] = (byte) (tailleTrame);
+		
+		for(int i = 0; i < o.message.length; i++)
+			trame[i+3] = o.message[i];
+		
+		/**
+		 * Calcul du checksum
+		 */
+		int c = 0;
+		for(int i = 0; i < tailleTrame-2; i++)
+			c += trame[i];
+		trame[tailleTrame-1] = (byte) (c);
+	}
+
 }

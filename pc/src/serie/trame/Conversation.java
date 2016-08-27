@@ -6,24 +6,33 @@ public class Conversation
 {
 	private long deathDate; // date d'envoi + 2*timeout
 	private long resendDate; // date d'envoi + timeout
-	public final Ticket ticket;
+	public Ticket ticket;
+	public boolean libre = true;
 	private OutgoingFrame firstFrame;
-	public final Order.Type type;
+	public Order.Type type;
 	protected static int timeout;
 	
-	public Conversation(Order o, int id)
+	/**
+	 * Construction d'une conversation
+	 * @param id
+	 */
+	public Conversation(int id)
 	{
-		ticket = o.ticket;
-		resendDate = System.currentTimeMillis() + timeout;
-		type = o.orderType;
-		firstFrame = new OutgoingFrame(o, id);
+		firstFrame = new OutgoingFrame(id);
 	}
 	
+	/**
+	 * Mise à mort !
+	 */
 	public void setDeathDate()
 	{
 		deathDate = System.currentTimeMillis() + 2*timeout;
 	}
 	
+	/**
+	 * Mise à jour de la date de renvoi.
+	 * A chaque fois que la trame est renvoyée, on remet à jour cette date.
+	 */
 	public void updateResendDate()
 	{
 		resendDate = System.currentTimeMillis() + timeout;
@@ -65,11 +74,6 @@ public class Conversation
 		return (int) (deathDate - System.currentTimeMillis());
 	}
 
-	public int getID()
-	{
-		return firstFrame.id;
-	}
-	
 	public static void setTimeout(int timeout_p)
 	{
 		timeout = timeout_p;
@@ -78,5 +82,13 @@ public class Conversation
 	public OutgoingFrame getFirstTrame()
 	{
 		return firstFrame;
+	}
+
+	public void update(Order o)
+	{
+		ticket = o.ticket;
+		type = o.orderType;
+		firstFrame.update(o);
+		resendDate = System.currentTimeMillis() + timeout;
 	}
 }

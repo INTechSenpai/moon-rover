@@ -37,9 +37,7 @@ public class RobotReal extends Robot
 	public void useConfig(Config config)
 	{
 		super.useConfig(config);
-//		distanceDegagement = config.getInt(ConfigInfo.DISTANCE_DEGAGEMENT_ROBOT);
-//		tempsAttente = config.getInt(ConfigInfo.ATTENTE_ENNEMI_PART);
-		log.debug("Initialisation de l'odométrie et des constantes d'asservissement");
+		// TODO
 		cinematique = new Cinematique(0, 0, 0, true, 0, 0, 0, Speed.STANDARD);
 	}
 		

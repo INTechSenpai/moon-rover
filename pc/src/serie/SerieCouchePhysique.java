@@ -258,7 +258,8 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 			if(Config.debugSerieTrame)
 				log.debug(out);
 
-			output.write(out.trame);
+			// On n'envoie que les premiers "tailleTrame" octets
+			output.write(out.trame, 0, out.tailleTrame);
 		}
 		catch (Exception e)
 		{
