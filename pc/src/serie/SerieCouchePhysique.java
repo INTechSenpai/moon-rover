@@ -214,10 +214,17 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 		try
 		{
 			if(input.available() == 0)
-				Sleep.sleep(10); // On attend un tout petit peu, au cas où
-	
-			if(input.available() == 0)
-				throw new MissingCharacterException(); // visiblement on ne recevra rien de plus
+			{
+				if(Config.debugSerieTrame)
+					log.debug("On attend un caractère qui devrait arriver…");
+				long t = System.nanoTime(), dt = 0;
+
+				while(input.available() == 0 && dt < 100000) // on attend 0,1ms max
+					dt = System.nanoTime() - t;
+
+				if(input.available() == 0)
+					throw new MissingCharacterException(); // visiblement on ne recevra rien de plus
+			}
 	 
 			byte out = (byte) input.read();
 			if(Config.debugSerieTrame)
