@@ -39,6 +39,18 @@ protected:
 
 // ### Définition des ordres longs ###
 
+class RienL : public OrderLong, public Singleton<RienL>
+{
+public:
+	RienL(){}
+	void launch(const std::vector<uint8_t> & input)
+	{}
+	void onExecute(std::vector<uint8_t> & output)
+	{}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+};
+
 class PingOfDeath : public OrderLong, public Singleton<PingOfDeath>
 {
 public:
@@ -70,6 +82,51 @@ public:
 	{
 		Serial.println("End of Ping of death");
 	}
+};
+
+
+class Move : public OrderLong, public Singleton<Move>
+{
+public:
+	Move()
+	{
+		called = false;
+	}
+	void launch(const std::vector<uint8_t> & input)
+	{
+		beginTime = millis();
+	}
+	void onExecute(std::vector<uint8_t> & output)
+	{
+		uint32_t now = millis();
+		if ((now - beginTime) % 500 == 0)
+		{
+			output.push_back(now & (0xFF << 24));
+			output.push_back(now & (0xFF << 16));
+			output.push_back(now & (0xFF << 8));
+			output.push_back(now & (0xFF));
+		}
+	}
+	void terminate(std::vector<uint8_t> & output)
+	{
+		if (called)
+		{
+			output.push_back(ARRIVED);
+		}
+		else
+		{
+			output.push_back(BLOCKED);
+		}
+		called = true;
+	}
+	enum RETURN_STATE
+	{
+		ARRIVED = 0x00,
+		BLOCKED = 0x01
+	};
+private:
+	uint32_t beginTime;
+	bool called;
 };
 
 

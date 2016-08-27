@@ -30,6 +30,14 @@ public:
 
 // ### Définition des ordres à réponse immédiate ###
 
+class Rien : public OrderImmediate, public Singleton<Rien>
+{
+public:
+	Rien(){}
+	virtual void execute(std::vector<uint8_t> & io, bool asciiMode = false){}
+};
+
+
 class Ping : public OrderImmediate, public Singleton<Ping>
 {
 public:
@@ -46,6 +54,37 @@ public:
 			io.clear();
 			//Serial.print("LOLI");
 		}
+	}
+};
+
+
+class GetColor : public OrderImmediate, public Singleton<GetColor>
+{
+public:
+	GetColor() {}
+	virtual void execute(std::vector<uint8_t> & io, bool asciiMode = false) 
+	{
+		enum Side
+		{
+			INTECH = 0x01,
+			WINDOW = 0x02,
+			UNKNOWN = 0x03
+		};
+
+		io.clear();
+		
+		// DEBUG
+		static bool called = false;
+		static uint32_t t;
+		if (!called)
+		{
+			t = millis();
+			called = true;
+		}
+		if (millis() - t > 2000)
+			io.push_back(INTECH);
+		else
+			io.push_back(UNKNOWN);
 	}
 };
 

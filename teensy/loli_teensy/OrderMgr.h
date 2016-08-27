@@ -29,9 +29,11 @@ public:
 
 		// Ordres à réponse immédiate
 		immediateOrderList[0x5A] = &Ping::Instance();
+		immediateOrderList[0x13] = &GetColor::Instance();
 
 		// Ordres longs
-		longOrderList[0] = &PingOfDeath::Instance();
+		longOrderList[0x00] = &PingOfDeath::Instance();
+		longOrderList[0x0C] = &Move::Instance();
 	}
 
 	void communicate()
