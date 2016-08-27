@@ -123,17 +123,17 @@ public:
 						longOrderList[orderStack[i].orderID]->onExecute(output);
 						if (output.size() > 0)
 						{
-							Frame statusUpdate(STATUS_UPDATE, i, orderStack[i].orderID, output);
+							Frame statusUpdate(STATUS_UPDATE, i, output);
 							sendFrame(statusUpdate);
 						}
 						if (longOrderList[orderStack[i].orderID]->isFinished())
 						{
 							output.clear();
 							longOrderList[orderStack[i].orderID]->terminate(output);
-							Frame execEnd(EXECUTION_END, i, orderStack[i].orderID, output);
+							Frame execEnd(EXECUTION_END, i, output);
 							sendFrame(execEnd);
 							orderStack[i].runState = ENDING;
-							orderStack[i].frame = output;
+							orderStack[i].frame = execEnd;
 							orderStack[i].timestamp = millis();
 						}
 					}
@@ -230,7 +230,7 @@ private:
 
 				std::vector<uint8_t> data = frame.getData();
 				immediateOrderList[frame.getOrder()]->execute(data);
-				Frame answerFrame(VALUE_ANSWER, frame.getID(), frame.getOrder(), data);
+				Frame answerFrame(VALUE_ANSWER, frame.getID(), data);
 				sendFrame(answerFrame);
 				orderStack[frame.getID()].frame = answerFrame;
 				orderStack[frame.getID()].orderID = frame.getOrder();
@@ -258,8 +258,9 @@ private:
 					return; // TODO : throw error
 				}
 
-				longOrderList[frame.getOrder()]->launch(frame.getData());
-				Frame answerFrame(EXECUTION_BEGIN, frame.getID());
+				std::vector<uint8_t> data = frame.getData();
+				longOrderList[frame.getOrder()]->launch(data);
+				Frame answerFrame(EXECUTION_BEGIN, frame.getID(), data);
 				sendFrame(answerFrame);
 				orderStack[frame.getID()].frame = answerFrame;
 				orderStack[frame.getID()].orderID = frame.getOrder();
@@ -295,10 +296,18 @@ private:
 
 	void sendFrame(const Frame & frame)
 	{
-		std::vector<uint8_t> frameVect = frame.getFrameVect();
-		for (size_t i = 0; i < frameVect.size(); i++)
+		if (frame.isFrameValid())
 		{
-			HLserial.write(frameVect.at(i));
+			std::vector<uint8_t> frameVect = frame.getFrameVect();
+			for (size_t i = 0; i < frameVect.size(); i++)
+			{
+				HLserial.write(frameVect.at(i));
+			}
+		}
+		else
+		{
+			HLserial.println("erreur 13");
+			// TODO : throw error
 		}
 	}
 	

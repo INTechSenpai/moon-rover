@@ -55,25 +55,30 @@ public:
 		orderType = findOrderType(type);
 
 		id = frame.at(2);
-		if (frame.size() > 4)
-		{
-			if (type == EXECUTION_BEGIN || type == END_ORDER)
+
+		size_t dataBegin;
+		if (type == NEW_ORDER || type == VALUE_REQUEST)
+		{// Présence du champ "id order"
+			if (frame.size() < 5)
 			{
 				frameValid = false;
 				return;
 			}
-			order = frame.at(3);
-			for (unsigned int i = 4; i < frame.size() - 1; i++)
+			else
 			{
-				data.push_back(frame.at(i));
+				order = frame.at(3);
+				dataBegin = 4;
 			}
 		}
-		else if(type != EXECUTION_BEGIN && type != END_ORDER)
-		{
-			frameValid = false;
-			return;
+		else
+		{// Pas de champ "id order"
+			dataBegin = 3;
 		}
-		
+
+		for (size_t i = dataBegin; i < frame.size() - 1; i++)
+		{
+			data.push_back(frame.at(i));
+		}
 
 		updateLengthAndChecksum();
 		if (checksum == frame.at(frame.size() - 1))
@@ -90,16 +95,17 @@ public:
 		order = newOrder;
 		data = newData;
 		updateLengthAndChecksum();
-		frameValid = (type != EXECUTION_BEGIN && type != END_ORDER);
+		frameValid = (type == NEW_ORDER || type == VALUE_REQUEST);
 	}
 
-	Frame(FrameType newType, uint8_t newId)
+	Frame(FrameType newType, uint8_t newId, const std::vector<uint8_t> & newData)
 	{
 		type = newType;
 		orderType = findOrderType(newType);
 		id = newId;
+		data = newData;
 		updateLengthAndChecksum();
-		frameValid = (type == EXECUTION_BEGIN || type == END_ORDER);
+		frameValid = (type != NEW_ORDER && type != VALUE_REQUEST);
 	}
 
 	bool isFrameValid() const
@@ -113,6 +119,7 @@ public:
 		updateLengthAndChecksum();
 	}
 
+	/*
 	void setFrameType(FrameType newFrameType)
 	{
 		if (orderType == findOrderType(newFrameType))
@@ -125,6 +132,7 @@ public:
 			//TODO : throw error
 		}
 	}
+	*/
 
 	std::vector<uint8_t> const & getData() const
 	{
@@ -157,13 +165,13 @@ public:
 		output.push_back((uint8_t)type);
 		output.push_back(length);
 		output.push_back(id);
-		if (type != EXECUTION_BEGIN && type != END_ORDER)
+		if (type == NEW_ORDER || type == VALUE_REQUEST)
 		{
 			output.push_back(order);
-			for (unsigned int i = 0; i < data.size(); i++)
-			{
-				output.push_back(data.at(i));
-			}
+		}
+		for (size_t i = 0; i < data.size(); i++)
+		{
+			output.push_back(data.at(i));
 		}
 		output.push_back(checksum);
 		return output;
@@ -181,7 +189,7 @@ private:
 	void updateLengthAndChecksum()
 	{
 		length = 4 + data.size();
-		if (type != EXECUTION_BEGIN && type != END_ORDER)
+		if (type == NEW_ORDER || type == VALUE_REQUEST)
 		{
 			length++;
 		}
@@ -190,7 +198,7 @@ private:
 		checksum += (uint8_t)type;
 		checksum += length;
 		checksum += id;
-		if (type != EXECUTION_BEGIN && type != END_ORDER)
+		if (type == NEW_ORDER || type == VALUE_REQUEST)
 		{
 			checksum += order;
 		}
