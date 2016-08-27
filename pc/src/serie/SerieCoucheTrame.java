@@ -379,4 +379,9 @@ public class SerieCoucheTrame implements Service
 			closedFrames.removeFirst();
 		}
 	}
+
+	public void init()
+	{
+		serie.init();
+	}
 }

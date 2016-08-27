@@ -15,4 +15,5 @@ public interface SerialInterface
 	public void close();
 	public boolean available();
 	public int read() throws MissingCharacterException;
+	public void init();
 }

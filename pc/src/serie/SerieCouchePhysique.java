@@ -290,4 +290,11 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 		baudrate = config.getInt(ConfigInfo.BAUDRATE);
 	}
 
+	@Override
+	public void init()
+	{
+		if(!portOuvert)
+			openPort();
+	}
+
 }

@@ -52,4 +52,8 @@ public class SerialSimulation implements SerialInterface, Service {
 	public void updateConfig(Config config)
 	{}
 
+	@Override
+	public void init()
+	{}
+
 }
