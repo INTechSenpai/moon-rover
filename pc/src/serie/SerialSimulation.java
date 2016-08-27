@@ -18,6 +18,7 @@ public class SerialSimulation implements SerialInterface, Service {
 	public SerialSimulation(Log log)
 	{
 		this.log = log;
+		log.warning("LA SÉRIE EST SIMULÉE !");
 	}
 
 	@Override

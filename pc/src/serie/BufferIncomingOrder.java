@@ -40,6 +40,7 @@ public class BufferIncomingOrder implements Service
 	 */
 	public synchronized void add(Paquet elem)
 	{
+		log.debug("Réception d'un paquet haut niveau !");
 		buffer.add(elem);
 		if(buffer.size() > 5)
 			log.critical("Ordres entrants traités trop lentement !");

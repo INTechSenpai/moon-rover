@@ -90,5 +90,6 @@ public class Conversation
 		type = o.orderType;
 		firstFrame.update(o);
 		resendDate = System.currentTimeMillis() + timeout;
+		System.out.println("Création d'une conversation : resendDate = "+resendDate);
 	}
 }
