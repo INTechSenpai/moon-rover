@@ -61,9 +61,9 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	/**
 	 * Ouverture du port
 	 */
-	protected void openPort()
+	protected synchronized void openPort()
 	{
-		if(!searchPort())
+		if(!portOuvert && !searchPort())
 		{
 			/**
 			 * Suppression des verrous qui empêchent parfois la connexion
@@ -192,8 +192,7 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	 */
 	public boolean available()
 	{
-		if(!portOuvert)
-			openPort();
+		openPort();
 
 		try {
 			return input.available() != 0;
@@ -246,8 +245,7 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	 */
 	public synchronized void communiquer(OutgoingFrame out)
 	{
-		if(!portOuvert)
-			openPort();
+		openPort();
 
 		/**
 		 * Un appel à une série fermée ne devrait jamais être effectué.
@@ -298,8 +296,7 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	@Override
 	public void init()
 	{
-		if(!portOuvert)
-			openPort();
+		openPort();
 	}
 
 }
