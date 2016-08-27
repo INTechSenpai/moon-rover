@@ -1,5 +1,6 @@
 package serie.trame;
 
+import enums.SerialProtocol;
 import serie.Ticket;
 
 /**
@@ -17,19 +18,20 @@ public class Order
 	}
 
 	public byte[] message;
-	public Type orderType;
 	public Ticket ticket;
+	public SerialProtocol.OutOrder ordre;
 	
-	public Order(byte[] message, Type orderType, Ticket ticket)
+	public Order(byte[] message, SerialProtocol.OutOrder ordre, Ticket ticket)
 	{
+		message[0] = ordre.code;
 		this.message = message;
-		this.orderType = orderType;
 		this.ticket = ticket;
+		this.ordre = ordre;
 	}
 
-	public Order(byte[] message, Type orderType)
+	public Order(byte[] message, SerialProtocol.OutOrder ordre)
 	{
-		this(message, orderType, new Ticket());
+		this(message, ordre, new Ticket());
 	}
 
 }

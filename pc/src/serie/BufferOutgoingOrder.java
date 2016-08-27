@@ -38,7 +38,6 @@ public class BufferOutgoingOrder implements Service
 	private volatile LinkedList<Order> bufferTrajectoireCourbe = new LinkedList<Order>();
 	private volatile boolean stop = false;
 	private final static int PARAM = 1;
-	private final static int COMMANDE = 0;
 	
 	/**
 	 * Le buffer est-il vide?
@@ -64,8 +63,7 @@ public class BufferOutgoingOrder implements Service
 			stop = false;
 			bufferTrajectoireCourbe.clear(); // on annule tout mouvement
 			out = new byte[1];
-			out[COMMANDE] = SerialProtocol.OutOrder.STOP.code;
-			return new Order(out, SerialProtocol.OutOrder.STOP.type);
+			return new Order(out, SerialProtocol.OutOrder.STOP);
 		}
 		else if(!bufferTrajectoireCourbe.isEmpty())
 		{
@@ -83,14 +81,15 @@ public class BufferOutgoingOrder implements Service
 	 */
 	public synchronized Ticket avancer(int distance, Speed vitesse)
 	{
+		SerialProtocol.OutOrder ordre;
 		if(Config.debugSerie)
 			log.debug("Avance de "+distance);
 		byte[] out = new byte[5];
 		if(distance >= 0)
-			out[COMMANDE] = SerialProtocol.OutOrder.AVANCER.code;
+			ordre = SerialProtocol.OutOrder.AVANCER;
 		else
 		{
-			out[COMMANDE] = SerialProtocol.OutOrder.AVANCER_NEG.code;
+			ordre = SerialProtocol.OutOrder.AVANCER_NEG;
 			distance = -distance;
 		}
 		out[PARAM] = (byte) (distance >> 8);
@@ -99,7 +98,7 @@ public class BufferOutgoingOrder implements Service
 		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
 //		log.debug("Vitesse : "+vitesse.translationalSpeed*1000);
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.AVANCER.type, t));
+		bufferBassePriorite.add(new Order(out, ordre, t));
 		notify();
 		return t;
 	}
@@ -114,11 +113,12 @@ public class BufferOutgoingOrder implements Service
 		if(Config.debugSerie)
 			log.debug("Avance (même sens) de "+distance);
 		byte[] out = new byte[5];
+		SerialProtocol.OutOrder order;
 		if(distance >= 0)
-			out[COMMANDE] = SerialProtocol.OutOrder.AVANCER_IDEM.code;
+			order = SerialProtocol.OutOrder.AVANCER_IDEM;
 		else
 		{
-			out[COMMANDE] = SerialProtocol.OutOrder.AVANCER_REVERSE.code;
+			order = SerialProtocol.OutOrder.AVANCER_REVERSE;
 			distance = -distance;
 		}
 		out[PARAM] = (byte) (distance >> 8);
@@ -126,7 +126,7 @@ public class BufferOutgoingOrder implements Service
 		out[PARAM+2] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
 		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.AVANCER_REVERSE.type, t));
+		bufferBassePriorite.add(new Order(out, order, t));
 		notify();
 		return t;
 	}
@@ -150,12 +150,11 @@ public class BufferOutgoingOrder implements Service
 	{
 		ActuatorOrder elem2 = elem.getSymetrie(symetrie);
 		byte[] out = new byte[4];
-		out[COMMANDE] = SerialProtocol.OutOrder.ACTIONNEUR.code;
 		out[PARAM] = (byte) (elem2.id);
 		out[PARAM + 1] = (byte) (elem2.angle >> 8);
 		out[PARAM + 2] = (byte) (elem2.angle & 0xFF);
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.ACTIONNEUR.type, t));
+		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.ACTIONNEUR, t));
 		notify();
 		return t;
 	}
@@ -166,9 +165,8 @@ public class BufferOutgoingOrder implements Service
 	public synchronized Ticket demandeCouleur()
 	{
 		byte[] out = new byte[1];
-		out[COMMANDE] = SerialProtocol.OutOrder.ASK_COLOR.code;
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.ASK_COLOR.type, t));
+		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.ASK_COLOR, t));
 		notify();
 		return t;
 	}
@@ -179,8 +177,7 @@ public class BufferOutgoingOrder implements Service
 	public synchronized void demandeNotifDebutMatch()
 	{
 		byte[] out = new byte[1];
-		out[COMMANDE] = SerialProtocol.OutOrder.MATCH_BEGIN.code;
-		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.MATCH_BEGIN.type));
+		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.MATCH_BEGIN));
 		notify();
 	}
 
@@ -190,8 +187,7 @@ public class BufferOutgoingOrder implements Service
 	public synchronized void demandeNotifFinMatch()
 	{
 		byte[] out = new byte[1];
-		out[COMMANDE] = SerialProtocol.OutOrder.MATCH_END.code;
-		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.MATCH_END.type));
+		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.MATCH_END));
 		notify();
 	}
 
@@ -201,8 +197,7 @@ public class BufferOutgoingOrder implements Service
 	public synchronized void asserOff()
 	{
 		byte[] out = new byte[1];
-		out[COMMANDE] = SerialProtocol.OutOrder.ASSER_OFF.code;
-		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.ASSER_OFF.type));
+		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.ASSER_OFF));
 		notify();
 	}
 
@@ -227,17 +222,18 @@ public class BufferOutgoingOrder implements Service
 
 		for(int i = 0; i < arc.getNbPoints(); i++)
 		{
+			SerialProtocol.OutOrder order;
 //			log.debug(i);
 			byte[] out = new byte[10];
 			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
 			{
 //				log.debug("ARC ARRET");
-				out[COMMANDE] = SerialProtocol.OutOrder.SEND_ARC_ARRET.code;
+				order = SerialProtocol.OutOrder.SEND_ARC_ARRET;
 			}
 			else
 			{
 //				log.debug("ARC");
-				out[COMMANDE] = SerialProtocol.OutOrder.SEND_ARC.code;
+				order = SerialProtocol.OutOrder.SEND_ARC;
 			}
 			out[PARAM] = (byte) (((int)(arc.getPoint(i).getPosition().x)+1500) >> 4);
 			out[PARAM+1] = (byte) ((((int)(arc.getPoint(i).getPosition().x)+1500) << 4) + ((int)(arc.getPoint(i).getPosition().y) >> 8));
@@ -261,7 +257,7 @@ public class BufferOutgoingOrder implements Service
 			out[PARAM+7] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) >> 8);
 			out[PARAM+8] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) & 0xFF);
 			
-			bufferTrajectoireCourbe.add(new Order(out, SerialProtocol.OutOrder.SEND_ARC.type));
+			bufferTrajectoireCourbe.add(new Order(out, order));
 		}
 		notify();			
 	}
@@ -273,8 +269,7 @@ public class BufferOutgoingOrder implements Service
 	public Order getPing()
 	{
 		byte[] out = new byte[1];
-		out[0] = SerialProtocol.OutOrder.PING.code;
-		Order message = new Order(out, SerialProtocol.OutOrder.PING.type);
+		Order message = new Order(out, SerialProtocol.OutOrder.PING);
 		return message;
 	}
 

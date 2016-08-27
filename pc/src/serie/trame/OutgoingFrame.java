@@ -52,7 +52,7 @@ public class OutgoingFrame extends Frame
 		tailleTrame = o.message.length + 4;
 		if(tailleTrame > 255)
 			throw new IllegalArgumentException("La trame est trop grande ! ("+tailleTrame+" octets)");
-		code = o.orderType == Order.Type.LONG ? OutgoingCode.NEW_ORDER : OutgoingCode.VALUE_REQUEST;
+		code = o.ordre.type == Order.Type.LONG ? OutgoingCode.NEW_ORDER : OutgoingCode.VALUE_REQUEST;
 		trame[0] = code.code;
 		trame[1] = (byte) (tailleTrame);
 		

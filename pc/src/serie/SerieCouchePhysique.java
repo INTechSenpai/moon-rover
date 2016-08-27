@@ -222,7 +222,7 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 				while(input.available() == 0 && dt < 100000) // on attend 0,1ms max
 					dt = System.nanoTime() - t;
 
-				if(input.available() == 0)
+				if(dt >= 100000)
 					throw new MissingCharacterException(); // visiblement on ne recevra rien de plus
 			}
 	 
@@ -282,7 +282,7 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 			{
 				log.critical("Pas trouvé... On recommence");
 				// On laisse la série respirer un peu
-				Sleep.sleep(200);
+				Sleep.sleep(100);
 			}
 			// On a retrouvé la série, on renvoie le message
 			communiquer(out);

@@ -1,5 +1,6 @@
 package serie.trame;
 
+import enums.SerialProtocol;
 import serie.Ticket;
 
 public class Conversation
@@ -9,8 +10,8 @@ public class Conversation
 	public Ticket ticket;
 	public boolean libre = true;
 	private OutgoingFrame firstFrame;
-	public Order.Type type;
 	protected static int timeout;
+	public SerialProtocol.OutOrder origine;
 	
 	/**
 	 * Construction d'une conversation
@@ -86,8 +87,8 @@ public class Conversation
 
 	public void update(Order o)
 	{
+		origine = o.ordre;
 		ticket = o.ticket;
-		type = o.orderType;
 		firstFrame.update(o);
 		resendDate = System.currentTimeMillis() + timeout;
 	}

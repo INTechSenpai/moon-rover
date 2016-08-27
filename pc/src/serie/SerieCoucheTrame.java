@@ -132,23 +132,21 @@ public class SerieCoucheTrame implements Service
 	public Paquet readData()
 	{
 		IncomingFrame f = null;
-		Ticket t = null;
+		Paquet p = null;
 		boolean restart;
 		do {
 			restart = false;
 			try {
 				f = readFrame();
-				log.debug("Debut process");
-				t = processFrame(f);
-				log.debug("fin process");
-				if(t == null) // c'est une trame de signalisation
+				p = processFrame(f);
+				if(p == null) // c'est une trame de signalisation
 					restart = true;
 			} catch (Exception e) {
 				log.warning(e);
 				restart = true;
 			}
 		} while(restart);
-		return new Paquet(f.message, t);
+		return p;
 	}
 	
 	/**
@@ -156,7 +154,7 @@ public class SerieCoucheTrame implements Service
 	 * Renvoie le ticket associé à la conversation
 	 * @param f
 	 */
-	public synchronized Ticket processFrame(IncomingFrame f) throws ProtocolException
+	public synchronized Paquet processFrame(IncomingFrame f) throws ProtocolException
 	{
 		Iterator<Integer> it = waitingFrames.iterator();
 		while(it.hasNext())
@@ -168,7 +166,7 @@ public class SerieCoucheTrame implements Service
 				// On a le EXECUTION_BEGIN d'une frame qui l'attendait
 				if(f.code == IncomingCode.EXECUTION_BEGIN)
 				{
-					if(waiting.type == Order.Type.LONG)
+					if(waiting.origine.type == Order.Type.LONG)
 					{
 						if(Config.debugSerie)
 							log.debug("EXECUTION_BEGIN reçu");
@@ -177,11 +175,11 @@ public class SerieCoucheTrame implements Service
 						return null;
 					}
 					else
-						throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.type);
+						throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.origine.type);
 				}
 				else if(f.code == IncomingCode.VALUE_ANSWER)
 				{
-					if(waiting.type == Order.Type.SHORT)
+					if(waiting.origine.type == Order.Type.SHORT)
 					{
 						if(Config.debugSerie)
 							log.debug("VALUE_ANSWER reçu");
@@ -190,10 +188,10 @@ public class SerieCoucheTrame implements Service
 						it.remove();
 						waiting.setDeathDate(); // tes jours sont comptés…
 						closedFrames.add(id);
-						return waiting.ticket;
+						return new Paquet(f.message, waiting.ticket, waiting.origine);
 					}
 					else
-						throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.type);
+						throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.origine.type);
 				}
 				else
 					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_BEGIN ou VALUE_ANSWER !");
@@ -223,14 +221,14 @@ public class SerieCoucheTrame implements Service
 					// et on retire la trame des trames en cours
 					it.remove();
 					closedFrames.add(id);
-					return pending.ticket;
+					return new Paquet(f.message, pending.ticket, pending.origine);
 				}
 				else if(f.code == IncomingCode.STATUS_UPDATE)
 				{
 					if(Config.debugSerie)
 						log.debug("STATUS_UPDATE reçu");
 					
-					return pending.ticket;
+					return new Paquet(f.message, pending.ticket, pending.origine);
 				}
 				else
 					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_END ou STATUS_UPDATE !");
@@ -247,7 +245,7 @@ public class SerieCoucheTrame implements Service
 			if(id == f.id)
 			{
 				// On avait déjà reçu l'EXECUTION_END. On ignore ce message
-				if(f.code == IncomingCode.EXECUTION_END && closed.type == Order.Type.LONG)
+				if(f.code == IncomingCode.EXECUTION_END && closed.origine.type == Order.Type.LONG)
 				{
 					if(Config.debugSerie)
 						log.warning("EXECUTION_END déjà reçu");
@@ -255,7 +253,7 @@ public class SerieCoucheTrame implements Service
 				}
 				// on ne peut pas recevoir de VALUE_ANSWER
 				else
-					throw new ProtocolException(f.code+" reçu pour une trame "+closed.type+" finie !");
+					throw new ProtocolException(f.code+" reçu pour une trame "+closed.origine.type+" finie !");
 			}
 		}
 		
@@ -273,7 +271,6 @@ public class SerieCoucheTrame implements Service
 	{
 		synchronized(serie)
 		{
-			log.debug("Debut readframe");
 			// Attente des données…
 			if(!serie.available())
 				try {
@@ -295,7 +292,7 @@ public class SerieCoucheTrame implements Service
 			for(int i = 0; i < message.length; i++)
 				message[i] = serie.read();
 			int checksum = serie.read();
-			log.debug("fin readframe");
+
 			return new IncomingFrame(code, id, checksum, longueur, message);
 		}
 	}
