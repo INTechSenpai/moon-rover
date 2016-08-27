@@ -63,7 +63,7 @@ public class OutgoingFrame extends Frame
 		 * Calcul du checksum
 		 */
 		int c = 0;
-		for(int i = 0; i < tailleTrame-2; i++)
+		for(int i = 0; i < tailleTrame-1; i++)
 			c += trame[i];
 		trame[tailleTrame-1] = (byte) (c);
 	}
