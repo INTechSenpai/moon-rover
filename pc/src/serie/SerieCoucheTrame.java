@@ -138,7 +138,9 @@ public class SerieCoucheTrame implements Service
 			restart = false;
 			try {
 				f = readFrame();
+				log.debug("Debut process");
 				t = processFrame(f);
+				log.debug("fin process");
 				if(t == null) // c'est une trame de signalisation
 					restart = true;
 			} catch (Exception e) {
@@ -271,6 +273,7 @@ public class SerieCoucheTrame implements Service
 	{
 		synchronized(serie)
 		{
+			log.debug("Debut readframe");
 			// Attente des données…
 			if(!serie.available())
 				try {
@@ -284,7 +287,7 @@ public class SerieCoucheTrame implements Service
 
 			if(longueur < 4 || longueur > 255)
 				throw new IllegalArgumentException("Mauvaise longueur : "+longueur);
-			else if(longueur > 4 && code == IncomingCode.EXECUTION_BEGIN.codeInt)
+			else if(longueur > 4 && code == IncomingCode.EXECUTION_BEGIN.code)
 				throw new IllegalArgumentException("Trame EXECUTION_BEGIN de longueur incorrecte ("+longueur+")");
 			
 			int id = serie.read();
@@ -292,6 +295,7 @@ public class SerieCoucheTrame implements Service
 			for(int i = 0; i < message.length; i++)
 				message[i] = serie.read();
 			int checksum = serie.read();
+			log.debug("fin readframe");
 			return new IncomingFrame(code, id, checksum, longueur, message);
 		}
 	}

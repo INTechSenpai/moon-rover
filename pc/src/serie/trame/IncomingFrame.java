@@ -23,14 +23,15 @@ public class IncomingFrame extends Frame
 		/**
 		 * On cherche à quel type de trame correspond la valeur reçue
 		 */
-		for(IncomingCode c : IncomingCode.values())
-			if(code == c.codeInt)
-			{
-				this.code = c;
-				break;
-			}
-
-		if(this.code == null)
+		if(code == IncomingCode.EXECUTION_BEGIN.code)
+			this.code = IncomingCode.EXECUTION_BEGIN;
+		else if(code == IncomingCode.EXECUTION_END.code)
+			this.code = IncomingCode.EXECUTION_END;
+		else if(code == IncomingCode.STATUS_UPDATE.code)
+			this.code = IncomingCode.STATUS_UPDATE;
+		else if(code == IncomingCode.VALUE_ANSWER.code)
+			this.code = IncomingCode.VALUE_ANSWER;
+		else
 			throw new IllegalArgumentException("Type de trame inconnu : "+code);
 
 		this.id = id;

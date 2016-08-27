@@ -15,13 +15,11 @@ public abstract class Frame
 		STATUS_UPDATE(0xFA),
 		VALUE_ANSWER(0xF9);
 		
-		public final byte code;
-		public final int codeInt;
+		public final int code;
 		
 		private IncomingCode(int code)
 		{
-			this.code = (byte) code;
-			codeInt = code;
+			this.code = code;
 		}
 	}
 
@@ -32,12 +30,10 @@ public abstract class Frame
 		VALUE_REQUEST(0xFD);
 		
 		public final byte code;
-		public final int codeInt;
 		
 		private OutgoingCode(int code)
 		{
 			this.code = (byte) code;
-			codeInt = code;
 		}
 	}
 
