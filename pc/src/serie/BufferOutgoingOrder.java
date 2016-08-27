@@ -8,7 +8,7 @@ import robot.Speed;
 import robot.actuator.ActuatorOrder;
 import serie.trame.Order;
 import container.Service;
-import enums.SerialProtocol;
+import enums.SerialProtocol.OutOrder;
 import utils.Config;
 import utils.Log;
 
@@ -33,11 +33,9 @@ public class BufferOutgoingOrder implements Service
 		
 	private boolean symetrie;
 	
-	// priorité 0 = priorité minimale
 	private volatile LinkedList<Order> bufferBassePriorite = new LinkedList<Order>();
 	private volatile LinkedList<Order> bufferTrajectoireCourbe = new LinkedList<Order>();
 	private volatile boolean stop = false;
-	private final static int PARAM = 1;
 	
 	/**
 	 * Le buffer est-il vide?
@@ -57,48 +55,42 @@ public class BufferOutgoingOrder implements Service
 		if(bufferTrajectoireCourbe.size() + bufferBassePriorite.size() > 10)
 			log.warning("On n'arrive pas à envoyer les ordres assez vites (ordres TC en attente : "+bufferTrajectoireCourbe.size()+", autres en attente : "+bufferBassePriorite.size()+")");
 		
-		byte[] out;
 		if(stop)
 		{
 			stop = false;
 			bufferTrajectoireCourbe.clear(); // on annule tout mouvement
-			out = new byte[1];
-			return new Order(out, SerialProtocol.OutOrder.STOP);
+			return new Order(OutOrder.STOP);
 		}
 		else if(!bufferTrajectoireCourbe.isEmpty())
-		{
 			return bufferTrajectoireCourbe.poll();
-		}
 		else
-		{
 			return bufferBassePriorite.poll();
-		}
 	}
 	
 	/**
 	 * Ajout d'une demande d'ordre d'avancer pour la série
-	 * @param elem
+	 * @0 elem
 	 */
 	public synchronized Ticket avancer(int distance, Speed vitesse)
 	{
-		SerialProtocol.OutOrder ordre;
+		OutOrder ordre;
 		if(Config.debugSerie)
 			log.debug("Avance de "+distance);
-		byte[] out = new byte[5];
+		byte[] data = new byte[4];
 		if(distance >= 0)
-			ordre = SerialProtocol.OutOrder.AVANCER;
+			ordre = OutOrder.AVANCER;
 		else
 		{
-			ordre = SerialProtocol.OutOrder.AVANCER_NEG;
+			ordre = OutOrder.AVANCER_NEG;
 			distance = -distance;
 		}
-		out[PARAM] = (byte) (distance >> 8);
-		out[PARAM+1] = (byte) (distance);
-		out[PARAM+2] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
-		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
+		data[0] = (byte) (distance >> 8);
+		data[1] = (byte) (distance);
+		data[2] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
+		data[3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
 //		log.debug("Vitesse : "+vitesse.translationalSpeed*1000);
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(out, ordre, t));
+		bufferBassePriorite.add(new Order(data, ordre, t));
 		notify();
 		return t;
 	}
@@ -106,27 +98,27 @@ public class BufferOutgoingOrder implements Service
 	/**
 	 * Ajout d'une demande d'ordre d'avancer pour la série
 	 * Si on avançait précédement, on va avancer. Si on reculait, on va reculer.
-	 * @param elem
+	 * @0 elem
 	 */
 	public synchronized Ticket avancerMemeSens(int distance, Speed vitesse)
 	{
 		if(Config.debugSerie)
 			log.debug("Avance (même sens) de "+distance);
-		byte[] out = new byte[5];
-		SerialProtocol.OutOrder order;
+		byte[] data = new byte[4];
+		OutOrder order;
 		if(distance >= 0)
-			order = SerialProtocol.OutOrder.AVANCER_IDEM;
+			order = OutOrder.AVANCER_IDEM;
 		else
 		{
-			order = SerialProtocol.OutOrder.AVANCER_REVERSE;
+			order = OutOrder.AVANCER_REVERSE;
 			distance = -distance;
 		}
-		out[PARAM] = (byte) (distance >> 8);
-		out[PARAM+1] = (byte) (distance);
-		out[PARAM+2] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
-		out[PARAM+3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
+		data[0] = (byte) (distance >> 8);
+		data[1] = (byte) (distance);
+		data[2] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
+		data[3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(out, order, t));
+		bufferBassePriorite.add(new Order(data, order, t));
 		notify();
 		return t;
 	}
@@ -144,17 +136,17 @@ public class BufferOutgoingOrder implements Service
 	
 	/**
 	 * Ajout d'une demande d'ordre d'actionneurs pour la série
-	 * @param elem
+	 * @0 elem
 	 */
 	public synchronized Ticket utiliseActionneurs(ActuatorOrder elem)
 	{
 		ActuatorOrder elem2 = elem.getSymetrie(symetrie);
-		byte[] out = new byte[4];
-		out[PARAM] = (byte) (elem2.id);
-		out[PARAM + 1] = (byte) (elem2.angle >> 8);
-		out[PARAM + 2] = (byte) (elem2.angle & 0xFF);
+		byte[] data = new byte[3];
+		data[0] = (byte) (elem2.id);
+		data[1] = (byte) (elem2.angle >> 8);
+		data[2] = (byte) (elem2.angle & 0xFF);
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.ACTIONNEUR, t));
+		bufferBassePriorite.add(new Order(data, OutOrder.ACTIONNEUR, t));
 		notify();
 		return t;
 	}
@@ -164,9 +156,8 @@ public class BufferOutgoingOrder implements Service
 	 */
 	public synchronized Ticket demandeCouleur()
 	{
-		byte[] out = new byte[1];
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.ASK_COLOR, t));
+		bufferBassePriorite.add(new Order(OutOrder.ASK_COLOR, t));
 		notify();
 		return t;
 	}
@@ -176,8 +167,7 @@ public class BufferOutgoingOrder implements Service
 	 */
 	public synchronized void demandeNotifDebutMatch()
 	{
-		byte[] out = new byte[1];
-		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.MATCH_BEGIN));
+		bufferBassePriorite.add(new Order(OutOrder.MATCH_BEGIN));
 		notify();
 	}
 
@@ -186,8 +176,7 @@ public class BufferOutgoingOrder implements Service
 	 */
 	public synchronized void demandeNotifFinMatch()
 	{
-		byte[] out = new byte[1];
-		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.MATCH_END));
+		bufferBassePriorite.add(new Order(OutOrder.MATCH_END));
 		notify();
 	}
 
@@ -196,8 +185,7 @@ public class BufferOutgoingOrder implements Service
 	 */
 	public synchronized void asserOff()
 	{
-		byte[] out = new byte[1];
-		bufferBassePriorite.add(new Order(out, SerialProtocol.OutOrder.ASSER_OFF));
+		bufferBassePriorite.add(new Order(OutOrder.ASSER_OFF));
 		notify();
 	}
 
@@ -213,7 +201,7 @@ public class BufferOutgoingOrder implements Service
 	
 	/**
 	 * Envoi de tous les arcs élémentaires d'un arc courbe
-	 * @param arc
+	 * @0 arc
 	 */
 	public synchronized void envoieArcCourbe(ArcCourbe arc)
 	{
@@ -222,22 +210,22 @@ public class BufferOutgoingOrder implements Service
 
 		for(int i = 0; i < arc.getNbPoints(); i++)
 		{
-			SerialProtocol.OutOrder order;
+			OutOrder order;
 //			log.debug(i);
-			byte[] out = new byte[10];
+			byte[] data = new byte[9];
 			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
 			{
 //				log.debug("ARC ARRET");
-				order = SerialProtocol.OutOrder.SEND_ARC_ARRET;
+				order = OutOrder.SEND_ARC_ARRET;
 			}
 			else
 			{
 //				log.debug("ARC");
-				order = SerialProtocol.OutOrder.SEND_ARC;
+				order = OutOrder.SEND_ARC;
 			}
-			out[PARAM] = (byte) (((int)(arc.getPoint(i).getPosition().x)+1500) >> 4);
-			out[PARAM+1] = (byte) ((((int)(arc.getPoint(i).getPosition().x)+1500) << 4) + ((int)(arc.getPoint(i).getPosition().y) >> 8));
-			out[PARAM+2] = (byte) ((int)(arc.getPoint(i).getPosition().y));
+			data[0] = (byte) (((int)(arc.getPoint(i).getPosition().x)+1500) >> 4);
+			data[1] = (byte) ((((int)(arc.getPoint(i).getPosition().x)+1500) << 4) + ((int)(arc.getPoint(i).getPosition().y) >> 8));
+			data[2] = (byte) ((int)(arc.getPoint(i).getPosition().y));
 			double angle = arc.getPoint(i).orientation;
 			if(!arc.getPoint(0).enMarcheAvant)
 				angle += Math.PI;
@@ -248,29 +236,18 @@ public class BufferOutgoingOrder implements Service
 
 			long theta = (long) (angle*1000);
 
-			out[PARAM+3] = (byte) (theta >> 8);
-			out[PARAM+4] = (byte) theta;
+			data[3] = (byte) (theta >> 8);
+			data[4] = (byte) theta;
 			
-			out[PARAM+5] = (byte) ((Math.round(arc.getPoint(i).courbure+20)*1000) >> 8);
-			out[PARAM+6] = (byte) ((Math.round(arc.getPoint(i).courbure+20)*1000) & 0xFF);
+			data[5] = (byte) ((Math.round(arc.getPoint(i).courbure+20)*1000) >> 8);
+			data[6] = (byte) ((Math.round(arc.getPoint(i).courbure+20)*1000) & 0xFF);
 			
-			out[PARAM+7] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) >> 8);
-			out[PARAM+8] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) & 0xFF);
+			data[7] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) >> 8);
+			data[8] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) & 0xFF);
 			
-			bufferTrajectoireCourbe.add(new Order(out, order));
+			bufferTrajectoireCourbe.add(new Order(data, order));
 		}
 		notify();			
-	}
-
-	/**
-	 * Renvoie un ping
-	 * @return
-	 */
-	public Order getPing()
-	{
-		byte[] out = new byte[1];
-		Order message = new Order(out, SerialProtocol.OutOrder.PING);
-		return message;
 	}
 
 }

@@ -1,6 +1,6 @@
 package serie.trame;
 
-import enums.SerialProtocol;
+import enums.SerialProtocol.OutOrder;
 import serie.Ticket;
 
 public class Conversation
@@ -11,7 +11,7 @@ public class Conversation
 	public boolean libre = true;
 	private OutgoingFrame firstFrame;
 	protected static int timeout;
-	public SerialProtocol.OutOrder origine;
+	public OutOrder origine;
 	
 	/**
 	 * Construction d'une conversation

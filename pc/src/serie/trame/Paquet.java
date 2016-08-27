@@ -1,6 +1,6 @@
 package serie.trame;
 
-import enums.SerialProtocol;
+import enums.SerialProtocol.OutOrder;
 import serie.Ticket;
 
 /**
@@ -11,11 +11,11 @@ import serie.Ticket;
 
 public class Paquet
 {
-	public SerialProtocol.OutOrder origine;
+	public OutOrder origine;
 	public int[] message;
 	public Ticket ticket;
 	
-	public Paquet(int[] message, Ticket ticket, SerialProtocol.OutOrder origine)
+	public Paquet(int[] message, Ticket ticket, OutOrder origine)
 	{
 		this.origine = origine;
 		this.message = message;
