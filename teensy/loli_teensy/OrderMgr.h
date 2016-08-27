@@ -28,7 +28,7 @@ public:
 		 *	################################################## */
 
 		// Ordres à réponse immédiate
-		immediateOrderList[0] = &Ping::Instance();
+		immediateOrderList[0x5A] = &Ping::Instance();
 
 		// Ordres longs
 		longOrderList[0] = &PingOfDeath::Instance();
@@ -296,11 +296,10 @@ private:
 	void sendFrame(const Frame & frame)
 	{
 		std::vector<uint8_t> frameVect = frame.getFrameVect();
-		for (unsigned int i = 0; i < frameVect.size(); i++)
+		for (size_t i = 0; i < frameVect.size(); i++)
 		{
-			HLserial.print(frameVect.at(i));
+			HLserial.write(frameVect.at(i));
 		}
-		HLserial.println();
 	}
 	
 	FrameHistory orderStack[STACK_SIZE];

@@ -220,9 +220,9 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 			{
 				String s = Integer.toHexString(out).toUpperCase();
 				if(s.length() == 1)
-					log.debug("Reçu : "+"0"+s);
+					log.debug("Reçu : "+"0"+s+" ("+(char)(out & 0xFF)+")");
 				else
-					log.debug("Reçu : "+s.substring(s.length()-2, s.length()));	
+					log.debug("Reçu : "+s.substring(s.length()-2, s.length())+" ("+(char)(out & 0xFF)+")");	
 			}
 			return out & 0xFF;
 

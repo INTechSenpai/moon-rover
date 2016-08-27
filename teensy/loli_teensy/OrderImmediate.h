@@ -37,8 +37,15 @@ public:
 
 	virtual void execute(std::vector<uint8_t> & io, bool asciiMode = false)
 	{
-		Serial.print("Ping !");
-		
+		if (asciiMode)
+		{
+			Serial.print("Ping !");
+		}
+		else
+		{
+			io.clear();
+			//Serial.print("LOLI");
+		}
 	}
 };
 
