@@ -68,11 +68,16 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 			/**
 			 * Suppression des verrous qui empêchent parfois la connexion
 			 */
-			try {
-				log.critical("Port série non trouvé, suppression des verrous");
-				Runtime.getRuntime().exec("sudo rm -f /var/lock/LCK..tty*");
-			} catch (IOException e) {
-				e.printStackTrace();
+			String OS = System.getProperty("os.name");
+			if(!OS.contains("win"))
+			{
+				// sur unix, on peut tester ça
+				try {
+					log.critical("Port série non trouvé, suppression des verrous");
+					Runtime.getRuntime().exec("sudo rm -f /var/lock/LCK..tty*");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 			while(!searchPort())
 			{
