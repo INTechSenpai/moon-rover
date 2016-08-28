@@ -176,11 +176,12 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	/**
 	 * Gestion d'un évènement sur la série.
 	 */
-	public synchronized void serialEvent(SerialPortEvent oEvent)
+	public void serialEvent(SerialPortEvent oEvent)
 	{
 		try {
 			if(Config.debugSerieTrame)
 				log.debug("Réception");
+			
 			if(input.available() > 0)
 				notify();
 
