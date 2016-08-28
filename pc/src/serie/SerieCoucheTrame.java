@@ -55,17 +55,19 @@ public class SerieCoucheTrame implements Service
 	private EndOrderFrame endOrderFrame = new EndOrderFrame();
 	
 	private Log log;
-	private SerialInterface serie;
+	private SerieCouchePhysique serieOutput;
+	private BufferIncomingBytes serieInput;
 	
 	/**
 	 * Constructeur classique
 	 * @param log
 	 * @param serie
 	 */
-	public SerieCoucheTrame(Log log, SerialInterface serie)
+	public SerieCoucheTrame(Log log, SerieCouchePhysique serieOutput, BufferIncomingBytes serieInput)
 	{
 		this.log = log;
-		this.serie = serie;
+		this.serieInput = serieInput;
+		this.serieOutput = serieOutput;
 		for(int i = 0; i < 256; i++)
 			conversations[i] = new Conversation(i);
 	}
@@ -117,7 +119,7 @@ public class SerieCoucheTrame implements Service
 		if(Config.debugSerie)
 			log.debug("Envoi d'une nouvelle trame");
 
-		serie.communiquer(f.getFirstTrame());
+		serieOutput.communiquer(f.getFirstTrame());
 		f.updateResendDate();
 	}
 
@@ -218,7 +220,7 @@ public class SerieCoucheTrame implements Service
 					pending.setDeathDate(); // tes jours sont comptés…
 					// on envoie un END_ORDER
 					endOrderFrame.updateId(f.id);
-					serie.communiquer(endOrderFrame);
+					serieOutput.communiquer(endOrderFrame);
 					// et on retire la trame des trames en cours
 					it.remove();
 					closedFrames.add(id);
@@ -270,29 +272,29 @@ public class SerieCoucheTrame implements Service
 	 */
 	private IncomingFrame readFrame() throws MissingCharacterException, IncorrectChecksumException, IllegalArgumentException
 	{
-		synchronized(serie)
+		synchronized(serieInput)
 		{
 			// Attente des données…
-			if(!serie.available())
+			if(!serieInput.available())
 				try {
-					serie.wait();
+					serieInput.wait();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			
-			int code = serie.read();
-			int longueur = serie.read();
+			int code = serieInput.read();
+			int longueur = serieInput.read();
 
 			if(longueur < 4 || longueur > 255)
 				throw new IllegalArgumentException("Mauvaise longueur : "+longueur);
 			else if(longueur > 4 && code == IncomingCode.EXECUTION_BEGIN.code)
 				throw new IllegalArgumentException("Trame EXECUTION_BEGIN de longueur incorrecte ("+longueur+")");
 			
-			int id = serie.read();
+			int id = serieInput.read();
 			int[] message = new int[longueur-4];
 			for(int i = 0; i < message.length; i++)
-				message[i] = serie.read();
-			int checksum = serie.read();
+				message[i] = serieInput.read();
+			int checksum = serieInput.read();
 
 			return new IncomingFrame(code, id, checksum, longueur, message);
 		}
@@ -314,7 +316,7 @@ public class SerieCoucheTrame implements Service
 	 */
 	public synchronized void close()
 	{
-		serie.close();
+		serieOutput.close();
 	}
 	
 	/**
@@ -364,7 +366,7 @@ public class SerieCoucheTrame implements Service
 			if(Config.debugSerie)
 				log.debug("Une trame est renvoyée");
 
-			serie.communiquer(trame.getFirstTrame());
+			serieOutput.communiquer(trame.getFirstTrame());
 			trame.updateResendDate(); // on remet la date de renvoi à plus tard
 		}
 	}
@@ -384,6 +386,6 @@ public class SerieCoucheTrame implements Service
 
 	public void init()
 	{
-		serie.init();
+		serieOutput.init();
 	}
 }

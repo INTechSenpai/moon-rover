@@ -1,6 +1,5 @@
 package serie;
 
-import exceptions.MissingCharacterException;
 import serie.trame.OutgoingFrame;
 
 /**
@@ -13,7 +12,5 @@ public interface SerialInterface
 {
 	public void communiquer(OutgoingFrame out);
 	public void close();
-	public boolean available();
-	public int read() throws MissingCharacterException;
 	public void init();
 }

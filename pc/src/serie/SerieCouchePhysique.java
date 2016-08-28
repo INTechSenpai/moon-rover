@@ -1,15 +1,13 @@
 package serie;
 
 import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
 import gnu.io.UnsupportedCommOperationException;
 import serie.trame.OutgoingFrame;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
@@ -19,7 +17,6 @@ import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
 import utils.Sleep;
-import exceptions.MissingCharacterException;
 
 /**
  * La connexion série
@@ -27,19 +24,17 @@ import exceptions.MissingCharacterException;
  *
  */
 
-public class SerieCouchePhysique implements SerialPortEventListener, Service, SerialInterface
+public class SerieCouchePhysique implements Service, SerialInterface
 {
 	private SerialPort serialPort;
 	protected Log log;
+	private BufferIncomingBytes buffer;
 	
 	protected volatile boolean isClosed;
 	private int baudrate;
 	
 	private String portName;
 	
-	/** The input stream from the port */
-	protected InputStream input;
-
 	/** The output stream to the port */
 	protected OutputStream output;
 
@@ -53,9 +48,10 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	 * Constructeur pour la série de test
 	 * @param log
 	 */
-	public SerieCouchePhysique(Log log)
+	public SerieCouchePhysique(Log log, BufferIncomingBytes buffer)
 	{
 		this.log = log;
+		this.buffer = buffer;
 	}
 
 	/**
@@ -69,7 +65,7 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 			 * Suppression des verrous qui empêchent parfois la connexion
 			 */
 			String OS = System.getProperty("os.name");
-			if(!OS.contains("win"))
+			if(!OS.toLowerCase().contains("win"))
 			{
 				// sur unix, on peut tester ça
 				try {
@@ -93,27 +89,40 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	 */
 	protected synchronized boolean searchPort()
 	{
-		log.debug("Recherche de la série sur "+portName+" à "+baudrate+" baud");
-		Enumeration<?> ports = CommPortIdentifier.getPortIdentifiers();
-		
-		while(ports.hasMoreElements())
-		{
-			CommPortIdentifier port = (CommPortIdentifier) ports.nextElement();
-
-			if(port.getName().equals(portName))
-			{
-				log.debug("Port "+port.getName()+" trouvé !");
-				if(!initialize(port, baudrate))
-					break;
-
-				portOuvert = true;
-				return true;
-			}
-		}
-
-		log.warning("Port "+portName+" introuvable.");
 		portOuvert = false;
-		return false;
+		CommPortIdentifier port;
+		try {
+			port = CommPortIdentifier.getPortIdentifier(portName);
+			log.debug("Port "+port.getName()+" trouvé !");
+
+			if(port.isCurrentlyOwned())
+			{
+				log.warning("Port déjà utilisé par "+port.getCurrentOwner());
+				return false;
+			}
+
+			if(!initialize(port, baudrate))
+				return false;
+
+			portOuvert = true;
+			return true;
+
+		} catch (NoSuchPortException e) {
+			log.warning("Port "+portName+" introuvable : "+e);
+			String out = "Les ports disponibles sont : ";
+			
+			Enumeration<?> ports = CommPortIdentifier.getPortIdentifiers();
+			
+			while(ports.hasMoreElements())
+			{
+				out += ((CommPortIdentifier) ports.nextElement()).getName();
+				if(ports.hasMoreElements())
+					out += ", ";
+			}
+
+			log.debug(out);
+			return false;
+		}
 	}
 	
 	/**
@@ -137,15 +146,15 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 //			serialPort.setOutputBufferSize(100);
 //			serialPort.enableReceiveTimeout(100);
 //			serialPort.enableReceiveThreshold(1);
-			
-			// Configuration du Listener
-			serialPort.addEventListener(this);
-
-			serialPort.notifyOnDataAvailable(true); // activation du listener
 
 			// open the streams
-			input = serialPort.getInputStream();
+			buffer.setInput(serialPort.getInputStream());
 			output = serialPort.getOutputStream();
+
+			// Configuration du Listener
+			serialPort.addEventListener(buffer);
+
+			serialPort.notifyOnDataAvailable(true); // activation du listener
 			
 			isClosed = false;
 			return true;
@@ -168,7 +177,7 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 				log.debug("Fermeture de la carte");
 				serialPort.removeEventListener();
 				serialPort.close();
-				input.close();
+				buffer.close();
 				output.close();
 			} catch(Exception e) {
 				log.warning(e);
@@ -181,80 +190,6 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 			log.warning("Carte jamais ouverte");
 	}
 
-	/**
-	 * Gestion d'un évènement sur la série.
-	 */
-	public void serialEvent(SerialPortEvent oEvent)
-	{
-		try {
-			if(Config.debugSerieTrame)
-				log.debug("Réception");
-			
-			if(input.available() > 0)
-				notify();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Retourne "true" ssi un octet est lisible en utilisant "read"
-	 */
-	public boolean available()
-	{
-		openPort();
-
-		try {
-			return input.available() != 0;
-		} catch (IOException e) {
-			e.printStackTrace(); // Cette exception a lieu si la série est fermée
-			return false;
-		}
-	}
-	
-	/**
-	 * Lit un octet
-	 * On sait qu'un octet doit s'y trouver ; soit parce que available() retourne "true", soit parce que le protocole l'impose.
-	 * @return
-	 * @throws IOException
-	 * @throws MissingCharacterException
-	 */
-	public int read() throws MissingCharacterException
-	{
-		try
-		{
-			if(input.available() == 0)
-			{
-				if(Config.debugSerieTrame)
-					log.debug("On attend un caractère qui devrait arriver…");
-				long t = System.nanoTime(), dt = 0;
-
-				while(input.available() == 0 && dt < 100000) // on attend 0,1ms max
-					dt = System.nanoTime() - t;
-
-				if(dt >= 100000)
-					throw new MissingCharacterException(); // visiblement on ne recevra rien de plus
-			}
-	 
-			byte out = (byte) input.read();
-			if(Config.debugSerieTrame)
-			{
-				String s = Integer.toHexString(out).toUpperCase();
-				if(s.length() == 1)
-					log.debug("Reçu : "+"0"+s+" ("+(char)(out & 0xFF)+")");
-				else
-					log.debug("Reçu : "+s.substring(s.length()-2, s.length())+" ("+(char)(out & 0xFF)+")");	
-			}
-			return out & 0xFF;
-
-		}
-		catch(IOException e)
-		{
-			System.out.println(e);
-			throw new MissingCharacterException();
-		}
-	}
 	
 	/**
 	 * Envoie une frame sur la série

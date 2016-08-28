@@ -1,7 +1,6 @@
 package serie;
 
 import container.Service;
-import exceptions.MissingCharacterException;
 import serie.trame.OutgoingFrame;
 import utils.Config;
 import utils.Log;
@@ -31,18 +30,6 @@ public class SerialSimulation implements SerialInterface, Service {
 	@Override
 	public void close()
 	{}
-
-	@Override
-	public boolean available()
-	{
-		return false;
-	}
-
-	@Override
-	public int read() throws MissingCharacterException
-	{
-		return 0;
-	}
 
 	@Override
 	public void useConfig(Config config)
