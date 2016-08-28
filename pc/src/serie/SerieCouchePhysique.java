@@ -189,7 +189,6 @@ public class SerieCouchePhysique implements Service, SerialInterface
 		else
 			log.warning("Carte jamais ouverte");
 	}
-
 	
 	/**
 	 * Envoie une frame sur la série

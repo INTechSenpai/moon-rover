@@ -54,7 +54,6 @@ public class BufferIncomingBytes implements Service, SerialPortEventListener
 			log.warning(oEvent.getEventType());
 		else
 		{
-//			log.debug("Réception");
 			try {
 				do
 				{
@@ -75,7 +74,7 @@ public class BufferIncomingBytes implements Service, SerialPortEventListener
 	/**
 	 * Retourne "true" ssi un octet est lisible en utilisant "read"
 	 */
-	public synchronized boolean available()
+	public final synchronized boolean available()
 	{
 		return indexBufferStart != indexBufferStop;
 	}
@@ -87,14 +86,18 @@ public class BufferIncomingBytes implements Service, SerialPortEventListener
 	 * @throws IOException
 	 * @throws MissingCharacterException
 	 */
-	public synchronized int read() throws MissingCharacterException
+	public final synchronized int read() throws MissingCharacterException
 	{
-		if(indexBufferStart == indexBufferStop)
+		int essai = 0;
+		while(indexBufferStart == indexBufferStop && essai < 10)
+		{
 			try {
-				wait(0, 1000);
+				wait(0, 10000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			essai++;
+		}
 
 		if(indexBufferStart == indexBufferStop)
 			throw new MissingCharacterException();

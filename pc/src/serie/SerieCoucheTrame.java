@@ -111,7 +111,7 @@ public class SerieCoucheTrame implements Service
 	 * Demande l'envoi d'un ordre
 	 * @param o
 	 */
-	public synchronized void sendOrder(Order o)
+	public void sendOrder(Order o)
 	{
 		Conversation f = getNextAvailableConversation();
 		f.update(o);
@@ -157,7 +157,7 @@ public class SerieCoucheTrame implements Service
 	 * Renvoie le ticket associé à la conversation
 	 * @param f
 	 */
-	public synchronized Paquet processFrame(IncomingFrame f) throws ProtocolException
+	public Paquet processFrame(IncomingFrame f) throws ProtocolException
 	{
 		Iterator<Integer> it = waitingFrames.iterator();
 		while(it.hasNext())
@@ -173,8 +173,11 @@ public class SerieCoucheTrame implements Service
 					{
 						if(Config.debugSerie)
 							log.debug("EXECUTION_BEGIN reçu");
-						it.remove();
-						pendingLongFrames.add(id);
+						synchronized(this)
+						{
+							it.remove();
+							pendingLongFrames.add(id);
+						}
 						return null;
 					}
 					else
@@ -188,9 +191,12 @@ public class SerieCoucheTrame implements Service
 							log.debug("VALUE_ANSWER reçu");
 
 						// L'ordre court a reçu un acquittement et ne passe pas par la case "pending"
-						it.remove();
-						waiting.setDeathDate(); // tes jours sont comptés…
-						closedFrames.add(id);
+						synchronized(this)
+						{
+							it.remove();
+							waiting.setDeathDate(); // tes jours sont comptés…
+							closedFrames.add(id);
+						}
 						return new Paquet(f.message, waiting.ticket, waiting.origine);
 					}
 					else
@@ -222,8 +228,11 @@ public class SerieCoucheTrame implements Service
 					endOrderFrame.updateId(f.id);
 					serieOutput.communiquer(endOrderFrame);
 					// et on retire la trame des trames en cours
-					it.remove();
-					closedFrames.add(id);
+					synchronized(this)
+					{
+						it.remove();
+						closedFrames.add(id);
+					}
 					return new Paquet(f.message, pending.ticket, pending.origine);
 				}
 				else if(f.code == IncomingCode.STATUS_UPDATE)
@@ -354,15 +363,23 @@ public class SerieCoucheTrame implements Service
 	/**
 	 * Renvoie la trame la plus vieille qui en a besoin (possiblement aucune)
 	 */
-	public synchronized void resend()
+	public void resend()
 	{
-		if(!waitingFrames.isEmpty() && conversations[waitingFrames.getFirst()].needResend())
-		{
-			int id = waitingFrames.poll();
-			Conversation trame = conversations[id];
-			// On remet à la fin
-			waitingFrames.add(id);
+		Conversation trame = null;
 
+		synchronized(this)
+		{
+			if(!waitingFrames.isEmpty() && conversations[waitingFrames.getFirst()].needResend())
+			{
+				int id = waitingFrames.poll();
+				trame = conversations[id];
+				// On remet à la fin
+				waitingFrames.add(id);
+			}
+		}
+
+		if(trame != null)
+		{
 			if(Config.debugSerie)
 				log.debug("Une trame est renvoyée");
 
