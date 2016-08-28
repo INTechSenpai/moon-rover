@@ -137,10 +137,11 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 //			serialPort.setOutputBufferSize(100);
 //			serialPort.enableReceiveTimeout(100);
 //			serialPort.enableReceiveThreshold(1);
-			serialPort.notifyOnDataAvailable(true); // activation du listener
-
+			
 			// Configuration du Listener
 			serialPort.addEventListener(this);
+
+			serialPort.notifyOnDataAvailable(true); // activation du listener
 
 			// open the streams
 			input = serialPort.getInputStream();
