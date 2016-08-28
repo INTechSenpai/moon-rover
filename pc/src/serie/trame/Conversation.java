@@ -90,6 +90,6 @@ public class Conversation
 		origine = o.ordre;
 		ticket = o.ticket;
 		firstFrame.update(o);
-		resendDate = System.currentTimeMillis() + timeout;
+		resendDate = System.currentTimeMillis() + 10000;
 	}
 }

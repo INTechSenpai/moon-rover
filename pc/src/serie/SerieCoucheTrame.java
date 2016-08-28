@@ -118,6 +118,7 @@ public class SerieCoucheTrame implements Service
 			log.debug("Envoi d'une nouvelle trame");
 
 		serie.communiquer(f.getFirstTrame());
+		f.updateResendDate();
 	}
 
 	/**
