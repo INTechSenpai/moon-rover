@@ -164,8 +164,15 @@ public class SerieCouchePhysique implements SerialPortEventListener, Service, Se
 	{
 		if (!isClosed && portOuvert)
 		{
-			log.debug("Fermeture de la carte");
-			serialPort.close();
+			try {
+				log.debug("Fermeture de la carte");
+				serialPort.removeEventListener();
+				serialPort.close();
+				input.close();
+				output.close();
+			} catch(Exception e) {
+				log.warning(e);
+			}
 			isClosed = true;
 		}
 		else if(isClosed)
