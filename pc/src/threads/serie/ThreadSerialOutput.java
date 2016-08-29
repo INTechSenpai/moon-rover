@@ -33,6 +33,7 @@ public class ThreadSerialOutput extends Thread implements Service
 	@Override
 	public void run()
 	{
+		Thread.currentThread().setName("ThreadSerialOutput");
 		Order message;
 		
 		// On envoie d'abord le ping long initial

@@ -28,6 +28,7 @@ public class ThreadSerialOutputTimeout extends Thread implements Service
 	@Override
 	public void run()
 	{
+		Thread.currentThread().setName("ThreadSerialOutputTimeout");
 		while(true)
 		{
 			int timeResend = serie.timeBeforeResend();

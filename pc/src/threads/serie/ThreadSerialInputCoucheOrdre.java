@@ -48,6 +48,7 @@ public class ThreadSerialInputCoucheOrdre extends Thread implements Service
 	@Override
 	public void run()
 	{
+		Thread.currentThread().setName("ThreadSerialInputCoucheOrdre");
 		while(true)
 		{
 			try {

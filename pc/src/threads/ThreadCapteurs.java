@@ -30,6 +30,7 @@ public class ThreadCapteurs extends Thread implements Service
 	@Override
 	public void run()
 	{
+		Thread.currentThread().setName("ThreadCapteurs");
 		while(true)
 		{
 			IncomingData e = null;

@@ -29,6 +29,7 @@ public class ThreadSerialInputCoucheTrame extends Thread implements Service
 	@Override
 	public void run()
 	{
+		Thread.currentThread().setName("ThreadSerialInputCoucheTrame");
 		while(true)
 			buffer.add(serie.readData());
 	}
