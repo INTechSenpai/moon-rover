@@ -2,7 +2,6 @@ package robot;
 
 import utils.Log;
 import utils.Config;
-import utils.Sleep;
 import pathfinding.dstarlite.GridSpace;
 import serie.BufferOutgoingOrder;
 import serie.Ticket;
@@ -43,39 +42,6 @@ public class RobotReal extends Robot
 	public void setEnMarcheAvance(boolean enMarcheAvant)
 	{
 		cinematique.enMarcheAvant = enMarcheAvant;
-	}
-
-	/**
-	 * Avance d'une certaine distance donnée en mm (méthode bloquante), gestion des hooks
-	 * @throws UnableToMoveException 
-	 */
-	@Override
-    public void avancer(int distance, boolean mur, Speed vitesse) throws UnableToMoveException
-	{
-		// TODO
-/*		Ticket t = serialOutput.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
-		synchronized(t)
-		{
-			try {
-				gestionExceptions(mur, t);
-			} catch (UnexpectedObstacleOnPathException e) {
-				t = serialOutput.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
-				try {
-					gestionExceptions(mur, t);
-				} catch (UnexpectedObstacleOnPathException e1) {
-				}
-			}
-		}*/
-	}	
-
-    
-    /**
-	 * Méthode sleep utilisée par les scripts
-	 */
-	@Override	
-	public void sleep(long duree)
-	{
-		Sleep.sleep(duree);
 	}
 
 	@Override
