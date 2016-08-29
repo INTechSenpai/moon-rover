@@ -5,11 +5,11 @@ import pathfinding.astarCourbe.arcs.ArcCourbe;
 import java.util.LinkedList;
 
 import robot.Speed;
-import robot.actuator.ActuatorOrder;
 import serie.trame.Order;
 import container.Service;
 import enums.SerialProtocol.OutOrder;
 import utils.Config;
+import utils.ConfigInfo;
 import utils.Log;
 
 /**
@@ -25,6 +25,7 @@ import utils.Log;
 public class BufferOutgoingOrder implements Service
 {
 	protected Log log;
+	private int prescaler, sendPeriod;
 	
 	public BufferOutgoingOrder(Log log)
 	{
@@ -71,58 +72,17 @@ public class BufferOutgoingOrder implements Service
 	 * Ajout d'une demande d'ordre d'avancer pour la série
 	 * @0 elem
 	 */
-	public synchronized Ticket avancer(int distance, Speed vitesse)
+	public synchronized Ticket followTrajectory(Speed vitesse)
 	{
-		OutOrder ordre;
-		if(Config.debugSerie)
-			log.debug("Avance de "+distance);
 		byte[] data = new byte[4];
-		if(distance >= 0)
-			ordre = OutOrder.AVANCER;
-		else
-		{
-			ordre = OutOrder.AVANCER_NEG;
-			distance = -distance;
-		}
-		data[0] = (byte) (distance >> 8);
-		data[1] = (byte) (distance);
-		data[2] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
-		data[3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
-//		log.debug("Vitesse : "+vitesse.translationalSpeed*1000);
+		data[0] = (byte) (0); // TODO vitesse
+		data[1] = (byte) (0);
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(data, ordre, t));
+		bufferBassePriorite.add(new Order(data, OutOrder.FOLLOW_TRAJECTORY, t));
 		notify();
 		return t;
 	}
-
-	/**
-	 * Ajout d'une demande d'ordre d'avancer pour la série
-	 * Si on avançait précédement, on va avancer. Si on reculait, on va reculer.
-	 * @0 elem
-	 */
-	public synchronized Ticket avancerMemeSens(int distance, Speed vitesse)
-	{
-		if(Config.debugSerie)
-			log.debug("Avance (même sens) de "+distance);
-		byte[] data = new byte[4];
-		OutOrder order;
-		if(distance >= 0)
-			order = OutOrder.AVANCER_IDEM;
-		else
-		{
-			order = OutOrder.AVANCER_REVERSE;
-			distance = -distance;
-		}
-		data[0] = (byte) (distance >> 8);
-		data[1] = (byte) (distance);
-		data[2] = (byte) ((int)(vitesse.translationalSpeed*1000) >> 8);
-		data[3] = (byte) ((int)(vitesse.translationalSpeed*1000) & 0xFF);
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(data, order, t));
-		notify();
-		return t;
-	}
-
+	
 	/**
 	 * Ajout d'une demande d'ordre de s'arrêter
 	 */
@@ -132,23 +92,6 @@ public class BufferOutgoingOrder implements Service
 			log.debug("Stop !");
 		stop = true;
 		notify();
-	}
-	
-	/**
-	 * Ajout d'une demande d'ordre d'actionneurs pour la série
-	 * @0 elem
-	 */
-	public synchronized Ticket utiliseActionneurs(ActuatorOrder elem)
-	{
-		ActuatorOrder elem2 = elem.getSymetrie(symetrie);
-		byte[] data = new byte[3];
-		data[0] = (byte) (elem2.id);
-		data[1] = (byte) (elem2.angle >> 8);
-		data[2] = (byte) (elem2.angle & 0xFF);
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(data, OutOrder.ACTIONNEUR, t));
-		notify();
-		return t;
 	}
 	
 	/**
@@ -167,7 +110,7 @@ public class BufferOutgoingOrder implements Service
 	 */
 	public synchronized void demandeNotifDebutMatch()
 	{
-		bufferBassePriorite.add(new Order(OutOrder.MATCH_BEGIN));
+		bufferBassePriorite.add(new Order(OutOrder.WAIT_FOR_JUMPER));
 		notify();
 	}
 
@@ -176,19 +119,35 @@ public class BufferOutgoingOrder implements Service
 	 */
 	public synchronized void demandeNotifFinMatch()
 	{
-		bufferBassePriorite.add(new Order(OutOrder.MATCH_END));
+		bufferBassePriorite.add(new Order(OutOrder.START_MATCH_CHRONO));
 		notify();
 	}
 
 	/**
-	 * Désasservit le robot
+	 * Démarre le stream
 	 */
-	public synchronized void asserOff()
+	public synchronized void startStream()
 	{
-		bufferBassePriorite.add(new Order(OutOrder.ASSER_OFF));
+		byte[] data = new byte[3];
+		data[0] = (byte) (sendPeriod >> 8);
+		data[1] = (byte) (sendPeriod & 0xFF);
+		data[2] = (byte) (prescaler);
+		bufferBassePriorite.add(new Order(data, OutOrder.START_STREAM_ALL));
 		notify();
 	}
 
+	/**
+	 * Démarre le stream
+	 */
+	public synchronized void setMaxSpeed()
+	{
+		byte[] data = new byte[2];
+		data[0] = (byte) (0); // TODO
+		data[1] = (byte) (0);
+		bufferBassePriorite.add(new Order(data, OutOrder.SET_MAX_SPEED));
+		notify();
+	}
+	
 	@Override
 	public void updateConfig(Config config)
 	{}
@@ -197,6 +156,8 @@ public class BufferOutgoingOrder implements Service
 	public void useConfig(Config config)
 	{
 		symetrie = config.getSymmetry();
+		sendPeriod = config.getInt(ConfigInfo.SENSORS_SEND_PERIOD);
+		prescaler = config.getInt(ConfigInfo.SENSORS_PRESCALER);
 	}
 	
 	/**
@@ -210,19 +171,7 @@ public class BufferOutgoingOrder implements Service
 
 		for(int i = 0; i < arc.getNbPoints(); i++)
 		{
-			OutOrder order;
-//			log.debug(i);
-			byte[] data = new byte[9];
-			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
-			{
-//				log.debug("ARC ARRET");
-				order = OutOrder.SEND_ARC_ARRET;
-			}
-			else
-			{
-//				log.debug("ARC");
-				order = OutOrder.SEND_ARC;
-			}
+			byte[] data = new byte[7];
 			data[0] = (byte) (((int)(arc.getPoint(i).getPosition().x)+1500) >> 4);
 			data[1] = (byte) ((((int)(arc.getPoint(i).getPosition().x)+1500) << 4) + ((int)(arc.getPoint(i).getPosition().y) >> 8));
 			data[2] = (byte) ((int)(arc.getPoint(i).getPosition().y));
@@ -239,13 +188,16 @@ public class BufferOutgoingOrder implements Service
 			data[3] = (byte) (theta >> 8);
 			data[4] = (byte) theta;
 			
-			data[5] = (byte) ((Math.round(arc.getPoint(i).courbure+20)*1000) >> 8);
-			data[6] = (byte) ((Math.round(arc.getPoint(i).courbure+20)*1000) & 0xFF);
+			data[5] = 0; // TODO : trajectory index
 			
-			data[7] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) >> 8);
-			data[8] = (byte) ((int)(arc.getPoint(i).vitesseTranslation*1000) & 0xFF);
+			data[6] = (byte) (((Math.round(arc.getPoint(i).courbure+20)*1000) >> 8) & 0xEF);
+
+			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
+				data[6] |= 0x70; // en cas de marche arrière
 			
-			bufferTrajectoireCourbe.add(new Order(data, order));
+			data[7] = (byte) ((Math.round(arc.getPoint(i).courbure+20)*1000) & 0xFF);
+
+			bufferTrajectoireCourbe.add(new Order(data, OutOrder.SEND_ARC));
 		}
 		notify();			
 	}
