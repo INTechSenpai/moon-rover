@@ -32,8 +32,6 @@ public class BufferOutgoingOrder implements Service
 		this.log = log;
 	}
 		
-	private boolean symetrie;
-	
 	private volatile LinkedList<Order> bufferBassePriorite = new LinkedList<Order>();
 	private volatile LinkedList<Order> bufferTrajectoireCourbe = new LinkedList<Order>();
 	private volatile boolean stop = false;
@@ -155,7 +153,6 @@ public class BufferOutgoingOrder implements Service
 	@Override
 	public void useConfig(Config config)
 	{
-		symetrie = config.getSymmetry();
 		sendPeriod = config.getInt(ConfigInfo.SENSORS_SEND_PERIOD);
 		prescaler = config.getInt(ConfigInfo.SENSORS_PRESCALER);
 	}
@@ -188,7 +185,7 @@ public class BufferOutgoingOrder implements Service
 			data[3] = (byte) (theta >> 8);
 			data[4] = (byte) theta;
 			
-			data[5] = 0; // TODO : trajectory index
+			data[5] = (byte) arc.indexTrajectory;
 			
 			data[6] = (byte) (((Math.round(arc.getPoint(i).courbure+20)*1000) >> 8) & 0xEF);
 

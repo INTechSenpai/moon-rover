@@ -17,6 +17,7 @@ import container.Service;
 import enums.RobotColor;
 import obstacles.IncomingData;
 import obstacles.IncomingDataBuffer;
+import pathfinding.CheminPathfinding;
 
 /**
  * Thread qui écoute la série et appelle qui il faut.
@@ -31,18 +32,20 @@ public class ThreadSerialInputCoucheOrdre extends Thread implements Service
 	private BufferIncomingOrder serie;
 	private IncomingDataBuffer buffer;
 	private RobotReal robot;
+	private CheminPathfinding chemin;
 	
 	private boolean capteursOn = false;
 	private volatile int nbCapteurs;
 	private boolean matchDemarre = false;
 	
-	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, IncomingDataBuffer buffer, RobotReal robot)
+	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, IncomingDataBuffer buffer, RobotReal robot, CheminPathfinding chemin)
 	{
 		this.log = log;
 		this.config = config;
 		this.serie = serie;
 		this.buffer = buffer;
 		this.robot = robot;
+		this.chemin = chemin;
 	}
 
 	@Override
@@ -99,7 +102,8 @@ public class ThreadSerialInputCoucheOrdre extends Thread implements Service
 						Vec2<ReadOnly> positionRobot = new Vec2<ReadOnly>(xRobot, yRobot);
 		
 						double orientationRobot = ((data[3] << 8) + data[4]) / 1000.;
-						int indexTrajectoirey = data[5];
+						int indexTrajectory = data[5];
+						chemin.setCurrentIndex(indexTrajectory);
 						
 						if(Config.debugSerie)
 							log.debug("Le robot est en "+positionRobot+", orientation : "+orientationRobot);
