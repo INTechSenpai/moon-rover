@@ -4,7 +4,6 @@ import utils.Log;
 import utils.Config;
 import utils.Sleep;
 import pathfinding.dstarlite.GridSpace;
-import robot.actuator.ActuatorOrder;
 import serie.BufferOutgoingOrder;
 import serie.Ticket;
 import exceptions.UnableToMoveException;
@@ -53,7 +52,8 @@ public class RobotReal extends Robot
 	@Override
     public void avancer(int distance, boolean mur, Speed vitesse) throws UnableToMoveException
 	{
-		Ticket t = serialOutput.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
+		// TODO
+/*		Ticket t = serialOutput.avancer(distance, mur ? Speed.INTO_WALL : vitesse);
 		synchronized(t)
 		{
 			try {
@@ -65,7 +65,7 @@ public class RobotReal extends Robot
 				} catch (UnexpectedObstacleOnPathException e1) {
 				}
 			}
-		}
+		}*/
 	}	
 
     
@@ -92,15 +92,6 @@ public class RobotReal extends Robot
 		else
 			return System.currentTimeMillis() - dateDebutMatch;
     }
-	
-	/**
-	 * Envoie un ordre à la série. Le protocole est défini dans l'enum ActuatorOrder
-	 * @param order l'ordre à envoyer
-	 */
-	public void useActuator(ActuatorOrder order)
-	{
-		serialOutput.utiliseActionneurs(order);
-	}
 
     /**
      * Gère les exceptions, c'est-à-dire les rencontres avec l'ennemi et les câlins avec un mur.
