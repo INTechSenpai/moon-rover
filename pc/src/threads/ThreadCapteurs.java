@@ -36,22 +36,16 @@ public class ThreadCapteurs extends Thread implements Service
 			synchronized(buffer)
 			{
 				try {
-					while(buffer.isEmpty())
-						buffer.wait(100);
-//					log.debug("Réveil de ThreadObstacleManager");
+					if(buffer.isEmpty())
+						buffer.wait();
 					e = buffer.poll();
 				} catch (InterruptedException e2) {
 					e2.printStackTrace();
 				}
 			}
-			// Cet appel peut lancer un obstaclemanager.notifyAll()
-			// Il n'est pas synchronized car il ne modifie pas le buffer
-//			if(e != null)
-//			if(e.capteursOn)
 			capteurs.updateObstaclesMobiles(e);
 			
 		}
-//		log.debug("Fermeture de ThreadObstacleManager");
 	}
 	
 	@Override

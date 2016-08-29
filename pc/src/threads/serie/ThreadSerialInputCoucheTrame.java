@@ -1,4 +1,4 @@
-package threads;
+package threads.serie;
 
 import container.Service;
 import serie.BufferIncomingOrder;

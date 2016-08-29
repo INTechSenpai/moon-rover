@@ -1,4 +1,4 @@
-package threads;
+package threads.serie;
 
 import serie.BufferOutgoingOrder;
 import serie.SerieCoucheTrame;

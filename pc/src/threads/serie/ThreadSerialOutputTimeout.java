@@ -1,4 +1,4 @@
-package threads;
+package threads.serie;
 
 import serie.SerieCoucheTrame;
 import utils.Config;

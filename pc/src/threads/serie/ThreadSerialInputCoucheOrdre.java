@@ -1,4 +1,4 @@
-package threads;
+package threads.serie;
 
 import enums.SerialProtocol.InOrder;
 import enums.SerialProtocol.OutOrder;
