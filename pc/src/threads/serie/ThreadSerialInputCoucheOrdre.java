@@ -52,6 +52,7 @@ public class ThreadSerialInputCoucheOrdre extends Thread implements Service
 	public void run()
 	{
 		Thread.currentThread().setName("ThreadSerialInputCoucheOrdre");
+		log.debug("Démarrage de "+Thread.currentThread().getName());
 		try {
 			while(true)
 			{
@@ -151,7 +152,10 @@ public class ThreadSerialInputCoucheOrdre extends Thread implements Service
 					{
 						log.debug("Fin du Match !");
 						config.set(ConfigInfo.FIN_MATCH, true);
-						return;
+
+						// On attend d'être arrêté
+						while(true)
+							Thread.sleep(1000);
 					}
 							
 					/**
@@ -176,7 +180,7 @@ public class ThreadSerialInputCoucheOrdre extends Thread implements Service
 				}
 			}
 		} catch (InterruptedException e) {
-			log.debug(e);
+			log.debug("Arrêt de "+Thread.currentThread().getName());
 		}
 	}
 	

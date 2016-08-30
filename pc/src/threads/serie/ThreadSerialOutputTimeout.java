@@ -28,6 +28,7 @@ public class ThreadSerialOutputTimeout extends Thread implements Service
 	public void run()
 	{
 		Thread.currentThread().setName("ThreadSerialOutputTimeout");
+		log.debug("Démarrage de "+Thread.currentThread().getName());
 		try {
 			while(true)
 			{
@@ -46,7 +47,7 @@ public class ThreadSerialOutputTimeout extends Thread implements Service
 				}			
 			}
 		} catch (InterruptedException e) {
-			log.debug(e);
+			log.debug("Arrêt de "+Thread.currentThread().getName());
 		}
 	}
 	

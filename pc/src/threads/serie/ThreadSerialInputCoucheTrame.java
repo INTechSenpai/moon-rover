@@ -30,11 +30,12 @@ public class ThreadSerialInputCoucheTrame extends Thread implements Service
 	public void run()
 	{
 		Thread.currentThread().setName("ThreadSerialInputCoucheTrame");
+		log.debug("Démarrage de "+Thread.currentThread().getName());
 		try {
 			while(true)
 				buffer.add(serie.readData());
 		} catch (InterruptedException e) {
-			log.debug(e);
+			log.debug("Arrêt de "+Thread.currentThread().getName());
 		}
 	}
 

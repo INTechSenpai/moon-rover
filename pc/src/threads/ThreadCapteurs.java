@@ -31,6 +31,7 @@ public class ThreadCapteurs extends Thread implements Service
 	public void run()
 	{
 		Thread.currentThread().setName("ThreadCapteurs");
+		log.debug("Démarrage de "+Thread.currentThread().getName());
 		try {
 			while(true)
 			{

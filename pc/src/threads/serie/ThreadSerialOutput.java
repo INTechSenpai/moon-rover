@@ -33,6 +33,7 @@ public class ThreadSerialOutput extends Thread implements Service
 	public void run()
 	{
 		Thread.currentThread().setName("ThreadSerialOutput");
+		log.debug("Démarrage de "+Thread.currentThread().getName());
 		Order message;
 		
 		// On envoie d'abord le ping long initial
