@@ -3,12 +3,6 @@
 #ifndef _ORDERIMMEDIATE_h
 #define _ORDERIMMEDIATE_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-	#include "arduino.h"
-#else
-	#include "WProgram.h"
-#endif
-
 #include <vector>
 #include "Singleton.h"
 

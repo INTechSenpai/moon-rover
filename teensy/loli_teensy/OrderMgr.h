@@ -4,9 +4,9 @@
 #include "OrderImmediate.h"
 #include "OrderLong.h"
 #include "Frame.h"
+#include "Log.h"
 
 
-#define BAUDRATE				115200	// bit/s
 #define TIMEOUT					10		// ms
 #define STACK_SIZE				(UINT8_MAX + 1)
 #define RECEPTION_BUFFER_SIZE	(UINT8_MAX + 1)
@@ -36,41 +36,58 @@ public:
 		longOrderList[0x0C] = &Move::Instance();
 	}
 
+private:
+	class ReceptionBuffer : public Printable
+	{
+	public:
+		ReceptionBuffer() { indice = 0; }
+		size_t indice;
+		uint8_t buffer[RECEPTION_BUFFER_SIZE];
+
+		size_t printTo(Print& p) const
+		{
+			size_t nbBytesWritten = 0;
+			for (size_t i = 0; i < indice; i++)
+			{
+				nbBytesWritten += p.print(buffer[i], HEX);
+				nbBytesWritten += p.print(" ");
+			}
+			return nbBytesWritten;
+		}
+	};
+
+public:
 	void communicate()
 	{
-		static uint8_t receptionBuffer[RECEPTION_BUFFER_SIZE];
-		static size_t rBufferIndice = 0;
+		static ReceptionBuffer rBuffer;
 		static uint8_t frameLength = 255;
 		static uint8_t rByte;
 
 		if (HLserial.available())
 		{
-			if (rBufferIndice >= RECEPTION_BUFFER_SIZE)
+			if (rBuffer.indice >= RECEPTION_BUFFER_SIZE)
 			{
-				rBufferIndice = 0;
-				HLserial.println("erreur 1");
-				//TODO : throw strong error
+				rBuffer.indice = 0;
+				Log::critical(1, "Reception buffer overflow");
 				return;
 			}
 
 			rByte = HLserial.read();
 
-			if (rBufferIndice == 0) // Type de trame
+			if (rBuffer.indice == 0) // Type de trame
 			{
 				if (rByte < 0xF9)
 				{
-					HLserial.println("erreur 2");
-					//TODO : throw error
+					Log::critical(2, "Début de trame invalide. Lecture abandonnée.");
 					return;
 				}
 			}
-			else if (rBufferIndice == 1) // Taille de la trame
+			else if (rBuffer.indice == 1) // Taille de la trame
 			{
 				if (rByte < 4)
 				{
-					rBufferIndice = 0;
-					HLserial.println("erreur 3");
-					//TODO : throw error
+					rBuffer.indice = 0;
+					Log::critical(3, "Taille de trame invalide. Lecture abandonnée.");
 					return;
 				}
 				else
@@ -79,15 +96,15 @@ public:
 				}
 			}
 
-			receptionBuffer[rBufferIndice] = rByte;
-			rBufferIndice++;
+			rBuffer.buffer[rBuffer.indice] = rByte;
+			rBuffer.indice++;
 
-			if (rBufferIndice == frameLength) // Fin de la réception de la trame
+			if (rBuffer.indice == frameLength) // Fin de la réception de la trame
 			{
 				std::vector<uint8_t> receivedData;
-				for (unsigned int i = 0; i < rBufferIndice; i++)
+				for (size_t i = 0; i < rBuffer.indice; i++)
 				{
-					receivedData.push_back(receptionBuffer[i]);
+					receivedData.push_back(rBuffer.buffer[i]);
 				}
 				Frame receivedFrame(receivedData);
 				if (receivedFrame.isFrameValid())
@@ -96,10 +113,9 @@ public:
 				}
 				else
 				{
-					// TODO : drop 'receivedData' to log output
-					HLserial.println("erreur 4");
+					Log::critical(4, rBuffer, "Trame invalide");
 				}
-				rBufferIndice = 0;
+				rBuffer.indice = 0;
 				frameLength = 255;
 			}
 		}
@@ -118,8 +134,7 @@ public:
 					{
 						if (longOrderList[orderStack[i].orderID] == NULL)
 						{
-							HLserial.println("erreur 5");
-							return; // TODO : throw error
+							Log::critical(5, "Ordre oublié");
 						}
 						output.clear();
 						longOrderList[orderStack[i].orderID]->onExecute(output);
@@ -211,8 +226,7 @@ private:
 	{
 		if (frame.getFrameType() == VALUE_ANSWER)
 		{
-			HLserial.println("erreur 6");
-			// TODO : drop frame to log output
+			Log::critical(6, frame, "Type incorrect");
 		}
 		else
 		{
@@ -225,8 +239,7 @@ private:
 			{
 				if (immediateOrderList[frame.getOrder()] == NULL)
 				{
-					HLserial.println("erreur 7");
-					// TODO : throw error
+					Log::critical(7, frame, "Ordre inconnu");
 					return;
 				}
 
@@ -256,8 +269,7 @@ private:
 			{
 				if (longOrderList[frame.getOrder()] == NULL)
 				{
-					HLserial.println("erreur 9");
-					return; // TODO : throw error
+					Log::critical(8, frame, "Ordre inconnu");
 				}
 
 				std::vector<uint8_t> data = frame.getData();
@@ -279,20 +291,17 @@ private:
 				}
 				else
 				{
-					HLserial.println("erreur 10");
-					return; // TODO : throw error
+					Log::critical(9, frame, "Type END_ORDER incorrect");
 				}
 			}
 			else
 			{
-				HLserial.println("erreur 11");
-				return; // TODO : throw error
+				Log::warning("END_ORDER reçu pour une conversation déjà terminée.");
 			}
 		}
 		else
 		{
-			HLserial.println("erreur 12");
-			// TODO : throw error
+			Log::critical(10, frame, "Type incorrect");
 		}
 	}
 
@@ -308,8 +317,7 @@ private:
 		}
 		else
 		{
-			HLserial.println("erreur 13");
-			// TODO : throw error
+			Log::critical(11, "Tentative d'envoi d'une trame invalide");
 		}
 	}
 	

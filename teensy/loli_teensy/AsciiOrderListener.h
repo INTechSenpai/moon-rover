@@ -1,11 +1,17 @@
 #ifndef _ASCIIORDERLISTENER_h
 #define _ASCIIORDERLISTENER_h
 
+#if defined(ARDUINO) && ARDUINO >= 100
+#include "arduino.h"
+#else
+#include "WProgram.h"
+#endif
+
 #define MAX_ORDER_SIZE	16
 
 #include <string.h>
-#include <stdint.h>
 #include <vector>
+#include "Log.h"
 
 class AsciiOrderListener
 {
@@ -23,7 +29,7 @@ public:
 			if (rIndex >= MAX_ORDER_SIZE)
 			{
 				rIndex = 0;
-				// TODO: print "ordre trop long"
+				Log::critical(20, "Ordre ASCII trop long");
 				return;
 			}
 			if (receivingState == ORDER_RECEIVED)
@@ -53,7 +59,7 @@ public:
 					}
 					else
 					{
-						// print "ordre inconnu"
+						Log::critical(21, "Ordre ASCII inconnu");
 					}
 					rIndex = 0;
 				}

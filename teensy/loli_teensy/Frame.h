@@ -2,6 +2,7 @@
 #define _FRAME_h
 
 #include <vector>
+#include <Printable.h>
 
 enum FrameType
 {
@@ -21,7 +22,7 @@ enum OrderType
 };
 
 
-class Frame
+class Frame : public Printable
 {
 public:
 	Frame() // Constructeur par défaut, volontairement inutilisable.
@@ -119,21 +120,6 @@ public:
 		updateLengthAndChecksum();
 	}
 
-	/*
-	void setFrameType(FrameType newFrameType)
-	{
-		if (orderType == findOrderType(newFrameType))
-		{
-			type = newFrameType;
-			updateLengthAndChecksum();
-		}
-		else
-		{
-			//TODO : throw error
-		}
-	}
-	*/
-
 	std::vector<uint8_t> const & getData() const
 	{
 		return data;
@@ -175,6 +161,33 @@ public:
 		}
 		output.push_back(checksum);
 		return output;
+	}
+
+	size_t printTo(Print& p) const
+	{
+		size_t n = 0;
+		if (frameValid)
+		{
+			n += p.print("T:");
+			n += p.print(type, HEX);
+			n += p.print(" id:");
+			n += p.print(id, HEX);
+			if (type == NEW_ORDER || type == VALUE_REQUEST)
+			{
+				n += p.print(" order:");
+				n += p.print(order);
+			}
+			if (data.size() > 0)
+			{
+				n += p.print(" data:");
+			}
+			for (size_t i = 0; i < data.size(); i++)
+			{
+				n += p.print(data.at(i), HEX);
+				n += p.print(" ");
+			}
+		}
+		return n;
 	}
 
 private:

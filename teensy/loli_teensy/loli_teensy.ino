@@ -5,16 +5,18 @@
 */
 
 
+#include "Log.h"
 #include "AsciiOrderListener.h"
 #include "Frame.h"
 #include "OrderLong.h"
 #include "OrderImmediate.h"
 #include "OrderMgr.h"
 #include <vector>
+#include <string.h>
+
 
 void setup()
 {
-	Serial.begin(115200);
 }
 
 
@@ -46,7 +48,7 @@ namespace std {
 	{
 		while (true)
 		{
-			Serial.println("Unable to allocate memory");
+			Log::critical(999, "Unable to allocate memory");
 			delay(500);
 		}
 	}
@@ -55,8 +57,7 @@ namespace std {
 	{
 		while (true)
 		{
-			Serial.print("Length Error :");
-			Serial.println(e);
+			Log::critical(998, e);
 			delay(500);
 		}
 	}
@@ -65,8 +66,7 @@ namespace std {
 	{
 		while (true)
 		{
-			Serial.print("Out of range :");
-			Serial.println(e);
+			Log::critical(997, e);
 			delay(500);
 		}
 	}
