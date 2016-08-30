@@ -45,13 +45,9 @@ public class ThreadSerialOutput extends Thread implements Service
 				serie.sendOrder(new Order(OutOrder.PING));
 				serie.wait(); // on est notifié dès qu'on reçoit quelque chose sur la série
 			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		
-		while(true)
-		{
-			try {
+			while(true)
+			{
 				synchronized(data)
 				{
 					/**
@@ -72,11 +68,10 @@ public class ThreadSerialOutput extends Thread implements Service
 						message = data.poll();
 				}
 				serie.sendOrder(message);
-				Sleep.sleep(sleep); // laisse un peu de temps entre deux trames si besoin est
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				continue;
+				Thread.sleep(sleep); // laisse un peu de temps entre deux trames si besoin est
 			}
+		} catch (InterruptedException e) {
+			log.debug(e);
 		}
 	}
 	

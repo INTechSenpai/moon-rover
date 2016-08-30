@@ -4,7 +4,6 @@ import serie.SerieCoucheTrame;
 import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
-import utils.Sleep;
 import container.Service;
 
 /**
@@ -29,21 +28,25 @@ public class ThreadSerialOutputTimeout extends Thread implements Service
 	public void run()
 	{
 		Thread.currentThread().setName("ThreadSerialOutputTimeout");
-		while(true)
-		{
-			int timeResend = serie.timeBeforeResend();
-			int timeDeath = serie.timeBeforeDeath();
-			
-			if(timeDeath <= timeResend)
+		try {
+			while(true)
 			{
-				Sleep.sleep(timeDeath+sleep);
-				serie.kill();
+				int timeResend = serie.timeBeforeResend();
+				int timeDeath = serie.timeBeforeDeath();
+				
+				if(timeDeath <= timeResend)
+				{
+					Thread.sleep(timeDeath+sleep);
+					serie.kill();
+				}
+				else
+				{
+					Thread.sleep(timeResend+sleep);
+					serie.resend();
+				}			
 			}
-			else
-			{
-				Sleep.sleep(timeResend+sleep);
-				serie.resend();
-			}			
+		} catch (InterruptedException e) {
+			log.debug(e);
 		}
 	}
 	

@@ -2,5 +2,5 @@
 if [ "$#" -ne 1 ]; then
     echo "Usage: ./lanceur.sh archive.jar"
 else
-    sudo nice -n -16 java -jar -Xmx1G -Xms1G -XX:ThreadPriorityPolicy=1 $1
+    sudo nice -n -2 java -jar -Xmx1G -Xms1G $1
 fi

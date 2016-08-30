@@ -132,7 +132,7 @@ public class SerieCoucheTrame implements Service
 	 * C'est cette méthode qui s'occupe de commander la signalisation.
 	 * @return
 	 */
-	public Paquet readData()
+	public Paquet readData() throws InterruptedException
 	{
 		IncomingFrame f = null;
 		Paquet p = null;

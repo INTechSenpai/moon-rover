@@ -52,9 +52,9 @@ public class ThreadSerialInputCoucheOrdre extends Thread implements Service
 	public void run()
 	{
 		Thread.currentThread().setName("ThreadSerialInputCoucheOrdre");
-		while(true)
-		{
-			try {
+		try {
+			while(true)
+			{
 				synchronized(serie)
 				{
 					if(serie.isEmpty())
@@ -174,9 +174,9 @@ public class ThreadSerialInputCoucheOrdre extends Thread implements Service
 						log.critical("On a ignoré un paquet d'origine "+paquet.origine+" (taille : "+data.length+")");
 
 				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
+		} catch (InterruptedException e) {
+			log.debug(e);
 		}
 	}
 	

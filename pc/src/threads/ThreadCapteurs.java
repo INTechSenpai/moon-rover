@@ -31,21 +31,21 @@ public class ThreadCapteurs extends Thread implements Service
 	public void run()
 	{
 		Thread.currentThread().setName("ThreadCapteurs");
-		while(true)
-		{
-			IncomingData e = null;
-			synchronized(buffer)
+		try {
+			while(true)
 			{
-				try {
+				IncomingData e = null;
+				synchronized(buffer)
+				{
 					if(buffer.isEmpty())
 						buffer.wait();
 					e = buffer.poll();
-				} catch (InterruptedException e2) {
-					e2.printStackTrace();
 				}
+				capteurs.updateObstaclesMobiles(e);
+				
 			}
-			capteurs.updateObstaclesMobiles(e);
-			
+		} catch (InterruptedException e2) {
+			log.debug("Arrêt de "+Thread.currentThread().getName());
 		}
 	}
 	
