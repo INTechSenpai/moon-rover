@@ -72,7 +72,7 @@ public class SerieCouchePhysique implements Service, SerialInterface
 					log.critical("Port série non trouvé, suppression des verrous");
 					Runtime.getRuntime().exec("sudo rm -f /var/lock/LCK..tty*");
 				} catch (IOException e) {
-					e.printStackTrace();
+					log.warning(e);
 				}
 			}
 			while(!searchPort())

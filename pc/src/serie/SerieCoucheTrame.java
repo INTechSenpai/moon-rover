@@ -5,9 +5,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import container.Service;
-import exceptions.IncorrectChecksumException;
-import exceptions.MissingCharacterException;
-import exceptions.ProtocolException;
+import exceptions.serie.IncorrectChecksumException;
+import exceptions.serie.MissingCharacterException;
+import exceptions.serie.ProtocolException;
 import serie.trame.Conversation;
 import serie.trame.EndOrderFrame;
 import serie.trame.Frame.IncomingCode;

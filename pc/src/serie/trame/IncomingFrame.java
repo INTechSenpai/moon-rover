@@ -1,6 +1,6 @@
 package serie.trame;
 
-import exceptions.IncorrectChecksumException;
+import exceptions.serie.IncorrectChecksumException;
 
 /**
  * Une trame qu'on a reçue

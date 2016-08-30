@@ -6,7 +6,7 @@ import java.io.InputStream;
 import utils.Config;
 import utils.Log;
 import container.Service;
-import exceptions.MissingCharacterException;
+import exceptions.serie.MissingCharacterException;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 
