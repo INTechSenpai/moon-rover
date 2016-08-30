@@ -61,7 +61,7 @@ public class BufferIncomingBytes implements Service, SerialPortEventListener
 					{
 						bufferReading[indexBufferStop++] = input.read();
 						indexBufferStop &= 0xFF;
-						notify();
+						notifyAll();
 					}
 				} while(input.available() > 0);
 

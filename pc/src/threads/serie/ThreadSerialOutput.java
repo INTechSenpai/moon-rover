@@ -1,5 +1,6 @@
 package threads.serie;
 
+import serie.BufferIncomingBytes;
 import serie.BufferOutgoingOrder;
 import serie.SerieCoucheTrame;
 import serie.trame.Order;
@@ -21,12 +22,14 @@ public class ThreadSerialOutput extends Thread implements Service
 	private SerieCoucheTrame serie;
 	private BufferOutgoingOrder data;
 	private int sleep;
+	private BufferIncomingBytes input;
 	
-	public ThreadSerialOutput(Log log, SerieCoucheTrame serie, BufferOutgoingOrder data)
+	public ThreadSerialOutput(Log log, SerieCoucheTrame serie, BufferOutgoingOrder data, BufferIncomingBytes input)
 	{
 		this.log = log;
 		this.serie = serie;
 		this.data = data;
+		this.input = input;
 	}
 
 	@Override
@@ -38,12 +41,12 @@ public class ThreadSerialOutput extends Thread implements Service
 		
 		// On envoie d'abord le ping long initial
 		try {
-			synchronized(serie)
+			serie.init();
+			Thread.sleep(50); // on attend que la série soit bien prête
+			synchronized(input)
 			{
-				serie.init();
-				Thread.sleep(50); // on attend que la série soit bien prête
 				serie.sendOrder(new Order(OutOrder.PING));
-				serie.wait(); // on est notifié dès qu'on reçoit quelque chose sur la série
+				input.wait(); // on est notifié dès qu'on reçoit quelque chose sur la série
 			}
 		
 			while(true)
