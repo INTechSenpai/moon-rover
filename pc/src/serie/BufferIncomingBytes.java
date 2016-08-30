@@ -85,17 +85,14 @@ public class BufferIncomingBytes implements Service, SerialPortEventListener
 	 * @return
 	 * @throws IOException
 	 * @throws MissingCharacterException
+	 * @throws InterruptedException 
 	 */
-	public final synchronized int read() throws MissingCharacterException
+	public final synchronized int read() throws MissingCharacterException, InterruptedException
 	{
 		int essai = 0;
 		while(indexBufferStart == indexBufferStop && essai < 10)
 		{
-			try {
-				wait(0, 10000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			wait(0, 10000);
 			essai++;
 		}
 

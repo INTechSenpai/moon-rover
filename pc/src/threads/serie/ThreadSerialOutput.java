@@ -6,7 +6,6 @@ import serie.trame.Order;
 import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
-import utils.Sleep;
 import container.Service;
 import enums.SerialProtocol.OutOrder;
 
@@ -41,7 +40,7 @@ public class ThreadSerialOutput extends Thread implements Service
 			synchronized(serie)
 			{
 				serie.init();
-				Sleep.sleep(50); // on attend que la série soit bien prête
+				Thread.sleep(50); // on attend que la série soit bien prête
 				serie.sendOrder(new Order(OutOrder.PING));
 				serie.wait(); // on est notifié dès qu'on reçoit quelque chose sur la série
 			}
@@ -71,7 +70,7 @@ public class ThreadSerialOutput extends Thread implements Service
 				Thread.sleep(sleep); // laisse un peu de temps entre deux trames si besoin est
 			}
 		} catch (InterruptedException e) {
-			log.debug(e);
+			log.debug("Arrêt de "+Thread.currentThread().getName());
 		}
 	}
 	

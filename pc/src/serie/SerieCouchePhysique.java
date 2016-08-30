@@ -16,7 +16,6 @@ import container.Service;
 import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
-import utils.Sleep;
 
 /**
  * La connexion série
@@ -56,8 +55,9 @@ public class SerieCouchePhysique implements Service, SerialInterface
 
 	/**
 	 * Ouverture du port
+	 * @throws InterruptedException 
 	 */
-	protected synchronized void openPort()
+	protected synchronized void openPort() throws InterruptedException
 	{
 		if(!portOuvert && !searchPort())
 		{
@@ -78,7 +78,7 @@ public class SerieCouchePhysique implements Service, SerialInterface
 			while(!searchPort())
 			{
 				log.critical("Port série non trouvé, réessaie dans 500 ms");
-				Sleep.sleep(500);
+				Thread.sleep(500);
 			}
 		}
 	}
@@ -179,7 +179,7 @@ public class SerieCouchePhysique implements Service, SerialInterface
 				serialPort.close();
 				buffer.close();
 				output.close();
-			} catch(Exception e) {
+			} catch(IOException e) {
 				log.warning(e);
 			}
 			isClosed = true;
@@ -194,8 +194,9 @@ public class SerieCouchePhysique implements Service, SerialInterface
 	 * Envoie une frame sur la série
 	 * Cette méthode est synchronized car deux threads peuvent l'utiliser : ThreadSerialOutput et ThreadSerialOutputTimeout
 	 * @param message
+	 * @throws InterruptedException 
 	 */
-	public synchronized void communiquer(OutgoingFrame out)
+	public synchronized void communiquer(OutgoingFrame out) throws InterruptedException
 	{
 		openPort();
 
@@ -220,7 +221,7 @@ public class SerieCouchePhysique implements Service, SerialInterface
 				log.debug("Envoi terminé");
 			
 		}
-		catch (Exception e)
+		catch (IOException e)
 		{
 			/**
 			 * Si la carte ne répond vraiment pas, on recommence de manière infinie.
@@ -231,7 +232,7 @@ public class SerieCouchePhysique implements Service, SerialInterface
 			{
 				log.critical("Pas trouvé... On recommence");
 				// On laisse la série respirer un peu
-				Sleep.sleep(100);
+				Thread.sleep(100);
 			}
 			// On a retrouvé la série, on renvoie le message
 			communiquer(out);
@@ -250,7 +251,7 @@ public class SerieCouchePhysique implements Service, SerialInterface
 	}
 
 	@Override
-	public void init()
+	public void init() throws InterruptedException
 	{
 		openPort();
 	}

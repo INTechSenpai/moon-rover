@@ -17,7 +17,6 @@ import serie.trame.Paquet;
 import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
-import utils.Sleep;
 
 /**
  * Implémentation du protocole série couche trame
@@ -81,8 +80,9 @@ public class SerieCoucheTrame implements Service
 	 * Cette méthode vérifie les ID actuellement utilisés et donne le prochain qui est libre.
 	 * Si tous les ID sont occupés, attend 1ms et re-cherche.
 	 * @return
+	 * @throws InterruptedException 
 	 */
-	private synchronized Conversation getNextAvailableConversation()
+	private synchronized Conversation getNextAvailableConversation() throws InterruptedException
 	{
 		int initialID = dernierIDutilise;
 		dernierIDutilise++;
@@ -91,7 +91,7 @@ public class SerieCoucheTrame implements Service
 			if(initialID == dernierIDutilise) // on a fait un tour complet…
 			{
 				log.critical("Aucun ID disponible : attente");
-				Sleep.sleep(1);
+				Thread.sleep(1);
 			}
 			
 			if(!conversations[dernierIDutilise].libre)
@@ -110,8 +110,9 @@ public class SerieCoucheTrame implements Service
 	/**
 	 * Demande l'envoi d'un ordre
 	 * @param o
+	 * @throws InterruptedException 
 	 */
-	public void sendOrder(Order o)
+	public void sendOrder(Order o) throws InterruptedException
 	{
 		Conversation f = getNextAvailableConversation();
 		f.update(o);
@@ -144,7 +145,7 @@ public class SerieCoucheTrame implements Service
 				p = processFrame(f);
 				if(p == null) // c'est une trame de signalisation
 					restart = true;
-			} catch (Exception e) {
+			} catch (ProtocolException | IncorrectChecksumException | MissingCharacterException e) {
 				log.warning(e);
 				restart = true;
 			}
@@ -156,8 +157,9 @@ public class SerieCoucheTrame implements Service
 	 * S'occupe du protocole : répond si besoin est, vérifie la cohérence, etc.
 	 * Renvoie le ticket associé à la conversation
 	 * @param f
+	 * @throws InterruptedException 
 	 */
-	public Paquet processFrame(IncomingFrame f) throws ProtocolException
+	public Paquet processFrame(IncomingFrame f) throws ProtocolException, InterruptedException
 	{
 		Iterator<Integer> it = waitingFrames.iterator();
 		while(it.hasNext())
@@ -278,18 +280,15 @@ public class SerieCoucheTrame implements Service
 	 * @return
 	 * @throws MissingCharacterException
 	 * @throws IncorrectChecksumException
+	 * @throws InterruptedException 
 	 */
-	private IncomingFrame readFrame() throws MissingCharacterException, IncorrectChecksumException, IllegalArgumentException
+	private IncomingFrame readFrame() throws MissingCharacterException, IncorrectChecksumException, IllegalArgumentException, InterruptedException
 	{
 		synchronized(serieInput)
 		{
 			// Attente des données…
 			if(!serieInput.available())
-				try {
-					serieInput.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				serieInput.wait();
 			
 			int code = serieInput.read();
 			int longueur = serieInput.read();
@@ -362,8 +361,9 @@ public class SerieCoucheTrame implements Service
 
 	/**
 	 * Renvoie la trame la plus vieille qui en a besoin (possiblement aucune)
+	 * @throws InterruptedException 
 	 */
-	public void resend()
+	public void resend() throws InterruptedException
 	{
 		Conversation trame = null;
 
@@ -401,7 +401,7 @@ public class SerieCoucheTrame implements Service
 		}
 	}
 
-	public void init()
+	public void init() throws InterruptedException
 	{
 		serieOutput.init();
 	}

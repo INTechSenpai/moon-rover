@@ -10,7 +10,7 @@ import serie.trame.OutgoingFrame;
 
 public interface SerialInterface
 {
-	public void communiquer(OutgoingFrame out);
+	public void communiquer(OutgoingFrame out) throws InterruptedException;
 	public void close();
-	public void init();
+	public void init() throws InterruptedException;
 }

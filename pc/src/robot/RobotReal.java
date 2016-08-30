@@ -63,8 +63,9 @@ public class RobotReal extends Robot
      * Gère les exceptions, c'est-à-dire les rencontres avec l'ennemi et les câlins avec un mur.
      * Cette méthode NE GÈRE PAS les exceptions lors des trajectoires courbes
      * @throws UnexpectedObstacleOnPathException 
+     * @throws InterruptedException 
      */
-    private void gestionExceptions(boolean mur, Ticket t) throws UnableToMoveException, UnexpectedObstacleOnPathException
+    private void gestionExceptions(boolean mur, Ticket t) throws UnableToMoveException, UnexpectedObstacleOnPathException, InterruptedException
     {
 //        int nb_iterations_deblocage = 1; // combien de fois on réessaye si on se prend un mur
 //        int nb_iterations_ennemi = 2000 / tempsAttente; // 2 secondes max
@@ -124,23 +125,23 @@ public class RobotReal extends Robot
      * - Soit le robot est bloqué, et la méthod lève une exception
      * ATTENTION ! Il faut que cette méthode soit appelée dans un synchronized(requete)
      * @throws UnableToMoveException
+     * @throws InterruptedException 
      */
-    private void attendStatus(Ticket t) throws UnableToMoveException, UnexpectedObstacleOnPathException
+    private void attendStatus(Ticket t) throws UnableToMoveException, UnexpectedObstacleOnPathException, InterruptedException
     {
-		try {
-			Ticket.State o;
-			do {
-				if(t.isEmpty())
-				{
-					// Si au bout de 3s le robot n'a toujours rien répondu,
-					// on suppose un blocage mécanique
-					t.set(Ticket.State.KO);
-					t.wait(15000);
-				}
+		Ticket.State o;
+		do {
+			if(t.isEmpty())
+			{
+				// Si au bout de 3s le robot n'a toujours rien répondu,
+				// on suppose un blocage mécanique
+				t.set(Ticket.State.KO);
+				t.wait(15000);
+			}
 
-				o = t.getAndClear();
-				if(o == Ticket.State.KO)
-					throw new UnableToMoveException();
+			o = t.getAndClear();
+			if(o == Ticket.State.KO)
+				throw new UnableToMoveException();
 /*				else if(o == SerialProtocol.ENNEMI_SUR_CHEMIN)
 				{
 					log.critical("Ennemi sur le chemin !");
@@ -148,10 +149,7 @@ public class RobotReal extends Robot
 					Sleep.sleep(4000);
 					throw new UnexpectedObstacleOnPathException();
 				}*/
-			} while(o != Ticket.State.OK);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		} while(o != Ticket.State.OK);
 
     }
 
