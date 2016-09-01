@@ -97,7 +97,7 @@ public class RobotReal extends Robot
 						e1.printStackTrace();
 					}
 //                    if(nb_iterations_deblocage-- == 0)*/
-                        throw new UnableToMoveException();
+                        throw new UnableToMoveException("On n'a pas réussi à se dégager");
                 }           
                 else
                 	return; // on s'est pris un mur, on s'attendait à un mur : tout va bien
@@ -141,7 +141,7 @@ public class RobotReal extends Robot
 
 			o = t.getAndClear();
 			if(o == Ticket.State.KO)
-				throw new UnableToMoveException();
+				throw new UnableToMoveException("Le bas niveau prévenu d'un problème mécanique");
 /*				else if(o == SerialProtocol.ENNEMI_SUR_CHEMIN)
 				{
 					log.critical("Ennemi sur le chemin !");

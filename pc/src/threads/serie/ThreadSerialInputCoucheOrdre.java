@@ -15,8 +15,9 @@ import utils.Vec2;
 import utils.permissions.ReadOnly;
 import container.Service;
 import enums.RobotColor;
-import obstacles.IncomingData;
-import obstacles.IncomingDataBuffer;
+import obstacles.Capteurs;
+import obstacles.SensorsData;
+import obstacles.SensorsDataBuffer;
 import pathfinding.CheminPathfinding;
 
 /**
@@ -30,15 +31,14 @@ public class ThreadSerialInputCoucheOrdre extends Thread implements Service
 	protected Log log;
 	protected Config config;
 	private BufferIncomingOrder serie;
-	private IncomingDataBuffer buffer;
+	private SensorsDataBuffer buffer;
 	private RobotReal robot;
 	private CheminPathfinding chemin;
 	
 	private boolean capteursOn = false;
-	private volatile int nbCapteurs;
 	private boolean matchDemarre = false;
 	
-	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, IncomingDataBuffer buffer, RobotReal robot, CheminPathfinding chemin)
+	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, CheminPathfinding chemin)
 	{
 		this.log = log;
 		this.config = config;
@@ -113,19 +113,19 @@ public class ThreadSerialInputCoucheOrdre extends Thread implements Service
 						Cinematique c = new Cinematique(positionRobot.x, positionRobot.y, orientationRobot, true, 0, 0, 0, Speed.STANDARD);
 						robot.setCinematique(c);
 						
-						if(data.length > 6) // la présence de ces infos n'est pas obligatoire
+						if(data.length > 6) // la présence de ces infos n'est pas systématiques
 						{
 							/**
 							 * Acquiert ce que voit les capteurs
 						 	 */
-							int[] mesures = new int[nbCapteurs];
-							for(int i = 0; i < nbCapteurs / 2; i++)
+							int[] mesures = new int[Capteurs.nbCapteurs];
+							for(int i = 0; i < Capteurs.nbCapteurs / 2; i++)
 							{
 								mesures[2*i] = (data[10+3*i] << 4) + (data[10+3*i+1] >> 4);
 								mesures[2*i+1] = ((data[10+3*i+1] & 0x0F) << 8) + data[10+3*i+2];
 							}
 							if(capteursOn)
-								buffer.add(new IncomingData(mesures, c));
+								buffer.add(new SensorsData(mesures, c));
 						}
 
 					}
@@ -190,8 +190,6 @@ public class ThreadSerialInputCoucheOrdre extends Thread implements Service
 
 	@Override
 	public void useConfig(Config config)
-	{
-		nbCapteurs = config.getInt(ConfigInfo.NB_CAPTEURS_PROXIMITE);
-	}
+	{}
 
 }

@@ -1,8 +1,8 @@
 package threads;
 
 import obstacles.Capteurs;
-import obstacles.IncomingData;
-import obstacles.IncomingDataBuffer;
+import obstacles.SensorsData;
+import obstacles.SensorsDataBuffer;
 import utils.Config;
 import utils.Log;
 import container.Service;
@@ -15,12 +15,12 @@ import container.Service;
 
 public class ThreadCapteurs extends Thread implements Service
 {
-	private IncomingDataBuffer buffer;
+	private SensorsDataBuffer buffer;
 	private Capteurs capteurs;
 	
 	protected Log log;
 	
-	public ThreadCapteurs(Log log, IncomingDataBuffer buffer, Capteurs capteurs)
+	public ThreadCapteurs(Log log, SensorsDataBuffer buffer, Capteurs capteurs)
 	{
 		this.log = log;
 		this.buffer = buffer;
@@ -35,7 +35,7 @@ public class ThreadCapteurs extends Thread implements Service
 		try {
 			while(true)
 			{
-				IncomingData e = null;
+				SensorsData e = null;
 				synchronized(buffer)
 				{
 					if(buffer.isEmpty())
