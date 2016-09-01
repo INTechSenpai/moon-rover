@@ -48,6 +48,7 @@ public class BufferIncomingBytes implements Service, SerialPortEventListener
 	/**
 	 * Gestion d'un évènement sur la série.
 	 */
+	@Override
 	public void serialEvent(SerialPortEvent oEvent)
 	{
 		if(oEvent.getEventType() != SerialPortEvent.DATA_AVAILABLE)
@@ -98,22 +99,20 @@ public class BufferIncomingBytes implements Service, SerialPortEventListener
 
 		if(indexBufferStart == indexBufferStop)
 			throw new MissingCharacterException();
-		else
+
+		int out = bufferReading[indexBufferStart++];
+		indexBufferStart &= 0xFF;
+
+		if(Config.debugSerieTrame)
 		{
-			int out = bufferReading[indexBufferStart++];
-			indexBufferStart &= 0xFF;
-
-			if(Config.debugSerieTrame)
-			{
-				String s = Integer.toHexString(out).toUpperCase();
-				if(s.length() == 1)
-					log.debug("Reçu : "+"0"+s+" ("+(char)(out)+")");
-				else
-					log.debug("Reçu : "+s.substring(s.length()-2, s.length())+" ("+(char)(out)+")");	
-			}
-
-			return out;
+			String s = Integer.toHexString(out).toUpperCase();
+			if(s.length() == 1)
+				log.debug("Reçu : "+"0"+s+" ("+(char)(out)+")");
+			else
+				log.debug("Reçu : "+s.substring(s.length()-2, s.length())+" ("+(char)(out)+")");	
 		}
+
+		return out;
 	}
 
 	/**

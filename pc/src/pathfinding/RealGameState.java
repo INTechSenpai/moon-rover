@@ -46,7 +46,8 @@ public class RealGameState extends GameState implements Service
     public void useConfig(Config config)
     {}
     
-    public final void copyAStarCourbe(ChronoGameState modified)
+    @Override
+	public final void copyAStarCourbe(ChronoGameState modified)
     {
     	table.copy(modified.table);
         robot.copy((RobotChrono) modified.robot);

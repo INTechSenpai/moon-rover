@@ -169,6 +169,7 @@ public class SerieCouchePhysique implements Service, SerialInterface
 	/**
 	 * Doit être appelé quand on arrête de se servir de la série
 	 */
+	@Override
 	public void close()
 	{
 		if (!isClosed && portOuvert)
@@ -196,6 +197,7 @@ public class SerieCouchePhysique implements Service, SerialInterface
 	 * @param message
 	 * @throws InterruptedException 
 	 */
+	@Override
 	public synchronized void communiquer(OutgoingFrame out) throws InterruptedException
 	{
 		openPort();

@@ -182,8 +182,8 @@ public class SerieCoucheTrame implements Service
 						}
 						return null;
 					}
-					else
-						throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.origine.type);
+
+					throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.origine.type);
 				}
 				else if(f.code == IncomingCode.VALUE_ANSWER)
 				{
@@ -201,8 +201,8 @@ public class SerieCoucheTrame implements Service
 						}
 						return new Paquet(f.message, waiting.ticket, waiting.origine);
 					}
-					else
-						throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.origine.type);
+
+					throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.origine.type);
 				}
 				else
 					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_BEGIN ou VALUE_ANSWER !");
@@ -266,8 +266,7 @@ public class SerieCoucheTrame implements Service
 					return null;
 				}
 				// on ne peut pas recevoir de VALUE_ANSWER
-				else
-					throw new ProtocolException(f.code+" reçu pour une trame "+closed.origine.type+" finie !");
+				throw new ProtocolException(f.code+" reçu pour une trame "+closed.origine.type+" finie !");
 			}
 		}
 		
@@ -339,7 +338,7 @@ public class SerieCoucheTrame implements Service
 	{
 		int out;
 		if(!waitingFrames.isEmpty())
-			out = (int) conversations[waitingFrames.getFirst()].timeBeforeResend();
+			out = conversations[waitingFrames.getFirst()].timeBeforeResend();
 		else
 			out = timeout;
 		return Math.max(out,0); // il faut envoyer un temps positif
@@ -353,7 +352,7 @@ public class SerieCoucheTrame implements Service
 	{
 		int out;
 		if(!closedFrames.isEmpty())
-			out = (int) conversations[closedFrames.getFirst()].timeBeforeDeath();
+			out = conversations[closedFrames.getFirst()].timeBeforeDeath();
 		else
 			out = 2*timeout;
 		return Math.max(out,0); // il faut envoyer un temps positif
