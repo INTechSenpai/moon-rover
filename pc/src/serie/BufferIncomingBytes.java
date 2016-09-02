@@ -111,14 +111,14 @@ public class BufferIncomingBytes implements Service, SerialPortEventListener
 				if(out >= 32 && out < 127)
 					log.debug("Reçu : "+"0"+s+" ("+(char)(out)+")");
 				else
-					log.debug("Reçu : "+"0"+s+" (non-ASCII)");
+					log.debug("Reçu : "+"0"+s);
 			}
 			else
 			{
 				if(out >= 32 && out < 127)
 					log.debug("Reçu : "+s.substring(s.length()-2, s.length())+" ("+(char)(out)+")");	
 				else
-					log.debug("Reçu : "+s.substring(s.length()-2, s.length())+" (non-ASCII)");	
+					log.debug("Reçu : "+s.substring(s.length()-2, s.length()));	
 			}
 		}
 

@@ -30,7 +30,7 @@ public class ThreadCapteurs extends Thread implements Service
 	@Override
 	public void run()
 	{
-		Thread.currentThread().setName("ThreadCapteurs");
+		Thread.currentThread().setName("ThreadRobotCapteurs");
 		log.debug("Démarrage de "+Thread.currentThread().getName());
 		try {
 			while(true)

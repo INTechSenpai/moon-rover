@@ -29,7 +29,7 @@ public class ThreadSerialInputCoucheTrame extends Thread implements Service
 	@Override
 	public void run()
 	{
-		Thread.currentThread().setName("ThreadSerialInputCoucheTrame");
+		Thread.currentThread().setName("ThreadRobotSerialInputCoucheTrame");
 		log.debug("Démarrage de "+Thread.currentThread().getName());
 		try {
 			while(true)

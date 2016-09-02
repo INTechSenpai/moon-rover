@@ -27,7 +27,7 @@ public class ThreadSerialOutputTimeout extends Thread implements Service
 	@Override
 	public void run()
 	{
-		Thread.currentThread().setName("ThreadSerialOutputTimeout");
+		Thread.currentThread().setName("ThreadRobotSerialOutputTimeout");
 		log.debug("Démarrage de "+Thread.currentThread().getName());
 		try {
 			while(true)

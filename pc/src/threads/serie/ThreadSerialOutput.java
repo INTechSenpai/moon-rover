@@ -35,7 +35,7 @@ public class ThreadSerialOutput extends Thread implements Service
 	@Override
 	public void run()
 	{
-		Thread.currentThread().setName("ThreadSerialOutput");
+		Thread.currentThread().setName("ThreadRobotSerialOutput");
 		log.debug("Démarrage de "+Thread.currentThread().getName());
 		Order message;
 		

@@ -51,7 +51,7 @@ public class ThreadSerialInputCoucheOrdre extends Thread implements Service
 	@Override
 	public void run()
 	{
-		Thread.currentThread().setName("ThreadSerialInputCoucheOrdre");
+		Thread.currentThread().setName("ThreadRobotSerialInputCoucheOrdre");
 		log.debug("Démarrage de "+Thread.currentThread().getName());
 		try {
 			while(true)
