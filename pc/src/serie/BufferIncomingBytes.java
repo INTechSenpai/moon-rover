@@ -107,9 +107,19 @@ public class BufferIncomingBytes implements Service, SerialPortEventListener
 		{
 			String s = Integer.toHexString(out).toUpperCase();
 			if(s.length() == 1)
-				log.debug("Reçu : "+"0"+s+" ("+(char)(out)+")");
+			{
+				if(out >= 32 && out < 127)
+					log.debug("Reçu : "+"0"+s+" ("+(char)(out)+")");
+				else
+					log.debug("Reçu : "+"0"+s+" (non-ASCII)");
+			}
 			else
-				log.debug("Reçu : "+s.substring(s.length()-2, s.length())+" ("+(char)(out)+")");	
+			{
+				if(out >= 32 && out < 127)
+					log.debug("Reçu : "+s.substring(s.length()-2, s.length())+" ("+(char)(out)+")");	
+				else
+					log.debug("Reçu : "+s.substring(s.length()-2, s.length())+" (non-ASCII)");	
+			}
 		}
 
 		return out;

@@ -159,7 +159,7 @@ public class SerieCoucheTrame implements Service
 	 * @param f
 	 * @throws InterruptedException 
 	 */
-	public Paquet processFrame(IncomingFrame f) throws ProtocolException, InterruptedException
+	public synchronized Paquet processFrame(IncomingFrame f) throws ProtocolException, InterruptedException
 	{
 		Iterator<Integer> it = waitingFrames.iterator();
 		while(it.hasNext())
@@ -175,11 +175,8 @@ public class SerieCoucheTrame implements Service
 					{
 						if(Config.debugSerie)
 							log.debug("EXECUTION_BEGIN reçu");
-						synchronized(this)
-						{
-							it.remove();
-							pendingLongFrames.add(id);
-						}
+						it.remove();
+						pendingLongFrames.add(id);
 						return null;
 					}
 
@@ -193,12 +190,9 @@ public class SerieCoucheTrame implements Service
 							log.debug("VALUE_ANSWER reçu");
 
 						// L'ordre court a reçu un acquittement et ne passe pas par la case "pending"
-						synchronized(this)
-						{
-							it.remove();
-							waiting.setDeathDate(); // tes jours sont comptés…
-							closedFrames.add(id);
-						}
+						it.remove();
+						waiting.setDeathDate(); // tes jours sont comptés…
+						closedFrames.add(id);
 						return new Paquet(f.message, waiting.ticket, waiting.origine);
 					}
 
@@ -230,11 +224,8 @@ public class SerieCoucheTrame implements Service
 					endOrderFrame.updateId(f.id);
 					serieOutput.communiquer(endOrderFrame);
 					// et on retire la trame des trames en cours
-					synchronized(this)
-					{
-						it.remove();
-						closedFrames.add(id);
-					}
+					it.remove();
+					closedFrames.add(id);
 					return new Paquet(f.message, pending.ticket, pending.origine);
 				}
 				else if(f.code == IncomingCode.STATUS_UPDATE)
