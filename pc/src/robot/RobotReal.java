@@ -38,7 +38,7 @@ public class RobotReal extends Robot
 		// TODO
 		cinematique = new Cinematique(0, 0, 0, true, 0, 0, 0, Speed.STANDARD);
 	}
-		
+			
 	public void setEnMarcheAvance(boolean enMarcheAvant)
 	{
 		cinematique.enMarcheAvant = enMarcheAvant;
