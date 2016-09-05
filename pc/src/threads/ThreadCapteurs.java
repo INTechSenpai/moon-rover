@@ -5,7 +5,6 @@ import obstacles.SensorsData;
 import obstacles.SensorsDataBuffer;
 import utils.Config;
 import utils.Log;
-import container.Service;
 
 /**
  * Thread qui gère les entrées des capteurs
@@ -13,7 +12,7 @@ import container.Service;
  *
  */
 
-public class ThreadCapteurs extends Thread implements Service
+public class ThreadCapteurs extends ThreadService
 {
 	private SensorsDataBuffer buffer;
 	private Capteurs capteurs;

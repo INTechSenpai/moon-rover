@@ -4,10 +4,10 @@ import serie.BufferIncomingBytes;
 import serie.BufferOutgoingOrder;
 import serie.SerieCoucheTrame;
 import serie.trame.Order;
+import threads.ThreadService;
 import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
-import container.Service;
 import enums.SerialProtocol.OutOrder;
 
 /**
@@ -16,7 +16,7 @@ import enums.SerialProtocol.OutOrder;
  *
  */
 
-public class ThreadSerialOutput extends Thread implements Service
+public class ThreadSerialOutput extends ThreadService
 {
 	protected Log log;
 	private SerieCoucheTrame serie;

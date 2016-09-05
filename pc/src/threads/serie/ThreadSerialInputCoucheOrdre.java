@@ -8,12 +8,12 @@ import robot.Speed;
 import serie.BufferIncomingOrder;
 import serie.Ticket;
 import serie.trame.Paquet;
+import threads.ThreadService;
 import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
 import utils.Vec2;
 import utils.permissions.ReadOnly;
-import container.Service;
 import enums.RobotColor;
 import obstacles.Capteurs;
 import obstacles.SensorsData;
@@ -26,7 +26,7 @@ import pathfinding.CheminPathfinding;
  *
  */
 
-public class ThreadSerialInputCoucheOrdre extends Thread implements Service
+public class ThreadSerialInputCoucheOrdre extends ThreadService
 {
 	protected Log log;
 	protected Config config;

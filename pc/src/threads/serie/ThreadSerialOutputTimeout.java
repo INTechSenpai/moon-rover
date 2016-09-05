@@ -1,10 +1,10 @@
 package threads.serie;
 
 import serie.SerieCoucheTrame;
+import threads.ThreadService;
 import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
-import container.Service;
 
 /**
  * Thread qui permet de faire gaffe au timeout de la série bas niveau
@@ -12,7 +12,7 @@ import container.Service;
  *
  */
 
-public class ThreadSerialOutputTimeout extends Thread implements Service
+public class ThreadSerialOutputTimeout extends ThreadService
 {
 	protected Log log;
 	private SerieCoucheTrame serie;

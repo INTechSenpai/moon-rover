@@ -1,8 +1,8 @@
 package threads.serie;
 
-import container.Service;
 import serie.BufferIncomingOrder;
 import serie.SerieCoucheTrame;
+import threads.ThreadService;
 import utils.Config;
 import utils.Log;
 
@@ -12,7 +12,7 @@ import utils.Log;
  *
  */
 
-public class ThreadSerialInputCoucheTrame extends Thread implements Service
+public class ThreadSerialInputCoucheTrame extends ThreadService
 {
 
 	protected Log log;

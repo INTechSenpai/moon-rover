@@ -23,7 +23,7 @@ import utils.Log;
  *
  */
 
-public class SerieCouchePhysique implements Service, SerialInterface
+public class SerieCouchePhysique implements Service
 {
 	private SerialPort serialPort;
 	protected Log log;
@@ -169,7 +169,6 @@ public class SerieCouchePhysique implements Service, SerialInterface
 	/**
 	 * Doit être appelé quand on arrête de se servir de la série
 	 */
-	@Override
 	public void close()
 	{
 		if (!isClosed && portOuvert)
@@ -197,7 +196,6 @@ public class SerieCouchePhysique implements Service, SerialInterface
 	 * @param message
 	 * @throws InterruptedException 
 	 */
-	@Override
 	public synchronized void communiquer(OutgoingFrame out) throws InterruptedException
 	{
 		openPort();
@@ -252,7 +250,6 @@ public class SerieCouchePhysique implements Service, SerialInterface
 		baudrate = config.getInt(ConfigInfo.BAUDRATE);
 	}
 
-	@Override
 	public void init() throws InterruptedException
 	{
 		openPort();

@@ -54,7 +54,7 @@ public class SerieCoucheTrame implements Service
 	private EndOrderFrame endOrderFrame = new EndOrderFrame();
 	
 	private Log log;
-	private SerialInterface serieOutput;
+	private SerieCouchePhysique serieOutput;
 	private BufferIncomingBytes serieInput;
 	
 	/**
@@ -62,7 +62,7 @@ public class SerieCoucheTrame implements Service
 	 * @param log
 	 * @param serie
 	 */
-	public SerieCoucheTrame(Log log, SerialInterface serieOutput, BufferIncomingBytes serieInput)
+	public SerieCoucheTrame(Log log, SerieCouchePhysique serieOutput, BufferIncomingBytes serieInput)
 	{
 		this.log = log;
 		this.serieInput = serieInput;
