@@ -31,6 +31,7 @@ public class SerieCouchePhysique implements Service
 	
 	protected volatile boolean isClosed;
 	private int baudrate;
+	private boolean simuleSerie;
 	
 	private String portName;
 	
@@ -89,6 +90,9 @@ public class SerieCouchePhysique implements Service
 	 */
 	protected synchronized boolean searchPort()
 	{
+		if(!simuleSerie)
+			return true;
+		
 		portOuvert = false;
 		CommPortIdentifier port;
 		try {
@@ -171,6 +175,9 @@ public class SerieCouchePhysique implements Service
 	 */
 	public void close()
 	{
+		if(!simuleSerie)
+			return;
+		
 		if (!isClosed && portOuvert)
 		{
 			try {
@@ -198,6 +205,9 @@ public class SerieCouchePhysique implements Service
 	 */
 	public synchronized void communiquer(OutgoingFrame out) throws InterruptedException
 	{
+		if(!simuleSerie)
+			return;
+		
 		openPort();
 
 		/**
@@ -248,6 +258,9 @@ public class SerieCouchePhysique implements Service
 	{
 		portName = config.getString(ConfigInfo.SERIAL_PORT);
 		baudrate = config.getInt(ConfigInfo.BAUDRATE);
+		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
+		if(simuleSerie)
+			log.critical("SÉRIE SIMULÉE !");
 	}
 
 	public void init() throws InterruptedException
