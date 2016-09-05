@@ -3,6 +3,7 @@ package robot;
 import utils.Log;
 import utils.Config;
 import pathfinding.dstarlite.GridSpace;
+import pathfinding.dstarlite.PointGridSpace;
 import serie.BufferOutgoingOrder;
 import serie.Ticket;
 import exceptions.UnableToMoveException;
@@ -45,9 +46,9 @@ public class RobotReal extends Robot
 	}
 
 	@Override
-	public int getPositionGridSpace()
+	public PointGridSpace getPositionGridSpace()
 	{
-		return GridSpace.computeGridPoint(cinematique.getPosition());
+		return new PointGridSpace(cinematique.getPosition());
 	}
 	
 	@Override
