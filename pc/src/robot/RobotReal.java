@@ -4,6 +4,7 @@ import utils.Log;
 import utils.Config;
 import pathfinding.dstarlite.GridSpace;
 import pathfinding.dstarlite.PointGridSpace;
+import pathfinding.dstarlite.PointGridSpaceManager;
 import serie.BufferOutgoingOrder;
 import serie.Ticket;
 import exceptions.UnableToMoveException;
@@ -18,14 +19,16 @@ import exceptions.UnexpectedObstacleOnPathException;
 public class RobotReal extends Robot
 {
 	private BufferOutgoingOrder serialOutput;
+	private PointGridSpaceManager pointManager;
 //	private int distanceDegagement;
 //	private int tempsAttente;
 	
 	// Constructeur
-	public RobotReal(BufferOutgoingOrder serialOutput, Log log)
+	public RobotReal(BufferOutgoingOrder serialOutput, Log log, PointGridSpaceManager pointManager)
  	{
 		super(log);
 		this.serialOutput = serialOutput;
+		this.pointManager = pointManager;
 	}
 	
 	/*
@@ -48,7 +51,7 @@ public class RobotReal extends Robot
 	@Override
 	public PointGridSpace getPositionGridSpace()
 	{
-		return new PointGridSpace(cinematique.getPosition());
+		return pointManager.get(cinematique.getPosition());
 	}
 	
 	@Override
