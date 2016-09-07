@@ -10,7 +10,7 @@ public class Conversation
 	public Ticket ticket;
 	public boolean libre = true;
 	private OutgoingFrame firstFrame;
-	protected static int timeout;
+	private static int timeout;
 	public OutOrder origine;
 	
 	/**

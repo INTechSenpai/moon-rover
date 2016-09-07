@@ -8,7 +8,7 @@ package serie.trame;
 
 public class EndOrderFrame extends OutgoingFrame
 {
-	int base;
+	private int base;
 	/**
 	 * Trame de END_ORDER
 	 */

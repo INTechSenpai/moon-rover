@@ -162,10 +162,4 @@ public class RobotReal extends Robot
 		cinematique.copy(this.cinematique);
 	}
 
-/*	// TODO à virer (utilisé uniquement pour les tests)
-	public Cinematique getCinematique()
-	{
-		return cinematique;
-	}
-*/
 }
