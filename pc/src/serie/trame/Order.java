@@ -1,7 +1,7 @@
 package serie.trame;
 
-import enums.SerialProtocol.OutOrder;
 import serie.Ticket;
+import serie.SerialProtocol.OutOrder;
 
 /**
  * Un ordre à envoyer sur la série

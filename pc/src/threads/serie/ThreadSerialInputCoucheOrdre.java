@@ -1,12 +1,13 @@
 package threads.serie;
 
-import enums.SerialProtocol.InOrder;
-import enums.SerialProtocol.OutOrder;
 import robot.Cinematique;
+import robot.RobotColor;
 import robot.RobotReal;
 import robot.Speed;
 import serie.BufferIncomingOrder;
 import serie.Ticket;
+import serie.SerialProtocol.InOrder;
+import serie.SerialProtocol.OutOrder;
 import serie.trame.Paquet;
 import threads.ThreadService;
 import utils.Config;
@@ -14,7 +15,6 @@ import utils.ConfigInfo;
 import utils.Log;
 import utils.Vec2;
 import utils.permissions.ReadOnly;
-import enums.RobotColor;
 import obstacles.Capteurs;
 import obstacles.SensorsData;
 import obstacles.SensorsDataBuffer;

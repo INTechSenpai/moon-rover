@@ -5,9 +5,9 @@ import pathfinding.astarCourbe.arcs.ArcCourbe;
 import java.util.LinkedList;
 
 import robot.Speed;
+import serie.SerialProtocol.OutOrder;
 import serie.trame.Order;
 import container.Service;
-import enums.SerialProtocol.OutOrder;
 import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;

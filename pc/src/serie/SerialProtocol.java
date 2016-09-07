@@ -1,4 +1,4 @@
-package enums;
+package serie;
 
 import serie.trame.Order.Type;
 

@@ -3,12 +3,12 @@ package threads.serie;
 import serie.BufferIncomingBytes;
 import serie.BufferOutgoingOrder;
 import serie.SerieCoucheTrame;
+import serie.SerialProtocol.OutOrder;
 import serie.trame.Order;
 import threads.ThreadService;
 import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
-import enums.SerialProtocol.OutOrder;
 
 /**
  * Thread qui vérifie s'il faut envoyer des choses sur la série
