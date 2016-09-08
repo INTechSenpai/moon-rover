@@ -2,13 +2,13 @@ package robot;
 
 import utils.Log;
 import utils.Config;
-import pathfinding.dstarlite.GridSpace;
-import pathfinding.dstarlite.PointGridSpace;
-import pathfinding.dstarlite.PointGridSpaceManager;
 import serie.BufferOutgoingOrder;
 import serie.Ticket;
 import exceptions.UnableToMoveException;
 import exceptions.UnexpectedObstacleOnPathException;
+import pathfinding.dstarlite.gridspace.GridSpace;
+import pathfinding.dstarlite.gridspace.PointGridSpace;
+import pathfinding.dstarlite.gridspace.PointGridSpaceManager;
 
 /**
  * Effectue le lien entre le code et la réalité (permet de parler à la carte bas niveau, d'interroger les capteurs, etc.)
