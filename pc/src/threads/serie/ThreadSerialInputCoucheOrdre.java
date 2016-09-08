@@ -9,6 +9,7 @@ import serie.Ticket;
 import serie.SerialProtocol.InOrder;
 import serie.SerialProtocol.OutOrder;
 import serie.trame.Paquet;
+import threads.ThreadShutdown;
 import threads.ThreadService;
 import utils.Config;
 import utils.ConfigInfo;
@@ -151,8 +152,11 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 					else if(paquet.origine == OutOrder.START_MATCH_CHRONO)
 					{
 						log.debug("Fin du Match !");
-						config.set(ConfigInfo.FIN_MATCH, true);
-
+						
+						// On lance manuellement le thread d'arrêt
+						Runtime.getRuntime().removeShutdownHook(ThreadShutdown.getInstance());
+						ThreadShutdown.getInstance().start();
+						
 						// On attend d'être arrêté
 						while(true)
 							Thread.sleep(1000);
