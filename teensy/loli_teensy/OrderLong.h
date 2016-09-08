@@ -93,12 +93,9 @@ public:
 	void onExecute(std::vector<uint8_t> & output)
 	{
 		uint32_t now = millis();
-		if ((now - beginTime) % 500 == 0)
+		if (now - beginTime > 2000)
 		{
-			output.push_back(now & (0xFF << 24));
-			output.push_back(now & (0xFF << 16));
-			output.push_back(now & (0xFF << 8));
-			output.push_back(now & (0xFF));
+			finished = true;
 		}
 	}
 	void terminate(std::vector<uint8_t> & output)

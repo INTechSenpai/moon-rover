@@ -5,14 +5,19 @@
 */
 
 
+#include "pin_mapping.h"
+#include "BlockingMgr.h"
+#include "DirectionController.h"
+#include "Trajectory.h"
+#include "Position.h"
 #include "Log.h"
 #include "AsciiOrderListener.h"
 #include "Frame.h"
 #include "OrderLong.h"
 #include "OrderImmediate.h"
 #include "OrderMgr.h"
+#include "MotionControlSystem.h"
 #include <vector>
-#include <string.h>
 
 
 void setup()
@@ -40,6 +45,16 @@ void loop()
 		*/
 	}
 }
+
+/* Interruption d'asservissement */
+void motionControlInterrupt()
+{
+	static MotionControlSystem & motionControlSystem = MotionControlSystem::Instance();
+	motionControlSystem.control();
+	motionControlSystem.manageBlocking();
+}
+
+
 
 
 /* Ce bout de code permet de compiler avec std::vector */

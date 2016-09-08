@@ -60,9 +60,9 @@ public:
 	{
 		enum Side
 		{
-			INTECH = 0x01,
-			WINDOW = 0x02,
-			UNKNOWN = 0x03
+			INTECH = 0x00,
+			WINDOW = 0x01,
+			UNKNOWN = 0x02
 		};
 
 		io.clear();

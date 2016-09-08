@@ -33,11 +33,17 @@ public:
 		PID_V_G,
 		PID_V_D,
 		PID_TRANS,
+		BLOCKING_M_G,
+		BLOCKING_M_D,
+		BLOCKING_GLOBAL,
+		DIRECTION,
 		SENSORS
 	};
 
+private:
 	static uint32_t enabledChannels;
 
+public:
 	static void enableChannel(LogChannel channel, bool enable)
 	{
 		uint32_t mask = 1 << channel;
@@ -57,6 +63,8 @@ public:
 		if ((enabledChannels & (1 << channel)) != 0)
 		{
 			Serial.print(LOG_PREFIX_DATA);
+			Serial.print(channel);
+			Serial.print("_");
 			Serial.println(obj);
 		}
 	}
