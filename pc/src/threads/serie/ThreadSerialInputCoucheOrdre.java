@@ -14,8 +14,7 @@ import threads.ThreadService;
 import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
-import utils.Vec2;
-import utils.permissions.ReadOnly;
+import utils.Vec2RO;
 import obstacles.Capteurs;
 import obstacles.SensorsData;
 import obstacles.SensorsDataBuffer;
@@ -102,7 +101,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 						xRobot -= 1500;
 						int yRobot = (data[1] & 0x0F) << 8;
 						yRobot = yRobot + data[2];
-						Vec2<ReadOnly> positionRobot = new Vec2<ReadOnly>(xRobot, yRobot);
+						Vec2RO positionRobot = new Vec2RO(xRobot, yRobot);
 		
 						double orientationRobot = ((data[3] << 8) + data[4]) / 1000.;
 						int indexTrajectory = data[5];
