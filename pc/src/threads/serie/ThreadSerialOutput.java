@@ -23,6 +23,7 @@ public class ThreadSerialOutput extends ThreadService
 	private BufferOutgoingOrder data;
 	private int sleep;
 	private BufferIncomingBytes input;
+	private boolean debugSerie;
 	
 	public ThreadSerialOutput(Log log, SerieCoucheTrame serie, BufferOutgoingOrder data, BufferIncomingBytes input)
 	{
@@ -64,7 +65,7 @@ public class ThreadSerialOutput extends ThreadService
 					if(data.isEmpty()) // si c'est le timeout qui nous a réveillé, on envoie un ping
 					{
 						message = new Order(OutOrder.PING);
-						if(Config.debugSerie)
+						if(debugSerie)
 							log.debug("Envoi d'un ping pour vérifier la connexion");
 					}
 					else
@@ -85,6 +86,7 @@ public class ThreadSerialOutput extends ThreadService
 	@Override
 	public void useConfig(Config config)
 	{
+		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 		sleep = config.getInt(ConfigInfo.SLEEP_ENTRE_TRAMES);
 	}
 

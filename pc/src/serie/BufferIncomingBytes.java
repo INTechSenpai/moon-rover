@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import utils.Config;
+import utils.ConfigInfo;
 import utils.Log;
 import container.Service;
 import exceptions.serie.MissingCharacterException;
@@ -27,6 +28,8 @@ public class BufferIncomingBytes implements Service, SerialPortEventListener
 	private volatile int indexBufferStart = 0;
 	private volatile int indexBufferStop = 0;
 	
+	private boolean debugSerieTrame;
+	
 	public BufferIncomingBytes(Log log)
 	{
 		this.log = log;
@@ -38,7 +41,9 @@ public class BufferIncomingBytes implements Service, SerialPortEventListener
 
 	@Override
 	public void useConfig(Config config)
-	{}
+	{
+		debugSerieTrame = config.getBoolean(ConfigInfo.DEBUG_SERIE_TRAME);
+	}
 	
 	public void setInput(InputStream input)
 	{
@@ -103,7 +108,7 @@ public class BufferIncomingBytes implements Service, SerialPortEventListener
 		int out = bufferReading[indexBufferStart++];
 		indexBufferStart &= 0xFF;
 
-		if(Config.debugSerieTrame)
+		if(debugSerieTrame)
 		{
 			String s = Integer.toHexString(out).toUpperCase();
 			if(s.length() == 1)

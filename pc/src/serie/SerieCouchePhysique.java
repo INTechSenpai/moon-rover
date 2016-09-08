@@ -44,6 +44,8 @@ public class SerieCouchePhysique implements Service
 	/** Milliseconds to block while waiting for port open */
 	private static final int TIME_OUT = 2000;
 
+	private boolean debugSerieTrame, debugSerie;
+	
 	/**
 	 * Constructeur pour la série de test
 	 * @param log
@@ -221,13 +223,13 @@ public class SerieCouchePhysique implements Service
 		
 		try
 		{
-			if(Config.debugSerieTrame)
+			if(debugSerieTrame)
 				log.debug(out);
 
 			// On n'envoie que les premiers "tailleTrame" octets
 			output.write(out.trame, 0, out.tailleTrame);
 			output.flush();
-			if(Config.debugSerie)
+			if(debugSerie)
 				log.debug("Envoi terminé");
 			
 		}
@@ -259,6 +261,8 @@ public class SerieCouchePhysique implements Service
 		portName = config.getString(ConfigInfo.SERIAL_PORT);
 		baudrate = config.getInt(ConfigInfo.BAUDRATE);
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
+		debugSerieTrame = config.getBoolean(ConfigInfo.DEBUG_SERIE_TRAME);
+		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 		if(simuleSerie)
 			log.critical("SÉRIE SIMULÉE !");
 	}

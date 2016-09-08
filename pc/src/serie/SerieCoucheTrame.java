@@ -56,6 +56,7 @@ public class SerieCoucheTrame implements Service
 	private Log log;
 	private SerieCouchePhysique serieOutput;
 	private BufferIncomingBytes serieInput;
+	private boolean debugSerie;
 	
 	/**
 	 * Constructeur classique
@@ -117,7 +118,7 @@ public class SerieCoucheTrame implements Service
 		Conversation f = getNextAvailableConversation();
 		f.update(o);
 
-		if(Config.debugSerie)
+		if(debugSerie)
 			log.debug("Envoi d'une nouvelle trame");
 
 		serieOutput.communiquer(f.getFirstTrame());
@@ -173,7 +174,7 @@ public class SerieCoucheTrame implements Service
 				{
 					if(waiting.origine.type == Order.Type.LONG)
 					{
-						if(Config.debugSerie)
+						if(debugSerie)
 							log.debug("EXECUTION_BEGIN reçu");
 						it.remove();
 						pendingLongFrames.add(id);
@@ -186,7 +187,7 @@ public class SerieCoucheTrame implements Service
 				{
 					if(waiting.origine.type == Order.Type.SHORT)
 					{
-						if(Config.debugSerie)
+						if(debugSerie)
 							log.debug("VALUE_ANSWER reçu");
 
 						// L'ordre court a reçu un acquittement et ne passe pas par la case "pending"
@@ -216,7 +217,7 @@ public class SerieCoucheTrame implements Service
 				// On a le EXECUTION_END d'une frame
 				if(f.code == IncomingCode.EXECUTION_END)
 				{
-					if(Config.debugSerie)
+					if(debugSerie)
 						log.debug("EXECUTION_END reçu. On répond par un END_ORDER.");
 
 					pending.setDeathDate(); // tes jours sont comptés…
@@ -230,7 +231,7 @@ public class SerieCoucheTrame implements Service
 				}
 				else if(f.code == IncomingCode.STATUS_UPDATE)
 				{
-					if(Config.debugSerie)
+					if(debugSerie)
 						log.debug("STATUS_UPDATE reçu");
 					
 					return new Paquet(f.message, pending.ticket, pending.origine);
@@ -252,7 +253,7 @@ public class SerieCoucheTrame implements Service
 				// On avait déjà reçu l'EXECUTION_END. On ignore ce message
 				if(f.code == IncomingCode.EXECUTION_END && closed.origine.type == Order.Type.LONG)
 				{
-					if(Config.debugSerie)
+					if(debugSerie)
 						log.warning("EXECUTION_END déjà reçu");
 					return null;
 				}
@@ -307,6 +308,7 @@ public class SerieCoucheTrame implements Service
 	{
 		timeout = config.getInt(ConfigInfo.SERIAL_TIMEOUT);
 		Conversation.setTimeout(timeout);
+		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 	}
 	
 	/**
@@ -370,7 +372,7 @@ public class SerieCoucheTrame implements Service
 
 		if(trame != null)
 		{
-			if(Config.debugSerie)
+			if(debugSerie)
 				log.debug("Une trame est renvoyée");
 
 			serieOutput.communiquer(trame.getFirstTrame());

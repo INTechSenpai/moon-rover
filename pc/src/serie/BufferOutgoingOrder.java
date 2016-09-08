@@ -35,6 +35,7 @@ public class BufferOutgoingOrder implements Service
 	private volatile LinkedList<Order> bufferBassePriorite = new LinkedList<Order>();
 	private volatile LinkedList<Order> bufferTrajectoireCourbe = new LinkedList<Order>();
 	private volatile boolean stop = false;
+	private boolean debugSerie;
 	
 	/**
 	 * Le buffer est-il vide?
@@ -86,7 +87,7 @@ public class BufferOutgoingOrder implements Service
 	 */
 	public synchronized void immobilise()
 	{
-		if(Config.debugSerie)
+		if(debugSerie)
 			log.debug("Stop !");
 		stop = true;
 		notify();
@@ -155,6 +156,7 @@ public class BufferOutgoingOrder implements Service
 	{
 		sendPeriod = config.getInt(ConfigInfo.SENSORS_SEND_PERIOD);
 		prescaler = config.getInt(ConfigInfo.SENSORS_PRESCALER);
+		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 	}
 	
 	/**
@@ -163,7 +165,7 @@ public class BufferOutgoingOrder implements Service
 	 */
 	public synchronized void envoieArcCourbe(ArcCourbe arc)
 	{
-		if(Config.debugSerie)
+		if(debugSerie)
 			log.debug("Envoi d'un arc "+arc.getPoint(0));
 
 		for(int i = 0; i < arc.getNbPoints(); i++)

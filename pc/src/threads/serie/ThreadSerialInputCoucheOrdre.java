@@ -38,6 +38,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 	
 	private boolean capteursOn = false;
 	private boolean matchDemarre = false;
+	private boolean debugSerie;
 	
 	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, CheminPathfinding chemin)
 	{
@@ -107,7 +108,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 						int indexTrajectory = data[5];
 						chemin.setCurrentIndex(indexTrajectory);
 						
-						if(Config.debugSerie)
+						if(debugSerie)
 							log.debug("Le robot est en "+positionRobot+", orientation : "+orientationRobot);
 		
 						// TODO récupérer à partir de l'index trajectory les info de cinématique
@@ -194,6 +195,8 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 
 	@Override
 	public void useConfig(Config config)
-	{}
+	{
+		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
+	}
 
 }
