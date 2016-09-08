@@ -4,7 +4,6 @@ import robot.RobotChrono;
 import robot.RobotReal;
 import container.Service;
 import table.Table;
-import utils.Log;
 import utils.Config;
 
 /**
@@ -15,12 +14,8 @@ import utils.Config;
 
 public class RealGameState extends GameState<RobotReal> implements Service
 {
-	// cet iterator et cette table sont ceux du gridspace. Modifier l'un modifie l'autre.
-    protected Log log;
-    
-    public RealGameState(Log log, RobotReal robot, Table table)
+    public RealGameState(RobotReal robot, Table table)
     {
-        this.log = log;
         this.robot = robot;
         this.table = table;
     }

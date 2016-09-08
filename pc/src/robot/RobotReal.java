@@ -1,12 +1,12 @@
 package robot;
 
+import container.Service;
 import utils.Log;
 import utils.Config;
 import serie.BufferOutgoingOrder;
 import serie.Ticket;
 import exceptions.UnableToMoveException;
 import exceptions.UnexpectedObstacleOnPathException;
-import pathfinding.dstarlite.gridspace.GridSpace;
 import pathfinding.dstarlite.gridspace.PointGridSpace;
 import pathfinding.dstarlite.gridspace.PointGridSpaceManager;
 
@@ -16,7 +16,7 @@ import pathfinding.dstarlite.gridspace.PointGridSpaceManager;
  *
  */
 
-public class RobotReal extends Robot
+public class RobotReal extends Robot implements Service
 {
 	private BufferOutgoingOrder serialOutput;
 	private PointGridSpaceManager pointManager;
