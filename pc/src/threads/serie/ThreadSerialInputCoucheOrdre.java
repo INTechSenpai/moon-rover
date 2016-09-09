@@ -111,7 +111,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 							log.debug("Le robot est en "+positionRobot+", orientation : "+orientationRobot);
 		
 						// TODO récupérer à partir de l'index trajectory les info de cinématique
-						Cinematique c = new Cinematique(positionRobot.x, positionRobot.y, orientationRobot, true, 0, 0, 0, Speed.STANDARD);
+						Cinematique c = new Cinematique(xRobot, yRobot, orientationRobot, true, 0, 0, 0, Speed.STANDARD);
 						robot.setCinematique(c);
 						
 						if(data.length > 6) // la présence de ces infos n'est pas systématiques

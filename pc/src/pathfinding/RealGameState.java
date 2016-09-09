@@ -32,7 +32,7 @@ public class RealGameState extends GameState<RobotReal> implements Service
 	public final void copyAStarCourbe(ChronoGameState modified)
     {
     	table.copy(modified.table);
-        robot.copy((RobotChrono) modified.robot);
+        robot.copy(modified.robot);
         modified.iterator.init(System.currentTimeMillis());
     }
 
