@@ -19,6 +19,7 @@ package robot;
 
 import container.Service;
 import utils.Log;
+import utils.Vec2RO;
 import utils.Config;
 import serie.BufferOutgoingOrder;
 import serie.Ticket;
@@ -177,6 +178,16 @@ public class RobotReal extends Robot implements Service
 	public void setCinematique(Cinematique cinematique)
 	{
 		cinematique.copy(this.cinematique);
+	}
+
+	public Vec2RO getPosition()
+	{
+		return cinematique.getPosition();
+	}
+
+	public double getOrientation()
+	{
+		return cinematique.orientation;
 	}
 
 }

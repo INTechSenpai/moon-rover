@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package threads;
 
-import obstacles.Capteurs;
+import obstacles.CapteursProcess;
 import obstacles.SensorsData;
 import obstacles.SensorsDataBuffer;
 import utils.Config;
@@ -32,11 +32,11 @@ import utils.Log;
 public class ThreadCapteurs extends ThreadService
 {
 	private SensorsDataBuffer buffer;
-	private Capteurs capteurs;
+	private CapteursProcess capteurs;
 	
 	protected Log log;
 	
-	public ThreadCapteurs(Log log, SensorsDataBuffer buffer, Capteurs capteurs)
+	public ThreadCapteurs(Log log, SensorsDataBuffer buffer, CapteursProcess capteurs)
 	{
 		this.log = log;
 		this.buffer = buffer;

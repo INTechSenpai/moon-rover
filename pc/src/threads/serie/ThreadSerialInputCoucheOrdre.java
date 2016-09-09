@@ -32,7 +32,7 @@ import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
 import utils.Vec2RO;
-import obstacles.Capteurs;
+import obstacles.CapteursProcess;
 import obstacles.SensorsData;
 import obstacles.SensorsDataBuffer;
 import pathfinding.CheminPathfinding;
@@ -136,8 +136,8 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 							/**
 							 * Acquiert ce que voit les capteurs
 						 	 */
-							int[] mesures = new int[Capteurs.nbCapteurs];
-							for(int i = 0; i < Capteurs.nbCapteurs / 2; i++)
+							int[] mesures = new int[CapteursProcess.nbCapteurs];
+							for(int i = 0; i < CapteursProcess.nbCapteurs / 2; i++)
 							{
 								mesures[2*i] = (data[10+3*i] << 4) + (data[10+3*i+1] >> 4);
 								mesures[2*i+1] = ((data[10+3*i+1] & 0x0F) << 8) + data[10+3*i+2];
