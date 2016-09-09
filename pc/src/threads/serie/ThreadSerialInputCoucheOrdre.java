@@ -17,6 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package threads.serie;
 
+import container.Container;
+import exceptions.ContainerException;
 import robot.Cinematique;
 import robot.RobotColor;
 import robot.RobotReal;
@@ -51,13 +53,15 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 	private SensorsDataBuffer buffer;
 	private RobotReal robot;
 	private CheminPathfinding chemin;
+	private Container container;
 	
 	private boolean capteursOn = false;
 	private boolean matchDemarre = false;
 	private boolean debugSerie;
 	
-	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, CheminPathfinding chemin)
+	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, CheminPathfinding chemin, Container container)
 	{
+		this.container = container;
 		this.log = log;
 		this.config = config;
 		this.serie = serie;
@@ -69,7 +73,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 	@Override
 	public void run()
 	{
-		Thread.currentThread().setName("ThreadRobotSerialInputCoucheOrdre");
+		Thread.currentThread().setName(getClass().getSimpleName());
 		log.debug("Démarrage de "+Thread.currentThread().getName());
 		try {
 			while(true)
@@ -171,8 +175,14 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 						log.debug("Fin du Match !");
 						
 						// On lance manuellement le thread d'arrêt
-						Runtime.getRuntime().removeShutdownHook(ThreadShutdown.getInstance());
-						ThreadShutdown.getInstance().start();
+						ThreadShutdown t;
+						try {
+							t = container.getService(ThreadShutdown.class);
+							Runtime.getRuntime().removeShutdownHook(t);
+							t.start();
+						} catch (ContainerException e) {
+							log.critical(e);
+						}
 						
 						// On attend d'être arrêté
 						while(true)
