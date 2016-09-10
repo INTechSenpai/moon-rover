@@ -34,7 +34,6 @@ import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
 import utils.Vec2RO;
-import obstacles.CapteursProcess;
 import obstacles.SensorsData;
 import obstacles.SensorsDataBuffer;
 import pathfinding.CheminPathfinding;
@@ -58,6 +57,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 	private boolean capteursOn = false;
 	private boolean matchDemarre = false;
 	private boolean debugSerie;
+	private int nbCapteurs;
 	
 	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, CheminPathfinding chemin, Container container)
 	{
@@ -140,8 +140,8 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 							/**
 							 * Acquiert ce que voit les capteurs
 						 	 */
-							int[] mesures = new int[CapteursProcess.nbCapteurs];
-							for(int i = 0; i < CapteursProcess.nbCapteurs / 2; i++)
+							int[] mesures = new int[nbCapteurs];
+							for(int i = 0; i < nbCapteurs / 2; i++)
 							{
 								mesures[2*i] = (data[10+3*i] << 4) + (data[10+3*i+1] >> 4);
 								mesures[2*i+1] = ((data[10+3*i+1] & 0x0F) << 8) + data[10+3*i+2];
@@ -223,6 +223,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 	public void useConfig(Config config)
 	{
 		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
+		nbCapteurs = config.getInt(ConfigInfo.NB_CAPTEURS);
 	}
 
 }
