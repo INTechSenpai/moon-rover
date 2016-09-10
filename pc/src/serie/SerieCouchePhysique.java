@@ -79,7 +79,7 @@ public class SerieCouchePhysique implements Service
 	 */
 	protected synchronized void openPort() throws InterruptedException
 	{
-		if(!portOuvert && !searchPort())
+		if(!simuleSerie && !portOuvert && !searchPort())
 		{
 			/**
 			 * Suppression des verrous qui empêchent parfois la connexion
@@ -109,7 +109,7 @@ public class SerieCouchePhysique implements Service
 	 */
 	protected synchronized boolean searchPort()
 	{
-		if(!simuleSerie)
+		if(simuleSerie)
 			return true;
 		
 		portOuvert = false;
@@ -157,6 +157,9 @@ public class SerieCouchePhysique implements Service
 	 */
 	private boolean initialize(CommPortIdentifier portId, int baudrate)
 	{
+		if(simuleSerie)
+			return true;
+		
 		try
 		{
 			serialPort = (SerialPort) portId.open("MoonRover", TIME_OUT);
@@ -194,7 +197,7 @@ public class SerieCouchePhysique implements Service
 	 */
 	public void close()
 	{
-		if(!simuleSerie)
+		if(simuleSerie)
 			return;
 		
 		if (!isClosed && portOuvert)
@@ -224,7 +227,7 @@ public class SerieCouchePhysique implements Service
 	 */
 	public synchronized void communiquer(OutgoingFrame out) throws InterruptedException
 	{
-		if(!simuleSerie)
+		if(simuleSerie)
 			return;
 		
 		openPort();
