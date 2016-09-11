@@ -4,6 +4,7 @@
 *.user
 *.project
 build/
+pc/config.ini
 pc/logs/
 .classpath
 .cproject
