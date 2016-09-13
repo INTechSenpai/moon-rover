@@ -20,6 +20,12 @@ package serie.trame;
 import serie.Ticket;
 import serie.SerialProtocol.OutOrder;
 
+/**
+ * Contient toutes les informations d'une conversation
+ * @author pf
+ *
+ */
+
 public class Conversation
 {
 	private long deathDate; // date d'envoi + 2*timeout
