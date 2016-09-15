@@ -199,7 +199,7 @@ public class BufferOutgoingOrder implements Service
 			if(angle < 0)
 				angle += 2*Math.PI; // il faut toujours envoyer des nombres positifs
 
-			long theta = (long) (angle*1000);
+			int theta = (int) Math.round(angle*1000);
 
 			data[3] = (byte) (theta >> 8);
 			data[4] = (byte) theta;
