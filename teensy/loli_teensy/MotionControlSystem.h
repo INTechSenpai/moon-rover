@@ -79,7 +79,7 @@ private:
 	PID translationPID;
 	volatile int32_t translationSetpoint;	// ticks
 	volatile int32_t currentDistance;		// ticks
-	volatile int32_t movingSpeedSetpoint;			// ticks/seconde
+	volatile int32_t movingSpeedSetpoint;	// ticks/seconde
 	
 	StoppingMgr endOfMoveMgr;
 	volatile int32_t currentMovingSpeed;	// ticks/seconde
@@ -127,12 +127,26 @@ private:
 public:
 	MotionControlSystem();
 
-	/* Asservissement (fonctions à appeller dans l'interruption associée) */
+	/* Asservissement (fonction à appeller dans l'interruption associée) */
 	void control();
-	void manageBlocking();
 private:
-	void updatePosition();
+	/* Mise à jour des variables :
+		position
+		currentRightSpeed (maj + filtrage)
+		currentLeftSpeed (maj + filtrage)
+		currentDistance
+		currentMovingSpeed (maj + filtrage) */
+	void updateSpeedAndPosition();
+
+	/* Mise à jour des variables :
+		trajectoryIndex
+		nextStopPoint
+		currentDistance (si trajectoryIndex a été incrémenté)
+		translationSetpoint (si nextStopPoint a été modifié) */
+	void updateTrajectoryIndex();
+
 	void manageStop();
+	void manageBlocking();
 public:
 
 	/* Activation et désactivation de l'asserv */

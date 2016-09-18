@@ -7,10 +7,10 @@ leftMotorEncoder(PIN_A_LEFT_MOTOR_ENCODER, PIN_B_LEFT_MOTOR_ENCODER),
 rightMotorEncoder(PIN_A_RIGHT_MOTOR_ENCODER, PIN_B_RIGHT_MOTOR_ENCODER),
 leftFreeEncoder(PIN_A_LEFT_BACK_ENCODER, PIN_B_LEFT_BACK_ENCODER),
 rightFreeEncoder(PIN_A_RIGHT_BACK_ENCODER, PIN_B_RIGHT_BACK_ENCODER),
+direction(DirectionController::Instance()),
 rightSpeedPID(&currentRightSpeed, &rightPWM, &rightSpeedSetpoint),
 leftSpeedPID(&currentLeftSpeed, &leftPWM, &leftSpeedSetpoint),
 translationPID(&currentDistance, &movingSpeedSetpoint, &translationSetpoint),
-direction(DirectionController::Instance()),
 averageLeftSpeed(), averageRightSpeed(),
 leftMotorBlockingMgr(leftSpeedSetpoint, currentLeftSpeed),
 rightMotorBlockingMgr(rightSpeedSetpoint, currentRightSpeed),
@@ -69,7 +69,17 @@ void MotionControlSystem::enablePwmControl(bool enable)
 */
 
 void MotionControlSystem::control()
-{/*
+{
+	updateSpeedAndPosition();
+	updateTrajectoryIndex();
+
+	/* Code d'asservissement */
+
+	manageStop();
+	manageBlocking();
+
+	
+	/*
 	// Pour le calcul de la vitesse instantanée :
 	static int32_t previousLeftTicks = 0;
 	static int32_t previousRightTicks = 0;
@@ -237,96 +247,35 @@ void MotionControlSystem::control()
 	//*/
 }
 
-
-void MotionControlSystem::manageBlocking()
+void MotionControlSystem::updateSpeedAndPosition() 
 {
-	// détecter les blocages physiques (3 BlockingMgr à tester)
-
-	/*
-
-	static uint32_t time = 0;
-	static uint32_t previousMove = 0;
-
-	// Au changement de UnitMove, on réinitialise le timer
-	if (currentMove != previousMove)
-	{
-		previousMove = currentMove;
-		time = 0;
-	}
-
-	if ((isPhysicallyBlocked() && moving) && !paused)
-	{
-
-		if (time == 0)
-		{ //Début du timer
-			time = millis();
-		}
-		else
-		{
-			if ((millis() - time) >= delayToStop)
-			{ //Si arrêté plus de 'delayToStop' ms
-				if (currentMove >= currentTrajectory.size())
-				{// Si la trajectoire est terminée
-					blocked = false;
-					stop();
-				}
-				else if (
-							(currentTrajectory[currentMove].getBendRadiusTicks() != 0 && ABS(currentDistance - translationSetpoint) <= toleranceTranslation) || 
-							(currentTrajectory[currentMove].getBendRadiusTicks() == 0 && ABS(currentAngle - rotationSetpoint) <= toleranceRotation)
-						)
-				{// Si on est suffisament proche de la fin du mouvement élémentaire
-					blocked = false;
-					if (currentMove == currentTrajectory.size() - 1)
-					{// Il s'agit du dernier mouvement élémentaire de la trajectoire
-						stop();
-					}
-					else
-					{
-						nextMove();
-					}
-				}
-				else
-				{// Sinon : il d'agit d'un blocage physique
-					blocked = true;
-					stop();
-				}
-			}
-		}
-	}
-	else
-	{
-		time = 0;
-		if (moving)
-			blocked = false;
-	}
-	//*/
+	// Check errors of encoder to detect external blocking
 }
 
-void MotionControlSystem::updatePosition() 
+void MotionControlSystem::updateTrajectoryIndex()
 {
-	/*
-	static int32_t lastDistance = 0;
-	static int32_t lastAngle = 0;
 
-	static float deltaDistanceMm;
-	static float deltaAngleRadian;
-
-	deltaDistanceMm = (currentDistance - lastDistance) * TICK_TO_MM;
-	lastDistance = currentDistance;
-
-	deltaAngleRadian = (currentAngle - lastAngle) * TICK_TO_RADIAN;
-	lastAngle = currentAngle;
-
-	currentPosition.orientation += deltaAngleRadian;
-
-	currentPosition.x += (deltaDistanceMm * cos(currentPosition.orientation));
-	currentPosition.y += (deltaDistanceMm * sin(currentPosition.orientation));
-	//*/
 }
 
 void MotionControlSystem::manageStop()
 {
-	// Détecter l'arrêt du robot via le StoppingMgr
+	endOfMoveMgr.compute();
+	if (endOfMoveMgr.isStopped())
+	{
+		movingState = STOPPED;
+		stop();
+	}
+}
+
+void MotionControlSystem::manageBlocking()
+{
+	leftMotorBlockingMgr.compute();
+	rightMotorBlockingMgr.compute();
+	if (leftMotorBlockingMgr.isBlocked() || rightMotorBlockingMgr.isBlocked())
+	{
+		movingState = INT_BLOCKED;
+		stop();
+	}
 }
 
 
@@ -366,7 +315,6 @@ void MotionControlSystem::stop()
 	previousMovingSpeed = 0;
 	motor.runLeft(0);
 	motor.runRight(0);
-	movingState = STOPPED;
 	translationPID.resetErrors();
 	leftSpeedPID.resetErrors();
 	rightSpeedPID.resetErrors();

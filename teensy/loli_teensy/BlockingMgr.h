@@ -71,8 +71,8 @@ private:
 class StoppingMgr : public Printable
 {
 public:
-	StoppingMgr(volatile int32_t const & position) :
-		position(position)
+	StoppingMgr(volatile int32_t const & speed) :
+		speed(speed)
 	{
 		epsilon = 0;
 		responseTime = 0;
@@ -82,7 +82,7 @@ public:
 
 	void compute()
 	{
-		if (ABS(position) < epsilon)
+		if (ABS(speed) < epsilon)
 		{
 			if (!stopped)
 			{
@@ -114,11 +114,11 @@ public:
 
 	size_t printTo(Print& p) const
 	{
-		return p.printf("%d_%d", position, isStopped());
+		return p.printf("%d_%d", speed, isStopped());
 	}
 
 private:
-	volatile int32_t const & position;
+	volatile int32_t const & speed;
 	
 	int32_t epsilon;
 	uint32_t responseTime;

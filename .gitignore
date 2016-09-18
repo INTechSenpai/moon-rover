@@ -19,6 +19,7 @@ project.properties
 *.toc
 /**/.idea/
 /**/.vs/
+/**/__pycache__/
 /teensy/**/Debug/
 *.sln
 /**/__vm/

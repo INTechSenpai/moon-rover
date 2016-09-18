@@ -51,7 +51,6 @@ void motionControlInterrupt()
 {
 	static MotionControlSystem & motionControlSystem = MotionControlSystem::Instance();
 	motionControlSystem.control();
-	motionControlSystem.manageBlocking();
 }
 
 

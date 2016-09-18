@@ -78,7 +78,7 @@ public:
 			{
 				if (rByte < 0xF9)
 				{
-					Log::critical(2, "Début de trame invalide. Lecture abandonnée.");
+					Log::critical(2, "Debut de trame invalide. Lecture abandonnee.");
 					return;
 				}
 			}
@@ -87,7 +87,7 @@ public:
 				if (rByte < 4)
 				{
 					rBuffer.indice = 0;
-					Log::critical(3, "Taille de trame invalide. Lecture abandonnée.");
+					Log::critical(3, "Taille de trame invalide. Lecture abandonnee.");
 					return;
 				}
 				else
@@ -134,7 +134,7 @@ public:
 					{
 						if (longOrderList[orderStack[i].orderID] == NULL)
 						{
-							Log::critical(5, "Ordre oublié");
+							Log::critical(5, "Ordre oublie");
 						}
 						output.clear();
 						longOrderList[orderStack[i].orderID]->onExecute(output);
@@ -296,7 +296,7 @@ private:
 			}
 			else
 			{
-				Log::warning("END_ORDER reçu pour une conversation déjà terminée.");
+				Log::warning("END_ORDER reçu pour une conversation deja terminee.");
 			}
 		}
 		else
