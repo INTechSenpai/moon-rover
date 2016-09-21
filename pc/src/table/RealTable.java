@@ -15,42 +15,30 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-package pathfinding;
+package table;
 
-import robot.RobotReal;
 import container.Service;
-import table.RealTable;
-import table.Table;
 import utils.Config;
+import utils.Log;
 
 /**
- * Utilisé par les scripts
+ * La "vraie" table
  * @author pf
  *
  */
 
-public class RealGameState extends GameState<RobotReal> implements Service
+public class RealTable extends Table implements Service
 {
-    public RealGameState(RobotReal robot, RealTable table)
-    {
-        this.robot = robot;
-        this.table = table;
-    }
-    
-    @Override
-    public void updateConfig(Config config)
-    {}
+	public RealTable(Log log)
+	{
+		super(log);
+	}
 
-    @Override
-    public void useConfig(Config config)
-    {}
-    
-    @Override
-	public final void copyAStarCourbe(ChronoGameState modified)
-    {
-    	table.copy(modified.table);
-        robot.copy(modified.robot);
-        modified.iterator.init(System.currentTimeMillis());
-    }
-
+	@Override
+	public void updateConfig(Config config)
+	{}
+	
+	@Override
+	public void useConfig(Config config)
+	{}
 }
