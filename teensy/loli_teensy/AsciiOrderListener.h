@@ -138,8 +138,42 @@ private:
 	OrderStatus getID(const char order[MAX_ORDER_SIZE], uint8_t & id, bool & immediate)
 	{
 		OrderStatus orderStatus = KNOWN_ORDER;
-		if (strcmp(order, "abwabwa") == 0) { id = 42; immediate = true; }
-		else if (strcmp(order, "ronald") == 0) { id = 24; immediate = true; }
+		if (strcmp(order, "abwabwa") == 0) { id = 0xFF; immediate = true; }
+		else if (strcmp(order, "logon") == 0) { id = 0x80; immediate = true; }
+		else if (strcmp(order, "logoff") == 0) { id = 0x81; immediate = true; }
+		else if (strcmp(order, "batt") == 0) { id = 0x82; immediate = true; }
+		else if (strcmp(order, "stop") == 0) { id = 0x83; immediate = true; }
+		else if (strcmp(order, "s") == 0) { id = 0x83; immediate = true; }
+		else if (strcmp(order, "save") == 0) { id = 0x85; immediate = true; }
+		else if (strcmp(order, "display") == 0) { id = 0x86; immediate = true; }
+		else if (strcmp(order, "pos") == 0) { id = 0x8A; immediate = true; }
+		else if (strcmp(order, "x") == 0) { id = 0x8B; immediate = true; }
+		else if (strcmp(order, "y") == 0) { id = 0x8C; immediate = true; }
+		else if (strcmp(order, "o") == 0) { id = 0x8D; immediate = true; }
+		else if (strcmp(order, "rp") == 0) { id = 0x8E; immediate = true; }
+		else if (strcmp(order, "dir") == 0) { id = 0x8F; immediate = true; }
+		else if (strcmp(order, "axg") == 0) { id = 0x90; immediate = true; }
+		else if (strcmp(order, "axd") == 0) { id = 0x91; immediate = true; }
+		else if (strcmp(order, "cod") == 0) { id = 0x92; immediate = true; }
+		else if (strcmp(order, "setaxid") == 0) { id = 0x93; immediate = true; }
+		else if (strcmp(order, "pid") == 0) { id = 0x94; immediate = true; }
+		else if (strcmp(order, "kp") == 0) { id = 0x95; immediate = true; }
+		else if (strcmp(order, "ki") == 0) { id = 0x96; immediate = true; }
+		else if (strcmp(order, "kd") == 0) { id = 0x97; immediate = true; }
+		else if (strcmp(order, "smgre") == 0) { id = 0x98; immediate = true; }
+		else if (strcmp(order, "smgrt") == 0) { id = 0x99; immediate = true; }
+		else if (strcmp(order, "bmgrs") == 0) { id = 0x9A; immediate = true; }
+		else if (strcmp(order, "bmgrt") == 0) { id = 0x9B; immediate = true; }
+		else if (strcmp(order, "mms") == 0) { id = 0x9C; immediate = true; }
+		else if (strcmp(order, "macc") == 0) { id = 0x9D; immediate = true; }
+		else if (strcmp(order, "cp") == 0) { id = 0x9E; immediate = true; }
+		else if (strcmp(order, "cvg") == 0) { id = 0x9F; immediate = true; }
+		else if (strcmp(order, "cvd") == 0) { id = 0xA0; immediate = true; }
+		else if (strcmp(order, "cpwm") == 0) { id = 0xA1; immediate = true; }
+		else if (strcmp(order, "pwm") == 0) { id = 0xA2; immediate = false; }
+		else if (strcmp(order, "a") == 0) { id = 0xA3; immediate = false; }
+		else if (strcmp(order, "p") == 0) { id = 0xA4; immediate = false; }
+		else if (strcmp(order, "capt") == 0) { id = 0xB0; immediate = true; }
 		else
 		{
 			orderStatus = UNKNOWN_ORDER;

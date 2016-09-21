@@ -34,6 +34,46 @@ public:
 		// Ordres longs
 		longOrderList[0x00] = &PingOfDeath::Instance();
 		longOrderList[0x0C] = &Move::Instance();
+
+		// Ordres ASCII
+		immediateOrderList[0x80] = &Logon::Instance();
+		immediateOrderList[0x81] = &Logoff::Instance();
+		immediateOrderList[0x82] = &Batt::Instance();
+		immediateOrderList[0x83] = &Stop_ascii::Instance();
+		
+		immediateOrderList[0x85] = &Save::Instance();
+		immediateOrderList[0x86] = &Display::Instance();
+		
+		immediateOrderList[0x8A] = &Pos::Instance();
+		immediateOrderList[0x8B] = &PosX::Instance();
+		immediateOrderList[0x8C] = &PosY::Instance();
+		immediateOrderList[0x8D] = &PosO::Instance();
+		immediateOrderList[0x8E] = &Rp::Instance();
+		immediateOrderList[0x8F] = &Dir::Instance();
+		immediateOrderList[0x90] = &Axg::Instance();
+		immediateOrderList[0x91] = &Axd::Instance();
+		immediateOrderList[0x92] = &Cod::Instance();
+		immediateOrderList[0x93] = &Setaxid::Instance();
+		immediateOrderList[0x94] = &Pid_c::Instance();
+		immediateOrderList[0x95] = &Pid_kp::Instance();
+		immediateOrderList[0x96] = &Pid_ki::Instance();
+		immediateOrderList[0x97] = &Pid_kd::Instance();
+		immediateOrderList[0x98] = &Smgre::Instance();
+		immediateOrderList[0x99] = &Smgrt::Instance();
+		immediateOrderList[0x9A] = &Bmgrs::Instance();
+		immediateOrderList[0x9B] = &Bmgrt::Instance();
+		immediateOrderList[0x9C] = &Mms::Instance();
+		immediateOrderList[0x9D] = &Macc::Instance();
+		immediateOrderList[0x9E] = &Control_p::Instance();
+		immediateOrderList[0x9F] = &Control_vg::Instance();
+		immediateOrderList[0xA0] = &Control_vd::Instance();
+		immediateOrderList[0xA1] = &Control_pwm::Instance();
+		
+		longOrderList[0xA2] = &Test_pwm::Instance();
+		longOrderList[0xA3] = &Test_speed::Instance();
+		longOrderList[0xA4] = &Test_pos::Instance();
+
+		immediateOrderList[0xB0] = &Capt::Instance();
 	}
 
 private:

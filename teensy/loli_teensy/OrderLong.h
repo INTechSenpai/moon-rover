@@ -121,5 +121,49 @@ private:
 };
 
 
+
+/*
+	######################
+	##   Ordres ASCII   ##
+	######################
+*/
+
+class Test_pwm : public OrderLong, public Singleton<Test_pwm>
+{
+public:
+	Test_pwm() {}
+	void launch(const std::vector<uint8_t> & input)
+	{}
+	void onExecute(std::vector<uint8_t> & output)
+	{}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+};
+
+class Test_speed : public OrderLong, public Singleton<Test_speed>
+{
+public:
+	Test_speed() {}
+	void launch(const std::vector<uint8_t> & input)
+	{}
+	void onExecute(std::vector<uint8_t> & output)
+	{}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+};
+
+class Test_pos : public OrderLong, public Singleton<Test_pos>
+{
+public:
+	Test_pos() {}
+	void launch(const std::vector<uint8_t> & input)
+	{}
+	void onExecute(std::vector<uint8_t> & output)
+	{}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+};
+
+
 #endif
 
