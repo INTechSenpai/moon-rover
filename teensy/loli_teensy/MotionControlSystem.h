@@ -108,6 +108,7 @@ public:
 	enum MovingState
 	{
 		STOPPED,		// Robot à l'arrêt, à la position voulue.
+		MOVE_INIT,		// L'ordre de mouvement a été reçu, mais le robot n'envoie pas encore un PWM aux moteurs de propulsion (il attend d'avoir les roues de direction en position)
 		MOVING,			// Robot en mouvent vers la position voulue.
 		EXT_BLOCKED,	// Robot bloqué par un obstacle extérieur (les roues patinent).
 		INT_BLOCKED,	// Roues du robot bloquées.

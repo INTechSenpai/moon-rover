@@ -26,14 +26,14 @@ public:
 	{
 		if (Serial.available())
 		{
+			if (receivingState == ORDER_RECEIVED)
+			{
+				return;
+			}
 			if (rIndex >= MAX_ORDER_SIZE)
 			{
 				rIndex = 0;
 				Log::critical(20, "Ordre ASCII trop long");
-				return;
-			}
-			if (receivingState == ORDER_RECEIVED)
-			{
 				return;
 			}
 
@@ -44,7 +44,8 @@ public:
 				if ((rByte == '\n' || rByte == '\r') || rByte == ' ')
 				{
 					rBuffer[rIndex] = '\0';
-					OrderStatus orderStatus = getID(rBuffer, lastOrder);
+					OrderStatus orderStatus = getID(rBuffer, lastOrder, isImmediate);
+
 					if (orderStatus == KNOWN_ORDER)
 					{
 						if (rByte == ' ')
@@ -90,9 +91,14 @@ public:
 		}
 	}
 
-	bool newOrderRecieved()
+	bool newLongOrderReceived()
 	{
-		return receivingState == ORDER_RECEIVED;
+		return receivingState == ORDER_RECEIVED && !isImmediate;
+	}
+
+	bool newImmediateOrderReceived()
+	{
+		return receivingState == ORDER_RECEIVED && isImmediate;
 	}
 
 	void getLastOrder(uint8_t & order, std::vector<uint8_t> & data)
@@ -112,6 +118,7 @@ private:
 	};
 
 	ReceivingState receivingState;
+	bool isImmediate;
 	uint8_t lastOrder;
 	std::vector<uint8_t> lastOrderData;
 	char rBuffer[MAX_ORDER_SIZE];
@@ -128,17 +135,11 @@ private:
 	*	# Définition de la correcpondance string <-> id  # *
 	*	################################################## */
 
-	OrderStatus getID(const char order[MAX_ORDER_SIZE], uint8_t & id)
+	OrderStatus getID(const char order[MAX_ORDER_SIZE], uint8_t & id, bool & immediate)
 	{
 		OrderStatus orderStatus = KNOWN_ORDER;
-		if (strcmp(order, "abwabwa") == 0)
-		{
-			id = 42;
-		}
-		else if (strcmp(order, "ronald") == 0)
-		{
-			id = 24;
-		}
+		if (strcmp(order, "abwabwa") == 0) { id = 42; immediate = true; }
+		else if (strcmp(order, "ronald") == 0) { id = 24; immediate = true; }
 		else
 		{
 			orderStatus = UNKNOWN_ORDER;

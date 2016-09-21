@@ -6,6 +6,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import copy
 import time
 import numpy as np
+import sys
 
 from AsciiSerial import AsciiSerial
 
@@ -91,7 +92,7 @@ class LowLevelGUI(tk.Frame):
     def on_exit(self):
         self.after_cancel(self._scheduledRoutine)
         self._master.destroy()
-        exit(0)
+        sys.exit(0)
 
     def ctrl_space(self, tk_event):
         self.toolbar.allOnOff()
@@ -110,18 +111,7 @@ class ToolBar(tk.Frame):
     def __init__(self, asciiSerial, master=None):
         super().__init__(master)
 
-        self.channelsList = [
-            'POSITION',
-            'TRAJECTORY',
-            'PID_V_G',
-            'PID_V_D',
-            'PID_TRANS',
-            'BLOCKING_M_G',
-            'BLOCKING_M_D',
-            'STOPPING_MGR',
-            'DIRECTION',
-            'SENSORS'
-        ]
+        channelsList = asciiSerial.getChannelsList()
 
         self.serialSetup = SerialSetup(asciiSerial, self)
         self.serialSetup.grid(column=0, row=0, sticky='NSEW')
@@ -145,18 +135,18 @@ class ToolBar(tk.Frame):
         self.zoomButton = ZoomButton(self)
         self.zoomButton.grid(column=5, row=0, sticky='NSEW')
 
-        self.controlGraph1 = ButtonGroup(self, "Graph 1", self.channelsList)
+        self.controlGraph1 = ButtonGroup(self, "Graph 1", channelsList)
         self.controlGraph1.grid(column=6, row=0, sticky='NSEW')
 
-        self.controlGraph2 = ButtonGroup(self, "Graph 2", self.channelsList)
+        self.controlGraph2 = ButtonGroup(self, "Graph 2", channelsList)
         self.controlGraph2.grid(column=7, row=0, sticky='NSEW')
         self.controlGraph2.show_hide()
 
-        self.controlGraph3 = ButtonGroup(self, "Graph 3", self.channelsList)
+        self.controlGraph3 = ButtonGroup(self, "Graph 3", channelsList)
         self.controlGraph3.grid(column=8, row=0, sticky='NSEW')
         self.controlGraph3.show_hide()
 
-        self.controlGraph4 = ButtonGroup(self, "Graph 4", self.channelsList)
+        self.controlGraph4 = ButtonGroup(self, "Graph 4", channelsList)
         self.controlGraph4.grid(column=9, row=0, sticky='NSEW')
         self.controlGraph4.show_hide()
 

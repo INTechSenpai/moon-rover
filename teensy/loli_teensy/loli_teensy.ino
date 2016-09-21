@@ -27,24 +27,47 @@ void setup()
 
 void loop()
 {
-	OrderMgr orderMgr(Serial);
+	OrderMgr orderMgr(Serial1);
 	AsciiOrderListener asciiOrder;
+	uint8_t longOrder;
+	std::vector<uint8_t> longOrderData;
+	bool longOrderRunning = false;
+
 	while (true)
 	{
 		orderMgr.communicate();
 		orderMgr.execute();
-		/*
+		//*
 		asciiOrder.listen();
-		if (asciiOrder.newOrderRecieved())
+		if (asciiOrder.newImmediateOrderReceived())
 		{
 			uint8_t order;
 			std::vector<uint8_t> data;
 			asciiOrder.getLastOrder(order, data);
 			orderMgr.executeImmediateOrder(order, data);
 		}
-		*/
+		else if (asciiOrder.newLongOrderReceived() && !longOrderRunning)
+		{
+			asciiOrder.getLastOrder(longOrder, longOrderData);
+			if (orderMgr.launchLongOrder(longOrder, longOrderData))
+			{
+				longOrderRunning = true;
+			}
+		}
+
+		if (longOrderRunning)
+		{
+			orderMgr.executeLongOrder(longOrder);
+			if (orderMgr.isLongOrderFinished(longOrder))
+			{
+				orderMgr.terminateLongOrder(longOrder);
+				longOrderRunning = false;
+			}
+		}
+		//*/
 	}
 }
+
 
 /* Interruption d'asservissement */
 void motionControlInterrupt()

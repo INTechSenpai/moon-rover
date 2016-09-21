@@ -169,7 +169,67 @@ public:
 
 	void executeImmediateOrder(uint8_t id, std::vector<uint8_t> data)
 	{
-		immediateOrderList[id]->execute(data, true);
+		if (immediateOrderList[id] == NULL)
+		{
+			Log::critical(id, "Ordre inconnu");
+		}
+		else
+		{
+			immediateOrderList[id]->execute(data);
+		}
+	}
+
+	bool launchLongOrder(uint8_t id, std::vector<uint8_t> data)
+	{
+		if (longOrderList[id] == NULL)
+		{
+			Log::critical(id, "Ordre inconnu");
+			return false;
+		}
+		else
+		{
+			longOrderList[id]->launch(data);
+			return true;
+		}
+	}
+
+	void executeLongOrder(uint8_t id)
+	{
+		if (longOrderList[id] == NULL)
+		{
+			Log::critical(id, "Ordre inconnu");
+		}
+		else
+		{
+			std::vector<uint8_t> out;
+			longOrderList[id]->onExecute(out);
+		}
+	}
+
+	bool isLongOrderFinished(uint8_t id)
+	{
+		if (longOrderList[id] == NULL)
+		{
+			Log::critical(id, "Ordre inconnu");
+			return true;
+		}
+		else
+		{
+			return longOrderList[id]->isFinished();
+		}
+	}
+
+	void terminateLongOrder(uint8_t id)
+	{
+		if (longOrderList[id] == NULL)
+		{
+			Log::critical(id, "Ordre inconnu");
+		}
+		else
+		{
+			std::vector<uint8_t> out;
+			longOrderList[id]->terminate(out);
+		}
 	}
 
 private:

@@ -9,19 +9,26 @@ import random
 
 class AsciiSerial:
     def __init__(self):
-        self._channelsList = {'graph1': None, 'graph2': None, 'graph3': None, 'graph4': None}
+        self._graphsChannels = {'graph1': None, 'graph2': None, 'graph3': None, 'graph4': None}
         self._enChannels = {'graph1': False, 'graph2': False, 'graph3': False, 'graph4': False}
-        self.channelToID = {
-            'POSITION':     0,
-            'TRAJECTORY':   1,
-            'PID_V_G':      2,
-            'PID_V_D':      3,
-            'PID_TRANS':    4,
-            'BLOCKING_M_G': 5,
-            'BLOCKING_M_D': 6,
-            'STOPPING_MGR': 7,
-            'DIRECTION':    8,
-            'SENSORS':      9}
+        self._channelsDataStructure = {
+            'POSITION':     channelData('line-scatter', {'p': [0, 0, 1]}),
+            'TRAJECTORY':   channelData('line-scatter', {'t': [1, 0, 1]}),
+            'PID_V_G':      channelData('line',         {'setPoint': [2, 0], 'value': [2, 1], 'output': [2, 2]}),
+            'PID_V_D':      channelData('line',         {'setPoint': [3, 0], 'value': [3, 1], 'output': [3, 2]}),
+            'PID_TRANS':    channelData('line',         {'setPoint': [4, 0], 'value': [4, 1], 'output': [4, 2]}),
+            'BLOCKING_M_G': channelData('line',         {'aimSpeed': [5, 0], 'realSpeed': [5, 1], 'isBlocked': [5, 2]}),
+            'BLOCKING_M_D': channelData('line',         {'aimSpeed': [6, 0], 'realSpeed': [6, 1], 'isBlocked': [6, 2]}),
+            'STOPPING_MGR': channelData('line',         {'speed': [7, 0], 'isStopped': [7, 1]}),
+            'DIRECTION':    channelData('line',         {'aimDirection': [8, 0], 'realDirection': [8, 1]}),
+            'SENSORS':      channelData('scatter',      {})
+        }
+
+        self._shapeInitData = {
+            'line': [],
+            'line-scatter': [[], []],
+            'scatter': [[], []]
+        }
 
         self.linesToSend = []
         self.receivedLines_main = []
@@ -63,6 +70,29 @@ class AsciiSerial:
     def close(self):
         self.serial.close()
 
+    def getChannelsList(self):
+        channelsList = []
+        for key in self._channelsDataStructure:
+            channelsList.append(key)
+        channelsList.sort()
+        return channelsList
+
+    def getChannelsFromID(self, identifier):
+        channels = set()
+        for channel, cData in self._channelsDataStructure.items():
+            lines = cData.lineNames
+            for lineName, lineIds in lines.items():
+                if lineIds[0] == identifier:
+                    channels.add(channel)
+        return channels
+
+    def getIDsFromChannel(self, channel):
+        ids = set()
+        lines = self._channelsDataStructure[channel].lineNames
+        for lineName, lineIds in lines.items():
+            ids.add(lineIds[0])
+        return ids
+
     def communicate(self):
         if self.serial.is_open:
             for line in self.linesToSend:
@@ -87,8 +117,11 @@ class AsciiSerial:
                 self.receivedLines_main.append(line)
         elif len(line) > 8 and line[0:9] == "_warning_":
             self.receivedLines_warning.append(line[9:])
-        elif len(line) > 6 and line[0:7] == "_error_":
-            errorLine = "#" + line[7:8] + "# " + line[9:]
+        elif len(line) > 7 and line[0:7] == "_error_":
+            splittedLine = line.split("_")
+            errorLine = "#" + splittedLine[2] + "# "
+            for s in splittedLine[3:]:
+                errorLine += s
             self.receivedLines_error.append(errorLine)
         else:
             self.receivedLines_main.append(line)
@@ -96,79 +129,30 @@ class AsciiSerial:
     def addGraphData(self, strData):
         data = strData.split("_")
         idChannel = int(data[0])
-        channel = None
-        for c, i in self.channelToID.items():
-            if i == idChannel:
-                channel = c
-                break
-        if channel is None:
-            raise ValueError
-
-        graph = None
-        for g in ['graph1', 'graph2', 'graph3', 'graph4']:
-            if self._channelsList[g] == channel:
-                graph = g
-                break
-        if graph is None:
-            raise ValueError
+        channels = self.getChannelsFromID(idChannel)
 
         values = []
         for strValue in data[1:]:
             values.append(float(strValue))
-        if len(values) == 0:
-            raise ValueError
 
-        if channel == 'POSITION':
-            if len(values) != 3:
-                raise ValueError
-            self.graphData[graph]['data']['p'][0].append(values[0])
-            self.graphData[graph]['data']['p'][1].append(values[1])
-        elif channel == 'TRAJECTORY':
-            pass #todo
-        elif channel == 'PID_V_G':
-            if len(values) != 3:
-                raise ValueError
-            self.graphData[graph]['data']['setPoint'].append(values[0])
-            self.graphData[graph]['data']['value'].append(values[1])
-            self.graphData[graph]['data']['output'].append(values[2])
-        elif channel == 'PID_V_D':
-            if len(values) != 3:
-                raise ValueError
-            self.graphData[graph]['data']['setPoint'].append(values[0])
-            self.graphData[graph]['data']['value'].append(values[1])
-            self.graphData[graph]['data']['output'].append(values[2])
-        elif channel == 'PID_TRANS':
-            if len(values) != 3:
-                raise ValueError
-            self.graphData[graph]['data']['setPoint'].append(values[0])
-            self.graphData[graph]['data']['value'].append(values[1])
-            self.graphData[graph]['data']['output'].append(values[2])
-        elif channel == 'BLOCKING_M_G':
-            if len(values) != 3:
-                raise ValueError
-            self.graphData[graph]['data']['aimSpeed'].append(values[0])
-            self.graphData[graph]['data']['realSpeed'].append(values[1])
-            self.graphData[graph]['data']['isBlocked'].append(values[2])
-        elif channel == 'BLOCKING_M_D':
-            if len(values) != 3:
-                raise ValueError
-            self.graphData[graph]['data']['aimSpeed'].append(values[0])
-            self.graphData[graph]['data']['realSpeed'].append(values[1])
-            self.graphData[graph]['data']['isBlocked'].append(values[2])
-        elif channel == 'STOPPING_MGR':
-            if len(values) != 2:
-                raise ValueError
-            self.graphData[graph]['data']['speed'].append(values[0])
-            self.graphData[graph]['data']['isStopped'].append(values[1])
-        elif channel == 'DIRECTION':
-            pass #todo
-        elif channel == 'SENSORS':
-            pass #todo
-        else:
-            raise ValueError
+        for graph in ['graph1', 'graph2', 'graph3', 'graph4']:
+            gChannel = self._graphsChannels[graph]
+            if gChannel in channels:
+                lines = self._channelsDataStructure[gChannel].lineNames
+                for lineName, ids in lines.items():
+                    if ids[0] == idChannel:
+                        if len(ids) == 2: # One dimension data
+                            if len(values) <= 1:
+                                raise ValueError
+                            self.graphData[graph]['data'][lineName].append(values[ids[1]])
+                        elif len(ids) == 3: # Two dimensions data
+                            if len(values) <= 2:
+                                raise ValueError
+                            self.graphData[graph]['data'][lineName][0].append(values[ids[1]])
+                            self.graphData[graph]['data'][lineName][1].append(values[ids[2]])
 
     def setEnabledChannels(self, competeConfig):
-        newChannelsList = {'graph1': competeConfig['graph1']['channel'],
+        newGraphsChannels = {'graph1': competeConfig['graph1']['channel'],
                            'graph2': competeConfig['graph2']['channel'],
                            'graph3': competeConfig['graph3']['channel'],
                            'graph4': competeConfig['graph4']['channel']}
@@ -180,78 +164,51 @@ class AsciiSerial:
         commandLines = []
         graphs = ['graph1', 'graph2', 'graph3', 'graph4']
         for graph in graphs:
-            if newChannelsList[graph] != self._channelsList[graph]:
+            if newGraphsChannels[graph] != self._graphsChannels[graph]:
                 if self._enChannels[graph]:
-                    commandLines.append(self.enableChannel(self._channelsList[graph], False))
+                    commandLines += self.enableChannel(self._graphsChannels[graph], False)
             else:
                 if newEnabledList[graph] != self._enChannels[graph]:
                     if not newEnabledList[graph]:
-                        commandLines.append(self.enableChannel(self._channelsList[graph], False))
+                        commandLines += self.enableChannel(self._graphsChannels[graph], False)
 
         for graph in graphs:
-            if newChannelsList[graph] != self._channelsList[graph]:
+            if newGraphsChannels[graph] != self._graphsChannels[graph]:
                 if newEnabledList[graph]:
-                    self.resetGraphData(graph, newChannelsList[graph])
-                    commandLines.append(self.enableChannel(newChannelsList[graph], True))
+                    self.resetGraphData(graph, newGraphsChannels[graph])
+                    commandLines += self.enableChannel(newGraphsChannels[graph], True)
             else:
                 if newEnabledList[graph] != self._enChannels[graph]:
                     if newEnabledList[graph]:
-                        self.resetGraphData(graph, newChannelsList[graph])
-                        commandLines.append(self.enableChannel(self._channelsList[graph], True))
+                        self.resetGraphData(graph, newGraphsChannels[graph])
+                        commandLines += self.enableChannel(self._graphsChannels[graph], True)
 
-        self._channelsList = newChannelsList
+        self._graphsChannels = newGraphsChannels
         self._enChannels = newEnabledList
         return commandLines
 
     def enableChannel(self, channel, enable):
-        commandLine = ""
-        if channel in self.channelToID:
+        commandLines = []
+        ids = self.getIDsFromChannel(channel)
+        for i in ids:
             if enable:
                 commandLine = "logon "
             else:
                 commandLine = "logoff "
-            commandLine += str(self.channelToID[channel])
+            commandLine += str(i)
             commandLine += '\n'
             self.addLinesToSend([commandLine])
-        return commandLine
+            commandLines.append(commandLine)
+        return commandLines
 
     def resetGraphData(self, graph, channel):
-        if channel == 'POSITION':
-            self.graphData[graph]['data'] = {"p": [[], []]}
-            self.graphData[graph]['shape'] = 'line-scatter'
-
-        elif channel == 'TRAJECTORY':
-            pass #todo
-
-        elif channel == 'PID_V_G':
-            self.graphData[graph]['data'] = {'setPoint': [], 'value': [], 'output': []}
-            self.graphData[graph]['shape'] = 'line'
-
-        elif channel == 'PID_V_D':
-            self.graphData[graph]['data'] = {'setPoint': [], 'value': [], 'output': []}
-            self.graphData[graph]['shape'] = 'line'
-
-        elif channel == 'PID_TRANS':
-            self.graphData[graph]['data'] = {'setPoint': [], 'value': [], 'output': []}
-            self.graphData[graph]['shape'] = 'line'
-
-        elif channel == 'BLOCKING_M_G':
-            self.graphData[graph]['data'] = {'aimSpeed': [], 'realSpeed': [], 'isBlocked': []}
-            self.graphData[graph]['shape'] = 'line'
-
-        elif channel == 'BLOCKING_M_D':
-            self.graphData[graph]['data'] = {'aimSpeed': [], 'realSpeed': [], 'isBlocked': []}
-            self.graphData[graph]['shape'] = 'line'
-
-        elif channel == 'STOPPING_MGR':
-            self.graphData[graph]['data'] = {'speed': [],'isStopped': []}
-            self.graphData[graph]['shape'] = 'line'
-
-        elif channel == 'DIRECTION':
-            pass #todo
-
-        elif channel == 'SENSORS':
-            pass #todo
+        cData = self._channelsDataStructure[channel]
+        self.graphData[graph]['shape'] = cData.shape
+        initData = self._shapeInitData[cData.shape]
+        initDict = {}
+        for name in cData.lineNames:
+            initDict[name] = initData
+        self.graphData[graph]['data'] = initDict
 
     def getLines_main(self):
         lines = copy.deepcopy(self.receivedLines_main)
@@ -284,3 +241,9 @@ class AsciiSerial:
                 'graph3': {'data': {}, 'shape': 'line'},
                 'graph4': {'data': {}, 'shape': 'line'}
                 }
+
+
+class channelData:
+    def __init__(self, shape, lineNames):
+        self.shape = shape
+        self.lineNames = lineNames

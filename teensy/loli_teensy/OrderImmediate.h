@@ -14,11 +14,8 @@ public:
 	/*
 		Méthode exécutant l'ordre immédiat.
 		L'argument correspond à la fois à l'input et à l'output de l'odre, il sera modifié par la méthode.
-
-		Si 'asciiMode' est passé à True, alors l'argument n'est plus qu'un input. La méthode doit envoyer sa réponse sur
-		le canal de débug (USBserial). L'input est une chaine de caractères qui devra donc être convertie en nombres avant usage.
 	*/
-	virtual void execute(std::vector<uint8_t> &, bool asciiMode = false) = 0;
+	virtual void execute(std::vector<uint8_t> &) = 0;
 };
 
 
@@ -28,7 +25,7 @@ class Rien : public OrderImmediate, public Singleton<Rien>
 {
 public:
 	Rien(){}
-	virtual void execute(std::vector<uint8_t> & io, bool asciiMode = false){}
+	virtual void execute(std::vector<uint8_t> & io){}
 };
 
 
@@ -37,17 +34,10 @@ class Ping : public OrderImmediate, public Singleton<Ping>
 public:
 	Ping(){}
 
-	virtual void execute(std::vector<uint8_t> & io, bool asciiMode = false)
+	virtual void execute(std::vector<uint8_t> & io)
 	{
-		if (asciiMode)
-		{
-			Serial.print("Ping !");
-		}
-		else
-		{
-			io.clear();
-			//Serial.print("LOLI");
-		}
+		Serial.print("Ping !");
+		io.clear();
 	}
 };
 
@@ -56,7 +46,7 @@ class GetColor : public OrderImmediate, public Singleton<GetColor>
 {
 public:
 	GetColor() {}
-	virtual void execute(std::vector<uint8_t> & io, bool asciiMode = false) 
+	virtual void execute(std::vector<uint8_t> & io) 
 	{
 		enum Side
 		{
