@@ -65,13 +65,19 @@ public class PointGridSpace implements Service, Printable
 		return hashcode;
 	}
 		
+	@Override
+	public boolean equals(Object o)
+	{
+		return o instanceof PointGridSpace && hashcode == o.hashCode();
+	}
+	
 	/**
 	 * On utilise la distance octile pour l'heuristique (surtout parce que c'est rapide)
 	 * @param pointA
 	 * @param pointB
 	 * @return
 	 */
-	public final int distanceHeuristiqueDStarLite(PointGridSpace point)
+	public final int distanceOctile(PointGridSpace point)
 	{
 		int dx = Math.abs(x - point.x);
 		int dy = Math.abs(y - point.y);
@@ -95,10 +101,10 @@ public class PointGridSpace implements Service, Printable
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
 		Vec2RO p = computeVec2();
-		g.fillOval(f.XtoWindow(p.getX())-f.distanceXtoWindow((int) PointGridSpace.DISTANCE_ENTRE_DEUX_POINTS)/2,
-				f.YtoWindow(p.getY())-f.distanceYtoWindow((int) PointGridSpace.DISTANCE_ENTRE_DEUX_POINTS)/2,
-				f.distanceXtoWindow((int) PointGridSpace.DISTANCE_ENTRE_DEUX_POINTS),
-				f.distanceYtoWindow((int) PointGridSpace.DISTANCE_ENTRE_DEUX_POINTS));
+		g.fillOval(f.XtoWindow(p.getX())-f.distanceXtoWindow((int) DISTANCE_ENTRE_DEUX_POINTS)/2,
+				f.YtoWindow(p.getY())-f.distanceYtoWindow((int) DISTANCE_ENTRE_DEUX_POINTS)/2,
+				f.distanceXtoWindow((int) DISTANCE_ENTRE_DEUX_POINTS),
+				f.distanceYtoWindow((int) DISTANCE_ENTRE_DEUX_POINTS));
 	}
 
 	@Override

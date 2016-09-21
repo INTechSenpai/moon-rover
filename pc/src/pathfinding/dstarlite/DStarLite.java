@@ -22,6 +22,7 @@ import java.util.BitSet;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
+import pathfinding.astarCourbe.arcs.ClothoidesComputer;
 import pathfinding.dstarlite.gridspace.Direction;
 import pathfinding.dstarlite.gridspace.GridSpace;
 import pathfinding.dstarlite.gridspace.PointDirige;
@@ -33,6 +34,7 @@ import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
 import utils.Vec2RO;
+import utils.Vec2RW;
 import container.Service;
 import exceptions.PathfindingException;
 import graphic.printable.Couleur;
@@ -52,7 +54,7 @@ public class DStarLite implements Service
 	private GridSpace gridspace;
 	private PointGridSpaceManager pointManager;
 	private PointDirigeManager pointDManager;
-	private boolean graphicDStarLite;
+	private boolean graphicDStarLite, graphicDStarLiteFinal;
 
 	private DStarLiteNode[] memory = new DStarLiteNode[PointGridSpace.NB_POINTS];
 
@@ -66,8 +68,8 @@ public class DStarLite implements Service
 	private BitSet obstaclesConnus;
 	
 	private Cle knew = new Cle();
-	private Cle tmp = new Cle();
 	private Cle kold = new Cle();
+	private Cle tmp = new Cle();
 
 	/**
 	 * Le comparateur de DStarLiteNode, utilisé par la PriorityQueue
@@ -101,21 +103,33 @@ public class DStarLite implements Service
 		this.pointDManager = pointDManager;
 		
 		obstaclesConnus = new BitSet(PointGridSpace.NB_POINTS * 8);
-		
+		obstaclesConnus.or(gridspace.getCurrentObstacles());
+
 		for(int i = 0; i < PointGridSpace.NB_POINTS; i++)
 			memory[i] = new DStarLiteNode(pointManager.get(i));
 	}
 		
+	/**
+	 * Met à jour la clé de s et la renvoie
+	 * @param s
+	 * @return
+	 */
+	private final Cle calcKey(DStarLiteNode s)
+	{
+		return calcKey(s, s.cle);
+	}
+	
+	/**
+	 * Met à jour la clé donnée en paramètre avec s et la renvoie
+	 * @param s
+	 * @param copy
+	 * @return
+	 */
 	private final Cle calcKey(DStarLiteNode s, Cle copy)
 	{
 		copy.set(add(add(Math.min(s.g,s.rhs), distanceHeuristique(s.gridpoint)), km),
 				Math.min(s.g, s.rhs));
 		return copy;
-	}
-
-	private boolean isThisNodeUptodate(PointGridSpace gridpoint)
-	{
-		return memory[gridpoint.hashCode()].nbPF == nbPF;
 	}
 
 	private DStarLiteNode getFromMemory(PointGridSpace gridpoint)
@@ -124,50 +138,38 @@ public class DStarLite implements Service
 		if(gridpoint == null)
 			return null;
 		
-		DStarLiteNode out = memory[gridpoint.hashCode()];
+		DStarLiteNode out = memory[gridpoint.hashcode];
 		out.update(nbPF);
 		
 		return out;
 	}
-		
-	private void updateVertex(DStarLiteNode u)
+	
+	private final void updateVertex(DStarLiteNode u)
 	{
-//		log.debug("Update de "+GridSpace.computeVec2(u.gridpoint));
-		/**
-		 * C'est un peu différent de l'algo classique
-		 */
+		if(graphicDStarLite)
+			gridspace.setColor(u.gridpoint, Couleur.BLEU);
+		
 		if(u.g != u.rhs)
 		{
-			calcKey(u, u.cle);
-			if(!u.done)
+			calcKey(u);
+			if(u.inOpenSet)
 				openset.remove(u);
 			else
-				u.done = false;
+				u.inOpenSet = true;
 			openset.add(u);
-//			contained.set(u.gridpoint);
-			if(graphicDStarLite)
-				gridspace.setColor(u.gridpoint, Couleur.BLEU);
 		}
-		else if(!u.done)
+		else if(u.inOpenSet)
 		{
 			openset.remove(u);
-			u.done = true;
+			u.inOpenSet = false;
 		}
 	}
 	
-	private void computeShortestPath() throws PathfindingException
+	private void computeShortestPath()
 	{
 		DStarLiteNode u;
 		while(!openset.isEmpty() && ((u = openset.peek()).cle.isLesserThan(calcKey(depart, tmp)) || depart.rhs > depart.g))
 		{
-			if(u.done)
-			{
-				openset.poll();
-				continue;
-			}
-			if(graphicDStarLite)
-				gridspace.setColor(u.gridpoint, Couleur.ROUGE);
-			
 			u.cle.copy(kold);
 //			Cle kold = u.cle.clone();
 			calcKey(u, knew);
@@ -185,15 +187,16 @@ public class DStarLite implements Service
 //				log.debug("Cas 2");
 				u.g = u.rhs;
 				openset.poll();
-				u.done = true;
+				u.inOpenSet = false;
 				if(graphicDStarLite)
 					gridspace.setColor(u.gridpoint, Couleur.ROUGE);
 				for(Direction i : Direction.values())
 				{
-					PointGridSpace voisin = pointManager.getGridPointVoisin(u.gridpoint, i);
-					if(voisin == null)
+					DStarLiteNode s = getFromMemory(pointManager.getGridPointVoisin(u.gridpoint, i));
+
+					if(s == null)
 						continue;
-					DStarLiteNode s = getFromMemory(voisin);
+
 					s.rhs = Math.min(s.rhs, add(distanceDynamiquePred(u.gridpoint, i), u.g));
 					updateVertex(s);
 				}
@@ -205,98 +208,79 @@ public class DStarLite implements Service
 				u.g = Integer.MAX_VALUE;
 				for(Direction i : Direction.values())
 				{
-					PointGridSpace voisin = pointManager.getGridPointVoisin(u.gridpoint, i);
-					if(voisin == null)
+					DStarLiteNode s = getFromMemory(pointManager.getGridPointVoisin(u.gridpoint, i));
+					if(s == null)
 						continue;
-					DStarLiteNode s = getFromMemory(voisin);
-//					if(s == null)
-//						continue;
-					if(s.rhs == add(distanceDynamiquePred(u.gridpoint, i), gold) && s.gridpoint != arrivee.gridpoint)
+					
+					if(s.rhs == add(distanceDynamiquePred(u.gridpoint, i), gold) && !s.gridpoint.equals(arrivee.gridpoint))
 					{
 						s.rhs = Integer.MAX_VALUE;
 						for(Direction j : Direction.values())
 						{
-							voisin = pointManager.getGridPointVoisin(s.gridpoint, j);
-							if(voisin == null)
+							DStarLiteNode s2 = getFromMemory(pointManager.getGridPointVoisin(s.gridpoint, j));
+							if(s2 == null)
 								continue;
-							DStarLiteNode s2 = getFromMemory(voisin);
-							s.rhs = Math.min(s.rhs, add(distanceDynamiquePred(s.gridpoint, j), s2.g));
+							
+							s.rhs = Math.min(s.rhs, add(distanceDynamiqueSucc(s.gridpoint, j), s2.g));
 						}
 					}
 					updateVertex(s);
 				}
 				// Dans la boucle, il faut aussi faire u.
-				if(u.rhs == gold && u.gridpoint != arrivee.gridpoint)
+				if(u.rhs == gold && !u.gridpoint.equals(arrivee.gridpoint))
 				{
 					u.rhs = Integer.MAX_VALUE;
 					for(Direction i : Direction.values())
 					{
-						PointGridSpace voisin = pointManager.getGridPointVoisin(u.gridpoint, i);
-						if(voisin == null)
+						DStarLiteNode s2 = getFromMemory(pointManager.getGridPointVoisin(u.gridpoint, i));
+						if(s2 == null)
 							continue;
-						DStarLiteNode s = getFromMemory(voisin);
-						u.rhs = Math.min(u.rhs, add(distanceDynamiquePred(u.gridpoint, i), s.g));
+						
+						u.rhs = Math.min(u.rhs, add(distanceDynamiqueSucc(u.gridpoint, i), s2.g));
 					}
 				}
+				
+				// de toute façon, comme u sera forcément retiré de la liste dans updateVertex… autant le faire efficacement ici
+				openset.poll();
+				u.inOpenSet = false;
 				updateVertex(u);
 			}
 
 		}
 
-		if(depart.rhs == Integer.MAX_VALUE)
-			throw new PathfindingException("Aucun chemin n'a été trouvé");
+//		if(depart.rhs == Integer.MAX_VALUE)
+//			throw new PathfindingException("Aucun chemin n'a été trouvé");
 	}
 
 	/**
 	 * Calcule un nouvel itinéraire.
+	 * Utilisé pour les tests
 	 * @param arrivee (un Vec2)
 	 * @param depart (un Vec2)
-	 * @throws PathfindingException 
 	 */
-	public void computeNewPath(Vec2RO depart, Vec2RO arrivee) throws PathfindingException
-	{
-		computeNewPath(pointManager.get(depart), pointManager.get(arrivee));
-	}
-	
-	/**
-	 * Calcule un nouvel itinéraire.
-	 * @param arrivee (un gridpoint)
-	 * @param depart (un gridpoint)
-	 * @throws PathfindingException 
-	 */
-	private void computeNewPath(PointGridSpace depart, PointGridSpace arrivee) throws PathfindingException
+	public void computeNewPath(Vec2RO depart, Vec2RO arrivee)
 	{
 		if(graphicDStarLite)
 			gridspace.reinitGraphicGrid();
 
-//		log.debug("Calcul chemin D* Lite entre "+depart+" et "+gridspace.computeVec2(arrivee));
-		nbPF++;
-		km = 0;
-		this.depart = getFromMemory(depart);
-		lastDepart = this.depart.gridpoint;
-
-		this.arrivee = getFromMemory(arrivee);
-		this.arrivee.rhs = 0;
-		this.arrivee.cle.set(distanceHeuristique(this.arrivee.gridpoint), 0);
-		
-		openset.clear();
-		openset.add(this.arrivee);
-		
 		if(graphicDStarLite)
 		{
 			gridspace.setColor(this.arrivee.gridpoint, Couleur.JAUNE);
 			gridspace.setColor(this.depart.gridpoint, Couleur.VIOLET);
 		}
-
-		obstaclesConnus.clear();
-		obstaclesConnus.or(gridspace.getCurrentObstacles());
-
-		computeShortestPath();
+		
+		updateGoalAndStart(depart, arrivee);
+		updateObstacles();
 	}
 	
+	/**
+	 * Heuristique (distance octile) entre le point de départ et ce gridpoint
+	 * @param gridpoint
+	 * @return
+	 */
 	private final int distanceHeuristique(PointGridSpace gridpoint)
 	{
-		return depart.gridpoint.distanceHeuristiqueDStarLite(gridpoint);
+		return depart.gridpoint.distanceOctile(gridpoint);
 	}
 
 	@Override
@@ -307,27 +291,55 @@ public class DStarLite implements Service
 	public void useConfig(Config config)
 	{
 		graphicDStarLite = config.getBoolean(ConfigInfo.GRAPHIC_D_STAR_LITE);
+		graphicDStarLiteFinal = config.getBoolean(ConfigInfo.GRAPHIC_D_STAR_LITE_FINAL);
 	}
 	
-	private void updateGoal(Vec2RO positionRobot)
+	/**
+	 * Met à jour la destination
+	 * @param positionArrivee
+	 */
+	public synchronized void updateGoalAndStart(Vec2RO positionRobot, Vec2RO positionArrivee)
+	{
+		nbPF++;
+		km = 0;
+
+		depart = getFromMemory(pointManager.get(positionRobot));
+		lastDepart = depart.gridpoint;
+
+		this.arrivee = getFromMemory(pointManager.get(positionArrivee));
+		this.arrivee.rhs = 0;
+		this.arrivee.cle.set(distanceHeuristique(this.arrivee.gridpoint), 0);
+		
+		openset.clear();
+		openset.add(this.arrivee);
+		
+		computeShortestPath();
+	}
+	
+	/**
+	 * Met à jour la position actuelle du robot
+	 * @param positionRobot
+	 */
+	public synchronized void updateStart(Vec2RO positionRobot)
 	{
 		depart = getFromMemory(pointManager.get(positionRobot));
 		km += distanceHeuristique(lastDepart);
 		lastDepart = depart.gridpoint;
+		
+		computeShortestPath();
 	}
 	
 	/**
 	 * Met à jour le pathfinding
-	 * @throws PathfindingException 
 	 */
-	public void updatePath(Vec2RO positionRobot) throws PathfindingException
+	public synchronized void updateObstacles()
 	{
-		if(graphicDStarLite)
+		if(graphicDStarLite || graphicDStarLiteFinal)
 			gridspace.reinitGraphicGrid();
 
-		updateGoal(positionRobot);
 		BitSet[] obs = gridspace.getOldAndNewObstacles();
 		
+		// Disparition d'un obstacle : le coût baisse
 		for(int i = obs[0].nextSetBit(0); i >= 0; i = obs[0].nextSetBit(i+1))
 		{
 //			log.debug("Retrait de "+o);
@@ -336,19 +348,15 @@ public class DStarLite implements Service
 				obstaclesConnus.clear(i);
 
 				PointDirige p = pointDManager.get(i);
-				// Retrait d'un obstacle. Le coût va donc diminuer.
-				PointGridSpace upoint = p.point;
-				DStarLiteNode u = getFromMemory(upoint);
-				Direction dir = p.dir;
+				DStarLiteNode u = getFromMemory(p.point);
 				DStarLiteNode v = getFromMemory(pointManager.getGridPointVoisin(p));
 				
-				if(v == null) // TODO
-					continue;
-
-				u.rhs = Math.min(u.rhs, add(v.g, gridspace.distanceStatique(pointDManager.get(upoint, dir))));
+				u.rhs = Math.min(u.rhs, add(v.g, gridspace.distanceStatique(p)));	
 				updateVertex(u);
 			}
 		}
+		
+		// Ajout d'un obstacle : le coût augmente
 		for(int i = obs[1].nextSetBit(0); i >= 0; i = obs[1].nextSetBit(i+1))
 		{
 //			log.debug("Ajout de "+o);
@@ -358,31 +366,21 @@ public class DStarLite implements Service
 
 				PointDirige p = pointDManager.get(i);
 				// Ajout d'un obstacle
-				PointGridSpace upoint = p.point;
-				DStarLiteNode u = getFromMemory(upoint);
-				Direction dir = p.dir;
-				DStarLiteNode v = getFromMemory(pointManager.getGridPointVoisin(upoint,dir));
+				DStarLiteNode u = getFromMemory(p.point);
+				DStarLiteNode v = getFromMemory(pointManager.getGridPointVoisin(p));
 
-				if(v == null) // TODO
-					continue;
-				
 				// l'ancienne distance est la distance statique car c'est un ajout d'obstacle
-				if(u.rhs == add(gridspace.distanceStatique(pointDManager.get(upoint, dir)), v.g) && !u.equals(arrivee))
+				if(u.rhs == add(v.g, gridspace.distanceStatique(p)) && !u.equals(arrivee))
 				{
 					u.rhs = Integer.MAX_VALUE;
 					for(Direction voisin : Direction.values())
-						u.rhs = Math.min(u.rhs, add(distanceDynamiqueSucc(u.gridpoint, voisin), getFromMemory(pointManager.getGridPointVoisin(u.gridpoint,p.dir)).g));
-				}
+						u.rhs = Math.min(u.rhs, add(distanceDynamiqueSucc(u.gridpoint, voisin),
+								getFromMemory(pointManager.getGridPointVoisin(u.gridpoint,voisin)).g));
+				}				
 				updateVertex(u);
 			}
-			else
-				obstaclesConnus.set(i);
 		}
 		
-//		if(graphicDStarLite)
-//			for(PointDirige i : obstaclesConnus)
-//				gridspace.setColor(pointManager.getGridPointVoisin(i.point, i.dir), Couleur.NOIR);
-
 		computeShortestPath();
 	}
 	
@@ -390,20 +388,25 @@ public class DStarLite implements Service
 	 * Utilisé pour l'affichage et le debug
 	 * @return
 	 */
-	public ArrayList<Vec2RO> itineraireBrut()
+	public synchronized ArrayList<Vec2RO> itineraireBrut() throws PathfindingException
 	{
 		ArrayList<Vec2RO> trajet = new ArrayList<Vec2RO>();
 
-		log.debug("depart : "+depart.gridpoint.computeVec2());
+//		log.debug("depart : "+depart.gridpoint.computeVec2());
 		DStarLiteNode node = depart;
 		DStarLiteNode min = null;
 		int coutMin;
 		
-		while(!node.equals(arrivee))
+		int nbMax = 500;
+		
+		if(depart.rhs == Integer.MAX_VALUE)
+			throw new PathfindingException("rhs infini : pas de chemin");
+		
+		while(!node.equals(arrivee) && --nbMax>0)
 		{
 			trajet.add(node.gridpoint.computeVec2());
-
-			if(graphicDStarLite)
+//			log.debug(node.gridpoint.computeVec2());
+			if(graphicDStarLiteFinal)
 				gridspace.setColor(node.gridpoint, Couleur.VERT);
 
 			coutMin = Integer.MAX_VALUE;
@@ -421,35 +424,78 @@ public class DStarLite implements Service
 					min = s;
 				}
 			}
+						
 			node = min;
 		}
+		if(nbMax < 0)
+			throw new PathfindingException("Erreur : on aurait dû trouver un chemin… et non.");
+
 		trajet.add(arrivee.gridpoint.computeVec2());
+//		log.debug("Arrivée : "+arrivee.gridpoint.computeVec2());
+
 		return trajet;
 		
 	}
 	
+	private Vec2RW delta = new Vec2RW();
+	private Vec2RW deltaTmp = new Vec2RW();
+	private Vec2RW centreCercle = new Vec2RW();
+	private Vec2RW posRobot = new Vec2RW();
+	
 	/**
-	 * Renvoie l'heuristique au ThetaStar. Attention ! On suppose que le gridpoint est à jour.
-	 * @param gridpoint
+	 * Renvoie l'heuristique au A* courbe.
+	 * L'heuristique est une distance en mm
+	 * @param c
 	 * @return
 	 */
-	public double heuristicCostCourbe(Cinematique c)
+	public synchronized double heuristicCostCourbe(Cinematique c)
 	{
-		PointGridSpace gridpoint = pointManager.get(c.getPosition());
+		updateStart(c.getPosition());
+		DStarLiteNode premier = getFromMemory(pointManager.get(c.getPosition()));
 		
-		// Si ce n'est pas à jour, on recalcule
-		if(isThisNodeUptodate(gridpoint))
-		{
-			updateGoal(c.getPosition());
-			try {
-				computeShortestPath();
-			} catch (PathfindingException e) {
-				// Pas de chemin ? Alors distance infinie
-				return Integer.MAX_VALUE;
-			}
-		}
+		if(premier.rhs == Integer.MAX_VALUE)
+			return Integer.MAX_VALUE;
+		
+		double rayonCourbure = 1000. / c.courbure;
+		delta.setX(Math.cos(c.orientation + Math.PI / 2) * rayonCourbure);
+		delta.setY(Math.sin(c.orientation + Math.PI / 2) * rayonCourbure);
+		
+		centreCercle.setX(c.getPosition().getX() + delta.getX());
+		centreCercle.setY(c.getPosition().getY() + delta.getY());
 
-		return getFromMemory(gridpoint).rhs; // TODO unité ?
+		
+		double cos = Math.sqrt(rayonCourbure * rayonCourbure - ClothoidesComputer.d * ClothoidesComputer.d) / rayonCourbure;
+		double sin = Math.abs(ClothoidesComputer.d / rayonCourbure);
+		sin = 2 * sin * cos; // sin(a) devient sin(2a)
+		cos = 2 * cos * cos - 1; // cos(a) devient cos(2a)
+		double cosSauv = cos;
+		double sinSauv = sin;
+		sin = 0;
+		cos = 1;
+		
+		DStarLiteNode n = null;
+		
+		// On trace un (petit) arc de cercle dans la continuité de l'arc pour voir s'il se prend un mur ou pas
+		for(int i = 0; i < 5; i++)
+		{
+			double tmp = sin;
+			sin = sin * cosSauv + sinSauv * cos; // sin vaut sin(2a*(i+1))
+			cos = cos * cosSauv - tmp * sinSauv;
+			delta.copy(deltaTmp);
+			deltaTmp.rotate(cos, sin);
+			centreCercle.copy(posRobot);
+			posRobot.minus(deltaTmp);
+			
+			PointGridSpace p = pointManager.get(posRobot);
+			updateStart(c.getPosition());
+			n = getFromMemory(p);
+			
+			if(n.rhs == Integer.MAX_VALUE)
+				return Integer.MAX_VALUE;
+		}
+		
+		// On renvoie la distance du dernier point
+		return (n.rhs + distanceHeuristique(premier.gridpoint)) / 1000. * PointGridSpace.DISTANCE_ENTRE_DEUX_POINTS; // heuristique en mm
 	}
 	
 	/**
@@ -471,7 +517,7 @@ public class DStarLite implements Service
 	 * @param dir
 	 * @return
 	 */
-	private int distanceDynamiquePred(PointGridSpace point, Direction dir)
+	private final int distanceDynamiquePred(PointGridSpace point, Direction dir)
 	{
 		PointGridSpace voisin = pointManager.getGridPointVoisin(point, dir);
 		return distanceDynamiqueSucc(voisin, dir.getOppose());
@@ -483,7 +529,7 @@ public class DStarLite implements Service
 	 * @param dir
 	 * @return
 	 */
-	private int distanceDynamiqueSucc(PointGridSpace point, Direction dir)
+	private final int distanceDynamiqueSucc(PointGridSpace point, Direction dir)
 	{
 		if(obstaclesConnus.get(pointDManager.get(point, dir).hashCode()))
 			return Integer.MAX_VALUE;

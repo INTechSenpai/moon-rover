@@ -27,6 +27,8 @@ import utils.Log;
 
 public class ObstaclesIteratorPresent extends ObstaclesIterator
 {
+	private int save;
+	
     public ObstaclesIteratorPresent(Log log, ObstaclesMemory memory)
     {
     	super(log, memory);
@@ -46,9 +48,26 @@ public class ObstaclesIteratorPresent extends ObstaclesIterator
 	 */
 	public boolean hasNextDead()
 	{
-		while(nbTmp + 1 < memory.getFirstNotDeadNow() && memory.getObstacle(nbTmp + 1) == null)
+		int firstNotDeadNow = memory.getFirstNotDeadNow();
+		while(nbTmp + 1 < firstNotDeadNow && memory.getObstacle(nbTmp + 1) == null)
 			nbTmp++;
 		
-		return nbTmp + 1 < memory.getFirstNotDeadNow();
+		return nbTmp + 1 < firstNotDeadNow;
+	}
+	
+	/**
+	 * Sauvegarde la position actuelle pour pouvoir y revenir plus tard
+	 */
+	public void save()
+	{
+		save = nbTmp;
+	}
+	
+	/**
+	 * Recharge la position précédemment sauvegardée
+	 */
+	public void load()
+	{
+		nbTmp = save;
 	}
 }

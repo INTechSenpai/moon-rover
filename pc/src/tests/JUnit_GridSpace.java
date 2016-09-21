@@ -17,8 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package tests;
 
-import java.util.BitSet;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -76,14 +74,14 @@ public class JUnit_GridSpace extends JUnit_Test {
 	@Test
 	public void test_distanceHeuristique() throws Exception
 	{
-		Assert.assertTrue(pointManager.get(1).distanceHeuristiqueDStarLite(pointManager.get(2)) == 1000);
-		Assert.assertTrue(pointManager.get(1).distanceHeuristiqueDStarLite(pointManager.get(65)) == 1000);
-		Assert.assertTrue(pointManager.get(1).distanceHeuristiqueDStarLite(pointManager.get(64)) == 1414);
-		Assert.assertTrue(pointManager.get(64).distanceHeuristiqueDStarLite(pointManager.get(1)) == 1414);
-		Assert.assertTrue(pointManager.get(1).distanceHeuristiqueDStarLite(pointManager.get(1+2*64)) == 2000);
-		Assert.assertTrue(pointManager.get(1+2*64).distanceHeuristiqueDStarLite(pointManager.get(1)) == 2000);
-		Assert.assertTrue(pointManager.get(64).distanceHeuristiqueDStarLite(pointManager.get(63)) == 63414);
-		Assert.assertTrue(pointManager.get(63).distanceHeuristiqueDStarLite(pointManager.get(64)) == 63414);
+		Assert.assertTrue(pointManager.get(1).distanceOctile(pointManager.get(2)) == 1000);
+		Assert.assertTrue(pointManager.get(1).distanceOctile(pointManager.get(65)) == 1000);
+		Assert.assertTrue(pointManager.get(1).distanceOctile(pointManager.get(64)) == 1414);
+		Assert.assertTrue(pointManager.get(64).distanceOctile(pointManager.get(1)) == 1414);
+		Assert.assertTrue(pointManager.get(1).distanceOctile(pointManager.get(1+2*64)) == 2000);
+		Assert.assertTrue(pointManager.get(1+2*64).distanceOctile(pointManager.get(1)) == 2000);
+		Assert.assertTrue(pointManager.get(64).distanceOctile(pointManager.get(63)) == 63414);
+		Assert.assertTrue(pointManager.get(63).distanceOctile(pointManager.get(64)) == 63414);
 	}
 	
 	@Test
@@ -92,7 +90,7 @@ public class JUnit_GridSpace extends JUnit_Test {
 		for(int i = 0; i < 8; i++)
 		{
 			log.debug(i);
-			Assert.assertEquals((i<4?1414:1000), pointManager.getGridPointVoisin(pointManager.get(150), Direction.values()[i]).distanceHeuristiqueDStarLite(pointManager.get(150)));
+			Assert.assertEquals((i<4?1414:1000), pointManager.getGridPointVoisin(pointManager.get(150), Direction.values()[i]).distanceOctile(pointManager.get(150)));
 		}
 
 		Assert.assertEquals(null, pointManager.getGridPointVoisin(pointManager.get(21), Direction.S));
@@ -108,11 +106,14 @@ public class JUnit_GridSpace extends JUnit_Test {
 		for(int i = 0; i < PointGridSpace.NB_POINTS; i++)
 			Assert.assertTrue(pointManager.get(pointManager.get(i).computeVec2()).hashCode() == i);
 	}
-	
+	/*
 	@Test
 	public void test_ajout_obstacle() throws Exception
-	{
-		int peremption = config.getInt(ConfigInfo.DUREE_PEREMPTION_OBSTACLES);
+	{*/
+		/**
+		 * Ce test ne peut plus être mené car getOldAndNewObstacles est appelé par un thread, ce qui fausse tout
+		 */
+/*		int peremption = config.getInt(ConfigInfo.DUREE_PEREMPTION_OBSTACLES);
 		Assert.assertEquals(gridspace.getCurrentObstacles().cardinality(), 0);
 		BitSet[] b = gridspace.getOldAndNewObstacles();
 		log.debug(b[0].cardinality()+" "+b[1].cardinality());
@@ -154,7 +155,7 @@ public class JUnit_GridSpace extends JUnit_Test {
 		log.debug(b[0].cardinality()+" "+b[1].cardinality());
 		Assert.assertEquals(b[0].cardinality(), 0);
 		Assert.assertEquals(b[1].cardinality(), 0);
-	}
+	}*/
 
 	@Test
 	public void test_masque() throws Exception

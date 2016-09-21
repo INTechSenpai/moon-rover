@@ -26,7 +26,6 @@ import utils.Log;
 import container.Service;
 import graphic.printable.Layer;
 import graphic.printable.Printable;
-import obstacles.types.ObstacleProximity;
 
 /**
  * Buffer de ce qu'il faut afficher
@@ -52,7 +51,7 @@ public class PrintBuffer implements Service
 	}
 
 	/**
-	 * Supprime tous les obstacles
+	 * Supprime tous les obstacles supprimables
 	 * @param c
 	 */
 	public synchronized void clearSupprimables()
@@ -63,7 +62,7 @@ public class PrintBuffer implements Service
 	}
 
 	/**
-	 * Ajoute un obstacle
+	 * Ajoute un obstacle dans la liste des supprimables
 	 * @param o
 	 */
 	public synchronized void addSupprimable(Printable o)
@@ -91,6 +90,12 @@ public class PrintBuffer implements Service
 	public void useConfig(Config config)
 	{}
 
+	/**
+	 * Affiche tout
+	 * @param g
+	 * @param f
+	 * @param robot
+	 */
 	public synchronized void print(Graphics g, Fenetre f, RobotReal robot)
 	{
 		for(int i = 0 ; i < Layer.values().length; i++)
@@ -103,14 +108,15 @@ public class PrintBuffer implements Service
 		}
 	}
 
-	public synchronized void removeSupprimable(ObstacleProximity o)
+	/**
+	 * Supprime un printable ajouté à la liste des supprimables
+	 * Ce n'est pas grave s'il y a une double suppression
+	 * @param o
+	 */
+	public synchronized void removeSupprimable(Printable o)
 	{
-		for(int i = 0 ; i < Layer.values().length; i++)
-			if(elementsAffichablesSupprimables.remove(o))
-			{
-				notify();
-				break;
-			}
+		if(elementsAffichablesSupprimables.get(o.getLayer().ordinal()).remove(o))
+			notify();
 	}
 	
 }

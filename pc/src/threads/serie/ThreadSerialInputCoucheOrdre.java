@@ -36,7 +36,7 @@ import utils.Log;
 import utils.Vec2RO;
 import obstacles.SensorsData;
 import obstacles.SensorsDataBuffer;
-import pathfinding.CheminPathfinding;
+import pathfinding.chemin.CheminPathfinding;
 
 /**
  * Thread qui écoute la série et appelle qui il faut.

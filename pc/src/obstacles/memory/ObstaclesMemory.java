@@ -17,6 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package obstacles.memory;
 
+import graphic.PrintBuffer;
+
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import obstacles.types.ObstacleProximity;
@@ -45,12 +48,16 @@ public class ObstaclesMemory implements Service
 	private volatile int indicePremierObstacle = 0;
 	private volatile int firstNotDeadNow = 0;
 	private volatile long nextDeathDate = Long.MAX_VALUE;
+	private boolean printProx;
+	private final int tempsAvantSuppression = 2000;
 	
 	protected Log log;
+	private PrintBuffer buffer;
 	
-	public ObstaclesMemory(Log log)
+	public ObstaclesMemory(Log log, PrintBuffer buffer)
 	{
 		this.log = log;
+		this.buffer = buffer;
 	}
 
 	public synchronized ObstacleProximity add(Vec2RO position, Masque masque)
@@ -62,6 +69,13 @@ public class ObstaclesMemory implements Service
 	{
         ObstacleProximity obstacle = new ObstacleProximity(position, rayonEnnemi, date+dureeAvantPeremption, masque);
         listObstaclesMobiles.add(obstacle);
+
+        if(printProx)
+        {
+        	buffer.addSupprimable(obstacle);
+        	buffer.addSupprimable(obstacle.getMasque());
+        }
+        
         size++;
 		return obstacle;
 	}
@@ -80,13 +94,14 @@ public class ObstaclesMemory implements Service
 	{
 		rayonEnnemi = config.getInt(ConfigInfo.RAYON_ROBOT_ADVERSE);
 		dureeAvantPeremption = config.getInt(ConfigInfo.DUREE_PEREMPTION_OBSTACLES);
+		printProx = config.getBoolean(ConfigInfo.GRAPHIC_PROXIMITY_OBSTACLES);
 	}
 
 	public synchronized ObstacleProximity getObstacle(int nbTmp)
 	{
 		if(nbTmp < indicePremierObstacle)
 		{
-			log.critical("Erreur : demande d'un vieil obstacle");
+			log.critical("Erreur : demande d'un vieil obstacle : "+nbTmp);
 			return null;
 		}
 		return listObstaclesMobiles.get(nbTmp-indicePremierObstacle);
@@ -98,8 +113,27 @@ public class ObstaclesMemory implements Service
 	 */
 	public synchronized void remove(int indice)
 	{
-		listObstaclesMortsTot.add(listObstaclesMobiles.get(indice-indicePremierObstacle));
+		ObstacleProximity o = listObstaclesMobiles.get(indice-indicePremierObstacle);
+		
+		if(printProx)
+		{
+			buffer.removeSupprimable(o);
+			buffer.removeSupprimable(o.getMasque());
+		}
+		
+		listObstaclesMortsTot.add(o);
 		listObstaclesMobiles.set(indice-indicePremierObstacle, null);
+		
+		/**
+		 * Mise à jour de firstNotDeadNow
+		 */
+		firstNotDeadNow -= indicePremierObstacle;
+		
+		// on reprend où en était firstNotDeadNow, et on l'avance tant qu'il y a des null devant lui
+		while(firstNotDeadNow < listObstaclesMobiles.size() && listObstaclesMobiles.get(firstNotDeadNow) == null)
+			firstNotDeadNow++;
+		
+		firstNotDeadNow += indicePremierObstacle;
 	}
 	
 	/**
@@ -113,28 +147,52 @@ public class ObstaclesMemory implements Service
 		long dateActuelle = System.currentTimeMillis();
 		int firstNotDeadNowSave = firstNotDeadNow;
 		
-		// S'il est périmé depuis deux secondes : on vire.
-		while(!listObstaclesMobiles.isEmpty() && (listObstaclesMobiles.getFirst() == null || listObstaclesMobiles.getFirst().isDestructionNecessary(dateActuelle-2000)))
-		{
-			indicePremierObstacle++;
-			listObstaclesMobiles.removeFirst();
-		}
+		ObstacleProximity o = null;
 		
 		nextDeathDate = Long.MAX_VALUE;
-		firstNotDeadNow = 0;
-		while(firstNotDeadNow < listObstaclesMobiles.size())
+//		firstNotDeadNow = indicePremierObstacle;
+		Iterator<ObstacleProximity> iter = listObstaclesMobiles.iterator();
+
+		int last = -1; // dernier indice assez vieux pour être détruit
+		int tmp = 0;
+		
+		/**
+		 * Suppression de la liste des obstacles très vieux.
+		 * On supprime tous les obstacles (null y compris) jusqu'au dernier très vieux obstacle
+		 */
+		while(iter.hasNext() && ((o = iter.next()) == null || o.isDestructionNecessary(dateActuelle - tempsAvantSuppression)))
 		{
-			ObstacleProximity o = listObstaclesMobiles.get(firstNotDeadNow);
-			// s'il est fraîchement périmé, on prévient qu'il y a du changement mais on conserve quand même l'obstacle en mémoire
-			if(o == null || o.isDestructionNecessary(dateActuelle))
-				firstNotDeadNow++;
-			else
+			if(o != null) // s'il n'est pas null, c'est qu'il est très vieux
+				last = tmp;
+			tmp++;
+		}
+		
+		iter = listObstaclesMobiles.iterator();
+		tmp = 0;
+		while(iter.hasNext() && tmp <= last)
+		{
+			indicePremierObstacle++;
+			o = iter.next();
+			iter.remove();
+			tmp++;
+		}
+		
+		// Mise à jour de firstNotDeadNow
+		iter = listObstaclesMobiles.iterator();
+		firstNotDeadNow = indicePremierObstacle;
+		while(iter.hasNext() && ((o = iter.next()) == null || o.isDestructionNecessary(dateActuelle)))
+		{
+			firstNotDeadNow++;
+			if(printProx && o != null)
 			{
-				nextDeathDate = o.getDeathDate();
-				break;
+				buffer.removeSupprimable(o);
+				buffer.removeSupprimable(o.getMasque());
 			}
 		}
-		firstNotDeadNow += indicePremierObstacle;
+		
+		if(o != null && o.getDeathDate() > dateActuelle)
+			nextDeathDate = o.getDeathDate();
+
 		return firstNotDeadNow != firstNotDeadNowSave;
 	}
 	
@@ -163,7 +221,7 @@ public class ObstaclesMemory implements Service
 	 * Permet de récupérer les obstacles morts prématurément
 	 * @return
 	 */
-	public ObstacleProximity pollMortTot()
+	public synchronized ObstacleProximity pollMortTot()
 	{
 		return listObstaclesMortsTot.poll();
 	}

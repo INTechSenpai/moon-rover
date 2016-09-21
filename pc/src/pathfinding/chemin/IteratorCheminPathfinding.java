@@ -15,48 +15,59 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-package robot;
+package pathfinding.chemin;
+
+import java.util.Iterator;
 
 import pathfinding.astarCourbe.arcs.ArcCourbe;
-import pathfinding.dstarlite.gridspace.PointGridSpace;
-import utils.Log;
 
 /**
- * Robot particulier qui fait pas bouger le robot réel, mais détermine la durée des actions
+ * Un iterateur pour manipuler facilement le chemin pathfinding
  * @author pf
+ *
  */
 
-public class RobotChrono extends Robot
+public class IteratorCheminPathfinding implements Iterator<ArcCourbe>
 {
-	// Date en millisecondes depuis le début du match.
-	protected long date;
-
-	/**
-	 * Constructeur clone
-	 * @param log
-	 * @param robot
-	 */
-	public RobotChrono(Log log, RobotReal robot)
+	private int index;
+	private CheminPathfinding chemin;
+	
+	public IteratorCheminPathfinding(CheminPathfinding chemin)
 	{
-		super(log);
-		robot.copy(this);
+		this.chemin = chemin;
+		index = -1;
+	}
+	
+	public void reinit()
+	{
+		index = chemin.indexFirst;
 	}
 
 	@Override
-	public long getTempsDepuisDebutMatch()
+	public boolean hasNext()
 	{
-		return date;
+		return index != chemin.indexLast;
+
 	}
-	
-	public void suitArcCourbe(ArcCourbe came_from_arc)
+
+	@Override
+	public ArcCourbe next()
 	{
-		date += came_from_arc.getDuree();
-		came_from_arc.getLast().copy(cinematique);
+		index++;
+		index &= 0xFF;
+		return chemin.get(index);
 	}
-	
-	public Cinematique getCinematique()
+
+	@Override
+	public void remove()
 	{
-		return cinematique;
+		chemin.indexFirst++;
+		chemin.indexFirst &= 0xFF;
 	}
-	
+
+	public int getIndex()
+	{
+		return index;
+	}
+
 }

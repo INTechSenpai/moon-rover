@@ -21,6 +21,7 @@ import container.Service;
 import utils.Log;
 import utils.Vec2RO;
 import utils.Config;
+import utils.ConfigInfo;
 import serie.BufferOutgoingOrder;
 import serie.Ticket;
 import exceptions.UnableToMoveException;
@@ -36,23 +37,27 @@ import pathfinding.dstarlite.gridspace.PointGridSpaceManager;
 
 public class RobotReal extends Robot implements Service
 {
-	private BufferOutgoingOrder serialOutput;
-	private PointGridSpaceManager pointManager;
-//	private int distanceDegagement;
-//	private int tempsAttente;
+	protected volatile boolean matchDemarre = false;
+    protected volatile long dateDebutMatch;
 	
 	// Constructeur
-	public RobotReal(BufferOutgoingOrder serialOutput, Log log, PointGridSpaceManager pointManager)
+	public RobotReal(Log log)
  	{
 		super(log);
-		this.serialOutput = serialOutput;
-		this.pointManager = pointManager;
 	}
 	
 	/*
 	 * MÉTHODES PUBLIQUES
 	 */
 
+	@Override
+	public synchronized void updateConfig(Config config)
+	{
+		super.updateConfig(config);
+		dateDebutMatch = config.getLong(ConfigInfo.DATE_DEBUT_MATCH);
+		matchDemarre = config.getBoolean(ConfigInfo.MATCH_DEMARRE);
+	}
+	
 	@Override
 	public void useConfig(Config config)
 	{
@@ -66,79 +71,13 @@ public class RobotReal extends Robot implements Service
 		cinematique.enMarcheAvant = enMarcheAvant;
 	}
 
-	@Override
-	public PointGridSpace getPositionGridSpace()
-	{
-		return pointManager.get(cinematique.getPosition());
-	}
 	
 	@Override
     public long getTempsDepuisDebutMatch()
     {
 		if(!matchDemarre)
 			return 0;
-		else
-			return System.currentTimeMillis() - dateDebutMatch;
-    }
-
-    /**
-     * Gère les exceptions, c'est-à-dire les rencontres avec l'ennemi et les câlins avec un mur.
-     * Cette méthode NE GÈRE PAS les exceptions lors des trajectoires courbes
-     * @throws UnexpectedObstacleOnPathException 
-     * @throws InterruptedException 
-     */
-    private void gestionExceptions(boolean mur, Ticket t) throws UnableToMoveException, UnexpectedObstacleOnPathException, InterruptedException
-    {
-//        int nb_iterations_deblocage = 1; // combien de fois on réessaye si on se prend un mur
-//        int nb_iterations_ennemi = 2000 / tempsAttente; // 2 secondes max
-
-        while(true)
-        {
-            try
-            {
-            	attendStatus(t);
-            	return; // tout s'est bien passé
-            } catch (UnableToMoveException e)
-            {
-                // Si on s'attendait à un mur, c'est juste normal de se le prendre.
-                if(!mur)
-                {
-//                    try
-//                    {
-                        /*
-                         * En cas de blocage, on recule (si on allait tout droit) ou on avance.
-                         */
-/*                    	Sleep.sleep(500);
-                        log.warning("On n'arrive plus à avancer. On se dégage");
-//                        serialOutput.avancerMemeSens(-distanceDegagement, Speed.STANDARD);
-                        attendStatus();
-                    } catch (UnableToMoveException e1) {
-                        log.critical("On n'arrive pas à se dégager.");
-					} catch (UnexpectedObstacleOnPathException e1) {
-						serialOutput.immobilise();
-						e1.printStackTrace();
-					}
-//                    if(nb_iterations_deblocage-- == 0)*/
-                        throw new UnableToMoveException("On n'a pas réussi à se dégager");
-                }           
-                else
-                	return; // on s'est pris un mur, on s'attendait à un mur : tout va bien
-            }/* catch (UnexpectedObstacleOnPathException e)
-            {
-            	serialOutput.suspendMouvement();
-
-            	Sleep.sleep(tempsAttente);
-            	// on ne s'est jamais arrêté à cause d'un problème mécanique, on peut donc relancer le mouvement
-
-            	serialOutput.reprendMouvement();
-            	//attendStatus();
-                if(nb_iterations_ennemi-- == 0)
-                    throw new UnableToMoveException();
-            }*/
-            
-        }
-
-    // Tout s'est bien passé
+		return System.currentTimeMillis() - dateDebutMatch;
     }
 
     /**
@@ -149,7 +88,7 @@ public class RobotReal extends Robot implements Service
      * @throws UnableToMoveException
      * @throws InterruptedException 
      */
-    private void attendStatus(Ticket t) throws UnableToMoveException, UnexpectedObstacleOnPathException, InterruptedException
+    public void attendStatus(Ticket t) throws UnableToMoveException, UnexpectedObstacleOnPathException, InterruptedException
     {
 		Ticket.State o;
 		do {
