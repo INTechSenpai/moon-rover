@@ -180,7 +180,7 @@ public class BufferOutgoingOrder implements Service
 	 * Envoi de tous les arcs élémentaires d'un arc courbe
 	 * @0 arc
 	 */
-	public synchronized void envoieArcCourbe(ArcCourbe arc)
+	public synchronized void envoieArcCourbe(ArcCourbe arc, int indexTrajectory)
 	{
 		if(debugSerie)
 			log.debug("Envoi d'un arc "+arc.getPoint(0));
@@ -204,7 +204,7 @@ public class BufferOutgoingOrder implements Service
 			data[3] = (byte) (theta >> 8);
 			data[4] = (byte) theta;
 			
-			data[5] = (byte) arc.indexTrajectory;
+			data[5] = (byte) indexTrajectory;
 			
 			data[6] = (byte) (((Math.round(arc.getPoint(i).courbure+20)*1000) >> 8) & 0xEF);
 

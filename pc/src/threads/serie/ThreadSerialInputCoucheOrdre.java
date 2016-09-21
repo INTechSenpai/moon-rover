@@ -36,6 +36,7 @@ import utils.Log;
 import utils.Vec2RO;
 import obstacles.SensorsData;
 import obstacles.SensorsDataBuffer;
+import pathfinding.astarCourbe.arcs.ClothoidesComputer;
 import pathfinding.chemin.CheminPathfinding;
 
 /**
@@ -126,7 +127,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 		
 						double orientationRobot = ((data[3] << 8) + data[4]) / 1000.;
 						int indexTrajectory = data[5];
-						chemin.setCurrentIndex(indexTrajectory);
+						chemin.setCurrentIndex(indexTrajectory / ClothoidesComputer.NB_POINTS);
 						
 						if(debugSerie)
 							log.debug("Le robot est en "+positionRobot+", orientation : "+orientationRobot);
