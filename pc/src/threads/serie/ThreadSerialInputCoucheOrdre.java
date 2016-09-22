@@ -17,6 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package threads.serie;
 
+import capteurs.SensorsData;
+import capteurs.SensorsDataBuffer;
 import container.Container;
 import exceptions.ContainerException;
 import robot.Cinematique;
@@ -34,8 +36,6 @@ import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
 import utils.Vec2RO;
-import obstacles.SensorsData;
-import obstacles.SensorsDataBuffer;
 import pathfinding.astarCourbe.arcs.ClothoidesComputer;
 import pathfinding.chemin.CheminPathfinding;
 

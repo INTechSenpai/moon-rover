@@ -15,9 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-package obstacles;
+package capteurs;
 
 import obstacles.types.ObstacleProximity;
+import obstacles.types.ObstaclesFixes;
 import pathfinding.chemin.CheminPathfinding;
 import pathfinding.dstarlite.DStarLite;
 import pathfinding.dstarlite.gridspace.GridSpace;
@@ -73,10 +74,11 @@ public class CapteursProcess implements Service {
 		distanceApproximation = config.getInt(ConfigInfo.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);		
 		nbCapteurs = config.getInt(ConfigInfo.NB_CAPTEURS);
 		
+		Capteur.useConfig(config);
 		capteurs = new Capteur[nbCapteurs];
 		
-		capteurs[0] = new Capteur(new Vec2RO(70, -25), 0., 15, 200);
-		capteurs[1] = new Capteur(new Vec2RO(70, 75), 0., 15, 200);
+		capteurs[0] = new CapteurMobile(new Vec2RO(70, -25), 0., 15 / 180. * Math.PI, 200, false);
+		capteurs[1] = new CapteurMobile(new Vec2RO(70, 75), 0., 15 / 180. * Math.PI, 200, true);
 	}
 
 	/**
@@ -108,7 +110,7 @@ public class CapteursProcess implements Service {
 			/**
 			 * Si ce qu'on voit est un obstacle de table, on l'ignore
 			 */
-			Vec2RO positionVue = new Vec2RO(data.mesures[i], capteurs[i].orientationRelative, true);
+			Vec2RO positionVue = new Vec2RO(data.mesures[i], capteurs[i].getOrientationRelative(data.cinematique), true);
 			
 	    	for(ObstaclesFixes o: ObstaclesFixes.values())
 	    		if(o.visible && o.getObstacle().squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
@@ -117,7 +119,7 @@ public class CapteursProcess implements Service {
 			/**
 			 * Sinon, on ajoute
 			 */
-			Vec2RW positionEnnemi = new Vec2RW(data.mesures[i]+rayonEnnemi, capteurs[i].orientationRelative, true);
+			Vec2RW positionEnnemi = new Vec2RW(data.mesures[i]+rayonEnnemi, capteurs[i].getOrientationRelative(data.cinematique), true);
 			positionEnnemi.plus(capteurs[i].positionRelative);
 			positionEnnemi.rotate(orientationRobot);
 			positionEnnemi.plus(positionRobot);

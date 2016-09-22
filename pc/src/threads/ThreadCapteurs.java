@@ -17,9 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package threads;
 
-import obstacles.CapteursProcess;
-import obstacles.SensorsData;
-import obstacles.SensorsDataBuffer;
+import capteurs.CapteursProcess;
+import capteurs.SensorsData;
+import capteurs.SensorsDataBuffer;
 import utils.Config;
 import utils.Log;
 

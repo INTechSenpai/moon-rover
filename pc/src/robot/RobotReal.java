@@ -126,4 +126,9 @@ public class RobotReal extends Robot implements Service
 		return cinematique.orientation;
 	}
 
+	public Cinematique getCinematique()
+	{
+		return cinematique;
+	}
+
 }
