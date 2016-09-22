@@ -81,7 +81,7 @@ public class CapteursProcess implements Service {
 		capteurs = new Capteur[nbCapteurs];
 		
 		capteurs[0] = new CapteurMobile(new Vec2RO(200, 80), 0., 7 / 180. * Math.PI, 600, false);
-		capteurs[1] = new CapteurMobile(new Vec2RO(200, -80), 0., 7 / 180. * Math.PI, 600, true);
+		capteurs[1] = new CapteurImmobile(new Vec2RO(200, -80), 0., 7 / 180. * Math.PI, 600);
 		
 		if(config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS))
 			for(Capteur c : capteurs)
@@ -131,7 +131,7 @@ public class CapteursProcess implements Service {
 			positionEnnemi.rotate(orientationRobot);
 			positionEnnemi.plus(positionRobot);
 			
-			if(positionEnnemi.getX() > 1500 || positionEnnemi.getX() < -1500 || positionEnnemi.getY() > 2000 || positionEnnemi.getY() < 0)
+			if(positionEnnemi.isHorsTable())
 				continue; // hors table
 			
 			ObstacleProximity o = gridspace.addObstacleAndRemoveNearbyObstacles(positionEnnemi);

@@ -187,7 +187,7 @@ public class BufferOutgoingOrder implements Service
 
 		for(int i = 0; i < arc.getNbPoints(); i++)
 		{
-			byte[] data = new byte[7];
+			byte[] data = new byte[8];
 			data[0] = (byte) (((int)(arc.getPoint(i).getPosition().getX())+1500) >> 4);
 			data[1] = (byte) ((((int)(arc.getPoint(i).getPosition().getX())+1500) << 4) + ((int)(arc.getPoint(i).getPosition().getY()) >> 8));
 			data[2] = (byte) ((int)(arc.getPoint(i).getPosition().getY()));

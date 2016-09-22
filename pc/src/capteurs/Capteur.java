@@ -63,9 +63,17 @@ public abstract class Capteur implements Printable
 	@Override
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
-		Vec2RW p1 = positionRelative.plusNewVector(robot.getPosition());
-		Vec2RW p2 = p1.plusNewVector(new Vec2RO(portee, angleCone + getOrientationRelative(robot.getCinematique()) + robot.getOrientation(), true));
-		Vec2RW p3 = p1.plusNewVector(new Vec2RO(portee, - angleCone + getOrientationRelative(robot.getCinematique()) + robot.getOrientation(), true));
+		Vec2RW p1 = positionRelative.clone();
+		p1.rotate(robot.getOrientation());
+		p1.plus(robot.getPosition());
+		Vec2RW p2 = positionRelative.clone();
+		p2.plus(new Vec2RO(portee, angleCone + getOrientationRelative(robot.getCinematique()), false));
+		p2.rotate(robot.getOrientation());
+		p2.plus(robot.getPosition());
+		Vec2RW p3 = positionRelative.clone();
+		p3.plus(new Vec2RO(portee, - angleCone + getOrientationRelative(robot.getCinematique()), false));
+		p3.rotate(robot.getOrientation());
+		p3.plus(robot.getPosition());
 		int[] x = new int[3];
 		x[0] = f.XtoWindow(p1.getX());
 		x[1] = f.XtoWindow(p2.getX());
@@ -77,7 +85,8 @@ public abstract class Capteur implements Printable
 		g.setColor(new Color(0, 130, 0, 50));
 		g.fillPolygon(x, y, 3);
 		g.setColor(new Color(0, 130, 0, 255));
-		g.drawPolygon(x, y, 3);	}
+		g.drawPolygon(x, y, 3);
+	}
 
 	@Override
 	public Layer getLayer() {

@@ -25,9 +25,6 @@ import utils.Log;
 import utils.Vec2RO;
 import utils.Config;
 import utils.ConfigInfo;
-import serie.Ticket;
-import exceptions.UnableToMoveException;
-import exceptions.UnexpectedObstacleOnPathException;
 import graphic.Fenetre;
 import graphic.PrintBuffer;
 import graphic.printable.Layer;
@@ -88,43 +85,13 @@ public class RobotReal extends Robot implements Service, Printable
 		return System.currentTimeMillis() - dateDebutMatch;
     }
 
-    /**
-     * Bloque jusqu'à ce que la carte donne un status.
-     * - Soit le robot a fini le mouvement, et la méthode se termine
-     * - Soit le robot est bloqué, et la méthod lève une exception
-     * ATTENTION ! Il faut que cette méthode soit appelée dans un synchronized(requete)
-     * @throws UnableToMoveException
-     * @throws InterruptedException 
-     */
-    public void attendStatus(Ticket t) throws UnableToMoveException, UnexpectedObstacleOnPathException, InterruptedException
-    {
-		Ticket.State o;
-		do {
-			if(t.isEmpty())
-			{
-				// Si au bout de 3s le robot n'a toujours rien répondu,
-				// on suppose un blocage mécanique
-				t.set(Ticket.State.KO);
-				t.wait(15000);
-			}
-
-			o = t.getAndClear();
-			if(o == Ticket.State.KO)
-				throw new UnableToMoveException("Le bas niveau prévenu d'un problème mécanique");
-/*				else if(o == SerialProtocol.ENNEMI_SUR_CHEMIN)
-				{
-					log.critical("Ennemi sur le chemin !");
-					serialOutput.immobilise();
-					Sleep.sleep(4000);
-					throw new UnexpectedObstacleOnPathException();
-				}*/
-		} while(o != Ticket.State.OK);
-
-    }
-
 	public void setCinematique(Cinematique cinematique)
 	{
 		cinematique.copy(this.cinematique);
+		synchronized(buffer)
+		{
+			buffer.notify();
+		}
 	}
 
 	public Vec2RO getPosition()
