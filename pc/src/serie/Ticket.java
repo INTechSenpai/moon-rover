@@ -51,4 +51,17 @@ public class Ticket
 		notify();
 	}
 	
+	/**
+	 * Récupère le status. Bloquant
+	 * @return
+	 * @throws InterruptedException
+	 */
+    public synchronized State attendStatus() throws InterruptedException
+    {
+		if(isEmpty())
+			wait();
+
+		return getAndClear();
+    }
+
 }

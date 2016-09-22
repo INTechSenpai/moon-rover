@@ -17,6 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package robot;
 
+import java.awt.Graphics;
+
+import obstacles.types.ObstacleRectangular;
 import container.Service;
 import utils.Log;
 import utils.Vec2RO;
@@ -25,6 +28,10 @@ import utils.ConfigInfo;
 import serie.Ticket;
 import exceptions.UnableToMoveException;
 import exceptions.UnexpectedObstacleOnPathException;
+import graphic.Fenetre;
+import graphic.PrintBuffer;
+import graphic.printable.Layer;
+import graphic.printable.Printable;
 
 /**
  * Effectue le lien entre le code et la réalité (permet de parler à la carte bas niveau, d'interroger les capteurs, etc.)
@@ -32,15 +39,18 @@ import exceptions.UnexpectedObstacleOnPathException;
  *
  */
 
-public class RobotReal extends Robot implements Service
+public class RobotReal extends Robot implements Service, Printable
 {
 	protected volatile boolean matchDemarre = false;
     protected volatile long dateDebutMatch;
+	private boolean print;
+	private PrintBuffer buffer;
 	
 	// Constructeur
-	public RobotReal(Log log)
+	public RobotReal(Log log, PrintBuffer buffer)
  	{
 		super(log);
+		this.buffer = buffer;
 	}
 	
 	/*
@@ -59,15 +69,16 @@ public class RobotReal extends Robot implements Service
 	public void useConfig(Config config)
 	{
 		super.useConfig(config);
-		// TODO
 		cinematique = new Cinematique(0, 0, 0, true, 0, 0, 0, Speed.STANDARD);
+		print = config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS);
+		if(print)
+			buffer.add(this);
 	}
 			
 	public void setEnMarcheAvance(boolean enMarcheAvant)
 	{
 		cinematique.enMarcheAvant = enMarcheAvant;
 	}
-
 	
 	@Override
     public long getTempsDepuisDebutMatch()
@@ -129,6 +140,19 @@ public class RobotReal extends Robot implements Service
 	public Cinematique getCinematique()
 	{
 		return cinematique;
+	}
+
+	@Override
+	public void print(Graphics g, Fenetre f, RobotReal robot)
+	{
+		// affichage rudimentaire
+		new ObstacleRectangular(cinematique.getPosition(), longueurNonDeploye, largeurNonDeploye, cinematique.orientation).print(g, f, robot);;
+	}
+
+	@Override
+	public Layer getLayer()
+	{
+		return Layer.FOREGROUND;
 	}
 
 }

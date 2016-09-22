@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package capteurs;
 
+import graphic.PrintBuffer;
 import obstacles.types.ObstacleProximity;
 import obstacles.types.ObstaclesFixes;
 import pathfinding.chemin.CheminPathfinding;
@@ -45,6 +46,7 @@ public class CapteursProcess implements Service {
 	private Table table;
 	private DStarLite dstarlite;
 	private CheminPathfinding chemin;
+	private PrintBuffer buffer;
 	
 	private int nbCapteurs;
 	private int rayonEnnemi;
@@ -53,13 +55,14 @@ public class CapteursProcess implements Service {
 
 	private Capteur[] capteurs;
 
-	public CapteursProcess(Log log, GridSpace gridspace, Table table, DStarLite dstarlite, CheminPathfinding chemin)
+	public CapteursProcess(Log log, GridSpace gridspace, Table table, DStarLite dstarlite, CheminPathfinding chemin, PrintBuffer buffer)
 	{
 		this.table = table;
 		this.log = log;
 		this.gridspace = gridspace;
 		this.dstarlite = dstarlite;
 		this.chemin = chemin;
+		this.buffer = buffer;
 	}
 	
 	@Override
@@ -79,6 +82,10 @@ public class CapteursProcess implements Service {
 		
 		capteurs[0] = new CapteurMobile(new Vec2RO(70, -25), 0., 15 / 180. * Math.PI, 200, false);
 		capteurs[1] = new CapteurMobile(new Vec2RO(70, 75), 0., 15 / 180. * Math.PI, 200, true);
+		
+		if(config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS))
+			for(Capteur c : capteurs)
+				buffer.add(c);
 	}
 
 	/**
