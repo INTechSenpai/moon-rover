@@ -22,12 +22,9 @@ import utils.Log;
 import utils.Vec2RO;
 import utils.Config;
 import utils.ConfigInfo;
-import serie.BufferOutgoingOrder;
 import serie.Ticket;
 import exceptions.UnableToMoveException;
 import exceptions.UnexpectedObstacleOnPathException;
-import pathfinding.dstarlite.gridspace.PointGridSpace;
-import pathfinding.dstarlite.gridspace.PointGridSpaceManager;
 
 /**
  * Effectue le lien entre le code et la réalité (permet de parler à la carte bas niveau, d'interroger les capteurs, etc.)

@@ -20,7 +20,6 @@ package pathfinding;
 import robot.RobotReal;
 import container.Service;
 import table.RealTable;
-import table.Table;
 import utils.Config;
 
 /**
