@@ -52,7 +52,7 @@ public class CapteurMobile extends Capteur
 		double R = 1000 / c.courbure; // le rayon de courbure
 		if(droite)
 			return orientationRelative + Math.atan2(L, d+R);
-		return orientationRelative + Math.atan2(L, d-R);
+		return orientationRelative + Math.atan2(L, R-d);
 	}
 
 }

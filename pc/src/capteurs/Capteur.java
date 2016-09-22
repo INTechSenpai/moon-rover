@@ -75,19 +75,13 @@ public abstract class Capteur implements Printable
 		y[1] = f.YtoWindow(p2.getY());
 		y[2] = f.YtoWindow(p3.getY());
 		g.setColor(new Color(0, 130, 0, 50));
-		g.fillArc(f.XtoWindow(p1.getX()-portee), f.YtoWindow(p1.getY()+portee), f.distanceXtoWindow(2*portee), f.distanceYtoWindow(2*portee), radianToDegre(robot.getOrientation()+orientationRelative - angleCone), radianToDegre(angleCone * 2));
-//		g.fillPolygon(x, y, 3);
+		g.fillPolygon(x, y, 3);
 		g.setColor(new Color(0, 130, 0, 255));
 		g.drawPolygon(x, y, 3);	}
 
 	@Override
 	public Layer getLayer() {
 		return Layer.FOREGROUND;
-	}
-	
-	private int radianToDegre(double a)
-	{
-		return (int) Math.round(a * 180 / Math.PI);
 	}
 
 }
