@@ -153,7 +153,7 @@ public class BufferOutgoingOrder implements Service
 	}
 
 	/**
-	 * Démarre le stream
+	 * Met à jour la vitesse max
 	 */
 	public synchronized void setMaxSpeed()
 	{
@@ -191,7 +191,7 @@ public class BufferOutgoingOrder implements Service
 			data[0] = (byte) (((int)(arc.getPoint(i).getPosition().getX())+1500) >> 4);
 			data[1] = (byte) ((((int)(arc.getPoint(i).getPosition().getX())+1500) << 4) + ((int)(arc.getPoint(i).getPosition().getY()) >> 8));
 			data[2] = (byte) ((int)(arc.getPoint(i).getPosition().getY()));
-			double angle = arc.getPoint(i).orientation;
+			double angle = arc.getPoint(i).orientationReelle;
 			if(!arc.getPoint(0).enMarcheAvant)
 				angle += Math.PI;
 		
@@ -206,12 +206,13 @@ public class BufferOutgoingOrder implements Service
 			
 			data[5] = (byte) indexTrajectory;
 			
-			data[6] = (byte) (((Math.round(arc.getPoint(i).courbure+20)*1000) >> 8) & 0xEF);
+			// TODO : corriger en se basant sur le protocole
+			data[6] = (byte) (((Math.round(arc.getPoint(i).courbureReelle+20)*1000) >> 8) & 0xEF);
 
 			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
 				data[6] |= 0x70; // en cas de marche arrière
 			
-			data[7] = (byte) ((Math.round(arc.getPoint(i).courbure+20)*1000) & 0xFF);
+			data[7] = (byte) ((Math.round(arc.getPoint(i).courbureReelle+20)*1000) & 0xFF);
 
 			bufferTrajectoireCourbe.add(new Order(data, OutOrder.SEND_ARC));
 		}

@@ -93,7 +93,7 @@ public class CapteursProcess implements Service {
 	 */
 	public void updateObstaclesMobiles(SensorsData data)
 	{
-		double orientationRobot = data.cinematique.orientation;
+		double orientationRobot = data.cinematique.orientationReelle;
 		Vec2RO positionRobot = data.cinematique.getPosition();
 		
 		/**

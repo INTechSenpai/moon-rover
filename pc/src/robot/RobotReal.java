@@ -22,7 +22,6 @@ import java.awt.Graphics;
 import obstacles.types.ObstacleRectangular;
 import container.Service;
 import utils.Log;
-import utils.Vec2RO;
 import utils.Config;
 import utils.ConfigInfo;
 import graphic.Fenetre;
@@ -92,16 +91,6 @@ public class RobotReal extends Robot implements Service, Printable
 		{
 			buffer.notify();
 		}
-	}
-
-	public Vec2RO getPosition()
-	{
-		return cinematique.getPosition();
-	}
-
-	public double getOrientation()
-	{
-		return cinematique.orientation;
 	}
 
 	public Cinematique getCinematique()

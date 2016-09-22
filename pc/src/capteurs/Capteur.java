@@ -63,17 +63,18 @@ public abstract class Capteur implements Printable
 	@Override
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
+		double orientation = robot.getCinematique().orientationReelle;
 		Vec2RW p1 = positionRelative.clone();
-		p1.rotate(robot.getOrientation());
-		p1.plus(robot.getPosition());
+		p1.rotate(orientation);
+		p1.plus(robot.getCinematique().getPosition());
 		Vec2RW p2 = positionRelative.clone();
 		p2.plus(new Vec2RO(portee, angleCone + getOrientationRelative(robot.getCinematique()), false));
-		p2.rotate(robot.getOrientation());
-		p2.plus(robot.getPosition());
+		p2.rotate(orientation);
+		p2.plus(robot.getCinematique().getPosition());
 		Vec2RW p3 = positionRelative.clone();
 		p3.plus(new Vec2RO(portee, - angleCone + getOrientationRelative(robot.getCinematique()), false));
-		p3.rotate(robot.getOrientation());
-		p3.plus(robot.getPosition());
+		p3.rotate(orientation);
+		p3.plus(robot.getCinematique().getPosition());
 		int[] x = new int[3];
 		x[0] = f.XtoWindow(p1.getX());
 		x[1] = f.XtoWindow(p2.getX());
