@@ -43,6 +43,7 @@ public:
 		
 		immediateOrderList[0x85] = &Save::Instance();
 		immediateOrderList[0x86] = &Display::Instance();
+		immediateOrderList[0x87] = &Default::Instance();
 		
 		immediateOrderList[0x8A] = &Pos::Instance();
 		immediateOrderList[0x8B] = &PosX::Instance();
@@ -73,6 +74,8 @@ public:
 		longOrderList[0xA3] = &Test_speed::Instance();
 		longOrderList[0xA4] = &Test_pos::Instance();
 
+		immediateOrderList[0xA5] = &Curv_k1::Instance();
+		immediateOrderList[0xA6] = &Curv_k2::Instance();
 		immediateOrderList[0xB0] = &Capt::Instance();
 	}
 

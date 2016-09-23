@@ -101,7 +101,7 @@ class AsciiSerial:
 
             nbB = self.serial.in_waiting
             if nbB > 0:
-                self.incomingLine += self.serial.read(nbB).decode()
+                self.incomingLine += self.serial.read(nbB).decode(encoding='utf-8', errors='ignore')
 
             newLineIndex = self.incomingLine.find('\n')
             while newLineIndex != -1:
@@ -227,6 +227,9 @@ class AsciiSerial:
 
     def addLinesToSend(self, lines):
         self.linesToSend += lines
+
+    def clearLinesToSend(self):
+        self.linesToSend = []
 
     def getAllData(self):
         y = np.multiply(np.sin(np.linspace(0, 6 * np.pi, 100) + self.phase[self.index]), self.index/20)

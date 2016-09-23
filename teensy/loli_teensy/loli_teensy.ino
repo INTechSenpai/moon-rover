@@ -5,6 +5,7 @@
 */
 
 
+#include "Vutils.h"
 #include "pin_mapping.h"
 #include "BlockingMgr.h"
 #include "DirectionController.h"
@@ -29,7 +30,7 @@ void loop()
 {
 	OrderMgr orderMgr(Serial1);
 	AsciiOrderListener asciiOrder;
-	uint8_t longOrder;
+	uint8_t longOrder = 0x00;
 	std::vector<uint8_t> longOrderData;
 	bool longOrderRunning = false;
 

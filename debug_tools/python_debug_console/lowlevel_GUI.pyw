@@ -44,8 +44,12 @@ class LowLevelGUI(tk.Frame):
         self.rowconfigure(1, weight=1)
 
         master.bind("<Control-space>", self.ctrl_space)
-        master.bind("<Control-+>", self.ctrl_plus)
+        master.bind("<Control-plus>", self.ctrl_plus)
         master.bind("<Control-minus>", self.ctrl_minus)
+        master.bind("<Control-Delete>", self.ctrl_delete)
+        master.bind("<Up>", self.up_key)
+        master.bind("<Down>", self.down_key)
+        master.bind("<Return>", self.get_focus)
 
         self._scheduledRoutine = None
 
@@ -102,6 +106,21 @@ class LowLevelGUI(tk.Frame):
 
     def ctrl_minus(self, tk_event):
         self.toolbar.zoomButton.zoom()
+
+    def ctrl_delete(self, tk_event):
+        self.displayArea.mainConsole.clear()
+        self.asciiSerial.clearLinesToSend()
+
+    def up_key(self, tk_event):
+        self.displayArea.mainConsole.goBackInTime()
+        self.get_focus(tk_event)
+
+    def down_key(self, tk_event):
+        self.displayArea.mainConsole.backToTheFuture()
+        self.get_focus(tk_event)
+
+    def get_focus(self, tk_event):
+        self.displayArea.mainConsole.get_focus()
 
 
 class ToolBar(tk.Frame):
@@ -539,6 +558,8 @@ class Console(tk.Frame):
             self.inputText.grid(column=0, row=1, sticky='NSEW')
 
         self.userInputLines = []
+        self.userInputHistory = []
+        self.historyIndex = 0
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
@@ -557,6 +578,14 @@ class Console(tk.Frame):
             self.outputText.tag_configure(str(self.altColoredTextCount), foreground=self.alt)
             self.altColoredTextCount += 1
 
+    def clear(self):
+        self.outputText['state'] = 'normal'
+        self.outputText.delete(1.0, 'end')
+        self.outputText['state'] = 'disabled'
+
+    def get_focus(self):
+        self.inputText.focus_set()
+
     def getUserInputLines(self):
         inputLines = copy.deepcopy(self.userInputLines)
         self.userInputLines.clear()
@@ -565,10 +594,27 @@ class Console(tk.Frame):
     def computeUserInput(self):
         userInput = self.inputText.get(1.0, 'end')
         if '\n\n' in userInput:
-            userInput = userInput[0:len(userInput)-1]
-            self.userInputLines.append(userInput)
+            if len(userInput) > 2:
+                userInput = userInput[0:len(userInput)-1]
+                self.userInputLines.append(userInput)
+                self.userInputHistory.append(userInput[0:len(userInput)-1])
+                self.historyIndex = 0
+                self.addLines([userInput], useAltColor=True)
             self.inputText.delete(1.0, 'end')
-            self.addLines([userInput], useAltColor=True)
+
+    def goBackInTime(self):
+        if self.historyIndex < len(self.userInputHistory):
+            self.historyIndex += 1
+        if self.historyIndex > 0:
+            self.inputText.delete(1.0, 'end')
+            self.inputText.insert('end', self.userInputHistory[-self.historyIndex])
+
+    def backToTheFuture(self):
+        if self.historyIndex > 0:
+            self.inputText.delete(1.0, 'end')
+            self.historyIndex -= 1
+        if self.historyIndex > 0:
+            self.inputText.insert('end', self.userInputHistory[-self.historyIndex])
 
 
 class Graph(tk.Frame):

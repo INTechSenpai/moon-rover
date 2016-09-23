@@ -20,6 +20,7 @@
 #include "Log.h"
 #include "BlockingMgr.h"
 #include <math.h>
+#include <EEPROM.h>
 
 
 #define FREQ_ASSERV			1000	// Fréquence d'asservissement (en Hz)
@@ -96,7 +97,7 @@ private:
 	volatile int32_t previousMovingSpeed;	// en ticks.s^-2
 
 	//  Accélération maximale (variation maximale de movingSpeedSetpoint)
-	volatile int32_t maxAcceleration;	// ticks*s^-2
+	int32_t maxAcceleration;	// ticks*s^-2
 
 	//	Pour faire de jolies courbes de réponse du système, la vitesse moyenne c'est mieux !
 	Average<int32_t, AVERAGE_SPEED_SIZE> averageLeftSpeed;
@@ -114,16 +115,26 @@ public:
 		INT_BLOCKED,	// Roues du robot bloquées.
 		EMPTY_TRAJ		// La trajectoire courante est terminée, le dernier point n'étant pas un point d'arrêt.
 	};
+
+	// Type désignant le(s) PID en cours de réglage
+	enum PIDtoSet
+	{
+		LEFT_SPEED,
+		RIGHT_SPEED,
+		SPEED,
+		TRANSLATION
+	};
 	
 private:
 	volatile MovingState movingState;
 
 	// Variables d'activation des différents PID
-	volatile bool positionControlled;	//  Asservissement en position
-	volatile bool leftSpeedControlled;	//	Asservissement en vitesse à gauche
-	volatile bool rightSpeedControlled;	//	Asservissement en vitesse à droite
-	volatile bool pwmControlled;		//	Mise à jour des PWM grâce à l'asservissement en vitesse
+	bool positionControlled;	//  Asservissement en position
+	bool leftSpeedControlled;	//	Asservissement en vitesse à gauche
+	bool rightSpeedControlled;	//	Asservissement en vitesse à droite
+	bool pwmControlled;		//	Mise à jour des PWM grâce à l'asservissement en vitesse
 
+	PIDtoSet pidToSet; // Indique lequel des PID est en cours de réglage
 
 public:
 	MotionControlSystem();
@@ -155,6 +166,7 @@ public:
 	void enableLeftSpeedControl(bool);
 	void enableRightSpeedControl(bool);
 	void enablePwmControl(bool);
+	void getEnableStates(bool &, bool &, bool &, bool&);
 
 	/* Gestion des déplacements */
 	void addTrajectoryPoint(const TrajectoryPoint &, uint8_t);
@@ -163,8 +175,12 @@ public:
 	void stop();
 	void setMaxMovingSpeed(int32_t);
 	int32_t getMaxMovingSpeed() const;
+	void setMaxAcceleration(int32_t);
+	int32_t getMaxAcceleration() const;
 
 	/* Setters et getters des constantes d'asservissement */
+	void setCurrentPIDTunings(float, float, float);
+	void getCurrentPIDTunings(float &, float &, float &) const;
 	void setTranslationTunings(float, float, float);
 	void setLeftSpeedTunings(float, float, float);
 	void setRightSpeedTunings(float, float, float);
@@ -174,11 +190,31 @@ public:
 	void getRightSpeedTunings(float &, float &, float &) const;
 	void getTrajectoryTunings(float &, float &) const;
 
+	void setPIDtoSet(PIDtoSet newPIDtoSet);
+	PIDtoSet getPIDtoSet() const;
+	void getPIDtoSet_str(char*, size_t) const;
+
 	/* Setter et getter de la position */
 	void setPosition(const Position &);
 	void getPosition(Position &) const;
 	uint8_t getTrajectoryIndex() const;
 	void resetPosition(void);
+
+	/* Setters et getters des gestionaires de blocage et d'arrêt */
+	void setLeftMotorBmgrTunings(float, uint32_t);
+	void setRightMotorBmgrTunings(float, uint32_t);
+	void setEndOfMoveMgrTunings(uint32_t, uint32_t);
+	void getLeftMotorBmgrTunings(float &, uint32_t &) const;
+	void getRightMotorBmgrTunings(float &, uint32_t &) const;
+	void getEndOfMoveMgrTunings(uint32_t &, uint32_t &) const;
+
+	/* Getters de débug */
+	void getTicks(int32_t &, int32_t &, int32_t &, int32_t &);
+
+	/* Sauvegarde et restauration des paramètres de l'asservissement */
+	void saveParameters();
+	void loadParameters();
+	void loadDefaultParameters();
 };
 
 

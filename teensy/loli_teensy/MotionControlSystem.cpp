@@ -16,28 +16,17 @@ leftMotorBlockingMgr(leftSpeedSetpoint, currentLeftSpeed),
 rightMotorBlockingMgr(rightSpeedSetpoint, currentRightSpeed),
 endOfMoveMgr(currentMovingSpeed)
 {
-	positionControlled = true;
-	leftSpeedControlled = true;
-	rightSpeedControlled = true;
-	pwmControlled = true;
-
 	currentDistance = 0;
 	currentLeftSpeed = 0;
 	currentRightSpeed = 0;
 
+	maxMovingSpeed = 0;
+
 	leftSpeedPID.setOutputLimits(-1023, 1023);
 	rightSpeedPID.setOutputLimits(-1023, 1023);
 
-	leftMotorBlockingMgr.setTunings(0.5, 100);
-	rightMotorBlockingMgr.setTunings(0.5, 100);
-	endOfMoveMgr.setTunings(5000, 100);
+	loadParameters();
 
-
-	maxAcceleration = 13000;
-
-	translationPID.setTunings(6.5, 0, 250);
-	leftSpeedPID.setTunings(2, 0.01, 100);
-	rightSpeedPID.setTunings(2, 0.01, 50);
 	resetPosition();
 	stop();
 }
@@ -60,6 +49,14 @@ void MotionControlSystem::enableRightSpeedControl(bool enable)
 void MotionControlSystem::enablePwmControl(bool enable)
 {
 	pwmControlled = enable;
+}
+
+void MotionControlSystem::getEnableStates(bool &cp, bool &cvg, bool &cvd, bool &cpwm)
+{
+	cp = positionControlled;
+	cvg = leftSpeedControlled;
+	cvd = rightSpeedControlled;
+	cpwm = pwmControlled;
 }
 
 
@@ -333,12 +330,74 @@ int32_t MotionControlSystem::getMaxMovingSpeed() const
 	return maxMovingSpeed;
 }
 
+void MotionControlSystem::setMaxAcceleration(int32_t newMaxAcceleration)
+{
+	noInterrupts();
+	maxAcceleration = newMaxAcceleration;
+	interrupts();
+}
+
+int32_t MotionControlSystem::getMaxAcceleration() const
+{
+	return maxAcceleration;
+}
+
 
 
 /**
 * Getters/Setters des constantes d'asservissement en translation/rotation/vitesse
 */
 
+void MotionControlSystem::setCurrentPIDTunings(float kp, float ki, float kd)
+{
+	switch (pidToSet)
+	{
+	case MotionControlSystem::LEFT_SPEED:
+		setLeftSpeedTunings(kp, ki, kd);
+		break;
+	case MotionControlSystem::RIGHT_SPEED:
+		setRightSpeedTunings(kp, ki, kd);
+		break;
+	case MotionControlSystem::SPEED:
+		setLeftSpeedTunings(kp, ki, kd);
+		setRightSpeedTunings(kp, ki, kd);
+		break;
+	case MotionControlSystem::TRANSLATION:
+		setTranslationTunings(kp, ki, kd);
+		break;
+	default:
+		break;
+	}
+}
+void MotionControlSystem::getCurrentPIDTunings(float &kp, float &ki, float &kd) const
+{
+	switch (pidToSet)
+	{
+	case MotionControlSystem::LEFT_SPEED:
+		getLeftSpeedTunings(kp, ki, kd);
+		break;
+	case MotionControlSystem::RIGHT_SPEED:
+		getRightSpeedTunings(kp, ki, kd);
+		break;
+	case MotionControlSystem::SPEED:
+		float kpl, kil, kdl, kpr, kir, kdr;
+		getLeftSpeedTunings(kpl, kil, kdl);
+		getRightSpeedTunings(kpr, kir, kdr);
+		if ((kpl != kpr || kil != kir) || kdl != kdr)
+		{
+			Log::warning("Left/Right speed PID tunings are different, left tunings are returned");
+		}
+		kp = kpl;
+		ki = kil;
+		kd = kdl;
+		break;
+	case MotionControlSystem::TRANSLATION:
+		getTranslationTunings(kp, ki, kd);
+		break;
+	default:
+		break;
+	}
+}
 void MotionControlSystem::getTranslationTunings(float &kp, float &ki, float &kd) const {
 	kp = translationPID.getKp();
 	ki = translationPID.getKi();
@@ -370,6 +429,51 @@ void MotionControlSystem::setRightSpeedTunings(float kp, float ki, float kd) {
 void MotionControlSystem::setTrajectoryTunings(float k1, float k2) {
 	curvatureCorrectorK1 = k1;
 	curvatureCorrectorK2 = k2;
+}
+void MotionControlSystem::setPIDtoSet(PIDtoSet newPIDtoSet)
+{
+	pidToSet = newPIDtoSet;
+}
+MotionControlSystem::PIDtoSet MotionControlSystem::getPIDtoSet() const
+{
+	return pidToSet;
+}
+void MotionControlSystem::getPIDtoSet_str(char * str, size_t size) const
+{
+	char leftSpeedStr[] = "LEFT_SPEED";
+	char rightSpeedStr[] = "RIGHT_SPEED";
+	char speedStr[] = "SPEED";
+	char translationStr[] = "TRANSLATION";
+
+	if (size == 0)
+	{
+		return;
+	}
+	else if (size < 12)
+	{
+		str[0] = '\0';
+	}
+	else
+	{
+		switch (pidToSet)
+		{
+		case MotionControlSystem::LEFT_SPEED:
+			strcpy(str, leftSpeedStr);
+			break;
+		case MotionControlSystem::RIGHT_SPEED:
+			strcpy(str, rightSpeedStr);
+			break;
+		case MotionControlSystem::SPEED:
+			strcpy(str, speedStr);
+			break;
+		case MotionControlSystem::TRANSLATION:
+			strcpy(str, translationStr);
+			break;
+		default:
+			str[0] = '\0';
+			break;
+		}
+	}
 }
 
 
@@ -406,5 +510,233 @@ void MotionControlSystem::resetPosition()
 	position.orientation = 0;
 	interrupts();
 	stop();
+}
+
+
+/*
+*	Réglage des blockingMgr et stoppingMgr
+*/
+
+void MotionControlSystem::setLeftMotorBmgrTunings(float sensibility, uint32_t responseTime)
+{
+	noInterrupts();
+	leftMotorBlockingMgr.setTunings(sensibility, responseTime);
+	interrupts();
+}
+
+void MotionControlSystem::setRightMotorBmgrTunings(float sensibility, uint32_t responseTime)
+{
+	noInterrupts();
+	rightMotorBlockingMgr.setTunings(sensibility, responseTime);
+	interrupts();
+}
+
+void MotionControlSystem::setEndOfMoveMgrTunings(uint32_t epsilon, uint32_t responseTime)
+{
+	noInterrupts();
+	endOfMoveMgr.setTunings(epsilon, responseTime);
+	interrupts();
+}
+
+void MotionControlSystem::getLeftMotorBmgrTunings(float & sensibility, uint32_t & responseTime) const
+{
+	leftMotorBlockingMgr.getTunings(sensibility, responseTime);
+}
+
+void MotionControlSystem::getRightMotorBmgrTunings(float & sensibility, uint32_t & responseTime) const
+{
+	rightMotorBlockingMgr.getTunings(sensibility, responseTime);
+}
+
+void MotionControlSystem::getEndOfMoveMgrTunings(uint32_t & epsilon, uint32_t & responseTime) const
+{
+	endOfMoveMgr.getTunings(epsilon, responseTime);
+}
+
+
+/*
+*	Getters/Setters de débug
+*/
+
+void MotionControlSystem::getTicks(int32_t & leftFront, int32_t & rightFront, int32_t & leftBack, int32_t & rightBack)
+{
+	leftFront = leftMotorEncoder.read();
+	rightFront = rightMotorEncoder.read();
+	leftBack = leftFreeEncoder.read();
+	rightBack = rightFreeEncoder.read();
+}
+
+void MotionControlSystem::saveParameters()
+{
+	int a = 0; // Adresse mémoire dans l'EEPROM
+	float kp, ki, kd, s;
+	uint32_t e, t;
+
+	EEPROM.put(a, positionControlled);
+	a += sizeof(positionControlled);
+	EEPROM.put(a, leftSpeedControlled);
+	a += sizeof(leftSpeedControlled);
+	EEPROM.put(a, rightSpeedControlled);
+	a += sizeof(rightSpeedControlled);
+	EEPROM.put(a, pwmControlled);
+	a += sizeof(pwmControlled);
+
+	leftMotorBlockingMgr.getTunings(s, t);
+	EEPROM.put(a, s);
+	a += sizeof(s);
+	EEPROM.put(a, t);
+	a += sizeof(t);
+
+	rightMotorBlockingMgr.getTunings(s, t);
+	EEPROM.put(a, s);
+	a += sizeof(s);
+	EEPROM.put(a, t);
+	a += sizeof(t);
+
+	endOfMoveMgr.getTunings(e, t);
+	EEPROM.put(a, e);
+	a += sizeof(e);
+	EEPROM.put(a, t);
+	a += sizeof(t);
+
+	EEPROM.put(a, maxAcceleration);
+	a += sizeof(maxAcceleration);
+
+	kp = translationPID.getKp();
+	EEPROM.put(a, kp);
+	a += sizeof(kp);
+	ki = translationPID.getKi();
+	EEPROM.put(a, ki);
+	a += sizeof(ki);
+	kd = translationPID.getKd();
+	EEPROM.put(a, kd);
+	a += sizeof(kd);
+
+	kp = leftSpeedPID.getKp();
+	EEPROM.put(a, kp);
+	a += sizeof(kp);
+	ki = leftSpeedPID.getKi();
+	EEPROM.put(a, ki);
+	a += sizeof(ki);
+	kd = leftSpeedPID.getKd();
+	EEPROM.put(a, kd);
+	a += sizeof(kd);
+
+	kp = rightSpeedPID.getKp();
+	EEPROM.put(a, kp);
+	a += sizeof(kp);
+	ki = rightSpeedPID.getKi();
+	EEPROM.put(a, ki);
+	a += sizeof(ki);
+	kd = rightSpeedPID.getKd();
+	EEPROM.put(a, kd);
+	a += sizeof(kd);
+
+	EEPROM.put(a, curvatureCorrectorK1);
+	a += sizeof(curvatureCorrectorK1);
+	EEPROM.put(a, curvatureCorrectorK2);
+	a += sizeof(curvatureCorrectorK2);
+
+	EEPROM.put(a, pidToSet);
+	a += sizeof(pidToSet);
+}
+
+void MotionControlSystem::loadParameters()
+{
+	noInterrupts();
+
+	int a = 0; // Adresse mémoire dans l'EEPROM
+	float kp, ki, kd, s;
+	uint32_t e, t;
+
+	EEPROM.get(a, positionControlled);
+	a += sizeof(positionControlled);
+	EEPROM.get(a, leftSpeedControlled);
+	a += sizeof(leftSpeedControlled);
+	EEPROM.get(a, rightSpeedControlled);
+	a += sizeof(rightSpeedControlled);
+	EEPROM.get(a, pwmControlled);
+	a += sizeof(pwmControlled);
+
+	EEPROM.get(a, s);
+	a += sizeof(s);
+	EEPROM.get(a, t);
+	a += sizeof(t);
+	leftMotorBlockingMgr.setTunings(s, t);
+
+	EEPROM.get(a, s);
+	a += sizeof(s);
+	EEPROM.get(a, t);
+	a += sizeof(t);
+	rightMotorBlockingMgr.setTunings(s, t);
+
+	EEPROM.get(a, e);
+	a += sizeof(e);
+	EEPROM.get(a, t);
+	a += sizeof(t);
+	endOfMoveMgr.setTunings(e, t);
+
+	EEPROM.get(a, maxAcceleration);
+	a += sizeof(maxAcceleration);
+
+	EEPROM.get(a, kp);
+	a += sizeof(kp);
+	EEPROM.get(a, ki);
+	a += sizeof(ki);
+	EEPROM.get(a, kd);
+	a += sizeof(kd);
+	translationPID.setTunings(kp, ki, kd);
+
+	EEPROM.get(a, kp);
+	a += sizeof(kp);
+	EEPROM.get(a, ki);
+	a += sizeof(ki);
+	EEPROM.get(a, kd);
+	a += sizeof(kd);
+	leftSpeedPID.setTunings(kp, ki, kd);
+
+	EEPROM.get(a, kp);
+	a += sizeof(kp);
+	EEPROM.get(a, ki);
+	a += sizeof(ki);
+	EEPROM.get(a, kd);
+	a += sizeof(kd);
+	rightSpeedPID.setTunings(kp, ki, kd);
+
+	EEPROM.get(a, curvatureCorrectorK1);
+	a += sizeof(curvatureCorrectorK1);
+	EEPROM.get(a, curvatureCorrectorK2);
+	a += sizeof(curvatureCorrectorK2);
+
+	EEPROM.get(a, pidToSet);
+	a += sizeof(pidToSet);
+
+	interrupts();
+}
+
+void MotionControlSystem::loadDefaultParameters()
+{
+	noInterrupts();
+
+	positionControlled = true;
+	leftSpeedControlled = true;
+	rightSpeedControlled = true;
+	pwmControlled = true;
+
+	leftMotorBlockingMgr.setTunings(0.5, 100);
+	rightMotorBlockingMgr.setTunings(0.5, 100);
+	endOfMoveMgr.setTunings(5000, 100);
+
+	maxAcceleration = 13000;
+
+	translationPID.setTunings(6.5, 0, 250);
+	leftSpeedPID.setTunings(2, 0.01, 100);
+	rightSpeedPID.setTunings(2, 0.01, 100);
+	curvatureCorrectorK1 = 1;
+	curvatureCorrectorK2 = 1;
+
+	pidToSet = SPEED;
+
+	interrupts();
 }
 

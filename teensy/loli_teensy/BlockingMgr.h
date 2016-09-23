@@ -45,6 +45,12 @@ public:
 		this->responseTime = responseTime;
 	}
 
+	void getTunings(float & sensibility, uint32_t & responseTime) const
+	{
+		sensibility = this->sensibility;
+		responseTime = this->responseTime;
+	}
+
 	bool isBlocked() const
 	{
 		return blocked && (millis() - beginTime > responseTime);
@@ -82,7 +88,7 @@ public:
 
 	void compute()
 	{
-		if (ABS(speed) < epsilon)
+		if ((uint32_t)ABS(speed) < epsilon)
 		{
 			if (!stopped)
 			{
@@ -101,10 +107,16 @@ public:
 		stopped = false;
 	}
 
-	void setTunings(int32_t epsilon, uint32_t responseTime)
+	void setTunings(uint32_t epsilon, uint32_t responseTime)
 	{
 		this->epsilon = epsilon;
 		this->responseTime = responseTime;
+	}
+
+	void getTunings(uint32_t & epsilon, uint32_t & responseTime) const
+	{
+		epsilon = this->epsilon;
+		responseTime = this->responseTime;
 	}
 
 	bool isStopped() const
@@ -120,7 +132,7 @@ public:
 private:
 	volatile int32_t const & speed;
 	
-	int32_t epsilon;
+	uint32_t epsilon;
 	uint32_t responseTime;
 
 	uint32_t beginTime;

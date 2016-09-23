@@ -8,6 +8,7 @@
 #endif
 
 #define MAX_ORDER_SIZE	16
+#define ARG_SIZE	MAX_ORDER_SIZE
 
 #include <string.h>
 #include <vector>
@@ -77,7 +78,7 @@ public:
 					lastOrderData.clear();
 					for (size_t i = 0; i < rIndex; i++)
 					{
-						lastOrderData.push_back(rBuffer[rIndex]);
+						lastOrderData.push_back(rBuffer[i]);
 					}
 					receivingState = ORDER_RECEIVED;
 					rIndex = 0;
@@ -146,6 +147,7 @@ private:
 		else if (strcmp(order, "s") == 0) { id = 0x83; immediate = true; }
 		else if (strcmp(order, "save") == 0) { id = 0x85; immediate = true; }
 		else if (strcmp(order, "display") == 0) { id = 0x86; immediate = true; }
+		else if (strcmp(order, "default") == 0) { id = 0x87; immediate = true; }
 		else if (strcmp(order, "pos") == 0) { id = 0x8A; immediate = true; }
 		else if (strcmp(order, "x") == 0) { id = 0x8B; immediate = true; }
 		else if (strcmp(order, "y") == 0) { id = 0x8C; immediate = true; }
@@ -173,6 +175,8 @@ private:
 		else if (strcmp(order, "pwm") == 0) { id = 0xA2; immediate = false; }
 		else if (strcmp(order, "a") == 0) { id = 0xA3; immediate = false; }
 		else if (strcmp(order, "p") == 0) { id = 0xA4; immediate = false; }
+		else if (strcmp(order, "k1") == 0) { id = 0xA5; immediate = true; }
+		else if (strcmp(order, "k2") == 0) { id = 0xA6; immediate = true; }
 		else if (strcmp(order, "capt") == 0) { id = 0xB0; immediate = true; }
 		else
 		{
