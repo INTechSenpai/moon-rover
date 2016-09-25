@@ -25,13 +25,11 @@ package robot;
 
 public enum RobotColor {
 	
-	// TODO attendre le règlement
-	
 	/**
 	 * Ces noms sont utilisés pour les tests uniquement. Sinon, on utilise le boolean symmetry
 	 */
-	VERT(false),
-	VIOLET(true);
+	JAUNE(false), // côté droite de la table
+	BLEU(true); // côté gauche de la table
 	
 	public final boolean symmetry;
 	
@@ -47,11 +45,11 @@ public enum RobotColor {
 	 */
 	public static RobotColor parse(String chaine)
 	{
-		if(chaine.toLowerCase().contains(VERT.name().toLowerCase()) ||
+		if(chaine.toLowerCase().contains(JAUNE.name().toLowerCase()) ||
 				chaine.toLowerCase().contains("nosym") ||
 				chaine.toLowerCase().contains("false"))
-			return VERT;
-		return VIOLET;
+			return JAUNE;
+		return BLEU;
 	}
 
 	/**
