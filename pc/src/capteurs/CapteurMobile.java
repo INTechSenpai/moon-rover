@@ -29,20 +29,17 @@ import utils.Vec2RO;
 
 public class CapteurMobile extends Capteur
 {
-	private boolean droite;
+	private boolean roueDroite;
 
 	/**
 	 * L'orientation relative à donner est celle du capteur lorsque les roues sont droites (courbure nulle)
-	 * @param positionRelative
-	 * @param orientationRelative
-	 * @param angleCone
-	 * @param portee
 	 */
-	public CapteurMobile(Vec2RO positionRelative, double orientationRelative, double angleCone, int portee, boolean droite)
+	public CapteurMobile(Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean roueDroite)
 	{
-		super(positionRelative, orientationRelative, angleCone, portee);
-		this.droite = droite;
+		super(positionRelative, orientationRelative, type);
+		this.roueDroite = roueDroite;
 	}
+
 
 	@Override
 	public double getOrientationRelative(Cinematique c)
@@ -50,7 +47,7 @@ public class CapteurMobile extends Capteur
 		if(Math.abs(c.courbureReelle) < 0.01)
 			return orientationRelative;
 		double R = 1000 / c.courbureReelle; // le rayon de courbure
-		if(droite)
+		if(roueDroite)
 			return orientationRelative + Math.atan2(L, Math.abs(d+R));
 		return orientationRelative + Math.atan2(L, Math.abs(R-d));
 	}

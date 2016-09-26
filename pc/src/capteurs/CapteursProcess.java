@@ -79,9 +79,10 @@ public class CapteursProcess implements Service {
 		
 		Capteur.useConfig(config);
 		capteurs = new Capteur[nbCapteurs];
-		
-		capteurs[0] = new CapteurMobile(new Vec2RO(200, 80), 0., 7 / 180. * Math.PI, 600, false);
-		capteurs[1] = new CapteurImmobile(new Vec2RO(200, -80), 0., 7 / 180. * Math.PI, 600);
+				
+		// TODO
+		capteurs[0] = new CapteurMobile(new Vec2RO(200, 80), 0., TypeCapteur.ToF, true);
+		capteurs[1] = new CapteurImmobile(new Vec2RO(200, -80), 0., TypeCapteur.IR);
 		
 		if(config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS))
 			for(Capteur c : capteurs)
@@ -111,7 +112,7 @@ public class CapteursProcess implements Service {
 			/**
 			 * Si le capteur voit trop proche ou trop loin, on ne peut pas lui faire confiance
 			 */
-			if(data.mesures[i] < 40 || data.mesures[i] > capteurs[i].portee)
+			if(data.mesures[i] < capteurs[i].distanceMin || data.mesures[i] > capteurs[i].portee)
 				continue;
 
 			/**

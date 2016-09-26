@@ -42,14 +42,16 @@ public abstract class Capteur implements Printable
 	protected final double orientationRelative;
 	public final double angleCone; // angle du cône (en radians)
 	public final int portee;
+	public final int distanceMin;
 	protected static int L, d;
 	
-	public Capteur(Vec2RO positionRelative, double orientationRelative, double angleCone, int portee)
+	public Capteur(Vec2RO positionRelative, double orientationRelative, TypeCapteur type)
 	{
 		this.positionRelative = positionRelative;
 		this.orientationRelative = orientationRelative;
-		this.angleCone = angleCone;
-		this.portee = portee;
+		this.angleCone = type.angleCone;
+		this.distanceMin = type.distanceMin;
+		this.portee = type.portee;
 	}
 	
 	public static void useConfig(Config config)
