@@ -28,8 +28,8 @@ public enum TypeCapteur
 	// IR : cône de 5°, horizon à 80mm, distance min 20mm
 	// ToF : cône de 0.1°, horizon à 254mm, distance min 0mm
 
-	ToF(0.1, 0, 254),
-	IR(5. / 180 * Math.PI, 200, 800);
+	ToF(0.1, 1, 254),
+	IR(5. / 180 * Math.PI, 100, 630);
 	
 	public final double angleCone;
 	public final int distanceMin, portee;

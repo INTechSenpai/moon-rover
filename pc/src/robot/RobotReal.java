@@ -102,7 +102,7 @@ public class RobotReal extends Robot implements Service, Printable
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
 		// affichage rudimentaire
-		new ObstacleRectangular(cinematique.getPosition(), longueurNonDeploye, largeurNonDeploye, cinematique.orientation).print(g, f, robot);;
+		new ObstacleRectangular(cinematique.getPosition(), longueurNonDeploye, largeurNonDeploye, cinematique.orientation).print(g, f, robot);
 	}
 
 	@Override
