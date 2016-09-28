@@ -38,6 +38,7 @@ import utils.Vec2RW;
 
 public abstract class Capteur implements Printable
 {
+	public boolean sureleve;
 	public final Vec2RO positionRelative;
 	protected final double orientationRelative;
 	public final double angleCone; // angle du cône (en radians)
@@ -45,13 +46,14 @@ public abstract class Capteur implements Printable
 	public final int distanceMin;
 	protected static int L, d;
 	
-	public Capteur(Vec2RO positionRelative, double orientationRelative, TypeCapteur type)
+	public Capteur(Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
 		this.positionRelative = positionRelative;
 		this.orientationRelative = orientationRelative;
 		this.angleCone = type.angleCone;
 		this.distanceMin = type.distanceMin;
 		this.portee = type.portee;
+		this.sureleve = sureleve;
 	}
 	
 	public static void useConfig(Config config)

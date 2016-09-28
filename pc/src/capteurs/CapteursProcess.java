@@ -81,8 +81,8 @@ public class CapteursProcess implements Service {
 		capteurs = new Capteur[nbCapteurs];
 				
 		// TODO
-		capteurs[0] = new CapteurMobile(new Vec2RO(200, 80), 0., TypeCapteur.ToF, true);
-		capteurs[1] = new CapteurImmobile(new Vec2RO(200, -80), 0., TypeCapteur.IR);
+		capteurs[0] = new CapteurMobile(new Vec2RO(200, 80), 0., TypeCapteur.ToF, false, true);
+		capteurs[1] = new CapteurImmobile(new Vec2RO(200, -80), 0., TypeCapteur.IR, true);
 		
 		if(config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS))
 			for(Capteur c : capteurs)
@@ -121,7 +121,7 @@ public class CapteursProcess implements Service {
 			Vec2RO positionVue = new Vec2RO(data.mesures[i], capteurs[i].getOrientationRelative(data.cinematique), true);
 			
 	    	for(ObstaclesFixes o: ObstaclesFixes.values())
-	    		if(o.visible && o.getObstacle().squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
+	    		if(o.isVisible(capteurs[i].sureleve) && o.getObstacle().squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 	                continue;
 			
 			/**

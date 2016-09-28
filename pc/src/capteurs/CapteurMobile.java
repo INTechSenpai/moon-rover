@@ -34,9 +34,9 @@ public class CapteurMobile extends Capteur
 	/**
 	 * L'orientation relative à donner est celle du capteur lorsque les roues sont droites (courbure nulle)
 	 */
-	public CapteurMobile(Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean roueDroite)
+	public CapteurMobile(Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve, boolean roueDroite)
 	{
-		super(positionRelative, orientationRelative, type);
+		super(positionRelative, orientationRelative, type, sureleve);
 		this.roueDroite = roueDroite;
 	}
 

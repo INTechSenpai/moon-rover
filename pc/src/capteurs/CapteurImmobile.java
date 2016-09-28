@@ -29,9 +29,9 @@ import utils.Vec2RO;
 public class CapteurImmobile extends Capteur
 {
 
-	public CapteurImmobile(Vec2RO positionRelative, double orientationRelative, TypeCapteur type)
+	public CapteurImmobile(Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
-		super(positionRelative, orientationRelative, type);
+		super(positionRelative, orientationRelative, type, sureleve);
 	}
 
 	@Override
