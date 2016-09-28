@@ -17,27 +17,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package capteurs;
 
-import robot.Cinematique;
-import utils.Vec2RO;
-
 /**
- * Un capteur immobile
+ * Les différents types de capteurs
  * @author pf
  *
  */
 
-public class CapteurImmobile extends Capteur
+public enum TypeCapteur
 {
+	// IR : cône de 5°, horizon à 80mm, distance min 20mm
+	// ToF : cône de 0.1°, horizon à 254mm, distance min 0mm
 
-	public CapteurImmobile(Vec2RO positionRelative, double orientationRelative, TypeCapteur type)
+	ToF(0.1, 1, 254),
+	IR(5. / 180 * Math.PI, 100, 630);
+	
+	public final double angleCone;
+	public final int distanceMin, portee;
+	
+	private TypeCapteur(double angleCone, int distanceMin, int portee)
 	{
-		super(positionRelative, orientationRelative, type);
+		this.angleCone = angleCone;
+		this.distanceMin = distanceMin;
+		this.portee = portee;
 	}
-
-	@Override
-	public double getOrientationRelative(Cinematique c)
-	{
-		return orientationRelative;
-	}
-
 }
