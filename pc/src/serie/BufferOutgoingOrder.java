@@ -185,12 +185,14 @@ public class BufferOutgoingOrder implements Service
 		if(debugSerie)
 			log.debug("Envoi d'un arc "+arc.getPoint(0));
 
+		byte[] data = new byte[1+7*arc.getNbPoints()];
+		data[0] = (byte) indexTrajectory;
+		
 		for(int i = 0; i < arc.getNbPoints(); i++)
 		{
-			byte[] data = new byte[8];
-			data[0] = (byte) (((int)(arc.getPoint(i).getPosition().getX())+1500) >> 4);
-			data[1] = (byte) ((((int)(arc.getPoint(i).getPosition().getX())+1500) << 4) + ((int)(arc.getPoint(i).getPosition().getY()) >> 8));
-			data[2] = (byte) ((int)(arc.getPoint(i).getPosition().getY()));
+			data[7*i+1] = (byte) (((int)(arc.getPoint(i).getPosition().getX())+1500) >> 4);
+			data[7*i+2] = (byte) ((((int)(arc.getPoint(i).getPosition().getX())+1500) << 4) + ((int)(arc.getPoint(i).getPosition().getY()) >> 8));
+			data[7*i+3] = (byte) ((int)(arc.getPoint(i).getPosition().getY()));
 			double angle = arc.getPoint(i).orientationReelle;
 			if(!arc.getPoint(0).enMarcheAvant)
 				angle += Math.PI;
@@ -201,21 +203,19 @@ public class BufferOutgoingOrder implements Service
 
 			int theta = (int) Math.round(angle*1000);
 
-			data[3] = (byte) (theta >> 8);
-			data[4] = (byte) theta;
-			
-			data[5] = (byte) indexTrajectory;
+			data[7*i+4] = (byte) (theta >> 8);
+			data[7*i+5] = (byte) theta;
 			
 			// TODO : corriger en se basant sur le protocole
-			data[6] = (byte) (((Math.round(arc.getPoint(i).courbureReelle+20)*1000) >> 8) & 0xEF);
+			data[7*i+6] = (byte) (((Math.round(arc.getPoint(i).courbureReelle+20)*1000) >> 8) & 0xEF);
 
 			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
 				data[6] |= 0x70; // en cas de marche arrière
 			
-			data[7] = (byte) ((Math.round(arc.getPoint(i).courbureReelle+20)*1000) & 0xFF);
+			data[7*i+7] = (byte) ((Math.round(arc.getPoint(i).courbureReelle+20)*1000) & 0xFF);
 
-			bufferTrajectoireCourbe.add(new Order(data, OutOrder.SEND_ARC));
 		}
+		bufferTrajectoireCourbe.add(new Order(data, OutOrder.SEND_ARC));
 		notify();			
 	}
 
