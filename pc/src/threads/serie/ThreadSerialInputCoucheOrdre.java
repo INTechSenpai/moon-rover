@@ -128,12 +128,13 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 						double orientationRobot = ((data[3] << 8) + data[4]) / 1000.;
 						int indexTrajectory = data[5];
 						chemin.setCurrentIndex(indexTrajectory / ClothoidesComputer.NB_POINTS);
+						// TODO : si besoin est, envoyer la nouvelle vitesse !
 						
 						if(debugSerie)
 							log.debug("Le robot est en "+positionRobot+", orientation : "+orientationRobot);
 		
 						// TODO récupérer à partir de l'index trajectory les info de cinématique
-						Cinematique c = new Cinematique(xRobot, yRobot, orientationRobot, true, 0, 0, 0, Speed.STANDARD);
+						Cinematique c = new Cinematique(xRobot, yRobot, orientationRobot, true, 0, Speed.STANDARD);
 						robot.setCinematique(c);
 						
 						if(data.length > 6) // la présence de ces infos n'est pas systématiques

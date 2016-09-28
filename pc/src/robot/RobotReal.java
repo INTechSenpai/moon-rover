@@ -65,7 +65,7 @@ public class RobotReal extends Robot implements Service, Printable
 	public void useConfig(Config config)
 	{
 		super.useConfig(config);
-		cinematique = new Cinematique(0, 300, 0, true, 3, 0, 0, Speed.STANDARD);
+		cinematique = new Cinematique(0, 300, 0, true, 3, Speed.STANDARD);
 		print = config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS);
 		if(print)
 			buffer.add(this);
