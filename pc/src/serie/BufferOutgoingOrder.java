@@ -19,6 +19,7 @@ package serie;
 
 import pathfinding.astarCourbe.arcs.ArcCourbe;
 
+import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
 import robot.Speed;
@@ -42,7 +43,8 @@ import utils.Log;
 public class BufferOutgoingOrder implements Service
 {
 	protected Log log;
-	private int prescaler, sendPeriod;
+	private byte prescaler;
+	private short sendPeriod;
 	
 	public BufferOutgoingOrder(Log log)
 	{
@@ -85,14 +87,21 @@ public class BufferOutgoingOrder implements Service
 	}
 	
 	/**
-	 * Ajout d'une demande d'ordre d'avancer pour la série
-	 * @0 elem
+	 * Signale la vitesse max au bas niveau
+	 * @param vitesse
+	 * @return
 	 */
-	public synchronized Ticket followTrajectory(Speed vitesse)
+	public synchronized Ticket setMaxSpeed(Speed vitesse, boolean marcheAvant)
 	{
-		byte[] data = new byte[4];
-		data[0] = (byte) (0); // TODO vitesse
-		data[1] = (byte) (0);
+		short vitesseTr;
+		if(marcheAvant)
+			vitesseTr = (short)(vitesse.translationalSpeed*1000);
+		else
+			vitesseTr = (short)(- vitesse.translationalSpeed*1000);
+
+		ByteBuffer data = ByteBuffer.allocate(2);
+		data.putShort(vitesseTr);
+
 		Ticket t = new Ticket();
 		bufferBassePriorite.add(new Order(data, OutOrder.FOLLOW_TRAJECTORY, t));
 		notify();
@@ -144,23 +153,10 @@ public class BufferOutgoingOrder implements Service
 	 */
 	public synchronized void startStream()
 	{
-		byte[] data = new byte[3];
-		data[0] = (byte) (sendPeriod >> 8);
-		data[1] = (byte) (sendPeriod & 0xFF);
-		data[2] = (byte) (prescaler);
+		ByteBuffer data = ByteBuffer.allocate(3);
+		data.putShort(sendPeriod);
+		data.put(prescaler);
 		bufferBassePriorite.add(new Order(data, OutOrder.START_STREAM_ALL));
-		notify();
-	}
-
-	/**
-	 * Met à jour la vitesse max
-	 */
-	public synchronized void setMaxSpeed()
-	{
-		byte[] data = new byte[2];
-		data[0] = (byte) (0); // TODO
-		data[1] = (byte) (0);
-		bufferBassePriorite.add(new Order(data, OutOrder.SET_MAX_SPEED));
 		notify();
 	}
 	
@@ -171,8 +167,8 @@ public class BufferOutgoingOrder implements Service
 	@Override
 	public void useConfig(Config config)
 	{
-		sendPeriod = config.getInt(ConfigInfo.SENSORS_SEND_PERIOD);
-		prescaler = config.getInt(ConfigInfo.SENSORS_PRESCALER);
+		sendPeriod = config.getShort(ConfigInfo.SENSORS_SEND_PERIOD);
+		prescaler = config.getByte(ConfigInfo.SENSORS_PRESCALER);
 		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 	}
 	
@@ -185,14 +181,15 @@ public class BufferOutgoingOrder implements Service
 		if(debugSerie)
 			log.debug("Envoi d'un arc "+arc.getPoint(0));
 
-		byte[] data = new byte[1+7*arc.getNbPoints()];
-		data[0] = (byte) indexTrajectory;
+		ByteBuffer data = ByteBuffer.allocate(1+7*arc.getNbPoints());
+		data.put((byte)indexTrajectory);
 		
 		for(int i = 0; i < arc.getNbPoints(); i++)
 		{
-			data[7*i+1] = (byte) (((int)(arc.getPoint(i).getPosition().getX())+1500) >> 4);
-			data[7*i+2] = (byte) ((((int)(arc.getPoint(i).getPosition().getX())+1500) << 4) + ((int)(arc.getPoint(i).getPosition().getY()) >> 8));
-			data[7*i+3] = (byte) ((int)(arc.getPoint(i).getPosition().getY()));
+			
+			data.put((byte) (((int)(arc.getPoint(i).getPosition().getX())+1500) >> 4));
+			data.put((byte) ((((int)(arc.getPoint(i).getPosition().getX())+1500) << 4) + ((int)(arc.getPoint(i).getPosition().getY()) >> 8)));
+			data.put((byte) ((int)(arc.getPoint(i).getPosition().getY())));
 			double angle = arc.getPoint(i).orientationReelle;
 			if(!arc.getPoint(0).enMarcheAvant)
 				angle += Math.PI;
@@ -201,18 +198,16 @@ public class BufferOutgoingOrder implements Service
 			if(angle < 0)
 				angle += 2*Math.PI; // il faut toujours envoyer des nombres positifs
 
-			int theta = (int) Math.round(angle*1000);
+			short theta = (short) Math.round(angle*1000);
 
-			data[7*i+4] = (byte) (theta >> 8);
-			data[7*i+5] = (byte) theta;
+			data.putShort(theta);
 			
-			// TODO : corriger en se basant sur le protocole
-			data[7*i+6] = (byte) (((Math.round(arc.getPoint(i).courbureReelle+20)*1000) >> 8) & 0xEF);
+			short courbure = (short) ((Math.round(arc.getPoint(i).courbureReelle)*10) & 0xEFFF);
 
 			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
-				data[6] |= 0x70; // en cas de marche arrière
+				courbure |= 0x8000; // en cas de marche arrière
 			
-			data[7*i+7] = (byte) ((Math.round(arc.getPoint(i).courbureReelle+20)*1000) & 0xFF);
+			data.putShort(courbure);
 
 		}
 		bufferTrajectoireCourbe.add(new Order(data, OutOrder.SEND_ARC));

@@ -70,7 +70,7 @@ public class OutgoingFrame extends Frame
 		if(o.message == null)
 			tailleMessage = 0;
 		else
-			tailleMessage = o.message.length;
+			tailleMessage = o.message.limit();
 		tailleTrame = tailleMessage + 5;
 		if(tailleTrame > 255)
 			throw new IllegalArgumentException("La trame est trop grande ! ("+tailleTrame+" octets)");
@@ -80,7 +80,7 @@ public class OutgoingFrame extends Frame
 		
 		trame[3] = o.ordre.code;
 		for(int i = 0; i < tailleMessage; i++)
-			trame[i + 4] = o.message[i];
+			trame[i + 4] = o.message.get();
 		
 		/**
 		 * Calcul du checksum

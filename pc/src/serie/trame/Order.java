@@ -18,6 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 package serie.trame;
 
 import serie.Ticket;
+
+import java.nio.ByteBuffer;
+
 import serie.SerialProtocol.OutOrder;
 
 /**
@@ -34,20 +37,21 @@ public class Order
 		LONG;
 	}
 
-	public byte[] message;
+	public ByteBuffer message;
 	public Ticket ticket;
 	public OutOrder ordre;
 	
-	public Order(byte[] message, OutOrder ordre, Ticket ticket)
+	public Order(ByteBuffer message, OutOrder ordre, Ticket ticket)
 	{
 		this.message = message;
 		this.ticket = ticket;
 		this.ordre = ordre;
 	}
 
-	public Order(byte[] message, OutOrder ordre)
+	public Order(ByteBuffer message, OutOrder ordre)
 	{
 		this(message, ordre, new Ticket());
+		this.message.flip();
 	}
 
 	public Order(OutOrder ordre)
