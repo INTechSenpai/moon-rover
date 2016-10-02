@@ -24,7 +24,6 @@ import exceptions.ContainerException;
 import robot.Cinematique;
 import robot.RobotColor;
 import robot.RobotReal;
-import robot.Speed;
 import serie.BufferIncomingOrder;
 import serie.Ticket;
 import serie.SerialProtocol.InOrder;
@@ -127,16 +126,13 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 		
 						double orientationRobot = ((data[3] << 8) + data[4]) / 1000.;
 						int indexTrajectory = data[5];
-						chemin.setCurrentIndex(indexTrajectory / ClothoidesComputer.NB_POINTS);
+						Cinematique current = chemin.setCurrentIndex(indexTrajectory / ClothoidesComputer.NB_POINTS);
+						robot.setCinematique(current);
 						// TODO : si besoin est, envoyer la nouvelle vitesse !
 						
 						if(debugSerie)
 							log.debug("Le robot est en "+positionRobot+", orientation : "+orientationRobot);
 		
-						// TODO récupérer à partir de l'index trajectory les info de cinématique
-						Cinematique c = new Cinematique(xRobot, yRobot, orientationRobot, true, 0, Speed.STANDARD);
-						robot.setCinematique(c);
-						
 						if(data.length > 6) // la présence de ces infos n'est pas systématiques
 						{
 							/**
@@ -146,10 +142,11 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 							for(int i = 0; i < nbCapteurs / 2; i++)
 							{
 								mesures[2*i] = (data[10+3*i] << 4) + (data[10+3*i+1] >> 4);
-								mesures[2*i+1] = ((data[10+3*i+1] & 0x0F) << 8) + data[10+3*i+2];
+								if(2*i+1 < nbCapteurs) // en cas de nombre impair…
+									mesures[2*i+1] = ((data[10+3*i+1] & 0x0F) << 8) + data[10+3*i+2];
 							}
 							if(capteursOn)
-								buffer.add(new SensorsData(mesures, c));
+								buffer.add(new SensorsData(mesures, current));
 						}
 
 					}
@@ -176,6 +173,14 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 					{
 						log.debug("Fin du Match !");
 						
+						if(data[0] == InOrder.ARRET_URGENCE.codeInt)
+						{
+							log.critical("Arrêt d'urgence provenant du bas niveau !");
+							paquet.ticket.set(Ticket.State.KO);
+						}
+						else
+							paquet.ticket.set(Ticket.State.OK);
+
 						// On lance manuellement le thread d'arrêt
 						ThreadShutdown t;
 						try {
@@ -202,7 +207,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 						else
 						{
 							paquet.ticket.set(Ticket.State.KO);
-							if(data[0] != InOrder.ROBOT_BLOQUE.codeInt && data[0] != InOrder.PLUS_DE_POINTS.codeInt)
+							if(data[0] != InOrder.ROBOT_BLOCAGE_INTERIEUR.codeInt && data[0] != InOrder.ROBOT_BLOCAGE_EXTERIEUR.codeInt && data[0] != InOrder.PLUS_DE_POINTS.codeInt)
 								log.critical("Code fin mouvement inconnu : "+data[0]);
 						}
 					}

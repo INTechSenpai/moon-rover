@@ -29,6 +29,7 @@ import container.Service;
 import utils.Config;
 import utils.ConfigInfo;
 import utils.Log;
+import utils.Vec2RO;
 
 /**
  * Classe qui contient les ordres à envoyer à la série
@@ -53,7 +54,7 @@ public class BufferOutgoingOrder implements Service
 		
 	private volatile LinkedList<Order> bufferBassePriorite = new LinkedList<Order>();
 	private volatile LinkedList<Order> bufferTrajectoireCourbe = new LinkedList<Order>();
-	private volatile boolean stop = false;
+	private volatile Ticket stop = null;
 	private boolean debugSerie;
 	
 	/**
@@ -62,7 +63,7 @@ public class BufferOutgoingOrder implements Service
 	 */
 	public synchronized boolean isEmpty()
 	{
-		return bufferBassePriorite.isEmpty() && bufferTrajectoireCourbe.isEmpty() && !stop;
+		return bufferBassePriorite.isEmpty() && bufferTrajectoireCourbe.isEmpty() && stop == null;
 	}
 
 	/**
@@ -74,11 +75,12 @@ public class BufferOutgoingOrder implements Service
 		if(bufferTrajectoireCourbe.size() + bufferBassePriorite.size() > 10)
 			log.warning("On n'arrive pas à envoyer les ordres assez vites (ordres TC en attente : "+bufferTrajectoireCourbe.size()+", autres en attente : "+bufferBassePriorite.size()+")");
 		
-		if(stop)
+		if(stop != null)
 		{
-			stop = false;
 			bufferTrajectoireCourbe.clear(); // on annule tout mouvement
-			return new Order(OutOrder.STOP);
+			Order out = new Order(OutOrder.STOP, stop);
+			stop = null;
+			return out;
 		}
 		else if(!bufferTrajectoireCourbe.isEmpty())
 			return bufferTrajectoireCourbe.poll();
@@ -91,9 +93,9 @@ public class BufferOutgoingOrder implements Service
 	 * @param vitesse
 	 * @return
 	 */
-	public synchronized Ticket setMaxSpeed(Speed vitesse, boolean marcheAvant)
+	public synchronized void setMaxSpeed(Speed vitesse, boolean marcheAvant)
 	{
-		short vitesseTr;
+		short vitesseTr; // vitesse signée
 		if(marcheAvant)
 			vitesseTr = (short)(vitesse.translationalSpeed*1000);
 		else
@@ -102,8 +104,29 @@ public class BufferOutgoingOrder implements Service
 		ByteBuffer data = ByteBuffer.allocate(2);
 		data.putShort(vitesseTr);
 
+		bufferBassePriorite.add(new Order(data, OutOrder.SET_MAX_SPEED));
+		notify();
+	}
+	
+	/**
+	 * Ordre long de suivi de trajectoire
+	 * @param vitesseInitiale
+	 * @param marcheAvant
+	 * @return
+	 */
+	public synchronized Ticket beginFollowTrajectory(Speed vitesseInitiale, boolean marcheAvant)
+	{
+		short vitesseTr; // vitesse signée
+		if(marcheAvant)
+			vitesseTr = (short)(vitesseInitiale.translationalSpeed*1000);
+		else
+			vitesseTr = (short)(- vitesseInitiale.translationalSpeed*1000);
+
+		ByteBuffer data = ByteBuffer.allocate(2);
+		data.putShort(vitesseTr);
+
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(data, OutOrder.FOLLOW_TRAJECTORY, t));
+		bufferBassePriorite.add(new Order(data, OutOrder.SET_MAX_SPEED, t));
 		notify();
 		return t;
 	}
@@ -111,12 +134,13 @@ public class BufferOutgoingOrder implements Service
 	/**
 	 * Ajout d'une demande d'ordre de s'arrêter
 	 */
-	public synchronized void immobilise()
+	public synchronized Ticket immobilise()
 	{
 		if(debugSerie)
 			log.debug("Stop !");
-		stop = true;
+		stop = new Ticket();
 		notify();
+		return stop;
 	}
 	
 	/**
@@ -131,9 +155,40 @@ public class BufferOutgoingOrder implements Service
 	}
 
 	/**
+	 * Ajoute une position et un angle.
+	 * Occupe 5 octets.
+	 * @param data
+	 * @param pos
+	 * @param angle
+	 */
+	private void addXYO(ByteBuffer data, Vec2RO pos, double angle)
+	{
+		data.put((byte) (((int)(pos.getX())+1500) >> 4));
+		data.put((byte) ((((int)(pos.getX())+1500) << 4) + ((int)(pos.getY()) >> 8)));
+		data.put((byte) ((int)(pos.getY())));
+		angle %= 2*Math.PI;
+//		if(angle < 0)
+//			angle += 2*Math.PI; // il faut toujours envoyer des nombres positifs
+
+		short theta = (short) Math.round(angle*1000);
+		data.putShort(theta);		
+	}
+	
+	/**
+	 * Corrige la position du bas niveau
+	 */
+	public synchronized void correctPosition(Vec2RO deltaPos, double deltaOrientation)
+	{
+		ByteBuffer data = ByteBuffer.allocate(4);
+		addXYO(data, deltaPos, deltaOrientation);
+		bufferBassePriorite.add(new Order(data, OutOrder.EDIT_POSITION));
+		notify();
+	}
+	
+	/**
 	 * Demande à être notifié du début du match
 	 */
-	public synchronized void demandeNotifDebutMatch()
+	public synchronized void waitForJumper()
 	{
 		bufferBassePriorite.add(new Order(OutOrder.WAIT_FOR_JUMPER));
 		notify();
@@ -142,7 +197,7 @@ public class BufferOutgoingOrder implements Service
 	/**
 	 * Demande à être notifié de la fin du match
 	 */
-	public synchronized void demandeNotifFinMatch()
+	public synchronized void startMatchChrono()
 	{
 		bufferBassePriorite.add(new Order(OutOrder.START_MATCH_CHRONO));
 		notify();
@@ -181,27 +236,15 @@ public class BufferOutgoingOrder implements Service
 		if(debugSerie)
 			log.debug("Envoi d'un arc "+arc.getPoint(0));
 
+		if(arc.getNbPoints() >= 30) // ne devrait pas arriver…
+			log.critical("Envoi d'un arc avec trop de points !");
+		
 		ByteBuffer data = ByteBuffer.allocate(1+7*arc.getNbPoints());
 		data.put((byte)indexTrajectory);
 		
 		for(int i = 0; i < arc.getNbPoints(); i++)
 		{
-			
-			data.put((byte) (((int)(arc.getPoint(i).getPosition().getX())+1500) >> 4));
-			data.put((byte) ((((int)(arc.getPoint(i).getPosition().getX())+1500) << 4) + ((int)(arc.getPoint(i).getPosition().getY()) >> 8)));
-			data.put((byte) ((int)(arc.getPoint(i).getPosition().getY())));
-			double angle = arc.getPoint(i).orientationReelle;
-			if(!arc.getPoint(0).enMarcheAvant)
-				angle += Math.PI;
-		
-			angle %= 2*Math.PI;
-			if(angle < 0)
-				angle += 2*Math.PI; // il faut toujours envoyer des nombres positifs
-
-			short theta = (short) Math.round(angle*1000);
-
-			data.putShort(theta);
-			
+			addXYO(data, arc.getPoint(i).getPosition(), arc.getPoint(i).orientationReelle);
 			short courbure = (short) ((Math.round(arc.getPoint(i).courbureReelle)*10) & 0xEFFF);
 
 			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
