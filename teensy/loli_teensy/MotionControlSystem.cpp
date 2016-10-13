@@ -1,26 +1,29 @@
 #include "MotionControlSystem.h"
 
 
-MotionControlSystem::MotionControlSystem() : 
-motor(), 
+MotionControlSystem::MotionControlSystem() :
 leftMotorEncoder(PIN_A_LEFT_MOTOR_ENCODER, PIN_B_LEFT_MOTOR_ENCODER),
 rightMotorEncoder(PIN_A_RIGHT_MOTOR_ENCODER, PIN_B_RIGHT_MOTOR_ENCODER),
 leftFreeEncoder(PIN_A_LEFT_BACK_ENCODER, PIN_B_LEFT_BACK_ENCODER),
 rightFreeEncoder(PIN_A_RIGHT_BACK_ENCODER, PIN_B_RIGHT_BACK_ENCODER),
 direction(DirectionController::Instance()),
 rightSpeedPID(&currentRightSpeed, &rightPWM, &rightSpeedSetpoint),
-leftSpeedPID(&currentLeftSpeed, &leftPWM, &leftSpeedSetpoint),
-translationPID(&currentDistance, &movingSpeedSetpoint, &translationSetpoint),
-averageLeftSpeed(), averageRightSpeed(),
-leftMotorBlockingMgr(leftSpeedSetpoint, currentLeftSpeed),
 rightMotorBlockingMgr(rightSpeedSetpoint, currentRightSpeed),
+leftSpeedPID(&currentLeftSpeed, &leftPWM, &leftSpeedSetpoint),
+leftMotorBlockingMgr(leftSpeedSetpoint, currentLeftSpeed),
+translationPID(&currentTranslation, &movingSpeedSetpoint, &translationSetpoint),
 endOfMoveMgr(currentMovingSpeed)
 {
-	currentDistance = 0;
+	currentTranslation = 0;
 	currentLeftSpeed = 0;
 	currentRightSpeed = 0;
 
 	maxMovingSpeed = 0;
+
+	movingState = STOPPED;
+	trajectoryIndex = 0;
+	updateNextStopPoint();
+	updateSideDistanceFactors();
 
 	leftSpeedPID.setOutputLimits(-1023, 1023);
 	rightSpeedPID.setOutputLimits(-1023, 1023);
@@ -68,198 +71,298 @@ void MotionControlSystem::getEnableStates(bool &cp, bool &cvg, bool &cvd, bool &
 void MotionControlSystem::control()
 {
 	updateSpeedAndPosition();
-	updateTrajectoryIndex();
-
-	/* Code d'asservissement */
-
 	manageStop();
 	manageBlocking();
-
-	
-	/*
-	// Pour le calcul de la vitesse instantanée :
-	static int32_t previousLeftTicks = 0;
-	static int32_t previousRightTicks = 0;
-
-	// Récupération des informations des encodeurs (nombre de ticks)
-	int32_t rightTicks = -(rightMotorEncoder.read());
-	int32_t leftTicks = leftMotorEncoder.read();
-
-	currentLeftSpeed = (leftTicks - previousLeftTicks) * FREQ_ASSERV; // (nb-de-tick-passés)*(freq_asserv) (ticks/sec)
-	currentRightSpeed = (rightTicks - previousRightTicks) * FREQ_ASSERV;
-
-	previousLeftTicks = leftTicks;
-	previousRightTicks = rightTicks;
-
-	averageLeftSpeed.add(currentLeftSpeed);
-	averageRightSpeed.add(currentRightSpeed);
-
-	// On effectue un lissage des valeurs de current[..]Speed en utilisant une moyenne glissante
-	currentLeftSpeed = averageLeftSpeed.value();
-	currentRightSpeed = averageRightSpeed.value();
-
-	currentDistance = (leftTicks + rightTicks) / 2;
-	currentAngle = (rightTicks - leftTicks) / 2;
-
+	checkTrajectory();
+	updateTrajectoryIndex();
 
 	if (positionControlled)
 	{
-		if (currentMove >= currentTrajectory.size())
-		{// Si la trajectoire est terminée ou inexistante : pas de mouvement
-			movingSpeedSetpoint = 0;
-			leftSpeedSetpoint = 0;
-			rightSpeedSetpoint = 0;
-		}
-		else
+		if (movingState == MOVE_INIT || movingState == MOVING)
 		{
+			/* Asservissement sur trajectoire */
+			static float posError;
+			static float orientationError;
+			TrajectoryPoint currentTrajPoint = currentTrajectory[trajectoryIndex];
+			Position posConsigne = currentTrajPoint.getPosition();
+			posError = sqrtf(square(position.x - posConsigne.x) + square(position.y - posConsigne.y));
+			orientationError = position.orientation - posConsigne.orientation;
+			curvatureOrder = currentTrajPoint.getCurvature() - curvatureCorrectorK1 * posError - curvatureCorrectorK2 * orientationError;
+			direction.setAimCurvature(curvatureOrder);
 
-			//* Vérification de fin de mouvement élémentaire *//*
-
-			if (currentTrajectory[currentMove].getBendRadiusTicks() == 0)
-			{// Cas d'un mouvement purement rotatif
-				if ( (currentTrajectory[currentMove].getLengthTicks() >= 0 && currentAngle >= rotationSetpoint)
-				  || (currentTrajectory[currentMove].getLengthTicks() <  0 && currentAngle <= rotationSetpoint) )
-				{// Rotation terminée
-					nextMove();
+			if (movingState == MOVE_INIT)
+			{
+				if (ABS(direction.getRealCurvature() - currentTrajPoint.getCurvature()) < CURVATURE_TOLERANCE)
+				{
+					movingState = MOVING;
 				}
-			}
-			else
-			{// Cas d'une trajectoire courbe standard
-				if ( (currentTrajectory[currentMove].getLengthTicks() >= 0 && currentDistance >= translationSetpoint)
-				  || (currentTrajectory[currentMove].getLengthTicks() <  0 && currentDistance <= translationSetpoint) )
-				{// Translation terminée
-					nextMove();
-				}
-			}
-
-
-			// On vérifie de nouveau l'existance du mouvement élémentaire courant
-			if (currentMove >= currentTrajectory.size())
-			{// Si la trajectoire est terminée ou inexistante : pas de mouvement
-				movingSpeedSetpoint = 0;
 				leftSpeedSetpoint = 0;
 				rightSpeedSetpoint = 0;
 			}
 			else
 			{
-				int32_t maxSpeed = currentTrajectory[currentMove].getSpeedTicks_S();
+				translationPID.compute(); // MAJ movingSpeedSetpoint
 
-
-				//  Si il est spécifié explicitement que ce mouvement élémentaire doit se terminer
-				//	à l'arrêt ("stopAfterMove" est alors passé à TRUE).
-				if (currentTrajectory[currentMove].stopAfterMove)
+				// Limitation de l'accélération
+				if (movingSpeedSetpoint - previousMovingSpeedSetpoint > maxAcceleration)
 				{
-					if (currentTrajectory[currentMove].getBendRadiusTicks() == 0)
-					{// Cas d'un mouvement purement rotatif
-						rotationPID.compute();		// Actualise la valeur de 'movingSpeedSetpoint'
-						
-						// Limitation de la consigne de vitesse en rotation
-						if (movingSpeedSetpoint > maxSpeed)
-							movingSpeedSetpoint = maxSpeed;
-						else if (movingSpeedSetpoint < -maxSpeed)
-							movingSpeedSetpoint = -maxSpeed;
-					}
-					else
-					{// Cas d'une trajectoire courbe standard
-						translationPID.compute();	// Actualise la valeur de 'movingSpeedSetpoint'
-
-						// Limitation de la consigne de vitesse en translation
-						if (movingSpeedSetpoint > maxSpeed)
-							movingSpeedSetpoint = maxSpeed;
-						else if (movingSpeedSetpoint < -maxSpeed)
-							movingSpeedSetpoint = -maxSpeed;
-					}
+					movingSpeedSetpoint = previousMovingSpeedSetpoint + maxAcceleration;
 				}
-				else
+				else if (movingSpeedSetpoint - previousMovingSpeedSetpoint < -maxAcceleration)
 				{
-					if (currentTrajectory[currentMove].getLengthTicks() > 0)
-					{
-						movingSpeedSetpoint = maxSpeed;
-					}
-					else
-					{
-						movingSpeedSetpoint = -maxSpeed;
-					}
+					movingSpeedSetpoint = previousMovingSpeedSetpoint - maxAcceleration;
 				}
 
-
-				//* Gestion du mode "PAUSED" *//*
-				if (paused)
+				// Limitation de la vitesse
+				if (movingSpeedSetpoint > ABS(maxMovingSpeed))
 				{
-					movingSpeedSetpoint = 0;
+					movingSpeedSetpoint = ABS(maxMovingSpeed);
 				}
 
+				// Calcul des vitesses gauche et droite en fonction de la vitesse globale
+				leftSpeedSetpoint = movingSpeedSetpoint * leftSideDistanceFactor;
+				rightSpeedSetpoint = movingSpeedSetpoint * rightSideDistanceFactor;
 
-				//* Limitation des variations de movingSpeedSetpoint (limitation de l'accélération) *//*
-				if (movingSpeedSetpoint - previousMovingSpeed > maxAcceleration / FREQ_ASSERV)
+				// Gestion du sens de déplacement
+				if (maxMovingSpeed < 0)
 				{
-					movingSpeedSetpoint = previousMovingSpeed + maxAcceleration / FREQ_ASSERV;
-				}
-				else if (previousMovingSpeed - movingSpeedSetpoint > maxAcceleration / FREQ_ASSERV)
-				{
-					movingSpeedSetpoint = previousMovingSpeed - maxAcceleration / FREQ_ASSERV;
-				}
-				previousMovingSpeed = movingSpeedSetpoint;
-
-
-
-
-
-				//* Calcul des vitesses des deux moteurs à partir de movingSpeedSetpoint et de bendRadius *//*
-				static int32_t radius;
-				radius = currentTrajectory[currentMove].getBendRadiusTicks();
-				if (radius == 0)
-				{
-					leftSpeedSetpoint = -movingSpeedSetpoint;
-					rightSpeedSetpoint = movingSpeedSetpoint;
-				}
-				else if (radius == INFINITE_RADIUS)
-				{
-					leftSpeedSetpoint = movingSpeedSetpoint;
-					rightSpeedSetpoint = movingSpeedSetpoint;
-				}
-				else
-				{
-					leftSpeedSetpoint = (int32_t)(((double)radius - ROBOT_RADIUS / TICK_TO_MM)*(double)movingSpeedSetpoint / (double)radius);
-					rightSpeedSetpoint = (int32_t)(((double)radius + ROBOT_RADIUS / TICK_TO_MM)*(double)movingSpeedSetpoint / (double)radius);
+					leftSpeedSetpoint = -leftSpeedSetpoint;
+					rightSpeedSetpoint = -rightSpeedSetpoint;
 				}
 			}
 		}
-
+		else
+		{
+			leftSpeedSetpoint = 0;
+			rightSpeedSetpoint = 0;
+		}
 	}
-
-
 
 	if (leftSpeedControlled)
 		leftSpeedPID.compute();		// Actualise la valeur de 'leftPWM'
 	if (rightSpeedControlled)
 		rightSpeedPID.compute();	// Actualise la valeur de 'rightPWM'
 
-
 	if (pwmControlled)
 	{
 		motor.runLeft(leftPWM);
 		motor.runRight(rightPWM);
 	}
-	//*/
 }
 
 void MotionControlSystem::updateSpeedAndPosition() 
 {
-	// Check errors of encoder to detect external blocking
+	static int32_t
+		leftMotorTicks = 0,
+		rightMotorTicks = 0,
+		leftTicks = 0,
+		rightTicks = 0;
+	static int32_t
+		previousLeftMotorTicks = 0,
+		previousRightMotorTicks = 0,
+		previousLeftTicks = 0,
+		previousRightTicks = 0;
+	static int32_t
+		deltaLeftMotorTicks = 0,
+		deltaRightMotorTicks = 0,
+		deltaLeftTicks = 0,
+		deltaRightTicks = 0,
+		deltaTranslation = 0;
+	static float
+		deltaTranslation_mm = 0,
+		half_deltaRotation_rad = 0,
+		currentAngle = 0,
+		corrector = 1;
+
+	// Récupération des données des encodeurs
+	leftMotorTicks = leftMotorEncoder.read() * FRONT_TICK_TO_TICK;
+	rightMotorTicks = rightMotorEncoder.read() * FRONT_TICK_TO_TICK;
+	leftTicks = leftFreeEncoder.read();
+	rightTicks = rightFreeEncoder.read();
+
+	// Calcul du mouvement de chaque roue depuis le dernier asservissement
+	deltaLeftMotorTicks = leftMotorTicks - previousLeftMotorTicks;
+	deltaRightMotorTicks = rightMotorTicks - previousRightMotorTicks;
+	deltaLeftTicks = leftTicks - previousLeftTicks;
+	deltaRightTicks = rightTicks - previousRightTicks;
+
+	previousLeftMotorTicks = leftMotorTicks;
+	previousRightMotorTicks = rightMotorTicks;
+	previousLeftTicks = leftTicks;
+	previousRightTicks = rightTicks;
+
+	// Mise à jour de la vitesse des moteurs
+	currentLeftSpeed = deltaLeftMotorTicks * FREQ_ASSERV;
+	currentRightSpeed = deltaRightMotorTicks * FREQ_ASSERV;
+	averageLeftSpeed.add(currentLeftSpeed);
+	averageRightSpeed.add(currentRightSpeed);
+	currentLeftSpeed = averageLeftSpeed.value();
+	currentRightSpeed = averageRightSpeed.value();
+
+	// Mise à jour de la position et de l'orientattion
+	deltaTranslation = ((deltaLeftTicks + deltaRightTicks) / 2);
+	deltaTranslation_mm = deltaTranslation * TICK_TO_MM;
+	half_deltaRotation_rad = ((deltaRightTicks - deltaLeftTicks) / 4) * TICK_TO_RADIANS;
+	currentAngle = position.orientation + half_deltaRotation_rad;
+	position.setOrientation(position.orientation + half_deltaRotation_rad * 2);
+	corrector = 1 - square(half_deltaRotation_rad) / 6;
+	position.x += corrector * deltaTranslation_mm * cosf(currentAngle);
+	position.y += corrector * deltaTranslation_mm * sinf(currentAngle);
+
+	// Mise à jour de currentTranslation
+	currentTranslation += deltaTranslation;
+
+	// Mise à jour de la vitesse de translation
+	currentMovingSpeed = deltaTranslation * FREQ_ASSERV;
+	averageTranslationSpeed.add(currentMovingSpeed);
+	currentMovingSpeed = averageTranslationSpeed.value();
+
+	// Mise à jour des erreurs cumulatives des encodeurs des moteurs
+	leftMotorError += deltaLeftMotorTicks - (int)((float)deltaTranslation * leftSideDistanceFactor);
+	rightMotorError += deltaRightMotorTicks - (int)((float)deltaTranslation * rightSideDistanceFactor);
+
+	// En cas d'erreur excessive au niveau des moteurs de propulsion, le robot est considéré bloqué.
+	if (ABS(leftMotorError) > MOTOR_SLIP_TOLERANCE || ABS(rightMotorError) > MOTOR_SLIP_TOLERANCE)
+	{
+		movingState = EXT_BLOCKED;
+		stop();
+		Log::critical(34, "Derapage d'un moteur de propulsion");
+	}
 }
 
 void MotionControlSystem::updateTrajectoryIndex()
 {
+	if (movingState == MOVING && !currentTrajectory[trajectoryIndex].isStopPoint())
+	{
+		uint8_t nextPoint = trajectoryIndex + 1;
+		while 
+			(
+			currentTrajectory[nextPoint].isUpToDate() && 
+			position.isCloserToAThanB(currentTrajectory[nextPoint].getPosition(), currentTrajectory[trajectoryIndex].getPosition())
+			)
+		{
+			nextPoint++;
+		}
+		if (nextPoint > trajectoryIndex + 1)
+		{
+			trajectoryIndex = nextPoint - 1;
+			updateTranslationSetpoint();
+			updateSideDistanceFactors();
+		}
+	}
+	else if (movingState == STOPPED && currentTrajectory[trajectoryIndex].isStopPoint())
+	{
+		if (currentTrajectory[(uint8_t)(trajectoryIndex + 1)].isUpToDate())
+		{
+			currentTrajectory[trajectoryIndex].makeObsolete();
+			trajectoryIndex++;
+			updateNextStopPoint();
+			updateSideDistanceFactors();
+		}
+	}
+}
 
+void MotionControlSystem::updateNextStopPoint()
+{
+	if (currentTrajectory[trajectoryIndex].isUpToDate() && currentTrajectory[trajectoryIndex].isStopPoint())
+	{
+		nextStopPoint = trajectoryIndex;
+	}
+	else
+	{
+		uint16_t infiniteLoopCheck = 0;
+		bool found = false;
+		nextStopPoint = trajectoryIndex + 1;
+		while (currentTrajectory[nextStopPoint].isUpToDate() && infiniteLoopCheck < UINT8_MAX + 1)
+		{
+			if (currentTrajectory[nextStopPoint].isStopPoint())
+			{
+				found = true;
+				break;
+			}
+			nextStopPoint++;
+			infiniteLoopCheck++;
+		}
+		if (!found)
+		{
+			nextStopPoint = UINT16_MAX;
+		}
+	}
+	updateTranslationSetpoint();
+}
+
+void MotionControlSystem::checkTrajectory()
+{
+	if (movingState == MOVE_INIT || movingState == MOVING)
+	{
+		bool valid = true;
+		if (!currentTrajectory[trajectoryIndex].isUpToDate())
+		{
+			valid = false;
+		}
+		else if (movingState == MOVING && !currentTrajectory[trajectoryIndex].isStopPoint())
+		{
+			if (!currentTrajectory[(uint8_t)(trajectoryIndex + 1)].isUpToDate())
+			{
+				valid = false;
+			}
+		}
+		if (!valid)
+		{
+			movingState = EMPTY_TRAJ;
+			stop();
+			Log::critical(32, "Empty trajectory");
+		}
+	}
+}
+
+void MotionControlSystem::updateTranslationSetpoint()
+{
+	if (nextStopPoint == UINT16_MAX)
+	{
+		translationSetpoint = currentTranslation + UINT8_MAX * TRAJECTORY_STEP;
+	}
+	else
+	{
+		uint8_t nbPointsToTravel = nextStopPoint - trajectoryIndex;
+		translationSetpoint = currentTranslation + nbPointsToTravel * TRAJECTORY_STEP;
+		translationSetpoint += TRAJECTORY_STEP / 2;
+	}
+}
+
+void MotionControlSystem::updateSideDistanceFactors()
+{
+	static float half_width = LEFT_RIGHT_WHEELS_DISTANCE / 2;
+	static float squared_length = square(FRONT_BACK_WHEELS_DISTANCE);
+
+	float c = currentTrajectory[trajectoryIndex].getCurvature();
+	if (c == 0 || !currentTrajectory[trajectoryIndex].isUpToDate())
+	{
+		leftSideDistanceFactor = 1;
+		rightSideDistanceFactor = 1;
+	}
+	else
+	{
+		float r = 1 / c;
+		leftSideDistanceFactor = sqrtf(square(r - half_width) + squared_length) / r;
+		rightSideDistanceFactor = sqrtf(square(r + half_width) + squared_length) / r;
+	}
 }
 
 void MotionControlSystem::manageStop()
 {
 	endOfMoveMgr.compute();
-	if (endOfMoveMgr.isStopped())
+	if (endOfMoveMgr.isStopped() && movingState == MOVING)
 	{
-		movingState = STOPPED;
+		if (currentTrajectory[trajectoryIndex].isStopPoint())
+		{
+			movingState = STOPPED;
+		}
+		else
+		{
+			movingState = EXT_BLOCKED;
+			Log::critical(33, "Erreur d'asservissement en translation");
+		}
 		stop();
 	}
 }
@@ -272,6 +375,7 @@ void MotionControlSystem::manageBlocking()
 	{
 		movingState = INT_BLOCKED;
 		stop();
+		Log::critical(31, "Blocage physique d'un moteur");
 	}
 }
 
@@ -283,8 +387,18 @@ void MotionControlSystem::manageBlocking()
 
 void MotionControlSystem::addTrajectoryPoint(const TrajectoryPoint & trajPoint, uint8_t index)
 {
-	// currentTrajectory n'a pas besoin d'être interrupt-safe
-	// mettre à jour nextStopPoint : doit être interrupt-safe
+	bool updateIsNeeded = false;
+	if (trajPoint.isStopPoint() || (currentTrajectory[index].isUpToDate() && currentTrajectory[index].isStopPoint()))
+	{
+		updateIsNeeded = true;
+	}
+	currentTrajectory[index] = trajPoint;
+	if (updateIsNeeded)
+	{
+		noInterrupts();
+		updateNextStopPoint();
+		interrupts();
+	}
 }
 
 MotionControlSystem::MovingState MotionControlSystem::getMovingState() const
@@ -297,24 +411,32 @@ MotionControlSystem::MovingState MotionControlSystem::getMovingState() const
 
 void MotionControlSystem::gotoNextStopPoint()
 {
-	// rappel : l'écriture de movingState doit être interrupt-safe 
+	noInterrupts();
+	if (movingState != MOVING)
+	{
+		movingState = MOVE_INIT;
+	}
+	interrupts();
 }
 
 void MotionControlSystem::stop() 
 {
 	noInterrupts();
-	translationSetpoint = currentDistance;
+	currentTranslation = 0;
+	translationSetpoint = 0;
 	leftSpeedSetpoint = 0;
 	rightSpeedSetpoint = 0;
 	leftPWM = 0;
 	rightPWM = 0;
 	movingSpeedSetpoint = 0;
-	previousMovingSpeed = 0;
+	previousMovingSpeedSetpoint = 0;
 	motor.runLeft(0);
 	motor.runRight(0);
 	translationPID.resetErrors();
 	leftSpeedPID.resetErrors();
 	rightSpeedPID.resetErrors();
+	leftMotorError = 0;
+	rightMotorError = 0;
 	interrupts();
 }
 

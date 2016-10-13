@@ -4,6 +4,8 @@
 #include <Printable.h>
 #include <vector>
 #include "Log.h"
+#include "utils.h"
+
 
 class Position : public Printable
 {
@@ -94,9 +96,26 @@ public:
 		return data;
 	}
 
+	bool isCloserToAThanB(Position const & positionA, Position const & positionB) const volatile
+	{
+		float squaredDistanceToA = square(x - positionA.x) + square(y - positionA.y);
+		float squaredDistanceToB = square(x - positionB.x) + square(y - positionB.y);
+		return squaredDistanceToA <= squaredDistanceToB;
+	}
+
 	size_t printTo(Print& p) const
 	{
 		return p.printf("%g_%g_%g", x, y, orientation);
+	}
+
+	inline void setOrientation(float _o)
+	{
+		orientation = fmodulo(_o, TWO_PI);
+	}
+
+	inline void setOrientation(float _o) volatile
+	{
+		orientation = fmodulo(_o, TWO_PI);
 	}
 
 	float x; // mm

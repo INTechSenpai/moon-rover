@@ -5,6 +5,7 @@
 */
 
 
+#include "physical_dimensions.h"
 #include "Vutils.h"
 #include "pin_mapping.h"
 #include "BlockingMgr.h"
@@ -77,6 +78,12 @@ void motionControlInterrupt()
 	motionControlSystem.control();
 }
 
+/* Interruption de contrôle de la direction des roues */
+void directionInterrupt()
+{
+	static DirectionController & directionController = DirectionController::Instance();
+	directionController.control();
+}
 
 
 

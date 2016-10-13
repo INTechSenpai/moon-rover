@@ -23,8 +23,14 @@
 #include <EEPROM.h>
 
 
-#define FREQ_ASSERV			1000	// Fréquence d'asservissement (en Hz)
-#define AVERAGE_SPEED_SIZE	50		// Nombre de valeurs à utiliser dans le calcul de la moyenne glissante permettant de lisser la mesure de vitesse
+#define FREQ_ASSERV				1000	// Fréquence d'asservissement (en Hz)
+#define AVERAGE_SPEED_SIZE		50		// Nombre de valeurs à utiliser dans le calcul de la moyenne glissante permettant de lisser la mesure de vitesse
+#define TRAJECTORY_STEP			10		// Distance (en ticks, correspondant à une translation) entre deux points d'une trajectoire
+#define TICK_TO_MM				1		// Conversion ticks-mm pour les roues codeuses arrières. Unité : mm/tick
+#define TICK_TO_RADIANS			1		// Conversion ticks-radians. Unité : radian/tick
+#define FRONT_TICK_TO_TICK		1		// Conversion ticks_des_roues_avant --> ticks. Unité : tick/ticks_des_roues_avant
+#define CURVATURE_TOLERANCE		0		// Ecart maximal entre la consigne en courbure et la courbure réelle admissible au démarrage. Unité : m^-1
+#define MOTOR_SLIP_TOLERANCE	200		// Erreur maximale de rotation enregistrable pour les moteurs de propulsion avant de détecter un dérapage. Unité : ticks
 
 
 class MotionControlSystem : public Singleton<MotionControlSystem>
@@ -67,6 +73,7 @@ private:
 	volatile int32_t currentRightSpeed;		// ticks/seconde
 	volatile int32_t rightPWM;
 	BlockingMgr rightMotorBlockingMgr;
+	volatile int32_t rightMotorError;		// ticks
 
 	//	Asservissement en vitesse du moteur gauche
 	PID leftSpeedPID;
@@ -74,12 +81,13 @@ private:
 	volatile int32_t currentLeftSpeed;		// ticks/seconde
 	volatile int32_t leftPWM;
 	BlockingMgr leftMotorBlockingMgr;
+	volatile int32_t leftMotorError;		// ticks
 
 	//	Asservissement en position : translation
 	//  (Ici toutes les grandeurs sont positives, le sens de déplacement sera donné par maxMovingSpeed)
 	PID translationPID;
 	volatile int32_t translationSetpoint;	// ticks
-	volatile int32_t currentDistance;		// ticks
+	volatile int32_t currentTranslation;	// ticks
 	volatile int32_t movingSpeedSetpoint;	// ticks/seconde
 	
 	StoppingMgr endOfMoveMgr;
@@ -89,12 +97,16 @@ private:
 	volatile float curvatureOrder;	// Consigne de courbure, en m^-1
 	float curvatureCorrectorK1;		// Coefficient du facteur "erreur de position"
 	float curvatureCorrectorK2;		// Coefficient du facteur "erreur d'orientation"
+
+	// Facteurs multiplicatifs à appliquer à la distance parcourue par les roues gauche et droite, en fonction de la courbure courante.
+	volatile float leftSideDistanceFactor;
+	volatile float rightSideDistanceFactor;
 	
 	//  Vitesse (algébrique) de translation maximale : une vitesse négative correspond à une marche arrière
-	volatile int32_t maxMovingSpeed;	// en ticks/seconde
+	int32_t maxMovingSpeed;	// en ticks/seconde
 
 	//  Pour le calcul de l'accélération :
-	volatile int32_t previousMovingSpeed;	// en ticks.s^-2
+	volatile int32_t previousMovingSpeedSetpoint;	// en ticks.s^-2
 
 	//  Accélération maximale (variation maximale de movingSpeedSetpoint)
 	int32_t maxAcceleration;	// ticks*s^-2
@@ -102,7 +114,7 @@ private:
 	//	Pour faire de jolies courbes de réponse du système, la vitesse moyenne c'est mieux !
 	Average<int32_t, AVERAGE_SPEED_SIZE> averageLeftSpeed;
 	Average<int32_t, AVERAGE_SPEED_SIZE> averageRightSpeed;
-	Average<int32_t, AVERAGE_SPEED_SIZE> averageCurrentSpeed;
+	Average<int32_t, AVERAGE_SPEED_SIZE> averageTranslationSpeed;
 
 public:
 	// Type décrivant l'état du mouvement
@@ -132,7 +144,7 @@ private:
 	bool positionControlled;	//  Asservissement en position
 	bool leftSpeedControlled;	//	Asservissement en vitesse à gauche
 	bool rightSpeedControlled;	//	Asservissement en vitesse à droite
-	bool pwmControlled;		//	Mise à jour des PWM grâce à l'asservissement en vitesse
+	bool pwmControlled;			//	Mise à jour des PWM grâce à l'asservissement en vitesse
 
 	PIDtoSet pidToSet; // Indique lequel des PID est en cours de réglage
 
@@ -146,16 +158,36 @@ private:
 		position
 		currentRightSpeed (maj + filtrage)
 		currentLeftSpeed (maj + filtrage)
-		currentDistance
+		currentTranslation
 		currentMovingSpeed (maj + filtrage) */
 	void updateSpeedAndPosition();
 
 	/* Mise à jour des variables :
 		trajectoryIndex
-		nextStopPoint
-		currentDistance (si trajectoryIndex a été incrémenté)
-		translationSetpoint (si nextStopPoint a été modifié) */
+		currentTrajectory (rend obsolète les points qui le sont)
+		translationSetpoint (si trajectoryIndex a été incrémenté) */
 	void updateTrajectoryIndex();
+	
+	/* Mise à jour de : 
+		nextStopPoint */
+	void updateNextStopPoint();
+
+	/* Vérifie la validité des prochains points de la trajectoire 
+		MOVING : le point courant et le prochain point doivent être valides (sauf si on se trouve sur un point d'arrêt)
+		MOVE_INIT : le point courant doit être valide
+		Autre : aucune vérification
+	*/
+	void checkTrajectory();
+
+	/* Mise à jour de translationSetpoint
+		il est supposé que le robot se situe entre deux points de trajectoire 
+		(si ce n'est pas le cas, ET que l'on se trouve dans une phase de décélération, il y aura une discontinutié de la consigne)
+	*/
+	void updateTranslationSetpoint();
+
+	/* Donne le facteur de multiplication de distance parcourue par les roues gauche et droite 
+		(en fonction de la courbure de la trajectoire courante) */
+	void updateSideDistanceFactors();
 
 	void manageStop();
 	void manageBlocking();

@@ -10,6 +10,8 @@ public:
 	TrajectoryPoint()
 	{
 		upToDate = false;
+		stopPoint = false;
+		curvature = 0;
 	}
 
 	TrajectoryPoint(const Position & pos, uint8_t hw_sp_curv, uint8_t lw_sp_curv)
