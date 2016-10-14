@@ -78,6 +78,28 @@ void MotionControlSystem::control()
 
 	if (positionControlled)
 	{
+		/* Gestion du timeout de MOVE_INIT */
+		static uint32_t moveInit_startTime = 0;
+		static bool moveInit_started = false;
+		if (movingState == MOVE_INIT)
+		{
+			if (!moveInit_started)
+			{
+				moveInit_started = true;
+				moveInit_startTime = millis();
+			}
+			if (millis() - moveInit_startTime > TIMEOUT_MOVE_INIT)
+			{
+				movingState = EXT_BLOCKED;
+				stop();
+				Log::critical(34, "MOVE_INIT TIMEOUT");
+			}
+		}
+		else
+		{
+			moveInit_started = false;
+		}
+
 		if (movingState == MOVE_INIT || movingState == MOVING)
 		{
 			/* Asservissement sur trajectoire */
@@ -85,7 +107,7 @@ void MotionControlSystem::control()
 			static float orientationError;
 			TrajectoryPoint currentTrajPoint = currentTrajectory[trajectoryIndex];
 			Position posConsigne = currentTrajPoint.getPosition();
-			posError = sqrtf(square(position.x - posConsigne.x) + square(position.y - posConsigne.y));
+			posError = -(position.x - posConsigne.x) * sinf(posConsigne.orientation) + (position.y - posConsigne.y) * cosf(posConsigne.orientation);
 			orientationError = position.orientation - posConsigne.orientation;
 			curvatureOrder = currentTrajPoint.getCurvature() - curvatureCorrectorK1 * posError - curvatureCorrectorK2 * orientationError;
 			direction.setAimCurvature(curvatureOrder);

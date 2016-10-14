@@ -31,6 +31,7 @@
 #define FRONT_TICK_TO_TICK		1		// Conversion ticks_des_roues_avant --> ticks. Unité : tick/ticks_des_roues_avant
 #define CURVATURE_TOLERANCE		0		// Ecart maximal entre la consigne en courbure et la courbure réelle admissible au démarrage. Unité : m^-1
 #define MOTOR_SLIP_TOLERANCE	200		// Erreur maximale de rotation enregistrable pour les moteurs de propulsion avant de détecter un dérapage. Unité : ticks
+#define TIMEOUT_MOVE_INIT		1000	// Durée maximale le la phase "MOVE_INIT" d'une trajectoire. Unité : ms
 
 
 class MotionControlSystem : public Singleton<MotionControlSystem>
