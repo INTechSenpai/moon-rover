@@ -166,11 +166,7 @@ public class BufferOutgoingOrder implements Service
 		data.put((byte) (((int)(pos.getX())+1500) >> 4));
 		data.put((byte) ((((int)(pos.getX())+1500) << 4) + ((int)(pos.getY()) >> 8)));
 		data.put((byte) ((int)(pos.getY())));
-		angle %= 2*Math.PI;
-//		if(angle < 0)
-//			angle += 2*Math.PI; // il faut toujours envoyer des nombres positifs
-
-		short theta = (short) Math.round(angle*1000);
+		short theta = (short) Math.round((angle % 2*Math.PI)*1000);
 		data.putShort(theta);		
 	}
 	
@@ -244,7 +240,7 @@ public class BufferOutgoingOrder implements Service
 		
 		for(int i = 0; i < arc.getNbPoints(); i++)
 		{
-			addXYO(data, arc.getPoint(i).getPosition(), arc.getPoint(i).orientationReelle);
+			addXYO(data, arc.getPoint(i).getPosition(), arc.getPoint(i).orientationGeometrique);
 			short courbure = (short) ((Math.round(arc.getPoint(i).courbureReelle)*10) & 0xEFFF);
 
 			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
