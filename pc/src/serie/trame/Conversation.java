@@ -17,6 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package serie.trame;
 
+import config.Config;
+import config.ConfigInfo;
+import config.Configurable;
 import serie.Ticket;
 import serie.SerialProtocol.OutOrder;
 
@@ -26,14 +29,14 @@ import serie.SerialProtocol.OutOrder;
  *
  */
 
-public class Conversation
+public class Conversation implements Configurable
 {
 	private long deathDate; // date d'envoi + 2*timeout
 	private long resendDate; // date d'envoi + timeout
 	public Ticket ticket;
 	public boolean libre = true;
 	private OutgoingFrame firstFrame;
-	private static int timeout;
+	private int timeout;
 	public OutOrder origine;
 	
 	/**
@@ -98,11 +101,12 @@ public class Conversation
 		return (int) (deathDate - System.currentTimeMillis());
 	}
 
-	public static void setTimeout(int timeout_p)
+	@Override
+	public void useConfig(Config config)
 	{
-		timeout = timeout_p;
+		timeout = config.getInt(ConfigInfo.SERIAL_TIMEOUT);
 	}
-
+	
 	public OutgoingFrame getFirstTrame()
 	{
 		return firstFrame;

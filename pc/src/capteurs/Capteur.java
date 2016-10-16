@@ -22,6 +22,7 @@ import java.awt.Graphics;
 
 import config.Config;
 import config.ConfigInfo;
+import config.Configurable;
 import graphic.Fenetre;
 import graphic.printable.Layer;
 import graphic.printable.Printable;
@@ -36,7 +37,7 @@ import utils.Vec2RW;
  *
  */
 
-public abstract class Capteur implements Printable
+public abstract class Capteur implements Printable, Configurable
 {
 	public boolean sureleve;
 	public final Vec2RO positionRelative;
@@ -44,7 +45,7 @@ public abstract class Capteur implements Printable
 	public final double angleCone; // angle du cône (en radians)
 	public final int portee;
 	public final int distanceMin;
-	protected static int L, d;
+	protected int L, d;
 	
 	public Capteur(Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
@@ -56,7 +57,8 @@ public abstract class Capteur implements Printable
 		this.sureleve = sureleve;
 	}
 	
-	public static void useConfig(Config config)
+	@Override
+	public void useConfig(Config config)
 	{
 		L = config.getInt(ConfigInfo.DISTANCE_ROUES_AVANT_ET_ARRIERE);
 		d = config.getInt(ConfigInfo.DISTANCE_ROUES_GAUCHE_ET_DROITE) / 2;

@@ -321,7 +321,6 @@ public class SerieCoucheTrame implements Service, Configurable
 	public void useConfig(Config config)
 	{
 		timeout = config.getInt(ConfigInfo.SERIAL_TIMEOUT);
-		Conversation.setTimeout(timeout);
 		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 	}
 	

@@ -26,7 +26,9 @@ import pathfinding.dstarlite.gridspace.GridSpace;
 import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
+import container.Container;
 import container.Service;
+import exceptions.ContainerException;
 import table.GameElementNames;
 import table.Table;
 import table.Tribool;
@@ -49,6 +51,7 @@ public class CapteursProcess implements Service, Configurable
 	private DStarLite dstarlite;
 	private CheminPathfinding chemin;
 	private PrintBuffer buffer;
+	private Container container;
 	
 	private int nbCapteurs;
 	private int rayonEnnemi;
@@ -57,7 +60,7 @@ public class CapteursProcess implements Service, Configurable
 
 	private Capteur[] capteurs;
 
-	public CapteursProcess(Log log, GridSpace gridspace, Table table, DStarLite dstarlite, CheminPathfinding chemin, PrintBuffer buffer)
+	public CapteursProcess(Container container, Log log, GridSpace gridspace, Table table, DStarLite dstarlite, CheminPathfinding chemin, PrintBuffer buffer)
 	{
 		this.table = table;
 		this.log = log;
@@ -65,6 +68,7 @@ public class CapteursProcess implements Service, Configurable
 		this.dstarlite = dstarlite;
 		this.chemin = chemin;
 		this.buffer = buffer;
+		this.container = container;
 	}
 	
 	@Override
@@ -75,12 +79,16 @@ public class CapteursProcess implements Service, Configurable
 		distanceApproximation = config.getInt(ConfigInfo.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);		
 		nbCapteurs = config.getInt(ConfigInfo.NB_CAPTEURS);
 		
-		Capteur.useConfig(config);
 		capteurs = new Capteur[nbCapteurs];
 				
 		// TODO
-		capteurs[0] = new CapteurMobile(new Vec2RO(200, 80), 0., TypeCapteur.ToF, false, true);
-		capteurs[1] = new CapteurImmobile(new Vec2RO(200, -80), 0., TypeCapteur.IR, true);
+		try {
+			capteurs[0] = container.make(CapteurMobile.class, new Vec2RO(200, 80), 0., TypeCapteur.ToF, false, true);
+			capteurs[1] = container.make(CapteurImmobile.class, new Vec2RO(200, -80), 0., TypeCapteur.IR, true);
+		} catch(ContainerException e)
+		{
+			log.critical(e);
+		}
 		
 		if(config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS))
 			for(Capteur c : capteurs)
