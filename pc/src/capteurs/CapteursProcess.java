@@ -23,12 +23,13 @@ import obstacles.types.ObstaclesFixes;
 import pathfinding.chemin.CheminPathfinding;
 import pathfinding.dstarlite.DStarLite;
 import pathfinding.dstarlite.gridspace.GridSpace;
+import config.Config;
+import config.ConfigInfo;
+import config.Configurable;
 import container.Service;
 import table.GameElementNames;
 import table.Table;
 import table.Tribool;
-import utils.Config;
-import utils.ConfigInfo;
 import utils.Log;
 import utils.Vec2RO;
 import utils.Vec2RW;
@@ -40,7 +41,8 @@ import utils.Vec2RW;
  *
  */
 
-public class CapteursProcess implements Service {
+public class CapteursProcess implements Service, Configurable
+{
 	protected Log log;
 	private GridSpace gridspace;
 	private Table table;
@@ -65,10 +67,6 @@ public class CapteursProcess implements Service {
 		this.buffer = buffer;
 	}
 	
-	@Override
-	public void updateConfig(Config config)
-	{}
-
 	@Override
 	public void useConfig(Config config)
 	{

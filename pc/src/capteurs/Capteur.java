@@ -20,13 +20,13 @@ package capteurs;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import config.Config;
+import config.ConfigInfo;
 import graphic.Fenetre;
 import graphic.printable.Layer;
 import graphic.printable.Printable;
 import robot.Cinematique;
 import robot.RobotReal;
-import utils.Config;
-import utils.ConfigInfo;
 import utils.Vec2RO;
 import utils.Vec2RW;
 

@@ -20,7 +20,6 @@ package capteurs;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import utils.Config;
 import utils.Log;
 import container.Service;
 
@@ -75,12 +74,4 @@ public class SensorsDataBuffer implements Service
 		return buffer.poll();
 	}
 	
-	@Override
-	public void updateConfig(Config config)
-	{}
-
-	@Override
-	public void useConfig(Config config)
-	{}
-
 }
