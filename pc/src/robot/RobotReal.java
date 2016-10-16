@@ -20,10 +20,10 @@ package robot;
 import java.awt.Graphics;
 
 import obstacles.types.ObstacleRectangular;
+import config.Config;
+import config.ConfigInfo;
 import container.Service;
 import utils.Log;
-import utils.Config;
-import utils.ConfigInfo;
 import graphic.Fenetre;
 import graphic.PrintBuffer;
 import graphic.printable.Layer;

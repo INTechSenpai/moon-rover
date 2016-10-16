@@ -29,9 +29,10 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
+import config.Config;
+import config.ConfigInfo;
+import config.Configurable;
 import container.Service;
-import utils.Config;
-import utils.ConfigInfo;
 import utils.Log;
 
 /**
@@ -40,7 +41,7 @@ import utils.Log;
  *
  */
 
-public class SerieCouchePhysique implements Service
+public class SerieCouchePhysique implements Service, Configurable
 {
 	private SerialPort serialPort;
 	protected Log log;
@@ -270,10 +271,6 @@ public class SerieCouchePhysique implements Service
 			communiquer(out);
 		}
 	}
-
-	@Override
-	public void updateConfig(Config config)
-	{}
 
 	@Override
 	public void useConfig(Config config)

@@ -20,9 +20,10 @@ package serie;
 import java.io.IOException;
 import java.io.InputStream;
 
-import utils.Config;
-import utils.ConfigInfo;
 import utils.Log;
+import config.Config;
+import config.ConfigInfo;
+import config.Configurable;
 import container.Service;
 import exceptions.serie.MissingCharacterException;
 import gnu.io.SerialPortEvent;
@@ -34,7 +35,7 @@ import gnu.io.SerialPortEventListener;
  *
  */
 
-public class BufferIncomingBytes implements Service, SerialPortEventListener
+public class BufferIncomingBytes implements Service, SerialPortEventListener, Configurable
 {
 	private Log log;
 	
@@ -52,10 +53,6 @@ public class BufferIncomingBytes implements Service, SerialPortEventListener
 		this.log = log;
 	}
 	
-	@Override
-	public void updateConfig(Config config)
-	{}
-
 	@Override
 	public void useConfig(Config config)
 	{

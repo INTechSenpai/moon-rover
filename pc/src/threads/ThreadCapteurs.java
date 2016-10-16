@@ -20,7 +20,6 @@ package threads;
 import capteurs.CapteursProcess;
 import capteurs.SensorsData;
 import capteurs.SensorsDataBuffer;
-import utils.Config;
 import utils.Log;
 
 /**
@@ -65,13 +64,5 @@ public class ThreadCapteurs extends ThreadService
 			log.debug("Arrêt de "+Thread.currentThread().getName());
 		}
 	}
-	
-	@Override
-	public void updateConfig(Config config)
-	{}
-
-	@Override
-	public void useConfig(Config config)
-	{}
 
 }

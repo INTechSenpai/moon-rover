@@ -20,7 +20,6 @@ package pathfinding;
 import robot.RobotReal;
 import container.Service;
 import table.RealTable;
-import utils.Config;
 
 /**
  * Utilisé par les scripts
@@ -35,14 +34,6 @@ public class RealGameState extends GameState<RobotReal> implements Service
         this.robot = robot;
         this.table = table;
     }
-    
-    @Override
-    public void updateConfig(Config config)
-    {}
-
-    @Override
-    public void useConfig(Config config)
-    {}
     
     @Override
 	public final void copyAStarCourbe(ChronoGameState modified)

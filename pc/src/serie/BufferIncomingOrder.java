@@ -20,7 +20,6 @@ package serie;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import utils.Config;
 import utils.Log;
 import container.Service;
 import serie.trame.Paquet;
@@ -73,12 +72,4 @@ public class BufferIncomingOrder implements Service
 		return buffer.poll();
 	}
 	
-	@Override
-	public void updateConfig(Config config)
-	{}
-
-	@Override
-	public void useConfig(Config config)
-	{}
-
 }

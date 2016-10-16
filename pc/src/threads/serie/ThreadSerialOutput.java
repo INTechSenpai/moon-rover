@@ -17,14 +17,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package threads.serie;
 
+import config.Config;
+import config.ConfigInfo;
+import config.Configurable;
 import serie.BufferIncomingBytes;
 import serie.BufferOutgoingOrder;
 import serie.SerieCoucheTrame;
 import serie.SerialProtocol.OutOrder;
 import serie.trame.Order;
 import threads.ThreadService;
-import utils.Config;
-import utils.ConfigInfo;
 import utils.Log;
 
 /**
@@ -33,7 +34,7 @@ import utils.Log;
  *
  */
 
-public class ThreadSerialOutput extends ThreadService
+public class ThreadSerialOutput extends ThreadService implements Configurable
 {
 	protected Log log;
 	private SerieCoucheTrame serie;
@@ -96,10 +97,6 @@ public class ThreadSerialOutput extends ThreadService
 		}
 	}
 	
-	@Override
-	public void updateConfig(Config config)
-	{}
-
 	@Override
 	public void useConfig(Config config)
 	{

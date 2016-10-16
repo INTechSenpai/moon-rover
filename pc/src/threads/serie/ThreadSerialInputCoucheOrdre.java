@@ -19,6 +19,9 @@ package threads.serie;
 
 import capteurs.SensorsData;
 import capteurs.SensorsDataBuffer;
+import config.Config;
+import config.ConfigInfo;
+import config.Configurable;
 import container.Container;
 import exceptions.ContainerException;
 import robot.Cinematique;
@@ -31,8 +34,6 @@ import serie.SerialProtocol.OutOrder;
 import serie.trame.Paquet;
 import threads.ThreadShutdown;
 import threads.ThreadService;
-import utils.Config;
-import utils.ConfigInfo;
 import utils.Log;
 import utils.Vec2RO;
 import pathfinding.astarCourbe.arcs.ClothoidesComputer;
@@ -44,7 +45,7 @@ import pathfinding.chemin.CheminPathfinding;
  *
  */
 
-public class ThreadSerialInputCoucheOrdre extends ThreadService
+public class ThreadSerialInputCoucheOrdre extends ThreadService implements Configurable
 {
 	protected Log log;
 	protected Config config;
@@ -222,10 +223,6 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 		}
 	}
 	
-	@Override
-	public void updateConfig(Config config)
-	{}
-
 	@Override
 	public void useConfig(Config config)
 	{

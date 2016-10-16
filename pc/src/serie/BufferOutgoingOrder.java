@@ -25,9 +25,10 @@ import java.util.LinkedList;
 import robot.Speed;
 import serie.SerialProtocol.OutOrder;
 import serie.trame.Order;
+import config.Config;
+import config.ConfigInfo;
+import config.Configurable;
 import container.Service;
-import utils.Config;
-import utils.ConfigInfo;
 import utils.Log;
 import utils.Vec2RO;
 
@@ -41,7 +42,7 @@ import utils.Vec2RO;
  *
  */
 
-public class BufferOutgoingOrder implements Service
+public class BufferOutgoingOrder implements Service, Configurable
 {
 	protected Log log;
 	private byte prescaler;
@@ -211,10 +212,6 @@ public class BufferOutgoingOrder implements Service
 		notify();
 	}
 	
-	@Override
-	public void updateConfig(Config config)
-	{}
-
 	@Override
 	public void useConfig(Config config)
 	{

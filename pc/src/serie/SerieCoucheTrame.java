@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import config.Config;
+import config.ConfigInfo;
+import config.Configurable;
 import container.Service;
 import exceptions.serie.IncorrectChecksumException;
 import exceptions.serie.MissingCharacterException;
@@ -31,8 +34,6 @@ import serie.trame.Frame.IncomingCode;
 import serie.trame.IncomingFrame;
 import serie.trame.Order;
 import serie.trame.Paquet;
-import utils.Config;
-import utils.ConfigInfo;
 import utils.Log;
 
 /**
@@ -41,7 +42,7 @@ import utils.Log;
  *
  */
 
-public class SerieCoucheTrame implements Service
+public class SerieCoucheTrame implements Service, Configurable
 {	
 	/**
 	 * Toutes les conversations
@@ -316,10 +317,6 @@ public class SerieCoucheTrame implements Service
 		}
 	}
 	
-	@Override
-	public void updateConfig(Config config)
-	{}
-
 	@Override
 	public void useConfig(Config config)
 	{

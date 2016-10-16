@@ -20,7 +20,6 @@ package threads.serie;
 import serie.BufferIncomingOrder;
 import serie.SerieCoucheTrame;
 import threads.ThreadService;
-import utils.Config;
 import utils.Log;
 
 /**
@@ -55,13 +54,5 @@ public class ThreadSerialInputCoucheTrame extends ThreadService
 			log.debug("Arrêt de "+Thread.currentThread().getName());
 		}
 	}
-
-	@Override
-	public void updateConfig(Config config)
-	{}
-
-	@Override
-	public void useConfig(Config config)
-	{}
 
 }
