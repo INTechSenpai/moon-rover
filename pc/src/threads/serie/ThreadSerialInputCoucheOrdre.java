@@ -127,7 +127,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 		
 						double orientationRobot = ((data[3] << 8) + data[4]) / 1000.;
 						int indexTrajectory = data[5];
-						Cinematique current = chemin.setCurrentIndex(indexTrajectory / ClothoidesComputer.NB_POINTS);
+						Cinematique current = chemin.setCurrentIndex(indexTrajectory);
 						robot.setCinematique(current);
 						// TODO : si besoin est, envoyer la nouvelle vitesse !
 						
