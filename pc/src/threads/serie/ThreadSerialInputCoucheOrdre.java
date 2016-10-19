@@ -36,7 +36,6 @@ import threads.ThreadShutdown;
 import threads.ThreadService;
 import utils.Log;
 import utils.Vec2RO;
-import pathfinding.astarCourbe.arcs.ClothoidesComputer;
 import pathfinding.chemin.CheminPathfinding;
 
 /**
