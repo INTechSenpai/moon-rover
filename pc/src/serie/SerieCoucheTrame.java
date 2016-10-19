@@ -20,6 +20,7 @@ package serie;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import config.Config;
 import config.ConfigInfo;
@@ -58,7 +59,7 @@ public class SerieCoucheTrame implements Service, Configurable
 	/**
 	 * Liste des trames d'ordre long acquittées dont on attend la fin
 	 */
-	private ArrayList<Integer> pendingLongFrames = new ArrayList<Integer>();
+	private List<Integer> pendingLongFrames = new ArrayList<Integer>();
 
 	/**
 	 * Liste des trames d'ordre dont on a reçu la fin (EXECUTION_END ou REQUEST_ANSWER)
