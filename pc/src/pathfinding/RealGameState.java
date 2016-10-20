@@ -40,7 +40,7 @@ public class RealGameState extends GameState<RobotReal> implements Service
     {
     	table.copy(modified.table);
         robot.copy(modified.robot);
-        modified.iterator.init(System.currentTimeMillis());
+        modified.iterator.init(robot.getTempsDepuisDebutMatch());
     }
 
 }
