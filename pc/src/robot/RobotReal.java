@@ -84,9 +84,10 @@ public class RobotReal extends Robot implements Service, Printable
 		return System.currentTimeMillis() - dateDebutMatch;
     }
 
+	@Override
 	public void setCinematique(Cinematique cinematique)
 	{
-		cinematique.copy(this.cinematique);
+		super.setCinematique(cinematique);
 		synchronized(buffer)
 		{
 			buffer.notify();
