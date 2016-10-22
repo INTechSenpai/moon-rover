@@ -11,6 +11,7 @@
 #include "physical_dimensions.h"
 #include <Printable.h>
 
+/* Angles des AX12 correspondant à des roues alignées vers l'avant */
 #define LEFT_ANGLE_ORIGIN	150
 #define RIGHT_ANGLE_ORIGIN	150
 
@@ -78,25 +79,24 @@ private:
 	void updateRealCurvature()
 	{
 		float leftCurvature, rightCurvature;
-		float e = LEFT_RIGHT_WHEELS_DISTANCE / 2;
-		if (realLeftAngle == 0)
+		if (realLeftAngle == LEFT_ANGLE_ORIGIN)
 		{
 			leftCurvature = 0;
 		}
 		else
 		{
 			float leftAngle_rad = ((float)realLeftAngle - LEFT_ANGLE_ORIGIN) * PI / 180;
-			leftCurvature = 1 / (FRONT_BACK_WHEELS_DISTANCE / tanf(leftAngle_rad) + e);
+			leftCurvature = 1 / (FRONT_BACK_WHEELS_DISTANCE / tanf(leftAngle_rad) + DIRECTION_ROTATION_POINT_Y);
 		}
 
-		if (realRightAngle == 0)
+		if (realRightAngle == RIGHT_ANGLE_ORIGIN)
 		{
 			rightCurvature = 0;
 		}
 		else
 		{
 			float rightAngle_rad = ((float)realRightAngle - RIGHT_ANGLE_ORIGIN) * PI / 180;
-			rightCurvature = 1 / (FRONT_BACK_WHEELS_DISTANCE / tanf(rightAngle_rad) - e);
+			rightCurvature = 1 / (FRONT_BACK_WHEELS_DISTANCE / tanf(rightAngle_rad) - DIRECTION_ROTATION_POINT_Y);
 		}
 		noInterrupts();
 		realCurvature = (leftCurvature + rightCurvature) / 2;
@@ -109,7 +109,6 @@ private:
 		float aimCurvature_cpy = aimCurvature;
 		interrupts();
 		float leftAngle_rad, rightAngle_rad;
-		float e = LEFT_RIGHT_WHEELS_DISTANCE / 2;
 		if (aimCurvature_cpy == 0)
 		{
 			leftAngle_rad = 0;
@@ -119,15 +118,18 @@ private:
 		{
 			float bendRadius;
 			bendRadius = 1 / aimCurvature_cpy;
-			leftAngle_rad = atan2f(FRONT_BACK_WHEELS_DISTANCE, bendRadius - e);
-			rightAngle_rad = atan2f(FRONT_BACK_WHEELS_DISTANCE, bendRadius + e);
+			leftAngle_rad = atan2f(FRONT_BACK_WHEELS_DISTANCE, bendRadius - DIRECTION_ROTATION_POINT_Y);
+			rightAngle_rad = atan2f(FRONT_BACK_WHEELS_DISTANCE, bendRadius + DIRECTION_ROTATION_POINT_Y);
 		}
 		aimLeftAngle = (uint16_t)(LEFT_ANGLE_ORIGIN + leftAngle_rad * 180 / PI);
 		aimRightAngle = (uint16_t)(RIGHT_ANGLE_ORIGIN + rightAngle_rad * 180 / PI);
 	}
 	
+	/* Courburen, en m^-1 */
 	volatile float aimCurvature;
 	volatile float realCurvature;
+
+	/* Angles des AX12, en degrés */
 	uint16_t aimLeftAngle;
 	uint16_t aimRightAngle;
 	uint16_t realLeftAngle;

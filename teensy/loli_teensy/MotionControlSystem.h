@@ -140,6 +140,7 @@ public:
 	
 private:
 	volatile MovingState movingState;
+	volatile bool trajectoryFullyCompleted; // Indique que tous les points de la dernière trajectoire ont étés rendus obsolètes
 
 	// Variables d'activation des différents PID
 	bool positionControlled;	//  Asservissement en position
@@ -192,6 +193,9 @@ private:
 
 	void manageStop();
 	void manageBlocking();
+
+	/* Appelée en car d'erreur durant le mouvement, réinitialise la trajectoire courante */
+	void clearCurrentTrajectory();
 public:
 
 	/* Activation et désactivation de l'asserv */

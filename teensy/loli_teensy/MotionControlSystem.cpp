@@ -21,6 +21,7 @@ endOfMoveMgr(currentMovingSpeed)
 	maxMovingSpeed = 0;
 
 	movingState = STOPPED;
+	trajectoryFullyCompleted = true;
 	trajectoryIndex = 0;
 	updateNextStopPoint();
 	updateSideDistanceFactors();
@@ -91,6 +92,7 @@ void MotionControlSystem::control()
 			if (millis() - moveInit_startTime > TIMEOUT_MOVE_INIT)
 			{
 				movingState = EXT_BLOCKED;
+				clearCurrentTrajectory();
 				stop();
 				Log::critical(34, "MOVE_INIT TIMEOUT");
 			}
@@ -100,7 +102,20 @@ void MotionControlSystem::control()
 			moveInit_started = false;
 		}
 
-		if (movingState == MOVE_INIT || movingState == MOVING)
+		/* Asservissement */
+		if (movingState == MOVE_INIT)
+		{
+			TrajectoryPoint currentTrajPoint = currentTrajectory[trajectoryIndex];
+			direction.setAimCurvature(currentTrajPoint.getCurvature());
+
+			if (ABS(direction.getRealCurvature() - currentTrajPoint.getCurvature()) < CURVATURE_TOLERANCE)
+			{
+				movingState = MOVING;
+			}
+			leftSpeedSetpoint = 0;
+			rightSpeedSetpoint = 0;
+		}
+		else if (movingState == MOVING)
 		{
 			/* Asservissement sur trajectoire */
 			static float posError;
@@ -112,45 +127,33 @@ void MotionControlSystem::control()
 			curvatureOrder = currentTrajPoint.getCurvature() - curvatureCorrectorK1 * posError - curvatureCorrectorK2 * orientationError;
 			direction.setAimCurvature(curvatureOrder);
 
-			if (movingState == MOVE_INIT)
+			translationPID.compute(); // MAJ movingSpeedSetpoint
+
+			// Limitation de l'accélération
+			if (movingSpeedSetpoint - previousMovingSpeedSetpoint > maxAcceleration)
 			{
-				if (ABS(direction.getRealCurvature() - currentTrajPoint.getCurvature()) < CURVATURE_TOLERANCE)
-				{
-					movingState = MOVING;
-				}
-				leftSpeedSetpoint = 0;
-				rightSpeedSetpoint = 0;
+				movingSpeedSetpoint = previousMovingSpeedSetpoint + maxAcceleration;
 			}
-			else
+			else if (movingSpeedSetpoint - previousMovingSpeedSetpoint < -maxAcceleration)
 			{
-				translationPID.compute(); // MAJ movingSpeedSetpoint
+				movingSpeedSetpoint = previousMovingSpeedSetpoint - maxAcceleration;
+			}
 
-				// Limitation de l'accélération
-				if (movingSpeedSetpoint - previousMovingSpeedSetpoint > maxAcceleration)
-				{
-					movingSpeedSetpoint = previousMovingSpeedSetpoint + maxAcceleration;
-				}
-				else if (movingSpeedSetpoint - previousMovingSpeedSetpoint < -maxAcceleration)
-				{
-					movingSpeedSetpoint = previousMovingSpeedSetpoint - maxAcceleration;
-				}
+			// Limitation de la vitesse
+			if (movingSpeedSetpoint > ABS(maxMovingSpeed))
+			{
+				movingSpeedSetpoint = ABS(maxMovingSpeed);
+			}
 
-				// Limitation de la vitesse
-				if (movingSpeedSetpoint > ABS(maxMovingSpeed))
-				{
-					movingSpeedSetpoint = ABS(maxMovingSpeed);
-				}
+			// Calcul des vitesses gauche et droite en fonction de la vitesse globale
+			leftSpeedSetpoint = movingSpeedSetpoint * leftSideDistanceFactor;
+			rightSpeedSetpoint = movingSpeedSetpoint * rightSideDistanceFactor;
 
-				// Calcul des vitesses gauche et droite en fonction de la vitesse globale
-				leftSpeedSetpoint = movingSpeedSetpoint * leftSideDistanceFactor;
-				rightSpeedSetpoint = movingSpeedSetpoint * rightSideDistanceFactor;
-
-				// Gestion du sens de déplacement
-				if (maxMovingSpeed < 0)
-				{
-					leftSpeedSetpoint = -leftSpeedSetpoint;
-					rightSpeedSetpoint = -rightSpeedSetpoint;
-				}
+			// Gestion du sens de déplacement
+			if (maxMovingSpeed < 0)
+			{
+				leftSpeedSetpoint = -leftSpeedSetpoint;
+				rightSpeedSetpoint = -rightSpeedSetpoint;
 			}
 		}
 		else
@@ -240,13 +243,14 @@ void MotionControlSystem::updateSpeedAndPosition()
 	currentMovingSpeed = averageTranslationSpeed.value();
 
 	// Mise à jour des erreurs cumulatives des encodeurs des moteurs
-	leftMotorError += deltaLeftMotorTicks - (int)((float)deltaTranslation * leftSideDistanceFactor);
-	rightMotorError += deltaRightMotorTicks - (int)((float)deltaTranslation * rightSideDistanceFactor);
+	leftMotorError += deltaLeftMotorTicks - (int32_t)((float)deltaTranslation * leftSideDistanceFactor);
+	rightMotorError += deltaRightMotorTicks - (int32_t)((float)deltaTranslation * rightSideDistanceFactor);
 
 	// En cas d'erreur excessive au niveau des moteurs de propulsion, le robot est considéré bloqué.
 	if (ABS(leftMotorError) > MOTOR_SLIP_TOLERANCE || ABS(rightMotorError) > MOTOR_SLIP_TOLERANCE)
 	{
 		movingState = EXT_BLOCKED;
+		clearCurrentTrajectory();
 		stop();
 		Log::critical(34, "Derapage d'un moteur de propulsion");
 	}
@@ -257,29 +261,33 @@ void MotionControlSystem::updateTrajectoryIndex()
 	if (movingState == MOVING && !currentTrajectory[trajectoryIndex].isStopPoint())
 	{
 		uint8_t nextPoint = trajectoryIndex + 1;
+		bool nextPointIncermented = false;
 		while 
 			(
 			currentTrajectory[nextPoint].isUpToDate() && 
 			position.isCloserToAThanB(currentTrajectory[nextPoint].getPosition(), currentTrajectory[trajectoryIndex].getPosition())
 			)
 		{
+			currentTrajectory[(uint8_t)(nextPoint - 1)].makeObsolete();
 			nextPoint++;
+			nextPointIncermented = true;
 		}
-		if (nextPoint > trajectoryIndex + 1)
+		if (nextPointIncermented)
 		{
-			trajectoryIndex = nextPoint - 1;
+			trajectoryIndex = (uint8_t)(nextPoint - 1);
 			updateTranslationSetpoint();
 			updateSideDistanceFactors();
 		}
 	}
 	else if (movingState == STOPPED && currentTrajectory[trajectoryIndex].isStopPoint())
 	{
-		if (currentTrajectory[(uint8_t)(trajectoryIndex + 1)].isUpToDate())
+		if (currentTrajectory[(uint8_t)(trajectoryIndex + 1)].isUpToDate() && !trajectoryFullyCompleted)
 		{
 			currentTrajectory[trajectoryIndex].makeObsolete();
 			trajectoryIndex++;
 			updateNextStopPoint();
 			updateSideDistanceFactors();
+			trajectoryFullyCompleted = true;
 		}
 	}
 }
@@ -332,6 +340,7 @@ void MotionControlSystem::checkTrajectory()
 		if (!valid)
 		{
 			movingState = EMPTY_TRAJ;
+			clearCurrentTrajectory();
 			stop();
 			Log::critical(32, "Empty trajectory");
 		}
@@ -348,13 +357,26 @@ void MotionControlSystem::updateTranslationSetpoint()
 	{
 		uint8_t nbPointsToTravel = nextStopPoint - trajectoryIndex;
 		translationSetpoint = currentTranslation + nbPointsToTravel * TRAJECTORY_STEP;
-		translationSetpoint += TRAJECTORY_STEP / 2;
+		if (nbPointsToTravel > 10)
+		{
+			translationSetpoint += TRAJECTORY_STEP / 2;
+		}
+		else
+		{
+			Position posConsigne = currentTrajectory[trajectoryIndex].getPosition();
+			translationSetpoint += 
+				ABS(
+					(
+						(position.x - posConsigne.x) * cosf(posConsigne.orientation) + 
+						(position.y - posConsigne.y) * sinf(posConsigne.orientation)
+					) / TICK_TO_MM
+				);
+		}
 	}
 }
 
 void MotionControlSystem::updateSideDistanceFactors()
 {
-	static float half_width = LEFT_RIGHT_WHEELS_DISTANCE / 2;
 	static float squared_length = square(FRONT_BACK_WHEELS_DISTANCE);
 
 	float c = currentTrajectory[trajectoryIndex].getCurvature();
@@ -366,8 +388,16 @@ void MotionControlSystem::updateSideDistanceFactors()
 	else
 	{
 		float r = 1 / c;
-		leftSideDistanceFactor = sqrtf(square(r - half_width) + squared_length) / r;
-		rightSideDistanceFactor = sqrtf(square(r + half_width) + squared_length) / r;
+		if (r > 0)
+		{
+			leftSideDistanceFactor = (sqrtf(square(r - DIRECTION_ROTATION_POINT_Y) + squared_length) - DIRECTION_WHEEL_DIST_FROM_ROT_PT) / r;
+			rightSideDistanceFactor = (sqrtf(square(r + DIRECTION_ROTATION_POINT_Y) + squared_length) + DIRECTION_WHEEL_DIST_FROM_ROT_PT) / r;
+		}
+		else
+		{
+			leftSideDistanceFactor = -(sqrtf(square(r - DIRECTION_ROTATION_POINT_Y) + squared_length) + DIRECTION_WHEEL_DIST_FROM_ROT_PT) / r;
+			rightSideDistanceFactor = -(sqrtf(square(r + DIRECTION_ROTATION_POINT_Y) + squared_length) - DIRECTION_WHEEL_DIST_FROM_ROT_PT) / r;
+		}
 	}
 }
 
@@ -383,6 +413,7 @@ void MotionControlSystem::manageStop()
 		else
 		{
 			movingState = EXT_BLOCKED;
+			clearCurrentTrajectory();
 			Log::critical(33, "Erreur d'asservissement en translation");
 		}
 		stop();
@@ -396,8 +427,19 @@ void MotionControlSystem::manageBlocking()
 	if (leftMotorBlockingMgr.isBlocked() || rightMotorBlockingMgr.isBlocked())
 	{
 		movingState = INT_BLOCKED;
+		clearCurrentTrajectory();
 		stop();
 		Log::critical(31, "Blocage physique d'un moteur");
+	}
+}
+
+void MotionControlSystem::clearCurrentTrajectory()
+{
+	trajectoryFullyCompleted = true;
+	TrajectoryPoint voidPoint;
+	for (uint8_t i = 0; i < UINT8_MAX + 1; i++)
+	{
+		currentTrajectory[i] = voidPoint;
 	}
 }
 
@@ -434,10 +476,17 @@ MotionControlSystem::MovingState MotionControlSystem::getMovingState() const
 void MotionControlSystem::gotoNextStopPoint()
 {
 	noInterrupts();
-	if (movingState != MOVING)
+	if (movingState == MOVING || movingState == MOVE_INIT)
 	{
-		movingState = MOVE_INIT;
+		Log::warning("Nested call of MotionControlSystem::gotoNextStopPoint()");
 	}
+	if (!trajectoryFullyCompleted)
+	{
+		updateTrajectoryIndex();
+	}
+
+	movingState = MOVE_INIT;
+	trajectoryFullyCompleted = false;
 	interrupts();
 }
 
