@@ -83,8 +83,10 @@ public class CapteursProcess implements Service, Configurable
 				
 		// TODO
 		try {
-			capteurs[0] = container.make(CapteurMobile.class, new Vec2RO(200, 80), 0., TypeCapteur.ToF, false, true);
-			capteurs[1] = container.make(CapteurImmobile.class, new Vec2RO(200, -80), 0., TypeCapteur.IR, true);
+			capteurs[0] = container.make(CapteurMobile.class, new Vec2RO(233, 86), 0., TypeCapteur.IR, true);
+			capteurs[1] = container.make(CapteurMobile.class, new Vec2RO(233, -86), 0., TypeCapteur.IR, true);
+			capteurs[2] = container.make(CapteurMobile.class, new Vec2RO(235, 60), 0., TypeCapteur.ToF_COURT, false);
+			capteurs[3] = container.make(CapteurMobile.class, new Vec2RO(235, -60), 0., TypeCapteur.ToF_COURT, false);
 		} catch(ContainerException e)
 		{
 			log.critical(e);
