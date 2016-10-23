@@ -40,17 +40,21 @@ import utils.Vec2RW;
 public abstract class Capteur implements Printable, Configurable
 {
 	public boolean sureleve;
-	public final Vec2RO positionRelative;
+	protected final Vec2RO positionRelative;
 	protected final double orientationRelative;
 	public final double angleCone; // angle du cône (en radians)
 	public final int portee;
 	public final int distanceMin;
 	protected int L, d;
+	protected Vec2RO centreRotationGauche, centreRotationDroite;
+	protected double orientationRelativeRotate;
+	protected Vec2RW positionRelativeRotate;
 	
 	public Capteur(Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
 		this.positionRelative = positionRelative;
 		this.orientationRelative = orientationRelative;
+		positionRelativeRotate = new Vec2RW();
 		this.angleCone = type.angleCone;
 		this.distanceMin = type.distanceMin;
 		this.portee = type.portee;
@@ -60,25 +64,28 @@ public abstract class Capteur implements Printable, Configurable
 	@Override
 	public void useConfig(Config config)
 	{
-		L = config.getInt(ConfigInfo.DISTANCE_ROUES_AVANT_ET_ARRIERE);
-		d = config.getInt(ConfigInfo.DISTANCE_ROUES_GAUCHE_ET_DROITE) / 2;
+		L = config.getInt(ConfigInfo.CENTRE_ROTATION_ROUE_X);
+		d = config.getInt(ConfigInfo.CENTRE_ROTATION_ROUE_Y);
+		centreRotationGauche = new Vec2RO(L, d);
+		centreRotationDroite = new Vec2RO(L, -d);
 	}
 
-	public abstract double getOrientationRelative(Cinematique c);
+	public abstract void computePosOrientationRelative(Cinematique c);
 	
 	@Override
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
 		double orientation = robot.getCinematique().orientationReelle;
-		Vec2RW p1 = positionRelative.clone();
+		computePosOrientationRelative(robot.getCinematique());
+		Vec2RW p1 = positionRelativeRotate.clone();
 		p1.rotate(orientation);
 		p1.plus(robot.getCinematique().getPosition());
-		Vec2RW p2 = positionRelative.clone();
-		p2.plus(new Vec2RO(portee, angleCone + getOrientationRelative(robot.getCinematique()), false));
+		Vec2RW p2 = positionRelativeRotate.clone();
+		p2.plus(new Vec2RO(portee, angleCone + orientationRelativeRotate, false));
 		p2.rotate(orientation);
 		p2.plus(robot.getCinematique().getPosition());
-		Vec2RW p3 = positionRelative.clone();
-		p3.plus(new Vec2RO(portee, - angleCone + getOrientationRelative(robot.getCinematique()), false));
+		Vec2RW p3 = positionRelativeRotate.clone();
+		p3.plus(new Vec2RO(portee, - angleCone + orientationRelativeRotate, false));
 		p3.rotate(orientation);
 		p3.plus(robot.getCinematique().getPosition());
 		int[] x = new int[3];
