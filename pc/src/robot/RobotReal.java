@@ -112,4 +112,25 @@ public class RobotReal extends Robot implements Service, Printable
 		return Layer.FOREGROUND;
 	}
 
+	public int getDemieLargeurGauche()
+	{
+		return largeurNonDeploye / 2; // TODO
+	}
+
+	public int getDemieLargeurDroite()
+	{
+		return largeurNonDeploye / 2; // TODO
+	}
+
+	public int getDemieLongueurAvant()
+	{
+		return longueurNonDeploye; // TODO
+	}
+
+	public int getDemieLongueurArriere()
+	{
+		return 0; // TODO
+	}
+
+	
 }
