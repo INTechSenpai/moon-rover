@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package capteurs;
 
-import java.awt.Color;
 import java.awt.Graphics;
 
 import config.Config;
@@ -49,9 +48,11 @@ public abstract class Capteur implements Printable, Configurable
 	protected Vec2RO centreRotationGauche, centreRotationDroite;
 	protected double orientationRelativeRotate;
 	protected Vec2RW positionRelativeRotate;
+	private TypeCapteur type;
 	
 	public Capteur(Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
+		this.type = type;
 		this.positionRelative = positionRelative;
 		this.orientationRelative = orientationRelative;
 		positionRelativeRotate = new Vec2RW();
@@ -96,9 +97,9 @@ public abstract class Capteur implements Printable, Configurable
 		y[0] = f.YtoWindow(p1.getY());
 		y[1] = f.YtoWindow(p2.getY());
 		y[2] = f.YtoWindow(p3.getY());
-		g.setColor(new Color(0, 130, 0, 50));
+		g.setColor(type.couleurTransparente);
 		g.fillPolygon(x, y, 3);
-		g.setColor(new Color(0, 130, 0, 255));
+		g.setColor(type.couleur);
 		g.drawPolygon(x, y, 3);
 	}
 
