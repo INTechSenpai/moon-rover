@@ -19,10 +19,12 @@ package capteurs;
 
 import graphic.PrintBuffer;
 import obstacles.types.ObstacleProximity;
+import obstacles.types.ObstacleRobot;
 import obstacles.types.ObstaclesFixes;
 import pathfinding.chemin.CheminPathfinding;
 import pathfinding.dstarlite.DStarLite;
 import pathfinding.dstarlite.gridspace.GridSpace;
+import robot.RobotReal;
 import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
@@ -55,12 +57,11 @@ public class CapteursProcess implements Service, Configurable
 	
 	private int nbCapteurs;
 	private int rayonEnnemi;
-    private int rayonRobot;
 	private int distanceApproximation;
-
+	private ObstacleRobot obstacleRobot;
 	private Capteur[] capteurs;
 
-	public CapteursProcess(Container container, Log log, GridSpace gridspace, Table table, DStarLite dstarlite, CheminPathfinding chemin, PrintBuffer buffer)
+	public CapteursProcess(Container container, Log log, GridSpace gridspace, Table table, DStarLite dstarlite, CheminPathfinding chemin, PrintBuffer buffer, RobotReal robot)
 	{
 		this.table = table;
 		this.log = log;
@@ -69,19 +70,18 @@ public class CapteursProcess implements Service, Configurable
 		this.chemin = chemin;
 		this.buffer = buffer;
 		this.container = container;
+		obstacleRobot = new ObstacleRobot(robot);
 	}
 	
 	@Override
 	public void useConfig(Config config)
 	{
 		rayonEnnemi = config.getInt(ConfigInfo.RAYON_ROBOT_ADVERSE);
-		rayonRobot = config.getInt(ConfigInfo.RAYON_ROBOT);
 		distanceApproximation = config.getInt(ConfigInfo.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);		
 		nbCapteurs = config.getInt(ConfigInfo.NB_CAPTEURS);
 		
 		capteurs = new Capteur[nbCapteurs];
 				
-		// TODO
 		try {
 			capteurs[0] = container.make(CapteurMobile.class, new Vec2RO(233, 86), 10./180.*Math.PI, TypeCapteur.IR, true);
 			capteurs[1] = container.make(CapteurMobile.class, new Vec2RO(233, -86), -10./180.*Math.PI, TypeCapteur.IR, true);
@@ -108,12 +108,14 @@ public class CapteursProcess implements Service, Configurable
 	{
 		double orientationRobot = data.cinematique.orientationReelle;
 		Vec2RO positionRobot = data.cinematique.getPosition();
-		
+
+		obstacleRobot.update(positionRobot, orientationRobot);
+
 		/**
 		 * On update la table avec notre position
 		 */
 	    for(GameElementNames g: GameElementNames.values())
-	        if(g.obstacle.isProcheObstacle(positionRobot, rayonRobot))
+	        if(g.obstacle.isColliding(obstacleRobot))
 	        	table.setDone(g, Tribool.TRUE); // on est sûr de l'avoir shooté
 					
 		/**
@@ -151,7 +153,7 @@ public class CapteursProcess implements Service, Configurable
 			ObstacleProximity o = gridspace.addObstacleAndRemoveNearbyObstacles(positionEnnemi);
 			
 			/**
-			 * Mise à jour de l'état de la table
+			 * Mise à jour de l'état de la table : un ennemi est passé
 			 */
 		    for(GameElementNames g: GameElementNames.values())
 		        if(table.isDone(g) == Tribool.FALSE && g.obstacle.isProcheObstacle(o, o.radius))

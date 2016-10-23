@@ -35,7 +35,6 @@ import serie.trame.Paquet;
 import threads.ThreadShutdown;
 import threads.ThreadService;
 import utils.Log;
-import utils.Vec2RO;
 import pathfinding.chemin.CheminPathfinding;
 
 /**
@@ -122,18 +121,22 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 						xRobot -= 1500;
 						int yRobot = (data[1] & 0x0F) << 8;
 						yRobot = yRobot + data[2];
-						Vec2RO positionRobot = new Vec2RO(xRobot, yRobot);
-		
+
+						// On ne récupère pas toutes les infos mécaniques (la courbure manque, marche avant, …)
+						// Du coup, on récupère les infos théoriques (à partir du chemin) qu'on complète
 						double orientationRobot = ((data[3] << 8) + data[4]) / 1000.;
 						int indexTrajectory = data[5];
 						Cinematique current = chemin.setCurrentIndex(indexTrajectory);
+						current.getPositionEcriture().setX(xRobot);
+						current.getPositionEcriture().setY(yRobot);
+						current.orientationReelle = orientationRobot;
 						robot.setCinematique(current);
 						// TODO : si besoin est, envoyer la nouvelle vitesse !
 						
 						if(debugSerie)
-							log.debug("Le robot est en "+positionRobot+", orientation : "+orientationRobot);
+							log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot);
 		
-						if(data.length > 6) // la présence de ces infos n'est pas systématiques
+						if(data.length > 6) // la présence de ces infos n'est pas systématique
 						{
 							/**
 							 * Acquiert ce que voit les capteurs
