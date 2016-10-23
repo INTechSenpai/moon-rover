@@ -44,7 +44,7 @@ public enum TypeCapteur
 	private TypeCapteur(double angleCone, int distanceMin, int portee, Couleur c)
 	{
 		couleur = c.couleur;
-		couleurTransparente = new Color(couleur.getRed(), couleur.getGreen(), couleur.getBlue(), 50);
+		couleurTransparente = new Color(couleur.getRed(), couleur.getGreen(), couleur.getBlue(), 100);
 		this.angleCone = angleCone;
 		this.distanceMin = distanceMin;
 		this.portee = portee;
