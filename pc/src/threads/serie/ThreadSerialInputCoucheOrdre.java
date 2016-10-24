@@ -132,7 +132,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 						current.orientationReelle = orientationRobot;
 						robot.setCinematique(current);
 						// TODO : si besoin est, envoyer la nouvelle vitesse !
-						
+						// TODO : si on est en relanification (chemin pas uptodate), envoyer une vitesse lente
 						if(debugSerie)
 							log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot);
 		
