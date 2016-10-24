@@ -21,7 +21,9 @@ import pathfinding.astar.arcs.ArcCourbe;
 
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
+import java.util.List;
 
+import robot.CinematiqueObs;
 import robot.Speed;
 import serie.SerialProtocol.OutOrder;
 import serie.trame.Order;
@@ -224,29 +226,39 @@ public class BufferOutgoingOrder implements Service, Configurable
 	 * Envoi de tous les arcs élémentaires d'un arc courbe
 	 * @0 arc
 	 */
-	public synchronized void envoieArcCourbe(ArcCourbe arc, int indexTrajectory)
+	public synchronized void envoieArcCourbe(List<CinematiqueObs> points, int indexTrajectory)
 	{
 		if(debugSerie)
-			log.debug("Envoi d'un arc "+arc.getPoint(0));
+			log.debug("Envoi de "+points.size()+" points");
 
-		if(arc.getNbPoints() >= 30) // ne devrait pas arriver…
-			log.critical("Envoi d'un arc avec trop de points !");
+		int index = indexTrajectory;
+		int nbEnvoi = (points.size() >> 5) + 1;
+		int modulo = (points.size() & 31); // pour le dernier envoi
 		
-		ByteBuffer data = ByteBuffer.allocate(1+7*arc.getNbPoints());
-		data.put((byte)indexTrajectory);
-		
-		for(int i = 0; i < arc.getNbPoints(); i++)
+		for(int i = 0; i < nbEnvoi; i++)
 		{
-			addXYO(data, arc.getPoint(i).getPosition(), arc.getPoint(i).orientationGeometrique);
-			short courbure = (short) ((Math.round(arc.getPoint(i).courbureReelle)*10) & 0xEFFF);
-
-			if(i != 0 && arc.getPoint(i).enMarcheAvant != arc.getPoint(i-1).enMarcheAvant)
-				courbure |= 0x8000; // en cas de marche arrière
+			int nbArc = 32;
+			if(i == nbEnvoi - 1) // dernier envoi
+				nbArc = modulo;
+			ByteBuffer data = ByteBuffer.allocate(1+7*nbArc);
+			data.put((byte)index);
 			
-			data.putShort(courbure);
-
+			for(int j = 0; j < nbArc; j++)
+			{
+				CinematiqueObs c = points.get((i<<5)+j);
+				addXYO(data, c.getPosition(), c.orientationGeometrique);
+				short courbure = (short) ((Math.round(c.courbureReelle)*10) & 0xEFFF);
+	
+				// on vérifie si on va dans le même sens que le prochain point
+				// le dernier point est forcément un point d'arrêt
+				if((i<<5)+j+1 == points.size() || c.enMarcheAvant != points.get((i<<5)+j+1).enMarcheAvant)
+					courbure |= 0x8000; // en cas de rebroussement
+				
+				data.putShort(courbure);
+			}
+			bufferTrajectoireCourbe.add(new Order(data, OutOrder.SEND_ARC));
+			index += nbArc;
 		}
-		bufferTrajectoireCourbe.add(new Order(data, OutOrder.SEND_ARC));
 		notify();			
 	}
 
