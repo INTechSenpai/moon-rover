@@ -66,7 +66,7 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	@Override
 	public void useConfig(Config config)
 	{
-		cinematique = new Cinematique(0, 300, 0, true, 3, Speed.STANDARD);
+		cinematique = new Cinematique(0, 300, 0, true, 3, Speed.STANDARD.translationalSpeed);
 		print = config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS);
 		demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);

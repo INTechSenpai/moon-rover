@@ -93,16 +93,13 @@ public class BufferOutgoingOrder implements Service, Configurable
 	
 	/**
 	 * Signale la vitesse max au bas niveau
-	 * @param vitesse
+	 * @param vitesse signée
 	 * @return
 	 */
-	public synchronized void setMaxSpeed(Speed vitesse, boolean marcheAvant)
+	public synchronized void setMaxSpeed(double vitesse)
 	{
 		short vitesseTr; // vitesse signée
-		if(marcheAvant)
-			vitesseTr = (short)(vitesse.translationalSpeed*1000);
-		else
-			vitesseTr = (short)(- vitesse.translationalSpeed*1000);
+		vitesseTr = (short)(vitesse*1000);
 
 		ByteBuffer data = ByteBuffer.allocate(2);
 		data.putShort(vitesseTr);

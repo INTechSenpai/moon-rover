@@ -27,7 +27,9 @@ import exceptions.ContainerException;
 import robot.Cinematique;
 import robot.RobotColor;
 import robot.RobotReal;
+import robot.Speed;
 import serie.BufferIncomingOrder;
+import serie.BufferOutgoingOrder;
 import serie.Ticket;
 import serie.SerialProtocol.InOrder;
 import serie.SerialProtocol.OutOrder;
@@ -52,13 +54,15 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 	private RobotReal robot;
 	private CheminPathfinding chemin;
 	private Container container;
+	private BufferOutgoingOrder out;
 	
 	private boolean capteursOn = false;
 	private boolean matchDemarre = false;
+	private double lastVitesse = -1;
 	private boolean debugSerie;
 	private int nbCapteurs;
 	
-	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, CheminPathfinding chemin, Container container)
+	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, CheminPathfinding chemin, Container container, BufferOutgoingOrder out)
 	{
 		this.container = container;
 		this.log = log;
@@ -67,6 +71,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 		this.buffer = buffer;
 		this.robot = robot;
 		this.chemin = chemin;
+		this.out = out;
 	}
 
 	@Override
@@ -131,8 +136,20 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 						current.getPositionEcriture().setY(yRobot);
 						current.orientationReelle = orientationRobot;
 						robot.setCinematique(current);
-						// TODO : si besoin est, envoyer la nouvelle vitesse !
-						// TODO : si on est en relanification (chemin pas uptodate), envoyer une vitesse lente
+						double tmpVitesse = current.vitesseMax;
+						
+						if(!chemin.isUptodate()) // si on est en replanif…
+							tmpVitesse = Speed.REPLANIF.translationalSpeed;
+						
+						if(!current.enMarcheAvant) // la vitesse doit être signée
+							tmpVitesse = -tmpVitesse;
+						
+						if(tmpVitesse != lastVitesse) // la vitesse a changé : on la renvoie
+						{
+							out.setMaxSpeed(tmpVitesse);
+							lastVitesse = tmpVitesse;
+						}
+
 						if(debugSerie)
 							log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot);
 		
