@@ -27,7 +27,6 @@ import exceptions.ContainerException;
 import robot.Cinematique;
 import robot.RobotColor;
 import robot.RobotReal;
-import robot.Speed;
 import serie.BufferIncomingOrder;
 import serie.BufferOutgoingOrder;
 import serie.Ticket;
@@ -136,10 +135,9 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 						current.getPositionEcriture().setY(yRobot);
 						current.orientationReelle = orientationRobot;
 						robot.setCinematique(current);
-						double tmpVitesse = current.vitesseMax;
 						
-						if(!chemin.isUptodate()) // si on est en replanif…
-							tmpVitesse = Speed.REPLANIF.translationalSpeed;
+						// la vitesse de planification est gérée directement dans le pathfinding
+						double tmpVitesse = current.vitesseMax;
 						
 						if(!current.enMarcheAvant) // la vitesse doit être signée
 							tmpVitesse = -tmpVitesse;
