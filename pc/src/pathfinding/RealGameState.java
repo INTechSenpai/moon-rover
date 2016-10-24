@@ -19,6 +19,7 @@ package pathfinding;
 
 import robot.RobotReal;
 import container.Service;
+import obstacles.memory.ObstaclesMemory;
 import table.RealTable;
 
 /**
@@ -29,10 +30,13 @@ import table.RealTable;
 
 public class RealGameState extends GameState<RobotReal> implements Service
 {
-    public RealGameState(RobotReal robot, RealTable table)
+	private ObstaclesMemory mem;
+	
+    public RealGameState(RobotReal robot, RealTable table, ObstaclesMemory mem)
     {
         this.robot = robot;
         this.table = table;
+        this.mem = mem;
     }
     
     @Override
@@ -40,7 +44,7 @@ public class RealGameState extends GameState<RobotReal> implements Service
     {
     	table.copy(modified.table);
         robot.copy(modified.robot);
-        modified.iterator.init(robot.getTempsDepuisDebutMatch());
+        modified.iterator.init(robot.getTempsDepuisDebutMatch(), mem.getFirstNotDeadNow());
     }
 
 }
