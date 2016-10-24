@@ -17,8 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package serie;
 
-import pathfinding.astar.arcs.ArcCourbe;
-
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
