@@ -15,29 +15,28 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-package pathfinding.astarCourbe.arcs;
+package pathfinding.astar.arcs;
 
 import java.util.List;
 
 import robot.CinematiqueObs;
 
 /**
- * Arc de trajectoire courbe issu d'une interpolation cubique
+ * Arc courbe de longueur inconnue à l'avance
  * @author pf
  *
  */
 
-public class ArcCourbeCubique extends ArcCourbe
+public class ArcCourbeDynamique extends ArcCourbe
 {
 	public List<CinematiqueObs> arcs;
 	public double longueur;
 	
-	public ArcCourbeCubique(List<CinematiqueObs> arcs, double longueur, boolean rebrousse, boolean stop)
+	public ArcCourbeDynamique(List<CinematiqueObs> arcs, double longueur, boolean rebrousse)
 	{
-		super(rebrousse, stop);
+		super(rebrousse);
 		this.arcs = arcs;
 		this.longueur = longueur;
-//		this.obstacle = obstacle;
 	}
 	
 	@Override
@@ -69,7 +68,7 @@ public class ArcCourbeCubique extends ArcCourbe
 	{
 		double v = 0;
 		for(CinematiqueObs c : arcs)
-			v += c.vitesseMax.translationalSpeed;
+			v += c.vitesseMax;
 		return v / arcs.size();
 	}
 

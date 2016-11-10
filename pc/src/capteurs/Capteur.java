@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package capteurs;
 
-import java.awt.Color;
 import java.awt.Graphics;
 
 import config.Config;
@@ -40,17 +39,23 @@ import utils.Vec2RW;
 public abstract class Capteur implements Printable, Configurable
 {
 	public boolean sureleve;
-	public final Vec2RO positionRelative;
+	protected final Vec2RO positionRelative;
 	protected final double orientationRelative;
 	public final double angleCone; // angle du cône (en radians)
 	public final int portee;
 	public final int distanceMin;
 	protected int L, d;
+	protected Vec2RO centreRotationGauche, centreRotationDroite;
+	protected double orientationRelativeRotate;
+	protected Vec2RW positionRelativeRotate;
+	private TypeCapteur type;
 	
 	public Capteur(Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
+		this.type = type;
 		this.positionRelative = positionRelative;
 		this.orientationRelative = orientationRelative;
+		positionRelativeRotate = new Vec2RW();
 		this.angleCone = type.angleCone;
 		this.distanceMin = type.distanceMin;
 		this.portee = type.portee;
@@ -60,25 +65,28 @@ public abstract class Capteur implements Printable, Configurable
 	@Override
 	public void useConfig(Config config)
 	{
-		L = config.getInt(ConfigInfo.DISTANCE_ROUES_AVANT_ET_ARRIERE);
-		d = config.getInt(ConfigInfo.DISTANCE_ROUES_GAUCHE_ET_DROITE) / 2;
+		L = config.getInt(ConfigInfo.CENTRE_ROTATION_ROUE_X);
+		d = config.getInt(ConfigInfo.CENTRE_ROTATION_ROUE_Y);
+		centreRotationGauche = new Vec2RO(L, d);
+		centreRotationDroite = new Vec2RO(L, -d);
 	}
 
-	public abstract double getOrientationRelative(Cinematique c);
+	public abstract void computePosOrientationRelative(Cinematique c);
 	
 	@Override
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
 		double orientation = robot.getCinematique().orientationReelle;
-		Vec2RW p1 = positionRelative.clone();
+		computePosOrientationRelative(robot.getCinematique());
+		Vec2RW p1 = positionRelativeRotate.clone();
 		p1.rotate(orientation);
 		p1.plus(robot.getCinematique().getPosition());
-		Vec2RW p2 = positionRelative.clone();
-		p2.plus(new Vec2RO(portee, angleCone + getOrientationRelative(robot.getCinematique()), false));
+		Vec2RW p2 = positionRelativeRotate.clone();
+		p2.plus(new Vec2RO(portee, angleCone + orientationRelativeRotate, false));
 		p2.rotate(orientation);
 		p2.plus(robot.getCinematique().getPosition());
-		Vec2RW p3 = positionRelative.clone();
-		p3.plus(new Vec2RO(portee, - angleCone + getOrientationRelative(robot.getCinematique()), false));
+		Vec2RW p3 = positionRelativeRotate.clone();
+		p3.plus(new Vec2RO(portee, - angleCone + orientationRelativeRotate, false));
 		p3.rotate(orientation);
 		p3.plus(robot.getCinematique().getPosition());
 		int[] x = new int[3];
@@ -89,9 +97,9 @@ public abstract class Capteur implements Printable, Configurable
 		y[0] = f.YtoWindow(p1.getY());
 		y[1] = f.YtoWindow(p2.getY());
 		y[2] = f.YtoWindow(p3.getY());
-		g.setColor(new Color(0, 130, 0, 50));
+		g.setColor(type.couleurTransparente);
 		g.fillPolygon(x, y, 3);
-		g.setColor(new Color(0, 130, 0, 255));
+		g.setColor(type.couleur);
 		g.drawPolygon(x, y, 3);
 	}
 

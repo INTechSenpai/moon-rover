@@ -37,13 +37,12 @@ public class CinematiqueObs extends Cinematique implements Memorizable
 		obstacle = new ObstacleRobot(r);
 	}
 	
-/*	public CinematiqueObs(double x, double y, double orientation, boolean enMarcheAvant, double courbure, Speed vitesseMax, RobotChrono r)
+	public void copy(CinematiqueObs autre)
 	{
-		super(x,y,orientation,enMarcheAvant, courbure,vitesseMax);
-		obstacle = new ObstacleRectangular();
-		this.obstacle.update(position, orientationReelle, r);
+		super.copy(autre);
+		obstacle.copy(autre.obstacle);
 	}
-*/
+	
 	@Override
 	public void setIndiceMemoryManager(int indice)
 	{
@@ -67,9 +66,10 @@ public class CinematiqueObs extends Cinematique implements Memorizable
 	 * @param obstacle
 	 * @param r
 	 */
-	public void update(double x, double y, double orientation, boolean enMarcheAvant, double courbure, Speed vitesseMax)
+	@Override
+	public void update(double x, double y, double orientationGeometrique, boolean enMarcheAvant, double courbure, double vitesseMax)
 	{
-		super.update(x,y,orientation,enMarcheAvant, courbure,vitesseMax);
+		super.update(x, y, orientationGeometrique, enMarcheAvant, courbure, vitesseMax);
 		obstacle.update(position, orientationReelle);
 	}
 

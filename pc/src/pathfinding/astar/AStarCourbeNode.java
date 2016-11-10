@@ -15,13 +15,21 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-package pathfinding.astarCourbe;
+package pathfinding.astar;
+
+import graphic.Fenetre;
+import graphic.printable.Couleur;
+import graphic.printable.Layer;
+import graphic.printable.Printable;
+
+import java.awt.Color;
+import java.awt.Graphics;
 
 import memory.Memorizable;
 import pathfinding.ChronoGameState;
-import pathfinding.astarCourbe.arcs.ArcCourbe;
-import pathfinding.astarCourbe.arcs.ArcCourbeClotho;
-import pathfinding.astarCourbe.arcs.ArcCourbeCubique;
+import pathfinding.astar.arcs.ArcCourbe;
+import pathfinding.astar.arcs.ArcCourbeStatique;
+import pathfinding.astar.arcs.ArcCourbeDynamique;
 import robot.RobotReal;
 
 /**
@@ -30,19 +38,20 @@ import robot.RobotReal;
  *
  */
 
-public class AStarCourbeNode implements Memorizable
+public class AStarCourbeNode implements Memorizable, Printable
 {
 	public ChronoGameState state;
 	public double g_score; // distance du point de départ à ce point
 	public double f_score; // g_score + heuristique = meilleure distance qu'on peut espérer avec ce point
 	public AStarCourbeNode parent;
-	public final ArcCourbeClotho cameFromArc;
-	public ArcCourbeCubique cameFromArcCubique = null;
+	public final ArcCourbeStatique cameFromArcStatique;
+	public ArcCourbeDynamique cameFromArcDynamique = null;
 	private int indiceMemoryManager;
+	private boolean dead = false;
 	
 	public AStarCourbeNode(ChronoGameState state, RobotReal r)
 	{
-		cameFromArc = new ArcCourbeClotho(r);
+		cameFromArcStatique = new ArcCourbeStatique(r);
 		this.state = state;
 	}
 	
@@ -50,15 +59,21 @@ public class AStarCourbeNode implements Memorizable
 	{
 		if(parent == null)
 			return null;
-		if(cameFromArcCubique != null)
-			return cameFromArcCubique;
-		return cameFromArc;
+		if(cameFromArcDynamique != null)
+			return cameFromArcDynamique;
+		return cameFromArcStatique;
 	}
 	
 	public void init()
 	{
 		g_score = Double.MAX_VALUE;
 		f_score = Double.MAX_VALUE;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		return o.hashCode() == hashCode();
 	}
 	
 	@Override
@@ -85,11 +100,42 @@ public class AStarCourbeNode implements Memorizable
 	 */
 	public void copyReconstruct(AStarCourbeNode modified)
 	{
-		modified.cameFromArcCubique = null;
+		modified.cameFromArcDynamique = null;
 		modified.g_score = g_score;
 		modified.f_score = f_score;
 		state.copyAStarCourbe(modified.state);
 		modified.parent = null;
 	}
 
+	@Override
+	public void print(Graphics g, Fenetre f, RobotReal robot)
+	{
+		ArcCourbe a = getArc();
+		if(a != null)
+		{
+			a.print(g, f, robot);
+			double h = f_score;
+			double seuil = 5000;
+			if(h > seuil)
+				h = seuil;
+			
+			if(dead)
+				g.setColor(Couleur.BLANC.couleur);
+			else
+				g.setColor(new Color((int)(h*255/seuil), 0, (int)(255-h*255/seuil)));
+
+			a.getLast().print(g, f, robot);
+		}
+	}
+
+	@Override
+	public Layer getLayer()
+	{
+		return Couleur.TRAJECTOIRE.l;
+	}
+
+	public void setDead()
+	{
+		dead = true;
+	}
 }

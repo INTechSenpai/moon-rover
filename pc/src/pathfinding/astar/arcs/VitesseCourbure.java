@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-package pathfinding.astarCourbe.arcs;
+package pathfinding.astar.arcs;
 
 /**
  * Les différentes vitesses de courbure qu'on peut suivre
@@ -30,36 +30,44 @@ public enum VitesseCourbure
 	
 	// Interpolation cubique avec l'arrivée
 	DIRECT_COURBE(0),
-//	DIRECT_COURBE_REBROUSSE(0),
+	DIRECT_COURBE_REBROUSSE(0),
+	
+	RAMENE_VOLANT(16), // ramène le volant au centre
 	
 	GAUCHE_0(1),
 	GAUCHE_1(4),
 	GAUCHE_2(9),
 	GAUCHE_3(16),
+	GAUCHE_4(25),
+	GAUCHE_5(36),
 	COURBURE_IDENTIQUE(0),
 	DROITE_0(-1),
 	DROITE_1(-4),
 	DROITE_2(-9),
 	DROITE_3(-16),
+	DROITE_4(-25),
+	DROITE_5(-36),
 	
-	GAUCHE_0_REBROUSSE(1),
+//	GAUCHE_0_REBROUSSE(1),
 //	GAUCHE_1_REBROUSSE(4),
 //	GAUCHE_2_REBROUSSE(9),
-//	GAUCHE_3_REBROUSSE(16),
+	GAUCHE_3_REBROUSSE(16),
 	COURBURE_IDENTIQUE_REBROUSSE(0),
-	DROITE_0_REBROUSSE(-1);
+//	DROITE_0_REBROUSSE(-1);
 //	DROITE_1_REBROUSSE(-4),
 //	DROITE_2_REBROUSSE(-9),
-//	DROITE_3_REBROUSSE(-16);
+	DROITE_3_REBROUSSE(-16);
 
-	public final int vitesse; // vitesse en en m^-1/s
+	public final int vitesse; // vitesse en (1/m)/m = 1/m^2
 	public final int squaredRootVitesse; // sqrt(abs(vitesse))
 	public final boolean positif;
 	public final boolean rebrousse;
+	public final boolean ramene;
 	
 	private VitesseCourbure(int vitesse)
 	{
 		this.rebrousse = toString().contains("REBROUSSE");
+		this.ramene = toString().startsWith("RAMENE_");
 		this.vitesse = vitesse;
 		this.positif = vitesse >= 0;
 		

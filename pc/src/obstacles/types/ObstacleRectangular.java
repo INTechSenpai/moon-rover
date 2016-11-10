@@ -20,7 +20,7 @@ package obstacles.types;
 import java.awt.Graphics;
 
 import graphic.Fenetre;
-import graphic.printable.Layer;
+import graphic.printable.Couleur;
 import robot.RobotReal;
 import utils.Vec2RO;
 import utils.Vec2RW;
@@ -57,24 +57,18 @@ public class ObstacleRectangular extends Obstacle
 
 	protected double angle, cos, sin;
 
-	/**
-	 * Cas où l'angle est nul
-	 * @param log
-	 * @param config
-	 * @param position
-	 * @param sizeX
-	 * @param sizeY
-	 * @param angle
-	 */
-	public ObstacleRectangular(Vec2RO position, int sizeX, int sizeY)
+	public ObstacleRectangular(Vec2RO position, int sizeX, int sizeY, double angle, Couleur c)
 	{
-		this(position, sizeX, sizeY, 0);
+		this(position, sizeX, sizeY, angle);
+		this.l = c.l;
+		this.c = c.couleur;
 	}
 
-	public ObstacleRectangular(Vec2RO position, int sizeX, int sizeY, Layer l)
+	public ObstacleRectangular(Vec2RO position, int sizeX, int sizeY, Couleur c)
 	{
 		this(position, sizeX, sizeY, 0);
-		this.l = l;
+		this.l = c.l;
+		this.c = c.couleur;
 	}
 
 	protected ObstacleRectangular(Vec2RW pos)
@@ -209,7 +203,7 @@ public class ObstacleRectangular extends Obstacle
 	@Override
 	public String toString()
 	{
-		return "ObstacleRectangulaire "+coinBasGauche+" "+coinBasDroite+" "+coinHautGauche+" "+coinHautDroite+" "+super.toString();
+		return "ObstacleRectangulaire "+coinBasGaucheRotate+" "+coinBasDroiteRotate+" "+coinHautGaucheRotate+" "+coinHautDroiteRotate+" "+super.toString();
 	}
 		
 	/**
@@ -276,6 +270,9 @@ public class ObstacleRectangular extends Obstacle
 	{
 		if(coinBasDroiteRotate == null)
 			return;
+
+		if(c != null)
+			g.setColor(c);
 		
 		int[] X = new int[4];
 		X[0] = (int) coinBasDroiteRotate.getX();

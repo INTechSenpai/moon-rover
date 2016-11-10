@@ -32,12 +32,12 @@ public class CapteurImmobile extends Capteur
 	public CapteurImmobile(Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
 		super(positionRelative, orientationRelative, type, sureleve);
+		orientationRelativeRotate = orientationRelative;
+		positionRelativeRotate = positionRelative.clone();
 	}
 
 	@Override
-	public double getOrientationRelative(Cinematique c)
-	{
-		return orientationRelative;
-	}
+	public void computePosOrientationRelative(Cinematique c)
+	{}
 
 }

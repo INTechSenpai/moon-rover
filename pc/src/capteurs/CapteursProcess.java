@@ -19,10 +19,12 @@ package capteurs;
 
 import graphic.PrintBuffer;
 import obstacles.types.ObstacleProximity;
+import obstacles.types.ObstacleRobot;
 import obstacles.types.ObstaclesFixes;
 import pathfinding.chemin.CheminPathfinding;
 import pathfinding.dstarlite.DStarLite;
 import pathfinding.dstarlite.gridspace.GridSpace;
+import robot.RobotReal;
 import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
@@ -55,12 +57,11 @@ public class CapteursProcess implements Service, Configurable
 	
 	private int nbCapteurs;
 	private int rayonEnnemi;
-    private int rayonRobot;
 	private int distanceApproximation;
-
+	private ObstacleRobot obstacleRobot;
 	private Capteur[] capteurs;
 
-	public CapteursProcess(Container container, Log log, GridSpace gridspace, Table table, DStarLite dstarlite, CheminPathfinding chemin, PrintBuffer buffer)
+	public CapteursProcess(Container container, Log log, GridSpace gridspace, Table table, DStarLite dstarlite, CheminPathfinding chemin, PrintBuffer buffer, RobotReal robot)
 	{
 		this.table = table;
 		this.log = log;
@@ -69,24 +70,27 @@ public class CapteursProcess implements Service, Configurable
 		this.chemin = chemin;
 		this.buffer = buffer;
 		this.container = container;
+		obstacleRobot = new ObstacleRobot(robot);
 	}
 	
 	@Override
 	public void useConfig(Config config)
 	{
 		rayonEnnemi = config.getInt(ConfigInfo.RAYON_ROBOT_ADVERSE);
-		rayonRobot = config.getInt(ConfigInfo.RAYON_ROBOT);
 		distanceApproximation = config.getInt(ConfigInfo.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);		
 		nbCapteurs = config.getInt(ConfigInfo.NB_CAPTEURS);
 		
 		capteurs = new Capteur[nbCapteurs];
 				
-		// TODO
 		try {
-			capteurs[0] = container.make(CapteurMobile.class, new Vec2RO(233, 86), 0., TypeCapteur.IR, true);
-			capteurs[1] = container.make(CapteurMobile.class, new Vec2RO(233, -86), 0., TypeCapteur.IR, true);
-			capteurs[2] = container.make(CapteurMobile.class, new Vec2RO(235, 60), 0., TypeCapteur.ToF_COURT, false);
-			capteurs[3] = container.make(CapteurMobile.class, new Vec2RO(235, -60), 0., TypeCapteur.ToF_COURT, false);
+			capteurs[0] = container.make(CapteurMobile.class, new Vec2RO(233, 86), 10./180.*Math.PI, TypeCapteur.IR, true);
+			capteurs[1] = container.make(CapteurMobile.class, new Vec2RO(233, -86), -10./180.*Math.PI, TypeCapteur.IR, true);
+			capteurs[2] = container.make(CapteurMobile.class, new Vec2RO(235, 60), 25./180.*Math.PI, TypeCapteur.ToF_COURT, false);
+			capteurs[3] = container.make(CapteurMobile.class, new Vec2RO(235, -60), -25./180.*Math.PI, TypeCapteur.ToF_COURT, false);
+			capteurs[4] = container.make(CapteurImmobile.class, new Vec2RO(55, 102), Math.PI/2, TypeCapteur.ToF_COURT, false);
+			capteurs[5] = container.make(CapteurImmobile.class, new Vec2RO(140, 102), Math.PI/2, TypeCapteur.ToF_COURT, false);
+			capteurs[6] = container.make(CapteurImmobile.class, new Vec2RO(55, -102), -Math.PI/2, TypeCapteur.ToF_COURT, false);
+			capteurs[7] = container.make(CapteurImmobile.class, new Vec2RO(140, -102), -Math.PI/2, TypeCapteur.ToF_COURT, false);
 		} catch(ContainerException e)
 		{
 			log.critical(e);
@@ -104,12 +108,14 @@ public class CapteursProcess implements Service, Configurable
 	{
 		double orientationRobot = data.cinematique.orientationReelle;
 		Vec2RO positionRobot = data.cinematique.getPosition();
-		
+
+		obstacleRobot.update(positionRobot, orientationRobot);
+
 		/**
 		 * On update la table avec notre position
 		 */
 	    for(GameElementNames g: GameElementNames.values())
-	        if(g.obstacle.isProcheObstacle(positionRobot, rayonRobot))
+	        if(g.obstacle.isColliding(obstacleRobot))
 	        	table.setDone(g, Tribool.TRUE); // on est sûr de l'avoir shooté
 					
 		/**
@@ -117,6 +123,7 @@ public class CapteursProcess implements Service, Configurable
 		 */
 		for(int i = 0; i < nbCapteurs; i++)
 		{
+			capteurs[i].computePosOrientationRelative(data.cinematique);
 			/**
 			 * Si le capteur voit trop proche ou trop loin, on ne peut pas lui faire confiance
 			 */
@@ -126,7 +133,7 @@ public class CapteursProcess implements Service, Configurable
 			/**
 			 * Si ce qu'on voit est un obstacle de table, on l'ignore
 			 */
-			Vec2RO positionVue = new Vec2RO(data.mesures[i], capteurs[i].getOrientationRelative(data.cinematique), true);
+			Vec2RO positionVue = new Vec2RO(data.mesures[i], capteurs[i].orientationRelativeRotate, true);
 			
 	    	for(ObstaclesFixes o: ObstaclesFixes.values())
 	    		if(o.isVisible(capteurs[i].sureleve) && o.getObstacle().squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
@@ -135,8 +142,8 @@ public class CapteursProcess implements Service, Configurable
 			/**
 			 * Sinon, on ajoute
 			 */
-			Vec2RW positionEnnemi = new Vec2RW(data.mesures[i]+rayonEnnemi, capteurs[i].getOrientationRelative(data.cinematique), true);
-			positionEnnemi.plus(capteurs[i].positionRelative);
+			Vec2RW positionEnnemi = new Vec2RW(data.mesures[i]+rayonEnnemi, capteurs[i].orientationRelativeRotate, true);
+			positionEnnemi.plus(capteurs[i].positionRelativeRotate);
 			positionEnnemi.rotate(orientationRobot);
 			positionEnnemi.plus(positionRobot);
 			
@@ -146,14 +153,15 @@ public class CapteursProcess implements Service, Configurable
 			ObstacleProximity o = gridspace.addObstacleAndRemoveNearbyObstacles(positionEnnemi);
 			
 			/**
-			 * Mise à jour de l'état de la table
+			 * Mise à jour de l'état de la table : un ennemi est passé
 			 */
 		    for(GameElementNames g: GameElementNames.values())
 		        if(table.isDone(g) == Tribool.FALSE && g.obstacle.isProcheObstacle(o, o.radius))
 		        	table.setDone(g, Tribool.MAYBE);
 
 		}
-		dstarlite.updateObstacles();
+		dstarlite.updateObstaclesEnnemi();
+		dstarlite.updateObstaclesTable();
 		chemin.checkColliding();
 	}
 	

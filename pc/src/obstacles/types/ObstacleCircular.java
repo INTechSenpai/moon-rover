@@ -20,9 +20,10 @@ package obstacles.types;
 import java.awt.Graphics;
 
 import graphic.Fenetre;
-import graphic.printable.Layer;
+import graphic.printable.Couleur;
 import robot.RobotReal;
 import utils.Vec2RO;
+import utils.Vec2RW;
 
 /**
  * Obstacle circulaire
@@ -44,9 +45,9 @@ public class ObstacleCircular extends Obstacle
 		squared_radius = rad * rad;
 	}
 
-	public ObstacleCircular(Vec2RO position, int rad, Layer l)
+	public ObstacleCircular(Vec2RO position, int rad, Couleur c)
 	{
-		super(position,l);
+		super(position,c);
 		this.radius = rad;
 		squared_radius = rad * rad;
 	}
@@ -67,15 +68,45 @@ public class ObstacleCircular extends Obstacle
 	@Override
 	public boolean isColliding(ObstacleRectangular o)
 	{
+		// Calcul simple permettant de vérifier les cas absurdes où les obstacles sont loin l'un de l'autre
+		if(position.squaredDistance(o.centreGeometrique) >= (radius+o.demieDiagonale)*(radius+o.demieDiagonale))
+			return false;
 		return o.squaredDistance(position) < radius*radius;
 	}
 
 	@Override
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
+		if(c != null)
+			g.setColor(c);
 		if(radius <= 0)
 			g.fillOval(f.XtoWindow(position.getX())-5, f.YtoWindow(position.getY())-5, 10, 10);
 		else
 			g.fillOval(f.XtoWindow(position.getX()-radius), f.YtoWindow(position.getY()+radius), f.distanceXtoWindow((radius)*2), f.distanceYtoWindow((radius)*2));
+	}
+
+	/**
+	 * Renvoie la position "nearestPos" la plus proche de "pos" tout en étant sur le cercle de centre "position" et de rayon "radius+distance"
+	 * Est utilisé pour aller sur les cratères
+	 * @param pos
+	 * @param nearestPos
+	 * @param distance
+	 */
+	public void getNearestPosition(Vec2RO pos, Vec2RW nearestPos, double distance)
+	{
+		pos.copy(nearestPos);
+		nearestPos.minus(position);
+		nearestPos.scalar((radius+distance)/position.distance(pos));
+		nearestPos.plus(position);
+	}
+
+	/**
+	 * Donne l'orientation à avoir au point donné par getNearestPosition
+	 * @param position
+	 * @return
+	 */
+	public double getNearestOrientation(Vec2RO pos)
+	{
+		return Math.atan2(pos.getY()-position.getY(), pos.getX()-position.getX());
 	}
 }

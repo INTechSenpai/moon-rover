@@ -15,11 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-package pathfinding.astarCourbe.arcs;
+package pathfinding.astar.arcs;
 
-import pathfinding.astarCourbe.AStarCourbeNode;
+import pathfinding.DirectionStrategy;
+import pathfinding.SensFinal;
+import pathfinding.astar.AStarCourbeNode;
+import pathfinding.dstarlite.DStarLite;
 import robot.Cinematique;
-import robot.DirectionStrategy;
 import robot.Speed;
 import table.GameElementNames;
 import table.Table;
@@ -51,19 +53,23 @@ public class ArcManager implements Service, Configurable
 	private PrintBuffer buffer;
 	private Table table;
 	private AStarCourbeNode current;
+	private DStarLite dstarlite;
 	private double courbureMax;
 	private boolean printObs;
 	
 	private DirectionStrategy directionstrategyactuelle;
+	private SensFinal sens;
+	private Cinematique arrivee = new Cinematique();
 	private List<VitesseCourbure> listeVitesse = Arrays.asList(VitesseCourbure.values());
 	private ListIterator<VitesseCourbure> iterator = listeVitesse.listIterator();
 	
-	public ArcManager(Log log, ClothoidesComputer clotho, Table table, PrintBuffer buffer)
+	public ArcManager(Log log, ClothoidesComputer clotho, Table table, PrintBuffer buffer, DStarLite dstarlite)
 	{
 		this.table = table;
 		this.log = log;
 		this.clotho = clotho;
 		this.buffer = buffer;
+		this.dstarlite = dstarlite;
 	}
 
 	private ObstacleArcCourbe obs = new ObstacleArcCourbe();
@@ -74,7 +80,7 @@ public class ArcManager implements Service, Configurable
 	 * @return
 	 * @throws FinMatchException
 	 */
-	public boolean isReachable(AStarCourbeNode node)
+	public boolean isReachable(AStarCourbeNode node, boolean shoot)
 	{
 		// le tout premier nœud n'a pas de parent
 		if(node.parent == null)
@@ -107,13 +113,14 @@ public class ArcManager implements Service, Configurable
     			return false;
     		}
     	
-    	// On vérifie si on collisionne un élément de jeu
-		for(GameElementNames g : GameElementNames.values())
-			if(table.isDone(g) != Tribool.FALSE && g.obstacle.isColliding(obs))
-    		{
-//    			log.debug("Collision avec "+g);
-    			return false;
-    		}
+    	// On vérifie si on collisionne un élément de jeu (sauf si on shoot)
+    	if(!shoot)
+			for(GameElementNames g : GameElementNames.values())
+				if(table.isDone(g) == Tribool.FALSE && g.obstacle.isColliding(obs))
+	    		{
+	//    			log.debug("Collision avec "+g);
+	    			return false;
+	    		}
 
     	return true;
 	}
@@ -134,7 +141,7 @@ public class ArcManager implements Service, Configurable
 	 * Fournit le prochain successeur. On suppose qu'il existe
 	 * @param successeur
 	 */
-    public boolean next(AStarCourbeNode successeur, Speed vitesseMax, Cinematique arrivee)
+    public boolean next(AStarCourbeNode successeur, Speed vitesseMax)
     {
     	VitesseCourbure v = iterator.next();
 
@@ -143,48 +150,56 @@ public class ArcManager implements Service, Configurable
 		/**
 		 * Si on est proche et qu'on tente une interpolation cubique
 		 */
-		if(v == VitesseCourbure.DIRECT_COURBE)// || v == VitesseCourbure.DIRECT_COURBE_REBROUSSE)
+		if(v == VitesseCourbure.DIRECT_COURBE || v == VitesseCourbure.DIRECT_COURBE_REBROUSSE)
 		{
 //			log.debug("Recherche arc cubique");
-			ArcCourbeCubique tmp;
-			if(current.getArc() != null)
-				tmp = clotho.cubicInterpolation(
-						current.state.robot,
-						current.getArc().getLast(),
-						arrivee,
-						vitesseMax,
-						v);
-			else
-				tmp = clotho.cubicInterpolation(
-						current.state.robot,
-						arrivee,
-						vitesseMax,
-						v);
+			ArcCourbeDynamique tmp;
+			tmp = clotho.cubicInterpolation(
+					current.state.robot.getCinematique(),
+					arrivee,
+					vitesseMax,
+					v);
 			if(tmp == null)
 			{
 //				log.debug("Interpolation impossible");
 				return false;
 			}
 
-			successeur.cameFromArcCubique = tmp;
+			successeur.cameFromArcDynamique = tmp;
+		}
+		
+		/**
+		 * Si on veut ramener le volant au milieu
+		 */
+		else if(v.ramene)
+		{
+			ArcCourbeDynamique tmp = clotho.getTrajectoireRamene(
+					successeur.state.robot.getCinematique(),
+					v,
+					vitesseMax);
+			if(tmp.getNbPoints() == 0)
+				return false;
+			successeur.cameFromArcDynamique = tmp;
 		}
 		
 		/**
 		 * Si on fait une interpolation par clothoïde
 		 */
-		else if(current.parent != null)
-			clotho.getTrajectoire(current.state.robot,
-					current.cameFromArc,
+		else
+			clotho.getTrajectoire(
+					successeur.state.robot.getCinematique(),
 					v,
 					vitesseMax,
-					successeur.cameFromArc);
-		else // pas de prédécesseur
-			clotho.getTrajectoire(successeur.state.robot,
-					v,
-					vitesseMax,
-					successeur.cameFromArc);
+					successeur.cameFromArcStatique);
 
 		return true;
+    }
+    
+    public void configureArcManager(SensFinal sens, DirectionStrategy directionstrategyactuelle, Cinematique arrivee)
+    {
+    	this.sens = sens;
+    	this.directionstrategyactuelle = directionstrategyactuelle;
+    	arrivee.copy(this.arrivee);
     }
     
     /**
@@ -201,36 +216,50 @@ public class ArcManager implements Service, Configurable
     	//      - on n'est pas en fast, donc pas d'autorisation
     	//      ET
     	//      - on est dans la bonne direction, donc pas d'autorisation exceptionnelle de se retourner
-    	if(vitesse.rebrousse && (directionstrategyactuelle != DirectionStrategy.FASTEST && directionstrategyactuelle.isPossible((current.state.robot).getCinematique().enMarcheAvant)))
+    	
+    	if(vitesse.rebrousse && (directionstrategyactuelle != DirectionStrategy.FASTEST && directionstrategyactuelle.isPossible(current.state.robot.getCinematique().enMarcheAvant)))
     	{ 
 //    		log.debug(vitesse+" n'est pas acceptable (rebroussement interdit");
     		return false;
     	}
     	
     	// Si on ne rebrousse pas chemin alors que c'est nécessaire
-    	if(!vitesse.rebrousse && !directionstrategyactuelle.isPossible((current.state.robot).getCinematique().enMarcheAvant))
+    	if(!vitesse.rebrousse && !directionstrategyactuelle.isPossible(current.state.robot.getCinematique().enMarcheAvant))
     	{
 //    		log.debug(vitesse+" n'est pas acceptable (rebroussement nécessaire");
     		return false;
     	}
 
     	// On ne tente pas l'interpolation si on est trop loin
-		if((vitesse == VitesseCourbure.DIRECT_COURBE /*|| vitesse == VitesseCourbure.DIRECT_COURBE_REBROUSSE*/))
+		if((vitesse == VitesseCourbure.DIRECT_COURBE || vitesse == VitesseCourbure.DIRECT_COURBE_REBROUSSE))
 		{
+			// on n'arriverait pas dans le bon sens…
+			if(!sens.isOK(current.state.robot.getCinematique().enMarcheAvant ^ vitesse == VitesseCourbure.DIRECT_COURBE_REBROUSSE))
+				return false;
+			
 			// h vaut donc l'heuristique de current
-			Double h = current.f_score - current.g_score;
-			if(h > 250)
+			double h = current.f_score - current.g_score;
+			if(h > 1000)
 //				log.debug(vitesse+" n'est pas acceptable (on est trop loin)");
-			return false;
+				return false;
 		}
     	
     	// TODO
-    	double courbureFuture = (current.state.robot).getCinematique().courbureGeometrique + vitesse.vitesse * ClothoidesComputer.DISTANCE_ARC_COURBE_M;
-    	if(courbureFuture >= -courbureMax && courbureFuture <= courbureMax)
-    		return true;
+    	double courbureFuture = current.state.robot.getCinematique().courbureGeometrique + vitesse.vitesse * ClothoidesComputer.DISTANCE_ARC_COURBE_M;
+    	if(!(courbureFuture >= -courbureMax && courbureFuture <= courbureMax))
+    	{
+//        	log.debug(vitesse+" n'est acceptable (courbure trop grande");
+    		return false;
+    	}
+    	
+    	double courbure = Math.abs(current.state.robot.getCinematique().courbureGeometrique);
+    	if(vitesse.ramene && (courbure < 0.1 || courbure > 3))
+    	{
+//    		log.debug("Ne peut pas ramener le volant si la courbure est déjà nulle ou bien trop grande…");
+    		return false;
+    	}
 
-//    	log.debug(vitesse+" n'est acceptable (courbure trop grande");
-		return false;
+		return true;
     }
     
     /**
@@ -254,9 +283,8 @@ public class ArcManager implements Service, Configurable
      * @param current
      * @param directionstrategyactuelle
      */
-    public void reinitIterator(AStarCourbeNode current, DirectionStrategy directionstrategyactuelle)
+    public void reinitIterator(AStarCourbeNode current)
     {
-    	this.directionstrategyactuelle = directionstrategyactuelle;
     	this.current = current;
     	iterator = listeVitesse.listIterator();
     }
@@ -268,4 +296,23 @@ public class ArcManager implements Service, Configurable
 		printObs = config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_COLLISION);
 	}
 
+	public synchronized Double heuristicCostCourbe(Cinematique c, SensFinal sens)
+	{
+		return dstarlite.heuristicCostCourbe(c, sens);
+	}
+
+	public boolean isArrived(AStarCourbeNode successeur)
+	{
+		return successeur.getArc() != null && successeur.getArc().getLast().getPosition().squaredDistance(arrivee.getPosition()) < 1 && sens.isOK(successeur.getArc().getLast().enMarcheAvant);
+	}
+
+	/**
+	 * heuristique de secours
+	 * @param cinematique
+	 * @return
+	 */
+	public double heuristicDirect(Cinematique cinematique)
+	{
+		return 3*cinematique.getPosition().distanceFast(arrivee.getPosition());
+	}
 }

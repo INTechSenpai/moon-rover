@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
+import pathfinding.SensFinal;
 import pathfinding.dstarlite.gridspace.Direction;
 import pathfinding.dstarlite.gridspace.GridSpace;
 import pathfinding.dstarlite.gridspace.PointDirige;
@@ -28,6 +29,8 @@ import pathfinding.dstarlite.gridspace.PointDirigeManager;
 import pathfinding.dstarlite.gridspace.PointGridSpace;
 import pathfinding.dstarlite.gridspace.PointGridSpaceManager;
 import robot.Cinematique;
+import robot.Speed;
+import table.RealTable;
 import utils.Log;
 import utils.Vec2RO;
 import config.Config;
@@ -35,6 +38,7 @@ import config.ConfigInfo;
 import config.Configurable;
 import container.Service;
 import exceptions.PathfindingException;
+import graphic.PrintBuffer;
 import graphic.printable.Couleur;
 
 /**
@@ -48,11 +52,14 @@ import graphic.printable.Couleur;
 
 public class DStarLite implements Service, Configurable
 {
+	// TODO : éléments de jeu comme obstacles
+	
 	protected Log log;
 	private GridSpace gridspace;
+	private RealTable table;
 	private PointGridSpaceManager pointManager;
 	private PointDirigeManager pointDManager;
-	private boolean graphicDStarLite, graphicDStarLiteFinal;
+	private boolean graphicDStarLite, graphicDStarLiteFinal, graphicHeuristique;
 
 	private DStarLiteNode[] memory = new DStarLiteNode[PointGridSpace.NB_POINTS];
 
@@ -61,6 +68,7 @@ public class DStarLite implements Service, Configurable
 	private DStarLiteNode arrivee;
 	private DStarLiteNode depart;
 	private PointGridSpace lastDepart;
+	private PrintBuffer buffer;
 	private long nbPF = 0;
 	
 	private double[][] atan2map = new double[19][19];
@@ -76,12 +84,14 @@ public class DStarLite implements Service, Configurable
 	 * @param log
 	 * @param gridspace
 	 */
-	public DStarLite(Log log, GridSpace gridspace, PointGridSpaceManager pointManager, PointDirigeManager pointDManager)
+	public DStarLite(Log log, GridSpace gridspace, PointGridSpaceManager pointManager, PointDirigeManager pointDManager, PrintBuffer buffer, RealTable table)
 	{
 		this.log = log;
 		this.gridspace = gridspace;
 		this.pointManager = pointManager;
 		this.pointDManager = pointDManager;
+		this.buffer = buffer;
+		this.table = table;
 		
 		obstaclesConnus = new BitSet(PointGridSpace.NB_POINTS * 8);
 		obstaclesConnus.or(gridspace.getCurrentObstacles());
@@ -277,7 +287,7 @@ public class DStarLite implements Service, Configurable
 			gridspace.reinitGraphicGrid();
 		
 		updateGoalAndStart(depart, arrivee);
-		updateObstacles();
+		updateObstaclesEnnemi();
 
 		if(graphicDStarLite)
 		{
@@ -302,6 +312,7 @@ public class DStarLite implements Service, Configurable
 	{
 		graphicDStarLite = config.getBoolean(ConfigInfo.GRAPHIC_D_STAR_LITE);
 		graphicDStarLiteFinal = config.getBoolean(ConfigInfo.GRAPHIC_D_STAR_LITE_FINAL);
+		graphicHeuristique = config.getBoolean(ConfigInfo.GRAPHIC_HEURISTIQUE);
 	}
 	
 	/**
@@ -345,11 +356,26 @@ public class DStarLite implements Service, Configurable
 	}
 	
 	/**
+	 * Met à jour les obstacles des éléments de jeux
+	 */
+	public synchronized void updateObstaclesTable()
+	{
+		updateObstacles(table.getOldAndNewObstacles(true));
+	}
+	
+	/**
+	 * Met à jour les obstacles des ennemies
+	 */
+	public synchronized void updateObstaclesEnnemi()
+	{
+		updateObstacles(gridspace.getOldAndNewObstacles());
+	}
+	
+	/**
 	 * Met à jour le pathfinding
 	 */
-	public synchronized void updateObstacles()
+	private synchronized void updateObstacles(BitSet[] obs)
 	{
-		BitSet[] obs = gridspace.getOldAndNewObstacles();
 		
 //		if((graphicDStarLite || graphicDStarLiteFinal) && (!obs[0].isEmpty() || !obs[1].isEmpty()))
 //			gridspace.reinitGraphicGrid();
@@ -452,26 +478,19 @@ public class DStarLite implements Service, Configurable
 		
 	}
 	
-/*	private Vec2RW delta = new Vec2RW();
-	private Vec2RW deltaTmp = new Vec2RW();
-	private Vec2RW centreCercle = new Vec2RW();
-	private Vec2RW posRobot = new Vec2RW();
-	private Vec2RW pos = new Vec2RW();*/
-
 	/**
 	 * Renvoie l'heuristique au A* courbe.
 	 * L'heuristique est une distance en mm
 	 * @param c
 	 * @return
 	 */
-	public synchronized Double heuristicCostCourbe(Cinematique c)
+	public synchronized Double heuristicCostCourbe(Cinematique c, SensFinal sens)
 	{
 		if(c.getPosition().isHorsTable())
 		{
 //			log.debug("Hors table !");
 			return null;
 		}
-//			throw new DStarLiteException("Heuristique : hors table");
 		
 		PointGridSpace pos = pointManager.get(c.getPosition());
 		
@@ -480,15 +499,29 @@ public class DStarLite implements Service, Configurable
 //			log.debug("Dans un obstacle");
 			return null;
 		}
-		
+
 		updateStart(pos);
 		DStarLiteNode premier = getFromMemoryUpdated(pos);
+		
+		// Cas particulier si on sait qu'on doit rebrousser chemin
+		if(!sens.isOK(c.enMarcheAvant))
+			return heuristicCostCourbeRebroussement(premier, pos, c);
+//		else if(sens == SensFinal.MARCHE_ARRIERE) // on doit arriver en marche arrière et on est en marche arrière
+//			return heuristicCostCourbeRebroussementFin(premier, pos, c);
 		
 		// si on est arrivé… on est arrivé.
 		if(pos.equals(arrivee.gridpoint))
 			return 0.;
 		
-		double erreurOrientation = Math.abs((c.orientationGeometrique - getOrientationHeuristique(pos)) % (2 * Math.PI)); // erreur en radian
+		double orientationOptimale = getOrientationHeuristique(pos);
+		
+		// l'orientation est vérifiée modulo 2*pi : la marche avant et la marche arrière sont différenciées
+		double erreurOrientation = (c.orientationGeometrique - orientationOptimale) % (2*Math.PI);
+		if(erreurOrientation > Math.PI)
+			erreurOrientation -= 2*Math.PI;
+
+		erreurOrientation = Math.abs(erreurOrientation);
+
 		double erreurDistance = premier.rhs / 1000. * PointGridSpace.DISTANCE_ENTRE_DEUX_POINTS; // distance en mm
 		
 		if(premier.rhs == Integer.MAX_VALUE)
@@ -498,14 +531,76 @@ public class DStarLite implements Service, Configurable
 		}
 //			throw new DStarLiteException("Heuristique : inaccessible");
 
-/*		log.debug("rhs : "+premier.rhs);
-		log.debug("erreurCourbure : "+erreurCourbure+" "+c.courbureGeometrique+" "+getCourbureHeuristique(pos, c.orientationGeometrique));
-		log.debug("erreurOrientation : "+erreurOrientation);
-		log.debug("erreurDistance : "+erreurDistance);
-		*/
-		return erreurDistance + 5*erreurOrientation; // TODO : coeff
+//		log.debug(c);
+//		log.debug("rhs : "+premier.rhs);
+//		log.debug("erreurOrientation : "+erreurOrientation+" "+c.orientationGeometrique+" "+orientationOptimale);
+//		log.debug("erreurDistance : "+erreurDistance);
+//		log.debug("Score : "+(erreurDistance + 5*erreurOrientation));
+
+		// on doit se retourner ? alors on l'encourage à tourner
+//		if(erreurOrientationReelle > Math.PI/2 && erreurDistance > 100)
+//			return 500 + 1.1*erreurDistance - Math.abs(30*c.courbureReelle);
+		
+//		log.debug(erreurDistance+" "+erreurOrientation+" "+erreurCourbure);
+		
+		// il faut toujours majorer la vraie distance, afin de ne pas chercher tous les trajets possibles…
+		// le poids de l'erreur d'orientation doit rester assez faible. Car vouloir trop coller à l'orientation, c'est risquer d'avoir une courbure impossible…
+		// on cherche une faible courbure. ça évite les trajectoires complexes
+		return 1.1*erreurDistance + 5*erreurOrientation + Math.abs(2*c.courbureReelle);
 	}
 
+	/**
+	 * Cette heuristique favorise les trajectoires orthogonales à la direction de l'heuristique.
+	 * Ceci afin de promouvoir le rebroussement.
+	 * @param premier
+	 * @param pos
+	 * @param c
+	 * @return
+	 */
+	private double heuristicCostCourbeRebroussement(DStarLiteNode premier, PointGridSpace pos, Cinematique c)
+	{
+		if(pos.equals(arrivee.gridpoint))
+			return 300.; // pas arrivé dans le bon sens !
+
+		double orientationOptimale = getOrientationHeuristique(pos) + Math.PI/2 ; // on va chercher à se retourner, donc on va tourner à angle droit
+		double erreurOrientation = (c.orientationGeometrique - orientationOptimale) % (Math.PI); // vérification modulo pi : on veut juste être orthogonal à la trajectoire
+		if(erreurOrientation > Math.PI/2)
+			erreurOrientation -= Math.PI;
+		erreurOrientation = Math.abs(erreurOrientation);
+
+		double erreurDistance = premier.rhs / 1000. * PointGridSpace.DISTANCE_ENTRE_DEUX_POINTS; // distance en mm
+		
+		return 1.1*(2000 + 100*erreurOrientation + erreurDistance);
+	}
+	
+	/**
+	 * Une fois que le rebroussement est fait, le problème est que la marche arrière est lente, donc à une mauvaise note
+	 * @param premier
+	 * @param pos
+	 * @param c
+	 * @return
+	 */
+	private double heuristicCostCourbeRebroussementFin(DStarLiteNode premier, PointGridSpace pos, Cinematique c)
+	{
+		// si on est arrivé… on est arrivé.
+		if(pos.equals(arrivee.gridpoint))
+			return 0.;
+		
+		double orientationOptimale = getOrientationHeuristique(pos);
+		
+		// l'orientation est vérifiée modulo 2*pi : la marche avant et la marche arrière sont différenciées
+		double erreurOrientation = (c.orientationGeometrique - orientationOptimale) % (2*Math.PI);
+		if(erreurOrientation > Math.PI)
+			erreurOrientation -= 2*Math.PI;
+
+		erreurOrientation = Math.abs(erreurOrientation);
+
+		double erreurDistance = premier.rhs / 1000. * PointGridSpace.DISTANCE_ENTRE_DEUX_POINTS; // distance en mm
+
+		// il faut toujours majorer la vraie distance, afin de ne pas chercher tous les trajets possibles…
+		return (erreurDistance + 10*erreurOrientation) * Speed.MARCHE_ARRIERE.translationalSpeed / Speed.STANDARD.translationalSpeed;
+	}
+	
 	/**
 	 * Fournit une heuristique de l'orientation à prendre en ce point
 	 * @param p
@@ -531,9 +626,10 @@ public class DStarLite implements Service, Configurable
 			DStarLiteNode voisin = getFromMemoryUpdated(pointManager.getGridPointVoisin(p, d));
 			if(voisin == null)
 				continue;
+			// TODO : vérifier si ce cas arrive souvent
 			int scoreVoisin = voisin.rhs;
 			// ce devrait être équivalent
-			double s = Math.signum(scoreVoisin - score);
+			double s = Math.signum(score-scoreVoisin);
 			directionX += s * d.deltaX;
 			directionY += s * d.deltaY;
 			n.heuristiqueOrientation = atan2map[(int)directionX+9][(int)directionY+9];
@@ -545,6 +641,9 @@ public class DStarLite implements Service, Configurable
 			directionY = arrivee.gridpoint.y - p.y;
 			n.heuristiqueOrientation = Math.atan2(directionY, directionX);
 		}
+		
+		if(graphicHeuristique)
+			buffer.addSupprimable(n);
 		
 		return n.heuristiqueOrientation;
 	}

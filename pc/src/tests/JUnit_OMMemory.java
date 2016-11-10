@@ -21,6 +21,9 @@ import obstacles.memory.ObstaclesIteratorPresent;
 import obstacles.memory.ObstaclesMemory;
 import obstacles.types.Obstacle;
 import obstacles.types.ObstacleProximity;
+import pathfinding.ChronoGameState;
+import pathfinding.RealGameState;
+import pathfinding.dstarlite.gridspace.GridSpace;
 import pathfinding.dstarlite.gridspace.Masque;
 import pathfinding.dstarlite.gridspace.MasqueManager;
 
@@ -46,16 +49,33 @@ public class JUnit_OMMemory extends JUnit_Test {
 	private ObstaclesMemory memory;
 	private ObstaclesIteratorPresent iterator;
 	private MasqueManager mm;
-	
+	private GridSpace gridspace;
+	private RealGameState state;
+
     @Override
 	@Before
     public void setUp() throws Exception {
         super.setUp();
+        state = container.getService(RealGameState.class);
+		gridspace = container.getService(GridSpace.class);
         memory = container.getService(ObstaclesMemory.class);
         iterator = new ObstaclesIteratorPresent(log, memory);
         mm = container.getService(MasqueManager.class);
     }
 
+	@Test
+    public void test_obstacle() throws Exception
+    {
+		ChronoGameState chrono = container.make(ChronoGameState.class);
+		iterator.reinit();
+		Assert.assertTrue(!iterator.hasNext());
+		gridspace.addObstacleAndRemoveNearbyObstacles(new Vec2RO(-400, 1300));
+		Assert.assertTrue(iterator.hasNext());
+		state.copyAStarCourbe(chrono);
+		Assert.assertTrue(chrono.iterator.hasNext());
+    }
+
+    
 	@Test
     public void test_iterator() throws Exception
     {
@@ -71,8 +91,8 @@ public class JUnit_OMMemory extends JUnit_Test {
     	Assert.assertTrue(memory.getFirstNotDeadNow() == 0);
     	Assert.assertTrue(memory.getNextDeathDate() == Long.MAX_VALUE);    	
     	
-    	m.invoke(memory, new Vec2RO(1324,546), date, mm.getMasque(new Vec2RO(1324,546)));
-    	m.invoke(memory, new Vec2RO(1324,546), date, mm.getMasque(new Vec2RO(1324,546)));
+    	m.invoke(memory, new Vec2RO(1324,546), date, mm.getMasqueEnnemi(new Vec2RO(1324,546)));
+    	m.invoke(memory, new Vec2RO(1324,546), date, mm.getMasqueEnnemi(new Vec2RO(1324,546)));
     	iterator.reinit();
     	Assert.assertTrue(iterator.hasNext());
     	iterator.next();
@@ -83,7 +103,7 @@ public class JUnit_OMMemory extends JUnit_Test {
     	iterator.remove();
     	Assert.assertTrue(!iterator.hasNext());
 
-    	m.invoke(memory, new Vec2RO(1324,546), date, mm.getMasque(new Vec2RO(1324,546)));
+    	m.invoke(memory, new Vec2RO(1324,546), date, mm.getMasqueEnnemi(new Vec2RO(1324,546)));
     	Assert.assertEquals(2, memory.getFirstNotDeadNow());
     	iterator.reinit();
 
@@ -93,10 +113,10 @@ public class JUnit_OMMemory extends JUnit_Test {
     	Assert.assertTrue(((Vec2RW)f.get(o)).getY() == 546);
     	Assert.assertTrue(!iterator.hasNext());
     	Assert.assertEquals(2, memory.getFirstNotDeadNow());
-    	m.invoke(memory, new Vec2RO(1324,546), date, mm.getMasque(new Vec2RO(1324,546)));
-    	m.invoke(memory, new Vec2RO(1324,546), date, mm.getMasque(new Vec2RO(1324,546)));
-    	m.invoke(memory, new Vec2RO(1324,546), date, mm.getMasque(new Vec2RO(1324,546)));
-    	m.invoke(memory, new Vec2RO(1324,546), date, mm.getMasque(new Vec2RO(1324,546)));
+    	m.invoke(memory, new Vec2RO(1324,546), date, mm.getMasqueEnnemi(new Vec2RO(1324,546)));
+    	m.invoke(memory, new Vec2RO(1324,546), date, mm.getMasqueEnnemi(new Vec2RO(1324,546)));
+    	m.invoke(memory, new Vec2RO(1324,546), date, mm.getMasqueEnnemi(new Vec2RO(1324,546)));
+    	m.invoke(memory, new Vec2RO(1324,546), date, mm.getMasqueEnnemi(new Vec2RO(1324,546)));
     	memory.deleteOldObstacles();
     	Assert.assertEquals(2, memory.getFirstNotDeadNow());
     	Assert.assertEquals(memory.getNextDeathDate(), (date+peremption));

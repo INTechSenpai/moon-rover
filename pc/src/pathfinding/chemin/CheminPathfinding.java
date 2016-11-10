@@ -18,12 +18,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 package pathfinding.chemin;
 
 import java.awt.Graphics;
+import java.util.LinkedList;
 
 import obstacles.memory.ObstaclesIteratorPresent;
 import obstacles.types.ObstacleCircular;
-import obstacles.types.ObstacleRectangular;
+import obstacles.types.ObstacleProximity;
+import obstacles.types.ObstacleRobot;
 import graphic.Fenetre;
 import graphic.PrintBuffer;
+import graphic.printable.Couleur;
 import graphic.printable.Layer;
 import graphic.printable.Printable;
 import robot.Cinematique;
@@ -35,7 +38,7 @@ import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
 import container.Service;
-import pathfinding.astarCourbe.arcs.ArcCourbe;
+import exceptions.PathfindingException;
 
 /**
  * S'occupe de la trajectoire actuelle.
@@ -43,8 +46,6 @@ import pathfinding.astarCourbe.arcs.ArcCourbe;
  * @author pf
  *
  */
-
-// TODO : le premier point du chemin doit être la position actuelle du robot
 
 public class CheminPathfinding implements Service, Printable, Configurable
 {
@@ -55,12 +56,12 @@ public class CheminPathfinding implements Service, Printable, Configurable
 	private PrintBuffer buffer;
 	
 	private volatile CinematiqueObs[] chemin = new CinematiqueObs[256];
+	private volatile ObstacleCircular[] aff = new ObstacleCircular[256];
 	protected int indexFirst = 0; // indice du point en cours
 	protected int indexLast = 0; // indice du prochain point de la trajectoire (donc indexLast - 1 est l'index du dernier point accessible)
-	private int lastValidIndex; // l'indice du dernier index (-1 si aucun ne l'est, Integer.MAX_VALUE si tous le sont)
+	private int lastValidIndex = -1; // l'indice du dernier index (-1 si aucun ne l'est, Integer.MAX_VALUE si tous le sont)
 	private boolean uptodate = true; // le chemin est-il complet
-	private int margeNecessaire;
-	private int anticipationReplanif;
+	private int margeNecessaire, margeInitiale;
 	private boolean graphic;
 	
 	public CheminPathfinding(Log log, BufferOutgoingOrder out, ObstaclesIteratorPresent iterator, PrintBuffer buffer, RobotReal robot)
@@ -86,7 +87,7 @@ public class CheminPathfinding implements Service, Printable, Configurable
 	/**
 	 * Y a-t-il une collision avec un obstacle de proximité ?
 	 */
-	public void checkColliding()
+	public synchronized void checkColliding()
 	{
 		if(isColliding())
 		{
@@ -103,20 +104,19 @@ public class CheminPathfinding implements Service, Printable, Configurable
 	 */
 	private boolean isColliding()
 	{
-		iterObstacles.save(); // on sauvegarde sa position actuelle, c'est-à-dire la première position des nouveaux obstacles
 		iterChemin.reinit();
-		lastValidIndex = -1;
-		
+		lastValidIndex = -1; // reste à -1 à moins d'avoir assez de points pour le bas niveau
+		int firstPossible = add(indexFirst, margeInitiale);
 		while(iterChemin.hasNext())
 		{
-			ObstacleRectangular a = iterChemin.next().obstacle;
-			iterObstacles.load();
+			ObstacleRobot a = iterChemin.next().obstacle;
+			iterObstacles.reinit();
 			while(iterObstacles.hasNext())
 			{
-				if(iterObstacles.next().isColliding(a))
+				ObstacleProximity o = iterObstacles.next();
+				if(o.isColliding(a))
 				{
-					while(iterObstacles.hasNext()) // on s'assure que l'iterateur se termine à la fin des obstacles connus
-						iterObstacles.next();
+//					log.debug(o+" collisionne le robot en "+a);
 					return true;
 				}
 			}
@@ -124,12 +124,9 @@ public class CheminPathfinding implements Service, Printable, Configurable
 			/**
 			 * Mise à jour de lastValidIndex
 			 */
-			lastValidIndex = iterChemin.getIndex();
-			if(minus(lastValidIndex, add(indexFirst, margeNecessaire)) >= anticipationReplanif)
-				lastValidIndex = minus(lastValidIndex, anticipationReplanif);
-			else
-				lastValidIndex = add(indexFirst, margeNecessaire);
-			
+			int tmp = iterChemin.getIndex();
+			if(minus(tmp, firstPossible) >= 0)
+				lastValidIndex = firstPossible; // on reprendra d'ici
 		}
 		return false;
 	}
@@ -138,7 +135,7 @@ public class CheminPathfinding implements Service, Printable, Configurable
 	public void useConfig(Config config)
 	{
 		margeNecessaire = config.getInt(ConfigInfo.PF_MARGE_NECESSAIRE);
-		anticipationReplanif = config.getInt(ConfigInfo.PF_ANTICIPATION);
+		margeInitiale = config.getInt(ConfigInfo.PF_MARGE_INITIALE);
 		graphic = config.getBoolean(ConfigInfo.GRAPHIC_TRAJECTORY_FINAL);
 		if(graphic)
 			buffer.add(this);
@@ -169,25 +166,44 @@ public class CheminPathfinding implements Service, Printable, Configurable
 	 * Il sera directement envoyé à la série
 	 * @param arc
 	 */
-	public void add(ArcCourbe arc)
+	public void add(LinkedList<CinematiqueObs> points) throws PathfindingException
 	{
-		synchronized(this)
+		/*
+		 * En cas de replanification, si les points ajoutés ne suffisent pas pour avoir assurer la marge du bas niveau, on lance une exception
+		 */
+		if(!uptodate && minus(add(indexLast, points.size()), indexFirst) < margeNecessaire)
+			throw new PathfindingException("Pas assez de points pour le bas niveau");
+				
+		if(!points.isEmpty())
 		{
-			int tmp = indexLast;
-			for(int i = 0; i < arc.getNbPoints(); i++)
-				add(arc.getPoint(i));
-			out.envoieArcCourbe(arc, tmp);
-		}
-		if(graphic)
-			synchronized(buffer)
+			synchronized(this)
 			{
-				buffer.notify();
+				int tmp = indexLast;
+				for(CinematiqueObs p : points)
+					add(p);
+				if(isIndexValid(tmp - 1) && chemin[tmp - 1].enMarcheAvant == points.getFirst().enMarcheAvant)
+				{
+					points.addFirst(chemin[tmp - 1]); // on renvoie ce point afin qu'il ne soit plus un point d'arrêt
+					tmp--;
+				}
+				out.envoieArcCourbe(points, tmp);
 			}
+			if(graphic)
+				synchronized(buffer)
+				{
+					buffer.notify();
+				}
+		}
+	}
+	
+	private boolean isIndexValid(int index)
+	{
+		return minus(index, indexFirst) < minus(indexLast, indexFirst);
 	}
 	
 	protected synchronized CinematiqueObs get(int index)
 	{
-		if(minus(index, indexFirst) < minus(indexLast, indexFirst))
+		if(isIndexValid(index))
 			return chemin[index];
 		return null;
 	}
@@ -211,6 +227,10 @@ public class CheminPathfinding implements Service, Printable, Configurable
 			}
 	}
 	
+	/**
+	 * Doit être mise à "true" si le trajet est entièrement planifié
+	 * @param uptodate
+	 */
 	public void setUptodate(boolean uptodate)
 	{
 		this.uptodate = uptodate;
@@ -245,12 +265,14 @@ public class CheminPathfinding implements Service, Printable, Configurable
 	
 	/**
 	 * Renvoie l'arc du dernier point qu'on peut encore utiliser
+	 * Un "checkColliding" doit être fait avant !
 	 * @return
 	 */
-	public Cinematique getLastValidCinematique()
+	public Cinematique getLastValidCinematique() throws PathfindingException
 	{
 		if(lastValidIndex == -1)
-			return null;
+			throw new PathfindingException("Pas assez de points pour le bas niveau !");
+		
 		indexLast = lastValidIndex + 1; // on complètera à partir de ce point
 		return chemin[lastValidIndex];
 	}
@@ -258,14 +280,15 @@ public class CheminPathfinding implements Service, Printable, Configurable
 	@Override
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
+//		for(int i = 0; i < 256; i++)
+//			if(aff[i] != null)
+//				buffer.removeSupprimable(aff[i]);
 		iterChemin.reinit();
 		while(iterChemin.hasNext())
 		{
 			Cinematique a = iterChemin.next();
-			if(a == null)
-				log.critical("Nul !");
-			else
-				buffer.addSupprimable(new ObstacleCircular(a.getPosition(), 8));
+			aff[iterChemin.getIndex()] = new ObstacleCircular(a.getPosition(), 8, Couleur.TRAJECTOIRE);
+			buffer.addSupprimable(aff[iterChemin.getIndex()]);
 		}
 	}
 

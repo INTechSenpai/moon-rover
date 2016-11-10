@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package config;
 
-import pathfinding.astarCourbe.arcs.ClothoidesComputer;
+import pathfinding.astar.arcs.ClothoidesComputer;
 import robot.RobotColor;
 
 /**
@@ -33,13 +33,18 @@ public enum ConfigInfo {
 	/**
 	 * Infos sur le robot
 	 */
-	RAYON_ROBOT(150), // permet de savoir si on shoot un élément de jeu TODO : centre géométrique
-	DILATATION_ROBOT_DSTARLITE(150), // dilatation des obstacles dans le D* Lite. Comme c'est une heuristique, on peut prendre plus petit que la vraie valeur
-	// en fait, comme on veut éviter que l'A* ne cherche à frôler les bords, on augmente artificiellement cette valeur
-	DISTANCE_ROUES_AVANT_ET_ARRIERE(204), // la distance entre l'axe des roues avant et l'axe des roues arrières
-	DISTANCE_ROUES_GAUCHE_ET_DROITE(184), // la distance entre la roue arrière gauche et la roue arrière droite
-	LONGUEUR_NON_DEPLOYE(332), // distance entre le bord avant et le bord arrière du robot non-déployé
+	DILATATION_ROBOT_DSTARLITE(40), // dilatation des obstacles dans le D* Lite. Comme c'est une heuristique, on peut prendre plus petit que la vraie valeur
+	DILATATION_ROBOT_ENNEMI_DSTARLITE(130), // dilatation du robot ennemi dans le calcul des masques
+	CENTRE_ROTATION_ROUE_X(204), // la position du centre de rotation des roues. Est utilisé pour la rotation des capteurs
+	CENTRE_ROTATION_ROUE_Y(64),
+	DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE(80), // distance entre le centre du robot et le bord arrière du robot non-déployé
+	DEMI_LONGUEUR_NON_DEPLOYE_AVANT(332-80), // distance entre le centre du robot et le bord avant du robot non-déployé
 	LARGEUR_NON_DEPLOYE(228), // distance entre le bord gauche et le bord droit du robot non-déployé
+	
+	/**
+	 * Paramètres des scripts
+	 */
+	DISTANCE_AU_CRATERE(10), // distance souhaitée entre l'arrière du rover et le bord du cratère
 	
 	/**
 	 * Paramètres du log
@@ -58,10 +63,11 @@ public enum ConfigInfo {
 	 * Paramètres du pathfinding
 	 */
 	COURBURE_MAX(5.5), // quelle courbure maximale la trajectoire du robot peut-elle avoir
-	TEMPS_REBROUSSEMENT(700), // temps qu'il faut au robot pour rebrousser chemin
+	TEMPS_REBROUSSEMENT(400), // temps qu'il faut au robot pour rebrousser chemin
 	PF_MARGE_NECESSAIRE((int)(0.10/ClothoidesComputer.PRECISION_TRACE)), // combien de points de pathfinding le bas niveau doit-il toujours avoir
-	PF_ANTICIPATION((int)(0.30/ClothoidesComputer.PRECISION_TRACE)), // combien de points avant le dernier valide supprime-t-on avant de replanifier
+	PF_MARGE_INITIALE((int)(0.15/ClothoidesComputer.PRECISION_TRACE)), // combien de points garde-t-on au début de la replanification
 	DUREE_MAX_RECHERCHE_PF(3000), // durée maximale que peut prendre le pathfinding
+	TAILLE_FAISCEAU_PF(5),
 	
 	/**
 	 * Paramètres de la série
@@ -81,7 +87,7 @@ public enum ConfigInfo {
 	/**
 	 * Paramètres du traitement des capteurs
 	 */
-	NB_CAPTEURS(4), // TODO
+	NB_CAPTEURS(8), // le nombre de capteurs du robot
 	DUREE_PEREMPTION_OBSTACLES(3000), // pendant combien de temps va-t-on garder un obstacle de proximité
 	DISTANCE_MAX_ENTRE_MESURE_ET_OBJET(50), // quelle marge d'erreur autorise-t-on entre un objet et sa détection
 	DISTANCE_BETWEEN_PROXIMITY_OBSTACLES(50), // sous quelle distance fusionne-t-on deux obstacles de proximité ?
@@ -103,20 +109,26 @@ public enum ConfigInfo {
 	/**
 	 * Interface graphique
 	 */
-	GRAPHIC_ENABLE(false), // désactive tout affichage (empêche le thread d'affichage de se lancer)
+	GRAPHIC_HEURISTIQUE(false), // affichage des orientations heuristiques données par le D* Lite
+	GRAPHIC_ENABLE(false), // désactive tout affichage si faux (empêche le thread d'affichage de se lancer)
 	GRAPHIC_D_STAR_LITE(false), // affiche les calculs du D* Lite
 	GRAPHIC_D_STAR_LITE_FINAL(false), // affiche l'itinéraire final du D* Lite
-	GRAPHIC_PROXIMITY_OBSTACLES(false), // affiche les obstacles de proximité
+	GRAPHIC_PROXIMITY_OBSTACLES(true), // affiche les obstacles de proximité
 	GRAPHIC_TRAJECTORY(false), // affiche les trajectoires temporaires
-	GRAPHIC_TRAJECTORY_FINAL(false), // affiche les trajectoires
-	GRAPHIC_FIXED_OBSTACLES(false), // affiche les obstacles fixes
-	GRAPHIC_MOBILES_OBSTACLES(false), // affiche les obstacles fixes
+	GRAPHIC_TRAJECTORY_ALL(false), // affiche TOUTES les trajectoires temporaires
+	GRAPHIC_TRAJECTORY_FINAL(true), // affiche les trajectoires
+	GRAPHIC_FIXED_OBSTACLES(true), // affiche les obstacles fixes
+	GRAPHIC_GAME_ELEMENTS(true), // affiche les éléments de jeux
 	GRAPHIC_ROBOT_COLLISION(false), // affiche les obstacles du robot lors de la vérification des collisions
 	GRAPHIC_BACKGROUND_PATH("background-2017-color.png"), // affiche d'image de la table
-	GRAPHIC_BACKGROUND(false), // affiche d'image de la table
+	GRAPHIC_ROBOT_PATH("robot_sans_roues_720.png"), // image du robot sans les roues
+	GRAPHIC_ROBOT_ROUE_GAUCHE_PATH("robot_roue_gauche_720.png"), // image de la roue gauche
+	GRAPHIC_ROBOT_ROUE_DROITE_PATH("robot_roue_droite_720.png"), // image de la roue droite
+	GRAPHIC_PRODUCE_GIF(false), // produit un gif ?
+	GRAPHIC_BACKGROUND(true), // affiche d'image de la table
 	GRAPHIC_SIZE_X(1000), // taille par défaut (sans image) de la fenêtre
 	GRAPHIC_ALL_OBSTACLES(false), // affiche absolument tous les obstacles créés
-	GRAPHIC_ROBOT_AND_SENSORS(false), // affiche le robot et ses capteurs
+	GRAPHIC_ROBOT_AND_SENSORS(true), // affiche le robot et ses capteurs
 
 	/**
 	 * Config dynamique

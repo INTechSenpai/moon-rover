@@ -19,9 +19,10 @@ package robot;
 
 import java.awt.Graphics;
 
-import obstacles.types.ObstacleRectangular;
+import obstacles.types.ObstacleRobot;
 import config.Config;
 import config.ConfigInfo;
+import config.Configurable;
 import container.Service;
 import utils.Log;
 import graphic.Fenetre;
@@ -35,10 +36,11 @@ import graphic.printable.Printable;
  *
  */
 
-public class RobotReal extends Robot implements Service, Printable
+public class RobotReal extends Robot implements Service, Printable, Configurable
 {
 	protected volatile boolean matchDemarre = false;
     protected volatile long dateDebutMatch;
+    private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant;
 	private boolean print;
 	private PrintBuffer buffer;
 	
@@ -64,9 +66,11 @@ public class RobotReal extends Robot implements Service, Printable
 	@Override
 	public void useConfig(Config config)
 	{
-		super.useConfig(config);
-		cinematique = new Cinematique(0, 300, 0, true, 3, Speed.STANDARD);
+		cinematique = new Cinematique(0, 300, 0, true, 3, Speed.STANDARD.translationalSpeed);
 		print = config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS);
+		demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
+		demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
+		demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
 		if(print)
 			buffer.add(this);
 	}
@@ -102,8 +106,9 @@ public class RobotReal extends Robot implements Service, Printable
 	@Override
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
-		// affichage rudimentaire
-		new ObstacleRectangular(cinematique.getPosition(), longueurNonDeploye, largeurNonDeploye, cinematique.orientationGeometrique).print(g, f, robot);
+		ObstacleRobot o = new ObstacleRobot(robot);
+		o.update(cinematique.getPosition(), cinematique.orientationReelle);
+		o.print(g, f, robot);
 	}
 
 	@Override
@@ -114,23 +119,22 @@ public class RobotReal extends Robot implements Service, Printable
 
 	public int getDemieLargeurGauche()
 	{
-		return largeurNonDeploye / 2; // TODO
+		return demieLargeurNonDeploye;
 	}
 
 	public int getDemieLargeurDroite()
 	{
-		return largeurNonDeploye / 2; // TODO
+		return demieLargeurNonDeploye;
 	}
 
 	public int getDemieLongueurAvant()
 	{
-		return longueurNonDeploye; // TODO
+		return demieLongueurAvant;
 	}
 
 	public int getDemieLongueurArriere()
 	{
-		return 0; // TODO
+		return demieLongueurArriere;
 	}
-
 	
 }

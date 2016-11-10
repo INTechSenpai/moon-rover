@@ -41,17 +41,12 @@ import utils.*;
 import exceptions.ContainerException;
 import graphic.PrintBuffer;
 import obstacles.types.Obstacle;
-import pathfinding.RealGameState;
-import pathfinding.astarCourbe.AStarCourbe;
-import pathfinding.astarCourbe.arcs.ArcManager;
-import pathfinding.astarCourbe.arcs.ClothoidesComputer;
-import pathfinding.chemin.CheminPathfinding;
-import robot.RobotReal;
+import pathfinding.astar.arcs.ArcCourbe;
 import serie.SerieCouchePhysique;
 import threads.ThreadName;
 import threads.ThreadPathfinding;
+import threads.ThreadService;
 import threads.ThreadShutdown;
-import threads.serie.ThreadSerialInputCoucheOrdre;
 
 /**
  * 
@@ -96,7 +91,10 @@ public class Container implements Service, Configurable
 
 		for(ThreadName n : ThreadName.values())
 		{
-			getService(n.c).join(1000); // on attend au plus 1000ms que le thread s'arrête
+			if(n == ThreadName.FENETRE && config.getBoolean(ConfigInfo.GRAPHIC_PRODUCE_GIF))
+				getService(n.c).join(120000); // spécialement pour lui qui enregistre un gif…
+			else
+				getService(n.c).join(10000); // on attend un peu que le thread s'arrête
 			if(getService(n.c).isAlive())
 				log.critical(n.c.getSimpleName()+" encore vivant !");
 		}
@@ -217,17 +215,12 @@ public class Container implements Service, Configurable
 			}
 			
 			ko.add(ThreadPathfinding.class);
-			ko.add(AStarCourbe.class);
-			ko.add(ArcManager.class);
-			ko.add(ClothoidesComputer.class);
-			ko.add(RealGameState.class);
-			ko.add(RobotReal.class);
-			ko.add(ThreadSerialInputCoucheOrdre.class);
-			ko.add(CheminPathfinding.class);
 		}
 		
 		Obstacle.set(log, getService(PrintBuffer.class));
-		
+		Obstacle.useConfig(config);
+		ArcCourbe.useConfig(config);
+
 		startAllThreads();
 
 	}
@@ -383,6 +376,22 @@ public class Container implements Service, Configurable
 		}
 	}
 
+	public void restartThread(ThreadName n) throws InterruptedException
+	{
+		try {
+			ThreadService t = getService(n.c);
+			if(t.isAlive()) // s'il est encore en vie, on le tue
+			{
+				t.interrupt();
+				t.join(1000);
+			}
+			instanciedServices.remove(n.c.getSimpleName());
+			getService(n.c).start(); // et on le redémarre
+		} catch (ContainerException e) {
+			log.critical(e);
+		}
+	}
+	
 	/**
 	 * Démarrage de tous les threads
 	 */

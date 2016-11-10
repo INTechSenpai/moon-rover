@@ -17,34 +17,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package pathfinding;
 
-import robot.RobotReal;
-import container.Service;
-import obstacles.memory.ObstaclesMemory;
-import table.RealTable;
-
 /**
- * Utilisé par les scripts
+ * Le sens final (marche avant / marche arrière) souhaitée à la fin d'une recherche de chemin
  * @author pf
  *
  */
 
-public class RealGameState extends GameState<RobotReal> implements Service
+public enum SensFinal
 {
-	private ObstaclesMemory mem;
-	
-    public RealGameState(RobotReal robot, RealTable table, ObstaclesMemory mem)
-    {
-        this.robot = robot;
-        this.table = table;
-        this.mem = mem;
-    }
-    
-    @Override
-	public final void copyAStarCourbe(ChronoGameState modified)
-    {
-    	table.copy(modified.table);
-        robot.copy(modified.robot);
-        modified.iterator.init(robot.getTempsDepuisDebutMatch(), mem.getFirstNotDeadNow());
-    }
+	MARCHE_AVANT(true, false), MARCHE_ARRIERE(false, true), AUCUNE_PREF(true, true);
 
+	private boolean marcheAvantOK, marcheArriereOK;
+	
+	private SensFinal(boolean marcheAvantOK, boolean marcheArriereOK)
+	{
+		this.marcheAvantOK = marcheAvantOK;
+		this.marcheArriereOK = marcheArriereOK;
+	}
+	
+	/**
+	 * Cette direction est-elle valide pour finir le chemin ?
+	 * @param marcheAvant
+	 * @return
+	 */
+	public boolean isOK(boolean marcheAvant)
+	{
+		return (marcheAvant && marcheAvantOK) || (!marcheAvant && marcheArriereOK);
+	}
 }

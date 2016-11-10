@@ -15,24 +15,24 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-package pathfinding.astarCourbe.arcs;
+package pathfinding.astar.arcs;
 
 import robot.CinematiqueObs;
 import robot.RobotReal;
 
 /**
- * Arc de clothoïde, utilisé dans l'AStarCourbe
+ * Arc courbe de longueur fixe
  * @author pf
  *
  */
 
-public class ArcCourbeClotho extends ArcCourbe
+public class ArcCourbeStatique extends ArcCourbe
 {
 	public CinematiqueObs[] arcselems = new CinematiqueObs[ClothoidesComputer.NB_POINTS];
 	
-	public ArcCourbeClotho(RobotReal r)
+	public ArcCourbeStatique(RobotReal r)
 	{
-		super(false, false); // modifié par copy
+		super(false); // modifié par copy
 		for(int i = 0; i < ClothoidesComputer.NB_POINTS; i++)
 			arcselems[i] = new CinematiqueObs(r);
 	}
@@ -41,7 +41,7 @@ public class ArcCourbeClotho extends ArcCourbe
 	 * Une copie afin d'éviter la création d'objet
 	 * @param arcCourbe
 	 */
-	public void copy(ArcCourbeClotho arcCourbe)
+	public void copy(ArcCourbeStatique arcCourbe)
 	{
 		for(int i = 0; i < arcselems.length; i++)
 			arcselems[i].copy(arcCourbe.arcselems[i]);
@@ -70,7 +70,7 @@ public class ArcCourbeClotho extends ArcCourbe
 	{
 		double v = 0;
 		for(int i = 0; i < ClothoidesComputer.NB_POINTS; i++)
-			v += arcselems[i].vitesseMax.translationalSpeed;
+			v += arcselems[i].vitesseMax;
 		return v / (ClothoidesComputer.NB_POINTS);
 	}
 

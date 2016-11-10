@@ -15,12 +15,19 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-package pathfinding.astarCourbe.arcs;
+package pathfinding.astar.arcs;
 
+import java.awt.Graphics;
+
+import obstacles.types.ObstacleCircular;
+import graphic.Fenetre;
+import graphic.printable.Couleur;
+import graphic.printable.Layer;
+import graphic.printable.Printable;
 import config.Config;
 import config.ConfigInfo;
-import config.Configurable;
 import robot.CinematiqueObs;
+import robot.RobotReal;
 
 /**
  * Un arc de trajectoire courbe. Juste une succession de points.
@@ -28,18 +35,16 @@ import robot.CinematiqueObs;
  *
  */
 
-public abstract class ArcCourbe implements Configurable
+public abstract class ArcCourbe implements Printable
 {
 
 	public boolean rebrousse; // cet arc commence par un rebroussement, c'est-à-dire que la marche avant change
-	public boolean stop; // cet arc commence par un arrêt du robot
 //	public ObstacleArcCourbe obstacle = new ObstacleArcCourbe();
-	protected int tempsRebroussement;
+	protected static int tempsRebroussement;
 	
-	public ArcCourbe(boolean rebrousse, boolean stop)
+	public ArcCourbe(boolean rebrousse)
 	{
 		this.rebrousse = rebrousse;
-		this.stop = stop;
 	}
 	
 	public abstract int getNbPoints();
@@ -48,7 +53,7 @@ public abstract class ArcCourbe implements Configurable
 	public abstract double getVitesseTr();
 	protected abstract double getLongueur();
 
-	public double getDuree()
+	public final double getDuree()
 	{
 		if(rebrousse)
 			return getLongueur() / getVitesseTr() + tempsRebroussement;
@@ -65,10 +70,23 @@ public abstract class ArcCourbe implements Configurable
 		return out;
 	}
 	
-	@Override
-	public void useConfig(Config config)
+	public static void useConfig(Config config)
 	{
 		tempsRebroussement = config.getInt(ConfigInfo.TEMPS_REBROUSSEMENT);
+	}
+
+
+	@Override
+	public void print(Graphics g, Fenetre f, RobotReal robot)
+	{
+		for(int i = 0; i < getNbPoints(); i++)
+			new ObstacleCircular(getPoint(i).getPosition(), 4, Couleur.TRAJECTOIRE).print(g, f, robot);
+	}
+
+	@Override	
+	public Layer getLayer()
+	{
+		return Couleur.TRAJECTOIRE.l;
 	}
 
 }
