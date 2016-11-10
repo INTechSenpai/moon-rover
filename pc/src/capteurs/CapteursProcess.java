@@ -160,7 +160,8 @@ public class CapteursProcess implements Service, Configurable
 		        	table.setDone(g, Tribool.MAYBE);
 
 		}
-		dstarlite.updateObstacles();
+		dstarlite.updateObstaclesEnnemi();
+		dstarlite.updateObstaclesTable();
 		chemin.checkColliding();
 	}
 	
