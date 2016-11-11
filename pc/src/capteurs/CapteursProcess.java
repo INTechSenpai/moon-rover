@@ -33,7 +33,7 @@ import container.Service;
 import exceptions.ContainerException;
 import table.GameElementNames;
 import table.Table;
-import table.Tribool;
+import table.EtatElement;
 import utils.Log;
 import utils.Vec2RO;
 import utils.Vec2RW;
@@ -116,7 +116,7 @@ public class CapteursProcess implements Service, Configurable
 		 */
 	    for(GameElementNames g: GameElementNames.values())
 	        if(g.obstacle.isColliding(obstacleRobot))
-	        	table.setDone(g, Tribool.TRUE); // on est sûr de l'avoir shooté
+	        	table.setDone(g, EtatElement.PRIS_PAR_NOUS); // on est sûr de l'avoir shooté
 					
 		/**
 		 * Suppression des mesures qui sont hors-table ou qui voient un obstacle de table
@@ -156,8 +156,8 @@ public class CapteursProcess implements Service, Configurable
 			 * Mise à jour de l'état de la table : un ennemi est passé
 			 */
 		    for(GameElementNames g: GameElementNames.values())
-		        if(table.isDone(g) == Tribool.FALSE && g.obstacle.isProcheObstacle(o, o.radius))
-		        	table.setDone(g, Tribool.MAYBE);
+		        if(table.isDone(g) == EtatElement.INDEMNE && g.obstacle.isProcheObstacle(o, o.radius))
+		        	table.setDone(g, EtatElement.PRIS_PAR_ENNEMI);
 
 		}
 		dstarlite.updateObstaclesEnnemi();
