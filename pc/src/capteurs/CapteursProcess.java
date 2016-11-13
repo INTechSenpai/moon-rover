@@ -84,15 +84,15 @@ public class CapteursProcess implements Service, Configurable
 				
 		try {
 			// IR avant
-			capteurs[0] = container.make(CapteurMobile.class, new Vec2RO(233, 86), 10./180.*Math.PI, TypeCapteur.IR, true);
-			capteurs[1] = container.make(CapteurMobile.class, new Vec2RO(233, -86), -10./180.*Math.PI, TypeCapteur.IR, true);
+			capteurs[0] = container.make(CapteurMobile.class, new Vec2RO(233, 86), 10./180.*Math.PI, TypeCapteur.IR, false);
+			capteurs[1] = container.make(CapteurMobile.class, new Vec2RO(233, -86), -10./180.*Math.PI, TypeCapteur.IR, false);
 			
 			// ToF courts avant
 			capteurs[2] = container.make(CapteurMobile.class, new Vec2RO(235, 60), 25./180.*Math.PI, TypeCapteur.ToF_COURT, false);
 			capteurs[3] = container.make(CapteurMobile.class, new Vec2RO(235, -60), -25./180.*Math.PI, TypeCapteur.ToF_COURT, false);
 			
 			// ToF long avant
-			capteurs[4] = container.make(CapteurImmobile.class, new Vec2RO(224, 0), 0, TypeCapteur.ToF_LONG, false);
+			capteurs[4] = container.make(CapteurImmobile.class, new Vec2RO(224, 0), 0, TypeCapteur.ToF_LONG, true);
 			
 			// ToF court gauche
 			capteurs[5] = container.make(CapteurImmobile.class, new Vec2RO(55, 102), Math.PI/2, TypeCapteur.ToF_COURT, false);
@@ -107,7 +107,7 @@ public class CapteursProcess implements Service, Configurable
 			capteurs[10] = container.make(CapteurImmobile.class, new Vec2RO(-53, -85), -170./180.*Math.PI, TypeCapteur.ToF_COURT, false);
 
 			// ToF long arrière
-			capteurs[11] = container.make(CapteurImmobile.class, new Vec2RO(0, 0), 180./180.*Math.PI, TypeCapteur.ToF_LONG, false);
+			capteurs[11] = container.make(CapteurImmobile.class, new Vec2RO(0, 0), 180./180.*Math.PI, TypeCapteur.ToF_LONG, true);
 
 			
 		} catch(ContainerException e)
@@ -157,7 +157,11 @@ public class CapteursProcess implements Service, Configurable
 	    	for(ObstaclesFixes o: ObstaclesFixes.values())
 	    		if(o.isVisible(capteurs[i].sureleve) && o.getObstacle().squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 	                continue;
-			
+
+	    	for(GameElementNames o: GameElementNames.values())
+	    		if(table.isDone(o) != EtatElement.PRIS_PAR_NOUS && o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
+	                continue;
+
 			/**
 			 * Sinon, on ajoute
 			 */
