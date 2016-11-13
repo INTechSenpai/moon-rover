@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package threads.serie;
 
+import capteurs.CapteursRobot;
 import capteurs.SensorsData;
 import capteurs.SensorsDataBuffer;
 import config.Config;
@@ -78,6 +79,8 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
 		log.debug("Démarrage de "+Thread.currentThread().getName());
+		
+		nbCapteurs = CapteursRobot.values().length;
 		try {
 			while(true)
 			{
@@ -244,7 +247,6 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 	public void useConfig(Config config)
 	{
 		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
-		nbCapteurs = config.getInt(ConfigInfo.NB_CAPTEURS);
 	}
 
 }

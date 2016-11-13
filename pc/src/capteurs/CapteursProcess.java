@@ -54,6 +54,7 @@ public class CapteursProcess implements Service, Configurable
 	private CheminPathfinding chemin;
 	private PrintBuffer buffer;
 	private Container container;
+	private RobotReal robot;
 	
 	private int nbCapteurs;
 	private int rayonEnnemi;
@@ -70,6 +71,7 @@ public class CapteursProcess implements Service, Configurable
 		this.chemin = chemin;
 		this.buffer = buffer;
 		this.container = container;
+		this.robot = robot;
 		obstacleRobot = new ObstacleRobot(robot);
 	}
 	
@@ -78,38 +80,16 @@ public class CapteursProcess implements Service, Configurable
 	{
 		rayonEnnemi = config.getInt(ConfigInfo.RAYON_ROBOT_ADVERSE);
 		distanceApproximation = config.getInt(ConfigInfo.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);		
-		nbCapteurs = config.getInt(ConfigInfo.NB_CAPTEURS);
+		nbCapteurs = CapteursRobot.values().length;
 		
 		capteurs = new Capteur[nbCapteurs];
 				
 		try {
-			// IR avant
-			capteurs[0] = container.make(CapteurMobile.class, new Vec2RO(233, 86), 10./180.*Math.PI, TypeCapteur.IR, false);
-			capteurs[1] = container.make(CapteurMobile.class, new Vec2RO(233, -86), -10./180.*Math.PI, TypeCapteur.IR, false);
-			
-			// ToF courts avant
-			capteurs[2] = container.make(CapteurMobile.class, new Vec2RO(235, 60), 25./180.*Math.PI, TypeCapteur.ToF_COURT, false);
-			capteurs[3] = container.make(CapteurMobile.class, new Vec2RO(235, -60), -25./180.*Math.PI, TypeCapteur.ToF_COURT, false);
-			
-			// ToF long avant
-			capteurs[4] = container.make(CapteurImmobile.class, new Vec2RO(224, 0), 0, TypeCapteur.ToF_LONG, true);
-			
-			// ToF court gauche
-			capteurs[5] = container.make(CapteurImmobile.class, new Vec2RO(55, 102), Math.PI/2, TypeCapteur.ToF_COURT, false);
-			capteurs[6] = container.make(CapteurImmobile.class, new Vec2RO(140, 102), Math.PI/2, TypeCapteur.ToF_COURT, false);
-			
-			// ToF court droite
-			capteurs[7] = container.make(CapteurImmobile.class, new Vec2RO(55, -102), -Math.PI/2, TypeCapteur.ToF_COURT, false);
-			capteurs[8] = container.make(CapteurImmobile.class, new Vec2RO(140, -102), -Math.PI/2, TypeCapteur.ToF_COURT, false);
-			
-			// ToF courts arrière
-			capteurs[9] = container.make(CapteurImmobile.class, new Vec2RO(-53, 85), 170./180.*Math.PI, TypeCapteur.ToF_COURT, false);
-			capteurs[10] = container.make(CapteurImmobile.class, new Vec2RO(-53, -85), -170./180.*Math.PI, TypeCapteur.ToF_COURT, false);
-
-			// ToF long arrière
-			capteurs[11] = container.make(CapteurImmobile.class, new Vec2RO(0, 0), 180./180.*Math.PI, TypeCapteur.ToF_LONG, true);
-
-			
+			for(int i = 0; i < nbCapteurs; i++)
+			{
+				CapteursRobot c = CapteursRobot.values()[i];
+				capteurs[i] = container.make(c.classe, c.pos, c.angle, c.type, c.sureleve);
+			}			
 		} catch(ContainerException e)
 		{
 			log.critical(e);
@@ -142,6 +122,27 @@ public class CapteursProcess implements Service, Configurable
 		 */
 		for(int i = 0; i < nbCapteurs; i++)
 		{
+			CapteursRobot c = CapteursRobot.values[i];
+			
+			/*
+			 * Les deux capteurs ToF courts arrière voient le filet lorsqu'il est baissé
+			 */
+			if(robot.isFiletBaisse() && (c == CapteursRobot.ToF_ARRIERE_DROITE || c == CapteursRobot.ToF_ARRIERE_GAUCHE))
+				continue;
+				
+			/*
+			 * Le ToF arrière voit le filet et permet de servir de jauge de remplissage
+			 */
+			if(c == CapteursRobot.ToF_LONG_ARRIERE && !robot.isFiletBaisse())
+			{
+				if(data.mesures[i] < 60) // filet plein
+				{
+					robot.remplitFilet();
+					continue;
+				}
+				robot.videFilet(); // filet vide
+			}
+			
 			capteurs[i].computePosOrientationRelative(data.cinematique);
 			/**
 			 * Si le capteur voit trop proche ou trop loin, on ne peut pas lui faire confiance

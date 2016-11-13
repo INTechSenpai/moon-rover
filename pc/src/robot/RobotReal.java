@@ -43,6 +43,8 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
     private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant;
 	private boolean print;
 	private PrintBuffer buffer;
+	private boolean filetBaisse = false;
+	private boolean filetPlein = false;
 	
 	// Constructeur
 	public RobotReal(Log log, PrintBuffer buffer)
@@ -135,6 +137,36 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	public int getDemieLongueurArriere()
 	{
 		return demieLongueurArriere;
+	}
+	
+	public void baisseFilet()
+	{
+		filetBaisse = true;
+	}
+	
+	public void remonteFilet()
+	{
+		filetBaisse = false;
+	}
+	
+	public boolean isFiletBaisse()
+	{
+		return filetBaisse;
+	}
+	
+	public void videFilet()
+	{
+		filetPlein = false;
+	}
+	
+	public void remplitFilet()
+	{
+		filetPlein = true;
+	}
+	
+	public boolean isFiletPlein()
+	{
+		return filetPlein;
 	}
 	
 }
