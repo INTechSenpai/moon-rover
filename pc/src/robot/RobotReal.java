@@ -154,11 +154,17 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 		return filetBaisse;
 	}
 	
+	/**
+	 * Géré par le capteur de jauge
+	 */
 	public void videFilet()
 	{
 		filetPlein = false;
 	}
 	
+	/**
+	 * Géré par le capteur de jauge
+	 */
 	public void remplitFilet()
 	{
 		filetPlein = true;
