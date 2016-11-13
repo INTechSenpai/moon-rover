@@ -83,14 +83,33 @@ public class CapteursProcess implements Service, Configurable
 		capteurs = new Capteur[nbCapteurs];
 				
 		try {
+			// IR avant
 			capteurs[0] = container.make(CapteurMobile.class, new Vec2RO(233, 86), 10./180.*Math.PI, TypeCapteur.IR, true);
 			capteurs[1] = container.make(CapteurMobile.class, new Vec2RO(233, -86), -10./180.*Math.PI, TypeCapteur.IR, true);
+			
+			// ToF courts avant
 			capteurs[2] = container.make(CapteurMobile.class, new Vec2RO(235, 60), 25./180.*Math.PI, TypeCapteur.ToF_COURT, false);
 			capteurs[3] = container.make(CapteurMobile.class, new Vec2RO(235, -60), -25./180.*Math.PI, TypeCapteur.ToF_COURT, false);
-			capteurs[4] = container.make(CapteurImmobile.class, new Vec2RO(55, 102), Math.PI/2, TypeCapteur.ToF_COURT, false);
-			capteurs[5] = container.make(CapteurImmobile.class, new Vec2RO(140, 102), Math.PI/2, TypeCapteur.ToF_COURT, false);
-			capteurs[6] = container.make(CapteurImmobile.class, new Vec2RO(55, -102), -Math.PI/2, TypeCapteur.ToF_COURT, false);
-			capteurs[7] = container.make(CapteurImmobile.class, new Vec2RO(140, -102), -Math.PI/2, TypeCapteur.ToF_COURT, false);
+			
+			// ToF long avant
+			capteurs[4] = container.make(CapteurImmobile.class, new Vec2RO(224, 0), 0, TypeCapteur.ToF_LONG, false);
+			
+			// ToF court gauche
+			capteurs[5] = container.make(CapteurImmobile.class, new Vec2RO(55, 102), Math.PI/2, TypeCapteur.ToF_COURT, false);
+			capteurs[6] = container.make(CapteurImmobile.class, new Vec2RO(140, 102), Math.PI/2, TypeCapteur.ToF_COURT, false);
+			
+			// ToF court droite
+			capteurs[7] = container.make(CapteurImmobile.class, new Vec2RO(55, -102), -Math.PI/2, TypeCapteur.ToF_COURT, false);
+			capteurs[8] = container.make(CapteurImmobile.class, new Vec2RO(140, -102), -Math.PI/2, TypeCapteur.ToF_COURT, false);
+			
+			// ToF courts arrière
+			capteurs[9] = container.make(CapteurImmobile.class, new Vec2RO(-53, 85), 170./180.*Math.PI, TypeCapteur.ToF_COURT, false);
+			capteurs[10] = container.make(CapteurImmobile.class, new Vec2RO(-53, -85), -170./180.*Math.PI, TypeCapteur.ToF_COURT, false);
+
+			// ToF long arrière
+			capteurs[11] = container.make(CapteurImmobile.class, new Vec2RO(0, 0), 180./180.*Math.PI, TypeCapteur.ToF_LONG, false);
+
+			
 		} catch(ContainerException e)
 		{
 			log.critical(e);
