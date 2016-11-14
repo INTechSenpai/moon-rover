@@ -25,3 +25,12 @@ project.properties
 /**/__vm/
 *.vcxproj
 *.vcxproj.filters
+
+# Documentation
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+*.psd
