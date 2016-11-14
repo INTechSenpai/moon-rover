@@ -153,6 +153,94 @@ public class BufferOutgoingOrder implements Service, Configurable
 	}
 
 	/**
+	 * Lève le filet
+	 */
+	public synchronized Ticket leveFilet()
+	{
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(OutOrder.PULL_UP_NET, t));
+		notify();
+		return t;
+	}
+	
+	/**
+	 * Baisse le filet
+	 */
+	public synchronized Ticket baisseFilet()
+	{
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(OutOrder.PULL_DOWN_NET, t));
+		notify();
+		return t;
+	}
+	
+	/**
+	 * Met le filet en position intermédiaire
+	 */
+	public synchronized Ticket bougeFiletMiChemin()
+	{
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(OutOrder.PUT_NET_HALFWAY, t));
+		notify();
+		return t;
+	}
+
+	/**
+	 * Abaisse la bascule avec le filet
+	 */
+	public synchronized Ticket traverseBascule()
+	{
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(OutOrder.CROSS_FLIP_FLOP, t));
+		notify();
+		return t;
+	}
+	
+	/**
+	 * Ouvre le filet
+	 */
+	public synchronized Ticket ouvreFilet()
+	{
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(OutOrder.OPEN_NET, t));
+		notify();
+		return t;
+	}
+	
+	/**
+	 * Ferme le filet
+	 */
+	public synchronized Ticket fermeFilet()
+	{
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(OutOrder.CLOSE_NET, t));
+		notify();
+		return t;
+	}
+	
+	/**
+	 * Ejecte les balles
+	 */
+	public synchronized Ticket ejecte(boolean droite)
+	{
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(droite ? OutOrder.EJECT_RIGHT_SIDE : OutOrder.EJECT_LEFT_SIDE, t));
+		notify();
+		return t;
+	}
+
+	/**
+	 * Réarme le filet
+	 */
+	public synchronized Ticket rearme(boolean droite)
+	{
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(droite ? OutOrder.REARM_RIGHT_SIDE : OutOrder.REARM_LEFT_SIDE, t));
+		notify();
+		return t;
+	}
+
+	/**
 	 * Ajoute une position et un angle.
 	 * Occupe 5 octets.
 	 * @param data
