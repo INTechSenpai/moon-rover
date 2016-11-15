@@ -17,6 +17,9 @@ project.properties
 *.out
 *.gz
 *.toc
+
+
+# Pour les IDE fancy
 /**/.idea/
 /**/.vs/
 /**/__pycache__/
@@ -34,3 +37,8 @@ project.properties
 *.ppt
 *.pptx
 *.psd
+
+# Eagle
+*.b#?
+*.s#?
+*.l#?
