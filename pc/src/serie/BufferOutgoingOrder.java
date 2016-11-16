@@ -221,7 +221,7 @@ public class BufferOutgoingOrder implements Service, Configurable
 	/**
 	 * Ejecte les balles
 	 */
-	public synchronized Ticket ejecte(boolean droite)
+	public synchronized Ticket ejecte(Boolean droite) // la réflectivité demande d'utiliser Boolean et pas boolean
 	{
 		Ticket t = new Ticket();
 		bufferBassePriorite.add(new Order(droite ? OutOrder.EJECT_RIGHT_SIDE : OutOrder.EJECT_LEFT_SIDE, t));
@@ -232,7 +232,7 @@ public class BufferOutgoingOrder implements Service, Configurable
 	/**
 	 * Réarme le filet
 	 */
-	public synchronized Ticket rearme(boolean droite)
+	public synchronized Ticket rearme(Boolean droite)
 	{
 		Ticket t = new Ticket();
 		bufferBassePriorite.add(new Order(droite ? OutOrder.REARM_RIGHT_SIDE : OutOrder.REARM_LEFT_SIDE, t));

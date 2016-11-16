@@ -157,9 +157,13 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	{
 		Ticket.State etat;
 		Ticket t = null;
+		Class<?>[] paramClasses = (Class<?>[]) new Class[param.length];
+		for(int i = 0; i < param.length; i++)
+			paramClasses[i] = param[i].getClass();
 		do {
+//			log.debug("Envoi l'ordre");
 			try {
-				t = (Ticket) BufferOutgoingOrder.class.getMethod(nom).invoke(out, param.length == 0 ? null : param);
+				t = (Ticket) BufferOutgoingOrder.class.getMethod(nom, paramClasses.length == 0 ? null : paramClasses).invoke(out, param.length == 0 ? null : param);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 				e.printStackTrace();
 			}
@@ -169,6 +173,7 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 					t.wait();
 			}
 			etat = t.getAndClear();
+//			log.debug("Etat reçu : "+etat);
 		} while(etat != Ticket.State.OK);		
 
 	}
