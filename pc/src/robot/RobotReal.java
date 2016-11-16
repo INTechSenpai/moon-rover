@@ -18,8 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 package robot;
 
 import java.awt.Graphics;
+import java.lang.reflect.InvocationTargetException;
 
 import obstacles.types.ObstacleRobot;
+import serie.BufferOutgoingOrder;
+import serie.Ticket;
 import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
@@ -43,14 +46,16 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
     private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant;
 	private boolean print;
 	private PrintBuffer buffer;
-	private boolean filetBaisse = false;
+	private BufferOutgoingOrder out;
+	private boolean filetBaisse = false, filetLeve = true;
 	private boolean filetPlein = false;
 	
 	// Constructeur
-	public RobotReal(Log log, PrintBuffer buffer)
+	public RobotReal(Log log, BufferOutgoingOrder out, PrintBuffer buffer)
  	{
 		super(log);
 		this.buffer = buffer;
+		this.out = out;
 	}
 	
 	/*
@@ -139,25 +144,102 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 		return demieLongueurArriere;
 	}
 	
-	public void baisseFilet()
+	/*
+	 * ACTIONNEURS
+	 */
+	
+	/**
+	 * Rend bloquant l'appel d'une méthode
+	 * @param m
+	 * @throws InterruptedException
+	 */
+	private void bloque(String nom, Object... param) throws InterruptedException
 	{
-		filetBaisse = true;
+		Ticket.State etat;
+		Ticket t = null;
+		do {
+			try {
+				t = (Ticket) BufferOutgoingOrder.class.getMethod(nom).invoke(out, param.length == 0 ? null : param);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+				e.printStackTrace();
+			}
+			synchronized(t)
+			{
+				if(t.isEmpty())
+					t.wait();
+			}
+			etat = t.getAndClear();
+		} while(etat != Ticket.State.OK);		
+
 	}
 	
-	public void remonteFilet()
+	/**
+	 * Méthode bloquante qui baisse le filet
+	 * @throws InterruptedException 
+	 */
+	public void baisseFilet() throws InterruptedException
 	{
+		bloque("baisseFilet");
+		filetBaisse = true;
+		filetLeve = false;
+	}
+	
+	public void filetMiHauteur() throws InterruptedException
+	{
+		bloque("bougeFiletMiChemin");
+		filetLeve = false;
+		filetBaisse = false; // TODO
+	}
+	
+	public void remonteFilet() throws InterruptedException
+	{
+		bloque("leveFilet");
 		filetBaisse = false;
+		filetLeve = true;
 	}
 	
 	public boolean isFiletBaisse()
 	{
 		return filetBaisse;
 	}
+
+	public boolean isFiletLeve()
+	{
+		return filetLeve;
+	}
+
+	public void ouvreFilet() throws InterruptedException
+	{
+		bloque("ouvreFilet");
+		filetPlein = false;
+	}
+
+	public void fermeFilet() throws InterruptedException
+	{
+		bloque("fermeFilet");
+//		filetPlein = false; // TODO
+	}
+	
+	public void ejectBalles() throws InterruptedException
+	{
+		bloque("ejecte", !symetrie);
+		filetPlein = false;
+	}
+
+	public void rearme() throws InterruptedException
+	{
+		bloque("rearme", !symetrie);
+	}
+	
+	public void traverseBascule() throws InterruptedException
+	{
+		bloque("traverseBascule");
+	}	
 	
 	/**
 	 * Géré par le capteur de jauge
 	 */
-	public void videFilet()
+	public void filetVuVide()
 	{
 		filetPlein = false;
 	}
@@ -165,7 +247,7 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	/**
 	 * Géré par le capteur de jauge
 	 */
-	public void remplitFilet()
+	public void filetVuPlein()
 	{
 		filetPlein = true;
 	}

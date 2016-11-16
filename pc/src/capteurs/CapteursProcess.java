@@ -133,14 +133,14 @@ public class CapteursProcess implements Service, Configurable
 			/*
 			 * Le ToF arrière voit le filet et permet de servir de jauge de remplissage
 			 */
-			if(c == CapteursRobot.ToF_LONG_ARRIERE && !robot.isFiletBaisse())
+			if(c == CapteursRobot.ToF_LONG_ARRIERE && robot.isFiletLeve())
 			{
 				if(data.mesures[i] < 60) // filet plein
 				{
-					robot.remplitFilet();
+					robot.filetVuPlein();
 					continue;
 				}
-				robot.videFilet(); // filet vide
+				robot.filetVuVide(); // filet vide
 			}
 			
 			capteurs[i].computePosOrientationRelative(data.cinematique);
