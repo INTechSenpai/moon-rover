@@ -83,7 +83,11 @@ public class SerialProtocol {
 
 		// Réponse à "StartMatchChrono"
 		MATCH_FINI(0x00),
-		ARRET_URGENCE(0x01);
+		ARRET_URGENCE(0x01),
+		
+		// Actionneurs
+		ACT_SUCCESS(0x00),
+		ACT_FAILURE(0x01);
 		
 		public final int codeInt;
 		

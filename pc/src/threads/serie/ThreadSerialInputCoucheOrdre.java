@@ -186,7 +186,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 							paquet.ticket.set(Ticket.State.OK);
 						}
 					}
-					
+
 					/**
 					 * Fin du match, on coupe la série et on arrête ce thread
 					 */
@@ -231,6 +231,77 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 							if(data[0] != InOrder.ROBOT_BLOCAGE_INTERIEUR.codeInt && data[0] != InOrder.ROBOT_BLOCAGE_EXTERIEUR.codeInt && data[0] != InOrder.PLUS_DE_POINTS.codeInt)
 								log.critical("Code fin mouvement inconnu : "+data[0]);
 						}
+					}
+					
+					/*
+					 * ACTIONNEURS
+					 */
+					
+					/**
+					 * Le filet est ouvert
+					 */
+					else if(paquet.origine == OutOrder.OPEN_NET)
+						paquet.ticket.set(Ticket.State.OK);
+
+					/**
+					 * Le filet est fermé
+					 */
+					else if(paquet.origine == OutOrder.CLOSE_NET)
+						paquet.ticket.set(Ticket.State.OK);
+
+					/**
+					 * Bascule abaissée
+					 */
+					else if(paquet.origine == OutOrder.CROSS_FLIP_FLOP)
+					{
+						if(data[0] == InOrder.ACT_SUCCESS.codeInt)
+							paquet.ticket.set(Ticket.State.OK);
+						else
+							paquet.ticket.set(Ticket.State.KO);
+					}
+
+					/**
+					 * Balles éjectées côté gauche
+					 */
+					else if(paquet.origine == OutOrder.EJECT_LEFT_SIDE)
+					{
+						if(data[0] == InOrder.ACT_SUCCESS.codeInt)
+							paquet.ticket.set(Ticket.State.OK);
+						else
+							paquet.ticket.set(Ticket.State.KO);
+					}
+
+					/**
+					 * Balles éjectées côté droit
+					 */
+					else if(paquet.origine == OutOrder.EJECT_RIGHT_SIDE)
+					{
+						if(data[0] == InOrder.ACT_SUCCESS.codeInt)
+							paquet.ticket.set(Ticket.State.OK);
+						else
+							paquet.ticket.set(Ticket.State.KO);
+					}
+					
+					/**
+					 * Côté gauche réarmé
+					 */
+					else if(paquet.origine == OutOrder.REARM_LEFT_SIDE)
+					{
+						if(data[0] == InOrder.ACT_SUCCESS.codeInt)
+							paquet.ticket.set(Ticket.State.OK);
+						else
+							paquet.ticket.set(Ticket.State.KO);
+					}
+					
+					/**
+					 * Côté droit réarmé
+					 */
+					else if(paquet.origine == OutOrder.REARM_RIGHT_SIDE)
+					{
+						if(data[0] == InOrder.ACT_SUCCESS.codeInt)
+							paquet.ticket.set(Ticket.State.OK);
+						else
+							paquet.ticket.set(Ticket.State.KO);
 					}
 					
 					else if(data.length != 0)
