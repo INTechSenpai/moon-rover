@@ -44,6 +44,7 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	protected volatile boolean matchDemarre = false;
     protected volatile long dateDebutMatch;
     private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant;
+    private int nbRetente;
 	private boolean print;
 	private PrintBuffer buffer;
 	private BufferOutgoingOrder out;
@@ -78,6 +79,7 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 		demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+		nbRetente = config.getInt(ConfigInfo.NB_TENTATIVES_ACTIONNEURS);
 		if(print)
 			buffer.add(this);
 	}
@@ -157,11 +159,11 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	{
 		Ticket.State etat;
 		Ticket t = null;
-		Class<?>[] paramClasses = (Class<?>[]) new Class[param.length];
+		Class<?>[] paramClasses = new Class[param.length];
 		for(int i = 0; i < param.length; i++)
 			paramClasses[i] = param[i].getClass();
+		int nbEssai = nbRetente;
 		do {
-//			log.debug("Envoi l'ordre");
 			try {
 				t = (Ticket) BufferOutgoingOrder.class.getMethod(nom, paramClasses.length == 0 ? null : paramClasses).invoke(out, param.length == 0 ? null : param);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
@@ -173,8 +175,10 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 					t.wait();
 			}
 			etat = t.getAndClear();
-//			log.debug("Etat reçu : "+etat);
-		} while(etat != Ticket.State.OK);		
+			nbEssai--;
+			if(etat == Ticket.State.KO)
+				log.warning("Problème pour l'actionneur "+nom+" : on "+(nbEssai >= 0 ? "retente." : "abandonne."));
+		} while(nbEssai >= 0 && etat == Ticket.State.KO);		
 
 	}
 	
