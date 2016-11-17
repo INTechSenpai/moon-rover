@@ -133,7 +133,7 @@ public class CapteursProcess implements Service, Configurable
 			/*
 			 * Le ToF arrière voit le filet et permet de servir de jauge de remplissage
 			 */
-			if(c == CapteursRobot.ToF_LONG_ARRIERE && robot.isFiletLeve())
+			if(c == CapteursRobot.ToF_LONG_ARRIERE && !robot.isFiletBaisse())
 			{
 				if(data.mesures[i] < 60) // filet plein
 				{

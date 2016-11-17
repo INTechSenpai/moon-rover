@@ -55,5 +55,11 @@ public class ScriptManager implements Service, Iterator<Script>
 	public Script next() {
 		return iter.next();
 	}
+
+	@Override
+	public void remove()
+	{
+		throw new UnsupportedOperationException();
+	}
 	
 }

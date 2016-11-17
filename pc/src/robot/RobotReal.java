@@ -48,7 +48,7 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	private boolean print;
 	private PrintBuffer buffer;
 	private BufferOutgoingOrder out;
-	private boolean filetBaisse = false, filetLeve = true;
+	private boolean filetBaisse = false;
 	private boolean filetPlein = false;
 	
 	// Constructeur
@@ -178,8 +178,7 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 			nbEssai--;
 			if(etat == Ticket.State.KO)
 				log.warning("Problème pour l'actionneur "+nom+" : on "+(nbEssai >= 0 ? "retente." : "abandonne."));
-		} while(nbEssai >= 0 && etat == Ticket.State.KO);		
-
+		} while(nbEssai >= 0 && etat == Ticket.State.KO);
 	}
 	
 	/**
@@ -190,31 +189,23 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	{
 		bloque("baisseFilet");
 		filetBaisse = true;
-		filetLeve = false;
 	}
 	
 	public void filetMiHauteur() throws InterruptedException
 	{
 		bloque("bougeFiletMiChemin");
-		filetLeve = false;
-		filetBaisse = false; // TODO
+		filetBaisse = true;
 	}
 	
 	public void remonteFilet() throws InterruptedException
 	{
 		bloque("leveFilet");
 		filetBaisse = false;
-		filetLeve = true;
 	}
 	
 	public boolean isFiletBaisse()
 	{
 		return filetBaisse;
-	}
-
-	public boolean isFiletLeve()
-	{
-		return filetLeve;
 	}
 
 	public void ouvreFilet() throws InterruptedException
