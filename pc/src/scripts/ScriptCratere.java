@@ -17,9 +17,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package scripts;
 
+import exceptions.UnableToMoveException;
 import pathfinding.RealGameState;
 import pathfinding.astar.arcs.CercleArrivee;
+import table.EtatElement;
 import table.GameElementNames;
+import utils.Log;
 
 /**
  * Le script qui récupère les balles d'un cratère
@@ -32,8 +35,9 @@ public class ScriptCratere extends Script
 	private GameElementNames element;
 	private CercleArrivee cercle;
 	
-	public ScriptCratere(CercleArrivee cercle, GameElementNames element)
+	public ScriptCratere(Log log, CercleArrivee cercle, GameElementNames element)
 	{
+		super(log);
 		this.element = element;
 		this.cercle = cercle;
 	}
@@ -45,9 +49,20 @@ public class ScriptCratere extends Script
 	}
 
 	@Override
-	public void run(RealGameState state) throws InterruptedException
+	protected void run(RealGameState state) throws InterruptedException, UnableToMoveException
 	{
+		state.robot.avance(-20);
+		state.robot.filetMiHauteur();
+		state.robot.ouvreFilet();
 		state.robot.baisseFilet();
+		state.table.setDone(element, EtatElement.PRIS_PAR_NOUS);
+	}
+	
+	@Override
+	protected void termine(RealGameState state) throws InterruptedException, UnableToMoveException
+	{
+		state.robot.fermeFilet();
+		state.robot.remonteFilet();		
 	}
 
 }

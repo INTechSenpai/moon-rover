@@ -27,6 +27,7 @@ import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
 import container.Service;
+import exceptions.UnableToMoveException;
 import utils.Log;
 import graphic.Fenetre;
 import graphic.PrintBuffer;
@@ -144,6 +145,15 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	public int getDemieLongueurArriere()
 	{
 		return demieLongueurArriere;
+	}
+	
+	/*
+	 * DÉPLACEMENTS
+	 */
+	
+	public void avance(double distance) throws UnableToMoveException
+	{
+		// TODO
 	}
 	
 	/*

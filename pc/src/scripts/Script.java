@@ -17,7 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package scripts;
 
+import exceptions.UnableToMoveException;
 import pathfinding.RealGameState;
+import utils.Log;
 
 /**
  * Script abstrait
@@ -27,7 +29,34 @@ import pathfinding.RealGameState;
 
 public abstract class Script
 {
+	protected Log log;
+	
+	public Script(Log log)
+	{
+		this.log = log;
+	}
+	
 	public abstract void setUpCercleArrivee();
 	
-	public abstract void run(RealGameState state) throws InterruptedException;
+	protected abstract void run(RealGameState state) throws InterruptedException, UnableToMoveException;
+	
+	protected abstract void termine(RealGameState state) throws InterruptedException, UnableToMoveException;
+	
+	public void execute(RealGameState state) throws InterruptedException
+	{
+		try {
+			run(state);
+		}
+		catch(UnableToMoveException e)
+		{
+			log.warning("Le script a rencontré une erreur !");
+			try {
+				termine(state);
+			}
+			catch(UnableToMoveException e1)
+			{
+				log.critical("Le dégagement post-script a échoué !");
+			}
+		}
+	}
 }
