@@ -42,6 +42,9 @@ public:
 };
 
 
+/*
+	Ne fait rien
+*/
 class Ping : public OrderImmediate, public Singleton<Ping>
 {
 public:
@@ -55,6 +58,10 @@ public:
 };
 
 
+/*
+	Le bas niveau renvoie la couleur s’il la
+	connait.
+*/
 class GetColor : public OrderImmediate, public Singleton<GetColor>
 {
 public:
@@ -82,6 +89,85 @@ public:
 			io.push_back(INTECH);
 		else
 			io.push_back(UNKNOWN);
+	}
+};
+
+
+/*
+	Ajoute à la trajectoire courante un
+	certain nombre de points (entre 0 et
+	31 points)
+*/
+class AddTrajectoryPoints : public OrderImmediate, public Singleton<AddTrajectoryPoints>
+{
+public:
+	AddTrajectoryPoints() {}
+	virtual void execute(std::vector<uint8_t> & io) 
+	{
+		if (io.size() <= 1 || (io.size() - 1) % 7 != 0)
+		{ // Nombre d'octets reçus incorrect
+			Log::critical(40, "AddTrajectoryPoint: argument incorrect");
+		}
+		else
+		{
+			uint8_t index = io.at(0);
+			for (size_t i = 1; i < io.size(); i += 7)
+			{
+				std::vector<uint8_t> pos_vect(io.begin() + i, io.begin() + i + 5);
+				Position pos(pos_vect);
+				TrajectoryPoint newTrajPoint(pos, io.at(5), io.at(6));
+				motionControlSystem.addTrajectoryPoint(newTrajPoint, index);
+				index++;
+			}
+		}
+		io.clear();
+	}
+};
+
+
+/*
+	Règle la vitesse maximale courante.
+*/
+class SetMaxSpeed : public OrderImmediate, public Singleton<SetMaxSpeed>
+{
+public:
+	SetMaxSpeed() {}
+	virtual void execute(std::vector<uint8_t> & io) 
+	{
+		if (io.size() != 2)
+		{// Nombre d'octets reçus incorrect
+			Log::critical(40, "SetMaxSpeed: argument incorrect");
+		}
+		else
+		{
+			int16_t maxSpeed = (io.at(0) << 8) + io.at(1);
+			motionControlSystem.setMaxMovingSpeed(maxSpeed);
+		}
+		io.clear();
+	}
+};
+
+
+/*
+	Modifie la position du robot dans le
+	bas niveau, les coordonnées fournies
+	sont ajoutées aux coordonnées
+	courantes du bas niveau.
+*/
+class EditPosition : public OrderImmediate, public Singleton<EditPosition>
+{
+public:
+	EditPosition() {}
+	virtual void execute(std::vector<uint8_t> & io) 
+	{
+		Position correctifPosition(io);
+		Position currentPosition;
+		motionControlSystem.getPosition(currentPosition);
+		currentPosition.x += correctifPosition.x;
+		currentPosition.y += correctifPosition.y;
+		currentPosition.setOrientation(currentPosition.orientation + correctifPosition.orientation);
+		motionControlSystem.setPosition(currentPosition);
+		io.clear();
 	}
 };
 

@@ -194,7 +194,7 @@ private:
 	void manageStop();
 	void manageBlocking();
 
-	/* Appelée en car d'erreur durant le mouvement, réinitialise la trajectoire courante */
+	/* Appelée en cas d'erreur durant le mouvement, réinitialise la trajectoire courante */
 	void clearCurrentTrajectory();
 public:
 
@@ -209,7 +209,9 @@ public:
 	void addTrajectoryPoint(const TrajectoryPoint &, uint8_t);
 	MovingState getMovingState() const;
 	void gotoNextStopPoint();
-	void stop();
+	void stop(); // Met toutes les consignes de l'asservissement à une valeur permettant l'arrêt du robot
+	void highLevelStop(); // Termine la trajectoire courante et stoppe le robot
+	bool isStopped(); // Indique si le robot est physiquement à l'arrêt
 	void setMaxMovingSpeed(int32_t);
 	int32_t getMaxMovingSpeed() const;
 	void setMaxAcceleration(int32_t);

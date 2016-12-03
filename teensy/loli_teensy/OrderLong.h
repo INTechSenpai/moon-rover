@@ -5,14 +5,22 @@
 
 #include <vector>
 #include "Singleton.h"
+#include "MotionControlSystem.h"
+#include "pin_mapping.h"
 
 class OrderLong
 {
 public:
-	OrderLong() : finished(false) {}
+	OrderLong() : finished(false), motionControlSystem(MotionControlSystem::Instance()) {}
+
+	void launch(const std::vector<uint8_t> & arg)
+	{
+		finished = false;
+		_launch(arg);
+	}
 
 	/* Lancement de l'ordre long. L'argument correspond à un input (NEW_ORDER). */
-	virtual void launch(const std::vector<uint8_t> &) = 0;
+	virtual void _launch(const std::vector<uint8_t> &) = 0;
 
 	/* Méthode exécutée en boucle durant l'exécution de l'odre. L'argument est un output, si il est non vide cela correspond à un STATUS_UPDATE. */
 	virtual void onExecute(std::vector<uint8_t> &) = 0;
@@ -28,6 +36,7 @@ public:
 
 protected:
 	bool finished;
+	MotionControlSystem & motionControlSystem;
 };
 
 
@@ -37,7 +46,7 @@ class RienL : public OrderLong, public Singleton<RienL>
 {
 public:
 	RienL(){}
-	void launch(const std::vector<uint8_t> & input)
+	void _launch(const std::vector<uint8_t> & input)
 	{}
 	void onExecute(std::vector<uint8_t> & output)
 	{}
@@ -45,79 +54,394 @@ public:
 	{}
 };
 
-class PingOfDeath : public OrderLong, public Singleton<PingOfDeath>
+
+/*
+	Suit la trajectoire courante. Se termine
+	une fois arrivé au prochain point d’arrêt
+	de la trajectoire, lorsque le robot est à
+	l’arrêt. Ou bien si « Stop » est appelé
+*/
+class FollowTrajectory : public OrderLong, public Singleton<FollowTrajectory>
 {
 public:
-	PingOfDeath(){}
-
-	void launch(const std::vector<uint8_t> &)
+	FollowTrajectory() {}
+	void _launch(const std::vector<uint8_t> & input)
 	{
-		Serial.println("Launch PingOfDeath");
-	}
-
-	void onExecute(std::vector<uint8_t> &)
-	{
-		static uint32_t lastPrintTime = 0;
-		static int printCount = 0;
-		if (millis() - lastPrintTime > 1000)
-		{
-			Serial.print("Ping of death ! #");
-			Serial.println(printCount);
-			lastPrintTime = millis();
-			printCount++;
+		if (input.size() != 2)
+		{// Nombre d'octets reçus incorrect
+			Log::critical(40, "FollowTrajectory: argument incorrect");
 		}
-		if (printCount > 10)
+		else
 		{
+			int16_t maxSpeed = (input.at(0) << 8) + input.at(1);
+			motionControlSystem.setMaxMovingSpeed(maxSpeed);
+			motionControlSystem.gotoNextStopPoint();
+		}
+	}
+	void onExecute(std::vector<uint8_t> & output)
+	{
+		MotionControlSystem::MovingState movingState = motionControlSystem.getMovingState();
+		switch (movingState)
+		{
+		case MotionControlSystem::STOPPED:
+			endMoveStatus = ARRIVED;
 			finished = true;
+			break;
+		case MotionControlSystem::MOVE_INIT:
+			break;
+		case MotionControlSystem::MOVING:
+			break;
+		case MotionControlSystem::EXT_BLOCKED:
+			endMoveStatus = EXT_BLOCKED;
+			finished = true;
+			break;
+		case MotionControlSystem::INT_BLOCKED:
+			endMoveStatus = INT_BLOCKED;
+			finished = true;
+			break;
+		case MotionControlSystem::EMPTY_TRAJ:
+			endMoveStatus = NO_MORE_POINTS;
+			finished = true;
+			break;
+		default:
+			break;
 		}
 	}
-
-	void terminate(std::vector<uint8_t> &)
+	void terminate(std::vector<uint8_t> & output)
 	{
-		Serial.println("End of Ping of death");
+		output.push_back(endMoveStatus);
 	}
+
+private:
+	enum EndMoveStatus
+	{
+		ARRIVED = 0x00,
+		EXT_BLOCKED = 0x01,
+		INT_BLOCKED = 0x02,
+		NO_MORE_POINTS = 0x03
+	};
+	uint8_t endMoveStatus;
 };
 
 
-class Move : public OrderLong, public Singleton<Move>
+/*
+	Interromps la trajectoire courante au
+	plus vite. La trajectoire est oubliée. Se
+	termine quand le robot est à l’arrêt.
+*/
+class Stop : public OrderLong, public Singleton<Stop>
 {
 public:
-	Move()
+	Stop() {}
+	void _launch(const std::vector<uint8_t> & input)
 	{
-		called = false;
+		motionControlSystem.highLevelStop();
 	}
-	void launch(const std::vector<uint8_t> & input)
+	void onExecute(std::vector<uint8_t> & output)
+	{
+		finished = motionControlSystem.isStopped();
+	}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+};
+
+
+/*
+	Se termine lorsque le jumper est retiré
+	du robot
+*/
+class WaitForJumper : public OrderLong, public Singleton<WaitForJumper>
+{
+public:
+	WaitForJumper() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{
+		jumperInPlace = false;
+	}
+	void onExecute(std::vector<uint8_t> & output)
+	{
+		if (analogRead(PIN_GET_JUMPER) > 500)
+		{// Jumper en place
+			jumperInPlace = true;
+		}
+		else
+		{// Jumper sorti
+			if (jumperInPlace)
+			{
+				finished = true;
+			}
+		}
+	}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+private:
+	bool jumperInPlace;
+};
+
+
+/*
+	Se termine au bout de 90 secondes si
+	tout se passe bien. Ou bien avant en cas
+	de problème grave
+*/
+class StartMatchChrono : public OrderLong, public Singleton<StartMatchChrono>
+{
+public:
+	StartMatchChrono() {}
+	void _launch(const std::vector<uint8_t> & input)
 	{
 		beginTime = millis();
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		uint32_t now = millis();
-		if (now - beginTime > 2000)
+		if (millis() - beginTime > 90000)
 		{
+			returnStatement = 0x00; // MATCH_FINISHED
+			finished = true;
+		}
+		else if (false) // TODO : check batterie
+		{
+			returnStatement = 0x01; // EMERGENCY_STOP
 			finished = true;
 		}
 	}
 	void terminate(std::vector<uint8_t> & output)
 	{
-		if (called)
-		{
-			output.push_back(ARRIVED);
+		output.push_back(returnStatement);
+	}
+private:
+	uint32_t beginTime;
+	uint8_t returnStatement;
+};
+
+
+/*
+	Envoie la position du robot et/ou l’état
+	des capteurs avec les fréquences
+	demandées
+*/
+class StreamAll : public OrderLong, public Singleton<StreamAll>
+{
+public:
+	StreamAll() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{
+		if (input.size() != 3)
+		{// Nombre d'octets reçus incorrect
+			Log::critical(40, "StreamAll: argument incorrect");
+			// On utilise des valeurs par défaut
+			sendPeriod = 1000;
+			sensorsPrescaler = 0;
 		}
 		else
 		{
-			output.push_back(BLOCKED);
+			sendPeriod = (input.at(0) << 8) + input.at(1);
+			sensorsPrescaler = input.at(2);
 		}
-		called = true;
+		lastUpdateTime = millis();
+		prescalerCounter = 1;
 	}
-	enum RETURN_STATE
+	void onExecute(std::vector<uint8_t> & output)
 	{
-		ARRIVED = 0x00,
-		BLOCKED = 0x01
-	};
+		if (millis() - lastUpdateTime >= sendPeriod)
+		{
+			motionControlSystem.getPosition(currentPosition);
+			output = currentPosition.getVector();
+			output.push_back(motionControlSystem.getTrajectoryIndex());
+			if (sensorsPrescaler != 0)
+			{
+				if (prescalerCounter == sensorsPrescaler)
+				{
+					// TODO : ajouter les données des capteurs à 'output'
+					prescalerCounter = 1;
+				}
+				else
+				{
+					prescalerCounter++;
+				}
+			}
+			lastUpdateTime = millis();
+		}
+	}
+	void terminate(std::vector<uint8_t> & output)
+	{}
 private:
-	uint32_t beginTime;
-	bool called;
+	Position currentPosition;
+	uint32_t lastUpdateTime;
+	uint16_t sendPeriod;
+	uint8_t sensorsPrescaler;
+	uint8_t prescalerCounter;
+};
+
+
+/*
+	Abaisse le filet à l’horizontale
+*/
+class PullDownNet : public OrderLong, public Singleton<PullDownNet>
+{
+public:
+	PullDownNet() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{}
+	void onExecute(std::vector<uint8_t> & output)
+	{}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+};
+
+
+/*
+	Abaisse le filet à mi-chemin. Afin de
+	pouvoir remplir un filet déjà en partie
+	rempli sans perdre de balles
+*/
+class PutNetHalfway : public OrderLong, public Singleton<PutNetHalfway>
+{
+public:
+	PutNetHalfway() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{}
+	void onExecute(std::vector<uint8_t> & output)
+	{}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+};
+
+
+/*
+	Remonte le filet à la verticale.
+*/
+class PullUpNet : public OrderLong, public Singleton<PullUpNet>
+{
+public:
+	PullUpNet() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{}
+	void onExecute(std::vector<uint8_t> & output)
+	{}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+};
+
+
+/*
+	Ouvre les mailles du filet pour pouvoir
+	accueillir les balles.
+*/
+class OpenNet : public OrderLong, public Singleton<OpenNet>
+{
+public:
+	OpenNet() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{}
+	void onExecute(std::vector<uint8_t> & output)
+	{}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+};
+
+
+/*
+	Ferme les mailles du filet.
+*/
+class CloseNet : public OrderLong, public Singleton<CloseNet>
+{
+public:
+	CloseNet() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{}
+	void onExecute(std::vector<uint8_t> & output)
+	{}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+};
+
+
+/*
+	Actionne le filet de manière à pouvoir
+	traverser la bascule de la zone de départ
+	en marche arrière comme si de rien était.
+	Entre en CONFLIT avec tous les autres
+	ordres actionnant le filet
+*/
+class CrossFlipFlop : public OrderLong, public Singleton<CrossFlipFlop>
+{
+public:
+	CrossFlipFlop() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{}
+	void onExecute(std::vector<uint8_t> & output)
+	{}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+};
+
+
+/*
+	Vide le filet par le côté gauche (du point
+	de vue du robot)
+*/
+class EjectLeftSide : public OrderLong, public Singleton<EjectLeftSide>
+{
+public:
+	EjectLeftSide() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{}
+	void onExecute(std::vector<uint8_t> & output)
+	{}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+};
+
+
+/*
+	Range le bras gauche permettant de
+	vider le filet.
+*/
+class RearmLeftSide : public OrderLong, public Singleton<RearmLeftSide>
+{
+public:
+	RearmLeftSide() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{}
+	void onExecute(std::vector<uint8_t> & output)
+	{}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+};
+
+
+/*
+	Vide le filet par le côté droit (du point
+	de vue du robot).
+*/
+class EjectRightSide : public OrderLong, public Singleton<EjectRightSide>
+{
+public:
+	EjectRightSide() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{}
+	void onExecute(std::vector<uint8_t> & output)
+	{}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+};
+
+
+/*
+	Range le bras droit permettant de vider
+	le filet.
+*/
+class RearmRightSide : public OrderLong, public Singleton<RearmRightSide>
+{
+public:
+	RearmRightSide() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{}
+	void onExecute(std::vector<uint8_t> & output)
+	{}
+	void terminate(std::vector<uint8_t> & output)
+	{}
 };
 
 
@@ -132,7 +456,7 @@ class Test_pwm : public OrderLong, public Singleton<Test_pwm>
 {
 public:
 	Test_pwm() {}
-	void launch(const std::vector<uint8_t> & input)
+	void _launch(const std::vector<uint8_t> & input)
 	{}
 	void onExecute(std::vector<uint8_t> & output)
 	{}
@@ -144,7 +468,7 @@ class Test_speed : public OrderLong, public Singleton<Test_speed>
 {
 public:
 	Test_speed() {}
-	void launch(const std::vector<uint8_t> & input)
+	void _launch(const std::vector<uint8_t> & input)
 	{}
 	void onExecute(std::vector<uint8_t> & output)
 	{}
@@ -156,7 +480,7 @@ class Test_pos : public OrderLong, public Singleton<Test_pos>
 {
 public:
 	Test_pos() {}
-	void launch(const std::vector<uint8_t> & input)
+	void _launch(const std::vector<uint8_t> & input)
 	{}
 	void onExecute(std::vector<uint8_t> & output)
 	{}

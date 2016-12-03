@@ -511,6 +511,18 @@ void MotionControlSystem::stop()
 	interrupts();
 }
 
+void MotionControlSystem::highLevelStop()
+{
+	movingState = STOPPED;
+	clearCurrentTrajectory();
+	stop();
+}
+
+bool MotionControlSystem::isStopped()
+{
+	return endOfMoveMgr.isStopped();
+}
+
 void MotionControlSystem::setMaxMovingSpeed(int32_t newMaxMovingSpeed)
 {
 	noInterrupts();

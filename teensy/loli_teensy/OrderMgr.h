@@ -28,12 +28,28 @@ public:
 		 *	################################################## */
 
 		// Ordres à réponse immédiate
+		immediateOrderList[0x59] = &GetColor::Instance();
 		immediateOrderList[0x5A] = &Ping::Instance();
-		immediateOrderList[0x13] = &GetColor::Instance();
+		immediateOrderList[0x5B] = &AddTrajectoryPoints::Instance();
+		immediateOrderList[0x5C] = &SetMaxSpeed::Instance();
+		immediateOrderList[0x5D] = &EditPosition::Instance();
 
 		// Ordres longs
-		longOrderList[0x00] = &PingOfDeath::Instance();
-		longOrderList[0x0C] = &Move::Instance();
+		longOrderList[0x38] = &FollowTrajectory::Instance();
+		longOrderList[0x39] = &Stop::Instance();
+		longOrderList[0x3A] = &WaitForJumper::Instance();
+		longOrderList[0x3B] = &StartMatchChrono::Instance();
+		longOrderList[0x3C] = &StreamAll::Instance();
+		longOrderList[0x3D] = &PullDownNet::Instance();
+		longOrderList[0x3E] = &PutNetHalfway::Instance();
+		longOrderList[0x3F] = &PullUpNet::Instance();
+		longOrderList[0x40] = &OpenNet::Instance();
+		longOrderList[0x41] = &CloseNet::Instance();
+		longOrderList[0x42] = &CrossFlipFlop::Instance();
+		longOrderList[0x43] = &EjectLeftSide::Instance();
+		longOrderList[0x44] = &RearmLeftSide::Instance();
+		longOrderList[0x45] = &EjectRightSide::Instance();
+		longOrderList[0x46] = &RearmRightSide::Instance();
 
 		// Ordres ASCII
 		immediateOrderList[0x80] = &Logon::Instance();
