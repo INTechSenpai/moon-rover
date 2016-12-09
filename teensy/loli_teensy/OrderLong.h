@@ -6,12 +6,17 @@
 #include <vector>
 #include "Singleton.h"
 #include "MotionControlSystem.h"
+#include "SensorMgr.h"
 #include "pin_mapping.h"
 
 class OrderLong
 {
 public:
-	OrderLong() : finished(false), motionControlSystem(MotionControlSystem::Instance()) {}
+	OrderLong():
+		finished(true), 
+		motionControlSystem(MotionControlSystem::Instance()),
+		sensorMgr(SensorMgr::Instance())
+	{}
 
 	void launch(const std::vector<uint8_t> & arg)
 	{
@@ -37,6 +42,7 @@ public:
 protected:
 	bool finished;
 	MotionControlSystem & motionControlSystem;
+	SensorMgr & sensorMgr;
 };
 
 
@@ -252,7 +258,8 @@ public:
 			{
 				if (prescalerCounter == sensorsPrescaler)
 				{
-					// TODO : ajouter les données des capteurs à 'output'
+					std::vector<uint8_t> sensorValues = sensorMgr.getValues();
+					output.insert(output.end(), sensorValues.begin(), sensorValues.end());
 					prescalerCounter = 1;
 				}
 				else

@@ -7,6 +7,8 @@
 #include "WProgram.h"
 #endif
 
+#include "communication_setup.h"
+
 #define LOG_PREFIX_DATA		"_data_"
 #define LOG_PREFIX_WARNING	"_warning_"
 #define LOG_PREFIX_CRITICAL	"_error_"

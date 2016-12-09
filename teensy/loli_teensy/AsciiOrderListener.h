@@ -109,6 +109,11 @@ public:
 		receivingState = RECEIVING_ORDER;
 	}
 
+	void trashLastOrder()
+	{
+		receivingState = RECEIVING_ORDER;
+	}
+
 private:
 
 	enum ReceivingState

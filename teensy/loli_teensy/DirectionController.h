@@ -10,6 +10,14 @@
 #include "Singleton.h"
 #include "physical_dimensions.h"
 #include <Printable.h>
+#include "InterfaceAX12.h"
+#include "DynamixelMotor.h"
+
+#define ID_LEFT_AX12	0
+#define ID_RIGHT_AX12	1
+
+/* Periode d'actualisation d'une requête AX12 (4 requêtes au total) */
+#define CONTROL_PERIOD	12500 // µs
 
 /* Angles des AX12 correspondant à des roues alignées vers l'avant */
 #define LEFT_ANGLE_ORIGIN	150
@@ -18,21 +26,55 @@
 class DirectionController : public Singleton<DirectionController>, public Printable
 {
 public:
-	DirectionController()
+	DirectionController() :
+		serialAX(InterfaceAX12::Instance()),
+		leftMotor(serialAX.serial, ID_LEFT_AX12),
+		rightMotor(serialAX.serial, ID_RIGHT_AX12)
 	{
 		aimCurvature = 0;
 		updateAimAngles();
 		realLeftAngle = 0;
 		realRightAngle = 0;
 		updateRealCurvature();
+		leftMotor.init();
+		rightMotor.init();
+		leftMotor.enableTorque();
+		rightMotor.enableTorque();
+		leftMotor.jointMode();
+		rightMotor.jointMode();
 	}
 
 	void control()
 	{
-		updateAimAngles();
-		sendAimAngles();
-		readRealAngles();
-		updateRealCurvature();
+		static uint32_t lastUpdateTime = 0;
+		static uint8_t counter = 0;
+		
+		if (micros() - lastUpdateTime >= CONTROL_PERIOD)
+		{
+			lastUpdateTime = micros();
+			updateAimAngles();
+			if (counter == 0)
+			{
+				leftMotor.goalPosition(aimLeftAngle);
+				counter = 1;
+			}
+			else if (counter == 1)
+			{
+				rightMotor.goalPosition(aimRightAngle);
+				counter = 2;
+			}
+			else if (counter == 2)
+			{
+				realLeftAngle = leftMotor.currentPosition();
+				counter = 3;
+			}
+			else
+			{
+				realRightAngle = rightMotor.currentPosition();
+				counter = 0;
+			}
+			updateRealCurvature();
+		}
 	}
 	
 	void setAimCurvature(float curvature)
@@ -66,16 +108,6 @@ public:
 	}
 
 private:
-	void readRealAngles()
-	{
-		//todo
-	}
-
-	void sendAimAngles()
-	{
-		//todo
-	}
-
 	void updateRealCurvature()
 	{
 		float leftCurvature, rightCurvature;
@@ -134,6 +166,11 @@ private:
 	uint16_t aimRightAngle;
 	uint16_t realLeftAngle;
 	uint16_t realRightAngle;
+
+	/* Les AX12 de direction */
+	InterfaceAX12 & serialAX;
+	DynamixelMotor leftMotor;
+	DynamixelMotor rightMotor;
 };
 
 

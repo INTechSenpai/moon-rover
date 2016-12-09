@@ -15,6 +15,12 @@
 class OrderMgr
 {
 public:
+	/*
+		Le constructeur prend en argument un objet 'Stream' afin de pouvoir utiliser indifférement
+		'HardwareSerial' ou 'usb_serial_class'. En contrepartie, la classe 'Stream' n'impémentant
+		pas de méthode 'begin', il est nécéssaire d'ouvrir la liaison avant de la donner à ce
+		constructeur (ou du moins de l'ouvrir avant de faire appel à 'communicate').
+	*/
 	OrderMgr(Stream & serial) : HLserial(serial)
 	{
 		for (int i = 0; i < NB_ORDER; i++)
