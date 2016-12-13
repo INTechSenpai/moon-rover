@@ -10,6 +10,7 @@
 #include "Log.h"
 #include "MotionControlSystem.h"
 #include "DirectionController.h"
+#include "SensorMgr.h"
 #include "Position.h"
 
 class OrderImmediate
@@ -17,7 +18,8 @@ class OrderImmediate
 public:
 	OrderImmediate() :
 		motionControlSystem(MotionControlSystem::Instance()),
-		directionController(DirectionController::Instance())
+		directionController(DirectionController::Instance()),
+		sensorMgr(SensorMgr::Instance())
 	{}
 
 	/*
@@ -29,6 +31,7 @@ public:
 protected:
 	MotionControlSystem & motionControlSystem;
 	DirectionController & directionController;
+	SensorMgr & sensorMgr;
 };
 
 
@@ -52,7 +55,7 @@ public:
 
 	virtual void execute(std::vector<uint8_t> & io)
 	{
-		Serial.print("Ping !");
+		Serial.println("Ping !");
 		io.clear();
 	}
 };
@@ -682,7 +685,78 @@ class Capt : public OrderImmediate, public Singleton<Capt>
 {
 public:
 	Capt() {}
-	virtual void execute(std::vector<uint8_t> & io) {}
+	virtual void execute(std::vector<uint8_t> & io)
+	{
+		uint8_t values[NB_SENSORS];
+		sensorMgr.getValues_noReset(values);
+		Serial.printf("ToF_LP_AV:%4u  ToF_LP_AR:%4u  IR_AVG:%4u  IR_AVD:%4u\n",
+			values[0]*10,
+			values[2]*10,
+			values[1]*10,
+			values[3]*10);
+		Serial.printf("AVg:%3u  flanAVg:%3u  flanARg:%3u  ARg:%3u  ARd:%3u  flanARd:%3u  flanAVd:%3u  AVd:%3u\n",
+			values[4],
+			values[5],
+			values[6],
+			values[7],
+			values[8],
+			values[9],
+			values[10],
+			values[11]);
+		Serial.println();
+	}
+};
+
+class Help : public OrderImmediate, public Singleton<Help>
+{
+public:
+	Help() {}
+	virtual void execute(std::vector<uint8_t> & io) 
+	{
+		Serial.println("---Liste des ordres ASCII (type de l'argument)---");
+		Serial.println("logon (int)");
+		Serial.println("logoff (int)");
+		Serial.println("batt (void)");
+		Serial.println("stop (void)");
+		Serial.println("s (void)");
+		Serial.println("save (void)");
+		Serial.println("display (void)");
+		Serial.println("default (void)");
+		Serial.println("pos (void)");
+		Serial.println("x (float)");
+		Serial.println("y (float)");
+		Serial.println("o (float)");
+		Serial.println("rp {'';'i';'w'}");
+		Serial.println("dir (float)");
+		Serial.println("axg (int)");
+		Serial.println("axd (int)");
+		Serial.println("cod (void)");
+		Serial.println("setaxid (int)");
+		Serial.println("pid {'g';'d';'t'}");
+		Serial.println("kp (float)");
+		Serial.println("ki (float)");
+		Serial.println("kd (float)");
+		Serial.println("smgre (int)");
+		Serial.println("smgrt (int)");
+		Serial.println("bmgrs (float)");
+		Serial.println("bmgrt (int)");
+		Serial.println("mms (int)");
+		Serial.println("macc (int)");
+		Serial.println("cp (bool)");
+		Serial.println("cvg (bool)");
+		Serial.println("cvd (bool)");
+		Serial.println("cpwm (bool)");
+		Serial.println("pwm (int)");
+		Serial.println("a (int)");
+		Serial.println("p (int)");
+		Serial.println("k1 (float)");
+		Serial.println("k2 (float)");
+		Serial.println("capt (void)");
+		Serial.println("abort (void)");
+		Serial.println("help (void)");
+		Serial.println("---FIN---");
+		Serial.println("");
+	}
 };
 
 #endif

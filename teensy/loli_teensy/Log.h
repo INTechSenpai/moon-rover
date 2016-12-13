@@ -7,6 +7,7 @@
 #include "WProgram.h"
 #endif
 
+#include "utils.h"
 #include "communication_setup.h"
 
 #define LOG_PREFIX_DATA		"_data_"
@@ -62,7 +63,7 @@ public:
 
 	static inline void data(LogChannel channel, const Printable & obj)
 	{
-		if ((enabledChannels & (1 << channel)) != 0)
+		if ((enabledChannels & (1 << channel)) != 0 && debug_serial_free)
 		{
 			Serial.print(LOG_PREFIX_DATA);
 			Serial.print(channel);
@@ -73,26 +74,35 @@ public:
 
 	static void warning(const char* s)
 	{
-		Serial.print(LOG_PREFIX_WARNING);
-		Serial.println(s);
+		if (debug_serial_free)
+		{
+			Serial.print(LOG_PREFIX_WARNING);
+			Serial.println(s);
+		}
 	}
 
 	static void critical(int errorCode, const char* s = "")
 	{
-		Serial.print(LOG_PREFIX_CRITICAL);
-		Serial.print(errorCode);
-		Serial.print("_");
-		Serial.println(s);
+		if (debug_serial_free)
+		{
+			Serial.print(LOG_PREFIX_CRITICAL);
+			Serial.print(errorCode);
+			Serial.print("_");
+			Serial.println(s);
+		}
 	}
 
 	static void critical(int errorCode, const Printable & obj, const char* s = "")
 	{
-		Serial.print(LOG_PREFIX_CRITICAL);
-		Serial.print(errorCode);
-		Serial.print("_");
-		Serial.print(s);
-		Serial.print("_");
-		Serial.println(obj);
+		if (debug_serial_free)
+		{
+			Serial.print(LOG_PREFIX_CRITICAL);
+			Serial.print(errorCode);
+			Serial.print("_");
+			Serial.print(s);
+			Serial.print("_");
+			Serial.println(obj);
+		}
 	}
 };
 

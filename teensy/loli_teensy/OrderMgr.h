@@ -99,6 +99,7 @@ public:
 		immediateOrderList[0xA5] = &Curv_k1::Instance();
 		immediateOrderList[0xA6] = &Curv_k2::Instance();
 		immediateOrderList[0xB0] = &Capt::Instance();
+		immediateOrderList[0xBF] = &Help::Instance();
 	}
 
 private:

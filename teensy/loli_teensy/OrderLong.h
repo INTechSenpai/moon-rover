@@ -7,6 +7,7 @@
 #include "Singleton.h"
 #include "MotionControlSystem.h"
 #include "SensorMgr.h"
+#include "ActuatorMgr.h"
 #include "pin_mapping.h"
 
 class OrderLong
@@ -15,7 +16,8 @@ public:
 	OrderLong():
 		finished(true), 
 		motionControlSystem(MotionControlSystem::Instance()),
-		sensorMgr(SensorMgr::Instance())
+		sensorMgr(SensorMgr::Instance()),
+		actuatorMgr(ActuatorMgr::Instance())
 	{}
 
 	void launch(const std::vector<uint8_t> & arg)
@@ -43,6 +45,7 @@ protected:
 	bool finished;
 	MotionControlSystem & motionControlSystem;
 	SensorMgr & sensorMgr;
+	ActuatorMgr & actuatorMgr;
 };
 
 
@@ -289,9 +292,13 @@ class PullDownNet : public OrderLong, public Singleton<PullDownNet>
 public:
 	PullDownNet() {}
 	void _launch(const std::vector<uint8_t> & input)
-	{}
+	{
+		actuatorMgr.pullDownNet(true);
+	}
 	void onExecute(std::vector<uint8_t> & output)
-	{}
+	{
+		finished = actuatorMgr.pullDownNet(false);
+	}
 	void terminate(std::vector<uint8_t> & output)
 	{}
 };
@@ -307,9 +314,13 @@ class PutNetHalfway : public OrderLong, public Singleton<PutNetHalfway>
 public:
 	PutNetHalfway() {}
 	void _launch(const std::vector<uint8_t> & input)
-	{}
+	{
+		actuatorMgr.putNetHalfway(true);
+	}
 	void onExecute(std::vector<uint8_t> & output)
-	{}
+	{
+		finished = actuatorMgr.putNetHalfway(false);
+	}
 	void terminate(std::vector<uint8_t> & output)
 	{}
 };
@@ -323,9 +334,13 @@ class PullUpNet : public OrderLong, public Singleton<PullUpNet>
 public:
 	PullUpNet() {}
 	void _launch(const std::vector<uint8_t> & input)
-	{}
+	{
+		actuatorMgr.pullUpNet(true);
+	}
 	void onExecute(std::vector<uint8_t> & output)
-	{}
+	{
+		finished = actuatorMgr.pullUpNet(false);
+	}
 	void terminate(std::vector<uint8_t> & output)
 	{}
 };
@@ -340,9 +355,13 @@ class OpenNet : public OrderLong, public Singleton<OpenNet>
 public:
 	OpenNet() {}
 	void _launch(const std::vector<uint8_t> & input)
-	{}
+	{
+		actuatorMgr.openNet(true);
+	}
 	void onExecute(std::vector<uint8_t> & output)
-	{}
+	{
+		finished = actuatorMgr.openNet(false);
+	}
 	void terminate(std::vector<uint8_t> & output)
 	{}
 };
@@ -356,11 +375,18 @@ class CloseNet : public OrderLong, public Singleton<CloseNet>
 public:
 	CloseNet() {}
 	void _launch(const std::vector<uint8_t> & input)
-	{}
+	{
+		actuatorMgr.closeNet(true);
+		Serial.println("closing");
+	}
 	void onExecute(std::vector<uint8_t> & output)
-	{}
+	{
+		finished = actuatorMgr.closeNet(false);
+	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		Serial.println("closed");
+	}
 };
 
 
@@ -378,9 +404,13 @@ public:
 	void _launch(const std::vector<uint8_t> & input)
 	{}
 	void onExecute(std::vector<uint8_t> & output)
-	{}
+	{
+		//todo
+	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		//todo
+	}
 };
 
 
@@ -393,11 +423,20 @@ class EjectLeftSide : public OrderLong, public Singleton<EjectLeftSide>
 public:
 	EjectLeftSide() {}
 	void _launch(const std::vector<uint8_t> & input)
-	{}
+	{
+		actuatorMgr.ejectLeftSide(true);
+	}
 	void onExecute(std::vector<uint8_t> & output)
-	{}
+	{
+		retStatus = actuatorMgr.ejectLeftSide(false);
+		finished = retStatus != 0xFF;
+	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		output.push_back(retStatus);
+	}
+private:
+	uint8_t retStatus;
 };
 
 
@@ -410,11 +449,20 @@ class RearmLeftSide : public OrderLong, public Singleton<RearmLeftSide>
 public:
 	RearmLeftSide() {}
 	void _launch(const std::vector<uint8_t> & input)
-	{}
+	{
+		actuatorMgr.rearmLeftSide(true);
+	}
 	void onExecute(std::vector<uint8_t> & output)
-	{}
+	{
+		retStatus = actuatorMgr.rearmLeftSide(false);
+		finished = retStatus != 0xFF;
+	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		output.push_back(retStatus);
+	}
+private:
+	uint8_t retStatus;
 };
 
 
@@ -427,11 +475,20 @@ class EjectRightSide : public OrderLong, public Singleton<EjectRightSide>
 public:
 	EjectRightSide() {}
 	void _launch(const std::vector<uint8_t> & input)
-	{}
+	{
+		actuatorMgr.ejectRightSide(true);
+	}
 	void onExecute(std::vector<uint8_t> & output)
-	{}
+	{
+		retStatus = actuatorMgr.ejectRightSide(false);
+		finished = retStatus != 0xFF;
+	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		output.push_back(retStatus);
+	}
+private:
+	uint8_t retStatus;
 };
 
 
@@ -444,11 +501,20 @@ class RearmRightSide : public OrderLong, public Singleton<RearmRightSide>
 public:
 	RearmRightSide() {}
 	void _launch(const std::vector<uint8_t> & input)
-	{}
+	{
+		actuatorMgr.rearmRightSide(true);
+	}
 	void onExecute(std::vector<uint8_t> & output)
-	{}
+	{
+		retStatus = actuatorMgr.rearmRightSide(false);
+		finished = retStatus != 0xFF;
+	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		output.push_back(retStatus);
+	}
+private:
+	uint8_t retStatus;
 };
 
 

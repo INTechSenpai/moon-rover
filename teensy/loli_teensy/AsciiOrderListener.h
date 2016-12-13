@@ -144,8 +144,7 @@ private:
 	OrderStatus getID(const char order[MAX_ORDER_SIZE], uint8_t & id, bool & immediate)
 	{
 		OrderStatus orderStatus = KNOWN_ORDER;
-		if (strcmp(order, "abwabwa") == 0) { id = 0xFF; immediate = true; }
-		else if (strcmp(order, "logon") == 0) { id = 0x80; immediate = true; }
+		if (strcmp(order, "logon") == 0) { id = 0x80; immediate = true; }
 		else if (strcmp(order, "logoff") == 0) { id = 0x81; immediate = true; }
 		else if (strcmp(order, "batt") == 0) { id = 0x82; immediate = true; }
 		else if (strcmp(order, "stop") == 0) { id = 0x83; immediate = true; }
@@ -183,6 +182,18 @@ private:
 		else if (strcmp(order, "k1") == 0) { id = 0xA5; immediate = true; }
 		else if (strcmp(order, "k2") == 0) { id = 0xA6; immediate = true; }
 		else if (strcmp(order, "capt") == 0) { id = 0xB0; immediate = true; }
+		else if (strcmp(order, "pdn") == 0) { id = 0x3D; immediate = false; }
+		else if (strcmp(order, "pnh") == 0) { id = 0x3E; immediate = false; }
+		else if (strcmp(order, "pun") == 0) { id = 0x3F; immediate = false; }
+		else if (strcmp(order, "opn") == 0) { id = 0x40; immediate = false; }
+		else if (strcmp(order, "cln") == 0) { id = 0x41; immediate = false; }
+		else if (strcmp(order, "cff") == 0) { id = 0x42; immediate = false; }
+		else if (strcmp(order, "els") == 0) { id = 0x43; immediate = false; }
+		else if (strcmp(order, "rls") == 0) { id = 0x44; immediate = false; }
+		else if (strcmp(order, "ers") == 0) { id = 0x45; immediate = false; }
+		else if (strcmp(order, "rrs") == 0) { id = 0x46; immediate = false; }
+		else if (strcmp(order, "abort") == 0) { id = 0xBE; immediate = true; }
+		else if (strcmp(order, "help") == 0) { id = 0xBF; immediate = true; }
 		else
 		{
 			orderStatus = UNKNOWN_ORDER;

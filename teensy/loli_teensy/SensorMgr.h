@@ -74,8 +74,7 @@ public:
 		{
 			index = (index + 1) % NB_SENSORS;
 		}
-
-		if (micros() - lastUpdateTime >= updatePattern[index])
+		else if (micros() - lastUpdateTime >= updatePattern[index])
 		{
 			lastUpdateTime = micros();
 			switch (index)
@@ -140,6 +139,14 @@ public:
 			values[i] = 0;
 		}
 		return values_vect;
+	}
+
+	void getValues_noReset(uint8_t tab[NB_SENSORS])
+	{
+		for (size_t i = 0; i < NB_SENSORS; i++)
+		{
+			tab[i] = values[i];
+		}
 	}
 
 private:

@@ -12,9 +12,7 @@
 #include <Printable.h>
 #include "InterfaceAX12.h"
 #include "DynamixelMotor.h"
-
-#define ID_LEFT_AX12	0
-#define ID_RIGHT_AX12	1
+#include "ax12config.h"
 
 /* Periode d'actualisation d'une requête AX12 (4 requêtes au total) */
 #define CONTROL_PERIOD	12500 // µs

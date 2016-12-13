@@ -30,8 +30,13 @@
 #define PIN_NET_COM			21
 
 /* Capteurs fin de course du filet */
+#if defined(__MK64FX512__) || defined(__MK66FX1M0__) // Teensy 3.5 ou 3.6
 #define PIN_BUTEE_G			A22
 #define PIN_BUTEE_D			A21
+#elif defined(__MK20DX128__) || defined(__MK20DX256__) // Teensy 3.0 3.1 ou 3.2
+#define PIN_BUTEE_G			67
+#define PIN_BUTEE_D			66
+#endif
 
 
 /* Capteurs ToF : pin 'enable' */
@@ -58,7 +63,11 @@
 
 
 /* Divers capteurs */
+#if defined(__MK64FX512__) || defined(__MK66FX1M0__) // Teensy 3.5 ou 3.6
 #define PIN_GET_COLOR		A25
+#elif defined(__MK20DX128__) || defined(__MK20DX256__) // Teensy 3.0 3.1 ou 3.2
+#define PIN_GET_COLOR		68
+#endif
 #define PIN_GET_VOLTAGE		A11
 #define PIN_GET_JUMPER		A10
 

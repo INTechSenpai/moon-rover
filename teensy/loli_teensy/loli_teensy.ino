@@ -4,6 +4,11 @@
  Author:	Sylvain
 */
 
+#include "ax12config.h"
+#include "SynchronousPWM.h"
+#include "ActuatorMgr.h"
+#include "ControlerNet.h"
+
 #include "Dynamixel.h"
 #include "DynamixelInterface.h"
 #include "DynamixelMotor.h"
@@ -49,12 +54,16 @@
 
 void setup()
 {
+	delay(500);
 }
 
 
 void loop()
 {
-	delay(500);
+	if (debug_serial_free)
+	{
+		Serial.println("Loli-Teensy");
+	}
 
 	OrderMgr orderMgr(SERIAL_HL);
 	AsciiOrderListener asciiOrder;
@@ -75,7 +84,16 @@ void loop()
 
 	IntervalTimer motionControlTimer;
 	motionControlTimer.priority(253);
-	motionControlTimer.begin(motionControlInterrupt, 1000);
+	motionControlTimer.begin(motionControlInterrupt, 1000); // 1kHz
+
+	IntervalTimer synchronousPWM_timer;
+	synchronousPWM_timer.priority(250);
+	synchronousPWM_timer.begin(synchronousPWM_interrupt, 36); // 440Hz avec un pwm codé sur 6bits
+
+	if (debug_serial_free)
+	{
+		Serial.println("Initialised");
+	}
 
 	while (true)
 	{
@@ -84,7 +102,7 @@ void loop()
 		orderMgr.execute();
 
 		/* Gestion des ordres ASCII */
-		if ((Stream*)&Serial != (Stream*)&SERIAL_HL && (Stream*)&Serial != (Stream*)&SERIAL_AX)
+		if (debug_serial_free)
 		{// Les ordres ASCII son désactivés si la série de débug est déjà utilisée
 			asciiOrder.listen();
 			if (asciiOrder.newImmediateOrderReceived())
@@ -92,7 +110,19 @@ void loop()
 				uint8_t order;
 				std::vector<uint8_t> data;
 				asciiOrder.getLastOrder(order, data);
-				orderMgr.executeImmediateOrder(order, data);
+				if (order == 0xBE)
+				{// "abort" termine l'ordre long en cours.
+					if (longOrderRunning)
+					{
+						orderMgr.terminateLongOrder(longOrder);
+						longOrderRunning = false;
+						Serial.printf("Interruption de l'ordre long (id=0x%x)\n", longOrder);
+					}
+				}
+				else
+				{
+					orderMgr.executeImmediateOrder(order, data);
+				}
 			}
 			else if (asciiOrder.newLongOrderReceived())
 			{
@@ -106,8 +136,8 @@ void loop()
 				}
 				else
 				{
-					Serial.print("Ordre long deja en cours d'execution; id=");
-					Serial.print(longOrder);
+					Serial.print("Ordre long deja en cours d'execution; id=0x");
+					Serial.print(longOrder, HEX);
 					if (longOrderData.size() > 0)
 					{
 						Serial.print(" arg=");
@@ -141,6 +171,9 @@ void loop()
 
 		/* Mise à jour des capteurs */
 		sensorMgr.update();
+
+		/* Vérification de la rapidité d'exécution */
+		checkSpeed();
 	}
 }
 
@@ -152,6 +185,32 @@ void motionControlInterrupt()
 	motionControlSystem.control();
 }
 
+
+/* Interruption contrôlant les PMW synchrones des ponts en H du filet */
+void synchronousPWM_interrupt()
+{
+	static SynchronousPWM & synchronousPWM = SynchronousPWM::Instance();
+	synchronousPWM.update();
+}
+
+
+/* Calcul des 'FPS' de la boucle principale */
+void checkSpeed()
+{
+	static const size_t bufferSize = 100;
+	static Average<float, bufferSize> bufferFPS;
+	static uint32_t lastCallTime = 0, lastPrintTime = 0;
+
+	bufferFPS.add(1000000 / (float)(micros() - lastCallTime));
+	lastCallTime = micros();
+
+	float averageFPS = bufferFPS.value();
+	if (averageFPS < 4000)
+	{
+		Serial.printf("FPS= %g\n", averageFPS);
+		lastPrintTime = millis();
+	}
+}
 
 
 /* Ce bout de code permet de compiler avec std::vector */
