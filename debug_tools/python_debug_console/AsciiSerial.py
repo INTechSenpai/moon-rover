@@ -11,6 +11,9 @@ class AsciiSerial:
     def __init__(self):
         self._graphsChannels = {'graph1': None, 'graph2': None, 'graph3': None, 'graph4': None}
         self._enChannels = {'graph1': False, 'graph2': False, 'graph3': False, 'graph4': False}
+
+        # Structure definition:
+        # {'ChannelName': channelData('display', {'lineName': [lowLevelID, xFieldID, yFieldID(optional)], ... }), ... }
         self._channelsDataStructure = {
             'POSITION':     channelData('line-scatter', {'p': [0, 0, 1]}),
             'TRAJECTORY':   channelData('line-scatter', {'t': [1, 0, 1]}),
@@ -21,7 +24,7 @@ class AsciiSerial:
             'BLOCKING_M_D': channelData('line',         {'aimSpeed': [6, 0], 'realSpeed': [6, 1], 'isBlocked': [6, 2]}),
             'STOPPING_MGR': channelData('line',         {'speed': [7, 0], 'isStopped': [7, 1]}),
             'DIRECTION':    channelData('line',         {'aimDirection': [8, 0], 'realDirection': [8, 1]}),
-            'SENSORS':      channelData('scatter',      {})
+            'SENSORS':      channelData('scatter',      {'sensorTest': [9, 0, 1]})
         }
 
         self._shapeInitData = {
@@ -137,7 +140,7 @@ class AsciiSerial:
 
         for graph in ['graph1', 'graph2', 'graph3', 'graph4']:
             gChannel = self._graphsChannels[graph]
-            if gChannel in channels:
+            if gChannel in channels and self._enChannels[graph]:
                 lines = self._channelsDataStructure[gChannel].lineNames
                 for lineName, ids in lines.items():
                     if ids[0] == idChannel:

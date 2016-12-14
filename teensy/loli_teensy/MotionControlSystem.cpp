@@ -33,6 +33,9 @@ endOfMoveMgr(currentMovingSpeed)
 
 	resetPosition();
 	stop();
+
+	lastInterruptDuration = 0;
+	maxInterruptDuration = 0;
 }
 
 void MotionControlSystem::enablePositionControl(bool enabled)
@@ -71,6 +74,9 @@ void MotionControlSystem::getEnableStates(bool &cp, bool &cvg, bool &cvd, bool &
 
 void MotionControlSystem::control()
 {
+	static uint32_t beginTimestamp;
+	beginTimestamp = micros();
+
 	updateSpeedAndPosition();
 	manageStop();
 	manageBlocking();
@@ -172,6 +178,12 @@ void MotionControlSystem::control()
 	{
 		motor.runLeft(leftPWM);
 		motor.runRight(rightPWM);
+	}
+
+	lastInterruptDuration = micros() - beginTimestamp;
+	if (lastInterruptDuration > maxInterruptDuration)
+	{
+		maxInterruptDuration = lastInterruptDuration;
 	}
 }
 
@@ -463,6 +475,8 @@ void MotionControlSystem::addTrajectoryPoint(const TrajectoryPoint & trajPoint, 
 		updateNextStopPoint();
 		interrupts();
 	}
+
+	Log::data(Log::TRAJECTORY, trajPoint);
 }
 
 MotionControlSystem::MovingState MotionControlSystem::getMovingState() const
@@ -943,5 +957,41 @@ void MotionControlSystem::loadDefaultParameters()
 	pidToSet = SPEED;
 
 	interrupts();
+}
+
+void MotionControlSystem::logAllData()
+{
+	static Position nonVolatilePos;
+	static uint32_t lastLogTime = 0;
+	if (micros() - lastLogTime > PERIOD_ASSERV)
+	{
+		lastLogTime = micros();
+		noInterrupts();
+		nonVolatilePos = position;
+		Log::data(Log::POSITION, nonVolatilePos);
+		Log::data(Log::PID_V_G, leftSpeedPID);
+		Log::data(Log::PID_V_D, rightSpeedPID);
+		Log::data(Log::PID_TRANS, translationPID);
+		Log::data(Log::BLOCKING_M_G, leftMotorBlockingMgr);
+		Log::data(Log::BLOCKING_M_D, rightMotorBlockingMgr);
+		Log::data(Log::STOPPING_MGR, endOfMoveMgr);
+		interrupts();
+	}
+}
+
+uint32_t MotionControlSystem::getLastInterruptDuration()
+{
+	noInterrupts();
+	uint32_t cpy = lastInterruptDuration;
+	interrupts();
+	return cpy;
+}
+
+uint32_t MotionControlSystem::getMaxInterruptDuration()
+{
+	noInterrupts();
+	uint32_t cpy = maxInterruptDuration;
+	interrupts();
+	return cpy;
 }
 

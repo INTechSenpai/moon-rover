@@ -4,10 +4,10 @@
  Author:	Sylvain
 */
 
-#include "ax12config.h"
-#include "SynchronousPWM.h"
+
 #include "ActuatorMgr.h"
 #include "ControlerNet.h"
+#include "SynchronousPWM.h"
 
 #include "Dynamixel.h"
 #include "DynamixelInterface.h"
@@ -21,6 +21,7 @@
 #include "OrderLong.h"
 #include "OrderMgr.h"
 
+#include "ax12config.h"
 #include "communication_setup.h"
 #include "physical_dimensions.h"
 #include "pin_mapping.h"
@@ -81,10 +82,11 @@ void loop()
 	sensorMgr.setUpdatePattern(updatePattern);
 
 	DirectionController & directionController = DirectionController::Instance();
+	MotionControlSystem & motionControlSystem = MotionControlSystem::Instance();
 
 	IntervalTimer motionControlTimer;
 	motionControlTimer.priority(253);
-	motionControlTimer.begin(motionControlInterrupt, 1000); // 1kHz
+	motionControlTimer.begin(motionControlInterrupt, PERIOD_ASSERV); // 1kHz
 
 	IntervalTimer synchronousPWM_timer;
 	synchronousPWM_timer.priority(250);
@@ -173,7 +175,10 @@ void loop()
 		sensorMgr.update();
 
 		/* Vérification de la rapidité d'exécution */
-		checkSpeed();
+		checkSpeed(10000, 0);
+
+		/* Print des logs */
+		motionControlSystem.logAllData();
 	}
 }
 
@@ -194,9 +199,10 @@ void synchronousPWM_interrupt()
 }
 
 
-/* Calcul des 'FPS' de la boucle principale */
-void checkSpeed()
+/* Calcul des 'FPS' de la boucle principale et de l'interruption d'asservissement */
+void checkSpeed(uint32_t daemonPeriod, float threshold)
 {
+	static MotionControlSystem & motionControlSystem = MotionControlSystem::Instance();
 	static const size_t bufferSize = 100;
 	static Average<float, bufferSize> bufferFPS;
 	static uint32_t lastCallTime = 0, lastPrintTime = 0;
@@ -205,9 +211,13 @@ void checkSpeed()
 	lastCallTime = micros();
 
 	float averageFPS = bufferFPS.value();
-	if (averageFPS < 4000)
+	if ((daemonPeriod != 0 && millis() - lastPrintTime > daemonPeriod) ||
+		(threshold != 0 && averageFPS < threshold))
 	{
-		Serial.printf("FPS= %g\n", averageFPS);
+		Serial.printf("FPS= %g  Asserv= %u (max=%u)\n", 
+			averageFPS,
+			motionControlSystem.getLastInterruptDuration(),
+			motionControlSystem.getMaxInterruptDuration());
 		lastPrintTime = millis();
 	}
 }

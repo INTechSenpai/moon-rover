@@ -7,11 +7,13 @@
 #include "ToF_longRange.h"
 #include "ToF_shortRange.h"
 #include "pin_mapping.h"
+#include <Printable.h>
+#include "Log.h"
 
 #define NB_SENSORS 12
 
 
-class SensorMgr : public Singleton<SensorMgr>
+class SensorMgr : public Singleton<SensorMgr>, public Printable
 {
 public:
 	SensorMgr() :
@@ -119,6 +121,8 @@ public:
 				break;
 			}
 			index = (index + 1) % NB_SENSORS;
+
+			Log::data(Log::SENSORS, *this);
 		}
 	}
 
@@ -147,6 +151,16 @@ public:
 		{
 			tab[i] = values[i];
 		}
+	}
+
+	size_t printTo(Print& p) const
+	{
+		size_t charCount = p.printf("%u", values[0]);
+		for (size_t i = 1; i < NB_SENSORS; i++)
+		{
+			charCount += p.printf("_%u", values[i]);
+		}
+		return charCount;
 	}
 
 private:

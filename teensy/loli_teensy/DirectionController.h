@@ -13,6 +13,7 @@
 #include "InterfaceAX12.h"
 #include "DynamixelMotor.h"
 #include "ax12config.h"
+#include "Log.h"
 
 /* Periode d'actualisation d'une requête AX12 (4 requêtes au total) */
 #define CONTROL_PERIOD	12500 // µs
@@ -31,8 +32,8 @@ public:
 	{
 		aimCurvature = 0;
 		updateAimAngles();
-		realLeftAngle = 0;
-		realRightAngle = 0;
+		realLeftAngle = LEFT_ANGLE_ORIGIN;
+		realRightAngle = RIGHT_ANGLE_ORIGIN;
 		updateRealCurvature();
 		leftMotor.init();
 		rightMotor.init();
@@ -72,6 +73,8 @@ public:
 				counter = 0;
 			}
 			updateRealCurvature();
+
+			Log::data(Log::DIRECTION, *this);
 		}
 	}
 	
@@ -102,7 +105,7 @@ public:
 
 	size_t printTo(Print& p) const
 	{
-		return p.printf("%g_%g_%d_%d", aimCurvature, realCurvature, realLeftAngle, realRightAngle);
+		return p.printf("%g_%g_%u_%u", aimCurvature, realCurvature, realLeftAngle, realRightAngle);
 	}
 
 private:

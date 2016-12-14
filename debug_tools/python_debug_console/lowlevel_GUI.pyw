@@ -688,6 +688,7 @@ class Graph(tk.Frame):
             elif self._dataShape == 'line-scatter':
                 line, = self.subplot.plot(lineData[0], lineData[1], label=lineName)
             else:
+                print("Warning: unsupported data shape (", self._dataShape, ")")
                 line, = self.subplot.plot([], [], label=lineName)
             self._lines.append((lineName, line))
         self.title = self.subplot.set_title(self._label)

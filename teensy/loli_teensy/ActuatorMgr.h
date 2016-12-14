@@ -12,6 +12,7 @@
 #include "ControlerNet.h"
 #include "DynamixelMotor.h"
 #include "InterfaceAX12.h"
+#include "ax12config.h"
 
 
 // TODO : régler les angles de l'AX12 du filet

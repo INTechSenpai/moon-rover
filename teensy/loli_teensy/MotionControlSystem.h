@@ -23,6 +23,7 @@
 #include <EEPROM.h>
 
 
+#define PERIOD_ASSERV			1000	// Durée entre deux asservissement (en µs)
 #define FREQ_ASSERV				1000	// Fréquence d'asservissement (en Hz)
 #define AVERAGE_SPEED_SIZE		50		// Nombre de valeurs à utiliser dans le calcul de la moyenne glissante permettant de lisser la mesure de vitesse
 #define TRAJECTORY_STEP			10		// Distance (en ticks, correspondant à une translation) entre deux points d'une trajectoire
@@ -116,6 +117,9 @@ private:
 	Average<int32_t, AVERAGE_SPEED_SIZE> averageLeftSpeed;
 	Average<int32_t, AVERAGE_SPEED_SIZE> averageRightSpeed;
 	Average<int32_t, AVERAGE_SPEED_SIZE> averageTranslationSpeed;
+
+	uint32_t lastInterruptDuration;
+	uint32_t maxInterruptDuration;
 
 public:
 	// Type décrivant l'état du mouvement
@@ -254,6 +258,13 @@ public:
 	void saveParameters();
 	void loadParameters();
 	void loadDefaultParameters();
+
+	/* Log les données de l'asservissement 
+	(à une fréquence proche de celle de l'interruption d'asservissement) */
+	void logAllData();
+
+	uint32_t getLastInterruptDuration();
+	uint32_t getMaxInterruptDuration();
 };
 
 
