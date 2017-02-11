@@ -49,8 +49,6 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	private boolean print;
 	private PrintBuffer buffer;
 	private BufferOutgoingOrder out;
-	private boolean filetBaisse = false;
-	private boolean filetPlein = false;
 	
 	// Constructeur
 	public RobotReal(Log log, BufferOutgoingOrder out, PrintBuffer buffer)
@@ -151,6 +149,7 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	 * DÉPLACEMENTS
 	 */
 	
+	@Override
 	public void avance(double distance) throws UnableToMoveException
 	{
 		// TODO
@@ -165,7 +164,8 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	 * @param m
 	 * @throws InterruptedException
 	 */
-	private void bloque(String nom, Object... param) throws InterruptedException
+	@Override
+	protected void bloque(String nom, Object... param) throws InterruptedException
 	{
 		Ticket.State etat;
 		Ticket t = null;
@@ -190,81 +190,5 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 				log.warning("Problème pour l'actionneur "+nom+" : on "+(nbEssai >= 0 ? "retente." : "abandonne."));
 		} while(nbEssai >= 0 && etat == Ticket.State.KO);
 	}
-	
-	/**
-	 * Méthode bloquante qui baisse le filet
-	 * @throws InterruptedException 
-	 */
-	public void baisseFilet() throws InterruptedException
-	{
-		bloque("baisseFilet");
-		filetBaisse = true;
-	}
-	
-	public void filetMiHauteur() throws InterruptedException
-	{
-		bloque("bougeFiletMiChemin");
-		filetBaisse = true;
-	}
-	
-	public void remonteFilet() throws InterruptedException
-	{
-		bloque("leveFilet");
-		filetBaisse = false;
-	}
-	
-	public boolean isFiletBaisse()
-	{
-		return filetBaisse;
-	}
 
-	public void ouvreFilet() throws InterruptedException
-	{
-		bloque("ouvreFilet");
-		filetPlein = false;
-	}
-
-	public void fermeFilet() throws InterruptedException
-	{
-		bloque("fermeFilet");
-//		filetPlein = false; // TODO
-	}
-	
-	public void ejectBalles() throws InterruptedException
-	{
-		bloque("ejecte", !symetrie);
-		filetPlein = false;
-	}
-
-	public void rearme() throws InterruptedException
-	{
-		bloque("rearme", !symetrie);
-	}
-	
-	public void traverseBascule() throws InterruptedException
-	{
-		bloque("traverseBascule");
-	}	
-	
-	/**
-	 * Géré par le capteur de jauge
-	 */
-	public void filetVuVide()
-	{
-		filetPlein = false;
-	}
-	
-	/**
-	 * Géré par le capteur de jauge
-	 */
-	public void filetVuPlein()
-	{
-		filetPlein = true;
-	}
-	
-	public boolean isFiletPlein()
-	{
-		return filetPlein;
-	}
-	
 }

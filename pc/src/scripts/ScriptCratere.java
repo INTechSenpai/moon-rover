@@ -18,8 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 package scripts;
 
 import exceptions.UnableToMoveException;
-import pathfinding.RealGameState;
+import pathfinding.GameState;
 import pathfinding.astar.arcs.CercleArrivee;
+import robot.Robot;
 import table.EtatElement;
 import table.GameElementNames;
 import utils.Log;
@@ -49,7 +50,7 @@ public class ScriptCratere extends Script
 	}
 
 	@Override
-	protected void run(RealGameState state) throws InterruptedException, UnableToMoveException
+	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
 	{
 		state.robot.avance(-20);
 		state.robot.filetMiHauteur();
@@ -59,10 +60,11 @@ public class ScriptCratere extends Script
 	}
 	
 	@Override
-	protected void termine(RealGameState state) throws InterruptedException, UnableToMoveException
+	protected void termine(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
 	{
 		state.robot.fermeFilet();
 		state.robot.remonteFilet();		
+		state.robot.avance(20);
 	}
 
 }

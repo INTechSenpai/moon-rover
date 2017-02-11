@@ -18,7 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 package scripts;
 
 import exceptions.UnableToMoveException;
-import pathfinding.RealGameState;
+import pathfinding.GameState;
+import robot.Robot;
 import utils.Log;
 
 /**
@@ -38,25 +39,37 @@ public abstract class Script
 	
 	public abstract void setUpCercleArrivee();
 	
-	protected abstract void run(RealGameState state) throws InterruptedException, UnableToMoveException;
+	protected abstract void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException;
 	
-	protected abstract void termine(RealGameState state) throws InterruptedException, UnableToMoveException;
+	protected abstract void termine(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException;
 	
-	public void execute(RealGameState state) throws InterruptedException
+	public void execute(GameState<? extends Robot> state) throws InterruptedException
 	{
 		try {
 			run(state);
 		}
 		catch(UnableToMoveException e)
 		{
-			log.warning("Le script a rencontré une erreur !");
+			log.critical("Erreur lors de l'exécution du script "+getClass().getSimpleName());
+		}
+		finally
+		{
 			try {
 				termine(state);
-			}
-			catch(UnableToMoveException e1)
+			}			
+			catch(UnableToMoveException e)
 			{
-				log.critical("Le dégagement post-script a échoué !");
+				log.critical("La terminaison de "+getClass().getSimpleName()+" a rencontré un problème. Nouvelle tentative.");
+				try {
+					termine(state);
+				}
+				catch(UnableToMoveException e1)
+				{
+					log.critical("La terminaison de "+getClass().getSimpleName()+" a encore échoué !");
+				}
 			}
 		}
+
 	}
+
 }
