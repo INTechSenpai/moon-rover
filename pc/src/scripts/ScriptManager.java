@@ -21,7 +21,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import container.Container;
 import container.Service;
+import exceptions.ContainerException;
+import table.GameElementNames;
 import utils.Log;
 
 /**
@@ -36,9 +39,17 @@ public class ScriptManager implements Service, Iterator<Script>
 	private Iterator<Script> iter;
 	protected Log log;
 	
-	public ScriptManager(Log log)
+	public ScriptManager(Log log, Container container)
 	{
 		this.log = log;
+		try {
+			for(GameElementNames n : GameElementNames.values())
+				if(n.toString().startsWith("MINERAI"))
+					scripts.add(container.make(ScriptCratere.class, n));
+			
+		} catch (ContainerException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void reinit()
