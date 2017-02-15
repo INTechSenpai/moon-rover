@@ -24,6 +24,7 @@ import utils.Log;
 import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
+import container.SerialClass;
 import container.Service;
 import exceptions.serie.MissingCharacterException;
 import gnu.io.SerialPortEvent;
@@ -35,7 +36,7 @@ import gnu.io.SerialPortEventListener;
  *
  */
 
-public class BufferIncomingBytes implements Service, SerialPortEventListener, Configurable
+public class BufferIncomingBytes implements Service, SerialPortEventListener, Configurable, SerialClass
 {
 	private Log log;
 	

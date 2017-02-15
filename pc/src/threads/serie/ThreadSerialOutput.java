@@ -20,6 +20,7 @@ package threads.serie;
 import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
+import container.SerialClass;
 import serie.BufferIncomingBytes;
 import serie.BufferOutgoingOrder;
 import serie.SerieCoucheTrame;
@@ -34,7 +35,7 @@ import utils.Log;
  *
  */
 
-public class ThreadSerialOutput extends ThreadService implements Configurable
+public class ThreadSerialOutput extends ThreadService implements Configurable, SerialClass
 {
 	protected Log log;
 	private SerieCoucheTrame serie;

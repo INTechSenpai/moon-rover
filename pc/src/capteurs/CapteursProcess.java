@@ -28,7 +28,9 @@ import robot.RobotReal;
 import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
+import container.LowPFClass;
 import container.Container;
+import container.HighPFClass;
 import container.Service;
 import exceptions.ContainerException;
 import table.GameElementNames;
@@ -45,7 +47,7 @@ import utils.Vec2RW;
  *
  */
 
-public class CapteursProcess implements Service, Configurable
+public class CapteursProcess implements Service, Configurable, LowPFClass, HighPFClass
 {
 	protected Log log;
 	private GridSpace gridspace;

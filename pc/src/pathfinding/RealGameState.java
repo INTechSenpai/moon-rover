@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 package pathfinding;
 
 import robot.RobotReal;
+import container.CoreClass;
 import container.Service;
 import obstacles.memory.ObstaclesMemory;
 import table.RealTable;
@@ -28,7 +29,7 @@ import table.RealTable;
  *
  */
 
-public class RealGameState extends GameState<RobotReal> implements Service
+public class RealGameState extends GameState<RobotReal> implements Service, CoreClass
 {
 	private ObstaclesMemory mem;
 	

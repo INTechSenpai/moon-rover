@@ -26,6 +26,7 @@ import serie.Ticket;
 import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
+import container.CoreClass;
 import container.Service;
 import exceptions.UnableToMoveException;
 import utils.Log;
@@ -40,7 +41,7 @@ import graphic.printable.Printable;
  *
  */
 
-public class RobotReal extends Robot implements Service, Printable, Configurable
+public class RobotReal extends Robot implements Service, Printable, Configurable, CoreClass
 {
 	protected volatile boolean matchDemarre = false;
     protected volatile long dateDebutMatch;

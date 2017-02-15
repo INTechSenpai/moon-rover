@@ -20,6 +20,8 @@ package threads;
 import capteurs.CapteursProcess;
 import capteurs.SensorsData;
 import capteurs.SensorsDataBuffer;
+import container.HighPFClass;
+import container.LowPFClass;
 import utils.Log;
 
 /**
@@ -28,7 +30,7 @@ import utils.Log;
  *
  */
 
-public class ThreadCapteurs extends ThreadService
+public class ThreadCapteurs extends ThreadService implements LowPFClass, HighPFClass
 {
 	private SensorsDataBuffer buffer;
 	private CapteursProcess capteurs;

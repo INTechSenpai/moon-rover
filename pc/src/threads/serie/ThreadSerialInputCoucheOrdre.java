@@ -24,6 +24,7 @@ import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
 import container.Container;
+import container.SerialClass;
 import exceptions.ContainerException;
 import robot.Cinematique;
 import robot.RobotColor;
@@ -45,7 +46,7 @@ import pathfinding.chemin.CheminPathfinding;
  *
  */
 
-public class ThreadSerialInputCoucheOrdre extends ThreadService implements Configurable
+public class ThreadSerialInputCoucheOrdre extends ThreadService implements Configurable, SerialClass
 {
 	protected Log log;
 	protected Config config;

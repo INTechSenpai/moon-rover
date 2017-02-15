@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import container.Container;
+import container.CoreClass;
 import container.Service;
 import exceptions.ContainerException;
 import table.GameElementNames;
@@ -33,7 +34,7 @@ import utils.Log;
  *
  */
 
-public class ScriptManager implements Service, Iterator<Script>
+public class ScriptManager implements Service, Iterator<Script>, CoreClass
 {
 	private List<Script> scripts = new ArrayList<Script>();
 	private Iterator<Script> iter;

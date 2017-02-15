@@ -25,6 +25,7 @@ import java.util.List;
 import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
+import container.SerialClass;
 import container.Service;
 import exceptions.serie.IncorrectChecksumException;
 import exceptions.serie.MissingCharacterException;
@@ -43,7 +44,7 @@ import utils.Log;
  *
  */
 
-public class SerieCoucheTrame implements Service, Configurable
+public class SerieCoucheTrame implements Service, Configurable, SerialClass
 {	
 	/**
 	 * Toutes les conversations

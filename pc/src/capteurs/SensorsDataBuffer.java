@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import utils.Log;
+import container.SerialClass;
 import container.Service;
 
 /**
@@ -29,7 +30,7 @@ import container.Service;
  *
  */
 
-public class SensorsDataBuffer implements Service
+public class SensorsDataBuffer implements Service, SerialClass
 {
 	protected Log log;
 	

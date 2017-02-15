@@ -32,6 +32,7 @@ import java.util.TooManyListenersException;
 import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
+import container.SerialClass;
 import container.Service;
 import utils.Log;
 
@@ -41,7 +42,7 @@ import utils.Log;
  *
  */
 
-public class SerieCouchePhysique implements Service, Configurable
+public class SerieCouchePhysique implements Service, Configurable, SerialClass
 {
 	private SerialPort serialPort;
 	protected Log log;

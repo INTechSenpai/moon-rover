@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package threads.serie;
 
+import container.SerialClass;
 import serie.BufferIncomingOrder;
 import serie.SerieCoucheTrame;
 import threads.ThreadService;
@@ -28,7 +29,7 @@ import utils.Log;
  *
  */
 
-public class ThreadSerialInputCoucheTrame extends ThreadService
+public class ThreadSerialInputCoucheTrame extends ThreadService implements SerialClass
 {
 
 	protected Log log;

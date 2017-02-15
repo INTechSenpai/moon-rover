@@ -28,6 +28,7 @@ import serie.trame.Order;
 import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
+import container.SerialClass;
 import container.Service;
 import utils.Log;
 import utils.Vec2RO;
@@ -42,7 +43,7 @@ import utils.Vec2RO;
  *
  */
 
-public class BufferOutgoingOrder implements Service, Configurable
+public class BufferOutgoingOrder implements Service, Configurable, SerialClass
 {
 	protected Log log;
 	private byte prescaler;

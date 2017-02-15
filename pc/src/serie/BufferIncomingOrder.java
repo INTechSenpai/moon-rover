@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import utils.Log;
+import container.SerialClass;
 import container.Service;
 import serie.trame.Paquet;
 
@@ -30,7 +31,7 @@ import serie.trame.Paquet;
  *
  */
 
-public class BufferIncomingOrder implements Service
+public class BufferIncomingOrder implements Service, SerialClass
 {
 	protected Log log;
 	
