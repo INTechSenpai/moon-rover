@@ -24,7 +24,9 @@ import obstacles.types.ObstaclesFixes;
 import pathfinding.chemin.CheminPathfinding;
 import pathfinding.dstarlite.DStarLite;
 import pathfinding.dstarlite.gridspace.GridSpace;
+import robot.Cinematique;
 import robot.RobotReal;
+import serie.BufferOutgoingOrder;
 import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
@@ -57,14 +59,22 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 	private PrintBuffer buffer;
 	private Container container;
 	private RobotReal robot;
+	private BufferOutgoingOrder serie;
 	
 	private int nbCapteurs;
 	private int rayonEnnemi;
 	private int distanceApproximation;
 	private ObstacleRobot obstacleRobot;
 	private Capteur[] capteurs;
-
-	public CapteursProcess(Container container, Log log, GridSpace gridspace, Table table, DStarLite dstarlite, CheminPathfinding chemin, PrintBuffer buffer, RobotReal robot)
+	private double imprecisionMaxPos;
+	private double imprecisionMaxAngle;
+	
+	private long dateLastMesureCorrection = -1;
+	private long peremptionCorrection;
+	private int indexCorrection = 0;
+	private Cinematique[] bufferCorrection;
+	
+	public CapteursProcess(Container container, Log log, GridSpace gridspace, Table table, DStarLite dstarlite, CheminPathfinding chemin, PrintBuffer buffer, RobotReal robot, BufferOutgoingOrder serie)
 	{
 		this.table = table;
 		this.log = log;
@@ -74,6 +84,7 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 		this.buffer = buffer;
 		this.container = container;
 		this.robot = robot;
+		this.serie = serie;
 		obstacleRobot = new ObstacleRobot(robot);
 	}
 	
@@ -83,7 +94,10 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 		rayonEnnemi = config.getInt(ConfigInfo.RAYON_ROBOT_ADVERSE);
 		distanceApproximation = config.getInt(ConfigInfo.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);		
 		nbCapteurs = CapteursRobot.values().length;
-		
+		imprecisionMaxPos = config.getDouble(ConfigInfo.IMPRECISION_MAX_POSITION);
+		imprecisionMaxAngle = config.getDouble(ConfigInfo.IMPRECISION_MAX_ORIENTATION);
+		bufferCorrection = new Cinematique[config.getInt(ConfigInfo.TAILLE_BUFFER_RECALAGE)];
+		peremptionCorrection = config.getInt(ConfigInfo.PEREMPTION_CORRECTION);
 		capteurs = new Capteur[nbCapteurs];
 				
 		try {
@@ -107,6 +121,8 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 	 */
 	public void updateObstaclesMobiles(SensorsData data)
 	{
+		correctXYO(data);
+
 		double orientationRobot = data.cinematique.orientationReelle;
 		Vec2RO positionRobot = data.cinematique.getPosition();
 
@@ -145,18 +161,11 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 				robot.filetVuVide(); // filet vide
 			}
 			
-			capteurs[i].computePosOrientationRelative(data.cinematique);
-			/**
-			 * Si le capteur voit trop proche ou trop loin, on ne peut pas lui faire confiance
-			 */
-			if(data.mesures[i] < capteurs[i].distanceMin || data.mesures[i] > capteurs[i].portee)
-				continue;
-
+			Vec2RO positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique);
+			
 			/**
 			 * Si ce qu'on voit est un obstacle de table, on l'ignore
-			 */
-			Vec2RO positionVue = new Vec2RO(data.mesures[i], capteurs[i].orientationRelativeRotate, true);
-			
+			 */			
 	    	for(ObstaclesFixes o: ObstaclesFixes.values())
 	    		if(o.isVisible(capteurs[i].sureleve) && o.getObstacle().squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 	                continue;
@@ -186,9 +195,159 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 		        	table.setDone(g, EtatElement.PRIS_PAR_ENNEMI);
 
 		}
+
 		dstarlite.updateObstaclesEnnemi();
 		dstarlite.updateObstaclesTable();
 		chemin.checkColliding();
 	}
 	
+	/**
+	 * Corrige les données et envoie la correction au robot
+	 * La correction n'est pas toujours possible
+	 * @param data
+	 */
+	private void correctXYO(SensorsData data)
+	{
+		int index1, index2;
+		for(int k = 0; k < 2; k++)
+		{
+			if(k == 0)
+			{
+				index1 = CapteursRobot.ToF_LATERAL_GAUCHE_AVANT.ordinal();
+				index2 = CapteursRobot.ToF_LATERAL_GAUCHE_ARRIERE.ordinal();
+			}
+			else
+			{
+				index1 = CapteursRobot.ToF_LATERAL_DROITE_AVANT.ordinal();
+				index2 = CapteursRobot.ToF_LATERAL_DROITE_ARRIERE.ordinal();
+			}
+			
+			Vec2RW pointVu1 = getPositionVue(capteurs[index1], data.mesures[index1], data.cinematique);
+			Vec2RW pointVu2 = getPositionVue(capteurs[index2], data.mesures[index2], data.cinematique);
+			Mur mur1 = orientationMurProche(pointVu1);
+			Mur mur2 = orientationMurProche(pointVu2);
+			
+			
+			
+			// ces capteurs ne voient pas un mur proche, ou pas le même
+			if(mur1 == null || mur2 == null || mur1 != mur2)
+				continue;
+			
+			Vec2RO delta = pointVu1.minusNewVector(pointVu2);
+			double deltaOrientation = delta.getFastArgument() - mur1.orientation;
+			
+			// le delta d'orientation qu'on cherche est entre -PI/2 et PI/2
+			if(Math.abs(deltaOrientation) > Math.PI/2)
+				deltaOrientation -= Math.PI;
+			else if(Math.abs(deltaOrientation) < -Math.PI/2)
+				deltaOrientation += Math.PI;
+			
+			/*
+			 * L'imprécision mesurée est trop grande. C'est probablement une erreur.
+			 */
+			if(Math.abs(deltaOrientation) > imprecisionMaxAngle)
+				continue;
+			
+			pointVu1.rotate(deltaOrientation, data.cinematique.getPosition());
+			pointVu2.rotate(deltaOrientation, data.cinematique.getPosition());
+			
+			double deltaX = 0;
+			double deltaY = 0;
+			if(mur1 == Mur.BAS)
+				deltaY = -pointVu1.getY();
+			else if(mur1 == Mur.HAUT)
+				deltaY = -(pointVu1.getY() - 2000);
+			else if(mur1 == Mur.GAUCHE)
+				deltaX = -(pointVu1.getX() + 1500);
+			else if(mur1 == Mur.DROITE)
+				deltaX = -(pointVu1.getX() - 1500);
+			
+			/*
+			 * L'imprécision mesurée est trop grande. C'est probablement une erreur.
+			 */			
+			if(Math.abs(deltaX) > imprecisionMaxPos || Math.abs(deltaY) > imprecisionMaxPos)
+				continue;
+				
+			Cinematique correction = new Cinematique(deltaX, deltaY, deltaOrientation, true, 0, 0);
+			if(System.currentTimeMillis() - dateLastMesureCorrection > peremptionCorrection) // trop de temps depuis le dernier calcul
+				indexCorrection = 0;
+	
+			bufferCorrection[indexCorrection] = correction;
+			indexCorrection++;
+			if(indexCorrection == bufferCorrection.length)
+			{
+				Vec2RW posmoy = new Vec2RW();
+				double orientationmoy = 0;
+				for(int i = 0; i < bufferCorrection.length; i++)
+				{
+					posmoy.plus(bufferCorrection[i].getPosition());
+					orientationmoy += bufferCorrection[i].orientationReelle;
+				}
+				posmoy.scalar(1./bufferCorrection.length);
+				orientationmoy /= bufferCorrection.length;
+				serie.correctPosition(posmoy, orientationmoy);
+				indexCorrection = 0;
+			}
+		}
+		dateLastMesureCorrection = System.currentTimeMillis();
+		
+	}
+	
+	/**
+	 * Permet de savoir si cet capteur voit actuellement un des quatres bordures de terrain
+	 * @param c
+	 * @param mesure
+	 * @param cinematique
+	 * @return
+	 */
+	private Vec2RW getPositionVue(Capteur c, int mesure, Cinematique cinematique)
+	{
+		c.computePosOrientationRelative(cinematique);
+		
+		/**
+		 * Si le capteur voit trop proche ou trop loin, on ne peut pas lui faire confiance
+		 */
+		if(mesure < c.distanceMin || mesure > c.portee)
+			return null;
+		Vec2RW positionVue = new Vec2RW(mesure, c.orientationRelativeRotate, true);
+		return positionVue;
+	}
+	
+	private enum Mur
+	{
+		HAUT(0), BAS(0), GAUCHE(Math.PI), DROITE(Math.PI);
+	
+		private double orientation;
+		
+		private Mur(double orientation)
+		{
+			this.orientation = orientation;
+		}
+	}
+	
+	/**
+	 * Renvoie l'orientation du mur le plus proche.
+	 * Renvoie null si aucun mur proche ou ambiguité (dans un coin)
+	 * @param pos
+	 * @return
+	 */
+	private Mur orientationMurProche(Vec2RO pos)
+	{
+		double distanceMax = 3*imprecisionMaxPos; // c'est une première approximation, on peut être bourrin
+		boolean murBas = Math.abs(pos.getY()) < distanceMax;
+		boolean murDroit = Math.abs(pos.getX() - 1500) < distanceMax;
+		boolean murHaut = Math.abs(pos.getY() - 2000) < distanceMax;
+		boolean murGauche = Math.abs(pos.getX() + 1500) < distanceMax;
+		
+		if(!(murBas ^ murDroit ^ murHaut ^ murGauche)) // cette condition est fausse si on est près de 0 ou de 2 murs
+			return null;
+			
+		if(murBas)
+			return Mur.BAS;
+		else if(murDroit)
+			return Mur.DROITE;
+		else if(murGauche)
+			return Mur.GAUCHE;
+		return Mur.BAS;
+	}
 }
