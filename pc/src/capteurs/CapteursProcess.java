@@ -162,6 +162,8 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 			}
 			
 			Vec2RO positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique);
+			if(positionVue == null)
+				continue;
 			
 			/**
 			 * Si ce qu'on voit est un obstacle de table, on l'ignore
@@ -223,24 +225,35 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 			}
 			
 			Vec2RW pointVu1 = getPositionVue(capteurs[index1], data.mesures[index1], data.cinematique);
+			if(pointVu1 == null)
+				continue;
+
 			Vec2RW pointVu2 = getPositionVue(capteurs[index2], data.mesures[index2], data.cinematique);
+			if(pointVu2 == null)
+				continue;			
+			
 			Mur mur1 = orientationMurProche(pointVu1);
 			Mur mur2 = orientationMurProche(pointVu2);
 			
-			
-			
+//			log.debug("PointVu1 : "+pointVu1);
+//			log.debug("PointVu2 : "+pointVu2);
+
+//			log.debug("Murs : "+mur1+" "+mur2);
+
 			// ces capteurs ne voient pas un mur proche, ou pas le même
 			if(mur1 == null || mur2 == null || mur1 != mur2)
 				continue;
 			
 			Vec2RO delta = pointVu1.minusNewVector(pointVu2);
-			double deltaOrientation = delta.getFastArgument() - mur1.orientation;
+			double deltaOrientation = mur1.orientation - delta.getFastArgument();
 			
 			// le delta d'orientation qu'on cherche est entre -PI/2 et PI/2
 			if(Math.abs(deltaOrientation) > Math.PI/2)
 				deltaOrientation -= Math.PI;
 			else if(Math.abs(deltaOrientation) < -Math.PI/2)
 				deltaOrientation += Math.PI;
+			
+//			log.debug("Delta orientation : "+deltaOrientation);
 			
 			/*
 			 * L'imprécision mesurée est trop grande. C'est probablement une erreur.
@@ -253,13 +266,13 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 			
 			double deltaX = 0;
 			double deltaY = 0;
-			if(mur1 == Mur.BAS)
+			if(mur1 == Mur.MUR_BAS)
 				deltaY = -pointVu1.getY();
-			else if(mur1 == Mur.HAUT)
+			else if(mur1 == Mur.MUR_HAUT)
 				deltaY = -(pointVu1.getY() - 2000);
-			else if(mur1 == Mur.GAUCHE)
+			else if(mur1 == Mur.MUR_GAUCHE)
 				deltaX = -(pointVu1.getX() + 1500);
-			else if(mur1 == Mur.DROITE)
+			else if(mur1 == Mur.MUR_DROIT)
 				deltaX = -(pointVu1.getX() - 1500);
 			
 			/*
@@ -268,6 +281,8 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 			if(Math.abs(deltaX) > imprecisionMaxPos || Math.abs(deltaY) > imprecisionMaxPos)
 				continue;
 				
+//			log.debug("Correction : "+deltaX+" "+deltaY+" "+deltaOrientation);
+			
 			Cinematique correction = new Cinematique(deltaX, deltaY, deltaOrientation, true, 0, 0);
 			if(System.currentTimeMillis() - dateLastMesureCorrection > peremptionCorrection) // trop de temps depuis le dernier calcul
 				indexCorrection = 0;
@@ -294,7 +309,7 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 	}
 	
 	/**
-	 * Permet de savoir si cet capteur voit actuellement un des quatres bordures de terrain
+	 * Renvoie la position vue par ce capteurs
 	 * @param c
 	 * @param mesure
 	 * @param cinematique
@@ -308,14 +323,21 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 		 * Si le capteur voit trop proche ou trop loin, on ne peut pas lui faire confiance
 		 */
 		if(mesure < c.distanceMin || mesure > c.portee)
+		{
+//			log.debug("Mesure d'un capteur trop loin ou trop proche.");
 			return null;
+		}
+		
 		Vec2RW positionVue = new Vec2RW(mesure, c.orientationRelativeRotate, true);
+		positionVue.plus(c.positionRelativeRotate);
+		positionVue.rotate(cinematique.orientationReelle);
+		positionVue.plus(cinematique.getPosition());
 		return positionVue;
 	}
 	
 	private enum Mur
 	{
-		HAUT(0), BAS(0), GAUCHE(Math.PI), DROITE(Math.PI);
+		MUR_HAUT(0), MUR_BAS(0), MUR_GAUCHE(Math.PI/2), MUR_DROIT(Math.PI/2);
 	
 		private double orientation;
 		
@@ -343,11 +365,11 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 			return null;
 			
 		if(murBas)
-			return Mur.BAS;
+			return Mur.MUR_BAS;
 		else if(murDroit)
-			return Mur.DROITE;
+			return Mur.MUR_DROIT;
 		else if(murGauche)
-			return Mur.GAUCHE;
-		return Mur.BAS;
+			return Mur.MUR_GAUCHE;
+		return Mur.MUR_BAS;
 	}
 }
