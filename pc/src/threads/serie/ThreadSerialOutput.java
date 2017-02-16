@@ -20,7 +20,7 @@ package threads.serie;
 import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
-import container.SerialClass;
+import container.dependances.SerialClass;
 import serie.BufferIncomingBytes;
 import serie.BufferOutgoingOrder;
 import serie.SerieCoucheTrame;

@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package threads.serie;
 
-import container.SerialClass;
+import container.dependances.SerialClass;
 import serie.BufferIncomingOrder;
 import serie.SerieCoucheTrame;
 import threads.ThreadService;

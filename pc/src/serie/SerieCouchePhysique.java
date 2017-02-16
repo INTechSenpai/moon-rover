@@ -32,8 +32,8 @@ import java.util.TooManyListenersException;
 import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
-import container.SerialClass;
 import container.Service;
+import container.dependances.SerialClass;
 import utils.Log;
 
 /**

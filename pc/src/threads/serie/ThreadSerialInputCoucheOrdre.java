@@ -24,7 +24,7 @@ import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
 import container.Container;
-import container.SerialClass;
+import container.dependances.SerialClass;
 import exceptions.ContainerException;
 import robot.Cinematique;
 import robot.RobotColor;

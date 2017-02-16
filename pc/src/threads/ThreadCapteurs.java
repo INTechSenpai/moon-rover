@@ -20,8 +20,8 @@ package threads;
 import capteurs.CapteursProcess;
 import capteurs.SensorsData;
 import capteurs.SensorsDataBuffer;
-import container.HighPFClass;
-import container.LowPFClass;
+import container.dependances.HighPFClass;
+import container.dependances.LowPFClass;
 import utils.Log;
 
 /**

@@ -22,8 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import container.Container;
-import container.CoreClass;
 import container.Service;
+import container.dependances.CoreClass;
 import exceptions.ContainerException;
 import table.GameElementNames;
 import utils.Log;

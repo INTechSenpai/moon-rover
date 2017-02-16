@@ -21,8 +21,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import utils.Log;
-import container.SerialClass;
 import container.Service;
+import container.dependances.SerialClass;
 
 /**
  * Buffer qui contient les infos provenant des capteurs de la STM
