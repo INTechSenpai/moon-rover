@@ -4,27 +4,27 @@ subgraph clusterPF {
 label = "Pathfinding";
 CapteursProcess;
 CercleArrivee;
-ThreadCapteurs;
+ThreadCapteurs[style=filled, fillcolor=cadetblue1];
 subgraph clusterPFCourbe {
 label = "PF courbe";
-NodeMM;
-BezierComputer;
-AStarCourbe;
-ThreadPathfinding;
-ClothoidesComputer;
-ArcManager;
 CheminPathfinding;
+ArcManager;
 CinemObsMM;
+ClothoidesComputer;
+NodeMM;
+ThreadPathfinding[style=filled, fillcolor=cadetblue1];
+AStarCourbe;
+BezierComputer;
 }
 
 subgraph clusterPFlow {
 label = "PF bas niveau";
-ThreadPeremption;
-PointGridSpaceManager;
 GridSpace;
+ThreadPeremption[style=filled, fillcolor=cadetblue1];
 MasqueManager;
-ObstaclesMemory;
+PointGridSpaceManager;
 DStarLite;
+ObstaclesMemory;
 PointDirigeManager;
 }
 
@@ -32,56 +32,56 @@ PointDirigeManager;
 
 subgraph clusterSerie {
 label = "Série";
+ThreadSerialInputCoucheTrame[style=filled, fillcolor=cadetblue1];
+ThreadSerialOutput[style=filled, fillcolor=cadetblue1];
+ThreadSerialOutputTimeout[style=filled, fillcolor=cadetblue1];
 BufferOutgoingOrder;
-BufferIncomingBytes;
-ThreadSerialOutputTimeout;
-SerieCoucheTrame;
 SerieCouchePhysique;
-ThreadSerialInputCoucheOrdre;
-SensorsDataBuffer;
-ThreadSerialInputCoucheTrame;
-ThreadSerialOutput;
+SerieCoucheTrame;
+BufferIncomingBytes;
 BufferIncomingOrder;
+SensorsDataBuffer;
+ThreadSerialInputCoucheOrdre[style=filled, fillcolor=cadetblue1];
 }
 
 subgraph clusterCore {
 label = "Core";
-RealGameState;
 RealTable;
 RobotReal;
+RealGameState;
 }
 
-ThreadShutdown;
-ThreadConfig;
-ThreadFenetre;
 Fenetre;
+ThreadFenetre[style=filled, fillcolor=cadetblue1];
+ThreadConfig[style=filled, fillcolor=cadetblue1];
+ThreadShutdown[style=filled, fillcolor=cadetblue1];
 
-RealGameState -> {ObstaclesMemory RobotReal RealTable };
-NodeMM -> {Config };
-BezierComputer -> {CinemObsMM ClothoidesComputer RobotReal CercleArrivee };
-CapteursProcess -> {RobotReal DStarLite CheminPathfinding GridSpace };
-ThreadPeremption -> {ObstaclesMemory DStarLite };
-AStarCourbe -> {CinemObsMM NodeMM DStarLite CheminPathfinding CercleArrivee RealGameState ArcManager };
-RealTable -> {MasqueManager };
-ThreadCapteurs -> {CapteursProcess SensorsDataBuffer };
-ThreadSerialOutputTimeout -> {SerieCoucheTrame };
-ThreadPathfinding -> {CheminPathfinding AStarCourbe };
-GridSpace -> {PointGridSpaceManager ObstaclesMemory MasqueManager };
-ClothoidesComputer -> {CinemObsMM };
-SerieCoucheTrame -> {BufferIncomingBytes SerieCouchePhysique };
-SerieCouchePhysique -> {BufferIncomingBytes };
-MasqueManager -> {PointGridSpaceManager PointDirigeManager };
-ThreadSerialInputCoucheOrdre -> {BufferOutgoingOrder Config RobotReal CheminPathfinding SensorsDataBuffer BufferIncomingOrder };
-ThreadConfig -> {Config };
-RobotReal -> {BufferOutgoingOrder };
-ArcManager -> {BezierComputer ClothoidesComputer DStarLite CercleArrivee };
-ThreadSerialInputCoucheTrame -> {BufferIncomingOrder SerieCoucheTrame };
-ThreadFenetre -> {Fenetre };
-ThreadSerialOutput -> {BufferOutgoingOrder BufferIncomingBytes SerieCoucheTrame };
+CapteursProcess -> {CheminPathfinding DStarLite GridSpace RobotReal };
 CheminPathfinding -> {BufferOutgoingOrder RobotReal };
-Fenetre -> {RobotReal };
-DStarLite -> {PointGridSpaceManager RealTable CercleArrivee GridSpace PointDirigeManager };
-PointDirigeManager -> {PointGridSpaceManager };
+ArcManager -> {ClothoidesComputer DStarLite BezierComputer CercleArrivee };
+GridSpace -> {PointGridSpaceManager ObstaclesMemory MasqueManager };
+ThreadSerialInputCoucheTrame -> {SerieCoucheTrame BufferIncomingOrder };
+ThreadPeremption -> {ObstaclesMemory DStarLite };
 CinemObsMM -> {Config };
+RealTable -> {MasqueManager };
+ClothoidesComputer -> {CinemObsMM };
+ThreadSerialOutput -> {SerieCoucheTrame BufferIncomingBytes BufferOutgoingOrder };
+RobotReal -> {BufferOutgoingOrder };
+NodeMM -> {Config };
+MasqueManager -> {PointGridSpaceManager PointDirigeManager };
+ThreadPathfinding -> {CheminPathfinding AStarCourbe };
+Fenetre -> {RobotReal };
+AStarCourbe -> {CheminPathfinding DStarLite RealGameState NodeMM CinemObsMM CercleArrivee ArcManager };
+ThreadFenetre -> {Fenetre };
+ThreadConfig -> {Config };
+DStarLite -> {PointGridSpaceManager RealTable PointDirigeManager CercleArrivee GridSpace };
+ThreadSerialOutputTimeout -> {SerieCoucheTrame };
+BezierComputer -> {ClothoidesComputer CinemObsMM CercleArrivee RobotReal };
+SerieCouchePhysique -> {BufferIncomingBytes };
+SerieCoucheTrame -> {SerieCouchePhysique BufferIncomingBytes };
+PointDirigeManager -> {PointGridSpaceManager };
+ThreadCapteurs -> {CapteursProcess SensorsDataBuffer };
+ThreadSerialInputCoucheOrdre -> {CheminPathfinding Config SensorsDataBuffer BufferIncomingOrder RobotReal BufferOutgoingOrder };
+RealGameState -> {ObstaclesMemory RealTable RobotReal };
 
 }
