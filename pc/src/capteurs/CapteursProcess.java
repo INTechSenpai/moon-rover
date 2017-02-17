@@ -121,8 +121,6 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 	 */
 	public void updateObstaclesMobiles(SensorsData data)
 	{
-		correctXYO(data);
-
 		double orientationRobot = data.cinematique.orientationReelle;
 		Vec2RO positionRobot = data.cinematique.getPosition();
 
@@ -201,6 +199,7 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 		dstarlite.updateObstaclesEnnemi();
 		dstarlite.updateObstaclesTable();
 		chemin.checkColliding();
+		correctXYO(data);
 	}
 	
 	/**
@@ -245,7 +244,7 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 				continue;
 			
 			Vec2RO delta = pointVu1.minusNewVector(pointVu2);
-			double deltaOrientation = mur1.orientation - delta.getFastArgument();
+			double deltaOrientation = mur1.orientation - delta.getArgument(); // on veut une mesure précise, donc on vite getFastArgument
 			
 			// le delta d'orientation qu'on cherche est entre -PI/2 et PI/2
 			if(Math.abs(deltaOrientation) > Math.PI/2)
@@ -259,7 +258,10 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 			 * L'imprécision mesurée est trop grande. C'est probablement une erreur.
 			 */
 			if(Math.abs(deltaOrientation) > imprecisionMaxAngle)
+			{
+//				log.debug("Imprécision en angle trop grande ! "+Math.abs(deltaOrientation));
 				continue;
+			}
 			
 			pointVu1.rotate(deltaOrientation, data.cinematique.getPosition());
 			pointVu2.rotate(deltaOrientation, data.cinematique.getPosition());
@@ -279,7 +281,10 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 			 * L'imprécision mesurée est trop grande. C'est probablement une erreur.
 			 */			
 			if(Math.abs(deltaX) > imprecisionMaxPos || Math.abs(deltaY) > imprecisionMaxPos)
+			{
+//				log.debug("Imprécision en position trop grande !");
 				continue;
+			}
 				
 //			log.debug("Correction : "+deltaX+" "+deltaY+" "+deltaOrientation);
 			
@@ -300,6 +305,7 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 				}
 				posmoy.scalar(1./bufferCorrection.length);
 				orientationmoy /= bufferCorrection.length;
+				log.debug("Envoi d'une correction XYO : "+posmoy+" "+orientationmoy);
 				serie.correctPosition(posmoy, orientationmoy);
 				indexCorrection = 0;
 			}
@@ -361,6 +367,8 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 		boolean murHaut = Math.abs(pos.getY() - 2000) < distanceMax;
 		boolean murGauche = Math.abs(pos.getX() + 1500) < distanceMax;
 		
+//		log.debug("État mur : "+murBas+" "+murDroit+" "+murHaut+" "+murGauche);
+
 		if(!(murBas ^ murDroit ^ murHaut ^ murGauche)) // cette condition est fausse si on est près de 0 ou de 2 murs
 			return null;
 			

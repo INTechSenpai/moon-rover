@@ -262,7 +262,7 @@ public class BufferOutgoingOrder implements Service, Configurable, SerialClass
 	 */
 	public synchronized void correctPosition(Vec2RO deltaPos, double deltaOrientation)
 	{
-		ByteBuffer data = ByteBuffer.allocate(4);
+		ByteBuffer data = ByteBuffer.allocate(5);
 		addXYO(data, deltaPos, deltaOrientation);
 		bufferBassePriorite.add(new Order(data, OutOrder.EDIT_POSITION));
 		notify();
