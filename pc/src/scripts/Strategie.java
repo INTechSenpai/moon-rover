@@ -62,9 +62,15 @@ public class Strategie implements Service, CoreClass
 	
 	/**
 	 * La méthode qui gagne un match
+	 * @throws InterruptedException 
 	 */
-	public void doWinMatch()
+	public void doWinMatch() throws InterruptedException
 	{
+		synchronized(state.robot)
+		{
+			if(!state.robot.isCinematiqueInitialised())
+				state.robot.wait();
+		}
 		Script s = strategie.getFirst();
 		s.setUpCercleArrivee();
 		try {

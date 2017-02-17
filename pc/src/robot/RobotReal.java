@@ -50,7 +50,8 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	private boolean print;
 	private PrintBuffer buffer;
 	private BufferOutgoingOrder out;
-	
+    private boolean cinematiqueInitialised = false;
+
 	// Constructeur
 	public RobotReal(Log log, BufferOutgoingOrder out, PrintBuffer buffer)
  	{
@@ -97,10 +98,23 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 		return System.currentTimeMillis() - dateDebutMatch;
     }
 
+	public boolean isCinematiqueInitialised()
+	{
+		return cinematiqueInitialised;
+	}
+	
 	@Override
-	public void setCinematique(Cinematique cinematique)
+	public synchronized void setCinematique(Cinematique cinematique)
 	{
 		super.setCinematique(cinematique);
+		/*
+		 * On vient juste de récupérer la position initiale
+		 */
+		if(!cinematiqueInitialised)
+		{
+			cinematiqueInitialised = true;
+			notifyAll();
+		}
 		synchronized(buffer)
 		{
 			buffer.notify();

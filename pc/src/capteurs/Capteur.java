@@ -76,31 +76,34 @@ public abstract class Capteur implements Printable, Configurable
 	@Override
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
-		double orientation = robot.getCinematique().orientationReelle;
-		computePosOrientationRelative(robot.getCinematique());
-		Vec2RW p1 = positionRelativeRotate.clone();
-		p1.rotate(orientation);
-		p1.plus(robot.getCinematique().getPosition());
-		Vec2RW p2 = positionRelativeRotate.clone();
-		p2.plus(new Vec2RO(portee, angleCone + orientationRelativeRotate, false));
-		p2.rotate(orientation);
-		p2.plus(robot.getCinematique().getPosition());
-		Vec2RW p3 = positionRelativeRotate.clone();
-		p3.plus(new Vec2RO(portee, - angleCone + orientationRelativeRotate, false));
-		p3.rotate(orientation);
-		p3.plus(robot.getCinematique().getPosition());
-		int[] x = new int[3];
-		x[0] = f.XtoWindow(p1.getX());
-		x[1] = f.XtoWindow(p2.getX());
-		x[2] = f.XtoWindow(p3.getX());
-		int[] y = new int[3];
-		y[0] = f.YtoWindow(p1.getY());
-		y[1] = f.YtoWindow(p2.getY());
-		y[2] = f.YtoWindow(p3.getY());
-		g.setColor(type.couleurTransparente);
-		g.fillPolygon(x, y, 3);
-		g.setColor(type.couleur);
-		g.drawPolygon(x, y, 3);
+		if(robot.isCinematiqueInitialised())
+		{
+			double orientation = robot.getCinematique().orientationReelle;
+			computePosOrientationRelative(robot.getCinematique());
+			Vec2RW p1 = positionRelativeRotate.clone();
+			p1.rotate(orientation);
+			p1.plus(robot.getCinematique().getPosition());
+			Vec2RW p2 = positionRelativeRotate.clone();
+			p2.plus(new Vec2RO(portee, angleCone + orientationRelativeRotate, false));
+			p2.rotate(orientation);
+			p2.plus(robot.getCinematique().getPosition());
+			Vec2RW p3 = positionRelativeRotate.clone();
+			p3.plus(new Vec2RO(portee, - angleCone + orientationRelativeRotate, false));
+			p3.rotate(orientation);
+			p3.plus(robot.getCinematique().getPosition());
+			int[] x = new int[3];
+			x[0] = f.XtoWindow(p1.getX());
+			x[1] = f.XtoWindow(p2.getX());
+			x[2] = f.XtoWindow(p3.getX());
+			int[] y = new int[3];
+			y[0] = f.YtoWindow(p1.getY());
+			y[1] = f.YtoWindow(p2.getY());
+			y[2] = f.YtoWindow(p3.getY());
+			g.setColor(type.couleurTransparente);
+			g.fillPolygon(x, y, 3);
+			g.setColor(type.couleur);
+			g.drawPolygon(x, y, 3);
+		}
 	}
 
 	@Override
