@@ -42,14 +42,14 @@ import utils.Log;
 public class Strategie implements Service, CoreClass
 {
 	protected Log log;
-	private PathCache prepaths;
+	private PathCache pathcache;
 	private RealGameState state;
 	private LinkedList<Script> strategie = new LinkedList<Script>();
 	
-	public Strategie(Log log, PathCache prepaths, Container container, RealGameState state, ScriptManager scriptsm)
+	public Strategie(Log log, PathCache pathcache, Container container, RealGameState state, ScriptManager scriptsm)
 	{
 		this.log = log;
-		this.prepaths = prepaths;
+		this.pathcache = pathcache;
 		this.state = state;
 		HashMap<String, Script> scripts = scriptsm.getScripts();
 		try {
@@ -74,9 +74,18 @@ public class Strategie implements Service, CoreClass
 		Script s = strategie.getFirst();
 		s.setUpCercleArrivee();
 		try {
-			prepaths.computeNewPathToCircle(true);
+			// le chemin est automatiquement exécuté
+			pathcache.computeNewPathToCircle(true);
+			
 		} catch (PathfindingException e) {
 			e.printStackTrace();
+		}
+		finally
+		{
+			/*
+			 * Dans tous les cas, il faut signaler au pathfinding que la recherche est finie
+			 */
+			pathcache.stopSearch();
 		}
 	}
 	

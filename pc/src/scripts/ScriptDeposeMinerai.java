@@ -41,6 +41,7 @@ public class ScriptDeposeMinerai extends Script
 	@Override
 	public void setUpCercleArrivee()
 	{
+		// TODO
 	}
 
 	@Override
@@ -54,4 +55,9 @@ public class ScriptDeposeMinerai extends Script
 	{
 	}
 
+	@Override
+	public String toString()
+	{
+		return "DEPOSE";
+	}
 }

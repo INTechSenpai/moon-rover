@@ -67,4 +67,9 @@ public class ScriptCratere extends Script
 		state.robot.avance(20);
 	}
 
+	@Override
+	public String toString()
+	{
+		return element.name();
+	}
 }
