@@ -19,10 +19,7 @@ package scripts;
 
 import exceptions.UnableToMoveException;
 import pathfinding.GameState;
-import pathfinding.astar.arcs.CercleArrivee;
 import robot.Robot;
-import table.EtatElement;
-import table.GameElementNames;
 import utils.Log;
 
 /**

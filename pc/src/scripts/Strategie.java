@@ -17,11 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package scripts;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 import container.Container;
 import container.Service;
