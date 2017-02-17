@@ -51,6 +51,18 @@ public class ScriptDeposeMinerai extends Script
 	protected void termine(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
 	{
 	}
+	
+	@Override
+	public boolean equals(Object other)
+	{
+		return other instanceof ScriptDeposeMinerai; // de toute façon, il n'y a qu'un seul script de ce type
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return 0;
+	}
 
 	@Override
 	public String toString()

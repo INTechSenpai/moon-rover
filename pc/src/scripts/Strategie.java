@@ -69,10 +69,9 @@ public class Strategie implements Service, CoreClass
 				state.robot.wait();
 		}
 		Script s = strategie.getFirst();
-		s.setUpCercleArrivee();
 		try {
 			// le chemin est automatiquement exécuté
-			pathcache.computeNewPathToCircle(true);
+			pathcache.computeNewPathToScript(state.robot.getCinematique(), s, true);
 			
 		} catch (PathfindingException e) {
 			e.printStackTrace();

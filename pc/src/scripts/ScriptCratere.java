@@ -44,6 +44,18 @@ public class ScriptCratere extends Script
 	}
 
 	@Override
+	public boolean equals(Object other)
+	{
+		return other instanceof ScriptCratere && other.hashCode() == hashCode();
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return element.hashCode();
+	}
+	
+	@Override
 	public void setUpCercleArrivee()
 	{
 		cercle.set(element);
