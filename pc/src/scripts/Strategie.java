@@ -71,8 +71,8 @@ public class Strategie implements Service, CoreClass
 		Script s = strategie.getFirst();
 		try {
 			// le chemin est automatiquement exécuté
-			pathcache.computeNewPathToScript(state.robot.getCinematique(), s, true);
-			
+			pathcache.prepareNewPathToScript(state.robot.getCinematique(), s, true);
+			pathcache.followPreparedPath();
 		} catch (PathfindingException e) {
 			e.printStackTrace();
 		}
