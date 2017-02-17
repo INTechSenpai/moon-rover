@@ -25,6 +25,7 @@ import container.Service;
 import container.dependances.CoreClass;
 import exceptions.ContainerException;
 import exceptions.PathfindingException;
+import pathfinding.ChronoGameState;
 import pathfinding.PathCache;
 import pathfinding.RealGameState;
 import table.GameElementNames;
@@ -41,13 +42,15 @@ public class Strategie implements Service, CoreClass
 	protected Log log;
 	private PathCache pathcache;
 	private RealGameState state;
+	private ChronoGameState chrono;
 	private LinkedList<Script> strategie = new LinkedList<Script>();
 	
-	public Strategie(Log log, PathCache pathcache, Container container, RealGameState state, ScriptManager scriptsm)
+	public Strategie(Log log, PathCache pathcache, Container container, RealGameState state, ChronoGameState chrono, ScriptManager scriptsm)
 	{
 		this.log = log;
 		this.pathcache = pathcache;
 		this.state = state;
+		this.chrono = chrono;
 		HashMap<String, Script> scripts = scriptsm.getScripts();
 		try {
 			strategie.add(scripts.get(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE.toString()));
@@ -70,8 +73,9 @@ public class Strategie implements Service, CoreClass
 		}
 		Script s = strategie.getFirst();
 		try {
-			// le chemin est automatiquement exécuté
-			pathcache.prepareNewPathToScript(state.robot.getCinematique(), s, true);
+			state.copyAStarCourbe(chrono); // TODO vérifier si la copie est correcte
+//			script.execute(chrono);
+			pathcache.prepareNewPathToScript(state.robot.getCinematique(), s, true, chrono);
 			pathcache.followPreparedPath();
 		} catch (PathfindingException e) {
 			e.printStackTrace();
