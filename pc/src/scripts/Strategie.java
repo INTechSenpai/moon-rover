@@ -20,64 +20,58 @@ package scripts;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import container.Container;
 import container.Service;
 import container.dependances.CoreClass;
 import exceptions.ContainerException;
+import exceptions.PathfindingException;
+import pathfinding.PathCache;
+import pathfinding.RealGameState;
 import table.GameElementNames;
 import utils.Log;
 
 /**
- * Le gestionnaire de scripts
+ * La stratégie : enchaîne les scripts et utilise le pathfinding
  * @author pf
  *
  */
 
-public class ScriptManager implements Service, Iterator<Script>, CoreClass
+public class Strategie implements Service, CoreClass
 {
-	private HashMap<String, Script> scripts = new HashMap<String, Script>();
-	private Iterator<Script> iter;
 	protected Log log;
+	private PathCache prepaths;
+	private RealGameState state;
+	private LinkedList<Script> strategie = new LinkedList<Script>();
 	
-	public ScriptManager(Log log, Container container)
+	public Strategie(Log log, PathCache prepaths, Container container, RealGameState state, ScriptManager scriptsm)
 	{
 		this.log = log;
+		this.prepaths = prepaths;
+		this.state = state;
+		HashMap<String, Script> scripts = scriptsm.getScripts();
 		try {
-			for(GameElementNames n : GameElementNames.values())
-				if(n.toString().startsWith("MINERAI"))
-					scripts.put(n.toString(), container.make(ScriptCratere.class, n));
-			scripts.put("DEPOSE", container.make(ScriptDeposeMinerai.class));
+			strategie.add(scripts.get(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE.toString()));
+			strategie.add(container.make(ScriptDeposeMinerai.class));
 		} catch (ContainerException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public HashMap<String, Script> getScripts()
+	/**
+	 * La méthode qui gagne un match
+	 */
+	public void doWinMatch()
 	{
-		return scripts;
-	}
-	
-	public void reinit()
-	{
-		iter = scripts.values().iterator();
-	}
-	
-	@Override
-	public boolean hasNext() {
-		return iter.hasNext();
-	}
-
-	@Override
-	public Script next() {
-		return iter.next();
-	}
-
-	@Override
-	public void remove()
-	{
-		throw new UnsupportedOperationException();
+		Script s = strategie.getFirst();
+		s.setUpCercleArrivee();
+		try {
+			prepaths.computeNewPathToCircle(true);
+		} catch (PathfindingException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }
