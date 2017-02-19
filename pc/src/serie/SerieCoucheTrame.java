@@ -68,7 +68,7 @@ public class SerieCoucheTrame implements Service, Configurable, SerialClass
 	private LinkedList<Integer> closedFrames = new LinkedList<Integer>();
 
 	private int timeout;
-	private int dernierIDutilise = 0; // dernier ID utilisé
+	private int dernierIDutilise = 0xFF; // dernier ID utilisé
 	
 	// Afin d'éviter de la créer à chaque fois
 	private EndOrderFrame endOrderFrame = new EndOrderFrame();
@@ -107,6 +107,7 @@ public class SerieCoucheTrame implements Service, Configurable, SerialClass
 	{
 		int initialID = dernierIDutilise;
 		dernierIDutilise++;
+		dernierIDutilise &= 0xFF;
 		while(true)
 		{
 			if(initialID == dernierIDutilise) // on a fait un tour complet…
@@ -324,6 +325,8 @@ public class SerieCoucheTrame implements Service, Configurable, SerialClass
 	{
 		timeout = config.getInt(ConfigInfo.SERIAL_TIMEOUT);
 		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
+		for(int i = 0; i < 256; i++)
+			conversations[i].useConfig(config);
 	}
 	
 	/**

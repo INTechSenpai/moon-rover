@@ -117,6 +117,6 @@ public class Conversation implements Configurable
 		origine = o.ordre;
 		ticket = o.ticket;
 		firstFrame.update(o);
-		resendDate = System.currentTimeMillis() + 10000;
+		resendDate = System.currentTimeMillis() + 1000000; // date très très loin. C'est en attendant que la trame soit envoyée et qu'on puisse lui attribuer sa vraie resendDate
 	}
 }
