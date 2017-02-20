@@ -43,6 +43,7 @@ public class ThreadSerialOutput extends ThreadService implements Configurable, S
 	private int sleep;
 	private BufferIncomingBytes input;
 	private boolean debugSerie;
+	private boolean simuleSerie;
 	
 	public ThreadSerialOutput(Log log, SerieCoucheTrame serie, BufferOutgoingOrder data, BufferIncomingBytes input)
 	{
@@ -61,6 +62,9 @@ public class ThreadSerialOutput extends ThreadService implements Configurable, S
 		
 		// On envoie d'abord le ping long initial
 		try {
+			if(simuleSerie)
+				Thread.sleep(1000000);
+
 			serie.init();
 			Thread.sleep(50); // on attend que la série soit bien prête
 			synchronized(input)
@@ -103,6 +107,7 @@ public class ThreadSerialOutput extends ThreadService implements Configurable, S
 	{
 		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 		sleep = config.getInt(ConfigInfo.SLEEP_ENTRE_TRAMES);
+		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
 	}
 
 }
