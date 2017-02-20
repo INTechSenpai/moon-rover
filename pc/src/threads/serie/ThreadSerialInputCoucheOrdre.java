@@ -237,6 +237,24 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 					/*
 					 * ACTIONNEURS
 					 */
+
+					/**
+					 * Filet en bas
+					 */
+					else if(paquet.origine == OutOrder.PULL_DOWN_NET)
+						paquet.ticket.set(Ticket.State.OK);
+					
+					/**
+					 * Filet en haut
+					 */
+					else if(paquet.origine == OutOrder.PULL_UP_NET)
+						paquet.ticket.set(Ticket.State.OK);
+					
+					/**
+					 * Filet à mi-chemin
+					 */
+					else if(paquet.origine == OutOrder.PUT_NET_HALFWAY)
+						paquet.ticket.set(Ticket.State.OK);
 					
 					/**
 					 * Le filet est ouvert
@@ -305,6 +323,9 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 							paquet.ticket.set(Ticket.State.KO);
 					}
 					
+					/**
+					 * Les paquets dont l'état n'importe pas et sans donnée (par exemple PING ou STOP) n'ont pas besoin d'être traités
+					 */
 					else if(data.length != 0)
 						log.critical("On a ignoré un paquet d'origine "+paquet.origine+" (taille : "+data.length+")");
 
