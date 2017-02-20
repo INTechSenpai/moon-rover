@@ -161,12 +161,8 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 							 * Acquiert ce que voit les capteurs
 						 	 */
 							int[] mesures = new int[nbCapteurs];
-							for(int i = 0; i < nbCapteurs / 2; i++)
-							{
-								mesures[2*i] = (data[10+3*i] << 4) + (data[10+3*i+1] >> 4);
-								if(2*i+1 < nbCapteurs) // en cas de nombre impair…
-									mesures[2*i+1] = ((data[10+3*i+1] & 0x0F) << 8) + data[10+3*i+2];
-							}
+							for(int i = 0; i < nbCapteurs; i++)
+								mesures[i] = data[6+i];
 							if(capteursOn)
 								buffer.add(new SensorsData(mesures, current));
 						}
