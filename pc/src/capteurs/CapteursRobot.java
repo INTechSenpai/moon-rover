@@ -27,25 +27,33 @@ import utils.Vec2RO;
 
 public enum CapteursRobot
 {
-	// IR avant
+	// Doc : [1] ToF LP Avant ; [2] IR Avant Gauche ; [3] ToF LP Arrière ; [4] IR Avant Droit ; [5] ToF Avant Gauche ; [6] ToF Flan Avant Gauche ; [7]
+	// ToF Flan Arrière Gauche ; [8] ToF Arrière Gauche ; [9] ToF Arrière Droit ; [10] ToF Flan Arrière Droit ; [11] ToF Flan Avant Droit ; [12]
+	//		ToF Avant Droit
+	
+	ToF_LONG_AVANT(CapteurImmobile.class, new Vec2RO(224, 0), 0, TypeCapteur.ToF_LONG, true),
+
 	IR_AVANT_GAUCHE(CapteurMobile.class, new Vec2RO(233, 86), 10./180.*Math.PI, TypeCapteur.IR, true),
+
+	ToF_LONG_ARRIERE(CapteurImmobile.class, new Vec2RO(0, 0), 180./180.*Math.PI, TypeCapteur.ToF_LONG, true),
+
 	IR_AVANT_DROITE(CapteurMobile.class, new Vec2RO(233, -86), -10./180.*Math.PI, TypeCapteur.IR, true),
 	
 	ToF_AVANT_GAUCHE(CapteurMobile.class, new Vec2RO(235, 60), 25./180.*Math.PI, TypeCapteur.ToF_COURT, false),
-	ToF_AVANT_DROITE(CapteurMobile.class, new Vec2RO(235, -60), -25./180.*Math.PI, TypeCapteur.ToF_COURT, false),
-	
-	ToF_LONG_AVANT(CapteurImmobile.class, new Vec2RO(224, 0), 0, TypeCapteur.ToF_LONG, true),
 	
 	ToF_LATERAL_GAUCHE_AVANT(CapteurImmobile.class, new Vec2RO(140, 102), Math.PI/2, TypeCapteur.ToF_COURT, false),
+	
 	ToF_LATERAL_GAUCHE_ARRIERE(CapteurImmobile.class, new Vec2RO(55, 102), Math.PI/2, TypeCapteur.ToF_COURT, false),
 
-	ToF_LATERAL_DROITE_AVANT(CapteurImmobile.class, new Vec2RO(140, -102), -Math.PI/2, TypeCapteur.ToF_COURT, false),
-	ToF_LATERAL_DROITE_ARRIERE(CapteurImmobile.class, new Vec2RO(55, -102), -Math.PI/2, TypeCapteur.ToF_COURT, false),
-
 	ToF_ARRIERE_GAUCHE(CapteurImmobile.class, new Vec2RO(-53, 85), 170./180.*Math.PI, TypeCapteur.ToF_COURT, false),
-	ToF_ARRIERE_DROITE(CapteurImmobile.class, new Vec2RO(-53, -85), -170./180.*Math.PI, TypeCapteur.ToF_COURT, false),
 	
-	ToF_LONG_ARRIERE(CapteurImmobile.class, new Vec2RO(0, 0), 180./180.*Math.PI, TypeCapteur.ToF_LONG, true);
+	ToF_ARRIERE_DROITE(CapteurImmobile.class, new Vec2RO(-53, -85), -170./180.*Math.PI, TypeCapteur.ToF_COURT, false),
+
+	ToF_LATERAL_DROITE_ARRIERE(CapteurImmobile.class, new Vec2RO(55, -102), -Math.PI/2, TypeCapteur.ToF_COURT, false),
+	
+	ToF_LATERAL_DROITE_AVANT(CapteurImmobile.class, new Vec2RO(140, -102), -Math.PI/2, TypeCapteur.ToF_COURT, false),
+
+	ToF_AVANT_DROITE(CapteurMobile.class, new Vec2RO(235, -60), -25./180.*Math.PI, TypeCapteur.ToF_COURT, false);
 	
 	public final Class<? extends Capteur> classe;
 	public final Vec2RO pos;

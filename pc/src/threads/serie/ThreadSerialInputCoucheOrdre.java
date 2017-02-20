@@ -162,7 +162,11 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 						 	 */
 							int[] mesures = new int[nbCapteurs];
 							for(int i = 0; i < nbCapteurs; i++)
+							{
 								mesures[i] = data[6+i];
+								if(debugSerie)
+									log.debug("Capteurs "+CapteursRobot.values[i].name()+" : "+mesures[i]);
+							}
 							if(capteursOn)
 								buffer.add(new SensorsData(mesures, current));
 						}
