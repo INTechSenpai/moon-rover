@@ -271,10 +271,12 @@ public class BufferOutgoingOrder implements Service, Configurable, SerialClass
 	/**
 	 * Demande à être notifié du début du match
 	 */
-	public synchronized void waitForJumper()
+	public synchronized Ticket waitForJumper()
 	{
-		bufferBassePriorite.add(new Order(OutOrder.WAIT_FOR_JUMPER));
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(OutOrder.WAIT_FOR_JUMPER, t));
 		notify();
+		return t;
 	}
 
 	/**
