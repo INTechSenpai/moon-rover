@@ -17,9 +17,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package robot;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.lang.reflect.InvocationTargetException;
 
+import obstacles.types.ObstacleCircular;
 import obstacles.types.ObstacleRobot;
 import serie.BufferOutgoingOrder;
 import serie.Ticket;
@@ -30,10 +32,13 @@ import container.Service;
 import container.dependances.CoreClass;
 import exceptions.UnableToMoveException;
 import utils.Log;
+import utils.Vec2RO;
 import graphic.Fenetre;
 import graphic.PrintBuffer;
+import graphic.printable.Couleur;
 import graphic.printable.Layer;
 import graphic.printable.Printable;
+import graphic.printable.Segment;
 
 /**
  * Effectue le lien entre le code et la réalité (permet de parler à la carte bas niveau, d'interroger les capteurs, etc.)
@@ -47,7 +52,7 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
     protected volatile long dateDebutMatch;
     private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant;
     private int nbRetente;
-	private boolean print;
+	private boolean print, printTrace;
 	private PrintBuffer buffer;
 	private BufferOutgoingOrder out;
     private boolean cinematiqueInitialised = false;
@@ -81,6 +86,7 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 		demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
 		nbRetente = config.getInt(ConfigInfo.NB_TENTATIVES_ACTIONNEURS);
+		printTrace = config.getBoolean(ConfigInfo.GRAPHIC_TRACE_ROBOT);
 		if(print)
 			buffer.add(this);
 	}
@@ -106,6 +112,7 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	@Override
 	public synchronized void setCinematique(Cinematique cinematique)
 	{
+		Vec2RO old = this.cinematique.getPosition().clone();
 		super.setCinematique(cinematique);
 		/*
 		 * On vient juste de récupérer la position initiale
@@ -117,7 +124,11 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 		}
 		synchronized(buffer)
 		{
-			buffer.notify();
+			// affichage
+			if(printTrace && cinematique.getPosition() != null && old.distanceFast(cinematique.getPosition()) < 100)
+				buffer.addSupprimable(new Segment(old, cinematique.getPosition().clone(), Layer.MIDDLE, Couleur.ROUGE.couleur));
+			else
+				buffer.notify();
 		}
 	}
 
