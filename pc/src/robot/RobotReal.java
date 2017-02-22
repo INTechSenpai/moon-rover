@@ -195,13 +195,18 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	{
 		Ticket.State etat;
 		Ticket t = null;
-		Class<?>[] paramClasses = new Class[param.length];
-		for(int i = 0; i < param.length; i++)
-			paramClasses[i] = param[i].getClass();
+		Class<?>[] paramClasses = null;
+		if(param.length > 0)
+		{
+			paramClasses = new Class[param.length];
+			for(int i = 0; i < param.length; i++)
+				paramClasses[i] = param[i].getClass();
+		}
+		long avant = System.currentTimeMillis();
 		int nbEssai = nbRetente;
 		do {
 			try {
-				t = (Ticket) BufferOutgoingOrder.class.getMethod(nom, paramClasses.length == 0 ? null : paramClasses).invoke(out, param.length == 0 ? null : param);
+				t = (Ticket) BufferOutgoingOrder.class.getMethod(nom, paramClasses).invoke(out, param.length == 0 ? null : param);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 				e.printStackTrace();
 			}
@@ -209,12 +214,13 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 			{
 				if(t.isEmpty())
 					t.wait();
+				etat = t.getAndClear();
 			}
-			etat = t.getAndClear();
 			nbEssai--;
 			if(etat == Ticket.State.KO)
 				log.warning("Problème pour l'actionneur "+nom+" : on "+(nbEssai >= 0 ? "retente." : "abandonne."));
 		} while(nbEssai >= 0 && etat == Ticket.State.KO);
+		log.debug("Temps d'exécution de "+nom+" : "+(System.currentTimeMillis()-avant));
 	}
 
 }

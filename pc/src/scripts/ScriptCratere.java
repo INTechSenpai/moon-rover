@@ -65,7 +65,7 @@ public class ScriptCratere extends Script
 	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
 	{
 		state.robot.avance(-20);
-		state.robot.filetMiHauteur();
+		state.robot.bougeFiletMiChemin();
 		state.robot.ouvreFilet();
 		state.robot.baisseFilet();
 		state.table.setDone(element, EtatElement.PRIS_PAR_NOUS);
@@ -75,7 +75,7 @@ public class ScriptCratere extends Script
 	protected void termine(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
 	{
 		state.robot.fermeFilet();
-		state.robot.remonteFilet();		
+		state.robot.leveFilet();		
 		state.robot.avance(20);
 	}
 

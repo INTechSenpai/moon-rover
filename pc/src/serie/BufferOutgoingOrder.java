@@ -136,7 +136,7 @@ public class BufferOutgoingOrder implements Service, Configurable, SerialClass
 	public synchronized Ticket immobilise()
 	{
 		if(debugSerie)
-			log.debug("Stop !");
+			log.warning("Stop !");
 		stop = new Ticket();
 		notify();
 		return stop;
@@ -222,7 +222,7 @@ public class BufferOutgoingOrder implements Service, Configurable, SerialClass
 	/**
 	 * Ejecte les balles
 	 */
-	public synchronized Ticket ejecte(Boolean droite) // la réflectivité demande d'utiliser Boolean et pas boolean
+	public synchronized Ticket ejecteBalles(Boolean droite) // la réflectivité demande d'utiliser Boolean et pas boolean
 	{
 		Ticket t = new Ticket();
 		bufferBassePriorite.add(new Order(droite ? OutOrder.EJECT_RIGHT_SIDE : OutOrder.EJECT_LEFT_SIDE, t));

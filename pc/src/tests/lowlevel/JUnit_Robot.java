@@ -29,7 +29,7 @@ import tests.JUnit_Test;
  *
  */
 
-public class JUnit_Actionneurs extends JUnit_Test {
+public class JUnit_Robot extends JUnit_Test {
 
 	private RobotReal robot;
 	
@@ -43,8 +43,13 @@ public class JUnit_Actionneurs extends JUnit_Test {
 	@Test
 	public void test_actionneurs() throws Exception
 	{
-		robot.ejectBalles();
 		robot.baisseFilet();
+		robot.leveFilet();
+		robot.bougeFiletMiChemin();
+		robot.ejecteBalles();
+		robot.rearme();
 		robot.ouvreFilet();
+		robot.fermeFilet();
+		robot.traverseBascule();
 	}
 }
