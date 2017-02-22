@@ -80,6 +80,7 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	@Override
 	public void useConfig(Config config)
 	{
+		// c'est le LL qui fournira la position
 		cinematique = new Cinematique(0, 300, 0, true, 3, Speed.STANDARD.translationalSpeed);
 		print = config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS);
 		demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
@@ -125,13 +126,17 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 		synchronized(buffer)
 		{
 			// affichage
-			if(printTrace && cinematique.getPosition() != null && old.distanceFast(cinematique.getPosition()) < 100)
-				buffer.addSupprimable(new Segment(old, cinematique.getPosition().clone(), Layer.MIDDLE, Couleur.ROUGE.couleur));
-			else
+			if(printTrace && old.distanceFast(cinematique.getPosition()) < 100)
+				buffer.addSupprimable(new Segment(old, cinematique.getPosition().clone(), Layer.FOREGROUND, Couleur.ROUGE.couleur));
+			else if(print)
 				buffer.notify();
 		}
 	}
 
+	/**
+	 * N'est utilisé que pour l'affichage
+	 * @return
+	 */
 	public Cinematique getCinematique()
 	{
 		return cinematique;
