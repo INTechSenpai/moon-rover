@@ -31,7 +31,7 @@ public:
 			uint16_t _x, _y, _o;
 			_x = data.at(0) << 4;
 			_x += data.at(1) >> 4;
-			_y = (data.at(1) & 0xFF) << 8;
+			_y = (data.at(1) & 0x0F) << 8;
 			_y += data.at(2);
 			_o = data.at(3) << 8;
 			_o += data.at(4);
@@ -60,22 +60,9 @@ public:
 	{
 		std::vector<uint8_t> data;
 
-		float rX = x + 1500, rY = y, rO = orientation * 1000;
-		if (rX < 0)
-			rX = 0;
-		else if (rX > 3000)
-			rX = 3000;
-		if (rY < 0)
-			rY = 0;
-		else if (rY > 2000)
-			rY = 2000;
-		if (rO < 0)
-			rO = 0;
-		else if (rO > 6283)
-			rO = 6283;
-
-		uint16_t _x = (uint16_t)rX;
-		uint16_t _y = (uint16_t)rY;
+		float rO = orientation * 1000;
+		uint16_t _x = (uint16_t)(x + 1500);
+		uint16_t _y = (uint16_t)y;
 		uint16_t _o = (uint16_t)rO;
 		
 		uint16_t hw_x, lw_x_hw_y, lw_y;
