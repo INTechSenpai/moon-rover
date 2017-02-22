@@ -2,7 +2,7 @@ import serial
 import time
 import stats
 
-ser = serial.Serial('COM3', baudrate=9600)  # open serial port
+ser = serial.Serial('COM4', baudrate=115200)  # open serial port
 print(ser.name)         # check which port was really used
 
 tArray = []
@@ -15,6 +15,8 @@ for i in range(60):
     t2 = time.clock()
     if r != b'\xf9\x04\x01\xfe':
         print(r)
+    else:
+        print("OK")
     tArray.append(t2-t1)
     tArray2.append(t2-t3)
     time.sleep(1)

@@ -4,22 +4,22 @@
 /* Encodeurs arrières */
 #define PIN_A_RIGHT_BACK_ENCODER	13
 #define PIN_B_RIGHT_BACK_ENCODER	14
-#define PIN_B_LEFT_BACK_ENCODER		15
-#define PIN_A_LEFT_BACK_ENCODER		16
+#define PIN_B_LEFT_BACK_ENCODER		16
+#define PIN_A_LEFT_BACK_ENCODER		15
 
 
 /* Encodeurs des moteurs de propultion */
-#define PIN_B_LEFT_MOTOR_ENCODER	7
-#define PIN_A_LEFT_MOTOR_ENCODER	8
+#define PIN_B_LEFT_MOTOR_ENCODER	8
+#define PIN_A_LEFT_MOTOR_ENCODER	7
 #define PIN_A_RIGHT_MOTOR_ENCODER	11
 #define PIN_B_RIGHT_MOTOR_ENCODER	12
 
 
 /* Ponts en H des moteurs de propultion */
-#define PIN_DIRECTION_LEFT_MOTOR	3
-#define PIN_DIRECTION_RIGHT_MOTOR	4
-#define PIN_PWM_LEFT_MOTOR			5
-#define PIN_PWM_RIGHT_MOTOR			6
+#define PIN_LEFT_MOTOR_A		3
+#define PIN_RIGHT_MOTOR_A		4
+#define PIN_LEFT_MOTOR_B		5
+#define PIN_RIGHT_MOTOR_B		6
 
 
 /* Ponts en H des moteurs du filet */

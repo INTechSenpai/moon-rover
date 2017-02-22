@@ -259,7 +259,7 @@ void MotionControlSystem::updateSpeedAndPosition()
 	rightMotorError += deltaRightMotorTicks - (int32_t)((float)deltaTranslation * rightSideDistanceFactor);
 
 	// En cas d'erreur excessive au niveau des moteurs de propulsion, le robot est considéré bloqué.
-	if (ABS(leftMotorError) > MOTOR_SLIP_TOLERANCE || ABS(rightMotorError) > MOTOR_SLIP_TOLERANCE)
+	if ((ABS(leftMotorError) > MOTOR_SLIP_TOLERANCE || ABS(rightMotorError) > MOTOR_SLIP_TOLERANCE) && false)
 	{
 		movingState = EXT_BLOCKED;
 		clearCurrentTrajectory();
@@ -449,7 +449,7 @@ void MotionControlSystem::clearCurrentTrajectory()
 {
 	trajectoryFullyCompleted = true;
 	TrajectoryPoint voidPoint;
-	for (uint8_t i = 0; i < UINT8_MAX + 1; i++)
+	for (uint16_t i = 0; i < UINT8_MAX + 1; i++)
 	{
 		currentTrajectory[i] = voidPoint;
 	}
@@ -993,5 +993,22 @@ uint32_t MotionControlSystem::getMaxInterruptDuration()
 	uint32_t cpy = maxInterruptDuration;
 	interrupts();
 	return cpy;
+}
+
+void MotionControlSystem::setPWM(int32_t pwm)
+{
+	leftPWM = pwm;
+	rightPWM = pwm;
+}
+
+void MotionControlSystem::setSpeed(int32_t speed)
+{
+	leftSpeedSetpoint = speed;
+	rightSpeedSetpoint = speed;
+}
+
+void MotionControlSystem::setTranslation(int32_t distance)
+{
+	translationSetpoint += distance;
 }
 

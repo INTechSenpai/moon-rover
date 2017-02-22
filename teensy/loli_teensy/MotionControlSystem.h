@@ -265,6 +265,11 @@ public:
 
 	uint32_t getLastInterruptDuration();
 	uint32_t getMaxInterruptDuration();
+
+	/* Tests */
+	void setPWM(int32_t);
+	void setSpeed(int32_t);
+	void setTranslation(int32_t);
 };
 
 

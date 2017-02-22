@@ -8,7 +8,7 @@
 #endif
 
 /* Liaison série avec la Raspberry pi */
-#define SERIAL_HL			Serial1
+#define SERIAL_HL			Serial
 #define SERIAL_HL_BAUDRATE	115200
 
 /* Liaison série avec les AX12 */

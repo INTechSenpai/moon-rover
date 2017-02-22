@@ -7,7 +7,7 @@
 #include "Log.h"
 
 
-#define TIMEOUT					10		// ms
+#define TIMEOUT					30		// ms
 #define STACK_SIZE				(UINT8_MAX + 1)
 #define RECEPTION_BUFFER_SIZE	(UINT8_MAX + 1)
 #define NB_ORDER				(UINT8_MAX + 1)
@@ -400,6 +400,7 @@ private:
 
 				std::vector<uint8_t> data = frame.getData();
 				longOrderList[frame.getOrder()]->launch(data);
+				data.clear();
 				Frame answerFrame(EXECUTION_BEGIN, frame.getID(), data);
 				sendFrame(answerFrame);
 				orderStack[frame.getID()].frame = answerFrame;

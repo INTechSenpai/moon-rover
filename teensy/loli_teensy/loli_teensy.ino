@@ -5,6 +5,7 @@
 */
 
 
+#include "BatterySensor.h"
 #include "ActuatorMgr.h"
 #include "ControlerNet.h"
 #include "SynchronousPWM.h"
@@ -56,6 +57,8 @@
 void setup()
 {
 	delay(500);
+	pinMode(PIN_DEL_STATUS_1, OUTPUT);
+	pinMode(PIN_DEL_STATUS_2, OUTPUT);
 }
 
 
@@ -78,8 +81,8 @@ void loop()
 	Wire.setClock(1500000);
 	SensorMgr & sensorMgr = SensorMgr::Instance();
 	//sensorMgr.powerOn();
-	uint32_t updatePattern[NB_SENSORS] = {};
-	sensorMgr.setUpdatePattern(updatePattern);
+	uint32_t updatePattern[NB_SENSORS] = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
+	//sensorMgr.setUpdatePattern(updatePattern);
 
 	DirectionController & directionController = DirectionController::Instance();
 	MotionControlSystem & motionControlSystem = MotionControlSystem::Instance();
@@ -91,6 +94,8 @@ void loop()
 	IntervalTimer synchronousPWM_timer;
 	synchronousPWM_timer.priority(250);
 	synchronousPWM_timer.begin(synchronousPWM_interrupt, 36); // 440Hz avec un pwm codé sur 6bits
+
+	BatterySensor & batterySensor = BatterySensor::Instance();
 
 	if (debug_serial_free)
 	{
@@ -174,11 +179,21 @@ void loop()
 		/* Mise à jour des capteurs */
 		sensorMgr.update();
 
+		/* Mise à jour du niveau de batterie */
+		batterySensor.update();
+
 		/* Vérification de la rapidité d'exécution */
-		checkSpeed(10000, 0);
+		//checkSpeed(10000, 0);
 
 		/* Print des logs */
 		motionControlSystem.logAllData();
+
+		//static uint32_t loli = 0;
+		//if (millis() - loli > 1000)
+		//{
+		//	loli = millis();
+		//	Serial.println("Alive");
+		//}
 	}
 }
 

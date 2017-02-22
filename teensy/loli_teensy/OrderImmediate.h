@@ -55,7 +55,7 @@ public:
 
 	virtual void execute(std::vector<uint8_t> & io)
 	{
-		Serial.println("Ping !");
+		//Serial.println("Ping !");
 		io.clear();
 	}
 };

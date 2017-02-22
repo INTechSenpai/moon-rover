@@ -9,6 +9,7 @@
 #include "SensorMgr.h"
 #include "ActuatorMgr.h"
 #include "pin_mapping.h"
+#include "Vutils.h"
 
 class OrderLong
 {
@@ -530,11 +531,25 @@ class Test_pwm : public OrderLong, public Singleton<Test_pwm>
 public:
 	Test_pwm() {}
 	void _launch(const std::vector<uint8_t> & input)
-	{}
+	{
+		motionControlSystem.enablePositionControl(false);
+		motionControlSystem.enableLeftSpeedControl(false);
+		motionControlSystem.enableRightSpeedControl(false);
+		motionControlSystem.enablePwmControl(true);
+		int arg = Vutils<ARG_SIZE>::vtof(input);
+		motionControlSystem.setPWM(arg);
+		beginTime = millis();
+	}
 	void onExecute(std::vector<uint8_t> & output)
-	{}
+	{
+		finished = millis() - beginTime > 2000;
+	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		motionControlSystem.setPWM(0);
+	}
+private:
+	uint32_t beginTime;
 };
 
 class Test_speed : public OrderLong, public Singleton<Test_speed>
@@ -542,23 +557,46 @@ class Test_speed : public OrderLong, public Singleton<Test_speed>
 public:
 	Test_speed() {}
 	void _launch(const std::vector<uint8_t> & input)
-	{}
+	{
+		motionControlSystem.enablePositionControl(false);
+		motionControlSystem.enableLeftSpeedControl(true);
+		motionControlSystem.enableRightSpeedControl(true);
+		motionControlSystem.enablePwmControl(true);
+		int arg = Vutils<ARG_SIZE>::vtof(input);
+		motionControlSystem.setSpeed(arg);
+		beginTime = millis();
+	}
 	void onExecute(std::vector<uint8_t> & output)
-	{}
+	{
+		finished = millis() - beginTime > 5000;
+	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		motionControlSystem.setSpeed(0);
+	}
+private:
+	uint32_t beginTime;
 };
 
 class Test_pos : public OrderLong, public Singleton<Test_pos>
 {
 public:
-	Test_pos() {}
 	void _launch(const std::vector<uint8_t> & input)
-	{}
+	{
+		motionControlSystem.enablePositionControl(true);
+		motionControlSystem.enableLeftSpeedControl(true);
+		motionControlSystem.enableRightSpeedControl(true);
+		motionControlSystem.enablePwmControl(true);
+		int arg = Vutils<ARG_SIZE>::vtof(input);
+		motionControlSystem.setTranslation(arg);
+	}
 	void onExecute(std::vector<uint8_t> & output)
-	{}
+	{
+		finished = motionControlSystem.isStopped();
+	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+	}
 };
 
 
