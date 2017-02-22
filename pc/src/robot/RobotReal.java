@@ -228,4 +228,15 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 		log.debug("Temps d'exécution de "+nom+" : "+(System.currentTimeMillis()-avant));
 	}
 
+	/**
+	 * Initialise les actionneurs pour le début du match
+	 * @throws InterruptedException 
+	 */
+	public void initActionneurs() throws InterruptedException
+	{
+		leveFilet();
+		fermeFilet();
+		rearme();
+	}
+
 }

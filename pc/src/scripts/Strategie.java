@@ -69,11 +69,6 @@ public class Strategie implements Service, CoreClass
 	 */
 	public void doWinMatch() throws InterruptedException
 	{
-		synchronized(state.robot)
-		{
-			if(!state.robot.isCinematiqueInitialised())
-				state.robot.wait();
-		}
 		Script s = strategie.getFirst();
 		try {
 			state.copyAStarCourbe(chrono); // TODO vérifier si la copie est correcte

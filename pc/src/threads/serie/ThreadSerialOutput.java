@@ -70,7 +70,9 @@ public class ThreadSerialOutput extends ThreadService implements Configurable, S
 			synchronized(input)
 			{
 				serie.sendOrder(new Order(OutOrder.PING));
+				log.debug("Ping envoyé : attente de réception");
 				input.wait(); // on est notifié dès qu'on reçoit quelque chose sur la série
+				log.debug("Pong reçu : la connexion série est OK");
 			}
 		
 			while(true)
