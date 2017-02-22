@@ -1,8 +1,11 @@
 #!/bin/sh
 sudo apt-get update -y
+sudo apt-get upgrade -y
+sudo apt-get dist-upgrade -y
 
 sudo apt-get install -y git \
-oracle-java7-jdk \
+oracle-java8-jdk \
+junit \
 librxtx-java \
 ant \
 hostapd \
@@ -11,9 +14,9 @@ vim
 
 # récupération du code
 git clone https://github.com/INTechSenpai/moon-rover.git
-git init --bare moon-rover-rpi.git
 
 # création du dépôt nu local
+git init --bare moon-rover-rpi.git
 cd moon-rover/pc
 git remote set-url origin ~/moon-rover-rpi.git
 git push
