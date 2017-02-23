@@ -24,9 +24,9 @@ git push
 # compilation
 ant
 
-# installation de la lib série (TODO)
-sudo cp lib/librxtxSerial.so $JAVA_HOME/jre/lib/i386/
-sudo cp lib/RXTXcomm.jar $JAVA_HOME/jre/lib/ext/
+# personnalisation
+sudo rm /etc/motd
+sudo ln -s /home/pi/moon-rover/pc/intro.txt /etc/motd
 
 # configuration hotspot wifi : https://frillip.com/using-your-raspberry-pi-3-as-a-wifi-access-point-with-hostapd/
 sudo cp pi/dhcpcd.conf /etc/dhcpcd.conf
@@ -42,5 +42,8 @@ sudo cp pi/dnsmasq.conf /etc/dnsmasq.conf
 sudo cp pi/sysctl.conf /etc/sysctl.conf
 sudo cp pi/iptables.ipv4.nat /etc/iptables.ipv4.nat
 sudo cp pi/rc.local /etc/rc.local
+
+# ajout de l'adresse statique dans hosts
+sudo sed -i s/127.0.1.1/172.24.1.1/g /etc/hosts
 
 sudo reboot
