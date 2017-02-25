@@ -51,7 +51,7 @@ void DynamixelDevice::communicationSpeed(uint32_t aSpeed)
 
 DynamixelStatus DynamixelDevice::init()
 {
-	mStatusReturnLevel=0;
+	//mStatusReturnLevel=0;
 	DynamixelStatus status=ping();
 	if(status!=DYN_STATUS_OK)
 	{
@@ -95,9 +95,20 @@ void DynamixelMotor::speed(int16_t aSpeed)
 	write(DYN_ADDRESS_GOAL_SPEED, aSpeed);
 }
 
-void DynamixelMotor::goalPosition(uint16_t aPosition)
+uint8_t DynamixelMotor::goalPosition(uint16_t aPosition)
 {
-	write(DYN_ADDRESS_GOAL_POSITION, aPosition);
+	return write(DYN_ADDRESS_GOAL_POSITION, aPosition);
+}
+
+uint8_t DynamixelMotor::goalPositionDegree(uint16_t posDeg)
+{
+	return goalPosition(posDeg * 3.41);
+}
+
+void DynamixelMotor::setId(uint8_t newId)
+{
+	write(DYN_ADDRESS_ID, newId);
+	mID = newId;
 }
 
 void DynamixelMotor::led(uint8_t aState)
@@ -108,7 +119,18 @@ void DynamixelMotor::led(uint8_t aState)
 uint16_t DynamixelMotor::currentPosition()
 {
 	uint16_t currentPosition;
-	read(DYN_ADDRESS_CURRENT_POSITION, currentPosition);
-	return currentPosition;
+	if (read(DYN_ADDRESS_CURRENT_POSITION, currentPosition) == 0)
+	{
+		return currentPosition;
+	}
+	else
+	{
+		return UINT16_MAX;
+	}
+}
+
+uint16_t DynamixelMotor::currentPositionDegree()
+{
+	return currentPosition() / 3.41;
 }
 

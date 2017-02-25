@@ -77,9 +77,11 @@ public:
 private:
 	
 	DynamixelInterface &mInterface;
-	DynamixelID mID;
 	uint8_t mStatusReturnLevel;
 	DynamixelStatus mStatus;
+
+protected:
+	DynamixelID mID;
 };
 
 
@@ -94,11 +96,15 @@ public:
 	
 	void enableTorque(bool aTorque=true);
 	void speed(int16_t aSpeed);
-	void goalPosition(uint16_t aPosition);
+	uint8_t goalPosition(uint16_t aPosition);
+	uint8_t goalPositionDegree(uint16_t posDeg);
+
+	void setId(uint8_t newId);
 	
 	void led(uint8_t aState);
 
 	uint16_t currentPosition();
+	uint16_t currentPositionDegree();
 };
 
 #endif

@@ -154,6 +154,7 @@ class AsciiSerial:
                             self.graphData[graph]['data'][lineName][0].append(values[ids[1]])
                             self.graphData[graph]['data'][lineName][1].append(values[ids[2]])
 
+
     def setEnabledChannels(self, competeConfig):
         newGraphsChannels = {'graph1': competeConfig['graph1']['channel'],
                            'graph2': competeConfig['graph2']['channel'],
@@ -210,8 +211,8 @@ class AsciiSerial:
         initData = self._shapeInitData[cData.shape]
         initDict = {}
         for name in cData.lineNames:
-            initDict[name] = initData
-        self.graphData[graph]['data'] = initDict
+            initDict[name] = copy.deepcopy(initData)
+        self.graphData[graph]['data'] = copy.deepcopy(initDict)
 
     def getLines_main(self):
         lines = copy.deepcopy(self.receivedLines_main)
@@ -235,18 +236,26 @@ class AsciiSerial:
         self.linesToSend = []
 
     def getAllData(self):
-        y = np.multiply(np.sin(np.linspace(0, 6 * np.pi, 100) + self.phase[self.index]), self.index/20)
-        y2 = np.multiply(np.sin(np.linspace(0, 6 * np.pi, 100) + (self.phase[self.index] + 0.1)), self.index/30)
-        self.index = int(math.fmod((self.index + 1), len(self.phase)))
-        return {'graph1': {'data': {'pwm': y, 'bite': y2}, 'shape': 'line'},
-                'graph2': {'data':
-                               {'traj': [[0,1,5*random.random(),9,12,6,3],[0,2,3,6*random.random(),7,2,-3]],
-                                'bite': [[0, 2, 4 * random.random(), 9, 12, 7, 3],
-                                         [3, 2, 3, 5 * random.random(), 3, 2, -1]]},
-                           'shape': 'scatter'},
-                'graph3': {'data': {}, 'shape': 'line'},
-                'graph4': {'data': {}, 'shape': 'line'}
-                }
+        # y = np.multiply(np.sin(np.linspace(0, 6 * np.pi, 100) + self.phase[self.index]), self.index/20)
+        # y2 = np.multiply(np.sin(np.linspace(0, 6 * np.pi, 100) + (self.phase[self.index] + 0.1)), self.index/30)
+        # self.index = int(math.fmod((self.index + 1), len(self.phase)))
+        # return {'graph1': {'data': {'pwm': y, 'bite': y2}, 'shape': 'line'},
+        #         'graph2': {'data':
+        #                        {'traj': [[0,1,5*random.random(),9,12,6,3],[0,2,3,6*random.random(),7,2,-3]],
+        #                         'bite': [[0, 2, 4 * random.random(), 9, 12, 7, 3],
+        #                                  [3, 2, 3, 5 * random.random(), 3, 2, -1]]},
+        #                    'shape': 'scatter'},
+        #         'graph3': {'data': {}, 'shape': 'line'},
+        #         'graph4': {'data': {}, 'shape': 'line'}
+        #         }
+
+        for graph in ['graph1', 'graph2', 'graph3', 'graph4']:
+            if self.graphData[graph]['data'] is not None:
+                for key, value in self.graphData[graph]['data'].items():
+                    if len(value) > 1000:
+                        value = value[len(value) - 1000:]
+                    #print(key, value)
+        return self.graphData
 
 
 class channelData:

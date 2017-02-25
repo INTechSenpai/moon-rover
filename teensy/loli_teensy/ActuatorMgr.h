@@ -40,6 +40,9 @@ public:
 	{
 		pinMode(PIN_VENTILATEUR, OUTPUT);
 		digitalWrite(PIN_VENTILATEUR, LOW);
+		ax12net.init();
+		ax12net.enableTorque();
+		ax12net.jointMode();
 	}
 
 	bool pullDownNet(bool launch)
@@ -121,14 +124,14 @@ private:
 	{
 		if (launch)
 		{
-			ax12net.goalPosition(goalPosition);
+			ax12net.goalPositionDegree(goalPosition);
 			lastCommunicationTime = millis();
 			return false;
 		}
 		else if (millis() - lastCommunicationTime > 100)
 		{
 			lastCommunicationTime = millis();
-			int32_t currentPosition = ax12net.currentPosition();
+			int32_t currentPosition = ax12net.currentPositionDegree();
 			return ABS(currentPosition - (int32_t)goalPosition) <= (int32_t)tolerance;
 		}
 	}

@@ -16,7 +16,7 @@
 #include "Log.h"
 
 /* Periode d'actualisation d'une requête AX12 (4 requêtes au total) */
-#define CONTROL_PERIOD	12500 // µs
+#define CONTROL_PERIOD	3125 // µs
 
 /* Angles des AX12 correspondant à des roues alignées vers l'avant */
 #define LEFT_ANGLE_ORIGIN	150
@@ -54,22 +54,30 @@ public:
 			updateAimAngles();
 			if (counter == 0)
 			{
-				leftMotor.goalPosition(aimLeftAngle);
+				leftMotor.goalPositionDegree(aimLeftAngle);
 				counter = 1;
 			}
 			else if (counter == 1)
 			{
-				rightMotor.goalPosition(aimRightAngle);
+				rightMotor.goalPositionDegree(aimRightAngle);
 				counter = 2;
 			}
 			else if (counter == 2)
 			{
-				realLeftAngle = leftMotor.currentPosition();
+				uint16_t angle = leftMotor.currentPositionDegree();
+				if (angle <= 300)
+				{
+					realLeftAngle = angle;
+				}
 				counter = 3;
 			}
 			else
 			{
-				realRightAngle = rightMotor.currentPosition();
+				uint16_t angle = rightMotor.currentPositionDegree();
+				if (angle <= 300)
+				{
+					realRightAngle = angle;
+				}
 				counter = 0;
 			}
 			updateRealCurvature();
@@ -105,7 +113,7 @@ public:
 
 	size_t printTo(Print& p) const
 	{
-		return p.printf("%g_%g_%u_%u", aimCurvature, realCurvature, realLeftAngle, realRightAngle);
+		return p.printf("%g_%g_%u_%u_%u_%u", aimCurvature, realCurvature, realLeftAngle, realRightAngle, aimLeftAngle, aimRightAngle);
 	}
 
 private:
@@ -119,7 +127,7 @@ private:
 		else
 		{
 			float leftAngle_rad = ((float)realLeftAngle - LEFT_ANGLE_ORIGIN) * PI / 180;
-			leftCurvature = 1 / (FRONT_BACK_WHEELS_DISTANCE / tanf(leftAngle_rad) + DIRECTION_ROTATION_POINT_Y);
+			leftCurvature = -1000 / (FRONT_BACK_WHEELS_DISTANCE / tanf(leftAngle_rad) + DIRECTION_ROTATION_POINT_Y);
 		}
 
 		if (realRightAngle == RIGHT_ANGLE_ORIGIN)
@@ -129,7 +137,7 @@ private:
 		else
 		{
 			float rightAngle_rad = ((float)realRightAngle - RIGHT_ANGLE_ORIGIN) * PI / 180;
-			rightCurvature = 1 / (FRONT_BACK_WHEELS_DISTANCE / tanf(rightAngle_rad) - DIRECTION_ROTATION_POINT_Y);
+			rightCurvature = -1000 / (FRONT_BACK_WHEELS_DISTANCE / tanf(rightAngle_rad) - DIRECTION_ROTATION_POINT_Y);
 		}
 		noInterrupts();
 		realCurvature = (leftCurvature + rightCurvature) / 2;
@@ -149,16 +157,24 @@ private:
 		}
 		else
 		{
-			float bendRadius;
-			bendRadius = 1 / aimCurvature_cpy;
-			leftAngle_rad = atan2f(FRONT_BACK_WHEELS_DISTANCE, bendRadius - DIRECTION_ROTATION_POINT_Y);
-			rightAngle_rad = atan2f(FRONT_BACK_WHEELS_DISTANCE, bendRadius + DIRECTION_ROTATION_POINT_Y);
+			float bendRadius; // en mm
+			bendRadius = (1 / aimCurvature_cpy) * 1000;
+			if (aimCurvature_cpy > 0)
+			{
+				leftAngle_rad = -atan2f(FRONT_BACK_WHEELS_DISTANCE, bendRadius - DIRECTION_ROTATION_POINT_Y);
+				rightAngle_rad = -atan2f(FRONT_BACK_WHEELS_DISTANCE, bendRadius + DIRECTION_ROTATION_POINT_Y);
+			}
+			else
+			{
+				leftAngle_rad = atan2f(FRONT_BACK_WHEELS_DISTANCE, DIRECTION_ROTATION_POINT_Y - bendRadius);
+				rightAngle_rad = atan2f(FRONT_BACK_WHEELS_DISTANCE, -DIRECTION_ROTATION_POINT_Y - bendRadius);
+			}
 		}
-		aimLeftAngle = (uint16_t)(LEFT_ANGLE_ORIGIN + leftAngle_rad * 180 / PI);
-		aimRightAngle = (uint16_t)(RIGHT_ANGLE_ORIGIN + rightAngle_rad * 180 / PI);
+		aimLeftAngle = (uint16_t)((LEFT_ANGLE_ORIGIN + leftAngle_rad * 180 / PI) + 0.5);
+		aimRightAngle = (uint16_t)((RIGHT_ANGLE_ORIGIN + rightAngle_rad * 180 / PI) + 0.5);
 	}
 	
-	/* Courburen, en m^-1 */
+	/* Courbure, en m^-1 */
 	volatile float aimCurvature;
 	volatile float realCurvature;
 

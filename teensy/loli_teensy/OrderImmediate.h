@@ -374,21 +374,55 @@ class Dir : public OrderImmediate, public Singleton<Dir>
 {
 public:
 	Dir() {}
-	virtual void execute(std::vector<uint8_t> & io) {}
+	virtual void execute(std::vector<uint8_t> & io) 
+	{
+		if (io.size() > 0)
+		{
+			float arg = Vutils<ARG_SIZE>::vtof(io);
+			Serial.printf("c= %g m^-1\n", arg);
+			directionController.setAimCurvature(arg);
+		}
+		else
+		{
+			Serial.println(directionController);
+		}
+	}
 };
 
 class Axg : public OrderImmediate, public Singleton<Axg>
 {
 public:
 	Axg() {}
-	virtual void execute(std::vector<uint8_t> & io) {}
+	virtual void execute(std::vector<uint8_t> & io) 
+	{
+		if (io.size() > 0)
+		{
+			uint16_t arg = Vutils<ARG_SIZE>::vtoi(io);
+			directionController.setLeftAngle(arg);
+		}
+		else
+		{
+			Serial.printf("axG= %u deg\n", directionController.getLeftAngle());
+		}
+	}
 };
 
 class Axd : public OrderImmediate, public Singleton<Axd>
 {
 public:
 	Axd() {}
-	virtual void execute(std::vector<uint8_t> & io) {}
+	virtual void execute(std::vector<uint8_t> & io) 
+	{
+		if (io.size() > 0)
+		{
+			uint16_t arg = Vutils<ARG_SIZE>::vtoi(io);
+			directionController.setRightAngle(arg);
+		}
+		else
+		{
+			Serial.printf("axD= %u deg\n", directionController.getRightAngle());
+		}
+	}
 };
 
 class Cod : public OrderImmediate, public Singleton<Cod>
