@@ -169,6 +169,7 @@ void loop()
 				{
 					orderMgr.terminateLongOrder(longOrder);
 					longOrderRunning = false;
+					Serial.printf("Fin ordre long 0x%x\n", longOrder);
 				}
 			}
 		}
@@ -183,7 +184,7 @@ void loop()
 		batterySensor.update();
 
 		/* Vérification de la rapidité d'exécution */
-		checkSpeed(10000, 0);
+		//checkSpeed(10000, 0);
 
 		/* Print des logs */
 		motionControlSystem.logAllData();

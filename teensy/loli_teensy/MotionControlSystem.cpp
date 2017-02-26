@@ -170,9 +170,21 @@ void MotionControlSystem::control()
 	}
 
 	if (leftSpeedControlled)
+	{
+		if (leftSpeedSetpoint == 0)
+		{
+			leftSpeedPID.resetIntegralError();
+		}
 		leftSpeedPID.compute();		// Actualise la valeur de 'leftPWM'
+	}
 	if (rightSpeedControlled)
+	{
+		if (rightSpeedSetpoint == 0)
+		{
+			rightSpeedPID.resetIntegralError();
+		}
 		rightSpeedPID.compute();	// Actualise la valeur de 'rightPWM'
+	}
 
 	if (pwmControlled)
 	{
@@ -517,9 +529,12 @@ void MotionControlSystem::stop()
 	previousMovingSpeedSetpoint = 0;
 	motor.runLeft(0);
 	motor.runRight(0);
-	translationPID.resetErrors();
-	leftSpeedPID.resetErrors();
-	rightSpeedPID.resetErrors();
+	translationPID.resetIntegralError();
+	translationPID.resetDerivativeError();
+	leftSpeedPID.resetIntegralError();
+	leftSpeedPID.resetDerivativeError();
+	rightSpeedPID.resetIntegralError();
+	rightSpeedPID.resetDerivativeError();
 	leftMotorError = 0;
 	rightMotorError = 0;
 	interrupts();
