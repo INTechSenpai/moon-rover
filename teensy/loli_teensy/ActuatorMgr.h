@@ -16,11 +16,11 @@
 
 
 // TODO : régler les angles de l'AX12 du filet
-#define	ANGLE_DOWN		0
-#define ANGLE_HALFWAY	0
-#define ANGLE_UP		0
+#define	ANGLE_DOWN		20
+#define ANGLE_HALFWAY	50
+#define ANGLE_UP		200
 
-#define TOLERANCE_ANGLE	10
+#define TOLERANCE_ANGLE	5
 
 #define FAN_SPIN_DURATION	5000 // ms
 
@@ -134,8 +134,11 @@ private:
 			int32_t currentPosition = ax12net.currentPositionDegree();
 			return ABS(currentPosition - (int32_t)goalPosition) <= (int32_t)tolerance;
 		}
+		else
+		{
+			return false;
+		}
 	}
-
 };
 
 
