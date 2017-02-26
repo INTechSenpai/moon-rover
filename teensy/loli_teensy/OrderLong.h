@@ -568,7 +568,7 @@ public:
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		finished = millis() - beginTime > 5000;
+		finished = millis() - beginTime > 2000;
 	}
 	void terminate(std::vector<uint8_t> & output)
 	{

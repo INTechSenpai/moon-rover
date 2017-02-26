@@ -24,7 +24,8 @@ public:
 		pre_error = 0;
 		derivative = 0;
 		integral = 0;
-		resetErrors();
+		resetIntegralError();
+		resetDerivativeError();
 	}
 
 	void compute() {
@@ -67,8 +68,10 @@ public:
 			(*output) = outMin;
 	}
 
-	void resetErrors() {
+	void resetDerivativeError() {
 		pre_error = 0;
+	}
+	void resetIntegralError() {
 		integral = 0;
 	}
 	float getKp() const {

@@ -595,7 +595,7 @@ public:
 			motionControlSystem.setRightMotorBmgrTunings(sensibility, arg);
 		}
 		motionControlSystem.getLeftMotorBmgrTunings(sensibility, responseTime);
-		Serial.printf("BlockingMgr : responseTime= %g\n", responseTime);
+		Serial.printf("BlockingMgr : responseTime= %d\n", responseTime);
 	}
 };
 

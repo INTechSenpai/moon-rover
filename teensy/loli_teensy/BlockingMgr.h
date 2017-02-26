@@ -133,7 +133,7 @@ private:
 	volatile int32_t const & speed;
 	
 	uint32_t epsilon;
-	uint32_t responseTime;
+	uint32_t responseTime; // ms
 
 	uint32_t beginTime;
 	bool stopped;
