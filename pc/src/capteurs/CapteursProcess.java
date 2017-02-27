@@ -85,7 +85,6 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 		this.container = container;
 		this.robot = robot;
 		this.serie = serie;
-		obstacleRobot = new ObstacleRobot(robot);
 	}
 	
 	@Override
@@ -98,6 +97,12 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 		imprecisionMaxAngle = config.getDouble(ConfigInfo.IMPRECISION_MAX_ORIENTATION);
 		bufferCorrection = new Cinematique[config.getInt(ConfigInfo.TAILLE_BUFFER_RECALAGE)];
 		peremptionCorrection = config.getInt(ConfigInfo.PEREMPTION_CORRECTION);
+
+		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
+		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
+		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+		obstacleRobot = new ObstacleRobot(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+
 		capteurs = new Capteur[nbCapteurs];
 				
 		try {

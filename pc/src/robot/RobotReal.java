@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import obstacles.types.ObstacleCircular;
 import obstacles.types.ObstacleRobot;
+import pathfinding.chemin.CheminPathfinding;
 import serie.BufferOutgoingOrder;
 import serie.Ticket;
 import serie.Ticket.State;
@@ -56,14 +57,16 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	private boolean print, printTrace;
 	private PrintBuffer buffer;
 	private BufferOutgoingOrder out;
+	private CheminPathfinding chemin;
     private boolean cinematiqueInitialised = false;
 
 	// Constructeur
-	public RobotReal(Log log, BufferOutgoingOrder out, PrintBuffer buffer)
+	public RobotReal(Log log, BufferOutgoingOrder out, PrintBuffer buffer, CheminPathfinding chemin)
  	{
 		super(log);
 		this.buffer = buffer;
 		this.out = out;
+		this.chemin = chemin;
 	}
 	
 	/*
@@ -146,7 +149,7 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	@Override
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
-		ObstacleRobot o = new ObstacleRobot(robot);
+		ObstacleRobot o = new ObstacleRobot(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 		o.update(cinematique.getPosition(), cinematique.orientationReelle);
 		o.print(g, f, robot);
 	}
