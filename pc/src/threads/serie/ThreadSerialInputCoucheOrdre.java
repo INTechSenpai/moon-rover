@@ -58,7 +58,6 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 	private BufferOutgoingOrder out;
 	
 	private boolean capteursOn = false;
-	private boolean matchDemarre = false;
 	private double lastVitesse = -1;
 	private boolean debugSerie;
 	private int nbCapteurs;
@@ -98,22 +97,17 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 					 */
 					if(paquet.origine == OutOrder.ASK_COLOR)
 					{
-						if(!matchDemarre)
+						if(data[0] == InOrder.COULEUR_ROBOT_DROITE.codeInt || data[0] == InOrder.COULEUR_ROBOT_GAUCHE.codeInt)
 						{
-							if(data[0] == InOrder.COULEUR_ROBOT_DROITE.codeInt || data[0] == InOrder.COULEUR_ROBOT_GAUCHE.codeInt)
-							{
-								paquet.ticket.set(Ticket.State.OK);
-								config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(data[0] == InOrder.COULEUR_ROBOT_GAUCHE.codeInt));
-							}
-							else
-							{
-								paquet.ticket.set(Ticket.State.KO);
-								if(data[0] != InOrder.COULEUR_ROBOT_INCONNU.codeInt)
-									log.critical("Code couleur inconnu : "+data[0]);
-							}
+							paquet.ticket.set(Ticket.State.OK);
+							config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(data[0] == InOrder.COULEUR_ROBOT_GAUCHE.codeInt));
 						}
 						else
-							log.critical("Le bas niveau a signalé un changement de couleur en plein match : "+data[0]);
+						{
+							paquet.ticket.set(Ticket.State.KO);
+							if(data[0] != InOrder.COULEUR_ROBOT_INCONNU.codeInt)
+								log.critical("Code couleur inconnu : "+data[0]);
+						}
 					}
 					
 					/**
@@ -183,7 +177,6 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 						{
 							config.set(ConfigInfo.DATE_DEBUT_MATCH, System.currentTimeMillis());
 							config.set(ConfigInfo.MATCH_DEMARRE, true);
-							matchDemarre = true;
 							paquet.ticket.set(Ticket.State.OK);
 						}
 					}
