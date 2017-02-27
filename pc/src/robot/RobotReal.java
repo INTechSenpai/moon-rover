@@ -17,11 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package robot;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.lang.reflect.InvocationTargetException;
 
-import obstacles.types.ObstacleCircular;
 import obstacles.types.ObstacleRobot;
 import pathfinding.chemin.CheminPathfinding;
 import serie.BufferOutgoingOrder;
