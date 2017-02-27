@@ -30,7 +30,6 @@ import robot.RobotColor;
 import robot.RobotReal;
 import serie.BufferIncomingOrder;
 import serie.BufferOutgoingOrder;
-import serie.Ticket;
 import serie.SerialProtocol.InOrder;
 import serie.SerialProtocol.OutOrder;
 import serie.trame.Paquet;
@@ -97,14 +96,19 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					 */
 					if(paquet.origine == OutOrder.ASK_COLOR)
 					{
-						if(data[0] == InOrder.COULEUR_ROBOT_DROITE.codeInt || data[0] == InOrder.COULEUR_ROBOT_GAUCHE.codeInt)
+						if(data[0] == InOrder.COULEUR_ROBOT_DROITE.codeInt)
 						{
-							paquet.ticket.set(Ticket.State.OK);
-							config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(data[0] == InOrder.COULEUR_ROBOT_GAUCHE.codeInt));
+							paquet.ticket.set(InOrder.COULEUR_ROBOT_DROITE);
+							config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(false));
+						}
+						else if(data[0] == InOrder.COULEUR_ROBOT_GAUCHE.codeInt)
+						{
+							paquet.ticket.set(InOrder.COULEUR_ROBOT_GAUCHE);
+							config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(true));
 						}
 						else
 						{
-							paquet.ticket.set(Ticket.State.KO);
+							paquet.ticket.set(InOrder.COULEUR_ROBOT_INCONNU);
 							if(data[0] != InOrder.COULEUR_ROBOT_INCONNU.codeInt)
 								log.critical("Code couleur inconnu : "+data[0]);
 						}
@@ -177,7 +181,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						{
 							config.set(ConfigInfo.DATE_DEBUT_MATCH, System.currentTimeMillis());
 							config.set(ConfigInfo.MATCH_DEMARRE, true);
-							paquet.ticket.set(Ticket.State.OK);
+							paquet.ticket.set(InOrder.LONG_ORDER_ACK);
 						}
 					}
 
@@ -191,10 +195,10 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						if(data[0] == InOrder.ARRET_URGENCE.codeInt)
 						{
 							log.critical("Arrêt d'urgence provenant du bas niveau !");
-							paquet.ticket.set(Ticket.State.KO);
+							paquet.ticket.set(InOrder.ARRET_URGENCE);
 						}
 						else
-							paquet.ticket.set(Ticket.State.OK);
+							paquet.ticket.set(InOrder.MATCH_FINI);
 
 						// On lance manuellement le thread d'arrêt
 						ThreadShutdown t;
@@ -218,13 +222,13 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					{
 
 						if(data[0] == InOrder.ROBOT_ARRIVE.codeInt)
-							paquet.ticket.set(Ticket.State.OK);
-						else
-						{
-							paquet.ticket.set(Ticket.State.KO);
-							if(data[0] != InOrder.ROBOT_BLOCAGE_INTERIEUR.codeInt && data[0] != InOrder.ROBOT_BLOCAGE_EXTERIEUR.codeInt && data[0] != InOrder.PLUS_DE_POINTS.codeInt)
-								log.critical("Code fin mouvement inconnu : "+data[0]);
-						}
+							paquet.ticket.set(InOrder.ROBOT_ARRIVE);
+						else if(data[0] == InOrder.ROBOT_BLOCAGE_INTERIEUR.codeInt)
+							paquet.ticket.set(InOrder.ROBOT_BLOCAGE_INTERIEUR);
+						else if(data[0] == InOrder.ROBOT_BLOCAGE_EXTERIEUR.codeInt)
+							paquet.ticket.set(InOrder.ROBOT_BLOCAGE_EXTERIEUR);
+						else if(data[0] == InOrder.PLUS_DE_POINTS.codeInt)
+							paquet.ticket.set(InOrder.PLUS_DE_POINTS);
 					}
 					
 					/*
@@ -232,88 +236,28 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					 */
 
 					/**
-					 * Filet en bas
+					 * Actionneurs sans code de retour
 					 */
-					else if(paquet.origine == OutOrder.PULL_DOWN_NET)
-						paquet.ticket.set(Ticket.State.OK);
-					
+					else if(paquet.origine == OutOrder.PULL_DOWN_NET
+							|| paquet.origine == OutOrder.PULL_UP_NET
+							|| paquet.origine == OutOrder.PUT_NET_HALFWAY
+							|| paquet.origine == OutOrder.OPEN_NET
+							|| paquet.origine == OutOrder.CLOSE_NET)
+						paquet.ticket.set(InOrder.LONG_ORDER_ACK);
+				
 					/**
-					 * Filet en haut
+					 * Actionneurs avec code de retour
 					 */
-					else if(paquet.origine == OutOrder.PULL_UP_NET)
-						paquet.ticket.set(Ticket.State.OK);
-					
-					/**
-					 * Filet à mi-chemin
-					 */
-					else if(paquet.origine == OutOrder.PUT_NET_HALFWAY)
-						paquet.ticket.set(Ticket.State.OK);
-					
-					/**
-					 * Le filet est ouvert
-					 */
-					else if(paquet.origine == OutOrder.OPEN_NET)
-						paquet.ticket.set(Ticket.State.OK);
-
-					/**
-					 * Le filet est fermé
-					 */
-					else if(paquet.origine == OutOrder.CLOSE_NET)
-						paquet.ticket.set(Ticket.State.OK);
-
-					/**
-					 * Bascule abaissée
-					 */
-					else if(paquet.origine == OutOrder.CROSS_FLIP_FLOP)
+					else if(paquet.origine == OutOrder.CROSS_FLIP_FLOP
+							|| paquet.origine == OutOrder.EJECT_LEFT_SIDE
+							|| paquet.origine == OutOrder.EJECT_RIGHT_SIDE
+							|| paquet.origine == OutOrder.REARM_LEFT_SIDE
+							|| paquet.origine == OutOrder.REARM_RIGHT_SIDE)
 					{
 						if(data[0] == InOrder.ACT_SUCCESS.codeInt)
-							paquet.ticket.set(Ticket.State.OK);
+							paquet.ticket.set(InOrder.ACT_SUCCESS);
 						else
-							paquet.ticket.set(Ticket.State.KO);
-					}
-
-					/**
-					 * Balles éjectées côté gauche
-					 */
-					else if(paquet.origine == OutOrder.EJECT_LEFT_SIDE)
-					{
-						if(data[0] == InOrder.ACT_SUCCESS.codeInt)
-							paquet.ticket.set(Ticket.State.OK);
-						else
-							paquet.ticket.set(Ticket.State.KO);
-					}
-
-					/**
-					 * Balles éjectées côté droit
-					 */
-					else if(paquet.origine == OutOrder.EJECT_RIGHT_SIDE)
-					{
-						if(data[0] == InOrder.ACT_SUCCESS.codeInt)
-							paquet.ticket.set(Ticket.State.OK);
-						else
-							paquet.ticket.set(Ticket.State.KO);
-					}
-					
-					/**
-					 * Côté gauche réarmé
-					 */
-					else if(paquet.origine == OutOrder.REARM_LEFT_SIDE)
-					{
-						if(data[0] == InOrder.ACT_SUCCESS.codeInt)
-							paquet.ticket.set(Ticket.State.OK);
-						else
-							paquet.ticket.set(Ticket.State.KO);
-					}
-					
-					/**
-					 * Côté droit réarmé
-					 */
-					else if(paquet.origine == OutOrder.REARM_RIGHT_SIDE)
-					{
-						if(data[0] == InOrder.ACT_SUCCESS.codeInt)
-							paquet.ticket.set(Ticket.State.OK);
-						else
-							paquet.ticket.set(Ticket.State.KO);
+							paquet.ticket.set(InOrder.ACT_FAILURE);
 					}
 					
 					/**

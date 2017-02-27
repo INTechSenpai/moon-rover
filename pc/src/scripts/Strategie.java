@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import container.Service;
 import container.dependances.CoreClass;
 import exceptions.PathfindingException;
+import exceptions.UnableToMoveException;
 import pathfinding.ChronoGameState;
 import pathfinding.PFInstruction;
 import pathfinding.PathCache;
@@ -72,6 +73,8 @@ public class Strategie implements Service, CoreClass
 			pathcache.sendPreparedPath();
 			state.robot.followTrajectory();
 		} catch (PathfindingException e) {
+			e.printStackTrace();
+		} catch (UnableToMoveException e) {
 			e.printStackTrace();
 		}
 		finally
