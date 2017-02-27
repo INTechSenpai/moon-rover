@@ -280,6 +280,17 @@ public class BufferOutgoingOrder implements Service, Configurable, SerialClass
 	}
 
 	/**
+	 * Initie le mouvement courbe
+	 */
+	public synchronized Ticket followTrajectory()
+	{
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(OutOrder.FOLLOW_TRAJECTORY, t));
+		notify();
+		return t;
+	}
+	
+	/**
 	 * Demande à être notifié de la fin du match
 	 */
 	public synchronized void startMatchChrono()

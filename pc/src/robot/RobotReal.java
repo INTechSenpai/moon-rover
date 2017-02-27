@@ -25,6 +25,7 @@ import obstacles.types.ObstacleCircular;
 import obstacles.types.ObstacleRobot;
 import serie.BufferOutgoingOrder;
 import serie.Ticket;
+import serie.Ticket.State;
 import config.Config;
 import config.ConfigInfo;
 import config.Configurable;
@@ -237,6 +238,24 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 		leveFilet();
 		fermeFilet();
 		rearme();
+	}
+
+	/**
+	 * Méthode bloquante qui suit une trajectoire précédemment envoyée
+	 * @throws InterruptedException
+	 */
+	public void followTrajectory() throws InterruptedException
+	{
+		Ticket t = out.followTrajectory();
+		State etat;
+		synchronized(t)
+		{
+			if(t.isEmpty())
+				t.wait();
+			etat = t.getAndClear();
+		}
+		if(etat != Ticket.State.OK) // TODO traitement haut niveau
+			log.critical("Erreur de mouvement !");
 	}
 
 }
