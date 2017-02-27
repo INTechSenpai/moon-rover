@@ -209,7 +209,10 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 			double deltaY = ClothoidesComputer.PRECISION_TRACE_MM * sin;
 			for(int i = 0; i < nbPoint; i++)
 				pointsAvancer[nbPoint-i-1].update(xFinal - i * deltaX, yFinal - i * deltaY, orientationGeometrique, marcheAvant, 0, vitesse);
+			for(int i = 0; i < nbPoint; i++)
+				out.add(pointsAvancer[i]);
 		}
+		
 		try {
 			chemin.add(out);
 		} catch (PathfindingException e) {
