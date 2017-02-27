@@ -20,10 +20,8 @@ package scripts;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import container.Container;
 import container.Service;
 import container.dependances.CoreClass;
-import exceptions.ContainerException;
 import exceptions.PathfindingException;
 import pathfinding.ChronoGameState;
 import pathfinding.PFInstruction;
@@ -47,7 +45,7 @@ public class Strategie implements Service, CoreClass
 	private LinkedList<Script> strategie = new LinkedList<Script>();
 	private PFInstruction inst;
 	
-	public Strategie(Log log, PathCache pathcache, Container container, RealGameState state, ChronoGameState chrono, ScriptManager scriptsm, PFInstruction inst)
+	public Strategie(Log log, PathCache pathcache, RealGameState state, ChronoGameState chrono, ScriptManager scriptsm, PFInstruction inst)
 	{
 		this.log = log;
 		this.pathcache = pathcache;
@@ -55,12 +53,8 @@ public class Strategie implements Service, CoreClass
 		this.chrono = chrono;
 		this.inst = inst;
 		HashMap<String, Script> scripts = scriptsm.getScripts();
-		try {
-			strategie.add(scripts.get(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE.toString()));
-			strategie.add(container.make(ScriptDeposeMinerai.class));
-		} catch (ContainerException e) {
-			e.printStackTrace();
-		}
+		strategie.add(scripts.get(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE.toString()));
+		strategie.add(new ScriptDeposeMinerai(log));
 	}
 	
 	/**
