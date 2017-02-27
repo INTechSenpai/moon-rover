@@ -23,7 +23,6 @@ import java.io.InputStream;
 import utils.Log;
 import config.Config;
 import config.ConfigInfo;
-import config.Configurable;
 import container.Service;
 import container.dependances.SerialClass;
 import exceptions.serie.MissingCharacterException;
@@ -36,7 +35,7 @@ import gnu.io.SerialPortEventListener;
  *
  */
 
-public class BufferIncomingBytes implements Service, SerialPortEventListener, Configurable, SerialClass
+public class BufferIncomingBytes implements Service, SerialPortEventListener, SerialClass
 {
 	private Log log;
 	
@@ -49,14 +48,9 @@ public class BufferIncomingBytes implements Service, SerialPortEventListener, Co
 	
 	private boolean debugSerieTrame;
 	
-	public BufferIncomingBytes(Log log)
+	public BufferIncomingBytes(Log log, Config config)
 	{
 		this.log = log;
-	}
-	
-	@Override
-	public void useConfig(Config config)
-	{
 		debugSerieTrame = config.getBoolean(ConfigInfo.DEBUG_SERIE_TRAME);
 	}
 	

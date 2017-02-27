@@ -19,7 +19,6 @@ package serie.trame;
 
 import config.Config;
 import config.ConfigInfo;
-import config.Configurable;
 import serie.Ticket;
 import serie.SerialProtocol.OutOrder;
 
@@ -29,7 +28,7 @@ import serie.SerialProtocol.OutOrder;
  *
  */
 
-public class Conversation implements Configurable
+public class Conversation
 {
 	private long deathDate; // date d'envoi + 2*timeout
 	private long resendDate; // date d'envoi + timeout
@@ -101,7 +100,6 @@ public class Conversation implements Configurable
 		return (int) (deathDate - System.currentTimeMillis());
 	}
 
-	@Override
 	public void useConfig(Config config)
 	{
 		timeout = config.getInt(ConfigInfo.SERIAL_TIMEOUT);

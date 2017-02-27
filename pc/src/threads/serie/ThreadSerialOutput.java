@@ -19,7 +19,6 @@ package threads.serie;
 
 import config.Config;
 import config.ConfigInfo;
-import config.Configurable;
 import container.dependances.SerialClass;
 import serie.BufferIncomingBytes;
 import serie.BufferOutgoingOrder;
@@ -35,7 +34,7 @@ import utils.Log;
  *
  */
 
-public class ThreadSerialOutput extends ThreadService implements Configurable, SerialClass
+public class ThreadSerialOutput extends ThreadService implements SerialClass
 {
 	protected Log log;
 	private SerieCoucheTrame serie;
@@ -45,12 +44,15 @@ public class ThreadSerialOutput extends ThreadService implements Configurable, S
 	private boolean debugSerie;
 	private boolean simuleSerie;
 	
-	public ThreadSerialOutput(Log log, SerieCoucheTrame serie, BufferOutgoingOrder data, BufferIncomingBytes input)
+	public ThreadSerialOutput(Log log, SerieCoucheTrame serie, BufferOutgoingOrder data, BufferIncomingBytes input, Config config)
 	{
 		this.log = log;
 		this.serie = serie;
 		this.data = data;
 		this.input = input;
+		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
+		sleep = config.getInt(ConfigInfo.SLEEP_ENTRE_TRAMES);
+		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
 	}
 
 	@Override
@@ -102,14 +104,6 @@ public class ThreadSerialOutput extends ThreadService implements Configurable, S
 		} catch (InterruptedException e) {
 			log.debug("Arrêt de "+Thread.currentThread().getName());
 		}
-	}
-	
-	@Override
-	public void useConfig(Config config)
-	{
-		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
-		sleep = config.getInt(ConfigInfo.SLEEP_ENTRE_TRAMES);
-		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
 	}
 
 }

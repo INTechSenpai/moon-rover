@@ -24,7 +24,6 @@ import java.util.List;
 
 import config.Config;
 import config.ConfigInfo;
-import config.Configurable;
 import container.Service;
 import container.dependances.SerialClass;
 import exceptions.serie.IncorrectChecksumException;
@@ -44,7 +43,7 @@ import utils.Log;
  *
  */
 
-public class SerieCoucheTrame implements Service, Configurable, SerialClass
+public class SerieCoucheTrame implements Service, SerialClass
 {	
 	/**
 	 * Toutes les conversations
@@ -83,13 +82,18 @@ public class SerieCoucheTrame implements Service, Configurable, SerialClass
 	 * @param log
 	 * @param serie
 	 */
-	public SerieCoucheTrame(Log log, SerieCouchePhysique serieOutput, BufferIncomingBytes serieInput)
+	public SerieCoucheTrame(Log log, SerieCouchePhysique serieOutput, BufferIncomingBytes serieInput, Config config)
 	{
 		this.log = log;
 		this.serieInput = serieInput;
 		this.serieOutput = serieOutput;
+		timeout = config.getInt(ConfigInfo.SERIAL_TIMEOUT);
+		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 		for(int i = 0; i < 256; i++)
+		{
 			conversations[i] = new Conversation(i);
+			conversations[i].useConfig(config);
+		}
 	}
 	
 	/**
@@ -318,15 +322,6 @@ public class SerieCoucheTrame implements Service, Configurable, SerialClass
 
 			return new IncomingFrame(code, id, checksum, longueur, message);
 		}
-	}
-	
-	@Override
-	public void useConfig(Config config)
-	{
-		timeout = config.getInt(ConfigInfo.SERIAL_TIMEOUT);
-		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
-		for(int i = 0; i < 256; i++)
-			conversations[i].useConfig(config);
 	}
 	
 	/**

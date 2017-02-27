@@ -27,7 +27,6 @@ import serie.SerialProtocol.OutOrder;
 import serie.trame.Order;
 import config.Config;
 import config.ConfigInfo;
-import config.Configurable;
 import container.Service;
 import container.dependances.SerialClass;
 import utils.Log;
@@ -43,15 +42,18 @@ import utils.Vec2RO;
  *
  */
 
-public class BufferOutgoingOrder implements Service, Configurable, SerialClass
+public class BufferOutgoingOrder implements Service, SerialClass
 {
 	protected Log log;
 	private byte prescaler;
 	private short sendPeriod;
 	
-	public BufferOutgoingOrder(Log log)
+	public BufferOutgoingOrder(Log log, Config config)
 	{
 		this.log = log;
+		sendPeriod = config.getShort(ConfigInfo.SENSORS_SEND_PERIOD);
+		prescaler = config.getByte(ConfigInfo.SENSORS_PRESCALER);
+		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 	}
 		
 	private volatile LinkedList<Order> bufferBassePriorite = new LinkedList<Order>();
@@ -310,15 +312,7 @@ public class BufferOutgoingOrder implements Service, Configurable, SerialClass
 		bufferBassePriorite.add(new Order(data, OutOrder.START_STREAM_ALL));
 		notify();
 	}
-	
-	@Override
-	public void useConfig(Config config)
-	{
-		sendPeriod = config.getShort(ConfigInfo.SENSORS_SEND_PERIOD);
-		prescaler = config.getByte(ConfigInfo.SENSORS_PRESCALER);
-		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
-	}
-	
+		
 	/**
 	 * Envoi de tous les arcs élémentaires d'un arc courbe
 	 * @0 arc

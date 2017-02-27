@@ -29,7 +29,6 @@ import robot.RobotReal;
 import serie.BufferOutgoingOrder;
 import config.Config;
 import config.ConfigInfo;
-import config.Configurable;
 import container.Container;
 import container.Service;
 import container.dependances.HighPFClass;
@@ -49,15 +48,13 @@ import utils.Vec2RW;
  *
  */
 
-public class CapteursProcess implements Service, Configurable, LowPFClass, HighPFClass
+public class CapteursProcess implements Service, LowPFClass, HighPFClass
 {
 	protected Log log;
 	private GridSpace gridspace;
 	private Table table;
 	private DStarLite dstarlite;
 	private CheminPathfinding chemin;
-	private PrintBuffer buffer;
-	private Container container;
 	private RobotReal robot;
 	private BufferOutgoingOrder serie;
 	
@@ -74,22 +71,16 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 	private int indexCorrection = 0;
 	private Cinematique[] bufferCorrection;
 	
-	public CapteursProcess(Container container, Log log, GridSpace gridspace, Table table, DStarLite dstarlite, CheminPathfinding chemin, PrintBuffer buffer, RobotReal robot, BufferOutgoingOrder serie)
+	public CapteursProcess(Container container, Log log, GridSpace gridspace, Table table, DStarLite dstarlite, CheminPathfinding chemin, PrintBuffer buffer, RobotReal robot, BufferOutgoingOrder serie, Config config)
 	{
 		this.table = table;
 		this.log = log;
 		this.gridspace = gridspace;
 		this.dstarlite = dstarlite;
 		this.chemin = chemin;
-		this.buffer = buffer;
-		this.container = container;
 		this.robot = robot;
 		this.serie = serie;
-	}
-	
-	@Override
-	public void useConfig(Config config)
-	{
+
 		rayonEnnemi = config.getInt(ConfigInfo.RAYON_ROBOT_ADVERSE);
 		distanceApproximation = config.getInt(ConfigInfo.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);		
 		nbCapteurs = CapteursRobot.values().length;
@@ -110,6 +101,7 @@ public class CapteursProcess implements Service, Configurable, LowPFClass, HighP
 			{
 				CapteursRobot c = CapteursRobot.values()[i];
 				capteurs[i] = container.make(c.classe, c.pos, c.angle, c.type, c.sureleve);
+				capteurs[i].useConfig(config);
 			}			
 		} catch(ContainerException e)
 		{

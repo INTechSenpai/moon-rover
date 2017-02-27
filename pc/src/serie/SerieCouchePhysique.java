@@ -31,7 +31,6 @@ import java.util.TooManyListenersException;
 
 import config.Config;
 import config.ConfigInfo;
-import config.Configurable;
 import container.Service;
 import container.dependances.SerialClass;
 import utils.Log;
@@ -42,7 +41,7 @@ import utils.Log;
  *
  */
 
-public class SerieCouchePhysique implements Service, Configurable, SerialClass
+public class SerieCouchePhysique implements Service, SerialClass
 {
 	private SerialPort serialPort;
 	protected Log log;
@@ -69,10 +68,18 @@ public class SerieCouchePhysique implements Service, Configurable, SerialClass
 	 * Constructeur pour la série de test
 	 * @param log
 	 */
-	public SerieCouchePhysique(Log log, BufferIncomingBytes buffer)
+	public SerieCouchePhysique(Log log, BufferIncomingBytes buffer, Config config)
 	{
 		this.log = log;
 		this.buffer = buffer;
+
+		portName = config.getString(ConfigInfo.SERIAL_PORT);
+		baudrate = config.getInt(ConfigInfo.BAUDRATE);
+		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
+		debugSerieTrame = config.getBoolean(ConfigInfo.DEBUG_SERIE_TRAME);
+		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
+		if(simuleSerie)
+			log.critical("SÉRIE SIMULÉE !");
 	}
 
 	/**
@@ -271,18 +278,6 @@ public class SerieCouchePhysique implements Service, Configurable, SerialClass
 			// On a retrouvé la série, on renvoie le message
 			communiquer(out);
 		}
-	}
-
-	@Override
-	public void useConfig(Config config)
-	{
-		portName = config.getString(ConfigInfo.SERIAL_PORT);
-		baudrate = config.getInt(ConfigInfo.BAUDRATE);
-		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
-		debugSerieTrame = config.getBoolean(ConfigInfo.DEBUG_SERIE_TRAME);
-		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
-		if(simuleSerie)
-			log.critical("SÉRIE SIMULÉE !");
 	}
 
 	public void init() throws InterruptedException

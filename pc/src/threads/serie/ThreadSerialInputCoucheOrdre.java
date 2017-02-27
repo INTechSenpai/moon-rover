@@ -22,7 +22,6 @@ import capteurs.SensorsData;
 import capteurs.SensorsDataBuffer;
 import config.Config;
 import config.ConfigInfo;
-import config.Configurable;
 import container.Container;
 import container.dependances.SerialClass;
 import exceptions.ContainerException;
@@ -46,7 +45,7 @@ import pathfinding.chemin.CheminPathfinding;
  *
  */
 
-public class ThreadSerialInputCoucheOrdre extends ThreadService implements Configurable, SerialClass
+public class ThreadSerialInputCoucheOrdre extends ThreadService implements SerialClass
 {
 	protected Log log;
 	protected Config config;
@@ -72,6 +71,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 		this.robot = robot;
 		this.chemin = chemin;
 		this.out = out;
+		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 	}
 
 	@Override
@@ -327,12 +327,6 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Confi
 		} catch (InterruptedException e) {
 			log.debug("Arrêt de "+Thread.currentThread().getName());
 		}
-	}
-	
-	@Override
-	public void useConfig(Config config)
-	{
-		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 	}
 
 }

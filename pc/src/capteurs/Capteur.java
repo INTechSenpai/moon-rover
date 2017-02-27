@@ -21,7 +21,6 @@ import java.awt.Graphics;
 
 import config.Config;
 import config.ConfigInfo;
-import config.Configurable;
 import graphic.Fenetre;
 import graphic.printable.Layer;
 import graphic.printable.Printable;
@@ -36,7 +35,7 @@ import utils.Vec2RW;
  *
  */
 
-public abstract class Capteur implements Printable, Configurable
+public abstract class Capteur implements Printable
 {
 	public boolean sureleve;
 	protected final Vec2RO positionRelative;
@@ -62,7 +61,6 @@ public abstract class Capteur implements Printable, Configurable
 		this.sureleve = sureleve;
 	}
 	
-	@Override
 	public void useConfig(Config config)
 	{
 		L = config.getInt(ConfigInfo.CENTRE_ROTATION_ROUE_X);
