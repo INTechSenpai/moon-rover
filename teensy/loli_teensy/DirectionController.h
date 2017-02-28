@@ -127,7 +127,7 @@ private:
 		else
 		{
 			float leftAngle_rad = ((float)realLeftAngle - LEFT_ANGLE_ORIGIN) * PI / 180;
-			leftCurvature = -1000 / (FRONT_BACK_WHEELS_DISTANCE / tanf(leftAngle_rad) + DIRECTION_ROTATION_POINT_Y);
+			leftCurvature = -1000 / (FRONT_BACK_WHEELS_DISTANCE / tanf(leftAngle_rad) - DIRECTION_ROTATION_POINT_Y);
 		}
 
 		if (realRightAngle == RIGHT_ANGLE_ORIGIN)
@@ -137,7 +137,7 @@ private:
 		else
 		{
 			float rightAngle_rad = ((float)realRightAngle - RIGHT_ANGLE_ORIGIN) * PI / 180;
-			rightCurvature = -1000 / (FRONT_BACK_WHEELS_DISTANCE / tanf(rightAngle_rad) - DIRECTION_ROTATION_POINT_Y);
+			rightCurvature = -1000 / (FRONT_BACK_WHEELS_DISTANCE / tanf(rightAngle_rad) + DIRECTION_ROTATION_POINT_Y);
 		}
 		noInterrupts();
 		realCurvature = (leftCurvature + rightCurvature) / 2;
