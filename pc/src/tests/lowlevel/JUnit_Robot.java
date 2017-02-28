@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import pathfinding.RealGameState;
+import pathfinding.SensFinal;
 import pathfinding.astar.AStarCourbe;
 import pathfinding.chemin.CheminPathfinding;
 import robot.Cinematique;
@@ -81,11 +82,33 @@ public class JUnit_Robot extends JUnit_Test {
     }
 	
 	@Test
+    public void test_follow_trajectory_courbe_arriere() throws Exception
+    {
+		Cinematique depart = new Cinematique(0, 1700, Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+		Cinematique c = new Cinematique(200, 1400, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		astar.initializeNewSearch(c, SensFinal.MARCHE_ARRIERE, true, state);
+		astar.process(chemin);
+		robot.followTrajectory();
+    }
+	
+	@Test
+    public void test_follow_trajectory_droite_arriere() throws Exception
+    {
+		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		robot.avance(-200);
+    }
+	
+	@Test
     public void test_follow_trajectory_droite() throws Exception
     {
 		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
-		robot.avance(1500);
+		robot.avance(200);
     }
 }
