@@ -97,8 +97,9 @@ public class PathCache implements Service, HighPFClass
 	 * @param s
 	 * @param shoot
 	 * @throws PathfindingException
+	 * @throws InterruptedException 
 	 */
-	public void prepareNewPathToScript(Script s, boolean shoot, ChronoGameState chrono) throws PathfindingException
+	public void prepareNewPathToScript(Script s, boolean shoot, ChronoGameState chrono) throws PathfindingException, InterruptedException
 	{
 		s.setUpCercleArrivee();
 		astar.initializeNewSearchToCircle(shoot, chrono);
@@ -117,10 +118,10 @@ public class PathCache implements Service, HighPFClass
 	}
 	
 	/**
-	 * Suit le chemin précédemment préparé
+	 * Envoie le chemin précédemment préparé
 	 * @throws InterruptedException 
 	 */
-	public void followPreparedPath() throws InterruptedException, PathfindingException
+	public void sendPreparedPath() throws InterruptedException, PathfindingException
 	{
 		/*
 		 * Normalement, cette exception ne peut survenir que lors d'une replanification (donc pas là)
@@ -135,7 +136,7 @@ public class PathCache implements Service, HighPFClass
 		}
 	}
 	
-	private void loadAll(ScriptManager smanager, ChronoGameState chrono, IteratorCheminPathfinding iterator)
+	private void loadAll(ScriptManager smanager, ChronoGameState chrono, IteratorCheminPathfinding iterator) throws InterruptedException
 	{
 		smanager.reinit();
 		boolean[] shoot = {true, false};
@@ -161,7 +162,7 @@ public class PathCache implements Service, HighPFClass
 					}
 					finally
 					{
-						astar.stopSearch();
+						astar.stopContinuousSearch();
 					}
 				}
 				if(path != null)
@@ -201,6 +202,6 @@ public class PathCache implements Service, HighPFClass
 	 */
 	public synchronized void stopSearch()
 	{
-		astar.stopSearch();
+		astar.stopContinuousSearch();
 	}
 }

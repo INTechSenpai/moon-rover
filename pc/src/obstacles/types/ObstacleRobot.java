@@ -39,7 +39,7 @@ public class ObstacleRobot extends ObstacleRectangular implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 
-	public ObstacleRobot(RobotReal robot)
+	public ObstacleRobot(int demieLargeurNonDeploye, int demieLongueurArriere, int demieLongueurAvant)
 	{
 		super(new Vec2RW());
 		c = Couleur.ROBOT.couleur;
@@ -49,10 +49,10 @@ public class ObstacleRobot extends ObstacleRectangular implements Serializable
 		coinHautGaucheRotate = new Vec2RW();
 		coinBasDroiteRotate = new Vec2RW();
 		coinHautDroiteRotate = new Vec2RW();
-		int a = robot.getDemieLargeurDroite();
-		int b = robot.getDemieLargeurGauche();
-		int c = robot.getDemieLongueurAvant();
-		int d = robot.getDemieLongueurArriere();
+		int a = demieLargeurNonDeploye;
+		int b = demieLargeurNonDeploye;
+		int c = demieLongueurAvant;
+		int d = demieLongueurArriere;
 		coinBasGauche = new Vec2RW(-d, -a);
 		coinHautGauche = new Vec2RW(-d, b);
 		coinBasDroite = new Vec2RW(c, -a);

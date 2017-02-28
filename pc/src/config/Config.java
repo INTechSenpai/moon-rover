@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import container.Service;
-import container.dependances.ConfigClass;
 import robot.RobotColor;
 import utils.Log;
 
@@ -36,7 +35,7 @@ import utils.Log;
  * @author pf
  *
  */
-public class Config implements Service, ConfigClass
+public class Config implements Service
 {	
 	private String name_config_file = "config.ini";
 	private volatile Properties properties = new Properties();
@@ -227,7 +226,7 @@ public class Config implements Service, ConfigClass
 				}
 				else if(!info.getDefaultValue().equals(properties.getProperty(info.name())))
 				{
-					System.out.println(info+" surchargé par config.ini ("+info.getDefaultValue()+" -> "+properties.getProperty(info.name())+")");
+//					System.out.println(info+" surchargé par config.ini ("+info.getDefaultValue()+" -> "+properties.getProperty(info.name())+")");
 					surcharged = true;
 				}
 			}
@@ -254,7 +253,6 @@ public class Config implements Service, ConfigClass
 			for(ConfigInfo info: ConfigInfo.values())
 				properties.setProperty(info.toString(), info.getDefaultValue().toString());
 		}
-		System.out.println();
 	}
 		
 	/**

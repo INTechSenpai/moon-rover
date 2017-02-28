@@ -27,6 +27,11 @@ import serie.trame.Order.Type;
 
 public class SerialProtocol {
 	
+	public enum State
+	{
+		OK, KO;
+	}
+
 	public enum OutOrder
 	{
 		/**
@@ -71,29 +76,34 @@ public class SerialProtocol {
 		 */
 	
 		// Réponse à "FollowTrajectory"
-		ROBOT_ARRIVE(0x00),
-		ROBOT_BLOCAGE_EXTERIEUR(0x01),
-		ROBOT_BLOCAGE_INTERIEUR(0x02),
-		PLUS_DE_POINTS(0x03),
+		ROBOT_ARRIVE(0x00, State.OK),
+		ROBOT_BLOCAGE_EXTERIEUR(0x01, State.KO),
+		ROBOT_BLOCAGE_INTERIEUR(0x02, State.KO),
+		PLUS_DE_POINTS(0x03, State.KO),
 		
 		// Couleur
-		COULEUR_ROBOT_DROITE(0x00),
-		COULEUR_ROBOT_GAUCHE(0x01),
-		COULEUR_ROBOT_INCONNU(0x02),
+		COULEUR_ROBOT_DROITE(0x00, State.OK),
+		COULEUR_ROBOT_GAUCHE(0x01, State.OK),
+		COULEUR_ROBOT_INCONNU(0x02, State.KO),
 
 		// Réponse à "StartMatchChrono"
-		MATCH_FINI(0x00),
-		ARRET_URGENCE(0x01),
+		MATCH_FINI(0x00, State.OK),
+		ARRET_URGENCE(0x01, State.KO),
 		
 		// Actionneurs
-		ACT_SUCCESS(0x00),
-		ACT_FAILURE(0x01);
+		ACT_SUCCESS(0x00, State.OK),
+		ACT_FAILURE(0x01, State.KO),
+		
+		SHORT_ORDER_ACK(-1, State.OK),
+		LONG_ORDER_ACK(-1, State.OK);
 		
 		public final int codeInt;
+		public final State etat;
 		
-		private InOrder(int code)
+		private InOrder(int code, State etat)
 		{
 			codeInt = code;
+			this.etat = etat;
 		}
 	}
 	

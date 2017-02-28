@@ -36,7 +36,6 @@ import serie.BufferOutgoingOrder;
 import utils.Log;
 import config.Config;
 import config.ConfigInfo;
-import config.Configurable;
 import container.Service;
 import container.dependances.HighPFClass;
 import exceptions.PathfindingException;
@@ -48,7 +47,7 @@ import exceptions.PathfindingException;
  *
  */
 
-public class CheminPathfinding implements Service, Printable, Configurable, HighPFClass, CheminPathfindingInterface
+public class CheminPathfinding implements Service, Printable, HighPFClass, CheminPathfindingInterface
 {
 	protected Log log;
 	private BufferOutgoingOrder out;
@@ -65,15 +64,25 @@ public class CheminPathfinding implements Service, Printable, Configurable, High
 	private int margeNecessaire, margeInitiale;
 	private boolean graphic;
 	
-	public CheminPathfinding(Log log, BufferOutgoingOrder out, ObstaclesIteratorPresent iterator, PrintBuffer buffer, RobotReal robot)
+	public CheminPathfinding(Log log, BufferOutgoingOrder out, ObstaclesIteratorPresent iterator, PrintBuffer buffer, Config config)
 	{
-		for(int i = 0; i < chemin.length; i++)
-			chemin[i] = new CinematiqueObs(robot);
 		this.log = log;
 		this.out = out;
 		this.iterObstacles = iterator;
 		iterChemin = new IteratorCheminPathfinding(this);
 		this.buffer = buffer;
+
+		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
+		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
+		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+		margeNecessaire = config.getInt(ConfigInfo.PF_MARGE_NECESSAIRE);
+		margeInitiale = config.getInt(ConfigInfo.PF_MARGE_INITIALE);
+		graphic = config.getBoolean(ConfigInfo.GRAPHIC_TRAJECTORY_FINAL);
+		if(graphic)
+			buffer.add(this);
+
+		for(int i = 0; i < chemin.length; i++)
+			chemin[i] = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 	}
 	
 	/**
@@ -133,16 +142,6 @@ public class CheminPathfinding implements Service, Printable, Configurable, High
 		return false;
 	}
 	
-	@Override
-	public void useConfig(Config config)
-	{
-		margeNecessaire = config.getInt(ConfigInfo.PF_MARGE_NECESSAIRE);
-		margeInitiale = config.getInt(ConfigInfo.PF_MARGE_INITIALE);
-		graphic = config.getBoolean(ConfigInfo.GRAPHIC_TRAJECTORY_FINAL);
-		if(graphic)
-			buffer.add(this);
-	}
-	
 	/**
 	 * Le chemin est-il vide ?
 	 * TODO inutilisé ?
@@ -184,6 +183,7 @@ public class CheminPathfinding implements Service, Printable, Configurable, High
 				int tmp = indexLast;
 				for(CinematiqueObs p : points)
 					add(p);
+				// TODO tmp - 1 ? pas de minus ?
 				if(isIndexValid(tmp - 1) && chemin[tmp - 1].enMarcheAvant == points.getFirst().enMarcheAvant)
 				{
 					points.addFirst(chemin[tmp - 1]); // on renvoie ce point afin qu'il ne soit plus un point d'arrêt

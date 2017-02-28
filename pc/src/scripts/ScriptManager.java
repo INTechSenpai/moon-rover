@@ -20,10 +20,9 @@ package scripts;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import container.Container;
 import container.Service;
 import container.dependances.CoreClass;
-import exceptions.ContainerException;
+import pathfinding.astar.arcs.CercleArrivee;
 import table.GameElementNames;
 import utils.Log;
 
@@ -39,17 +38,13 @@ public class ScriptManager implements Service, Iterator<Script>, CoreClass
 	private Iterator<Script> iter;
 	protected Log log;
 	
-	public ScriptManager(Log log, Container container)
+	public ScriptManager(Log log, CercleArrivee cercle)
 	{
 		this.log = log;
-		try {
-			for(GameElementNames n : GameElementNames.values())
-				if(n.toString().startsWith("MINERAI"))
-					scripts.put(n.toString(), container.make(ScriptCratere.class, n));
-			scripts.put("DEPOSE", container.make(ScriptDeposeMinerai.class));
-		} catch (ContainerException e) {
-			e.printStackTrace();
-		}
+		for(GameElementNames n : GameElementNames.values())
+			if(n.toString().startsWith("MINERAI"))
+				scripts.put(n.toString(), new ScriptCratere(log, cercle, n));
+		scripts.put("DEPOSE", new ScriptDeposeMinerai(log));
 	}
 	
 	public HashMap<String, Script> getScripts()

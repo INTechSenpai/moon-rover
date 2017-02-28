@@ -17,19 +17,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package robot;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedList;
 
-import obstacles.types.ObstacleCircular;
 import obstacles.types.ObstacleRobot;
+import pathfinding.astar.arcs.ClothoidesComputer;
+import pathfinding.chemin.CheminPathfinding;
 import serie.BufferOutgoingOrder;
+import serie.SerialProtocol;
+import serie.SerialProtocol.InOrder;
 import serie.Ticket;
 import config.Config;
 import config.ConfigInfo;
-import config.Configurable;
 import container.Service;
 import container.dependances.CoreClass;
+import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
 import utils.Log;
 import utils.Vec2RO;
@@ -46,7 +49,7 @@ import graphic.printable.Segment;
  *
  */
 
-public class RobotReal extends Robot implements Service, Printable, Configurable, CoreClass
+public class RobotReal extends Robot implements Service, Printable, CoreClass
 {
 	protected volatile boolean matchDemarre = false;
     protected volatile long dateDebutMatch;
@@ -55,14 +58,31 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	private boolean print, printTrace;
 	private PrintBuffer buffer;
 	private BufferOutgoingOrder out;
+	private CheminPathfinding chemin;
     private boolean cinematiqueInitialised = false;
+    private CinematiqueObs[] pointsAvancer = new CinematiqueObs[256];
 
 	// Constructeur
-	public RobotReal(Log log, BufferOutgoingOrder out, PrintBuffer buffer)
+	public RobotReal(Log log, BufferOutgoingOrder out, PrintBuffer buffer, CheminPathfinding chemin, Config config)
  	{
 		super(log);
 		this.buffer = buffer;
 		this.out = out;
+		this.chemin = chemin;
+
+		// c'est le LL qui fournira la position
+		cinematique = new Cinematique(0, 300, 0, true, 3, Speed.STANDARD.translationalSpeed);
+		print = config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS);
+		demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
+		demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
+		demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+		nbRetente = config.getInt(ConfigInfo.NB_TENTATIVES_ACTIONNEURS);
+		printTrace = config.getBoolean(ConfigInfo.GRAPHIC_TRACE_ROBOT);
+		if(print)
+			buffer.add(this);
+		
+		for(int i = 0; i < pointsAvancer.length; i++)
+			pointsAvancer[i] = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 	}
 	
 	/*
@@ -75,21 +95,6 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 		super.updateConfig(config);
 		dateDebutMatch = config.getLong(ConfigInfo.DATE_DEBUT_MATCH);
 		matchDemarre = config.getBoolean(ConfigInfo.MATCH_DEMARRE);
-	}
-	
-	@Override
-	public void useConfig(Config config)
-	{
-		// c'est le LL qui fournira la position
-		cinematique = new Cinematique(0, 300, 0, true, 3, Speed.STANDARD.translationalSpeed);
-		print = config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS);
-		demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
-		demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
-		demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-		nbRetente = config.getInt(ConfigInfo.NB_TENTATIVES_ACTIONNEURS);
-		printTrace = config.getBoolean(ConfigInfo.GRAPHIC_TRACE_ROBOT);
-		if(print)
-			buffer.add(this);
 	}
 			
 	public void setEnMarcheAvance(boolean enMarcheAvant)
@@ -145,7 +150,7 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	@Override
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
-		ObstacleRobot o = new ObstacleRobot(robot);
+		ObstacleRobot o = new ObstacleRobot(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 		o.update(cinematique.getPosition(), cinematique.orientationReelle);
 		o.print(g, f, robot);
 	}
@@ -181,9 +186,40 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	 */
 	
 	@Override
-	public void avance(double distance) throws UnableToMoveException
+	public void avance(double distance) throws UnableToMoveException, InterruptedException
 	{
-		// TODO
+		LinkedList<CinematiqueObs> out = new LinkedList<CinematiqueObs>();
+		double cos = Math.cos(cinematique.orientationReelle);
+		double sin = Math.sin(cinematique.orientationReelle);
+		int nbPoint = (int) Math.round(distance / ClothoidesComputer.PRECISION_TRACE_MM);
+		double xFinal = cinematique.position.getX()+distance*cos;
+		double yFinal = cinematique.position.getY()+distance*sin;
+		boolean marcheAvant = distance > 0;
+		double orientationGeometrique = marcheAvant ? cinematique.orientationReelle : -cinematique.orientationReelle;
+		double vitesse = marcheAvant ? Speed.STANDARD.translationalSpeed : Speed.MARCHE_ARRIERE.translationalSpeed;
+		if(nbPoint == 0)
+		{
+			// Le point est vraiment tout proche
+			pointsAvancer[0].update(xFinal, yFinal, orientationGeometrique, marcheAvant, 0, vitesse);
+			out.add(pointsAvancer[0]);
+		}
+		else
+		{
+			double deltaX = ClothoidesComputer.PRECISION_TRACE_MM * cos;
+			double deltaY = ClothoidesComputer.PRECISION_TRACE_MM * sin;
+			for(int i = 0; i < nbPoint; i++)
+				pointsAvancer[nbPoint-i-1].update(xFinal - i * deltaX, yFinal - i * deltaY, orientationGeometrique, marcheAvant, 0, vitesse);
+			for(int i = 0; i < nbPoint; i++)
+				out.add(pointsAvancer[i]);
+		}
+		
+		try {
+			chemin.add(out);
+		} catch (PathfindingException e) {
+			// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de 5m
+			e.printStackTrace();
+		}
+		followTrajectory();
 	}
 	
 	/*
@@ -198,7 +234,7 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 	@Override
 	protected void bloque(String nom, Object... param) throws InterruptedException
 	{
-		Ticket.State etat;
+		SerialProtocol.State etat;
 		Ticket t = null;
 		Class<?>[] paramClasses = null;
 		if(param.length > 0)
@@ -215,16 +251,11 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 				e.printStackTrace();
 			}
-			synchronized(t)
-			{
-				if(t.isEmpty())
-					t.wait();
-				etat = t.getAndClear();
-			}
+			etat = t.attendStatus().etat;
 			nbEssai--;
-			if(etat == Ticket.State.KO)
+			if(etat == SerialProtocol.State.KO)
 				log.warning("Problème pour l'actionneur "+nom+" : on "+(nbEssai >= 0 ? "retente." : "abandonne."));
-		} while(nbEssai >= 0 && etat == Ticket.State.KO);
+		} while(nbEssai >= 0 && etat == SerialProtocol.State.KO);
 		log.debug("Temps d'exécution de "+nom+" : "+(System.currentTimeMillis()-avant));
 	}
 
@@ -237,6 +268,22 @@ public class RobotReal extends Robot implements Service, Printable, Configurable
 		leveFilet();
 		fermeFilet();
 		rearme();
+	}
+
+	/**
+	 * Méthode bloquante qui suit une trajectoire précédemment envoyée
+	 * @throws InterruptedException
+	 * @throws UnableToMoveException 
+	 */
+	public void followTrajectory() throws InterruptedException, UnableToMoveException
+	{
+		Ticket t = out.followTrajectory();
+		InOrder i = t.attendStatus();
+		if(i == InOrder.ROBOT_BLOCAGE_EXTERIEUR || i == InOrder.ROBOT_BLOCAGE_INTERIEUR)
+		{
+			log.critical("Erreur : "+i);
+			throw new UnableToMoveException();
+		}
 	}
 
 }

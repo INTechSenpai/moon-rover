@@ -36,10 +36,8 @@ import java.util.Stack;
 
 import config.Config;
 import config.ConfigInfo;
-import config.Configurable;
 import config.DynamicConfigurable;
 import container.Service;
-import container.dependances.ConfigClass;
 import container.dependances.CoreClass;
 import container.dependances.GUIClass;
 import container.dependances.HighPFClass;
@@ -63,7 +61,7 @@ import threads.ThreadShutdown;
  * 
  * @author pf
  */
-public class Container implements Service, Configurable
+public class Container implements Service
 {
 	// liste des services déjà instanciés. Contient au moins Config et Log. Les autres services appelables seront présents quand ils auront été appelés
 	private HashMap<String, Service> instanciedServices = new HashMap<String, Service>();
@@ -130,7 +128,6 @@ public class Container implements Service, Configurable
 		log.debug("Fermeture du log");
 		log.close();
 		nbInstances--;
-		System.out.println();
 		printMessage("outro.txt");
 		
 		if(!threadError.isEmpty())
@@ -170,7 +167,6 @@ public class Container implements Service, Configurable
 		List<String> classesBothPF = new ArrayList<String>();
 		List<String> classesCore = new ArrayList<String>();
 		List<String> classesGUI = new ArrayList<String>();
-		List<String> classesConfig = new ArrayList<String>();
 		List<String> classesAutres = new ArrayList<String>();
 
 		for(Class<? extends Service> classe : grapheDep.keySet())
@@ -193,8 +189,6 @@ public class Container implements Service, Configurable
 				classesGUI.add(nom);
 			else if(LowPFClass.class.isAssignableFrom(classe))
 				classesLowPF.add(nom);
-			else if(ConfigClass.class.isAssignableFrom(classe))
-				classesConfig.add(nom);
 			else if(CoreClass.class.isAssignableFrom(classe))
 				classesCore.add(nom);				
 			else
@@ -227,12 +221,6 @@ public class Container implements Service, Configurable
 			fw.write("subgraph clusterSerie {\n");
 			fw.write("label = \"Série\";\n");
 			for(String s : classesSerie)					
-				fw.write(s+";\n");
-			fw.write("}\n\n");
-			
-			fw.write("subgraph clusterConfig {\n");
-			fw.write("label = \"Config\";\n");
-			for(String s : classesConfig)					
 				fw.write(s+";\n");
 			fw.write("}\n\n");
 			
@@ -289,14 +277,14 @@ public class Container implements Service, Configurable
 		mainThread =  Thread.currentThread();
 		Thread.currentThread().setName("ThreadPrincipal");
 
-		log = new Log();
-		config = new Config();
-		log.useConfig(config);
-
 		/**
 		 * Affichage d'un petit message de bienvenue
 		 */
 		printMessage("intro.txt");
+
+		log = new Log();
+		config = new Config();
+		log.useConfig(config);
 		
 		/**
 		 * Affiche la version du programme (dernier commit et sa branche)
@@ -339,7 +327,7 @@ public class Container implements Service, Configurable
 
 		// Le container est aussi un service
 		instanciedServices.put(getClass().getSimpleName(), this);
-		useConfig(config);
+		showGraph = config.getBoolean(ConfigInfo.GENERATE_DEPENDENCY_GRAPH);
 	
 		if(showGraph)
 			log.warning("Le graphe de dépendances va être généré !");
@@ -347,9 +335,6 @@ public class Container implements Service, Configurable
 		Obstacle.set(log, getService(PrintBuffer.class));
 		Obstacle.useConfig(config);
 		ArcCourbe.useConfig(config);
-
-		if(showGraph)
-			grapheDep.put(Config.class, new HashSet<String>());
 
 		startAllThreads();
 
@@ -359,7 +344,7 @@ public class Container implements Service, Configurable
 		try {
 			Runtime.getRuntime().addShutdownHook(getService(ThreadShutdown.class));
 		} catch (ContainerException e) {
-			log.critical(e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -443,7 +428,13 @@ public class Container implements Service, Configurable
 				}
 			}
 			else if(classe.getConstructors().length == 0)
-				throw new ContainerException(classe.getSimpleName()+" n'a aucun constructeur !");
+			{
+				String out = "";
+				for(String s : stack)
+					out += s + " -> ";
+				out += classe.getSimpleName();
+				throw new ContainerException(classe.getSimpleName()+" n'a aucun constructeur ! "+out);
+			}
 			else
 				constructeur = (Constructor<S>) classe.getConstructors()[0];
 			
@@ -452,7 +443,7 @@ public class Container implements Service, Configurable
 			/*
 			 * Récupération du graphe de dépendances
 			 */
-			if(showGraph && Service.class.isAssignableFrom(classe) && !classe.equals(Log.class) && !classe.equals(PrintBuffer.class))
+			if(showGraph && Service.class.isAssignableFrom(classe) && !classe.equals(Log.class) && !classe.equals(Config.class) && !classe.equals(PrintBuffer.class))
 			{
 				Set<String> enf = grapheDep.get(classe);
 				if(enf == null)
@@ -463,7 +454,7 @@ public class Container implements Service, Configurable
 				for(int i = 0; i < param.length - extraParam.length; i++)
 				{
 					String fils = param[i].getSimpleName();
-					if(!param[i].equals(Log.class) && !param[i].equals(PrintBuffer.class) && !param[i].equals(Container.class) && Service.class.isAssignableFrom(param[i]))
+					if(!param[i].equals(Log.class) && !param[i].equals(PrintBuffer.class) && !param[i].equals(Config.class) && !param[i].equals(Container.class) && Service.class.isAssignableFrom(param[i]))
 						enf.add(fils);
 				}				
 			}
@@ -489,8 +480,6 @@ public class Container implements Service, Configurable
 			/**
 			 * Mise à jour de la config
 			 */
-			if(config != null && Configurable.class.isAssignableFrom(classe))
-				((Configurable) s).useConfig(config);
 			if(DynamicConfigurable.class.isAssignableFrom(classe))
 			{
 				synchronized(dynaConf)
@@ -524,7 +513,7 @@ public class Container implements Service, Configurable
 			instanciedServices.remove(n.c.getSimpleName());
 			getService(n.c).start(); // et on le redémarre
 		} catch (ContainerException e) {
-			log.critical(e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -538,7 +527,7 @@ public class Container implements Service, Configurable
 			try {
 				getService(n.c).start();
 			} catch (ContainerException e) {
-				log.critical(e);
+				e.printStackTrace();
 			}
 		}
 	}
@@ -575,12 +564,6 @@ public class Container implements Service, Configurable
 		} catch (IOException e) {
 			System.err.println(e); // peut-être que log n'est pas encore démarré…
 		}
-	}
-
-	@Override
-	public void useConfig(Config config)
-	{
-		showGraph = config.getBoolean(ConfigInfo.GENERATE_DEPENDENCY_GRAPH);
 	}
 	
 }

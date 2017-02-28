@@ -25,6 +25,7 @@ import java.util.Stack;
 
 import memory.NodeMM;
 import memory.CinemObsMM;
+import pathfinding.ChronoGameState;
 import pathfinding.DirectionStrategy;
 import pathfinding.GameState;
 import pathfinding.RealGameState;
@@ -38,7 +39,6 @@ import pathfinding.dstarlite.DStarLite;
 import pathfinding.dstarlite.gridspace.PointGridSpace;
 import config.Config;
 import config.ConfigInfo;
-import config.Configurable;
 import container.Service;
 import container.dependances.HighPFClass;
 import exceptions.PathfindingException;
@@ -55,7 +55,7 @@ import utils.Log;
  *
  */
 
-public class AStarCourbe implements Service, Configurable, HighPFClass
+public class AStarCourbe implements Service, HighPFClass
 {
 	protected Log log;
 	private ArcManager arcmanager;
@@ -104,18 +104,26 @@ public class AStarCourbe implements Service, Configurable, HighPFClass
 	/**
 	 * Constructeur du AStarCourbe
 	 */
-	public AStarCourbe(Log log, DStarLite dstarlite, ArcManager arcmanager, RealGameState state, CheminPathfinding chemin, NodeMM memorymanager, CinemObsMM rectMemory, PrintBuffer buffer, AStarCourbeNode depart, CercleArrivee cercle)
+	public AStarCourbe(Log log, DStarLite dstarlite, ArcManager arcmanager, RealGameState state, CheminPathfinding chemin, NodeMM memorymanager, CinemObsMM rectMemory, PrintBuffer buffer, CercleArrivee cercle, ChronoGameState chrono, Config config)
 	{
 		this.log = log;
 		this.arcmanager = arcmanager;
 		this.state = state;
 		this.memorymanager = memorymanager;
 		this.realChemin = chemin;
-		this.depart = depart;
 		this.dstarlite = dstarlite;
 		this.cinemMemory = rectMemory;
 		this.buffer = buffer;
 		this.cercle = cercle;
+		graphicTrajectory = config.getBoolean(ConfigInfo.GRAPHIC_TRAJECTORY);
+		graphicTrajectoryAll = config.getBoolean(ConfigInfo.GRAPHIC_TRAJECTORY_ALL);
+		graphicDStarLite = config.getBoolean(ConfigInfo.GRAPHIC_D_STAR_LITE_FINAL);
+		dureeMaxPF = config.getInt(ConfigInfo.DUREE_MAX_RECHERCHE_PF);
+		tailleFaisceau = config.getInt(ConfigInfo.TAILLE_FAISCEAU_PF);
+		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
+		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
+		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+		this.depart = new AStarCourbeNode(chrono, demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 	}
 	
 	/**
@@ -123,8 +131,9 @@ public class AStarCourbe implements Service, Configurable, HighPFClass
 	 * @param depart
 	 * @return
 	 * @throws PathfindingException 
+	 * @throws InterruptedException 
 	 */
-	public final void process(CheminPathfindingInterface chemin) throws PathfindingException
+	public final void process(CheminPathfindingInterface chemin) throws PathfindingException, InterruptedException
 	{
 		trajetDeSecours = null;
 		depart.parent = null;
@@ -331,16 +340,6 @@ public class AStarCourbe implements Service, Configurable, HighPFClass
 		}
 		chemin.add(trajectory);
 	}
-
-	@Override
-	public void useConfig(Config config)
-	{
-		graphicTrajectory = config.getBoolean(ConfigInfo.GRAPHIC_TRAJECTORY);
-		graphicTrajectoryAll = config.getBoolean(ConfigInfo.GRAPHIC_TRAJECTORY_ALL);
-		graphicDStarLite = config.getBoolean(ConfigInfo.GRAPHIC_D_STAR_LITE_FINAL);
-		dureeMaxPF = config.getInt(ConfigInfo.DUREE_MAX_RECHERCHE_PF);
-		tailleFaisceau = config.getInt(ConfigInfo.TAILLE_FAISCEAU_PF);
-	}
 				
 	/**
 	 * Valeurs par défaut : DirectionStrategy.FASTEST
@@ -402,8 +401,9 @@ public class AStarCourbe implements Service, Configurable, HighPFClass
 	 * S'il n'y avait aucun recherche en cours, on ignore.
 	 * @param shoot
 	 * @throws PathfindingException
+	 * @throws InterruptedException 
 	 */
-	public synchronized void updatePath(boolean shoot) throws PathfindingException
+	public synchronized void updatePath(boolean shoot) throws PathfindingException, InterruptedException
 	{
 		if(!rechercheEnCours)
 		{
@@ -438,11 +438,11 @@ public class AStarCourbe implements Service, Configurable, HighPFClass
 	/**
 	 * Le chemin a été entièrement parcouru.
 	 */
-	public synchronized void stopSearch()
+	public synchronized void stopContinuousSearch()
 	{
 		rechercheEnCours = false;
 		buffer.clearSupprimables();
-		dstarlite.stopSearch();
+		dstarlite.stopContinuousSearch();
 	}
 	
 }

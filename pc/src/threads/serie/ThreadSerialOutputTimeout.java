@@ -19,7 +19,6 @@ package threads.serie;
 
 import config.Config;
 import config.ConfigInfo;
-import config.Configurable;
 import container.dependances.SerialClass;
 import serie.SerieCoucheTrame;
 import threads.ThreadService;
@@ -31,16 +30,17 @@ import utils.Log;
  *
  */
 
-public class ThreadSerialOutputTimeout extends ThreadService implements Configurable, SerialClass
+public class ThreadSerialOutputTimeout extends ThreadService implements SerialClass
 {
 	protected Log log;
 	private SerieCoucheTrame serie;
 	private int sleep;
 	
-	public ThreadSerialOutputTimeout(Log log, SerieCoucheTrame serie)
+	public ThreadSerialOutputTimeout(Log log, SerieCoucheTrame serie, Config config)
 	{
 		this.log = log;
 		this.serie = serie;
+		sleep = config.getInt(ConfigInfo.SLEEP_ENTRE_TRAMES);
 	}
 
 	@Override
@@ -68,12 +68,6 @@ public class ThreadSerialOutputTimeout extends ThreadService implements Configur
 		} catch (InterruptedException e) {
 			log.debug("Arrêt de "+Thread.currentThread().getName());
 		}
-	}
-	
-	@Override
-	public void useConfig(Config config)
-	{
-		sleep = config.getInt(ConfigInfo.SLEEP_ENTRE_TRAMES);
 	}
 
 }

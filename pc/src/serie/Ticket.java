@@ -17,6 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package serie;
 
+import serie.SerialProtocol.InOrder;
+
 /**
  * Un ticket. Tu tires un numéro et tu attends ton tour.
  * Utilisé par la série pour notifier des infos.
@@ -26,28 +28,23 @@ package serie;
 
 public class Ticket
 {
-	public enum State
-	{
-		OK, KO;
-	}
-
-	private volatile State type;
+	private volatile InOrder order;
 	
-	public synchronized State getAndClear()
+	private synchronized InOrder getAndClear()
 	{
-		State out = type;
-		type = null;
+		InOrder out = order;
+		order = null;
 		return out;
 	}
 	
 	public synchronized boolean isEmpty()
 	{
-		return type == null;
+		return order == null;
 	}
 	
-	public synchronized void set(State type)
+	public synchronized void set(InOrder order)
 	{
-		this.type = type;
+		this.order = order;
 		notify();
 	}
 	
@@ -56,7 +53,7 @@ public class Ticket
 	 * @return
 	 * @throws InterruptedException
 	 */
-    public synchronized State attendStatus() throws InterruptedException
+    public synchronized InOrder attendStatus() throws InterruptedException
     {
 		if(isEmpty())
 			wait();
