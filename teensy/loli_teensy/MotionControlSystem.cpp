@@ -250,8 +250,8 @@ void MotionControlSystem::updateSpeedAndPosition()
 
 	// Mise à jour de la position et de l'orientattion
 	deltaTranslation = ((deltaLeftTicks + deltaRightTicks) / 2);
-	deltaTranslation_mm = deltaTranslation * TICK_TO_MM;
-	half_deltaRotation_rad = ((deltaRightTicks - deltaLeftTicks) / 4) * TICK_TO_RADIANS;
+	deltaTranslation_mm = (float)deltaTranslation * TICK_TO_MM;
+	half_deltaRotation_rad = (((float)deltaRightTicks - (float)deltaLeftTicks) / 4) * TICK_TO_RADIANS;
 	currentAngle = position.orientation + half_deltaRotation_rad;
 	position.setOrientation(position.orientation + half_deltaRotation_rad * 2);
 	corrector = 1 - square(half_deltaRotation_rad) / 6;
