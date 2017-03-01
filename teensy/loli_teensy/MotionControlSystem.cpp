@@ -215,13 +215,13 @@ void MotionControlSystem::updateSpeedAndPosition()
 		deltaLeftMotorTicks = 0,
 		deltaRightMotorTicks = 0,
 		deltaLeftTicks = 0,
-		deltaRightTicks = 0,
-		deltaTranslation = 0;
+		deltaRightTicks = 0;
 	static float
 		deltaTranslation_mm = 0,
 		half_deltaRotation_rad = 0,
 		currentAngle = 0,
-		corrector = 1;
+		corrector = 1,
+		deltaTranslation = 0;
 
 	// Récupération des données des encodeurs
 	leftMotorTicks = leftMotorEncoder.read() * FRONT_TICK_TO_TICK;
@@ -249,17 +249,19 @@ void MotionControlSystem::updateSpeedAndPosition()
 	currentRightSpeed = averageRightSpeed.value();
 
 	// Mise à jour de la position et de l'orientattion
-	deltaTranslation = ((deltaLeftTicks + deltaRightTicks) / 2);
-	deltaTranslation_mm = (float)deltaTranslation * TICK_TO_MM;
+	deltaTranslation = ((float)deltaLeftTicks + (float)deltaRightTicks) / 2;
+	deltaTranslation_mm = deltaTranslation * TICK_TO_MM;
 	half_deltaRotation_rad = (((float)deltaRightTicks - (float)deltaLeftTicks) / 4) * TICK_TO_RADIANS;
 	currentAngle = position.orientation + half_deltaRotation_rad;
 	position.setOrientation(position.orientation + half_deltaRotation_rad * 2);
-	corrector = 1 - square(half_deltaRotation_rad) / 6;
-	position.x += corrector * deltaTranslation_mm * cosf(currentAngle);
-	position.y += corrector * deltaTranslation_mm * sinf(currentAngle);
+	//corrector = 1 - square(half_deltaRotation_rad) / 6;
+	position.x += corrector * deltaTranslation_mm * cos(currentAngle);
+	position.y += corrector * deltaTranslation_mm * sin(currentAngle);
 
 	// Mise à jour de currentTranslation
-	currentTranslation += deltaTranslation;
+	currentTranslation_float += deltaTranslation;
+	currentTranslation = (int32_t)(currentTranslation_float + 0.5);
+
 
 	// Mise à jour de la vitesse de translation
 	currentMovingSpeed = deltaTranslation * FREQ_ASSERV;
@@ -267,8 +269,8 @@ void MotionControlSystem::updateSpeedAndPosition()
 	currentMovingSpeed = averageTranslationSpeed.value();
 
 	// Mise à jour des erreurs cumulatives des encodeurs des moteurs
-	leftMotorError += deltaLeftMotorTicks - (int32_t)((float)deltaTranslation * leftSideDistanceFactor);
-	rightMotorError += deltaRightMotorTicks - (int32_t)((float)deltaTranslation * rightSideDistanceFactor);
+	leftMotorError += deltaLeftMotorTicks - (int32_t)(deltaTranslation * leftSideDistanceFactor);
+	rightMotorError += deltaRightMotorTicks - (int32_t)(deltaTranslation * rightSideDistanceFactor);
 
 	// En cas d'erreur excessive au niveau des moteurs de propulsion, le robot est considéré bloqué.
 	if ((ABS(leftMotorError) > MOTOR_SLIP_TOLERANCE || ABS(rightMotorError) > MOTOR_SLIP_TOLERANCE) && false)
@@ -520,6 +522,7 @@ void MotionControlSystem::stop()
 {
 	noInterrupts();
 	currentTranslation = 0;
+	currentTranslation_float = 0;
 	translationSetpoint = 0;
 	leftSpeedSetpoint = 0;
 	rightSpeedSetpoint = 0;
@@ -552,10 +555,11 @@ bool MotionControlSystem::isStopped()
 	return endOfMoveMgr.isStopped();
 }
 
-void MotionControlSystem::setMaxMovingSpeed(int32_t newMaxMovingSpeed)
+void MotionControlSystem::setMaxMovingSpeed(int32_t maxMovingSpeed_mm_sec)
 {
+	int32_t speed_ticks_sec = maxMovingSpeed_mm_sec / TICK_TO_MM;
 	noInterrupts();
-	maxMovingSpeed = newMaxMovingSpeed;
+	maxMovingSpeed = speed_ticks_sec;
 	interrupts();
 }
 

@@ -27,9 +27,9 @@
 #define FREQ_ASSERV				1000		// Fréquence d'asservissement (en Hz)
 #define AVERAGE_SPEED_SIZE		50			// Nombre de valeurs à utiliser dans le calcul de la moyenne glissante permettant de lisser la mesure de vitesse
 #define TRAJECTORY_STEP			10			// Distance (en ticks, correspondant à une translation) entre deux points d'une trajectoire
-#define TICK_TO_MM				0.09702		// Conversion ticks-mm pour les roues codeuses arrières. Unité : mm/tick
+#define TICK_TO_MM				0.09721		// Conversion ticks-mm pour les roues codeuses arrières. Unité : mm/tick
 #define TICK_TO_RADIANS			0.0010558	// Conversion ticks-radians. Unité : radian/tick
-#define FRONT_TICK_TO_TICK		1			// Conversion ticks_des_roues_avant --> ticks. Unité : tick/ticks_des_roues_avant
+#define FRONT_TICK_TO_TICK		2.4			// Conversion ticks_des_roues_avant --> ticks. Unité : tick/ticks_des_roues_avant
 #define CURVATURE_TOLERANCE		0			// Ecart maximal entre la consigne en courbure et la courbure réelle admissible au démarrage. Unité : m^-1
 #define MOTOR_SLIP_TOLERANCE	200			// Erreur maximale de rotation enregistrable pour les moteurs de propulsion avant de détecter un dérapage. Unité : ticks
 #define TIMEOUT_MOVE_INIT		1000		// Durée maximale le la phase "MOVE_INIT" d'une trajectoire. Unité : ms
@@ -90,6 +90,7 @@ private:
 	PID translationPID;
 	volatile int32_t translationSetpoint;	// ticks
 	volatile int32_t currentTranslation;	// ticks
+	float currentTranslation_float;			// utilisé pour les calculs précis (tjrs mis à jour en même tps que currentTranslation)
 	volatile int32_t movingSpeedSetpoint;	// ticks/seconde
 	
 	StoppingMgr endOfMoveMgr;
@@ -216,7 +217,7 @@ public:
 	void stop(); // Met toutes les consignes de l'asservissement à une valeur permettant l'arrêt du robot
 	void highLevelStop(); // Termine la trajectoire courante et stoppe le robot
 	bool isStopped(); // Indique si le robot est physiquement à l'arrêt
-	void setMaxMovingSpeed(int32_t);
+	void setMaxMovingSpeed(int32_t); // Règle la vitess maximale de translation (argument passé en mm/s)
 	int32_t getMaxMovingSpeed() const;
 	void setMaxAcceleration(int32_t);
 	int32_t getMaxAcceleration() const;
