@@ -90,10 +90,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 		timeout = config.getInt(ConfigInfo.SERIAL_TIMEOUT);
 		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 		for(int i = 0; i < 256; i++)
-		{
-			conversations[i] = new Conversation(i);
-			conversations[i].useConfig(config);
-		}
+			conversations[i] = new Conversation(i, config);
 	}
 	
 	/**

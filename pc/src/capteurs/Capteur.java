@@ -49,7 +49,7 @@ public abstract class Capteur implements Printable
 	protected Vec2RW positionRelativeRotate;
 	private TypeCapteur type;
 	
-	public Capteur(Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
+	public Capteur(Config config, Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
 		this.type = type;
 		this.positionRelative = positionRelative;
@@ -59,10 +59,7 @@ public abstract class Capteur implements Printable
 		this.distanceMin = type.distanceMin;
 		this.portee = type.portee;
 		this.sureleve = sureleve;
-	}
-	
-	public void useConfig(Config config)
-	{
+
 		L = config.getInt(ConfigInfo.CENTRE_ROTATION_ROUE_X);
 		d = config.getInt(ConfigInfo.CENTRE_ROTATION_ROUE_Y);
 		centreRotationGauche = new Vec2RO(L, d);

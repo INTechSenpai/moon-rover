@@ -101,7 +101,6 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			{
 				CapteursRobot c = CapteursRobot.values()[i];
 				capteurs[i] = container.make(c.classe, c.pos, c.angle, c.type, c.sureleve);
-				capteurs[i].useConfig(config);
 			}			
 		} catch(ContainerException e)
 		{

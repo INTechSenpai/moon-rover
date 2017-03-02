@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package capteurs;
 
+import config.Config;
 import robot.Cinematique;
 import utils.Vec2RO;
 
@@ -29,9 +30,9 @@ import utils.Vec2RO;
 public class CapteurImmobile extends Capteur
 {
 
-	public CapteurImmobile(Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
+	public CapteurImmobile(Config config, Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
-		super(positionRelative, orientationRelative, type, sureleve);
+		super(config, positionRelative, orientationRelative, type, sureleve);
 		orientationRelativeRotate = orientationRelative;
 		positionRelativeRotate = positionRelative.clone();
 	}

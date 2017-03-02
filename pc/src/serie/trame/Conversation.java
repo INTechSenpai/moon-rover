@@ -42,9 +42,10 @@ public class Conversation
 	 * Construction d'une conversation
 	 * @param id
 	 */
-	public Conversation(int id)
+	public Conversation(int id, Config config)
 	{
 		firstFrame = new OutgoingFrame(id);
+		timeout = config.getInt(ConfigInfo.SERIAL_TIMEOUT);
 	}
 	
 	/**
@@ -98,11 +99,6 @@ public class Conversation
 	public int timeBeforeDeath()
 	{
 		return (int) (deathDate - System.currentTimeMillis());
-	}
-
-	public void useConfig(Config config)
-	{
-		timeout = config.getInt(ConfigInfo.SERIAL_TIMEOUT);
 	}
 	
 	public OutgoingFrame getFirstTrame()
