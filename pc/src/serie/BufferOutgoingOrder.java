@@ -256,6 +256,8 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		data.put((byte) ((((int)(pos.getX())+1500) << 4) + ((int)(pos.getY()) >> 8)));
 		data.put((byte) ((int)(pos.getY())));
 		short theta = (short) Math.round((angle % (2*Math.PI))*1000);
+		if(theta < 0)
+			theta += (short) Math.round(2000 * Math.PI);
 		data.putShort(theta);		
 	}
 	
