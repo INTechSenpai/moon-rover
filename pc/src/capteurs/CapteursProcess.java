@@ -68,6 +68,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 	
 	private long dateLastMesureCorrection = -1;
 	private long peremptionCorrection;
+	private boolean enableCorrection;
 	private int indexCorrection = 0;
 	private Cinematique[] bufferCorrection;
 	
@@ -88,7 +89,8 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 		imprecisionMaxAngle = config.getDouble(ConfigInfo.IMPRECISION_MAX_ORIENTATION);
 		bufferCorrection = new Cinematique[config.getInt(ConfigInfo.TAILLE_BUFFER_RECALAGE)];
 		peremptionCorrection = config.getInt(ConfigInfo.PEREMPTION_CORRECTION);
-
+		enableCorrection = config.getBoolean(ConfigInfo.ENABLE_CORRECTION);
+		
 		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
@@ -195,7 +197,8 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 		dstarlite.updateObstaclesEnnemi();
 		dstarlite.updateObstaclesTable();
 		chemin.checkColliding();
-		correctXYO(data);
+		if(enableCorrection)
+			correctXYO(data);
 	}
 	
 	/**
