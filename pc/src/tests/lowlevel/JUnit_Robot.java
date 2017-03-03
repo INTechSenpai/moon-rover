@@ -56,11 +56,16 @@ public class JUnit_Robot extends JUnit_Test {
 	}
 	
 	@Test
-	public void test_actionneurs() throws Exception
+	public void test_ax12() throws Exception
 	{
 		robot.baisseFilet();
 		robot.leveFilet();
 		robot.bougeFiletMiChemin();
+	}
+
+	@Test
+	public void test_actionneurs() throws Exception
+	{
 		robot.ejecteBalles();
 		robot.rearme();
 		robot.ouvreFilet();
