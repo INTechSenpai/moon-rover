@@ -45,7 +45,7 @@ public:
 		distance += low;
 		distance = distance >> (4 + shift);
 
-		return distance*10; /* Conversion en mm */
+		return distance;
 	}
 
 private:

@@ -26,11 +26,11 @@
 #define PERIOD_ASSERV			1000		// Durée entre deux asservissement (en µs)
 #define FREQ_ASSERV				1000		// Fréquence d'asservissement (en Hz)
 #define AVERAGE_SPEED_SIZE		50			// Nombre de valeurs à utiliser dans le calcul de la moyenne glissante permettant de lisser la mesure de vitesse
-#define TRAJECTORY_STEP			10			// Distance (en ticks, correspondant à une translation) entre deux points d'une trajectoire
+#define TRAJECTORY_STEP			103			// Distance (en ticks, correspondant à une translation) entre deux points d'une trajectoire
 #define TICK_TO_MM				0.09721		// Conversion ticks-mm pour les roues codeuses arrières. Unité : mm/tick
-#define TICK_TO_RADIANS			0.0010558	// Conversion ticks-radians. Unité : radian/tick
+#define TICK_TO_RADIANS			0.001058	// Conversion ticks-radians. Unité : radian/tick
 #define FRONT_TICK_TO_TICK		2.4			// Conversion ticks_des_roues_avant --> ticks. Unité : tick/ticks_des_roues_avant
-#define CURVATURE_TOLERANCE		0			// Ecart maximal entre la consigne en courbure et la courbure réelle admissible au démarrage. Unité : m^-1
+#define CURVATURE_TOLERANCE		0.3			// Ecart maximal entre la consigne en courbure et la courbure réelle admissible au démarrage. Unité : m^-1
 #define MOTOR_SLIP_TOLERANCE	200			// Erreur maximale de rotation enregistrable pour les moteurs de propulsion avant de détecter un dérapage. Unité : ticks
 #define TIMEOUT_MOVE_INIT		1000		// Durée maximale le la phase "MOVE_INIT" d'une trajectoire. Unité : ms
 

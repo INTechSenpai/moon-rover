@@ -38,7 +38,7 @@ public:
 
 			x = (float)_x - 1500;
 			y = (float)_y;
-			orientation = ((float)_o) / 1000;
+			setOrientation(((float)_o) / 1000);
 		}
 		else
 		{

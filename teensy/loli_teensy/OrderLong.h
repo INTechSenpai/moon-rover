@@ -600,5 +600,70 @@ public:
 };
 
 
+class FollowTrajectory_ascii : public OrderLong, public Singleton<FollowTrajectory_ascii>
+{
+public:
+	FollowTrajectory_ascii() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{
+		Serial.println("FollowTrajectory");
+		int arg = Vutils<ARG_SIZE>::vtoi(input);
+		motionControlSystem.setMaxMovingSpeed(arg);
+		Serial.println(motionControlSystem.getMaxMovingSpeed());
+		motionControlSystem.gotoNextStopPoint();
+		Serial.println("launched");
+	}
+	void onExecute(std::vector<uint8_t> & output)
+	{
+		MotionControlSystem::MovingState movingState = motionControlSystem.getMovingState();
+		switch (movingState)
+		{
+		case MotionControlSystem::STOPPED:
+			Serial.println("STOPPED");
+			endMoveStatus = ARRIVED;
+			finished = true;
+			break;
+		case MotionControlSystem::MOVE_INIT:
+			//Serial.println("MOVE_INIT");
+			break;
+		case MotionControlSystem::MOVING:
+			//Serial.println("MOVING");
+			break;
+		case MotionControlSystem::EXT_BLOCKED:
+			Serial.println("EXT_BLOCKED");
+			endMoveStatus = EXT_BLOCKED;
+			finished = true;
+			break;
+		case MotionControlSystem::INT_BLOCKED:
+			Serial.println("INT_BLOCKED");
+			endMoveStatus = INT_BLOCKED;
+			finished = true;
+			break;
+		case MotionControlSystem::EMPTY_TRAJ:
+			Serial.println("EMPTY_TRAJ");
+			endMoveStatus = NO_MORE_POINTS;
+			finished = true;
+			break;
+		default:
+			break;
+		}
+	}
+	void terminate(std::vector<uint8_t> & output)
+	{
+		output.push_back(endMoveStatus);
+	}
+
+private:
+	enum EndMoveStatus
+	{
+		ARRIVED = 0x00,
+		EXT_BLOCKED = 0x01,
+		INT_BLOCKED = 0x02,
+		NO_MORE_POINTS = 0x03
+	};
+	uint8_t endMoveStatus;
+};
+
+
 #endif
 

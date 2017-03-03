@@ -117,6 +117,7 @@ void MotionControlSystem::control()
 			if (ABS(direction.getRealCurvature() - currentTrajPoint.getCurvature()) < CURVATURE_TOLERANCE)
 			{
 				movingState = MOVING;
+				endOfMoveMgr.moveIsStarting();
 			}
 			leftSpeedSetpoint = 0;
 			rightSpeedSetpoint = 0;
@@ -224,8 +225,8 @@ void MotionControlSystem::updateSpeedAndPosition()
 		deltaTranslation = 0;
 
 	// Récupération des données des encodeurs
-	leftMotorTicks = leftMotorEncoder.read() * FRONT_TICK_TO_TICK;
-	rightMotorTicks = rightMotorEncoder.read() * FRONT_TICK_TO_TICK;
+	leftMotorTicks = leftMotorEncoder.read();
+	rightMotorTicks = rightMotorEncoder.read();
 	leftTicks = leftFreeEncoder.read();
 	rightTicks = rightFreeEncoder.read();
 
@@ -254,7 +255,7 @@ void MotionControlSystem::updateSpeedAndPosition()
 	half_deltaRotation_rad = (((float)deltaRightTicks - (float)deltaLeftTicks) / 4) * TICK_TO_RADIANS;
 	currentAngle = position.orientation + half_deltaRotation_rad;
 	position.setOrientation(position.orientation + half_deltaRotation_rad * 2);
-	//corrector = 1 - square(half_deltaRotation_rad) / 6;
+	corrector = 1 - square(half_deltaRotation_rad) / 6;
 	position.x += corrector * deltaTranslation_mm * cos(currentAngle);
 	position.y += corrector * deltaTranslation_mm * sin(currentAngle);
 
@@ -269,8 +270,8 @@ void MotionControlSystem::updateSpeedAndPosition()
 	currentMovingSpeed = averageTranslationSpeed.value();
 
 	// Mise à jour des erreurs cumulatives des encodeurs des moteurs
-	leftMotorError += deltaLeftMotorTicks - (int32_t)(deltaTranslation * leftSideDistanceFactor);
-	rightMotorError += deltaRightMotorTicks - (int32_t)(deltaTranslation * rightSideDistanceFactor);
+	leftMotorError += deltaLeftMotorTicks * FRONT_TICK_TO_TICK - (int32_t)(deltaTranslation * leftSideDistanceFactor);
+	rightMotorError += deltaRightMotorTicks * FRONT_TICK_TO_TICK - (int32_t)(deltaTranslation * rightSideDistanceFactor);
 
 	// En cas d'erreur excessive au niveau des moteurs de propulsion, le robot est considéré bloqué.
 	if ((ABS(leftMotorError) > MOTOR_SLIP_TOLERANCE || ABS(rightMotorError) > MOTOR_SLIP_TOLERANCE) && false)
@@ -557,7 +558,7 @@ bool MotionControlSystem::isStopped()
 
 void MotionControlSystem::setMaxMovingSpeed(int32_t maxMovingSpeed_mm_sec)
 {
-	int32_t speed_ticks_sec = maxMovingSpeed_mm_sec / TICK_TO_MM;
+	int32_t speed_ticks_sec = (maxMovingSpeed_mm_sec / TICK_TO_MM ) / FRONT_TICK_TO_TICK;
 	noInterrupts();
 	maxMovingSpeed = speed_ticks_sec;
 	interrupts();
@@ -565,7 +566,7 @@ void MotionControlSystem::setMaxMovingSpeed(int32_t maxMovingSpeed_mm_sec)
 
 int32_t MotionControlSystem::getMaxMovingSpeed() const
 {
-	return maxMovingSpeed;
+	return maxMovingSpeed * TICK_TO_MM * FRONT_TICK_TO_TICK;
 }
 
 void MotionControlSystem::setMaxAcceleration(int32_t newMaxAcceleration)
