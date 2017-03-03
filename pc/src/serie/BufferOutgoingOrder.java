@@ -289,7 +289,9 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	public synchronized Ticket followTrajectory()
 	{
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(OutOrder.FOLLOW_TRAJECTORY, t));
+		ByteBuffer data = ByteBuffer.allocate(2);
+		data.putShort((short)500);
+		bufferBassePriorite.add(new Order(data, OutOrder.FOLLOW_TRAJECTORY, t));
 		notify();
 		return t;
 	}
