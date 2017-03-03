@@ -43,6 +43,8 @@ public class Order
 	
 	public Order(ByteBuffer message, OutOrder ordre, Ticket ticket)
 	{
+		if(message != null)
+			message.flip();
 		this.message = message;
 		this.ticket = ticket;
 		this.ordre = ordre;
@@ -51,7 +53,6 @@ public class Order
 	public Order(ByteBuffer message, OutOrder ordre)
 	{
 		this(message, ordre, new Ticket());
-		this.message.flip();
 	}
 
 	public Order(OutOrder ordre)
