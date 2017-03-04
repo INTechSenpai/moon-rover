@@ -220,7 +220,9 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		}
 
 		try {
-			chemin.add(out);
+			Ticket[] t = chemin.add(out);
+			for(Ticket ticket : t)
+				ticket.attendStatus();
 		} catch (PathfindingException e) {
 			// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de 5m
 			e.printStackTrace();

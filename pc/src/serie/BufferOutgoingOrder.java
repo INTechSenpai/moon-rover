@@ -324,7 +324,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 * Envoi de tous les arcs élémentaires d'un arc courbe
 	 * @0 arc
 	 */
-	public synchronized void envoieArcCourbe(List<CinematiqueObs> points, int indexTrajectory)
+	public synchronized Ticket[] envoieArcCourbe(List<CinematiqueObs> points, int indexTrajectory)
 	{
 		if(debugSerie)
 			log.debug("Envoi de "+points.size()+" points");
@@ -333,6 +333,8 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		int nbEnvoi = (points.size() >> 5) + 1;
 		int modulo = (points.size() & 31); // pour le dernier envoi
 		
+		Ticket[] t = new Ticket[nbEnvoi];
+		
 		for(int i = 0; i < nbEnvoi; i++)
 		{
 			int nbArc = 32;
@@ -340,7 +342,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 				nbArc = modulo;
 			ByteBuffer data = ByteBuffer.allocate(1+7*nbArc);
 			data.put((byte)index);
-			
+			t[i] = new Ticket();
 			for(int j = 0; j < nbArc; j++)
 			{
 				CinematiqueObs c = points.get((i<<5)+j);
@@ -354,10 +356,11 @@ public class BufferOutgoingOrder implements Service, SerialClass
 				
 				data.putShort(courbure);
 			}
-			bufferTrajectoireCourbe.add(new Order(data, OutOrder.SEND_ARC));
+			bufferTrajectoireCourbe.add(new Order(data, OutOrder.SEND_ARC, t[i]));
 			index += nbArc;
 		}
 		notify();			
+		return t;
 	}
 
 }
