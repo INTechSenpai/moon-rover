@@ -49,6 +49,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	private byte prescaler;
 	private short sendPeriod;
 	private boolean streamStarted = false;
+	private boolean debugpf;
 	
 	public BufferOutgoingOrder(Log log, Config config)
 	{
@@ -56,6 +57,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		sendPeriod = config.getShort(ConfigInfo.SENSORS_SEND_PERIOD);
 		prescaler = config.getByte(ConfigInfo.SENSORS_PRESCALER);
 		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
+		debugpf = config.getBoolean(ConfigInfo.DEBUG_PF);
 	}
 		
 	private volatile LinkedList<Order> bufferBassePriorite = new LinkedList<Order>();
@@ -353,7 +355,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized Ticket[] envoieArcCourbe(List<CinematiqueObs> points, int indexTrajectory)
 	{
-		if(debugSerie)
+		if(debugSerie || debugpf)
 			log.debug("Envoi de "+points.size()+" points");
 
 		int index = indexTrajectory;
@@ -373,6 +375,8 @@ public class BufferOutgoingOrder implements Service, SerialClass
 			for(int j = 0; j < nbArc; j++)
 			{
 				CinematiqueObs c = points.get((i<<5)+j);
+				if(debugpf)
+					log.debug("Point "+((i<<5)+j)+" : "+c);
 				addXYO(data, c.getPosition(), c.orientationReelle);
 				short courbure = (short) ((Math.round(c.courbureReelle)*10) & 0xEFFF);
 	
