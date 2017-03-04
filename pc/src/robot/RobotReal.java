@@ -188,6 +188,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	@Override
 	public void avance(double distance) throws UnableToMoveException, InterruptedException
 	{
+		// TODO revoir
 		LinkedList<CinematiqueObs> out = new LinkedList<CinematiqueObs>();
 		double cos = Math.cos(cinematique.orientationReelle);
 		double sin = Math.sin(cinematique.orientationReelle);
@@ -207,6 +208,11 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		{
 			double deltaX = ClothoidesComputer.PRECISION_TRACE_MM * cos;
 			double deltaY = ClothoidesComputer.PRECISION_TRACE_MM * sin;
+			if(distance < 0)
+			{
+				deltaX = -deltaX;
+				deltaY = -deltaY;
+			}
 			for(int i = 0; i < nbPoint; i++)
 				pointsAvancer[nbPoint-i-1].update(xFinal - i * deltaX, yFinal - i * deltaY, orientationGeometrique, marcheAvant, 0, vitesse);
 			for(int i = 0; i < nbPoint; i++)
