@@ -47,6 +47,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	protected Log log;
 	private byte prescaler;
 	private short sendPeriod;
+	private boolean streamStarted = false;
 	
 	public BufferOutgoingOrder(Log log, Config config)
 	{
@@ -115,7 +116,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 * @param marcheAvant
 	 * @return
 	 */
-	public synchronized Ticket beginFollowTrajectory(Speed vitesseInitiale, boolean marcheAvant)
+	public synchronized Ticket followTrajectory(Speed vitesseInitiale, boolean marcheAvant)
 	{
 		short vitesseTr; // vitesse signée
 		if(marcheAvant)
@@ -127,7 +128,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		data.putShort(vitesseTr);
 
 		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(data, OutOrder.SET_MAX_SPEED, t));
+		bufferBassePriorite.add(new Order(data, OutOrder.FOLLOW_TRAJECTORY, t));
 		notify();
 		return t;
 	}
@@ -286,7 +287,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	/**
 	 * Initie le mouvement courbe
 	 */
-	public synchronized Ticket followTrajectory(boolean avant)
+/*	public synchronized Ticket followTrajectory(boolean avant)
 	{
 		Ticket t = new Ticket();
 		ByteBuffer data = ByteBuffer.allocate(2);
@@ -297,7 +298,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		bufferBassePriorite.add(new Order(data, OutOrder.FOLLOW_TRAJECTORY, t));
 		notify();
 		return t;
-	}
+	}*/
 	
 	/**
 	 * Demande à être notifié de la fin du match
@@ -313,13 +314,32 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized void startStream()
 	{
-		ByteBuffer data = ByteBuffer.allocate(3);
-		data.putShort(sendPeriod);
-		data.put(prescaler);
-		bufferBassePriorite.add(new Order(data, OutOrder.START_STREAM_ALL));
-		notify();
+		if(streamStarted)
+			log.warning("Le stream est déjà lancé !");
+		else
+		{
+			streamStarted = true;
+			ByteBuffer data = ByteBuffer.allocate(3);
+			data.putShort(sendPeriod);
+			data.put(prescaler);
+			bufferBassePriorite.add(new Order(data, OutOrder.START_STREAM_ALL));
+			notify();
+		}
 	}
-		
+
+	/**
+	 * Arrête le stream
+	 */
+	public synchronized void stopStream()
+	{
+		if(streamStarted)
+		{
+			streamStarted = false;
+			bufferBassePriorite.add(new Order(OutOrder.STOP_STREAM_ALL));
+			notify();
+		}
+	}
+
 	/**
 	 * Envoi de tous les arcs élémentaires d'un arc courbe
 	 * @0 arc

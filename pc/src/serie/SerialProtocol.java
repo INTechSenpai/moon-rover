@@ -57,7 +57,8 @@ public class SerialProtocol {
 		PING(0x5A, Type.SHORT),
 		SEND_ARC(0x5B, Type.SHORT),
 		SET_MAX_SPEED(0x5C, Type.SHORT),
-		EDIT_POSITION(0x5D, Type.SHORT);
+		EDIT_POSITION(0x5D, Type.SHORT),
+		STOP_STREAM_ALL(0x5E, Type.SHORT);
 		
 		public final byte code;
 		public final Type type;
