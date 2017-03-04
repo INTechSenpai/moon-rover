@@ -223,7 +223,6 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					 */
 					else if(paquet.origine == OutOrder.FOLLOW_TRAJECTORY)
 					{
-
 						if(data[0] == InOrder.ROBOT_ARRIVE.codeInt)
 							paquet.ticket.set(InOrder.ROBOT_ARRIVE);
 						else if(data[0] == InOrder.ROBOT_BLOCAGE_INTERIEUR.codeInt)

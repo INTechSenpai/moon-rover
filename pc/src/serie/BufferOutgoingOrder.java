@@ -31,6 +31,7 @@ import container.Service;
 import container.dependances.SerialClass;
 import utils.Log;
 import utils.Vec2RO;
+import utils.Vec2RW;
 
 /**
  * Classe qui contient les ordres à envoyer à la série
@@ -243,6 +244,8 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		notify();
 		return t;
 	}
+	
+	Vec2RW tmp = new Vec2RW();
 
 	/**
 	 * Ajoute une position et un angle.
@@ -253,9 +256,13 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	private void addXYO(ByteBuffer data, Vec2RO pos, double angle)
 	{
-		data.put((byte) (((int)(pos.getX())+1500) >> 4));
-		data.put((byte) ((((int)(pos.getX())+1500) << 4) + ((int)(pos.getY()) >> 8)));
-		data.put((byte) ((int)(pos.getY())));
+		double x = pos.getX();
+		double y = pos.getY();
+		x = (x < -1500 ? -1500 : x > 1500 ? 1500 : x);
+		y = (y < 0 ? 0 : y > 2000 ? 2000 : y);
+		data.put((byte) (((int)(x)+1500) >> 4));
+		data.put((byte) ((((int)(x)+1500) << 4) + ((int)(y) >> 8)));
+		data.put((byte) ((int)(y)));
 		short theta = (short) Math.round((angle % (2*Math.PI))*1000);
 		if(theta < 0)
 			theta += (short) Math.round(2000 * Math.PI);
