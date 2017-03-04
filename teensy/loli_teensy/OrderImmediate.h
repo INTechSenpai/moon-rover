@@ -12,6 +12,8 @@
 #include "DirectionController.h"
 #include "SensorMgr.h"
 #include "Position.h"
+#include "StreamMgr.h"
+
 
 class OrderImmediate
 {
@@ -89,9 +91,15 @@ public:
 			called = true;
 		}
 		if (millis() - t > 2000)
+		{
 			io.push_back(INTECH);
+			//Serial.println("INTECH");
+		}
 		else
+		{
 			io.push_back(UNKNOWN);
+			//Serial.println("UNKNOWN");
+		}
 	}
 };
 
@@ -114,11 +122,14 @@ public:
 		else
 		{
 			uint8_t index = io.at(0);
+			Serial.printf("AddTP: %u ", index);
 			for (size_t i = 1; i < io.size(); i += 7)
 			{
 				std::vector<uint8_t> pos_vect(io.begin() + i, io.begin() + i + 5);
 				Position pos(pos_vect);
 				TrajectoryPoint newTrajPoint(pos, io.at(i + 5), io.at(i + 6));
+				Serial.print(newTrajPoint);
+				Serial.println();
 				motionControlSystem.addTrajectoryPoint(newTrajPoint, index);
 				index++;
 			}
@@ -170,9 +181,33 @@ public:
 		currentPosition.y += correctifPosition.y;
 		currentPosition.setOrientation(currentPosition.orientation + correctifPosition.orientation);
 		motionControlSystem.setPosition(currentPosition);
+		Serial.print("EditPosition: ");
+		Serial.println(currentPosition);
 		io.clear();
 	}
 };
+
+
+/*
+	Interromps le stream de position/capteurs
+	(seul moyen de faire terminer l'ordre long "StreamAll")
+*/
+class StopStream : public OrderImmediate, public Singleton<StopStream>
+{
+public:
+	StopStream() {}
+	virtual void execute(std::vector<uint8_t> & io)
+	{
+		StreamMgr & streamMgr = StreamMgr::Instance();
+		if (!streamMgr.running)
+		{
+			Log::warning("StopStream: already stopped");
+		}
+		streamMgr.running = false;
+		io.clear();
+	}
+};
+
 
 
 /*

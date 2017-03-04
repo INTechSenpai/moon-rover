@@ -39,6 +39,7 @@ public:
 		immediateOrderList[0x5B] = &AddTrajectoryPoints::Instance();
 		immediateOrderList[0x5C] = &SetMaxSpeed::Instance();
 		immediateOrderList[0x5D] = &EditPosition::Instance();
+		immediateOrderList[0x5E] = &StopStream::Instance();
 
 		// Ordres longs
 		longOrderList[0x38] = &FollowTrajectory::Instance();
@@ -135,7 +136,8 @@ public:
 		static uint8_t frameLength = 255;
 		static uint8_t rByte;
 
-		if (HLserial.available())
+		int nbReadingPerformed = 0;
+		while (HLserial.available() && nbReadingPerformed < 128) // On s'autorise à lire 128 octets d'affilé (sans rendre la main à la boucle principale)
 		{
 			if (rBuffer.indice >= RECEPTION_BUFFER_SIZE)
 			{
@@ -145,6 +147,8 @@ public:
 			}
 
 			rByte = HLserial.read();
+
+			Serial.printf("i=%d b=%x\n", rBuffer.indice, rByte);
 
 			if (rBuffer.indice == 0) // Type de trame
 			{
@@ -189,7 +193,9 @@ public:
 				}
 				rBuffer.indice = 0;
 				frameLength = 255;
+				break; // On rend la main à la boucle principale en fin de lecture de trame.
 			}
+			nbReadingPerformed++; // On compte le nombre d'octets lus d'affilé
 		}
 	}
 

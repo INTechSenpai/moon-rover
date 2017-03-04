@@ -260,7 +260,14 @@ void MotionControlSystem::updateSpeedAndPosition()
 	position.y += corrector * deltaTranslation_mm * sin(currentAngle);
 
 	// Mise à jour de currentTranslation
-	currentTranslation_float += deltaTranslation;
+	if (maxMovingSpeed >= 0)
+	{
+		currentTranslation_float += deltaTranslation;
+	}
+	else
+	{
+		currentTranslation_float -= deltaTranslation;
+	}
 	currentTranslation = (int32_t)(currentTranslation_float + 0.5);
 
 

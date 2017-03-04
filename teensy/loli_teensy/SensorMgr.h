@@ -49,7 +49,7 @@ public:
 		tofARGauche.powerON();
 		tofARDroit.powerON();
 		tofFlanARDroit.powerON();
-		tofFlanAVDroit.powerON();
+		tofFlanAVDroit.powerON();		
 		tofAVDroit.powerON();
 	}
 

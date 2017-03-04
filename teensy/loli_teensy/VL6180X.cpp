@@ -35,6 +35,9 @@ void VL6180X::init()
   // Store part-to-part range offset so it can be adjusted if scaling is changed
   ptp_offset = readReg(SYSRANGE__PART_TO_PART_RANGE_OFFSET);
 
+  Serial.print("ptp_offset ");
+  Serial.println(ptp_offset);
+
   if (readReg(SYSTEM__FRESH_OUT_OF_RESET) == 1)
   {
     scaling = 1;
@@ -74,6 +77,7 @@ void VL6180X::init()
   }
   else
   {
+	  Serial.println("ToF already initialized");
     // Sensor has already been initialized, so try to get scaling settings by
     // reading registers.
 

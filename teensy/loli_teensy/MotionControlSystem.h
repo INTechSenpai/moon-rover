@@ -26,7 +26,7 @@
 #define PERIOD_ASSERV			1000		// Durée entre deux asservissement (en µs)
 #define FREQ_ASSERV				1000		// Fréquence d'asservissement (en Hz)
 #define AVERAGE_SPEED_SIZE		50			// Nombre de valeurs à utiliser dans le calcul de la moyenne glissante permettant de lisser la mesure de vitesse
-#define TRAJECTORY_STEP			103			// Distance (en ticks, correspondant à une translation) entre deux points d'une trajectoire
+#define TRAJECTORY_STEP			206			// Distance (en ticks, correspondant à une translation) entre deux points d'une trajectoire
 #define TICK_TO_MM				0.09721		// Conversion ticks-mm pour les roues codeuses arrières. Unité : mm/tick
 #define TICK_TO_RADIANS			0.001058	// Conversion ticks-radians. Unité : radian/tick
 #define FRONT_TICK_TO_TICK		2.4			// Conversion ticks_des_roues_avant --> ticks. Unité : tick/ticks_des_roues_avant
@@ -119,8 +119,8 @@ private:
 	Average<int32_t, AVERAGE_SPEED_SIZE> averageRightSpeed;
 	Average<int32_t, AVERAGE_SPEED_SIZE> averageTranslationSpeed;
 
-	uint32_t lastInterruptDuration;
-	uint32_t maxInterruptDuration;
+	uint32_t lastInterruptDuration; // µs
+	uint32_t maxInterruptDuration; // µs
 
 public:
 	// Type décrivant l'état du mouvement

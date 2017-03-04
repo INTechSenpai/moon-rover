@@ -184,7 +184,7 @@ void loop()
 		batterySensor.update();
 
 		/* Vérification de la rapidité d'exécution */
-		//checkSpeed(10000, 0);
+		//checkSpeed(10000, 1000);
 
 		/* Print des logs */
 		motionControlSystem.logAllData();

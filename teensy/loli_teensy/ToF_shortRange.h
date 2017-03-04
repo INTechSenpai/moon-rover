@@ -24,7 +24,8 @@ public:
 	{
 		if (isON)
 		{
-			distance = vlSensor.readRangeContinuous();
+			//distance = vlSensor.readRangeContinuous();
+			distance = vlSensor.readRangeSingleMillimeters();
 			if (vlSensor.timeoutOccurred())
 			{
 				distance = 0;
@@ -52,11 +53,13 @@ public:
 		vlSensor.configureDefault();
 		vlSensor.setAddress(i2cAddress);
 
-		vlSensor.writeReg(VL6180X::SYSRANGE__MAX_CONVERGENCE_TIME, 10);
+		vlSensor.writeReg(VL6180X::SYSRANGE__PART_TO_PART_RANGE_OFFSET, (uint8_t)15);
 
-		vlSensor.stopContinuous();
-		delay(50);
-		vlSensor.startRangeContinuous(20);
+		//vlSensor.writeReg(VL6180X::SYSRANGE__MAX_CONVERGENCE_TIME, 10);
+
+		//vlSensor.stopContinuous();
+		//delay(50);
+		//vlSensor.startRangeContinuous(20);
 		isON = true;
 	}
 

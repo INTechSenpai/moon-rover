@@ -25,8 +25,13 @@ public:
 		if (millis() - lastUpdateTime > updatePeriod)
 		{
 			float voltage = (float)analogRead(PIN_GET_VOLTAGE) / 60 - 0.2;
+
+			//Serial.println(analogRead(PIN_GET_VOLTAGE));
+			//Serial.println(voltage);
 			
 			float level = (voltage - 10.7) * 50;
+
+			//Serial.println(level);
 			// 10,7V <-> 0%
 			// 11,1V <-> 20%
 			// 12,7V <-> 100%

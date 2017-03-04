@@ -10,6 +10,7 @@
 #include "ActuatorMgr.h"
 #include "pin_mapping.h"
 #include "Vutils.h"
+#include "StreamMgr.h"
 
 class OrderLong
 {
@@ -84,6 +85,7 @@ public:
 		else
 		{
 			int16_t maxSpeed = (input.at(0) << 8) + input.at(1);
+			Serial.printf("FollowTraj: %d\n", maxSpeed);
 			motionControlSystem.setMaxMovingSpeed(maxSpeed);
 			motionControlSystem.gotoNextStopPoint();
 		}
@@ -233,12 +235,13 @@ private:
 class StreamAll : public OrderLong, public Singleton<StreamAll>
 {
 public:
-	StreamAll() {}
+	StreamAll():
+		streamMgr(StreamMgr::Instance()) {}
 	void _launch(const std::vector<uint8_t> & input)
 	{
 		if (input.size() != 3)
 		{// Nombre d'octets reçus incorrect
-			Log::critical(40, "StreamAll: argument incorrect");
+			Log::critical(40, "StreamAll: argument incorrect (launched anyway)");
 			// On utilise des valeurs par défaut
 			sendPeriod = 1000;
 			sensorsPrescaler = 0;
@@ -250,28 +253,36 @@ public:
 		}
 		lastUpdateTime = millis();
 		prescalerCounter = 1;
+		streamMgr.running = true;
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		if (millis() - lastUpdateTime >= sendPeriod)
+		if (streamMgr.running)
 		{
-			motionControlSystem.getPosition(currentPosition);
-			output = currentPosition.getVector();
-			output.push_back(motionControlSystem.getTrajectoryIndex());
-			if (sensorsPrescaler != 0)
+			if (millis() - lastUpdateTime >= sendPeriod)
 			{
-				if (prescalerCounter == sensorsPrescaler)
+				motionControlSystem.getPosition(currentPosition);
+				output = currentPosition.getVector();
+				output.push_back(motionControlSystem.getTrajectoryIndex());
+				if (sensorsPrescaler != 0)
 				{
-					std::vector<uint8_t> sensorValues = sensorMgr.getValues();
-					output.insert(output.end(), sensorValues.begin(), sensorValues.end());
-					prescalerCounter = 1;
+					if (prescalerCounter == sensorsPrescaler)
+					{
+						std::vector<uint8_t> sensorValues = sensorMgr.getValues();
+						output.insert(output.end(), sensorValues.begin(), sensorValues.end());
+						prescalerCounter = 1;
+					}
+					else
+					{
+						prescalerCounter++;
+					}
 				}
-				else
-				{
-					prescalerCounter++;
-				}
+				lastUpdateTime = millis();
 			}
-			lastUpdateTime = millis();
+		}
+		else
+		{
+			finished = true;
 		}
 	}
 	void terminate(std::vector<uint8_t> & output)
@@ -282,6 +293,7 @@ private:
 	uint16_t sendPeriod;
 	uint8_t sensorsPrescaler;
 	uint8_t prescalerCounter;
+	StreamMgr & streamMgr;
 };
 
 
