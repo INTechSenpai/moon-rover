@@ -1,5 +1,4 @@
 #!/bin/sh
-#!/bin/sh
 if [ "$#" -lt 1 ]; then
     echo "Usage: ./run.sh Classe#methode"
 else
