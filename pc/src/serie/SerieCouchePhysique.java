@@ -46,6 +46,7 @@ public class SerieCouchePhysique implements Service, SerialClass
 	private SerialPort serialPort;
 	protected Log log;
 	private BufferIncomingBytes buffer;
+	private SerialListener listener;
 	
 	protected volatile boolean isClosed;
 	private int baudrate;
@@ -68,10 +69,11 @@ public class SerieCouchePhysique implements Service, SerialClass
 	 * Constructeur pour la série de test
 	 * @param log
 	 */
-	public SerieCouchePhysique(Log log, BufferIncomingBytes buffer, Config config)
+	public SerieCouchePhysique(Log log, BufferIncomingBytes buffer, Config config, SerialListener listener)
 	{
 		this.log = log;
 		this.buffer = buffer;
+		this.listener = listener;
 
 		portName = config.getString(ConfigInfo.SERIAL_PORT);
 		baudrate = config.getInt(ConfigInfo.BAUDRATE);
@@ -177,8 +179,8 @@ public class SerieCouchePhysique implements Service, SerialClass
 					SerialPort.DATABITS_8,
 					SerialPort.STOPBITS_1,
 					SerialPort.PARITY_NONE);
-//			serialPort.setInputBufferSize(100);
-//			serialPort.setOutputBufferSize(100);
+			serialPort.setInputBufferSize(100);
+			serialPort.setOutputBufferSize(100);
 //			serialPort.enableReceiveTimeout(100);
 //			serialPort.enableReceiveThreshold(1);
 
@@ -187,9 +189,10 @@ public class SerieCouchePhysique implements Service, SerialClass
 			output = serialPort.getOutputStream();
 
 			// Configuration du Listener
-			serialPort.addEventListener(buffer);
+			serialPort.addEventListener(listener);
 
-			serialPort.notifyOnDataAvailable(true); // activation du listener
+			serialPort.notifyOnDataAvailable(true); // activation du listener pour vérifier qu'on a des données disponible
+			serialPort.notifyOnOutputEmpty(true); // activation du listener pour vérifier que l'envoi est fini
 			
 			isClosed = false;
 			return true;
@@ -248,19 +251,26 @@ public class SerieCouchePhysique implements Service, SerialClass
 		{
 			log.debug("La série est fermée et ne peut envoyer :"+out);
 			return;
-		}
+		}		
 		
 		try
 		{
 			if(debugSerieTrame)
 				log.debug(out);
 
-			// On n'envoie que les premiers "tailleTrame" octets
-			output.write(out.trame, 0, out.tailleTrame);
-			output.flush();
-			if(debugSerie)
-				log.debug("Envoi terminé");
+			// On vérifie bien que toutes les données précédentes ont été envoyées
+			synchronized(listener)
+			{
+				if(!listener.isOutputEmpty())
+					listener.wait();
+				// On n'envoie que les premiers "tailleTrame" octets
+				listener.setOutputNonEmpty();
+				output.write(out.trame, 0, out.tailleTrame);
+				output.flush();
+			}
 			
+			if(debugSerie)
+				log.debug("Envoi terminé");			
 		}
 		catch (IOException e)
 		{

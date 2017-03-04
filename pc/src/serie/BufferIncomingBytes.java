@@ -26,8 +26,6 @@ import config.ConfigInfo;
 import container.Service;
 import container.dependances.SerialClass;
 import exceptions.serie.MissingCharacterException;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
 
 /**
  * Buffer très bas niveau qui récupère les octets sur la série
@@ -35,7 +33,7 @@ import gnu.io.SerialPortEventListener;
  *
  */
 
-public class BufferIncomingBytes implements Service, SerialPortEventListener, SerialClass
+public class BufferIncomingBytes implements Service, SerialClass
 {
 	private Log log;
 	
@@ -60,29 +58,23 @@ public class BufferIncomingBytes implements Service, SerialPortEventListener, Se
 	}
 
 	/**
-	 * Gestion d'un évènement sur la série.
+	 * Récupération des données de la série
 	 */
-	@Override
-	public void serialEvent(SerialPortEvent oEvent)
+	public void dataAvailable()
 	{
-		if(oEvent.getEventType() != SerialPortEvent.DATA_AVAILABLE)
-			log.warning(oEvent.getEventType());
-		else
-		{
-			try {
-				do
+		try {
+			do
+			{
+				synchronized(this)
 				{
-					synchronized(this)
-					{
-						bufferReading[indexBufferStop++] = input.read();
-						indexBufferStop &= 0xFF;
-						notifyAll();
-					}
-				} while(input.available() > 0);
+					bufferReading[indexBufferStop++] = input.read();
+					indexBufferStop &= 0xFF;
+					notifyAll();
+				}
+			} while(input.available() > 0);
 
-			} catch (IOException e) {
-				log.critical(e);
-			}
+		} catch (IOException e) {
+			log.critical(e);
 		}
 	}
 
