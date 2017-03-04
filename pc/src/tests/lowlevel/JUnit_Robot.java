@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package tests.lowlevel;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -56,6 +57,12 @@ public class JUnit_Robot extends JUnit_Test {
 		data.startStream();
 	}
 	
+	@Override
+	@After
+	public void tearDown() throws Exception {
+		data.stopStream();
+		super.tearDown();
+	}
 	@Test
 	public void test_ax12() throws Exception
 	{
@@ -84,7 +91,7 @@ public class JUnit_Robot extends JUnit_Test {
 		Cinematique c = new Cinematique(300, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
-		robot.followTrajectory(true);
+		robot.followTrajectory(true, Speed.TEST);
     }
 	
 	@Test
@@ -97,7 +104,7 @@ public class JUnit_Robot extends JUnit_Test {
 		Cinematique c = new Cinematique(200, 1400, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
 		astar.initializeNewSearch(c, SensFinal.MARCHE_ARRIERE, true, state);
 		astar.process(chemin);
-		robot.followTrajectory(false);
+		robot.followTrajectory(false, Speed.TEST);
     }
 	
 	@Test
@@ -107,7 +114,7 @@ public class JUnit_Robot extends JUnit_Test {
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
-		robot.avance(-200);
+		robot.avance(-200, Speed.TEST);
     }
 	
 	@Test
@@ -117,6 +124,6 @@ public class JUnit_Robot extends JUnit_Test {
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
-		robot.avance(200);
+		robot.avance(200, Speed.TEST);
     }
 }

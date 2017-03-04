@@ -21,6 +21,7 @@ import exceptions.UnableToMoveException;
 import pathfinding.GameState;
 import pathfinding.astar.arcs.CercleArrivee;
 import robot.Robot;
+import robot.Speed;
 import table.EtatElement;
 import table.GameElementNames;
 import utils.Log;
@@ -64,7 +65,7 @@ public class ScriptCratere extends Script
 	@Override
 	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
 	{
-		state.robot.avance(-20);
+		state.robot.avance(-20, Speed.STANDARD);
 		state.robot.bougeFiletMiChemin();
 		state.robot.ouvreFilet();
 		state.robot.baisseFilet();
@@ -76,7 +77,7 @@ public class ScriptCratere extends Script
 	{
 		state.robot.fermeFilet();
 		state.robot.leveFilet();		
-		state.robot.avance(20);
+		state.robot.avance(20, Speed.STANDARD);
 	}
 
 	@Override

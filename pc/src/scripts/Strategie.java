@@ -28,6 +28,7 @@ import pathfinding.ChronoGameState;
 import pathfinding.PFInstruction;
 import pathfinding.PathCache;
 import pathfinding.RealGameState;
+import robot.Speed;
 import table.GameElementNames;
 import utils.Log;
 
@@ -71,7 +72,7 @@ public class Strategie implements Service, CoreClass
 			inst.set(s, true, chrono);
 			s.execute(state);
 			pathcache.sendPreparedPath();
-			state.robot.followTrajectory(true); // TODO
+			state.robot.followTrajectory(true, Speed.STANDARD); // TODO
 		} catch (PathfindingException e) {
 			e.printStackTrace();
 		} catch (UnableToMoveException e) {
