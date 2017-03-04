@@ -286,11 +286,14 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	/**
 	 * Initie le mouvement courbe
 	 */
-	public synchronized Ticket followTrajectory()
+	public synchronized Ticket followTrajectory(boolean avant)
 	{
 		Ticket t = new Ticket();
 		ByteBuffer data = ByteBuffer.allocate(2);
-		data.putShort((short)500);
+		if(avant)
+			data.putShort((short)500);
+		else
+			data.putShort((short)-500);
 		bufferBassePriorite.add(new Order(data, OutOrder.FOLLOW_TRAJECTORY, t));
 		notify();
 		return t;

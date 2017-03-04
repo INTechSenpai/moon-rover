@@ -219,7 +219,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 			// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de 5m
 			e.printStackTrace();
 		}
-		followTrajectory();
+		followTrajectory(distance > 0);
 	}
 	
 	/*
@@ -275,9 +275,9 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	 * @throws InterruptedException
 	 * @throws UnableToMoveException 
 	 */
-	public void followTrajectory() throws InterruptedException, UnableToMoveException
+	public void followTrajectory(boolean avant) throws InterruptedException, UnableToMoveException
 	{
-		Ticket t = out.followTrajectory();
+		Ticket t = out.followTrajectory(avant);
 		InOrder i = t.attendStatus();
 		if(i == InOrder.ROBOT_BLOCAGE_EXTERIEUR || i == InOrder.ROBOT_BLOCAGE_INTERIEUR)
 		{
