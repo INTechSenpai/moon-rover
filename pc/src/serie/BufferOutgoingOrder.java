@@ -292,22 +292,6 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		notify();
 		return t;
 	}
-
-	/**
-	 * Initie le mouvement courbe
-	 */
-/*	public synchronized Ticket followTrajectory(boolean avant)
-	{
-		Ticket t = new Ticket();
-		ByteBuffer data = ByteBuffer.allocate(2);
-		if(avant)
-			data.putShort((short)500);
-		else
-			data.putShort((short)-500);
-		bufferBassePriorite.add(new Order(data, OutOrder.FOLLOW_TRAJECTORY, t));
-		notify();
-		return t;
-	}*/
 	
 	/**
 	 * Demande à être notifié de la fin du match
