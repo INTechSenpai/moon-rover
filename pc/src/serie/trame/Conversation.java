@@ -53,7 +53,7 @@ public class Conversation
 	 */
 	public void setDeathDate()
 	{
-		deathDate = System.currentTimeMillis() + 2*timeout;
+		deathDate = System.currentTimeMillis() + 20 * timeout;
 	}
 	
 	/**
