@@ -323,9 +323,13 @@ public class SerieCoucheTrame implements Service, SerialClass
 	
 	/**
 	 * Fermeture de la série
+	 * @throws InterruptedException 
 	 */
-	public synchronized void close()
+	public synchronized void close() throws InterruptedException
 	{
+		// On attend de clore les conversations
+		if(!waitingFrames.isEmpty() || !pendingLongFrames.isEmpty())
+			Thread.sleep(300);
 		serieOutput.close();
 	}
 	
