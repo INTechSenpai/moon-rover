@@ -95,7 +95,8 @@ public class SerialProtocol {
 		ACT_FAILURE(0x01, State.KO),
 		
 		SHORT_ORDER_ACK(-1, State.OK),
-		LONG_ORDER_ACK(-1, State.OK);
+		LONG_ORDER_ACK(-1, State.OK),
+		ORDER_ACK(-1, State.OK);
 		
 		public final int codeInt;
 		public final State etat;
