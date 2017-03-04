@@ -207,7 +207,7 @@ public class SerieCouchePhysique implements Service, SerialClass
 	/**
 	 * Doit être appelé quand on arrête de se servir de la série
 	 */
-	public void close()
+	public synchronized void close()
 	{
 		if(simuleSerie)
 			return;

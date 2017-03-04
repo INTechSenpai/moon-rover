@@ -325,7 +325,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 * Fermeture de la série
 	 * @throws InterruptedException 
 	 */
-	public synchronized void close() throws InterruptedException
+	public void close() throws InterruptedException
 	{
 		// On attend de clore les conversations
 		if(!waitingFrames.isEmpty() || !pendingLongFrames.isEmpty())
