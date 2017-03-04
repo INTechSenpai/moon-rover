@@ -191,7 +191,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		LinkedList<CinematiqueObs> out = new LinkedList<CinematiqueObs>();
 		double cos = Math.cos(cinematique.orientationReelle);
 		double sin = Math.sin(cinematique.orientationReelle);
-		int nbPoint = (int) Math.round(distance / ClothoidesComputer.PRECISION_TRACE_MM);
+		int nbPoint = (int) Math.round(Math.abs(distance) / ClothoidesComputer.PRECISION_TRACE_MM);
 		double xFinal = cinematique.position.getX()+distance*cos;
 		double yFinal = cinematique.position.getY()+distance*sin;
 		boolean marcheAvant = distance > 0;
@@ -212,7 +212,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 			for(int i = 0; i < nbPoint; i++)
 				out.add(pointsAvancer[i]);
 		}
-		
+
 		try {
 			chemin.add(out);
 		} catch (PathfindingException e) {
