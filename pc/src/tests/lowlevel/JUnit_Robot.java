@@ -53,6 +53,7 @@ public class JUnit_Robot extends JUnit_Test {
 		chemin = container.getService(CheminPathfinding.class);
 		astar = container.getService(AStarCourbe.class);
 		data = container.getService(BufferOutgoingOrder.class);
+		data.startStream();
 	}
 	
 	@Test
@@ -105,6 +106,7 @@ public class JUnit_Robot extends JUnit_Test {
 		Cinematique depart = new Cinematique(0, 1600, Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(500);
 		robot.avance(-200);
     }
 	
@@ -114,6 +116,7 @@ public class JUnit_Robot extends JUnit_Test {
 		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(500);
 		robot.avance(200);
     }
 }
