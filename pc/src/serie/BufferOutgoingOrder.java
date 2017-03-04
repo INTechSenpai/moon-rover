@@ -344,7 +344,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 			for(int j = 0; j < nbArc; j++)
 			{
 				CinematiqueObs c = points.get((i<<5)+j);
-				addXYO(data, c.getPosition(), c.orientationGeometrique);
+				addXYO(data, c.getPosition(), c.orientationReelle);
 				short courbure = (short) ((Math.round(c.courbureReelle)*10) & 0xEFFF);
 	
 				// on vérifie si on va dans le même sens que le prochain point

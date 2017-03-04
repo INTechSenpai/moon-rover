@@ -102,7 +102,7 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void test_follow_trajectory_droite_arriere() throws Exception
     {
-		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique depart = new Cinematique(0, 1600, Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		robot.avance(-200);

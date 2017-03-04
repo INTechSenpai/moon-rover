@@ -71,7 +71,7 @@ public class Strategie implements Service, CoreClass
 			inst.set(s, true, chrono);
 			s.execute(state);
 			pathcache.sendPreparedPath();
-			state.robot.followTrajectory();
+			state.robot.followTrajectory(true); // TODO
 		} catch (PathfindingException e) {
 			e.printStackTrace();
 		} catch (UnableToMoveException e) {
