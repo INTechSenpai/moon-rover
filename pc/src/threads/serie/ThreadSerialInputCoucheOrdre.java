@@ -119,57 +119,59 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					 */
 					else if(paquet.origine == OutOrder.START_STREAM_ALL)
 					{
-						/**
-						 * Récupération de la position et de l'orientation
-						 */
-						int xRobot = data[0] << 4;
-						xRobot += data[1] >> 4;
-						xRobot -= 1500;
-						int yRobot = (data[1] & 0x0F) << 8;
-						yRobot = yRobot + data[2];
-
-						// On ne récupère pas toutes les infos mécaniques (la courbure manque, marche avant, …)
-						// Du coup, on récupère les infos théoriques (à partir du chemin) qu'on complète
-						double orientationRobot = ((data[3] << 8) + data[4]) / 1000.;
-						int indexTrajectory = data[5];
-						log.debug("Index trajectory : "+indexTrajectory);
-						Cinematique current = chemin.setCurrentIndex(indexTrajectory);
-						current.getPositionEcriture().setX(xRobot);
-						current.getPositionEcriture().setY(yRobot);
-						current.orientationReelle = orientationRobot;
-						robot.setCinematique(current);
-						
-						// la vitesse de planification est gérée directement dans le pathfinding
-						double tmpVitesse = current.vitesseMax;
-						
-						if(!current.enMarcheAvant) // la vitesse doit être signée
-							tmpVitesse = -tmpVitesse;
-						
-/*						if(tmpVitesse != lastVitesse) // la vitesse a changé : on la renvoie
-						{
-							out.setMaxSpeed(tmpVitesse);
-							lastVitesse = tmpVitesse;
-						}
-*/
-						if(debugSerie)
-							log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot);
-		
-						if(data.length > 6) // la présence de ces infos n'est pas systématique
+						if(data.length != 0) // au cas où ce soit le EXECUTION_END
 						{
 							/**
-							 * Acquiert ce que voit les capteurs
-						 	 */
-							int[] mesures = new int[nbCapteurs];
-							for(int i = 0; i < nbCapteurs; i++)
+							 * Récupération de la position et de l'orientation
+							 */
+							int xRobot = data[0] << 4;
+							xRobot += data[1] >> 4;
+							xRobot -= 1500;
+							int yRobot = (data[1] & 0x0F) << 8;
+							yRobot = yRobot + data[2];
+	
+							// On ne récupère pas toutes les infos mécaniques (la courbure manque, marche avant, …)
+							// Du coup, on récupère les infos théoriques (à partir du chemin) qu'on complète
+							double orientationRobot = ((data[3] << 8) + data[4]) / 1000.;
+							int indexTrajectory = data[5];
+							log.debug("Index trajectory : "+indexTrajectory);
+							Cinematique current = chemin.setCurrentIndex(indexTrajectory);
+							current.getPositionEcriture().setX(xRobot);
+							current.getPositionEcriture().setY(yRobot);
+							current.orientationReelle = orientationRobot;
+							robot.setCinematique(current);
+							
+							// la vitesse de planification est gérée directement dans le pathfinding
+							double tmpVitesse = current.vitesseMax;
+							
+							if(!current.enMarcheAvant) // la vitesse doit être signée
+								tmpVitesse = -tmpVitesse;
+							
+	/*						if(tmpVitesse != lastVitesse) // la vitesse a changé : on la renvoie
 							{
-								mesures[i] = data[6+i];
-								if(debugSerie)
-									log.debug("Capteur "+CapteursRobot.values[i].name()+" : "+mesures[i]);
+								out.setMaxSpeed(tmpVitesse);
+								lastVitesse = tmpVitesse;
 							}
-							if(capteursOn)
-								buffer.add(new SensorsData(mesures, current));
+	*/
+							if(debugSerie)
+								log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot);
+			
+							if(data.length > 6) // la présence de ces infos n'est pas systématique
+							{
+								/**
+								 * Acquiert ce que voit les capteurs
+							 	 */
+								int[] mesures = new int[nbCapteurs];
+								for(int i = 0; i < nbCapteurs; i++)
+								{
+									mesures[i] = data[6+i];
+									if(debugSerie)
+										log.debug("Capteur "+CapteursRobot.values[i].name()+" : "+mesures[i]);
+								}
+								if(capteursOn)
+									buffer.add(new SensorsData(mesures, current));
+							}
 						}
-
 					}
 		
 					/**
