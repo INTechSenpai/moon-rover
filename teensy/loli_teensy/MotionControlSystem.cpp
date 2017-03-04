@@ -421,7 +421,7 @@ void MotionControlSystem::updateSideDistanceFactors()
 	}
 	else
 	{
-		float r = 1 / c;
+		float r = 1000 / c;
 		if (r > 0)
 		{
 			leftSideDistanceFactor = (sqrtf(square(r - DIRECTION_ROTATION_POINT_Y) + squared_length) - DIRECTION_WHEEL_DIST_FROM_ROT_PT) / r;

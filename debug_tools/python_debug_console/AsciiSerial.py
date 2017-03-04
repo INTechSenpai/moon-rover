@@ -24,7 +24,8 @@ class AsciiSerial:
             'BLOCKING_M_D': channelData('line',         {'aimSpeed': [6, 0], 'realSpeed': [6, 1], 'isBlocked': [6, 2]}),
             'STOPPING_MGR': channelData('line',         {'speed': [7, 0], 'isStopped': [7, 1]}),
             'DIRECTION':    channelData('line',         {'aimDirection': [8, 0], 'realDirection': [8, 1]}),
-            'SENSORS':      channelData('scatter',      {'sensorTest': [9, 0, 1]})
+            'SENSORS':      channelData('scatter',      {'sensorTest': [9, 0, 1]}),
+            'PID_TRAJ':     channelData('scatter',      {'p': [0, 0, 1], 't': [1, 0, 1]})
         }
 
         self._shapeInitData = {

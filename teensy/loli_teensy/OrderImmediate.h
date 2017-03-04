@@ -156,6 +156,7 @@ public:
 		{
 			int16_t maxSpeed = (io.at(0) << 8) + io.at(1);
 			motionControlSystem.setMaxMovingSpeed(maxSpeed);
+			Serial.printf("SetSpeed %d\n", maxSpeed);
 		}
 		io.clear();
 	}

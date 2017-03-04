@@ -148,8 +148,6 @@ public:
 
 			rByte = HLserial.read();
 
-			Serial.printf("i=%d b=%x\n", rBuffer.indice, rByte);
-
 			if (rBuffer.indice == 0) // Type de trame
 			{
 				if (rByte < 0xF9)
@@ -339,7 +337,7 @@ private:
 			}
 			else if (frame.getOrderType() == IMMEDIATE_ORDER)
 			{
-				return millis() - timestamp < 2 * TIMEOUT;
+				return millis() - timestamp < 20 * TIMEOUT;
 			}
 			else
 			{
@@ -446,6 +444,8 @@ private:
 
 	void sendFrame(const Frame & frame)
 	{
+		//Serial.printf("[%u]__SendFrame__", millis());
+		//Serial.println(frame);
 		if (frame.isFrameValid())
 		{
 			std::vector<uint8_t> frameVect = frame.getFrameVect();
