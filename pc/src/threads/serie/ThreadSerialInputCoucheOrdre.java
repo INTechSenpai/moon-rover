@@ -145,12 +145,12 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						if(!current.enMarcheAvant) // la vitesse doit être signée
 							tmpVitesse = -tmpVitesse;
 						
-						if(tmpVitesse != lastVitesse) // la vitesse a changé : on la renvoie
+/*						if(tmpVitesse != lastVitesse) // la vitesse a changé : on la renvoie
 						{
 							out.setMaxSpeed(tmpVitesse);
 							lastVitesse = tmpVitesse;
 						}
-
+*/
 						if(debugSerie)
 							log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot);
 		
