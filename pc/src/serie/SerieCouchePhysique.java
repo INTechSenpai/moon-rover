@@ -22,6 +22,7 @@ import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
+import serie.trame.Conversation;
 import serie.trame.OutgoingFrame;
 
 import java.io.IOException;
@@ -237,7 +238,7 @@ public class SerieCouchePhysique implements Service, SerialClass
 	 * @param message
 	 * @throws InterruptedException 
 	 */
-	public synchronized void communiquer(OutgoingFrame out) throws InterruptedException
+	public synchronized void communiquer(Conversation f, OutgoingFrame out) throws InterruptedException
 	{
 		if(simuleSerie)
 			return;
@@ -265,8 +266,16 @@ public class SerieCouchePhysique implements Service, SerialClass
 					listener.wait();
 				// On n'envoie que les premiers "tailleTrame" octets
 				listener.setOutputNonEmpty();
-				output.write(out.trame, 0, out.tailleTrame);
-				output.flush();
+				if(f.libre)
+				{
+					if(debugSerie)
+						log.debug("Envoi annulé : réponse reçue entre temps");
+				}
+				else
+				{
+					output.write(out.trame, 0, out.tailleTrame);
+					output.flush();
+				}
 			}
 			
 			if(debugSerie)
@@ -286,7 +295,7 @@ public class SerieCouchePhysique implements Service, SerialClass
 				Thread.sleep(100);
 			}
 			// On a retrouvé la série, on renvoie le message
-			communiquer(out);
+			communiquer(f, out);
 		}
 	}
 
