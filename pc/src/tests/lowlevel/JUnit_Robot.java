@@ -143,16 +143,7 @@ public class JUnit_Robot extends JUnit_Test {
 		Cinematique c = new Cinematique(300, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
-
-		depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
-		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
-		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		c = new Cinematique(-300, 1200, -Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
-		astar.initializeNewSearch(c, true, state);
-		astar.process(chemin);
-
-		//		robot.followTrajectory(true, Speed.TEST);
+		robot.followTrajectory(true, Speed.TEST);
     }
 
 	@Test
@@ -162,23 +153,10 @@ public class JUnit_Robot extends JUnit_Test {
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		Cinematique c = new Cinematique(300, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique c = new Cinematique(-300, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
-
-		BezierComputer bezier = container.getService(BezierComputer.class);
-		
-		int nbArc = 1;
-		ArcCourbeDynamique arc[] = new ArcCourbeDynamique[nbArc];
-
-		c = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
-		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
-		Cinematique arrivee = new Cinematique(-300, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
-		arc[0] = bezier.interpolationQuadratique(c, arrivee.getPosition(), Speed.STANDARD);
-		
-		Thread.sleep(500);
-		data.envoieArcCourbe(arc[0].arcs, 0);
-//		robot.followTrajectory(true, Speed.TEST);
+		robot.followTrajectory(true, Speed.TEST);
     }
 
 	@Test
