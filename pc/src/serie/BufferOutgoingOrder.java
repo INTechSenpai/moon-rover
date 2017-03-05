@@ -364,7 +364,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 				addXYO(data, c.getPosition(), c.orientationReelle);
 				short courbure = (short) ((Math.round(Math.abs(c.courbureReelle)*100)) & 0x7FFF);
 				if(c.courbureReelle < 0) // complément à 2 à la main
-					courbure |= 0x7000;
+					courbure |= 0x4000;
 	
 				// on vérifie si on va dans le même sens que le prochain point
 				// le dernier point est forcément un point d'arrêt
