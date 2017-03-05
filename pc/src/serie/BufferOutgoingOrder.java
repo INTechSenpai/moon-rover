@@ -362,7 +362,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 				if(debugpf)
 					log.debug("Point "+((i<<5)+j)+" : "+c);
 				addXYO(data, c.getPosition(), c.orientationReelle);
-				short courbure = (short) ((Math.round(c.courbureReelle)*10) & 0xEFFF);
+				short courbure = (short) ((Math.round(c.courbureReelle)*100) & 0xEFFF);
 	
 				// on vérifie si on va dans le même sens que le prochain point
 				// le dernier point est forcément un point d'arrêt
