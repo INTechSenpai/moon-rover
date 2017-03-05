@@ -186,12 +186,14 @@ public class JUnit_Robot extends JUnit_Test {
 		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
 
-		int nbArc = 16;
+		int nbArc = 50;
 		ArcCourbeStatique arc[] = new ArcCourbeStatique[nbArc];
 		for(int i = 0; i < nbArc; i++)
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 
 		Cinematique c = new Cinematique(0, 1000, Math.PI/2, true, 5, Speed.STANDARD.translationalSpeed);
+		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(1000);
 		log.debug("Initial : "+c);
 		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[0]);
 		
