@@ -17,15 +17,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package tests.lowlevel;
 
+import java.util.ArrayList;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import config.ConfigInfo;
+import graphic.PrintBuffer;
+import obstacles.types.ObstacleCircular;
 import pathfinding.RealGameState;
 import pathfinding.SensFinal;
 import pathfinding.astar.AStarCourbe;
+import pathfinding.astar.arcs.ArcCourbeStatique;
+import pathfinding.astar.arcs.ClothoidesComputer;
+import pathfinding.astar.arcs.vitesses.VitesseClotho;
 import pathfinding.chemin.CheminPathfinding;
 import robot.Cinematique;
+import robot.CinematiqueObs;
 import robot.RobotReal;
 import robot.Speed;
 import serie.BufferOutgoingOrder;
@@ -166,4 +175,40 @@ public class JUnit_Robot extends JUnit_Test {
 		Thread.sleep(500);
 		robot.avance(200, Speed.TEST);
     }
+	
+	@Test
+    public void test_cercle() throws Exception
+    {
+		ClothoidesComputer clotho = container.getService(ClothoidesComputer.class);
+		PrintBuffer buffer = container.getService(PrintBuffer.class);
+		
+		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
+		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
+		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+
+		int nbArc = 16;
+		ArcCourbeStatique arc[] = new ArcCourbeStatique[nbArc];
+		for(int i = 0; i < nbArc; i++)
+			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+
+		Cinematique c = new Cinematique(0, 1000, Math.PI/2, true, 5, Speed.STANDARD.translationalSpeed);
+		log.debug("Initial : "+c);
+		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[0]);
+		
+		for(int i = 1; i < nbArc; i++)
+			clotho.getTrajectoire(arc[i-1], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[i]);
+
+		ArrayList<CinematiqueObs> path = new ArrayList<CinematiqueObs>();
+		
+		for(int i = 0; i < nbArc; i++)
+			for(int j = 0; j < arc[i].getNbPoints(); j++)
+			{
+				path.add(arc[i].getPoint(j));
+				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
+			}
+
+		data.envoieArcCourbe(path, 0);
+		robot.followTrajectory(true, Speed.TEST);
+    }
+
 }
