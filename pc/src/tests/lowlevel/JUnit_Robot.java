@@ -154,7 +154,7 @@ public class JUnit_Robot extends JUnit_Test {
 		int nbArc = 1;
 		ArcCourbeDynamique arc[] = new ArcCourbeDynamique[nbArc];
 
-		Cinematique c = new Cinematique(0, 1800, -Math.PI/2, true, -1, Speed.STANDARD.translationalSpeed);
+		Cinematique c = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Cinematique arrivee = new Cinematique(-300, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
 		arc[0] = bezier.interpolationQuadratique(c, arrivee.getPosition(), Speed.STANDARD);
