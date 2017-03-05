@@ -251,7 +251,7 @@ public class JUnit_Robot extends JUnit_Test {
 			}
 
 		data.envoieArcCourbe(path, 0);
-//		robot.followTrajectory(true, Speed.TEST);
+		robot.followTrajectory(true, Speed.TEST);
     }
 
 	
