@@ -20,6 +20,7 @@ package tests.lowlevel;
 import java.util.ArrayList;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +30,9 @@ import obstacles.types.ObstacleCircular;
 import pathfinding.RealGameState;
 import pathfinding.SensFinal;
 import pathfinding.astar.AStarCourbe;
+import pathfinding.astar.arcs.ArcCourbeDynamique;
 import pathfinding.astar.arcs.ArcCourbeStatique;
+import pathfinding.astar.arcs.BezierComputer;
 import pathfinding.astar.arcs.ClothoidesComputer;
 import pathfinding.astar.arcs.vitesses.VitesseClotho;
 import pathfinding.chemin.CheminPathfinding;
@@ -131,7 +134,7 @@ public class JUnit_Robot extends JUnit_Test {
 
 	
 	@Test
-    public void test_follow_trajectory_courbe_gauce() throws Exception
+    public void test_follow_trajectory_courbe_gauche() throws Exception
     {
 		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
 		robot.setCinematique(depart);
@@ -146,13 +149,16 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void test_follow_trajectory_courbe_droite() throws Exception
     {
-		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
-		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
-		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		Cinematique c = new Cinematique(-300, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
-		astar.initializeNewSearch(c, true, state);
-		astar.process(chemin);
+		BezierComputer bezier = container.getService(BezierComputer.class);
+		
+		int nbArc = 1;
+		ArcCourbeDynamique arc[] = new ArcCourbeDynamique[nbArc];
+
+		Cinematique c = new Cinematique(0, 1800, -Math.PI/2, true, -1, Speed.STANDARD.translationalSpeed);
+		Cinematique arrivee = new Cinematique(-300, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		arc[0] = bezier.interpolationQuadratique(c, arrivee.getPosition(), Speed.STANDARD);
+		
+		data.envoieArcCourbe(arc[0].arcs, 0);
 		robot.followTrajectory(true, Speed.TEST);
     }
 
@@ -178,6 +184,8 @@ public class JUnit_Robot extends JUnit_Test {
 		Thread.sleep(500);
 		robot.avance(-200, Speed.TEST);
     }
+	
+	
 	
 	@Test
     public void test_follow_trajectory_droite() throws Exception
