@@ -362,7 +362,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 				if(debugpf)
 					log.debug("Point "+((i<<5)+j)+" : "+c);
 				addXYO(data, c.getPosition(), c.orientationReelle);
-				short courbure = (short) ((Math.round(Math.abs(c.courbureReelle))*100) & 0x7FFF);
+				short courbure = (short) ((Math.round(Math.abs(c.courbureReelle)*100)) & 0x7FFF);
 				if(c.courbureReelle < 0) // complément à 2 à la main
 				{
 					courbure ^= 0xFFFF;
