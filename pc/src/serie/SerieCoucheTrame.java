@@ -170,6 +170,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 					restart = true;
 			} catch (ProtocolException | IncorrectChecksumException | MissingCharacterException e) {
 				log.warning(e);
+				e.printStackTrace();
 				restart = true;
 			}
 		} while(restart);
