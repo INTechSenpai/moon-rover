@@ -143,25 +143,42 @@ public class JUnit_Robot extends JUnit_Test {
 		Cinematique c = new Cinematique(300, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
-		robot.followTrajectory(true, Speed.TEST);
+
+		depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+		c = new Cinematique(-300, 1200, -Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		astar.initializeNewSearch(c, true, state);
+		astar.process(chemin);
+
+		//		robot.followTrajectory(true, Speed.TEST);
     }
 
 	@Test
     public void test_follow_trajectory_courbe_droite() throws Exception
     {
+		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+		Cinematique c = new Cinematique(300, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		astar.initializeNewSearch(c, true, state);
+		astar.process(chemin);
+
 		BezierComputer bezier = container.getService(BezierComputer.class);
 		
 		int nbArc = 1;
 		ArcCourbeDynamique arc[] = new ArcCourbeDynamique[nbArc];
 
-		Cinematique c = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		c = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Cinematique arrivee = new Cinematique(-300, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
 		arc[0] = bezier.interpolationQuadratique(c, arrivee.getPosition(), Speed.STANDARD);
 		
 		Thread.sleep(500);
 		data.envoieArcCourbe(arc[0].arcs, 0);
-		robot.followTrajectory(true, Speed.TEST);
+//		robot.followTrajectory(true, Speed.TEST);
     }
 
 	@Test
@@ -198,6 +215,45 @@ public class JUnit_Robot extends JUnit_Test {
 		Thread.sleep(500);
 		robot.avance(200, Speed.TEST);
     }
+	
+	@Test
+    public void test_clotho() throws Exception
+    {
+		ClothoidesComputer clotho = container.getService(ClothoidesComputer.class);
+		PrintBuffer buffer = container.getService(PrintBuffer.class);
+		
+		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
+		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
+		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+
+		int nbArc = 4;
+		ArcCourbeStatique arc[] = new ArcCourbeStatique[nbArc];
+		for(int i = 0; i < nbArc; i++)
+			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+
+		Cinematique c = new Cinematique(0, 1000, Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(1000);
+		log.debug("Initial : "+c);
+		clotho.getTrajectoire(c, VitesseClotho.GAUCHE_3, Speed.STANDARD, arc[0]);
+		
+		clotho.getTrajectoire(arc[0], VitesseClotho.DROITE_1, Speed.STANDARD, arc[1]);
+		clotho.getTrajectoire(arc[1], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[2]);
+		clotho.getTrajectoire(arc[2], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[3]);
+
+		ArrayList<CinematiqueObs> path = new ArrayList<CinematiqueObs>();
+		
+		for(int i = 0; i < nbArc; i++)
+			for(int j = 0; j < arc[i].getNbPoints(); j++)
+			{
+				path.add(arc[i].getPoint(j));
+				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
+			}
+
+		data.envoieArcCourbe(path, 0);
+//		robot.followTrajectory(true, Speed.TEST);
+    }
+
 	
 	@Test
     public void test_cercle() throws Exception
