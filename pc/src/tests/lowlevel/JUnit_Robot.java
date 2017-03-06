@@ -138,7 +138,7 @@ public class JUnit_Robot extends JUnit_Test {
 		c = new Cinematique(1000, 700, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
-		robot.followTrajectory(true, Speed.TEST);
+		robot.followTrajectory(false, Speed.TEST);
     }
 
 	
