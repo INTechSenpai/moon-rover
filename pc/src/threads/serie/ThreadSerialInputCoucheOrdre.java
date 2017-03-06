@@ -134,7 +134,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 							// Du coup, on récupère les infos théoriques (à partir du chemin) qu'on complète
 							double orientationRobot = ((data[3] << 8) + data[4]) / 1000.;
 							int indexTrajectory = data[5];
-							log.debug("Index trajectory : "+indexTrajectory);
+//							log.debug("Index trajectory : "+indexTrajectory);
 							Cinematique current = chemin.setCurrentIndex(indexTrajectory);
 							current.getPositionEcriture().setX(xRobot);
 							current.getPositionEcriture().setY(yRobot);
