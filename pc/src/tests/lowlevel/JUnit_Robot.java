@@ -75,13 +75,13 @@ public class JUnit_Robot extends JUnit_Test {
 		log.debug("Position voulue : "+c.getPosition());
 		log.debug("Erreur position : "+robot.getCinematique().getPosition().distance(c.getPosition()));
 		log.debug("Orientation robot : "+robot.getCinematique().orientationReelle);
-		log.debug("Orientation voulue : "+c.orientationReelle);
+/*		log.debug("Orientation voulue : "+c.orientationReelle);
 		double deltaO = robot.getCinematique().orientationReelle - c.orientationReelle;
 		if(deltaO > Math.PI)
 			deltaO -= 2*Math.PI;
 		else if(deltaO < -Math.PI)
 			deltaO += 2*Math.PI;
-		log.debug("Erreur orientation : "+deltaO);
+		log.debug("Erreur orientation : "+deltaO);*/
 		super.tearDown();
 	}
 	@Test
@@ -112,6 +112,10 @@ public class JUnit_Robot extends JUnit_Test {
 		c = new Cinematique(-400, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
 		astar.initializeNewSearch(c, false, state);
 		astar.process(chemin);
+		robot.followTrajectory(true, Speed.TEST);
+		robot.followTrajectory(false, Speed.TEST);
+		robot.followTrajectory(true, Speed.TEST);
+		robot.followTrajectory(false, Speed.TEST);
 		robot.followTrajectory(true, Speed.TEST);
     }
 
