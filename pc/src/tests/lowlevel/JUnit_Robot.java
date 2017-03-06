@@ -54,6 +54,7 @@ public class JUnit_Robot extends JUnit_Test {
 	private RealGameState state;
 	private BufferOutgoingOrder data;
 	private Cinematique c;
+	private boolean simuleSerie;
 	
 	@Override
 	@Before
@@ -64,6 +65,7 @@ public class JUnit_Robot extends JUnit_Test {
 		chemin = container.getService(CheminPathfinding.class);
 		astar = container.getService(AStarCourbe.class);
 		data = container.getService(BufferOutgoingOrder.class);
+		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
 		data.startStream();
 	}
 	
@@ -71,10 +73,13 @@ public class JUnit_Robot extends JUnit_Test {
 	@After
 	public void tearDown() throws Exception {
 		data.stopStream();
-		log.debug("Position robot : "+robot.getCinematique().getPosition());
-		log.debug("Position voulue : "+c.getPosition());
-		log.debug("Erreur position : "+robot.getCinematique().getPosition().distance(c.getPosition()));
-		log.debug("Orientation robot : "+robot.getCinematique().orientationReelle);
+		if(!simuleSerie)
+		{
+			log.debug("Position robot : "+robot.getCinematique().getPosition());
+			log.debug("Position voulue : "+c.getPosition());
+			log.debug("Erreur position : "+robot.getCinematique().getPosition().distance(c.getPosition()));
+			log.debug("Orientation robot : "+robot.getCinematique().orientationReelle);
+		}
 /*		log.debug("Orientation voulue : "+c.orientationReelle);
 		double deltaO = robot.getCinematique().orientationReelle - c.orientationReelle;
 		if(deltaO > Math.PI)
@@ -110,13 +115,16 @@ public class JUnit_Robot extends JUnit_Test {
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 		c = new Cinematique(-400, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
-		astar.initializeNewSearch(c, false, state);
+		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
-		robot.followTrajectory(true, Speed.TEST);
-		robot.followTrajectory(false, Speed.TEST);
-		robot.followTrajectory(true, Speed.TEST);
-		robot.followTrajectory(false, Speed.TEST);
-		robot.followTrajectory(true, Speed.TEST);
+		if(!simuleSerie)
+		{
+			robot.followTrajectory(true, Speed.TEST);
+			robot.followTrajectory(false, Speed.TEST);
+			robot.followTrajectory(true, Speed.TEST);
+			robot.followTrajectory(false, Speed.TEST);
+			robot.followTrajectory(true, Speed.TEST);
+		}
     }
 
 	@Test
@@ -129,7 +137,8 @@ public class JUnit_Robot extends JUnit_Test {
 		c = new Cinematique(1000, 700, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
-		robot.followTrajectory(true, Speed.TEST);
+		if(!simuleSerie)
+			robot.followTrajectory(true, Speed.TEST);
     }
 
 	@Test
@@ -142,7 +151,8 @@ public class JUnit_Robot extends JUnit_Test {
 		c = new Cinematique(1000, 700, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
-		robot.followTrajectory(false, Speed.TEST);
+		if(!simuleSerie)
+			robot.followTrajectory(false, Speed.TEST);
     }
 
 	
@@ -156,7 +166,8 @@ public class JUnit_Robot extends JUnit_Test {
 		c = new Cinematique(300, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
-		robot.followTrajectory(true, Speed.TEST);
+		if(!simuleSerie)
+			robot.followTrajectory(true, Speed.TEST);
     }
 	
 	@Test
@@ -169,7 +180,8 @@ public class JUnit_Robot extends JUnit_Test {
 		c = new Cinematique(700, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
-		robot.followTrajectory(true, Speed.TEST);
+		if(!simuleSerie)
+			robot.followTrajectory(true, Speed.TEST);
     }
 
 	@Test
@@ -182,7 +194,8 @@ public class JUnit_Robot extends JUnit_Test {
 		c = new Cinematique(-300, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
-		robot.followTrajectory(true, Speed.TEST);
+		if(!simuleSerie)
+			robot.followTrajectory(true, Speed.TEST);
     }
 
 	@Test
@@ -195,7 +208,8 @@ public class JUnit_Robot extends JUnit_Test {
 		c = new Cinematique(200, 1400, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
 		astar.initializeNewSearch(c, SensFinal.MARCHE_ARRIERE, true, state);
 		astar.process(chemin);
-		robot.followTrajectory(false, Speed.TEST);
+		if(!simuleSerie)
+			robot.followTrajectory(false, Speed.TEST);
     }
 	
 	@Test
@@ -205,7 +219,8 @@ public class JUnit_Robot extends JUnit_Test {
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
-		robot.avance(-200, Speed.TEST);
+		if(!simuleSerie)
+			robot.avance(-200, Speed.TEST);
     }
 	
 	
@@ -217,7 +232,8 @@ public class JUnit_Robot extends JUnit_Test {
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
-		robot.avance(200, Speed.TEST);
+		if(!simuleSerie)
+			robot.avance(200, Speed.TEST);
     }
 	
 	@Test
@@ -255,7 +271,8 @@ public class JUnit_Robot extends JUnit_Test {
 			}
 
 		data.envoieArcCourbe(path, 0);
-		robot.followTrajectory(true, Speed.TEST);
+		if(!simuleSerie)
+			robot.followTrajectory(true, Speed.TEST);
     }
 
 	
@@ -293,7 +310,8 @@ public class JUnit_Robot extends JUnit_Test {
 			}
 
 		data.envoieArcCourbe(path, 0);
-		robot.followTrajectory(true, Speed.TEST);
+		if(!simuleSerie)
+			robot.followTrajectory(true, Speed.TEST);
     }
 
 }
