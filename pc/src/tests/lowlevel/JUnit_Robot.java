@@ -156,6 +156,10 @@ public class JUnit_Robot extends JUnit_Test {
     }
 
 	
+	/**
+	 * C'est lui le test qu'on a répété et répété
+	 * @throws Exception
+	 */
 	@Test
     public void test_follow_trajectory_courbe_gauche() throws Exception
     {
@@ -185,6 +189,20 @@ public class JUnit_Robot extends JUnit_Test {
     }
 
 	@Test
+    public void test_follow_trajectory_courbe_longue() throws Exception
+    {
+		Cinematique depart = new Cinematique(-1000, 700, 0, true, 0, Speed.STANDARD.translationalSpeed);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+		c = new Cinematique(1000, 700, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		astar.initializeNewSearch(c, true, state);
+		astar.process(chemin);
+		if(!simuleSerie)
+			robot.followTrajectory(true, Speed.TEST);
+    }
+	
+	@Test
     public void test_follow_trajectory_courbe_droite() throws Exception
     {
 		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
@@ -197,7 +215,7 @@ public class JUnit_Robot extends JUnit_Test {
 		if(!simuleSerie)
 			robot.followTrajectory(true, Speed.TEST);
     }
-
+	
 	@Test
     public void test_follow_trajectory_courbe_arriere() throws Exception
     {
