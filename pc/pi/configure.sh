@@ -10,9 +10,7 @@ librxtx-java \
 ant \
 hostapd \
 dnsmasq \
-vim \
-xserver-xorg \
-xinit
+vim
 
 # récupération du code
 git clone https://github.com/INTechSenpai/moon-rover.git

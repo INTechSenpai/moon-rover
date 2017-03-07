@@ -17,6 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package tests.lowlevel;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import org.junit.After;
@@ -54,6 +58,25 @@ public class JUnit_Robot extends JUnit_Test {
 	private BufferOutgoingOrder data;
 	private Cinematique c;
 	private boolean simuleSerie;
+	
+	/**
+	 * Génère un fichier qui présente les tests
+	 * @param args
+	 */
+	public static void main(String[] args)
+	{
+		BufferedWriter writer;
+		try {
+			writer = new BufferedWriter(new FileWriter("liste-tests.txt"));
+			Method[] methodes = JUnit_Robot.class.getDeclaredMethods();
+			for(Method m : methodes)
+				if(m.isAnnotationPresent(Test.class))
+					writer.write("./run_junit.sh tests.lowlevel.JUnit_Robot#"+m.getName()+"\n");
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+	}
 	
 	/**
 	 * Pas un test
