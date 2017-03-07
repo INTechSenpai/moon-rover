@@ -227,7 +227,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 			// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de 5m
 			e.printStackTrace();
 		}
-		followTrajectory(distance > 0, speed);
+		followTrajectory(speed);
 	}
 	
 	/*
@@ -283,15 +283,32 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	 * @throws InterruptedException
 	 * @throws UnableToMoveException 
 	 */
-	public void followTrajectory(boolean avant, Speed vitesse) throws InterruptedException, UnableToMoveException
+	public void followTrajectory(Speed vitesse) throws InterruptedException, UnableToMoveException
 	{
-		Ticket t = out.followTrajectory(vitesse, avant);
-		InOrder i = t.attendStatus();
-		if(i == InOrder.ROBOT_BLOCAGE_EXTERIEUR || i == InOrder.ROBOT_BLOCAGE_INTERIEUR)
-		{
-			log.critical("Erreur : "+i);
-			throw new UnableToMoveException();
-		}
+		followTrajectory(chemin.getIndexLast(), vitesse);
+	}
+	
+	/**
+	 * Méthode bloquante qui suit une trajectoire précédemment envoyée.
+	 * S'arrête à l'index spécifié
+	 * @throws InterruptedException
+	 * @throws UnableToMoveException 
+	 */
+	public void followTrajectory(int indexTraj, Speed vitesse) throws InterruptedException, UnableToMoveException
+	{
+		if(chemin.isEmpty())
+			log.debug("Trajectoire vide !");
+		else
+			while(chemin.getCurrentIndex() != indexTraj)
+			{
+				Ticket t = out.followTrajectory(vitesse, chemin.getNextMarcheAvant());
+				InOrder i = t.attendStatus();
+				if(i == InOrder.ROBOT_BLOCAGE_EXTERIEUR || i == InOrder.ROBOT_BLOCAGE_INTERIEUR)
+				{
+					log.critical("Erreur : "+i);
+					throw new UnableToMoveException();
+				}
+			}
 	}
 
 }

@@ -27,7 +27,6 @@ import config.ConfigInfo;
 import graphic.PrintBuffer;
 import obstacles.types.ObstacleCircular;
 import pathfinding.RealGameState;
-import pathfinding.SensFinal;
 import pathfinding.astar.AStarCourbe;
 import pathfinding.astar.arcs.ArcCourbeStatique;
 import pathfinding.astar.arcs.ClothoidesComputer;
@@ -56,6 +55,9 @@ public class JUnit_Robot extends JUnit_Test {
 	private Cinematique c;
 	private boolean simuleSerie;
 	
+	/**
+	 * Pas un test
+	 */
 	@Override
 	@Before
     public void setUp() throws Exception {
@@ -69,6 +71,9 @@ public class JUnit_Robot extends JUnit_Test {
 		data.startStream();
 	}
 	
+	/**
+	 * Pas un test
+	 */
 	@Override
 	@After
 	public void tearDown() throws Exception {
@@ -89,6 +94,11 @@ public class JUnit_Robot extends JUnit_Test {
 		log.debug("Erreur orientation : "+deltaO);*/
 		super.tearDown();
 	}
+	
+	/**
+	 * Test AX-12 filet
+	 * @throws Exception
+	 */
 	@Test
 	public void test_ax12() throws Exception
 	{
@@ -97,6 +107,10 @@ public class JUnit_Robot extends JUnit_Test {
 		robot.bougeFiletMiChemin();
 	}
 
+	/**
+	 * Test de l'attrape-rêve
+	 * @throws Exception
+	 */
 	@Test
 	public void test_actionneurs() throws Exception
 	{
@@ -107,8 +121,13 @@ public class JUnit_Robot extends JUnit_Test {
 		robot.traverseBascule();
 	}
 	
+	/**
+	 * TODO
+	 * Trajectoire qui alterne marche avant / marche arrière (créneau)
+	 * @throws Exception
+	 */
 	@Test
-    public void test_follow_trajectory_creneau() throws Exception
+    public void creneau() throws Exception
     {
 		Cinematique depart = new Cinematique(-900, 650, 0, true, 0, Speed.STANDARD.translationalSpeed);
 		robot.setCinematique(depart);
@@ -118,17 +137,14 @@ public class JUnit_Robot extends JUnit_Test {
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		if(!simuleSerie)
-		{
-			robot.followTrajectory(true, Speed.TEST);
-			robot.followTrajectory(false, Speed.TEST);
-			robot.followTrajectory(true, Speed.TEST);
-			robot.followTrajectory(false, Speed.TEST);
-			robot.followTrajectory(true, Speed.TEST);
-		}
+			robot.followTrajectory(Speed.TEST);
     }
 
+	/**
+	 * Trajectoire longue vers la gauche
+	 */
 	@Test
-    public void test_follow_trajectory_courbe_loin() throws Exception
+    public void courbe_loin() throws Exception
     {
 		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
 		robot.setCinematique(depart);
@@ -138,11 +154,15 @@ public class JUnit_Robot extends JUnit_Test {
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		if(!simuleSerie)
-			robot.followTrajectory(true, Speed.TEST);
+			robot.followTrajectory(Speed.TEST);
     }
 
+	/**
+	 * Cette trajectoire procède en deux temps : le rover recule puis avance
+	 * @throws Exception
+	 */
 	@Test
-    public void test_follow_trajectory_courbe_arriere_loin() throws Exception
+    public void arriere_loin() throws Exception
     {
 		Cinematique depart = new Cinematique(0, 1700, Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
 		robot.setCinematique(depart);
@@ -152,16 +172,16 @@ public class JUnit_Robot extends JUnit_Test {
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		if(!simuleSerie)
-			robot.followTrajectory(false, Speed.TEST);
+			robot.followTrajectory(Speed.TEST);
     }
 
 	
 	/**
-	 * C'est lui le test qu'on a répété et répété
+	 * Petite trajectoire en marche avant vers la gauche
 	 * @throws Exception
 	 */
 	@Test
-    public void test_follow_trajectory_courbe_gauche() throws Exception
+    public void gauche() throws Exception
     {
 		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
 		robot.setCinematique(depart);
@@ -171,11 +191,15 @@ public class JUnit_Robot extends JUnit_Test {
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		if(!simuleSerie)
-			robot.followTrajectory(true, Speed.TEST);
+			robot.followTrajectory(Speed.TEST);
     }
 	
+	/**
+	 * Trajectoire de longueur moyenne en marche avant vers la gauche
+	 * @throws Exception
+	 */
 	@Test
-    public void test_follow_trajectory_courbe_gauche2() throws Exception
+    public void gauche2() throws Exception
     {
 		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
 		robot.setCinematique(depart);
@@ -185,11 +209,15 @@ public class JUnit_Robot extends JUnit_Test {
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		if(!simuleSerie)
-			robot.followTrajectory(true, Speed.TEST);
+			robot.followTrajectory(Speed.TEST);
     }
 
+	/**
+	 * Trajectoire longue (environ 2m) en marche avant
+	 * @throws Exception
+	 */
 	@Test
-    public void test_follow_trajectory_courbe_longue() throws Exception
+    public void courbe_longue() throws Exception
     {
 		Cinematique depart = new Cinematique(-1000, 700, 0, true, 0, Speed.STANDARD.translationalSpeed);
 		robot.setCinematique(depart);
@@ -199,11 +227,15 @@ public class JUnit_Robot extends JUnit_Test {
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		if(!simuleSerie)
-			robot.followTrajectory(true, Speed.TEST);
+			robot.followTrajectory(Speed.TEST);
     }
 	
+	/**
+	 * Trajectoire courte vers la droite. Courbure assez grande (-3.4)
+	 * @throws Exception
+	 */
 	@Test
-    public void test_follow_trajectory_courbe_droite() throws Exception
+    public void droite() throws Exception
     {
 		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
 		robot.setCinematique(depart);
@@ -213,25 +245,15 @@ public class JUnit_Robot extends JUnit_Test {
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		if(!simuleSerie)
-			robot.followTrajectory(true, Speed.TEST);
+			robot.followTrajectory(Speed.TEST);
     }
 	
+	/**
+	 * Le robot recule de 20cm
+	 * @throws Exception
+	 */
 	@Test
-    public void test_follow_trajectory_courbe_arriere() throws Exception
-    {
-		Cinematique depart = new Cinematique(0, 1700, Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
-		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
-		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		c = new Cinematique(200, 1400, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
-		astar.initializeNewSearch(c, SensFinal.MARCHE_ARRIERE, true, state);
-		astar.process(chemin);
-		if(!simuleSerie)
-			robot.followTrajectory(false, Speed.TEST);
-    }
-	
-	@Test
-    public void test_follow_trajectory_droite_arriere() throws Exception
+    public void recule() throws Exception
     {
 		Cinematique depart = new Cinematique(0, 1600, Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
 		robot.setCinematique(depart);
@@ -241,10 +263,12 @@ public class JUnit_Robot extends JUnit_Test {
 			robot.avance(-200, Speed.TEST);
     }
 	
-	
-	
+	/**
+	 * Le robot avance de 20cm
+	 * @throws Exception
+	 */
 	@Test
-    public void test_follow_trajectory_droite() throws Exception
+    public void avance() throws Exception
     {
 		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
 		robot.setCinematique(depart);
@@ -254,6 +278,10 @@ public class JUnit_Robot extends JUnit_Test {
 			robot.avance(200, Speed.TEST);
     }
 	
+	/**
+	 * Un test qui sert plus à grand chose
+	 * @throws Exception
+	 */
 	@Test
     public void test_clotho() throws Exception
     {
@@ -290,10 +318,14 @@ public class JUnit_Robot extends JUnit_Test {
 
 		data.envoieArcCourbe(path, 0);
 		if(!simuleSerie)
-			robot.followTrajectory(true, Speed.TEST);
+			robot.followTrajectory(Speed.TEST);
     }
 
-	
+
+	/**
+	 * Fais un cercle avec un rayon de courbure de 20cm
+	 * @throws Exception
+	 */
 	@Test
     public void test_cercle() throws Exception
     {
@@ -329,7 +361,7 @@ public class JUnit_Robot extends JUnit_Test {
 
 		data.envoieArcCourbe(path, 0);
 		if(!simuleSerie)
-			robot.followTrajectory(true, Speed.TEST);
+			robot.followTrajectory(Speed.TEST);
     }
 
 }
