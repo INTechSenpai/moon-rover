@@ -167,12 +167,12 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void creneau() throws Exception
     {
-		Cinematique depart = new Cinematique(-900, 650, 0, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique depart = new Cinematique(-900, 650, -Math.PI/6, true, 0, Speed.STANDARD.translationalSpeed);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 		c = new Cinematique(-400, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
-		astar.initializeNewSearch(c, true, state);
+		astar.initializeNewSearch(c, false, state);
 		astar.process(chemin);
 		last = chemin.getLastOrientation();
 		if(!simuleSerie)
