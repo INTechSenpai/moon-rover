@@ -32,12 +32,6 @@ void VL6180X::setAddress(uint8_t new_addr)
 // "Mandatory : private registers"
 void VL6180X::init()
 {
-  // Store part-to-part range offset so it can be adjusted if scaling is changed
-  ptp_offset = readReg(SYSRANGE__PART_TO_PART_RANGE_OFFSET);
-
-  Serial.print("ptp_offset ");
-  Serial.println(ptp_offset);
-
   if (readReg(SYSTEM__FRESH_OUT_OF_RESET) == 1)
   {
     scaling = 1;
@@ -74,6 +68,9 @@ void VL6180X::init()
     writeReg(0x030, 0x00);
 
     writeReg(SYSTEM__FRESH_OUT_OF_RESET, 0);
+
+	// Store part-to-part range offset so it can be adjusted if scaling is changed
+	ptp_offset = readReg(SYSRANGE__PART_TO_PART_RANGE_OFFSET);
   }
   else
   {
@@ -87,12 +84,18 @@ void VL6180X::init()
     else if (s == ScalerValues[2]) { scaling = 2; }
     else                           { scaling = 1; }
 
+	// Store part-to-part range offset so it can be adjusted if scaling is changed
+	ptp_offset = readReg(SYSRANGE__PART_TO_PART_RANGE_OFFSET);
+
     // Adjust the part-to-part range offset value read earlier to account for
     // existing scaling. If the sensor was already in 2x or 3x scaling mode,
     // precision will be lost calculating the original (1x) offset, but this can
     // be resolved by resetting the sensor and Arduino again.
     ptp_offset *= scaling;
   }
+
+  Serial.print("ptp_offset ");
+  Serial.println(ptp_offset);
 }
 
 // Configure some settings for the sensor's default behavior from AN4545 -
@@ -137,13 +140,13 @@ void VL6180X::configureDefault(void)
   // Reset other settings to power-on defaults
 
   // sysrange__max_convergence_time = 49 (49 ms)
-  writeReg(VL6180X::SYSRANGE__MAX_CONVERGENCE_TIME, 0x31);
+  //writeReg(VL6180X::SYSRANGE__MAX_CONVERGENCE_TIME, 0x31);
 
   // disable interleaved mode
-  writeReg(INTERLEAVED_MODE__ENABLE, 0);
+  //writeReg(INTERLEAVED_MODE__ENABLE, 0);
 
   // reset range scaling factor to 1x
-  setScaling(1);
+  //setScaling(1);
 }
 
 // Writes an 8-bit register

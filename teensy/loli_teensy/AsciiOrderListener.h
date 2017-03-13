@@ -182,6 +182,7 @@ private:
 		else if (strcmp(order, "k1") == 0) { id = 0xA5; immediate = true; }
 		else if (strcmp(order, "k2") == 0) { id = 0xA6; immediate = true; }
 		else if (strcmp(order, "capt") == 0) { id = 0xB0; immediate = true; }
+		else if (strcmp(order, "axn") == 0) { id = 0xB5; immediate = true; }
 		else if (strcmp(order, "pdn") == 0) { id = 0x3D; immediate = false; }
 		else if (strcmp(order, "pnh") == 0) { id = 0x3E; immediate = false; }
 		else if (strcmp(order, "pun") == 0) { id = 0x3F; immediate = false; }
@@ -196,6 +197,8 @@ private:
 		else if (strcmp(order, "help") == 0) { id = 0xBF; immediate = true; }
 		else if (strcmp(order, "addt") == 0) { id = 0xB1; immediate = true; }
 		else if (strcmp(order, "ft") == 0) { id = 0xB2; immediate = false; }
+		else if (strcmp(order, "tax") == 0) { id = 0xB3; immediate = false; }
+		else if (strcmp(order, "ckd") == 0) { id = 0xB4; immediate = true; }
 		else
 		{
 			orderStatus = UNKNOWN_ORDER;

@@ -40,7 +40,8 @@ public:
 		BLOCKING_M_D,
 		STOPPING_MGR,
 		DIRECTION,
-		SENSORS
+		SENSORS,
+		TRAJ_ERR
 	};
 
 private:

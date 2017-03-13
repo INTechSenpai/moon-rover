@@ -12,12 +12,12 @@
 
 
 // ms
-#define DELAY_OPEN_NET			1500
-#define DELAY_CLOSE_NET			1500
-#define DELAY_EJECT_LEFT_SIDE	3000
-#define DELAY_EJECT_RIGHT_SIDE	3000
-#define DELAY_REARM_LEFT_SIDE	3000
-#define DELAY_REARM_RIGHT_SIDE	3000
+#define DELAY_OPEN_NET			1400
+#define DELAY_CLOSE_NET			1400
+#define DELAY_EJECT_LEFT_SIDE	300
+#define DELAY_EJECT_RIGHT_SIDE	300
+#define DELAY_REARM_LEFT_SIDE	300
+#define DELAY_REARM_RIGHT_SIDE	300
 
 #define PWM_OPEN_NET	255
 #define PWM_CLOSE_NET	255
@@ -91,7 +91,7 @@ public:
 		else if (millis() - beginTime > DELAY_EJECT_LEFT_SIDE)
 		{
 			synchronousPWM.stop();
-			if (analogRead(PIN_BUTEE_G) < 512)
+			if (analogRead(PIN_BUTEE_G) > 512)
 			{
 				return FAILURE;
 			}
@@ -116,7 +116,7 @@ public:
 			synchronousPWM.stop();
 			return FAILURE;
 		}
-		else if (analogRead(PIN_BUTEE_G) < 512)
+		else if (analogRead(PIN_BUTEE_G) > 512)
 		{
 			synchronousPWM.stop();
 			return SUCCESS;
@@ -135,7 +135,7 @@ public:
 		else if (millis() - beginTime > DELAY_EJECT_RIGHT_SIDE)
 		{
 			synchronousPWM.stop();
-			if (analogRead(PIN_BUTEE_D) < 512)
+			if (analogRead(PIN_BUTEE_D) > 512)
 			{
 				return FAILURE;
 			}

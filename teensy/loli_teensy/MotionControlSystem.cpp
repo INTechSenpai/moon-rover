@@ -118,6 +118,7 @@ void MotionControlSystem::control()
 			{
 				movingState = MOVING;
 				endOfMoveMgr.moveIsStarting();
+				derivativeCurvature.update(currentTrajPoint.getCurvature());
 			}
 			leftSpeedSetpoint = 0;
 			rightSpeedSetpoint = 0;
@@ -127,12 +128,45 @@ void MotionControlSystem::control()
 			/* Asservissement sur trajectoire */
 			static float posError;
 			static float orientationError;
-			TrajectoryPoint currentTrajPoint = currentTrajectory[trajectoryIndex];
-			Position posConsigne = currentTrajPoint.getPosition();
+			
+			uint8_t realIndex = trajectoryIndex + desiredIndexOffset;
+			while (!currentTrajectory[realIndex].isUpToDate())
+			{
+				realIndex--;
+			}
+
+			Position posConsigne = currentTrajectory[trajectoryIndex].getPosition();
+			float anticipatedCurvature = currentTrajectory[realIndex].getCurvature();
 			posError = -(position.x - posConsigne.x) * sinf(posConsigne.orientation) + (position.y - posConsigne.y) * cosf(posConsigne.orientation);
-			orientationError = position.orientation - posConsigne.orientation;
-			curvatureOrder = currentTrajPoint.getCurvature() - curvatureCorrectorK1 * posError - curvatureCorrectorK2 * orientationError;
+			orientationError = fmodulo(position.orientation - posConsigne.orientation, TWO_PI);
+
+			if (orientationError > PI)
+			{
+				orientationError -= TWO_PI;
+			}
+			if (maxMovingSpeed > 0)
+			{
+				curvatureOrder = anticipatedCurvature - curvatureCorrectorK1 * posError - curvatureCorrectorK2 * orientationError;
+			}
+			else
+			{
+				curvatureOrder = anticipatedCurvature - curvatureCorrectorK1 * posError + curvatureCorrectorK2 * orientationError;
+			}
+
+			curvatureOrder += derivativeCurvature.getDerivativeCurvature() * curvatureCorrectorKd;
+
 			direction.setAimCurvature(curvatureOrder);
+			
+			watchTrajErrors.traj_curv = anticipatedCurvature;
+			watchTrajErrors.current_curv = direction.getRealCurvature();
+			watchTrajErrors.aim_curv = curvatureOrder;
+			watchTrajErrors.angle_err = 100*orientationError;
+			watchTrajErrors.pos_err = posError;
+			watchTrajErrors.curv_deriv = 10*derivativeCurvature.getDerivativeCurvature();
+
+			watchTrajIndex.index = realIndex;
+			watchTrajIndex.currentPos = position;
+			watchTrajIndex.aimPosition = posConsigne;
 
 			translationPID.compute(); // MAJ movingSpeedSetpoint
 
@@ -256,8 +290,8 @@ void MotionControlSystem::updateSpeedAndPosition()
 	currentAngle = position.orientation + half_deltaRotation_rad;
 	position.setOrientation(position.orientation + half_deltaRotation_rad * 2);
 	corrector = 1 - square(half_deltaRotation_rad) / 6;
-	position.x += corrector * deltaTranslation_mm * cos(currentAngle);
-	position.y += corrector * deltaTranslation_mm * sin(currentAngle);
+	position.x += corrector * deltaTranslation_mm * cosf(currentAngle);
+	position.y += corrector * deltaTranslation_mm * sinf(currentAngle);
 
 	// Mise à jour de currentTranslation
 	if (maxMovingSpeed >= 0)
@@ -295,6 +329,24 @@ void MotionControlSystem::updateTrajectoryIndex()
 	if (movingState == MOVING && !currentTrajectory[trajectoryIndex].isStopPoint())
 	{
 		uint8_t nextPoint = trajectoryIndex + 1;
+		
+		Position trajPoint = currentTrajectory[trajectoryIndex].getPosition();
+		if 
+			(
+			currentTrajectory[nextPoint].isUpToDate() &&
+			((position.x - trajPoint.x) * cosf(trajPoint.orientation) + (position.y - trajPoint.y) * sinf(trajPoint.orientation)) * (float)maxMovingSpeed > 0
+			)
+		{
+			currentTrajectory[trajectoryIndex].makeObsolete();
+			trajectoryIndex = nextPoint;
+			updateTranslationSetpoint();
+			updateSideDistanceFactors();
+			derivativeCurvature.update(currentTrajectory[trajectoryIndex].getCurvature());
+		}
+
+
+		// Ancien algorithme de changement de point
+		/*
 		bool nextPointIncermented = false;
 		while 
 			(
@@ -312,6 +364,7 @@ void MotionControlSystem::updateTrajectoryIndex()
 			updateTranslationSetpoint();
 			updateSideDistanceFactors();
 		}
+		*/
 	}
 	else if (movingState == STOPPED && currentTrajectory[trajectoryIndex].isStopPoint())
 	{
@@ -435,6 +488,7 @@ void MotionControlSystem::updateSideDistanceFactors()
 	}
 }
 
+
 void MotionControlSystem::manageStop()
 {
 	endOfMoveMgr.compute();
@@ -548,6 +602,7 @@ void MotionControlSystem::stop()
 	rightSpeedPID.resetDerivativeError();
 	leftMotorError = 0;
 	rightMotorError = 0;
+	derivativeCurvature.reset();
 	interrupts();
 }
 
@@ -565,6 +620,10 @@ bool MotionControlSystem::isStopped()
 
 void MotionControlSystem::setMaxMovingSpeed(int32_t maxMovingSpeed_mm_sec)
 {
+	//desiredIndexOffset = ABS(maxMovingSpeed_mm_sec) / DESIRED_OFFSET_TO_SPEED;
+	desiredIndexOffset = 0;
+	Serial.print("offset= ");
+	Serial.println(desiredIndexOffset);
 	int32_t speed_ticks_sec = (maxMovingSpeed_mm_sec / TICK_TO_MM ) / FRONT_TICK_TO_TICK;
 	noInterrupts();
 	maxMovingSpeed = speed_ticks_sec;
@@ -720,6 +779,16 @@ void MotionControlSystem::getPIDtoSet_str(char * str, size_t size) const
 			break;
 		}
 	}
+}
+
+void MotionControlSystem::setCurvatureCorrectorKd(float kd)
+{
+	curvatureCorrectorKd = kd;
+}
+
+float MotionControlSystem::getCurvatureCorrectorKd()
+{
+	return curvatureCorrectorKd;
 }
 
 
@@ -885,6 +954,9 @@ void MotionControlSystem::saveParameters()
 
 	EEPROM.put(a, pidToSet);
 	a += sizeof(pidToSet);
+
+	EEPROM.put(a, curvatureCorrectorKd);
+	a += sizeof(curvatureCorrectorKd);
 }
 
 void MotionControlSystem::loadParameters()
@@ -957,6 +1029,9 @@ void MotionControlSystem::loadParameters()
 	EEPROM.get(a, pidToSet);
 	a += sizeof(pidToSet);
 
+	EEPROM.get(a, curvatureCorrectorKd);
+	a += sizeof(curvatureCorrectorKd);
+
 	interrupts();
 }
 
@@ -978,8 +1053,9 @@ void MotionControlSystem::loadDefaultParameters()
 	translationPID.setTunings(6.5, 0, 250);
 	leftSpeedPID.setTunings(2, 0.01, 100);
 	rightSpeedPID.setTunings(2, 0.01, 100);
-	curvatureCorrectorK1 = 1;
-	curvatureCorrectorK2 = 1;
+	curvatureCorrectorK1 = 0;
+	curvatureCorrectorK2 = 0;
+	curvatureCorrectorKd = 0;
 
 	pidToSet = SPEED;
 
@@ -1002,6 +1078,7 @@ void MotionControlSystem::logAllData()
 		Log::data(Log::BLOCKING_M_G, leftMotorBlockingMgr);
 		Log::data(Log::BLOCKING_M_D, rightMotorBlockingMgr);
 		Log::data(Log::STOPPING_MGR, endOfMoveMgr);
+		Log::data(Log::TRAJ_ERR, watchTrajErrors);
 		interrupts();
 	}
 }

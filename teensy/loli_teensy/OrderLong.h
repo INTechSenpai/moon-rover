@@ -19,7 +19,8 @@ public:
 		finished(true), 
 		motionControlSystem(MotionControlSystem::Instance()),
 		sensorMgr(SensorMgr::Instance()),
-		actuatorMgr(ActuatorMgr::Instance())
+		actuatorMgr(ActuatorMgr::Instance()),
+		directionControler(DirectionController::Instance())
 	{}
 
 	void launch(const std::vector<uint8_t> & arg)
@@ -48,6 +49,7 @@ protected:
 	MotionControlSystem & motionControlSystem;
 	SensorMgr & sensorMgr;
 	ActuatorMgr & actuatorMgr;
+	DirectionController & directionControler;
 };
 
 
@@ -268,6 +270,8 @@ public:
 				{
 					if (prescalerCounter == sensorsPrescaler)
 					{
+						output.push_back((uint8_t)directionControler.getLeftAngle()); // uint16_t tronqué en uint8_t car la valeur ne dépasse jamais 206
+						output.push_back((uint8_t)directionControler.getRightAngle()); // idem
 						std::vector<uint8_t> sensorValues = sensorMgr.getValues();
 						output.insert(output.end(), sensorValues.begin(), sensorValues.end());
 						prescalerCounter = 1;
@@ -390,16 +394,13 @@ public:
 	void _launch(const std::vector<uint8_t> & input)
 	{
 		actuatorMgr.closeNet(true);
-		Serial.println("closing");
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
 		finished = actuatorMgr.closeNet(false);
 	}
 	void terminate(std::vector<uint8_t> & output)
-	{
-		Serial.println("closed");
-	}
+	{}
 };
 
 
@@ -674,6 +675,42 @@ private:
 		NO_MORE_POINTS = 0x03
 	};
 	uint8_t endMoveStatus;
+};
+
+
+class TestAX12 : public OrderLong, public Singleton<TestAX12>
+{
+public:
+	TestAX12() : directionController(DirectionController::Instance()) {}
+	void _launch(const std::vector<uint8_t> & input)
+	{
+		c = 0;
+		lastUpdate = millis();
+		t = 10;
+		delta = 10 * (float)t / 1000; // m^-1 / seconde
+	}
+	void onExecute(std::vector<uint8_t> & output)
+	{
+		if (millis() - lastUpdate > t)
+		{
+			c += delta;
+			directionController.setAimCurvature(c);
+			lastUpdate = millis();
+			if (c >= 3)
+			{
+				finished = true;
+			}
+		}
+	}
+	void terminate(std::vector<uint8_t> & output)
+	{}
+
+private:
+	float c;
+	uint32_t lastUpdate;
+	uint32_t t;
+	float delta;
+	DirectionController & directionController;
 };
 
 

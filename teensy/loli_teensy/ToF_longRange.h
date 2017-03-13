@@ -24,7 +24,8 @@ public:
 	{
 		if (isON)
 		{
-			distance = vlSensor.readRangeContinuousMillimeters();
+			//distance = vlSensor.readRangeContinuousMillimeters();
+			distance = vlSensor.readRangeSingleMillimeters();
 			if (vlSensor.timeoutOccurred())
 			{
 				distance = 0;
@@ -47,13 +48,15 @@ public:
 
 	void powerON()
 	{
+		Serial.println("PowerOn ToF long");
 		pinMode(pinStandby, INPUT);
+		delay(50);
 		vlSensor.init();
 		vlSensor.setAddress(i2cAddress);
 
-		vlSensor.stopContinuous();
-		delay(50);
-		vlSensor.startContinuous();
+		//vlSensor.stopContinuous();
+		//delay(50);
+		//vlSensor.startContinuous();
 		isON = true;
 	}
 

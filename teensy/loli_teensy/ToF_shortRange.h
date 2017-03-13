@@ -18,6 +18,7 @@ public:
 		this->pinStandby = pinStandby;
 		standby();
 		vlSensor.setTimeout(500);
+		ptp_offset = 0;
 	}
 
 	uint32_t getMesure()
@@ -48,12 +49,14 @@ public:
 
 	void powerON()
 	{
+		Serial.println("PowerOn ToF short");
 		pinMode(pinStandby, INPUT);
+		delay(50);
 		vlSensor.init();
 		vlSensor.configureDefault();
 		vlSensor.setAddress(i2cAddress);
 
-		vlSensor.writeReg(VL6180X::SYSRANGE__PART_TO_PART_RANGE_OFFSET, (uint8_t)15);
+		//vlSensor.writeReg(VL6180X::SYSRANGE__PART_TO_PART_RANGE_OFFSET, ptp_offset);
 
 		//vlSensor.writeReg(VL6180X::SYSRANGE__MAX_CONVERGENCE_TIME, 10);
 
@@ -63,11 +66,17 @@ public:
 		isON = true;
 	}
 
+	void setPtpOffset(uint8_t offset)
+	{
+		ptp_offset = offset;
+	}
+
 private:
 	uint8_t i2cAddress, pinStandby;
 	uint32_t distance;
 	bool isON;
 	VL6180X vlSensor;
+	uint8_t ptp_offset;
 };
 
 #endif

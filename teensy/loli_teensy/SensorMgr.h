@@ -35,13 +35,20 @@ public:
 			values[i] = 0;
 			updatePattern[i] = 0;
 		}
+
+		tofAVGauche.setPtpOffset(0);
+		tofFlanAVGauche.setPtpOffset(50);
+		tofFlanARGauche.setPtpOffset(0);
+		tofARGauche.setPtpOffset(0);
+		tofARDroit.setPtpOffset(0);
+		tofFlanARDroit.setPtpOffset(0);
+		tofFlanAVDroit.setPtpOffset(0);
+		tofAVDroit.setPtpOffset(0);
 	}
 
 	void powerOn()
 	{
-		tofLPAvant.powerON();
 		irGauche.init();
-		tofLPArriere.powerON();
 		irDroit.init();
 		tofAVGauche.powerON();
 		tofFlanAVGauche.powerON();
@@ -51,6 +58,8 @@ public:
 		tofFlanARDroit.powerON();
 		tofFlanAVDroit.powerON();		
 		tofAVDroit.powerON();
+		tofLPAvant.powerON();
+		//tofLPArriere.powerON();
 	}
 
 	void powerOff()

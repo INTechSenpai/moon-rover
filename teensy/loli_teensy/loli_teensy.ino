@@ -77,12 +77,13 @@ void loop()
 
 	SERIAL_HL.begin(SERIAL_HL_BAUDRATE);
 	
-	Wire.begin();
-	Wire.setClock(1500000);
+
 	SensorMgr & sensorMgr = SensorMgr::Instance();
-	//sensorMgr.powerOn();
+	Wire.begin();
+	Wire.setClock(400000);
+	sensorMgr.powerOn();
 	uint32_t updatePattern[NB_SENSORS] = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
-	//sensorMgr.setUpdatePattern(updatePattern);
+	sensorMgr.setUpdatePattern(updatePattern);
 
 	DirectionController & directionController = DirectionController::Instance();
 	MotionControlSystem & motionControlSystem = MotionControlSystem::Instance();

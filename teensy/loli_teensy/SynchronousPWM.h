@@ -122,17 +122,17 @@ public:
 		noInterrupts();
 		if (eject)
 		{
-			pin_motor_net = LOW;
-			pin_left_motor = LOW;
-			pin_right_motor = HIGH;
-			pin_com = LOW;
-		}
-		else
-		{
 			pin_motor_net = HIGH;
 			pin_left_motor = HIGH;
 			pin_right_motor = LOW;
 			pin_com = HIGH;
+		}
+		else
+		{
+			pin_motor_net = LOW;
+			pin_left_motor = LOW;
+			pin_right_motor = HIGH;
+			pin_com = LOW;
 		}
 		pwm = _pwm;
 		interrupts();

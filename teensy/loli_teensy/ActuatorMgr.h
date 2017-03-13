@@ -16,9 +16,9 @@
 
 
 // TODO : régler les angles de l'AX12 du filet
-#define	ANGLE_DOWN		20
-#define ANGLE_HALFWAY	50
-#define ANGLE_UP		200
+#define	ANGLE_DOWN		65
+#define ANGLE_HALFWAY	80
+#define ANGLE_UP		150
 
 #define TOLERANCE_ANGLE	5
 
@@ -101,18 +101,27 @@ public:
 			controlerNet.stop();
 			digitalWrite(PIN_VENTILATEUR, HIGH);
 			startTime = millis();
+			return false;
 		}
 		else if (millis() - startTime > FAN_SPIN_DURATION)
 		{
 			digitalWrite(PIN_VENTILATEUR, LOW);
 			return true;
 		}
-		return false;
+		else
+		{
+			return false;
+		}
 	}
 
 	uint8_t crossFlipFlop()
 	{
 		// TODO
+	}
+
+	void setAngleNet(uint8_t angle)
+	{
+		ax12net.goalPositionDegree(angle);
 	}
 
 private:

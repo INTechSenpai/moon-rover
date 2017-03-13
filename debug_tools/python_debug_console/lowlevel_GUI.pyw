@@ -685,6 +685,7 @@ class Graph(tk.Frame):
                 line, = self.subplot.plot(self._xIndex, y, label=lineName)
             elif self._dataShape == 'scatter':
                 line, = self.subplot.plot(lineData[0], lineData[1], 'o', label=lineName)
+                self.subplot.set_aspect('equal')
             elif self._dataShape == 'line-scatter':
                 line, = self.subplot.plot(lineData[0], lineData[1], label=lineName)
             else:

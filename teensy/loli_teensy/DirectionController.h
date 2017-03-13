@@ -16,14 +16,16 @@
 #include "Log.h"
 
 /* Periode d'actualisation d'une requête AX12 (4 requêtes au total) */
-#define CONTROL_PERIOD	3125 // µs
+#define CONTROL_PERIOD	25000 //3125 // µs
 
 /* Angles des AX12 correspondant à des roues alignées vers l'avant */
 #define LEFT_ANGLE_ORIGIN	150
 #define RIGHT_ANGLE_ORIGIN	150
 
-#define ANGLE_MIN	93
-#define ANGLE_MAX	206
+#define ANGLE_MIN_LEFT	93
+#define ANGLE_MIN_RIGHT	111
+#define ANGLE_MAX_LEFT	188
+#define ANGLE_MAX_RIGHT	206
 
 class DirectionController : public Singleton<DirectionController>, public Printable
 {
@@ -176,22 +178,22 @@ private:
 		aimLeftAngle = (uint16_t)((LEFT_ANGLE_ORIGIN + leftAngle_rad * 180 / PI) + 0.5);
 		aimRightAngle = (uint16_t)((RIGHT_ANGLE_ORIGIN + rightAngle_rad * 180 / PI) + 0.5);
 
-		if (aimLeftAngle < ANGLE_MIN)
+		if (aimLeftAngle < ANGLE_MIN_LEFT)
 		{
-			aimLeftAngle = ANGLE_MIN;
+			aimLeftAngle = ANGLE_MIN_LEFT;
 		}
-		else if (aimLeftAngle > ANGLE_MAX)
+		else if (aimLeftAngle > ANGLE_MAX_LEFT)
 		{
-			aimLeftAngle = ANGLE_MAX;
+			aimLeftAngle = ANGLE_MAX_LEFT;
 		}
 
-		if (aimRightAngle < ANGLE_MIN)
+		if (aimRightAngle < ANGLE_MIN_RIGHT)
 		{
-			aimRightAngle = ANGLE_MIN;
+			aimRightAngle = ANGLE_MIN_RIGHT;
 		}
-		else if (aimRightAngle > ANGLE_MAX)
+		else if (aimRightAngle > ANGLE_MAX_RIGHT)
 		{
-			aimRightAngle = ANGLE_MAX;
+			aimRightAngle = ANGLE_MAX_RIGHT;
 		}
 	}
 	

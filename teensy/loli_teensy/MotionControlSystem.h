@@ -33,6 +33,8 @@
 #define CURVATURE_TOLERANCE		0.3			// Ecart maximal entre la consigne en courbure et la courbure réelle admissible au démarrage. Unité : m^-1
 #define MOTOR_SLIP_TOLERANCE	200			// Erreur maximale de rotation enregistrable pour les moteurs de propulsion avant de détecter un dérapage. Unité : ticks
 #define TIMEOUT_MOVE_INIT		1000		// Durée maximale le la phase "MOVE_INIT" d'une trajectoire. Unité : ms
+#define DESIRED_OFFSET_TO_SPEED	75			// Conversion du desiredOffset en vitesse (m/s)
+
 
 
 class MotionControlSystem : public Singleton<MotionControlSystem>
@@ -52,6 +54,9 @@ private:
 	
 	// Point de la trajectoire courante sur lequel le robot se situe actuellement
 	volatile uint8_t trajectoryIndex;
+
+	// L'index de trajectoire utilisé pour l'asservissement sera avancé (si possible) de cet offset (par rapport au trajectoryIndex).
+	volatile uint8_t desiredIndexOffset;
 
 	// Prochain point d'arrêt sur la trajectoire courante. Tant qu'aucun point d'arrêt n'a été reçu, nextStopPoint vaut MAX_UINT_16.
 	volatile uint16_t nextStopPoint;
@@ -100,6 +105,53 @@ private:
 	volatile float curvatureOrder;	// Consigne de courbure, en m^-1
 	float curvatureCorrectorK1;		// Coefficient du facteur "erreur de position"
 	float curvatureCorrectorK2;		// Coefficient du facteur "erreur d'orientation"
+	
+	// Aide à l'asservissement sur trajectoire : utilisation de la dérivée de la courbure
+	float curvatureCorrectorKd;		// Coefficient de la dérivée de la courbure (invention de S&G Cie)
+
+	class DerivativeCurvature
+	{
+	public:
+		DerivativeCurvature()
+		{
+			reset();
+		}
+
+		float getDerivativeCurvature()
+		{
+			return derivativeCurvature;
+		}
+
+		void update(float currentCurvature)
+		{
+			if (launched)
+			{
+				derivativeCurvature = 1000 * (currentCurvature - previousCurvature) / (millis() - lastUpdateTime);
+			}
+			else
+			{
+				launched = true;
+			}
+			previousCurvature = currentCurvature;
+			lastUpdateTime = millis();
+		}
+
+		void reset()
+		{
+			derivativeCurvature = 0;
+			previousCurvature = 0;
+			lastUpdateTime = 0;
+			launched = false;
+		}
+
+	private:
+		float derivativeCurvature;		// Dérivée de la consigne en courbure donnée par la trajectoire consigne. Unité : m^-1/s
+		float previousCurvature;		// Utilisé dans le calcul de derivativeCurvature.
+		uint32_t lastUpdateTime;
+		bool launched;
+	};
+
+	DerivativeCurvature derivativeCurvature;
 
 	// Facteurs multiplicatifs à appliquer à la distance parcourue par les roues gauche et droite, en fonction de la courbure courante.
 	volatile float leftSideDistanceFactor;
@@ -121,6 +173,53 @@ private:
 
 	uint32_t lastInterruptDuration; // µs
 	uint32_t maxInterruptDuration; // µs
+
+	class WatchTrajErrors : public Printable
+	{
+	public:
+		WatchTrajErrors()
+		{
+			traj_curv = 0;
+			current_curv = 0;
+			aim_curv = 0;
+			angle_err = 0;
+			pos_err = 0;
+			curv_deriv = 0;
+		}
+
+		size_t printTo(Print& p) const
+		{
+			return p.printf("%g_%g_%g_%g_%g_%g", traj_curv, current_curv, aim_curv, angle_err, pos_err, curv_deriv);
+		}
+
+		float traj_curv;
+		float current_curv;
+		float aim_curv;
+		float angle_err;
+		float pos_err;
+		float curv_deriv;
+	};
+
+	class WatchTrajIndex : public Printable
+	{
+	public:
+		WatchTrajIndex()
+		{
+			index = 0;
+		}
+
+		size_t printTo(Print& p) const
+		{
+			return p.printf("%u_", index) + p.print(currentPos) + p.print("_") + p.print(aimPosition);
+		}
+
+		uint8_t index;
+		Position currentPos;
+		Position aimPosition;
+	};
+
+	WatchTrajErrors watchTrajErrors;
+	WatchTrajIndex watchTrajIndex;
 
 public:
 	// Type décrivant l'état du mouvement
@@ -237,6 +336,9 @@ public:
 	void setPIDtoSet(PIDtoSet newPIDtoSet);
 	PIDtoSet getPIDtoSet() const;
 	void getPIDtoSet_str(char*, size_t) const;
+
+	void setCurvatureCorrectorKd(float);
+	float getCurvatureCorrectorKd();
 
 	/* Setter et getter de la position */
 	void setPosition(const Position &);

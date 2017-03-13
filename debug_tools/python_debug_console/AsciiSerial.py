@@ -25,7 +25,10 @@ class AsciiSerial:
             'STOPPING_MGR': channelData('line',         {'speed': [7, 0], 'isStopped': [7, 1]}),
             'DIRECTION':    channelData('line',         {'aimDirection': [8, 0], 'realDirection': [8, 1]}),
             'SENSORS':      channelData('scatter',      {'sensorTest': [9, 0, 1]}),
-            'PID_TRAJ':     channelData('scatter',      {'p': [0, 0, 1], 't': [1, 0, 1]})
+            'PID_TRAJ':     channelData('scatter',      {'p': [0, 0, 1], 't': [1, 0, 1]}),
+            'TRAJ_ERRORS':  channelData('line',         {'ang': [10, 3], 'pos': [10, 4], 'curv_deriv': [10, 5]}),
+            'AX12_G':       channelData('line',         {'aim': [8, 4], 'real': [8, 2]}),
+            'AX12_D':       channelData('line',         {'aim': [8, 5], 'real': [8, 3]})
         }
 
         self._shapeInitData = {

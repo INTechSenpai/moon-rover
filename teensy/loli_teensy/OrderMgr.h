@@ -103,6 +103,10 @@ public:
 		immediateOrderList[0xB1] = &AddTraj_test::Instance();
 
 		longOrderList[0xB2] = &FollowTrajectory_ascii::Instance();
+		longOrderList[0xB3] = &TestAX12::Instance();
+
+		immediateOrderList[0xB4] = &Curv_kd::Instance();
+		immediateOrderList[0xB5] = &AxNet::Instance();
 
 		immediateOrderList[0xBF] = &Help::Instance();
 

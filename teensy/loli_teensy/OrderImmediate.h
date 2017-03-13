@@ -21,7 +21,8 @@ public:
 	OrderImmediate() :
 		motionControlSystem(MotionControlSystem::Instance()),
 		directionController(DirectionController::Instance()),
-		sensorMgr(SensorMgr::Instance())
+		sensorMgr(SensorMgr::Instance()),
+		actuatorMgr(ActuatorMgr::Instance())
 	{}
 
 	/*
@@ -34,6 +35,7 @@ protected:
 	MotionControlSystem & motionControlSystem;
 	DirectionController & directionController;
 	SensorMgr & sensorMgr;
+	ActuatorMgr & actuatorMgr;
 };
 
 
@@ -122,14 +124,13 @@ public:
 		else
 		{
 			uint8_t index = io.at(0);
-			Serial.printf("AddTP: %u ", index);
+			Serial.printf("AddTP: %u\n", index);
 			for (size_t i = 1; i < io.size(); i += 7)
 			{
 				std::vector<uint8_t> pos_vect(io.begin() + i, io.begin() + i + 5);
 				Position pos(pos_vect);
 				TrajectoryPoint newTrajPoint(pos, io.at(i + 5), io.at(i + 6));
-				Serial.print(newTrajPoint);
-				Serial.println();
+				Serial.println(newTrajPoint);
 				motionControlSystem.addTrajectoryPoint(newTrajPoint, index);
 				index++;
 			}
@@ -297,6 +298,7 @@ public:
 		Serial.println();
 		Serial.printf("Curvature K1= %g\n", k1);
 		Serial.printf("Curvature K2= %g\n", k2);
+		Serial.printf("Curvature Kd= %g\n", motionControlSystem.getCurvatureCorrectorKd());
 		Serial.println();
 		Serial.printf("StopMgr epsilon= %d\tresponseTime= %d\n", smgre, smgrt);
 		Serial.printf("BlockMgr sensibility= %g\tresponseTime= %d\n", bmgrs, bmgrt);
@@ -751,6 +753,21 @@ public:
 	}
 };
 
+class Curv_kd: public OrderImmediate, public Singleton<Curv_kd>
+{
+public:
+	Curv_kd() {}
+	virtual void execute(std::vector<uint8_t> & io) {
+		if (io.size() > 0)
+		{
+			float arg = Vutils<ARG_SIZE>::vtof(io);
+			motionControlSystem.setCurvatureCorrectorKd(arg);
+		}
+		Serial.printf("CurvatureCorrector kd= %g\n", motionControlSystem.getCurvatureCorrectorKd());
+	}
+};
+
+
 class Capt : public OrderImmediate, public Singleton<Capt>
 {
 public:
@@ -868,6 +885,28 @@ public:
 		Serial.println("Done");
 	}
 };
+
+
+/* Règle l’angle de l’AX12 du filet. */
+class AxNet : public OrderImmediate, public Singleton<AxNet>
+{
+public:
+	AxNet() {}
+	virtual void execute(std::vector<uint8_t> & io) 
+	{
+		if (io.size() > 0)
+		{
+			int a = Vutils<ARG_SIZE>::vtoi(io);
+			Serial.printf("Angle= %d\n", a);
+			actuatorMgr.setAngleNet(a);
+		}
+		else
+		{
+			Serial.println("Argument manquant");
+		}
+	}
+};
+
 
 #endif
 
