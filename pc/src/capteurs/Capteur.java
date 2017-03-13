@@ -66,15 +66,32 @@ public abstract class Capteur implements Printable
 		centreRotationDroite = new Vec2RO(L, -d);
 	}
 
-	public abstract void computePosOrientationRelative(Cinematique c);
+	/**
+	 * Orientation donnée par le bas niveau
+	 * @param c
+	 * @param angleRoueGauche
+	 * @param angleRoueDroite
+	 */
+	public abstract void computePosOrientationRelative(Cinematique c, double angleRoueGauche, double angleRoueDroite);
 	
 	@Override
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
 		if(robot.isCinematiqueInitialised())
 		{
+			double courbure = robot.getCinematique().courbureReelle;
+			double angleRoueGauche, angleRoueDroite;
+			if(Math.abs(courbure) < 0.01)
+				angleRoueGauche = angleRoueDroite = 0;
+			else
+			{
+				double R = Math.abs(1000 / courbure); // le rayon de courbure
+				angleRoueDroite = Math.signum(courbure) * Math.atan2(L, Math.abs(d+R));
+				angleRoueGauche = Math.signum(courbure) * Math.atan2(L, Math.abs(R-d));
+			}
+			
 			double orientation = robot.getCinematique().orientationReelle;
-			computePosOrientationRelative(robot.getCinematique());
+			computePosOrientationRelative(robot.getCinematique(), angleRoueGauche, angleRoueDroite);
 			Vec2RW p1 = positionRelativeRotate.clone();
 			p1.rotate(orientation);
 			p1.plus(robot.getCinematique().getPosition());

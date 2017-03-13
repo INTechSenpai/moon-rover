@@ -158,18 +158,22 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 			
 							if(data.length > 6) // la présence de ces infos n'est pas systématique
 							{
+								// changement de repère (cf la doc)
+								double angleRoueGauche = -(data[6] - 150.)*Math.PI/180.;
+								double angleRoueDroite = -(data[7] - 150.)*Math.PI/180.;
+								
 								/**
 								 * Acquiert ce que voit les capteurs
 							 	 */
 								int[] mesures = new int[nbCapteurs];
 								for(int i = 0; i < nbCapteurs; i++)
 								{
-									mesures[i] = data[6+i];
+									mesures[i] = data[8+i];
 									if(debugSerie)
 										log.debug("Capteur "+CapteursRobot.values[i].name()+" : "+mesures[i]);
 								}
 								if(capteursOn)
-									buffer.add(new SensorsData(mesures, current));
+									buffer.add(new SensorsData(angleRoueGauche, angleRoueDroite, mesures, current));
 							}
 						}
 					}

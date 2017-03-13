@@ -30,9 +30,12 @@ public class SensorsData
 	public Cinematique cinematique;
 	/** Ce que voit chacun des capteurs */
 	public int[] mesures;
+	public double angleRoueGauche, angleRoueDroite;
 	
-	public SensorsData(int[] mesures, Cinematique cinematique)
+	public SensorsData(double angleRoueGauche, double angleRoueDroite, int[] mesures, Cinematique cinematique)
 	{
+		this.angleRoueDroite = angleRoueDroite;
+		this.angleRoueGauche = angleRoueGauche;
 		this.mesures = mesures;
 		this.cinematique = cinematique;
 	}

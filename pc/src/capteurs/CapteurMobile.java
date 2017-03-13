@@ -42,18 +42,13 @@ public class CapteurMobile extends Capteur
 	}
 
 	@Override
-	public void computePosOrientationRelative(Cinematique c)
+	public void computePosOrientationRelative(Cinematique c, double angleRoueGauche, double angleRoueDroite)
 	{
-		if(Math.abs(c.courbureReelle) < 0.01)
-			orientationRelativeRotate = orientationRelative;
+		if(roueDroite)
+			orientationRelativeRotate = orientationRelative + angleRoueDroite;
 		else
-		{
-			double R = Math.abs(1000 / c.courbureReelle); // le rayon de courbure
-			if(roueDroite)
-				orientationRelativeRotate = orientationRelative + Math.signum(c.courbureReelle) * Math.atan2(L, Math.abs(d+R));
-			else
-				orientationRelativeRotate = orientationRelative + Math.signum(c.courbureReelle) * Math.atan2(L, Math.abs(R-d));
-		}
+			orientationRelativeRotate = orientationRelative + angleRoueGauche;
+
 		positionRelative.copy(positionRelativeRotate);
 		if(roueDroite)
 		{

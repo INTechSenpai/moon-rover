@@ -157,7 +157,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 				robot.filetVuVide(); // filet vide
 			}
 			
-			Vec2RO positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique);
+			Vec2RO positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
 			if(positionVue == null)
 				continue;
 			
@@ -222,11 +222,11 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 				index2 = CapteursRobot.ToF_LATERAL_DROITE_ARRIERE.ordinal();
 			}
 			
-			Vec2RW pointVu1 = getPositionVue(capteurs[index1], data.mesures[index1], data.cinematique);
+			Vec2RW pointVu1 = getPositionVue(capteurs[index1], data.mesures[index1], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
 			if(pointVu1 == null)
 				continue;
 
-			Vec2RW pointVu2 = getPositionVue(capteurs[index2], data.mesures[index2], data.cinematique);
+			Vec2RW pointVu2 = getPositionVue(capteurs[index2], data.mesures[index2], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
 			if(pointVu2 == null)
 				continue;			
 			
@@ -320,9 +320,9 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 	 * @param cinematique
 	 * @return
 	 */
-	private Vec2RW getPositionVue(Capteur c, int mesure, Cinematique cinematique)
+	private Vec2RW getPositionVue(Capteur c, int mesure, Cinematique cinematique, double angleRoueGauche, double angleRoueDroite)
 	{
-		c.computePosOrientationRelative(cinematique);
+		c.computePosOrientationRelative(cinematique, angleRoueGauche, angleRoueDroite);
 		
 		/**
 		 * Si le capteur voit trop proche ou trop loin, on ne peut pas lui faire confiance
