@@ -29,6 +29,7 @@ import utils.Vec2RO;
 
 public class CapteurImmobile extends Capteur
 {
+	private static final long serialVersionUID = -1125705600981449689L;
 
 	public CapteurImmobile(Config config, Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{

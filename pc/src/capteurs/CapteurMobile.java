@@ -30,6 +30,7 @@ import utils.Vec2RO;
 
 public class CapteurMobile extends Capteur
 {
+	private static final long serialVersionUID = -6597126099899641842L;
 	private boolean roueDroite;
 
 	/**
