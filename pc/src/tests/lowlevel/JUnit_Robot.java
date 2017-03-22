@@ -67,17 +67,26 @@ public class JUnit_Robot extends JUnit_Test {
 	 */
 	public static void main(String[] args)
 	{
-		BufferedWriter writer;
+		BufferedWriter writer = null;
 		try {
 			writer = new BufferedWriter(new FileWriter("liste-tests.txt"));
 			Method[] methodes = JUnit_Robot.class.getDeclaredMethods();
 			for(Method m : methodes)
 				if(m.isAnnotationPresent(Test.class))
 					writer.write("./run_junit.sh tests.lowlevel.JUnit_Robot#"+m.getName()+"\n");
-			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
+		finally
+		{
+			if(writer != null)
+				try {
+					writer.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
 	}
 	
 	/**
