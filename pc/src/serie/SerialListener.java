@@ -50,7 +50,8 @@ public class SerialListener implements Service, SerialPortEventListener, SerialC
 	{
 		return outputEmpty;
 	}
-	
+
+	@Override
 	public synchronized void serialEvent(SerialPortEvent oEvent)
 	{
 		if(oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE)
