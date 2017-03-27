@@ -1,5 +1,4 @@
 #!/bin/sh
-export DISPLAY=:1
 if [ "$#" -lt 1 ]; then
     echo "Usage: ./run.sh Classe#methode"
 else
