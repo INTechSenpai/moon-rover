@@ -15,14 +15,15 @@
 #include "ax12config.h"
 
 
-// TODO : régler les angles de l'AX12 du filet
 #define	ANGLE_DOWN		65
 #define ANGLE_HALFWAY	80
-#define ANGLE_UP		150
+#define ANGLE_UP		155
+#define ANGLE_RELEASE	150
 
 #define TOLERANCE_ANGLE	5
 
-#define FAN_SPIN_DURATION	5000 // ms
+#define FAN_STARTUP_DURATION	2000 // ms
+#define FUNNY_ACTION_DURATION	5000 // ms
 
 
 /*
@@ -93,24 +94,49 @@ public:
 		return controlerNet.rearmRightSide(launch);
 	}
 
-	bool fan(bool launch)
+	bool funnyAction(bool launch)
 	{
 		static uint32_t startTime;
+		static uint32_t fanStartTime;
+		static uint32_t lastCommTime;
+		static uint8_t stage;
 		if (launch)
 		{
 			controlerNet.stop();
-			digitalWrite(PIN_VENTILATEUR, HIGH);
+			stage = 0;
+			moveTheAX12(true, ANGLE_UP, TOLERANCE_ANGLE, lastCommTime);
 			startTime = millis();
 			return false;
 		}
-		else if (millis() - startTime > FAN_SPIN_DURATION)
-		{
-			digitalWrite(PIN_VENTILATEUR, LOW);
-			return true;
-		}
 		else
 		{
-			return false;
+			if (stage == 0)
+			{
+				if (moveTheAX12(false, ANGLE_UP, TOLERANCE_ANGLE, lastCommTime))
+				{ // AX12 en place pour bloquer la fusée
+					digitalWrite(PIN_VENTILATEUR, HIGH);
+					fanStartTime = millis();
+					stage = 1;
+				}
+			}
+			else if (stage == 1)
+			{
+				if (millis() - fanStartTime > FAN_STARTUP_DURATION)
+				{
+					moveTheAX12(true, ANGLE_RELEASE, TOLERANCE_ANGLE, lastCommTime);
+					stage = 2;
+				}
+			}
+
+			if (millis() - startTime > FUNNY_ACTION_DURATION)
+			{
+				digitalWrite(PIN_VENTILATEUR, LOW);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 	}
 

@@ -532,6 +532,29 @@ private:
 };
 
 
+/*
+	Fait tourner le ventilateur et libère le projectile.
+*/
+class FunnyAction : public OrderLong, public Singleton<FunnyAction>
+{
+public:
+	FunnyAction() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{
+		Serial.println("Start funny action");
+		actuatorMgr.funnyAction(true);
+	}
+	void onExecute(std::vector<uint8_t> & output)
+	{
+		finished = actuatorMgr.funnyAction(false);
+	}
+	void terminate(std::vector<uint8_t> & output)
+	{
+		Serial.println("End funny action");
+	}
+};
+
+
 
 /*
 	######################

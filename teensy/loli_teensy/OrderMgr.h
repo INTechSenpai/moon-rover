@@ -57,6 +57,7 @@ public:
 		longOrderList[0x44] = &RearmLeftSide::Instance();
 		longOrderList[0x45] = &EjectRightSide::Instance();
 		longOrderList[0x46] = &RearmRightSide::Instance();
+		longOrderList[0x47] = &FunnyAction::Instance();
 
 		// Ordres ASCII
 		immediateOrderList[0x80] = &Logon::Instance();
