@@ -271,6 +271,20 @@ public class JUnit_Robot extends JUnit_Test {
 			robot.followTrajectory(Speed.TEST);
     }
 	
+	@Test
+    public void droite2() throws Exception
+    {
+		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+		c = new Cinematique(-700, 1100, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		astar.initializeNewSearch(c, true, state);
+		astar.process(chemin);
+		if(!simuleSerie)
+			robot.followTrajectory(Speed.TEST);
+    }
+	
 	/**
 	 * Le robot recule de 20cm
 	 * @throws Exception
