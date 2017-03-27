@@ -96,7 +96,7 @@ public class JUnit_Robot extends JUnit_Test {
 		this.v = null;
 		double v = config.getInt(ConfigInfo.DEBUG_VITESSE_ROBOT) / 1000.;
 		for(Speed s : Speed.values())
-			if(Math.abs(s.translationalSpeed - v) < 1)
+			if(Math.abs(s.translationalSpeed - v) < 0.001)
 				this.v = s;
 		if(this.v == null)
 		{
@@ -104,7 +104,7 @@ public class JUnit_Robot extends JUnit_Test {
 			this.v = Speed.TEST1;
 		}
 		else
-			log.debug("Vitesse du robot : "+v*1000.);
+			log.debug("Vitesse du robot : "+v*1000.+" ("+this.v+")");
 	}
 	
 	/**
