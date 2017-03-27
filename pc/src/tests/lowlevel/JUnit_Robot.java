@@ -58,6 +58,7 @@ public class JUnit_Robot extends JUnit_Test {
 	private BufferOutgoingOrder data;
 	private Cinematique c;
 	private boolean simuleSerie;
+	private Speed v;
 	
 	/**
 	 * Génère un fichier qui présente les tests
@@ -92,6 +93,18 @@ public class JUnit_Robot extends JUnit_Test {
 		data = container.getService(BufferOutgoingOrder.class);
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
 		data.startStream();
+		this.v = null;
+		double v = config.getInt(ConfigInfo.DEBUG_VITESSE_ROBOT) / 1000.;
+		for(Speed s : Speed.values())
+			if(Math.abs(s.translationalSpeed - v) < 1)
+				this.v = s;
+		if(this.v == null)
+		{
+			log.warning("Vitesse inconnue ! "+v*1000.+". Vitesse utilisée : "+Speed.TEST1.translationalSpeed);
+			this.v = Speed.TEST1;
+		}
+		else
+			log.debug("Vitesse du robot : "+v*1000.);
 	}
 	
 	/**
@@ -160,7 +173,7 @@ public class JUnit_Robot extends JUnit_Test {
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		if(!simuleSerie)
-			robot.followTrajectory(Speed.TEST);
+			robot.followTrajectory(v);
     }
 
 	/**
@@ -177,7 +190,7 @@ public class JUnit_Robot extends JUnit_Test {
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		if(!simuleSerie)
-			robot.followTrajectory(Speed.TEST);
+			robot.followTrajectory(v);
     }
 
 	/**
@@ -195,7 +208,7 @@ public class JUnit_Robot extends JUnit_Test {
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		if(!simuleSerie)
-			robot.followTrajectory(Speed.TEST);
+			robot.followTrajectory(v);
     }
 
 	
@@ -214,7 +227,7 @@ public class JUnit_Robot extends JUnit_Test {
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		if(!simuleSerie)
-			robot.followTrajectory(Speed.TEST);
+			robot.followTrajectory(v);
     }
 	
 	/**
@@ -232,7 +245,7 @@ public class JUnit_Robot extends JUnit_Test {
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		if(!simuleSerie)
-			robot.followTrajectory(Speed.TEST);
+			robot.followTrajectory(v);
     }
 
 	/**
@@ -250,7 +263,7 @@ public class JUnit_Robot extends JUnit_Test {
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		if(!simuleSerie)
-			robot.followTrajectory(Speed.TEST);
+			robot.followTrajectory(v);
     }
 	
 	/**
@@ -268,7 +281,7 @@ public class JUnit_Robot extends JUnit_Test {
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		if(!simuleSerie)
-			robot.followTrajectory(Speed.TEST);
+			robot.followTrajectory(v);
     }
 	
 	@Test
@@ -282,7 +295,7 @@ public class JUnit_Robot extends JUnit_Test {
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		if(!simuleSerie)
-			robot.followTrajectory(Speed.TEST);
+			robot.followTrajectory(v);
     }
 	
 	/**
@@ -297,7 +310,7 @@ public class JUnit_Robot extends JUnit_Test {
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
 		if(!simuleSerie)
-			robot.avance(-200, Speed.TEST);
+			robot.avance(-200, v);
     }
 	
 	/**
@@ -312,7 +325,7 @@ public class JUnit_Robot extends JUnit_Test {
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
 		if(!simuleSerie)
-			robot.avance(200, Speed.TEST);
+			robot.avance(200, v);
     }
 	
 	/**
@@ -355,7 +368,7 @@ public class JUnit_Robot extends JUnit_Test {
 
 		data.envoieArcCourbe(path, 0);
 		if(!simuleSerie)
-			robot.followTrajectory(Speed.TEST);
+			robot.followTrajectory(v);
     }
 
 
@@ -398,7 +411,7 @@ public class JUnit_Robot extends JUnit_Test {
 
 		data.envoieArcCourbe(path, 0);
 		if(!simuleSerie)
-			robot.followTrajectory(Speed.TEST);
+			robot.followTrajectory(v);
     }
 
 }
