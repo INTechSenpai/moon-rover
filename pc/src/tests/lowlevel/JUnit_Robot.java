@@ -114,20 +114,22 @@ public class JUnit_Robot extends JUnit_Test {
 	@After
 	public void tearDown() throws Exception {
 		data.stopStream();
+		Cinematique last = chemin.getLastSent();
 		if(!simuleSerie)
 		{
 			log.debug("Position robot : "+robot.getCinematique().getPosition());
 			log.debug("Position voulue : "+c.getPosition());
 			log.debug("Erreur position : "+robot.getCinematique().getPosition().distance(c.getPosition()));
 			log.debug("Orientation robot : "+robot.getCinematique().orientationReelle);
+			log.debug("Orientation voulue : "+last.orientationReelle);
+			double deltaO = robot.getCinematique().orientationReelle - last.orientationReelle;
+			if(deltaO > Math.PI)
+				deltaO -= 2*Math.PI;
+			else if(deltaO < -Math.PI)
+				deltaO += 2*Math.PI;
+			log.debug("Erreur orientation : "+deltaO);
 		}
-/*		log.debug("Orientation voulue : "+c.orientationReelle);
-		double deltaO = robot.getCinematique().orientationReelle - c.orientationReelle;
-		if(deltaO > Math.PI)
-			deltaO -= 2*Math.PI;
-		else if(deltaO < -Math.PI)
-			deltaO += 2*Math.PI;
-		log.debug("Erreur orientation : "+deltaO);*/
+
 		super.tearDown();
 	}
 	
