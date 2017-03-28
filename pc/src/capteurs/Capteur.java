@@ -37,7 +37,6 @@ import utils.Vec2RW;
 
 public abstract class Capteur implements Printable
 {
-	private static final long serialVersionUID = -99257680610929776L;
 	public boolean sureleve;
 	protected final Vec2RO positionRelative;
 	protected final double orientationRelative;

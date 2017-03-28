@@ -51,7 +51,6 @@ import graphic.printable.Segment;
 
 public class RobotReal extends Robot implements Service, Printable, CoreClass
 {
-	private static final long serialVersionUID = 8613526717632288662L;
 	protected volatile boolean matchDemarre = false;
     protected volatile long dateDebutMatch;
     private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant;
