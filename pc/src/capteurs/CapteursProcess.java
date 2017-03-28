@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package capteurs;
 
-import graphic.PrintBuffer;
+import graphic.PrintBufferInterface;
 import obstacles.types.ObstacleProximity;
 import obstacles.types.ObstacleRobot;
 import obstacles.types.ObstaclesFixes;
@@ -72,7 +72,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 	private int indexCorrection = 0;
 	private Cinematique[] bufferCorrection;
 	
-	public CapteursProcess(Container container, Log log, GridSpace gridspace, Table table, DStarLite dstarlite, CheminPathfinding chemin, PrintBuffer buffer, RobotReal robot, BufferOutgoingOrder serie, Config config)
+	public CapteursProcess(Container container, Log log, GridSpace gridspace, Table table, DStarLite dstarlite, CheminPathfinding chemin, PrintBufferInterface buffer, RobotReal robot, BufferOutgoingOrder serie, Config config)
 	{
 		this.table = table;
 		this.log = log;

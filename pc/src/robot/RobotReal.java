@@ -37,7 +37,7 @@ import exceptions.UnableToMoveException;
 import utils.Log;
 import utils.Vec2RO;
 import graphic.Fenetre;
-import graphic.PrintBuffer;
+import graphic.PrintBufferInterface;
 import graphic.printable.Couleur;
 import graphic.printable.Layer;
 import graphic.printable.Printable;
@@ -57,14 +57,14 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
     private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant;
     private int nbRetente;
 	private boolean print, printTrace;
-	private PrintBuffer buffer;
+	private PrintBufferInterface buffer;
 	private BufferOutgoingOrder out;
 	private CheminPathfinding chemin;
     private boolean cinematiqueInitialised = false;
     private CinematiqueObs[] pointsAvancer = new CinematiqueObs[256];
 
 	// Constructeur
-	public RobotReal(Log log, BufferOutgoingOrder out, PrintBuffer buffer, CheminPathfinding chemin, Config config)
+	public RobotReal(Log log, BufferOutgoingOrder out, PrintBufferInterface buffer, CheminPathfinding chemin, Config config)
  	{
 		super(log);
 		this.buffer = buffer;
