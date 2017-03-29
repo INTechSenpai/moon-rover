@@ -27,17 +27,17 @@ import table.GameElementNames;
 import utils.Log;
 
 /**
- * Le script qui récupère les balles d'un cratère
+ * Le script qui récupère les balles d'un petit cratère
  * @author pf
  *
  */
 
-public class ScriptCratere extends Script
+public class ScriptPetitCratere extends Script
 {
 	private GameElementNames element;
 	private CercleArrivee cercle;
 	
-	public ScriptCratere(Log log, CercleArrivee cercle, GameElementNames element)
+	public ScriptPetitCratere(Log log, CercleArrivee cercle, GameElementNames element)
 	{
 		super(log);
 		this.element = element;
@@ -47,7 +47,7 @@ public class ScriptCratere extends Script
 	@Override
 	public boolean equals(Object other)
 	{
-		return other instanceof ScriptCratere && other.hashCode() == hashCode();
+		return other instanceof ScriptPetitCratere && other.hashCode() == hashCode();
 	}
 	
 	@Override
@@ -59,7 +59,7 @@ public class ScriptCratere extends Script
 	@Override
 	public void setUpCercleArrivee()
 	{
-		cercle.set(element);
+		cercle.set(element, 250);
 	}
 
 	@Override

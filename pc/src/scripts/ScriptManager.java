@@ -42,8 +42,10 @@ public class ScriptManager implements Service, Iterator<Script>, CoreClass
 	{
 		this.log = log;
 		for(GameElementNames n : GameElementNames.values())
-			if(n.toString().startsWith("MINERAI"))
-				scripts.put(n.toString(), new ScriptCratere(log, cercle, n));
+			if(n.toString().startsWith("MINERAI_CRATERE"))
+				scripts.put(n.toString(), new ScriptPetitCratere(log, cercle, n));
+		scripts.put("MINERAI_GROS_CRATERE_GAUCHE", new ScriptGrosCratere(log, cercle, "MINERAI_GROS_CRATERE_GAUCHE"));
+		scripts.put("MINERAI_GROS_CRATERE_DROITE", new ScriptGrosCratere(log, cercle, "MINERAI_GROS_CRATERE_DROITE"));
 		scripts.put("DEPOSE", new ScriptDeposeMinerai(log));
 	}
 	
