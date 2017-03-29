@@ -25,6 +25,7 @@ import container.dependances.CoreClass;
 import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
 import pathfinding.ChronoGameState;
+import pathfinding.Key;
 import pathfinding.PFInstruction;
 import pathfinding.PathCache;
 import pathfinding.RealGameState;
@@ -69,7 +70,7 @@ public class Strategie implements Service, CoreClass
 		try {
 			state.copyAStarCourbe(chrono); // TODO vérifier si la copie est correcte
 			s.execute(chrono);
-			inst.set(s, true, chrono);
+			inst.set(new Key(chrono, s, true));
 			s.execute(state);
 			pathcache.sendPreparedPath();
 			state.robot.followTrajectory(Speed.STANDARD); // TODO
