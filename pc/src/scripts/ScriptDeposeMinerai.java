@@ -19,8 +19,11 @@ package scripts;
 
 import exceptions.UnableToMoveException;
 import pathfinding.GameState;
+import pathfinding.SensFinal;
+import pathfinding.astar.arcs.CercleArrivee;
 import robot.Robot;
 import utils.Log;
+import utils.Vec2RO;
 
 /**
  * Le script qui dépose le minerai
@@ -30,15 +33,18 @@ import utils.Log;
 
 public class ScriptDeposeMinerai extends Script
 {
-	public ScriptDeposeMinerai(Log log)
+	private CercleArrivee cercle;
+	
+	public ScriptDeposeMinerai(Log log, CercleArrivee cercle)
 	{
 		super(log);
+		this.cercle = cercle;
 	}
 
 	@Override
 	public void setUpCercleArrivee()
 	{
-		// TODO
+		cercle.set(new Vec2RO(400, 1800), 5*Math.PI/4, 350, SensFinal.MARCHE_AVANT);
 	}
 
 	@Override

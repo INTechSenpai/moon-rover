@@ -57,7 +57,8 @@ public class Strategie implements Service, CoreClass
 		this.inst = inst;
 		HashMap<String, Script> scripts = scriptsm.getScripts();
 		strategie.add(scripts.get(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE.toString()));
-		strategie.add(new ScriptDeposeMinerai(log));
+		strategie.add(scripts.get(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE.toString()));
+		strategie.add(scripts.get("DEPOSE"));
 	}
 	
 	/**
