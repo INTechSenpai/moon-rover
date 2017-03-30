@@ -26,16 +26,16 @@ import utils.Log;
 import utils.Vec2RO;
 
 /**
- * Le script qui dépose le minerai dans le panier
+ * Le script qui dépose le minerai dans la base mais pas dans le filet
  * @author pf
  *
  */
 
-public class ScriptDeposeMinerai extends Script
+public class ScriptDeposeMineraiSimple extends Script
 {
 	private CercleArrivee cercle;
 	
-	public ScriptDeposeMinerai(Log log, CercleArrivee cercle)
+	public ScriptDeposeMineraiSimple(Log log, CercleArrivee cercle)
 	{
 		super(log);
 		this.cercle = cercle;
@@ -44,7 +44,7 @@ public class ScriptDeposeMinerai extends Script
 	@Override
 	public void setUpCercleArrivee()
 	{
-		cercle.set(new Vec2RO(400, 1800), 5*Math.PI/4, 350, SensFinal.MARCHE_AVANT);
+		cercle.set(new Vec2RO(400, 1800), 5*Math.PI/4, 350, SensFinal.MARCHE_ARRIERE);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class ScriptDeposeMinerai extends Script
 	@Override
 	public boolean equals(Object other)
 	{
-		return other instanceof ScriptDeposeMinerai; // de toute façon, il n'y a qu'un seul script de ce type
+		return other instanceof ScriptDeposeMineraiSimple; // de toute façon, il n'y a qu'un seul script de ce type
 	}
 	
 	@Override
