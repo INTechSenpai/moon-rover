@@ -9,6 +9,8 @@
 
 #include "Dynamixel.h"
 
+#define COM_TIMEOUT 2 // unit: ms [WARNING: standard timeout is 50]
+
 /**
  * \class  DynamixelInterface
  * \brief Represent a dynamixel bus

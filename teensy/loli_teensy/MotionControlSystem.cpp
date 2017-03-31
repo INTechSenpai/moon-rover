@@ -126,8 +126,10 @@ void MotionControlSystem::control()
 		else if (movingState == MOVING)
 		{
 			/* Asservissement sur trajectoire */
-			static float posError;
-			static float orientationError;
+			static float posError, prevPosError, deltaPosError;
+			static float orientationError, prevOrientationError, deltaOrientationError;
+			static Average<float, 5> averageDeltaPosError;
+			static Average<float, 5> averageDeltaOrientationError;
 			
 			uint8_t realIndex = trajectoryIndex + desiredIndexOffset;
 			while (!currentTrajectory[realIndex].isUpToDate())
@@ -140,22 +142,38 @@ void MotionControlSystem::control()
 			posError = -(position.x - posConsigne.x) * sinf(posConsigne.orientation) + (position.y - posConsigne.y) * cosf(posConsigne.orientation);
 			orientationError = fmodulo(position.orientation - posConsigne.orientation, TWO_PI);
 
+			deltaPosError = (posError - prevPosError) * FREQ_ASSERV;
+			//averageDeltaPosError.add(deltaPosError);
+			//deltaPosError = averageDeltaPosError.value();
+
 			if (orientationError > PI)
 			{
 				orientationError -= TWO_PI;
 			}
+
+			deltaOrientationError = (orientationError - prevOrientationError) * FREQ_ASSERV;
+			//averageDeltaOrientationError.add(deltaOrientationError);
+			//deltaOrientationError = averageDeltaOrientationError.value();
+
 			if (maxMovingSpeed > 0)
 			{
 				curvatureOrder = anticipatedCurvature - curvatureCorrectorK1 * posError - curvatureCorrectorK2 * orientationError;
+				curvatureOrder -= curvatureCorrectorKD1 * deltaPosError;
+				curvatureOrder -= curvatureCorrectorKD2 * deltaOrientationError;
 			}
 			else
 			{
 				curvatureOrder = anticipatedCurvature - curvatureCorrectorK1 * posError + curvatureCorrectorK2 * orientationError;
+				curvatureOrder -= curvatureCorrectorKD1 * deltaPosError;
+				curvatureOrder += curvatureCorrectorKD2 * deltaOrientationError;
 			}
 
 			curvatureOrder += derivativeCurvature.getDerivativeCurvature() * curvatureCorrectorKd;
 
 			direction.setAimCurvature(curvatureOrder);
+
+			prevPosError = posError;
+			prevOrientationError = orientationError;
 			
 			watchTrajErrors.traj_curv = anticipatedCurvature;
 			watchTrajErrors.current_curv = direction.getRealCurvature();
@@ -163,6 +181,8 @@ void MotionControlSystem::control()
 			watchTrajErrors.angle_err = 100*orientationError;
 			watchTrajErrors.pos_err = posError;
 			watchTrajErrors.curv_deriv = 10*derivativeCurvature.getDerivativeCurvature();
+			watchTrajErrors.delta_angle_err = deltaOrientationError;
+			watchTrajErrors.delta_pos_err = deltaPosError/10;
 
 			watchTrajIndex.index = realIndex;
 			watchTrajIndex.currentPos = position;
@@ -718,9 +738,11 @@ void MotionControlSystem::getRightSpeedTunings(float &kp, float &ki, float &kd) 
 	ki = rightSpeedPID.getKi();
 	kd = rightSpeedPID.getKd();
 }
-void MotionControlSystem::getTrajectoryTunings(float &k1, float &k2) const {
+void MotionControlSystem::getTrajectoryTunings(float &k1, float &kd1, float &k2, float &kd2) const {
 	k1 = curvatureCorrectorK1;
 	k2 = curvatureCorrectorK2;
+	kd1 = curvatureCorrectorKD1;
+	kd2 = curvatureCorrectorKD2;
 }
 void MotionControlSystem::setTranslationTunings(float kp, float ki, float kd) {
 	translationPID.setTunings(kp, ki, kd);
@@ -731,9 +753,11 @@ void MotionControlSystem::setLeftSpeedTunings(float kp, float ki, float kd) {
 void MotionControlSystem::setRightSpeedTunings(float kp, float ki, float kd) {
 	rightSpeedPID.setTunings(kp, ki, kd);
 }
-void MotionControlSystem::setTrajectoryTunings(float k1, float k2) {
+void MotionControlSystem::setTrajectoryTunings(float k1, float kd1, float k2, float kd2) {
 	curvatureCorrectorK1 = k1;
 	curvatureCorrectorK2 = k2;
+	curvatureCorrectorKD1 = kd1;
+	curvatureCorrectorKD2 = kd2;
 }
 void MotionControlSystem::setPIDtoSet(PIDtoSet newPIDtoSet)
 {
@@ -957,6 +981,12 @@ void MotionControlSystem::saveParameters()
 
 	EEPROM.put(a, curvatureCorrectorKd);
 	a += sizeof(curvatureCorrectorKd);
+
+	EEPROM.put(a, curvatureCorrectorKD1);
+	a += sizeof(curvatureCorrectorKD1);
+
+	EEPROM.put(a, curvatureCorrectorKD2);
+	a += sizeof(curvatureCorrectorKD2);
 }
 
 void MotionControlSystem::loadParameters()
@@ -1032,6 +1062,12 @@ void MotionControlSystem::loadParameters()
 	EEPROM.get(a, curvatureCorrectorKd);
 	a += sizeof(curvatureCorrectorKd);
 
+	EEPROM.get(a, curvatureCorrectorKD1);
+	a += sizeof(curvatureCorrectorKD1);
+
+	EEPROM.get(a, curvatureCorrectorKD2);
+	a += sizeof(curvatureCorrectorKD2);
+
 	interrupts();
 }
 
@@ -1066,8 +1102,12 @@ void MotionControlSystem::logAllData()
 {
 	static Position nonVolatilePos;
 	static uint32_t lastLogTime = 0;
-	if (micros() - lastLogTime > PERIOD_ASSERV)
+	if (micros() - lastLogTime > 2000)
 	{
+		if (micros() - lastLogTime > 2500)
+		{
+			//Serial.printf("LATENCE (%d)\n", micros() - lastLogTime);
+		}
 		lastLogTime = micros();
 		noInterrupts();
 		nonVolatilePos = position;

@@ -179,7 +179,7 @@ void loop()
 		directionController.control();
 
 		/* Mise à jour des capteurs */
-		sensorMgr.update();
+		//sensorMgr.update();
 
 		/* Mise à jour du niveau de batterie */
 		batterySensor.update();
@@ -220,7 +220,7 @@ void synchronousPWM_interrupt()
 void checkSpeed(uint32_t daemonPeriod, float threshold)
 {
 	static MotionControlSystem & motionControlSystem = MotionControlSystem::Instance();
-	static const size_t bufferSize = 100;
+	static const size_t bufferSize = 1;
 	static Average<float, bufferSize> bufferFPS;
 	static uint32_t lastCallTime = 0, lastPrintTime = 0;
 

@@ -105,6 +105,8 @@ private:
 	volatile float curvatureOrder;	// Consigne de courbure, en m^-1
 	float curvatureCorrectorK1;		// Coefficient du facteur "erreur de position"
 	float curvatureCorrectorK2;		// Coefficient du facteur "erreur d'orientation"
+	float curvatureCorrectorKD1;
+	float curvatureCorrectorKD2;
 	
 	// Aide à l'asservissement sur trajectoire : utilisation de la dérivée de la courbure
 	float curvatureCorrectorKd;		// Coefficient de la dérivée de la courbure (invention de S&G Cie)
@@ -185,11 +187,13 @@ private:
 			angle_err = 0;
 			pos_err = 0;
 			curv_deriv = 0;
+			delta_angle_err = 0;
+			delta_pos_err = 0;
 		}
 
 		size_t printTo(Print& p) const
 		{
-			return p.printf("%g_%g_%g_%g_%g_%g", traj_curv, current_curv, aim_curv, angle_err, pos_err, curv_deriv);
+			return p.printf("%g_%g_%g_%g_%g_%g_%g_%g", traj_curv, current_curv, aim_curv, angle_err, pos_err, curv_deriv, delta_angle_err, delta_pos_err);
 		}
 
 		float traj_curv;
@@ -198,6 +202,8 @@ private:
 		float angle_err;
 		float pos_err;
 		float curv_deriv;
+		float delta_pos_err;
+		float delta_angle_err;
 	};
 
 	class WatchTrajIndex : public Printable
@@ -327,11 +333,11 @@ public:
 	void setTranslationTunings(float, float, float);
 	void setLeftSpeedTunings(float, float, float);
 	void setRightSpeedTunings(float, float, float);
-	void setTrajectoryTunings(float, float);
+	void setTrajectoryTunings(float, float, float, float);
 	void getTranslationTunings(float &, float &, float &) const;
 	void getLeftSpeedTunings(float &, float &, float &) const;
 	void getRightSpeedTunings(float &, float &, float &) const;
-	void getTrajectoryTunings(float &, float &) const;
+	void getTrajectoryTunings(float &, float &, float &, float &) const;
 
 	void setPIDtoSet(PIDtoSet newPIDtoSet);
 	PIDtoSet getPIDtoSet() const;

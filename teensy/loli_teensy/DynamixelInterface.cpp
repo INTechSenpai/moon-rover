@@ -48,7 +48,7 @@ void DynamixelInterface::begin(unsigned long aBaud)
 	}
 #endif
 #endif
-	mStream.setTimeout(50); //warning : response delay seems much higher than expected for some operation (eg writing eeprom)
+	mStream.setTimeout(COM_TIMEOUT); //warning : response delay seems much higher than expected for some operation (eg writing eeprom)
 	readMode();
 }
 

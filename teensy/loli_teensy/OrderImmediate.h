@@ -270,7 +270,7 @@ public:
 		float vg_kp, vg_ki, vg_kd;
 		float vd_kp, vd_ki, vd_kd;
 		float tr_kp, tr_ki, tr_kd;
-		float k1, k2;
+		float k1, k2, kd1, kd2;
 		uint32_t smgre, smgrt;
 		float bmgrs;
 		uint32_t bmgrt;
@@ -282,7 +282,7 @@ public:
 		motionControlSystem.getLeftSpeedTunings(vg_kp, vg_ki, vg_kd);
 		motionControlSystem.getRightSpeedTunings(vd_kp, vd_ki, vd_kd);
 		motionControlSystem.getTranslationTunings(tr_kp, tr_ki, tr_kd);
-		motionControlSystem.getTrajectoryTunings(k1, k2);
+		motionControlSystem.getTrajectoryTunings(k1, kd1, k2, kd2);
 		motionControlSystem.getEndOfMoveMgrTunings(smgre, smgrt);
 		motionControlSystem.getLeftMotorBmgrTunings(bmgrs, bmgrt);
 		mms = motionControlSystem.getMaxMovingSpeed();
@@ -298,6 +298,8 @@ public:
 		Serial.println();
 		Serial.printf("Curvature K1= %g\n", k1);
 		Serial.printf("Curvature K2= %g\n", k2);
+		Serial.printf("Curvature KD1= %g\n", kd1);
+		Serial.printf("Curvature KD2= %g\n", kd2);
 		Serial.printf("Curvature Kd= %g\n", motionControlSystem.getCurvatureCorrectorKd());
 		Serial.println();
 		Serial.printf("StopMgr epsilon= %d\tresponseTime= %d\n", smgre, smgrt);
@@ -724,15 +726,32 @@ class Curv_k1 : public OrderImmediate, public Singleton<Curv_k1>
 public:
 	Curv_k1() {}
 	virtual void execute(std::vector<uint8_t> & io) {
-		float k1, k2;
-		motionControlSystem.getTrajectoryTunings(k1, k2);
+		float k1, kd1, k2, kd2;
+		motionControlSystem.getTrajectoryTunings(k1, kd1, k2, kd2);
 		if (io.size() > 0)
 		{
 			float arg = Vutils<ARG_SIZE>::vtof(io);
-			motionControlSystem.setTrajectoryTunings(arg, k2);
+			motionControlSystem.setTrajectoryTunings(arg, kd1, k2, kd2);
 		}
-		motionControlSystem.getTrajectoryTunings(k1, k2);
+		motionControlSystem.getTrajectoryTunings(k1, kd1, k2, kd2);
 		Serial.printf("CurvatureCorrector k1= %g\n", k1);
+	}
+};
+
+class Curv_kd1 : public OrderImmediate, public Singleton<Curv_kd1>
+{
+public:
+	Curv_kd1() {}
+	virtual void execute(std::vector<uint8_t> & io) {
+		float k1, kd1, k2, kd2;
+		motionControlSystem.getTrajectoryTunings(k1, kd1, k2, kd2);
+		if (io.size() > 0)
+		{
+			float arg = Vutils<ARG_SIZE>::vtof(io);
+			motionControlSystem.setTrajectoryTunings(k1, arg, k2, kd2);
+		}
+		motionControlSystem.getTrajectoryTunings(k1, kd1, k2, kd2);
+		Serial.printf("CurvatureCorrector kd1= %g\n", kd1);
 	}
 };
 
@@ -741,15 +760,32 @@ class Curv_k2 : public OrderImmediate, public Singleton<Curv_k2>
 public:
 	Curv_k2() {}
 	virtual void execute(std::vector<uint8_t> & io) {
-		float k1, k2;
-		motionControlSystem.getTrajectoryTunings(k1, k2);
+		float k1, kd1, k2, kd2;
+		motionControlSystem.getTrajectoryTunings(k1, kd1, k2, kd2);
 		if (io.size() > 0)
 		{
 			float arg = Vutils<ARG_SIZE>::vtof(io);
-			motionControlSystem.setTrajectoryTunings(k1, arg);
+			motionControlSystem.setTrajectoryTunings(k1, kd1, arg, kd2);
 		}
-		motionControlSystem.getTrajectoryTunings(k1, k2);
+		motionControlSystem.getTrajectoryTunings(k1, kd1, k2, kd2);
 		Serial.printf("CurvatureCorrector k2= %g\n", k2);
+	}
+};
+
+class Curv_kd2 : public OrderImmediate, public Singleton<Curv_kd2>
+{
+public:
+	Curv_kd2() {}
+	virtual void execute(std::vector<uint8_t> & io) {
+		float k1, kd1, k2, kd2;
+		motionControlSystem.getTrajectoryTunings(k1, kd1, k2, kd2);
+		if (io.size() > 0)
+		{
+			float arg = Vutils<ARG_SIZE>::vtof(io);
+			motionControlSystem.setTrajectoryTunings(k1, kd1, k2, arg);
+		}
+		motionControlSystem.getTrajectoryTunings(k1, kd1, k2, kd2);
+		Serial.printf("CurvatureCorrector kd2= %g\n", kd2);
 	}
 };
 

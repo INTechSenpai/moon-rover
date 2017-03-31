@@ -16,7 +16,7 @@
 #include "Log.h"
 
 /* Periode d'actualisation d'une requête AX12 (4 requêtes au total) */
-#define CONTROL_PERIOD	25000 //3125 // µs
+#define CONTROL_PERIOD	3125 // µs
 
 /* Angles des AX12 correspondant à des roues alignées vers l'avant */
 #define LEFT_ANGLE_ORIGIN	150
