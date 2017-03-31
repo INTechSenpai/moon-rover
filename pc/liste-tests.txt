@@ -7,7 +7,10 @@
 ./run_junit.sh tests.lowlevel.JUnit_Robot#gauche2
 ./run_junit.sh tests.lowlevel.JUnit_Robot#courbe_longue
 ./run_junit.sh tests.lowlevel.JUnit_Robot#droite
+./run_junit.sh tests.lowlevel.JUnit_Robot#droite2
 ./run_junit.sh tests.lowlevel.JUnit_Robot#recule
 ./run_junit.sh tests.lowlevel.JUnit_Robot#avance
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_clotho
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_cercle
+./run_junit.sh tests.lowlevel.JUnit_Robot#droite_sym
+./run_junit.sh tests.lowlevel.JUnit_Robot#gauche_sym
