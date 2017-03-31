@@ -379,7 +379,7 @@ public class JUnit_Robot extends JUnit_Test {
 		clotho.getTrajectoire(arc[1], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[2]);
 		clotho.getTrajectoire(arc[2], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[3]);
 
-		ArrayList<CinematiqueObs> path = new ArrayList<CinematiqueObs>();
+		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
 		for(int i = 0; i < nbArc; i++)
 			for(int j = 0; j < arc[i].getNbPoints(); j++)
@@ -388,7 +388,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		data.envoieArcCourbe(path, 0);
+		chemin.add(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
@@ -422,7 +422,7 @@ public class JUnit_Robot extends JUnit_Test {
 		for(int i = 1; i < nbArc; i++)
 			clotho.getTrajectoire(arc[i-1], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[i]);
 
-		ArrayList<CinematiqueObs> path = new ArrayList<CinematiqueObs>();
+		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
 		for(int i = 0; i < nbArc; i++)
 			for(int j = 0; j < arc[i].getNbPoints(); j++)
@@ -431,7 +431,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		data.envoieArcCourbe(path, 0);
+		chemin.add(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
@@ -465,7 +465,7 @@ public class JUnit_Robot extends JUnit_Test {
 		clotho.getTrajectoire(arc[6], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[7]);
 		clotho.getTrajectoire(arc[7], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[8]);
 		
-		ArrayList<CinematiqueObs> path = new ArrayList<CinematiqueObs>();
+		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
 		for(int i = 0; i < nbArc; i++)
 			for(int j = 0; j < arc[i].getNbPoints(); j++)
@@ -475,7 +475,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		data.envoieArcCourbe(path, 0);
+		chemin.add(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
@@ -509,7 +509,7 @@ public class JUnit_Robot extends JUnit_Test {
 		clotho.getTrajectoire(arc[6], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[7]);
 		clotho.getTrajectoire(arc[7], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[8]);
 		
-		ArrayList<CinematiqueObs> path = new ArrayList<CinematiqueObs>();
+		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
 		for(int i = 0; i < nbArc; i++)
 			for(int j = 0; j < arc[i].getNbPoints(); j++)
@@ -519,7 +519,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		data.envoieArcCourbe(path, 0);
+		chemin.add(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
@@ -587,7 +587,7 @@ public class JUnit_Robot extends JUnit_Test {
 		clotho.getTrajectoire(arc[1], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[2]);
 		clotho.getTrajectoire(arc[2], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[3]);
 		
-		ArrayList<CinematiqueObs> path = new ArrayList<CinematiqueObs>();
+		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
 		for(int i = 0; i < nbArc; i++)
 			for(int j = 0; j < arc[i].getNbPoints(); j++)
@@ -597,7 +597,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		data.envoieArcCourbe(path, 0);
+		chemin.add(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
@@ -628,7 +628,7 @@ public class JUnit_Robot extends JUnit_Test {
 		clotho.getTrajectoire(arc[3], VitesseClotho.GAUCHE_3, Speed.STANDARD, arc[4]);
 		clotho.getTrajectoire(arc[4], VitesseClotho.GAUCHE_3, Speed.STANDARD, arc[5]);
 		
-		ArrayList<CinematiqueObs> path = new ArrayList<CinematiqueObs>();
+		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
 		for(int i = 0; i < nbArc; i++)
 			for(int j = 0; j < arc[i].getNbPoints(); j++)
@@ -638,7 +638,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		data.envoieArcCourbe(path, 0);
+		chemin.add(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
@@ -669,7 +669,7 @@ public class JUnit_Robot extends JUnit_Test {
 		clotho.getTrajectoire(arc[3], VitesseClotho.DROITE_3, Speed.STANDARD, arc[4]);
 		clotho.getTrajectoire(arc[4], VitesseClotho.DROITE_3, Speed.STANDARD, arc[5]);
 		
-		ArrayList<CinematiqueObs> path = new ArrayList<CinematiqueObs>();
+		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
 		for(int i = 0; i < nbArc; i++)
 			for(int j = 0; j < arc[i].getNbPoints(); j++)
@@ -679,7 +679,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		data.envoieArcCourbe(path, 0);
+		chemin.add(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
