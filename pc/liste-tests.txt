@@ -12,5 +12,9 @@
 ./run_junit.sh tests.lowlevel.JUnit_Robot#avance
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_clotho
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_cercle
+./run_junit.sh tests.lowlevel.JUnit_Robot#grand_cercle_droite_sym
+./run_junit.sh tests.lowlevel.JUnit_Robot#grand_cercle_gauche_sym
+./run_junit.sh tests.lowlevel.JUnit_Robot#petit_cercle_droite_sym
+./run_junit.sh tests.lowlevel.JUnit_Robot#petit_cercle_gauche_sym
 ./run_junit.sh tests.lowlevel.JUnit_Robot#droite_sym
 ./run_junit.sh tests.lowlevel.JUnit_Robot#gauche_sym
