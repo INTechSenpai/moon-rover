@@ -206,7 +206,10 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 							paquet.ticket.set(InOrder.ARRET_URGENCE);
 						}
 						else
+						{
 							paquet.ticket.set(InOrder.MATCH_FINI);
+							robot.funnyAction();
+						}
 
 						// On lance manuellement le thread d'arrêt
 						ThreadShutdown t;
