@@ -38,6 +38,11 @@ import utils.Log;
 
 public class Homologation {
 
+	/**
+	 * Position de départ : (700, 1800), Math.PI
+	 * @param args
+	 */
+	
 	public static void main(String[] args)
 	{
 		try {
@@ -49,12 +54,16 @@ public class Homologation {
 			RealGameState state = container.getService(RealGameState.class);
 			ScriptManager sm = container.getService(ScriptManager.class);
 			
+			log.debug("Initialisation des actionneurs…");
+			
 			/*
 			 * Initialise les actionneurs
 			 */
 			robot.initActionneurs();
 			
 			log.debug("Actionneurs initialisés");
+			
+			log.debug("Attente de la couleur…");
 			
 			/*
 			 * Demande de la couleur
@@ -85,6 +94,8 @@ public class Homologation {
 			
 			log.debug("Cinématique initialisée : "+robot.getCinematique());
 			
+			log.debug("Attente du jumper…");
+			
 			/*
 			 * Attente du jumper
 			 */
@@ -112,6 +123,7 @@ public class Homologation {
 				
 				k.s = sm.getScripts().get("DEPOSE_SIMPLE");
 				path.prepareNewPathToScript(k);
+				robot.followTrajectory(Speed.TEST1);
 				k.s.execute(state);
 			} catch (PathfindingException e) {
 				e.printStackTrace();

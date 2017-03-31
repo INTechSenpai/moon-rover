@@ -44,7 +44,7 @@ public class ScriptDeposeMineraiSimple extends Script
 	@Override
 	public void setUpCercleArrivee()
 	{
-		cercle.set(new Vec2RO(400, 1800), 5*Math.PI/4, 350, SensFinal.MARCHE_ARRIERE);
+		cercle.set(new Vec2RO(700, 1800), Math.PI, 200, SensFinal.MARCHE_ARRIERE);
 	}
 
 	@Override
@@ -73,6 +73,6 @@ public class ScriptDeposeMineraiSimple extends Script
 	@Override
 	public String toString()
 	{
-		return "DEPOSE";
+		return "DEPOSE_SIMPLE";
 	}
 }

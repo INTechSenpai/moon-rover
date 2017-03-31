@@ -47,6 +47,7 @@ public class ScriptManager implements Service, Iterator<Script>, CoreClass
 		scripts.put("MINERAI_GROS_CRATERE_GAUCHE", new ScriptGrosCratere(log, cercle, "MINERAI_GROS_CRATERE_GAUCHE"));
 		scripts.put("MINERAI_GROS_CRATERE_DROITE", new ScriptGrosCratere(log, cercle, "MINERAI_GROS_CRATERE_DROITE"));
 		scripts.put("DEPOSE", new ScriptDeposeMinerai(log, cercle));
+		scripts.put("DEPOSE_SIMPLE", new ScriptDeposeMineraiSimple(log, cercle));
 	}
 	
 	public HashMap<String, Script> getScripts()
