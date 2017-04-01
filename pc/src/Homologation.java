@@ -114,6 +114,7 @@ public class Homologation {
 			log.debug("Chrono démarré");
 			
 			KeyPathCache k = new KeyPathCache(state);
+			k.shoot = false;
 			k.s = sm.getScripts().get("MINERAI_CRATERE_HAUT_GAUCHE");
 			try {
 				path.prepareNewPathToScript(k);

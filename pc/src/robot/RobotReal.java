@@ -283,6 +283,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	 * @throws InterruptedException
 	 * @throws UnableToMoveException 
 	 */
+	@Override
 	public void followTrajectory(Speed vitesse) throws InterruptedException, UnableToMoveException
 	{
 		followTrajectory(chemin.getIndexLast(), vitesse);
