@@ -72,4 +72,16 @@ public abstract class Script
 
 	}
 
+	@Override
+	public int hashCode()
+	{
+		return toString().hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		return o.toString().equals(toString());
+	}
+	
 }

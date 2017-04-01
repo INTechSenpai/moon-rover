@@ -60,13 +60,13 @@ public class ScriptPetitCratere extends Script
 	public void setUpCercleArrivee()
 	{
 		// il faut se mettre à 180mm du bord pour récupérer les balles
-		cercle.set(element, 200);
+		cercle.set(element, 220);
 	}
 
 	@Override
 	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
 	{
-		state.robot.avance(-20, Speed.STANDARD);
+		state.robot.avance(-40, Speed.STANDARD);
 		state.robot.ouvreFilet();
 		state.robot.baisseFilet();
 		state.table.setDone(element, EtatElement.PRIS_PAR_NOUS);
@@ -77,7 +77,7 @@ public class ScriptPetitCratere extends Script
 	{
 		state.robot.fermeFilet();
 		state.robot.leveFilet();		
-		state.robot.avance(20, Speed.STANDARD);
+		state.robot.avance(40, Speed.STANDARD);
 	}
 
 	@Override
