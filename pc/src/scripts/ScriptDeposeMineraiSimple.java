@@ -50,12 +50,15 @@ public class ScriptDeposeMineraiSimple extends Script
 	@Override
 	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
 	{
-		// TODO
+		state.robot.baisseFilet();
+		state.robot.ouvreFilet();
 	}
-	
+
 	@Override
 	protected void termine(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
 	{
+		state.robot.leveFilet();		
+		state.robot.fermeFilet();
 	}
 	
 	@Override
