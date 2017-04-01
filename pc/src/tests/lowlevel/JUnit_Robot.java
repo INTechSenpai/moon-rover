@@ -21,7 +21,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.junit.After;
@@ -373,7 +372,7 @@ public class JUnit_Robot extends JUnit_Test {
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
-		clotho.getTrajectoire(c, VitesseClotho.GAUCHE_3, Speed.STANDARD, arc[0]);
+		clotho.getTrajectoire(c, VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[0]);
 		
 		clotho.getTrajectoire(arc[0], VitesseClotho.DROITE_1, Speed.STANDARD, arc[1]);
 		clotho.getTrajectoire(arc[1], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[2]);
@@ -624,9 +623,9 @@ public class JUnit_Robot extends JUnit_Test {
 		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[0]);
 		clotho.getTrajectoire(arc[0], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[1]);
 		clotho.getTrajectoire(arc[1], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[2]);
-		clotho.getTrajectoire(arc[2], VitesseClotho.GAUCHE_3, Speed.STANDARD, arc[3]);
-		clotho.getTrajectoire(arc[3], VitesseClotho.GAUCHE_3, Speed.STANDARD, arc[4]);
-		clotho.getTrajectoire(arc[4], VitesseClotho.GAUCHE_3, Speed.STANDARD, arc[5]);
+		clotho.getTrajectoire(arc[2], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[3]);
+		clotho.getTrajectoire(arc[3], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[4]);
+		clotho.getTrajectoire(arc[4], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[5]);
 		
 		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
@@ -665,9 +664,9 @@ public class JUnit_Robot extends JUnit_Test {
 		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[0]);
 		clotho.getTrajectoire(arc[0], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[1]);
 		clotho.getTrajectoire(arc[1], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[2]);
-		clotho.getTrajectoire(arc[2], VitesseClotho.DROITE_3, Speed.STANDARD, arc[3]);
-		clotho.getTrajectoire(arc[3], VitesseClotho.DROITE_3, Speed.STANDARD, arc[4]);
-		clotho.getTrajectoire(arc[4], VitesseClotho.DROITE_3, Speed.STANDARD, arc[5]);
+		clotho.getTrajectoire(arc[2], VitesseClotho.DROITE_2, Speed.STANDARD, arc[3]);
+		clotho.getTrajectoire(arc[3], VitesseClotho.DROITE_2, Speed.STANDARD, arc[4]);
+		clotho.getTrajectoire(arc[4], VitesseClotho.DROITE_2, Speed.STANDARD, arc[5]);
 		
 		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
