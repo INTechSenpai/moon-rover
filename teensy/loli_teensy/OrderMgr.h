@@ -143,7 +143,7 @@ public:
 		static uint8_t rByte;
 
 		int nbReadingPerformed = 0;
-		while (HLserial.available() && nbReadingPerformed < 128) // On s'autorise à lire 128 octets d'affilé (sans rendre la main à la boucle principale)
+		while (HLserial.available() && nbReadingPerformed < 32) // On s'autorise à lire 32 octets d'affilé (sans rendre la main à la boucle principale)
 		{
 			if (rBuffer.indice >= RECEPTION_BUFFER_SIZE)
 			{

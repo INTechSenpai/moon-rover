@@ -24,8 +24,7 @@ public:
 	{
 		if (isON)
 		{
-			//distance = vlSensor.readRangeContinuousMillimeters();
-			distance = vlSensor.readRangeSingleMillimeters();
+			distance = vlSensor.readRangeContinuousMillimeters();
 			if (vlSensor.timeoutOccurred())
 			{
 				distance = 0;
@@ -54,9 +53,9 @@ public:
 		vlSensor.init();
 		vlSensor.setAddress(i2cAddress);
 
-		//vlSensor.stopContinuous();
-		//delay(50);
-		//vlSensor.startContinuous();
+		vlSensor.stopContinuous();
+		delay(50);
+		vlSensor.startContinuous();
 		isON = true;
 	}
 

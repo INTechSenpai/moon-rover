@@ -18,14 +18,16 @@
 /* Periode d'actualisation d'une requête AX12 (4 requêtes au total) */
 #define CONTROL_PERIOD	3125 // µs
 
+#define MAGIC_CORRECTOR	0.937
+
 /* Angles des AX12 correspondant à des roues alignées vers l'avant */
 #define LEFT_ANGLE_ORIGIN	150
 #define RIGHT_ANGLE_ORIGIN	150
 
-#define ANGLE_MIN_LEFT	93
-#define ANGLE_MIN_RIGHT	111
-#define ANGLE_MAX_LEFT	188
-#define ANGLE_MAX_RIGHT	206
+#define ANGLE_MIN_LEFT	84
+#define ANGLE_MIN_RIGHT	105
+#define ANGLE_MAX_LEFT	193
+#define ANGLE_MAX_RIGHT	216
 
 class DirectionController : public Singleton<DirectionController>, public Printable
 {
@@ -59,12 +61,12 @@ public:
 			updateAimAngles();
 			if (counter == 0)
 			{
-				leftMotor.goalPositionDegree(aimLeftAngle);
+				leftMotor.goalPositionDegree(aimLeftAngle + 1);
 				counter = 1;
 			}
 			else if (counter == 1)
 			{
-				rightMotor.goalPositionDegree(aimRightAngle);
+				rightMotor.goalPositionDegree(aimRightAngle + 1);
 				counter = 2;
 			}
 			else if (counter == 2)
@@ -93,11 +95,11 @@ public:
 	
 	void setAimCurvature(float curvature)
 	{
-		aimCurvature = curvature;
+		aimCurvature = curvature * MAGIC_CORRECTOR;
 	}
 	float getRealCurvature() const
 	{
-		return realCurvature;
+		return realCurvature / MAGIC_CORRECTOR;
 	}
 	uint16_t getLeftAngle() const
 	{

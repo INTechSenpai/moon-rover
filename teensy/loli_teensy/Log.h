@@ -70,7 +70,6 @@ public:
 			Serial.print(channel);
 			Serial.print("_");
 			Serial.println(obj);
-			Serial.flush();
 		}
 	}
 

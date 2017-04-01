@@ -35,15 +35,6 @@ public:
 			values[i] = 0;
 			updatePattern[i] = 0;
 		}
-
-		tofAVGauche.setPtpOffset(0);
-		tofFlanAVGauche.setPtpOffset(50);
-		tofFlanARGauche.setPtpOffset(0);
-		tofARGauche.setPtpOffset(0);
-		tofARDroit.setPtpOffset(0);
-		tofFlanARDroit.setPtpOffset(0);
-		tofFlanAVDroit.setPtpOffset(0);
-		tofAVDroit.setPtpOffset(0);
 	}
 
 	void powerOn()
@@ -59,7 +50,7 @@ public:
 		tofFlanAVDroit.powerON();		
 		tofAVDroit.powerON();
 		tofLPAvant.powerON();
-		//tofLPArriere.powerON();
+		tofLPArriere.powerON();
 	}
 
 	void powerOff()
@@ -88,9 +79,11 @@ public:
 		else if (micros() - lastUpdateTime >= updatePattern[index])
 		{
 			lastUpdateTime = micros();
+			//uint32_t t1 = micros();
 			switch (index)
 			{
 			case 0:
+				//Serial.println("____begin");
 				values[0] = tofLPAvant.getMesure();
 				break;
 			case 1:
@@ -130,6 +123,8 @@ public:
 				break;
 			}
 			index = (index + 1) % NB_SENSORS;
+
+			//Serial.println(micros() - t1);
 
 			Log::data(Log::SENSORS, *this);
 		}

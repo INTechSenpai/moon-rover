@@ -64,6 +64,7 @@ void setup()
 
 void loop()
 {
+
 	if (debug_serial_free)
 	{
 		Serial.println("Loli-Teensy");
@@ -82,7 +83,7 @@ void loop()
 	Wire.begin();
 	Wire.setClock(400000);
 	sensorMgr.powerOn();
-	uint32_t updatePattern[NB_SENSORS] = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
+	uint32_t updatePattern[NB_SENSORS] = {4375, 4375, 4375, 4375, 4375, 0, 0, 4375, 4375, 0, 0, 4375 };
 	sensorMgr.setUpdatePattern(updatePattern);
 
 	DirectionController & directionController = DirectionController::Instance();
@@ -179,13 +180,13 @@ void loop()
 		directionController.control();
 
 		/* Mise à jour des capteurs */
-		//sensorMgr.update();
+		sensorMgr.update();
 
 		/* Mise à jour du niveau de batterie */
 		batterySensor.update();
 
 		/* Vérification de la rapidité d'exécution */
-		//checkSpeed(10000, 1000);
+		//checkSpeed(10000, 100);
 
 		/* Print des logs */
 		motionControlSystem.logAllData();
@@ -231,6 +232,10 @@ void checkSpeed(uint32_t daemonPeriod, float threshold)
 	if ((daemonPeriod != 0 && millis() - lastPrintTime > daemonPeriod) ||
 		(threshold != 0 && averageFPS < threshold))
 	{
+		if (threshold != 0 && averageFPS < threshold)
+		{
+			Serial.print("!!! ");
+		}
 		Serial.printf("FPS= %g  Asserv= %u (max=%u)\n", 
 			averageFPS,
 			motionControlSystem.getLastInterruptDuration(),

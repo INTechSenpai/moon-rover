@@ -130,6 +130,8 @@ void MotionControlSystem::control()
 			static float orientationError, prevOrientationError, deltaOrientationError;
 			static Average<float, 5> averageDeltaPosError;
 			static Average<float, 5> averageDeltaOrientationError;
+			static Average<float, 5> averagePosError;
+			static Average<float, 5> averageOrientationError;
 			
 			uint8_t realIndex = trajectoryIndex + desiredIndexOffset;
 			while (!currentTrajectory[realIndex].isUpToDate())
@@ -190,15 +192,17 @@ void MotionControlSystem::control()
 
 			translationPID.compute(); // MAJ movingSpeedSetpoint
 
-			// Limitation de l'accélération
+			// Limitation de l'accélération (et pas de la décélération)
 			if (movingSpeedSetpoint - previousMovingSpeedSetpoint > maxAcceleration)
 			{
 				movingSpeedSetpoint = previousMovingSpeedSetpoint + maxAcceleration;
 			}
-			else if (movingSpeedSetpoint - previousMovingSpeedSetpoint < -maxAcceleration)
-			{
-				movingSpeedSetpoint = previousMovingSpeedSetpoint - maxAcceleration;
-			}
+			//else if (movingSpeedSetpoint - previousMovingSpeedSetpoint < -maxAcceleration)
+			//{
+			//	movingSpeedSetpoint = previousMovingSpeedSetpoint - maxAcceleration;
+			//}
+
+			previousMovingSpeedSetpoint = movingSpeedSetpoint;
 
 			// Limitation de la vitesse
 			if (movingSpeedSetpoint > ABS(maxMovingSpeed))
@@ -482,19 +486,19 @@ void MotionControlSystem::updateTranslationSetpoint()
 	}
 }
 
+
 void MotionControlSystem::updateSideDistanceFactors()
 {
 	static float squared_length = square(FRONT_BACK_WHEELS_DISTANCE);
 
-	float c = currentTrajectory[trajectoryIndex].getCurvature();
-	if (c == 0 || !currentTrajectory[trajectoryIndex].isUpToDate())
+	if (curvatureOrder == 0 || !currentTrajectory[trajectoryIndex].isUpToDate())
 	{
 		leftSideDistanceFactor = 1;
 		rightSideDistanceFactor = 1;
 	}
 	else
 	{
-		float r = 1000 / c;
+		float r = 1000 / curvatureOrder;
 		if (r > 0)
 		{
 			leftSideDistanceFactor = (sqrtf(square(r - DIRECTION_ROTATION_POINT_Y) + squared_length) - DIRECTION_WHEEL_DIST_FROM_ROT_PT) / r;
@@ -1080,17 +1084,17 @@ void MotionControlSystem::loadDefaultParameters()
 	rightSpeedControlled = true;
 	pwmControlled = true;
 
-	leftMotorBlockingMgr.setTunings(0.5, 100);
-	rightMotorBlockingMgr.setTunings(0.5, 100);
-	endOfMoveMgr.setTunings(5000, 100);
+	leftMotorBlockingMgr.setTunings(0, 0);
+	rightMotorBlockingMgr.setTunings(0, 0);
+	endOfMoveMgr.setTunings(100, 100);
 
-	maxAcceleration = 13000;
+	maxAcceleration = 25;
 
-	translationPID.setTunings(6.5, 0, 250);
-	leftSpeedPID.setTunings(2, 0.01, 100);
-	rightSpeedPID.setTunings(2, 0.01, 100);
-	curvatureCorrectorK1 = 0;
-	curvatureCorrectorK2 = 0;
+	translationPID.setTunings(2.75, 0, 1);
+	leftSpeedPID.setTunings(0.6, 0.01, 20);
+	rightSpeedPID.setTunings(0.6, 0.01, 20);
+	curvatureCorrectorK1 = 0.1;
+	curvatureCorrectorK2 = 12;
 	curvatureCorrectorKd = 0;
 
 	pidToSet = SPEED;
@@ -1102,9 +1106,9 @@ void MotionControlSystem::logAllData()
 {
 	static Position nonVolatilePos;
 	static uint32_t lastLogTime = 0;
-	if (micros() - lastLogTime > 2000)
+	if (micros() - lastLogTime > 10000)
 	{
-		if (micros() - lastLogTime > 2500)
+		if (micros() - lastLogTime > 13000)
 		{
 			//Serial.printf("LATENCE (%d)\n", micros() - lastLogTime);
 		}
