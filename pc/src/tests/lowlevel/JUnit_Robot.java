@@ -479,6 +479,51 @@ public class JUnit_Robot extends JUnit_Test {
 			robot.followTrajectory(v);
     }
 	
+
+	@Test
+    public void relou2() throws Exception
+    {
+		ClothoidesComputer clotho = container.getService(ClothoidesComputer.class);
+		PrintBuffer buffer = container.getService(PrintBuffer.class);
+		
+		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
+		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
+		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+
+		int nbArc = 9;
+		ArcCourbeStatique arc[] = new ArcCourbeStatique[nbArc];
+		for(int i = 0; i < nbArc; i++)
+			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+
+		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(1000);
+		log.debug("Initial : "+c);
+		clotho.getTrajectoire(c, VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[0]);
+		clotho.getTrajectoire(arc[0], VitesseClotho.DROITE_2, Speed.STANDARD, arc[1]);
+		clotho.getTrajectoire(arc[1], VitesseClotho.DROITE_2, Speed.STANDARD, arc[2]);
+		clotho.getTrajectoire(arc[2], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[3]);
+		clotho.getTrajectoire(arc[3], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[4]);
+		clotho.getTrajectoire(arc[4], VitesseClotho.DROITE_2, Speed.STANDARD, arc[5]);
+		clotho.getTrajectoire(arc[5], VitesseClotho.DROITE_2, Speed.STANDARD, arc[6]);
+		clotho.getTrajectoire(arc[6], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[7]);
+		clotho.getTrajectoire(arc[7], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[8]);
+		
+		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
+		
+		for(int i = 0; i < nbArc; i++)
+			for(int j = 0; j < arc[i].getNbPoints(); j++)
+			{
+				log.debug(arc[i].getPoint(j));
+				path.add(arc[i].getPoint(j));
+				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
+			}
+
+		chemin.add(path);
+		if(!simuleSerie)
+			robot.followTrajectory(v);
+    }
+	
 	@Test
     public void grand_cercle_droite_sym() throws Exception
     {
