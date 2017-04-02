@@ -84,8 +84,8 @@ public class SerialProtocol {
 		PLUS_DE_POINTS(0x03, State.KO),
 		
 		// Couleur
-		COULEUR_ROBOT_DROITE(0x00, State.OK),
-		COULEUR_ROBOT_GAUCHE(0x01, State.OK),
+		COULEUR_BLEU(0x00, State.OK),
+		COULEUR_JAUNE(0x01, State.OK),
 		COULEUR_ROBOT_INCONNU(0x02, State.KO),
 
 		// Réponse à "StartMatchChrono"

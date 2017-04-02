@@ -96,14 +96,14 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					 */
 					if(paquet.origine == OutOrder.ASK_COLOR)
 					{
-						if(data[0] == InOrder.COULEUR_ROBOT_DROITE.codeInt)
+						if(data[0] == InOrder.COULEUR_BLEU.codeInt)
 						{
-							paquet.ticket.set(InOrder.COULEUR_ROBOT_DROITE);
+							paquet.ticket.set(InOrder.COULEUR_BLEU);
 							config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(true));
 						}
-						else if(data[0] == InOrder.COULEUR_ROBOT_GAUCHE.codeInt)
+						else if(data[0] == InOrder.COULEUR_JAUNE.codeInt)
 						{
-							paquet.ticket.set(InOrder.COULEUR_ROBOT_GAUCHE);
+							paquet.ticket.set(InOrder.COULEUR_JAUNE);
 							config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(false));
 						}
 						else
