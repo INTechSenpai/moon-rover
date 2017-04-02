@@ -124,6 +124,7 @@ public class Homologation {
 				
 				k.s = sm.getScripts().get("DEPOSE_SIMPLE");
 				path.prepareNewPathToScript(k);
+				path.sendPreparedPath();
 				robot.followTrajectory(Speed.TEST1);
 				k.s.execute(state);
 			} catch (PathfindingException e) {
