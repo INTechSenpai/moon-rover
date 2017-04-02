@@ -99,12 +99,12 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						if(data[0] == InOrder.COULEUR_ROBOT_DROITE.codeInt)
 						{
 							paquet.ticket.set(InOrder.COULEUR_ROBOT_DROITE);
-							config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(false));
+							config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(true));
 						}
 						else if(data[0] == InOrder.COULEUR_ROBOT_GAUCHE.codeInt)
 						{
 							paquet.ticket.set(InOrder.COULEUR_ROBOT_GAUCHE);
-							config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(true));
+							config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(false));
 						}
 						else
 						{
@@ -275,7 +275,6 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					 */
 					else if(data.length != 0)
 						log.critical("On a ignoré un paquet d'origine "+paquet.origine+" (taille : "+data.length+")");
-//					paquet.ticket.set(InOrder.ORDER_ACK);
 
 				}
 			}
