@@ -275,7 +275,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					 */
 					else if(data.length != 0)
 						log.critical("On a ignoré un paquet d'origine "+paquet.origine+" (taille : "+data.length+")");
-					paquet.ticket.set(InOrder.ORDER_ACK);
+//					paquet.ticket.set(InOrder.ORDER_ACK);
 
 				}
 			}
