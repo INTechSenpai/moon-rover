@@ -5,6 +5,7 @@
 */
 
 
+#include "start_potitions.h"
 #include "LedMgr.h"
 #include "StartupMgr.h"
 #include "BatterySensor.h"

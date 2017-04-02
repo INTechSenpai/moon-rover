@@ -15,6 +15,7 @@
 #include "StreamMgr.h"
 #include "StartupMgr.h"
 #include "BatterySensor.h"
+#include "start_potitions.h"
 
 
 class OrderImmediate
@@ -382,13 +383,21 @@ public:
 		char arg[ARG_SIZE];
 		Vutils<ARG_SIZE>::vtostr(io, arg);
 		if (strcmp(arg, "") == 0)
+		{
 			motionControlSystem.resetPosition();
-		else if (strcmp(arg, "i") == 0)
-			motionControlSystem.setPosition(Position(0, 0, 0)); // TODO: position coté INTech
-		else if (strcmp(arg, "w") == 0)
-			motionControlSystem.setPosition(Position(0, 0, 0)); // TODO : position côté fenêtre
+		}
+		else if (strcmp(arg, "i") == 0) // Côté bleu
+		{
+			motionControlSystem.setPosition(Position(X_BLEU, Y_BLEU, O_BLEU));
+		}
+		else if (strcmp(arg, "w") == 0) // Côté jaune
+		{
+			motionControlSystem.setPosition(Position(X_JAUNE, Y_JAUNE, O_JAUNE));
+		}
 		else
+		{
 			Log::warning("[rp] Argument incorrect");
+		}
 		Position position;
 		motionControlSystem.getPosition(position);
 		Serial.printf("x= %g\ty= %g\t o= %g\n", position.x, position.y, position.orientation);

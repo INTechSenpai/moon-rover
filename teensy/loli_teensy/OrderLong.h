@@ -180,7 +180,7 @@ public:
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		if (analogRead(PIN_GET_JUMPER) > 500 && startupMgr.isReady())
+		if (analogRead(PIN_GET_JUMPER) > 750 && startupMgr.isReady())
 		{// Jumper en place
 			jumperInPlace = true;
 		}

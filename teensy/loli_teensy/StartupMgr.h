@@ -10,12 +10,15 @@
 #include "Singleton.h"
 #include "pin_mapping.h"
 #include "LedMgr.h"
+#include "MotionControlSystem.h"
+#include "Position.h"
 
 class StartupMgr : public Singleton<StartupMgr>
 {
 public:
 	StartupMgr():
-		ledMgr(LedMgr::Instance())
+		ledMgr(LedMgr::Instance()),
+		motionControlSystem(MotionControlSystem::Instance())
 	{
 		state = WAIT_FOR_COLOR_SETUP;
 		side = UNKNOWN;
@@ -58,10 +61,12 @@ public:
 					if (analogRead(PIN_GET_COLOR) > 750)
 					{
 						side = BLUE;
+						motionControlSystem.setPosition(Position(X_BLEU, Y_BLEU, O_BLEU));
 					}
 					else
 					{
 						side = YELLOW;
+						motionControlSystem.setPosition(Position(X_JAUNE, Y_JAUNE, O_JAUNE));
 					}
 				}
 			}
@@ -96,6 +101,7 @@ private:
 	uint32_t setupEnd_startTime; //ms
 
 	LedMgr & ledMgr;
+	MotionControlSystem & motionControlSystem;
 };
 
 #endif
