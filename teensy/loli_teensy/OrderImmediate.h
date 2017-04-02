@@ -13,6 +13,8 @@
 #include "SensorMgr.h"
 #include "Position.h"
 #include "StreamMgr.h"
+#include "StartupMgr.h"
+#include "BatterySensor.h"
 
 
 class OrderImmediate
@@ -22,7 +24,9 @@ public:
 		motionControlSystem(MotionControlSystem::Instance()),
 		directionController(DirectionController::Instance()),
 		sensorMgr(SensorMgr::Instance()),
-		actuatorMgr(ActuatorMgr::Instance())
+		actuatorMgr(ActuatorMgr::Instance()),
+		startupMgr(StartupMgr::Instance()),
+		batterySensor(BatterySensor::Instance())
 	{}
 
 	/*
@@ -36,6 +40,8 @@ protected:
 	DirectionController & directionController;
 	SensorMgr & sensorMgr;
 	ActuatorMgr & actuatorMgr;
+	StartupMgr & startupMgr;
+	BatterySensor & batterySensor;
 };
 
 
@@ -75,33 +81,8 @@ public:
 	GetColor() {}
 	virtual void execute(std::vector<uint8_t> & io) 
 	{
-		enum Side
-		{
-			INTECH = 0x00,
-			WINDOW = 0x01,
-			UNKNOWN = 0x02
-		};
-
 		io.clear();
-		
-		// DEBUG
-		static bool called = false;
-		static uint32_t t;
-		if (!called)
-		{
-			t = millis();
-			called = true;
-		}
-		if (millis() - t > 2000)
-		{
-			io.push_back(INTECH);
-			//Serial.println("INTECH");
-		}
-		else
-		{
-			io.push_back(UNKNOWN);
-			//Serial.println("UNKNOWN");
-		}
+		io.push_back(startupMgr.getSide());
 	}
 };
 
@@ -240,7 +221,11 @@ class Batt : public OrderImmediate, public Singleton<Batt>
 {
 public:
 	Batt() {}
-	virtual void execute(std::vector<uint8_t> & io) {}
+	virtual void execute(std::vector<uint8_t> & io) {
+		Serial.print("Battery level: ");
+		Serial.print(batterySensor.getLevel());
+		Serial.println(" %");
+	}
 };
 
 class Stop_ascii : public OrderImmediate, public Singleton<Stop_ascii>

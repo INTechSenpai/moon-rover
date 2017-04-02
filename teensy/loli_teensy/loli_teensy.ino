@@ -5,6 +5,8 @@
 */
 
 
+#include "LedMgr.h"
+#include "StartupMgr.h"
 #include "BatterySensor.h"
 #include "ActuatorMgr.h"
 #include "ControlerNet.h"
@@ -57,8 +59,6 @@
 void setup()
 {
 	delay(500);
-	pinMode(PIN_DEL_STATUS_1, OUTPUT);
-	pinMode(PIN_DEL_STATUS_2, OUTPUT);
 }
 
 
@@ -98,6 +98,8 @@ void loop()
 	synchronousPWM_timer.begin(synchronousPWM_interrupt, 36); // 440Hz avec un pwm codé sur 6bits
 
 	BatterySensor & batterySensor = BatterySensor::Instance();
+	StartupMgr & startupMgr = StartupMgr::Instance();
+	LedMgr & ledMgr = LedMgr::Instance();
 
 	if (debug_serial_free)
 	{
@@ -190,6 +192,22 @@ void loop()
 
 		/* Print des logs */
 		motionControlSystem.logAllData();
+
+		/* Gestion de la phase de choix de la couleur (côté de la table) */
+		startupMgr.update();
+
+		/* Gestion de l'allumage des DELs du robot */
+		ledMgr.update();
+
+		/* Alerte visuelle en cas de niveau bas de batterie */
+		if (batterySensor.getLevel() < 30)
+		{
+			ledMgr.statusLed_lowBattery();
+		}
+		else
+		{
+			ledMgr.statusLed_batteryOk();
+		}
 
 		//static uint32_t loli = 0;
 		//if (millis() - loli > 1000)

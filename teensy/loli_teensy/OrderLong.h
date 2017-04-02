@@ -11,6 +11,8 @@
 #include "pin_mapping.h"
 #include "Vutils.h"
 #include "StreamMgr.h"
+#include "StartupMgr.h"
+#include "BatterySensor.h"
 
 class OrderLong
 {
@@ -20,7 +22,9 @@ public:
 		motionControlSystem(MotionControlSystem::Instance()),
 		sensorMgr(SensorMgr::Instance()),
 		actuatorMgr(ActuatorMgr::Instance()),
-		directionControler(DirectionController::Instance())
+		directionControler(DirectionController::Instance()),
+		startupMgr(StartupMgr::Instance()),
+		batterySensor(BatterySensor::Instance())
 	{}
 
 	void launch(const std::vector<uint8_t> & arg)
@@ -50,6 +54,8 @@ protected:
 	SensorMgr & sensorMgr;
 	ActuatorMgr & actuatorMgr;
 	DirectionController & directionControler;
+	StartupMgr & startupMgr;
+	BatterySensor & batterySensor;
 };
 
 
@@ -174,7 +180,7 @@ public:
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		if (analogRead(PIN_GET_JUMPER) > 500)
+		if (analogRead(PIN_GET_JUMPER) > 500 && startupMgr.isReady())
 		{// Jumper en place
 			jumperInPlace = true;
 		}
@@ -211,11 +217,6 @@ public:
 		if (millis() - beginTime > 90000)
 		{
 			returnStatement = 0x00; // MATCH_FINISHED
-			finished = true;
-		}
-		else if (false) // TODO : check batterie
-		{
-			returnStatement = 0x01; // EMERGENCY_STOP
 			finished = true;
 		}
 	}

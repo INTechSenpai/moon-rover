@@ -46,17 +46,6 @@ public:
 			currentLevel = (uint8_t)level;
 
 			lastUpdateTime = millis();
-
-			//Hack
-			if (currentLevel < 30)
-			{
-				digitalWrite(PIN_DEL_STATUS_1, HIGH);
-			}
-			else
-			{
-				digitalWrite(PIN_DEL_STATUS_1, LOW);
-			}
-
 		}
 	}
 
