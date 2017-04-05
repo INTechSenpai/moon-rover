@@ -28,6 +28,7 @@ import exceptions.ContainerException;
 import robot.Cinematique;
 import robot.RobotColor;
 import robot.RobotReal;
+import robot.Speed;
 import serie.BufferIncomingOrder;
 import serie.BufferOutgoingOrder;
 import serie.SerialProtocol.InOrder;
@@ -53,14 +54,12 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 	private RobotReal robot;
 	private CheminPathfinding chemin;
 	private Container container;
-	private BufferOutgoingOrder out;
 	
 	private boolean capteursOn = false;
-	private double lastVitesse = -1;
 	private boolean debugSerie;
 	private int nbCapteurs;
 	
-	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, CheminPathfinding chemin, Container container, BufferOutgoingOrder out)
+	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, CheminPathfinding chemin, Container container)
 	{
 		this.container = container;
 		this.log = log;
@@ -69,7 +68,6 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 		this.buffer = buffer;
 		this.robot = robot;
 		this.chemin = chemin;
-		this.out = out;
 		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 	}
 
@@ -141,15 +139,6 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 							current.orientationReelle = orientationRobot;
 							robot.setCinematique(current);
 							
-							// la vitesse de planification est gérée directement dans le pathfinding
-							
-							// TODO vérifier la gestion de l'envoi de la vitesse
-	/*						if(tmpVitesse != lastVitesse) // la vitesse a changé : on la renvoie
-							{
-								out.setMaxSpeed(tmpVitesse);
-								lastVitesse = tmpVitesse;
-							}
-	*/
 							if(debugSerie)
 								log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot);
 			
