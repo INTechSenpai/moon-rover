@@ -71,7 +71,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		this.chemin = chemin;
 
 		// c'est le LL qui fournira la position
-		cinematique = new Cinematique(0, 300, 0, true, 3, Speed.STANDARD.translationalSpeed);
+		cinematique = new Cinematique(0, 300, 0, true, 3);
 		print = config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS);
 		demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
@@ -197,11 +197,10 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		double yFinal = cinematique.position.getY()+distance*sin;
 		boolean marcheAvant = distance > 0;
 		double orientationGeometrique = marcheAvant ? cinematique.orientationReelle : -cinematique.orientationReelle;
-		double vitesse = marcheAvant ? Speed.STANDARD.translationalSpeed : Speed.MARCHE_ARRIERE.translationalSpeed;
 		if(nbPoint == 0)
 		{
 			// Le point est vraiment tout proche
-			pointsAvancer[0].update(xFinal, yFinal, orientationGeometrique, marcheAvant, 0, vitesse);
+			pointsAvancer[0].update(xFinal, yFinal, orientationGeometrique, marcheAvant, 0);
 			out.add(pointsAvancer[0]);
 		}
 		else
@@ -214,7 +213,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 				deltaY = -deltaY;
 			}
 			for(int i = 0; i < nbPoint; i++)
-				pointsAvancer[nbPoint-i-1].update(xFinal - i * deltaX, yFinal - i * deltaY, orientationGeometrique, marcheAvant, 0, vitesse);
+				pointsAvancer[nbPoint-i-1].update(xFinal - i * deltaX, yFinal - i * deltaY, orientationGeometrique, marcheAvant, 0);
 			for(int i = 0; i < nbPoint; i++)
 				out.add(pointsAvancer[i]);
 		}

@@ -142,10 +142,6 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 							robot.setCinematique(current);
 							
 							// la vitesse de planification est gérée directement dans le pathfinding
-							double tmpVitesse = current.vitesseMax;
-							
-							if(!current.enMarcheAvant) // la vitesse doit être signée
-								tmpVitesse = -tmpVitesse;
 							
 							// TODO vérifier la gestion de l'envoi de la vitesse
 	/*						if(tmpVitesse != lastVitesse) // la vitesse a changé : on la renvoie

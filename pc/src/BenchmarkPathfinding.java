@@ -48,7 +48,7 @@ public class BenchmarkPathfinding {
 			CercleArrivee cercle = container.getService(CercleArrivee.class);
 
 			long avant = System.nanoTime();
-			Cinematique depart = new Cinematique(-800, 350, Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+			Cinematique depart = new Cinematique(-800, 350, Math.PI/2, true, 0);
 			robot.setCinematique(depart);
 			cercle.set(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE, 230);
 			int nbtest = 1000;

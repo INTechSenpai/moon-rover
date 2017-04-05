@@ -177,11 +177,11 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void creneau() throws Exception
     {
-		Cinematique depart = new Cinematique(-900, 650, -Math.PI/6, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique depart = new Cinematique(-900, 650, -Math.PI/6, true, 0);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		c = new Cinematique(-400, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		c = new Cinematique(-400, 1200, Math.PI, false, 0);
 		astar.initializeNewSearch(c, false, state);
 		astar.process(chemin);
 		last = chemin.getLastOrientation();
@@ -195,11 +195,11 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void courbe_loin() throws Exception
     {
-		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		c = new Cinematique(1000, 700, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		c = new Cinematique(1000, 700, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		last = chemin.getLastOrientation();
@@ -214,11 +214,11 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void arriere_loin() throws Exception
     {
-		Cinematique depart = new Cinematique(0, 1700, Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique depart = new Cinematique(0, 1700, Math.PI/2, true, 0);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		c = new Cinematique(1000, 700, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		c = new Cinematique(1000, 700, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		last = chemin.getLastOrientation();
@@ -234,11 +234,11 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void gauche() throws Exception
     {
-		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		c = new Cinematique(300, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		c = new Cinematique(300, 1200, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		last = chemin.getLastOrientation();
@@ -253,11 +253,11 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void gauche2() throws Exception
     {
-		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		c = new Cinematique(700, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		c = new Cinematique(700, 1200, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		last = chemin.getLastOrientation();
@@ -272,11 +272,11 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void courbe_longue() throws Exception
     {
-		Cinematique depart = new Cinematique(-1000, 700, 0, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique depart = new Cinematique(-1000, 700, 0, true, 0);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		c = new Cinematique(1000, 700, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		c = new Cinematique(1000, 700, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		last = chemin.getLastOrientation();
@@ -287,11 +287,11 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void test_trajectoire_avec_arret() throws Exception
     {
-		Cinematique depart = new Cinematique(-800, 350, 3*Math.PI/4, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique depart = new Cinematique(-800, 350, 3*Math.PI/4, true, 0);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		Cinematique c = new Cinematique(-600, 900, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique c = new Cinematique(-600, 900, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		last = chemin.getLastOrientation();
@@ -305,11 +305,11 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void droite() throws Exception
     {
-		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		c = new Cinematique(-300, 1200, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		c = new Cinematique(-300, 1200, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		last = chemin.getLastOrientation();
@@ -320,11 +320,11 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void droite2() throws Exception
     {
-		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		c = new Cinematique(-700, 1100, Math.PI, false, 0, Speed.STANDARD.translationalSpeed);
+		c = new Cinematique(-700, 1100, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		last = chemin.getLastOrientation();
@@ -339,7 +339,7 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void recule() throws Exception
     {
-		Cinematique depart = new Cinematique(0, 1600, Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique depart = new Cinematique(0, 1600, Math.PI/2, true, 0);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
@@ -354,7 +354,7 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void avance() throws Exception
     {
-		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
@@ -381,15 +381,15 @@ public class JUnit_Robot extends JUnit_Test {
 		for(int i = 0; i < nbArc; i++)
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 
-		Cinematique c = new Cinematique(0, 1000, Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique c = new Cinematique(0, 1000, Math.PI/2, true, 0);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
-		clotho.getTrajectoire(c, VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[0]);
+		clotho.getTrajectoire(c, VitesseClotho.GAUCHE_2, arc[0]);
 		
-		clotho.getTrajectoire(arc[0], VitesseClotho.DROITE_1, Speed.STANDARD, arc[1]);
-		clotho.getTrajectoire(arc[1], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[2]);
-		clotho.getTrajectoire(arc[2], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[3]);
+		clotho.getTrajectoire(arc[0], VitesseClotho.DROITE_1, arc[1]);
+		clotho.getTrajectoire(arc[1], VitesseClotho.GAUCHE_2, arc[2]);
+		clotho.getTrajectoire(arc[2], VitesseClotho.COURBURE_IDENTIQUE, arc[3]);
 
 		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
@@ -425,14 +425,14 @@ public class JUnit_Robot extends JUnit_Test {
 		for(int i = 0; i < nbArc; i++)
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 
-		Cinematique c = new Cinematique(0, 1000, Math.PI/2, true, 5, Speed.STANDARD.translationalSpeed);
+		Cinematique c = new Cinematique(0, 1000, Math.PI/2, true, 5);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
-		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[0]);
+		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, arc[0]);
 		
 		for(int i = 1; i < nbArc; i++)
-			clotho.getTrajectoire(arc[i-1], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[i]);
+			clotho.getTrajectoire(arc[i-1], VitesseClotho.COURBURE_IDENTIQUE, arc[i]);
 
 		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
@@ -463,19 +463,19 @@ public class JUnit_Robot extends JUnit_Test {
 		for(int i = 0; i < nbArc; i++)
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 
-		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 0);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
-		clotho.getTrajectoire(c, VitesseClotho.GAUCHE_1, Speed.STANDARD, arc[0]);
-		clotho.getTrajectoire(arc[0], VitesseClotho.DROITE_2, Speed.STANDARD, arc[1]);
-		clotho.getTrajectoire(arc[1], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[2]);
-		clotho.getTrajectoire(arc[2], VitesseClotho.DROITE_2, Speed.STANDARD, arc[3]);
-		clotho.getTrajectoire(arc[3], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[4]);
-		clotho.getTrajectoire(arc[4], VitesseClotho.DROITE_2, Speed.STANDARD, arc[5]);
-		clotho.getTrajectoire(arc[5], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[6]);
-		clotho.getTrajectoire(arc[6], VitesseClotho.DROITE_2, Speed.STANDARD, arc[7]);
-		clotho.getTrajectoire(arc[7], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[8]);
+		clotho.getTrajectoire(c, VitesseClotho.GAUCHE_1, arc[0]);
+		clotho.getTrajectoire(arc[0], VitesseClotho.DROITE_2, arc[1]);
+		clotho.getTrajectoire(arc[1], VitesseClotho.GAUCHE_2, arc[2]);
+		clotho.getTrajectoire(arc[2], VitesseClotho.DROITE_2, arc[3]);
+		clotho.getTrajectoire(arc[3], VitesseClotho.GAUCHE_2, arc[4]);
+		clotho.getTrajectoire(arc[4], VitesseClotho.DROITE_2, arc[5]);
+		clotho.getTrajectoire(arc[5], VitesseClotho.GAUCHE_2, arc[6]);
+		clotho.getTrajectoire(arc[6], VitesseClotho.DROITE_2, arc[7]);
+		clotho.getTrajectoire(arc[7], VitesseClotho.GAUCHE_2, arc[8]);
 		
 		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
@@ -508,19 +508,19 @@ public class JUnit_Robot extends JUnit_Test {
 		for(int i = 0; i < nbArc; i++)
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 
-		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 0, Speed.STANDARD.translationalSpeed);
+		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 0);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
-		clotho.getTrajectoire(c, VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[0]);
-		clotho.getTrajectoire(arc[0], VitesseClotho.DROITE_2, Speed.STANDARD, arc[1]);
-		clotho.getTrajectoire(arc[1], VitesseClotho.DROITE_2, Speed.STANDARD, arc[2]);
-		clotho.getTrajectoire(arc[2], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[3]);
-		clotho.getTrajectoire(arc[3], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[4]);
-		clotho.getTrajectoire(arc[4], VitesseClotho.DROITE_2, Speed.STANDARD, arc[5]);
-		clotho.getTrajectoire(arc[5], VitesseClotho.DROITE_2, Speed.STANDARD, arc[6]);
-		clotho.getTrajectoire(arc[6], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[7]);
-		clotho.getTrajectoire(arc[7], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[8]);
+		clotho.getTrajectoire(c, VitesseClotho.GAUCHE_2, arc[0]);
+		clotho.getTrajectoire(arc[0], VitesseClotho.DROITE_2, arc[1]);
+		clotho.getTrajectoire(arc[1], VitesseClotho.DROITE_2, arc[2]);
+		clotho.getTrajectoire(arc[2], VitesseClotho.GAUCHE_2, arc[3]);
+		clotho.getTrajectoire(arc[3], VitesseClotho.GAUCHE_2, arc[4]);
+		clotho.getTrajectoire(arc[4], VitesseClotho.DROITE_2, arc[5]);
+		clotho.getTrajectoire(arc[5], VitesseClotho.DROITE_2, arc[6]);
+		clotho.getTrajectoire(arc[6], VitesseClotho.GAUCHE_2, arc[7]);
+		clotho.getTrajectoire(arc[7], VitesseClotho.GAUCHE_2, arc[8]);
 		
 		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
@@ -552,19 +552,19 @@ public class JUnit_Robot extends JUnit_Test {
 		for(int i = 0; i < nbArc; i++)
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 
-		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, -2, Speed.STANDARD.translationalSpeed);
+		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, -2);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
-		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[0]);
-		clotho.getTrajectoire(arc[0], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[1]);
-		clotho.getTrajectoire(arc[1], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[2]);
-		clotho.getTrajectoire(arc[2], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[3]);
-		clotho.getTrajectoire(arc[3], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[4]);
-		clotho.getTrajectoire(arc[4], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[5]);
-		clotho.getTrajectoire(arc[5], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[6]);
-		clotho.getTrajectoire(arc[6], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[7]);
-		clotho.getTrajectoire(arc[7], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[8]);
+		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, arc[0]);
+		clotho.getTrajectoire(arc[0], VitesseClotho.COURBURE_IDENTIQUE, arc[1]);
+		clotho.getTrajectoire(arc[1], VitesseClotho.COURBURE_IDENTIQUE, arc[2]);
+		clotho.getTrajectoire(arc[2], VitesseClotho.COURBURE_IDENTIQUE, arc[3]);
+		clotho.getTrajectoire(arc[3], VitesseClotho.COURBURE_IDENTIQUE, arc[4]);
+		clotho.getTrajectoire(arc[4], VitesseClotho.COURBURE_IDENTIQUE, arc[5]);
+		clotho.getTrajectoire(arc[5], VitesseClotho.COURBURE_IDENTIQUE, arc[6]);
+		clotho.getTrajectoire(arc[6], VitesseClotho.COURBURE_IDENTIQUE, arc[7]);
+		clotho.getTrajectoire(arc[7], VitesseClotho.COURBURE_IDENTIQUE, arc[8]);
 		
 		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
@@ -596,19 +596,19 @@ public class JUnit_Robot extends JUnit_Test {
 		for(int i = 0; i < nbArc; i++)
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 
-		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 2, Speed.STANDARD.translationalSpeed);
+		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 2);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
-		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[0]);
-		clotho.getTrajectoire(arc[0], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[1]);
-		clotho.getTrajectoire(arc[1], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[2]);
-		clotho.getTrajectoire(arc[2], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[3]);
-		clotho.getTrajectoire(arc[3], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[4]);
-		clotho.getTrajectoire(arc[4], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[5]);
-		clotho.getTrajectoire(arc[5], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[6]);
-		clotho.getTrajectoire(arc[6], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[7]);
-		clotho.getTrajectoire(arc[7], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[8]);
+		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, arc[0]);
+		clotho.getTrajectoire(arc[0], VitesseClotho.COURBURE_IDENTIQUE, arc[1]);
+		clotho.getTrajectoire(arc[1], VitesseClotho.COURBURE_IDENTIQUE, arc[2]);
+		clotho.getTrajectoire(arc[2], VitesseClotho.COURBURE_IDENTIQUE, arc[3]);
+		clotho.getTrajectoire(arc[3], VitesseClotho.COURBURE_IDENTIQUE, arc[4]);
+		clotho.getTrajectoire(arc[4], VitesseClotho.COURBURE_IDENTIQUE, arc[5]);
+		clotho.getTrajectoire(arc[5], VitesseClotho.COURBURE_IDENTIQUE, arc[6]);
+		clotho.getTrajectoire(arc[6], VitesseClotho.COURBURE_IDENTIQUE, arc[7]);
+		clotho.getTrajectoire(arc[7], VitesseClotho.COURBURE_IDENTIQUE, arc[8]);
 		
 		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
@@ -640,14 +640,14 @@ public class JUnit_Robot extends JUnit_Test {
 		for(int i = 0; i < nbArc; i++)
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 
-		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, -5, Speed.STANDARD.translationalSpeed);
+		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, -5);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
-		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[0]);
-		clotho.getTrajectoire(arc[0], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[1]);
-		clotho.getTrajectoire(arc[1], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[2]);
-		clotho.getTrajectoire(arc[2], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[3]);
+		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, arc[0]);
+		clotho.getTrajectoire(arc[0], VitesseClotho.COURBURE_IDENTIQUE, arc[1]);
+		clotho.getTrajectoire(arc[1], VitesseClotho.COURBURE_IDENTIQUE, arc[2]);
+		clotho.getTrajectoire(arc[2], VitesseClotho.COURBURE_IDENTIQUE, arc[3]);
 		
 		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
@@ -679,14 +679,14 @@ public class JUnit_Robot extends JUnit_Test {
 		for(int i = 0; i < nbArc; i++)
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 
-		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 5, Speed.STANDARD.translationalSpeed);
+		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 5);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
-		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[0]);
-		clotho.getTrajectoire(arc[0], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[1]);
-		clotho.getTrajectoire(arc[1], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[2]);
-		clotho.getTrajectoire(arc[2], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[3]);
+		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, arc[0]);
+		clotho.getTrajectoire(arc[0], VitesseClotho.COURBURE_IDENTIQUE, arc[1]);
+		clotho.getTrajectoire(arc[1], VitesseClotho.COURBURE_IDENTIQUE, arc[2]);
+		clotho.getTrajectoire(arc[2], VitesseClotho.COURBURE_IDENTIQUE, arc[3]);
 		
 		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
@@ -718,16 +718,16 @@ public class JUnit_Robot extends JUnit_Test {
 		for(int i = 0; i < nbArc; i++)
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 
-		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, -2, Speed.STANDARD.translationalSpeed);
+		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, -2);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
-		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[0]);
-		clotho.getTrajectoire(arc[0], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[1]);
-		clotho.getTrajectoire(arc[1], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[2]);
-		clotho.getTrajectoire(arc[2], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[3]);
-		clotho.getTrajectoire(arc[3], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[4]);
-		clotho.getTrajectoire(arc[4], VitesseClotho.GAUCHE_2, Speed.STANDARD, arc[5]);
+		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, arc[0]);
+		clotho.getTrajectoire(arc[0], VitesseClotho.COURBURE_IDENTIQUE, arc[1]);
+		clotho.getTrajectoire(arc[1], VitesseClotho.COURBURE_IDENTIQUE, arc[2]);
+		clotho.getTrajectoire(arc[2], VitesseClotho.GAUCHE_2, arc[3]);
+		clotho.getTrajectoire(arc[3], VitesseClotho.GAUCHE_2, arc[4]);
+		clotho.getTrajectoire(arc[4], VitesseClotho.GAUCHE_2, arc[5]);
 		
 		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
@@ -759,16 +759,16 @@ public class JUnit_Robot extends JUnit_Test {
 		for(int i = 0; i < nbArc; i++)
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 
-		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 2, Speed.STANDARD.translationalSpeed);
+		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 2);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
-		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[0]);
-		clotho.getTrajectoire(arc[0], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[1]);
-		clotho.getTrajectoire(arc[1], VitesseClotho.COURBURE_IDENTIQUE, Speed.STANDARD, arc[2]);
-		clotho.getTrajectoire(arc[2], VitesseClotho.DROITE_2, Speed.STANDARD, arc[3]);
-		clotho.getTrajectoire(arc[3], VitesseClotho.DROITE_2, Speed.STANDARD, arc[4]);
-		clotho.getTrajectoire(arc[4], VitesseClotho.DROITE_2, Speed.STANDARD, arc[5]);
+		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, arc[0]);
+		clotho.getTrajectoire(arc[0], VitesseClotho.COURBURE_IDENTIQUE, arc[1]);
+		clotho.getTrajectoire(arc[1], VitesseClotho.COURBURE_IDENTIQUE, arc[2]);
+		clotho.getTrajectoire(arc[2], VitesseClotho.DROITE_2, arc[3]);
+		clotho.getTrajectoire(arc[3], VitesseClotho.DROITE_2, arc[4]);
+		clotho.getTrajectoire(arc[4], VitesseClotho.DROITE_2, arc[5]);
 		
 		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		

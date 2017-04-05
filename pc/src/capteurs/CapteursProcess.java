@@ -287,7 +287,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 				
 //			log.debug("Correction : "+deltaX+" "+deltaY+" "+deltaOrientation);
 			
-			Cinematique correction = new Cinematique(deltaX, deltaY, deltaOrientation, true, 0, 0);
+			Cinematique correction = new Cinematique(deltaX, deltaY, deltaOrientation, true, 0);
 			if(System.currentTimeMillis() - dateLastMesureCorrection > peremptionCorrection) // trop de temps depuis le dernier calcul
 				indexCorrection = 0;
 	
