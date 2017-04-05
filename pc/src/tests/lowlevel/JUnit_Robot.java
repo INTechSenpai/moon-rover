@@ -83,7 +83,6 @@ public class JUnit_Robot extends JUnit_Test {
 				try {
 					writer.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			System.out.println("Génération de la liste des tests terminée.");
