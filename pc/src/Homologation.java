@@ -119,13 +119,13 @@ public class Homologation {
 			try {
 				path.prepareNewPathToScript(k);
 				path.sendPreparedPath();
-				robot.followTrajectory(Speed.TEST1);
+				robot.followTrajectory(Speed.TEST);
 				k.s.execute(state);
 				
 				k.s = sm.getScripts().get("DEPOSE_SIMPLE");
 				path.prepareNewPathToScript(k);
 				path.sendPreparedPath();
-				robot.followTrajectory(Speed.TEST1);
+				robot.followTrajectory(Speed.TEST);
 				k.s.execute(state);
 			} catch (PathfindingException e) {
 				e.printStackTrace();
