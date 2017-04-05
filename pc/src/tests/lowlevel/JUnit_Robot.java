@@ -42,6 +42,7 @@ import robot.RobotReal;
 import robot.Speed;
 import serie.BufferOutgoingOrder;
 import tests.JUnit_Test;
+import utils.Vec2RO;
 
 /**
  * Tests unitaires des actionneurs
@@ -104,7 +105,7 @@ public class JUnit_Robot extends JUnit_Test {
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
 		data.startStream();
 		v = Speed.TEST;
-		log.debug("Vitesse du robot : "+v.translationalSpeed);
+		log.debug("Vitesse du robot : "+v.translationalSpeed*1000);
 	}
 	
 	/**
@@ -350,6 +351,28 @@ public class JUnit_Robot extends JUnit_Test {
 		Thread.sleep(500);
 		if(!simuleSerie)
 			robot.avance(200, v);
+    }
+	
+	@Test
+    public void recule_corrige() throws Exception
+    {
+		Cinematique depart = new Cinematique(0, 1600, Math.PI/2, true, 0);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(500);
+		if(!simuleSerie)
+			robot.avanceVersCentre(-200, v, new Vec2RO(100, 1200));
+    }
+	
+	@Test
+    public void avance_corrige() throws Exception
+    {
+		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(500);
+		if(!simuleSerie)
+			robot.avanceVersCentre(200, v, new Vec2RO(-100, 2000));
     }
 	
 	/**

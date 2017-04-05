@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 
 import obstacles.types.ObstacleRobot;
+import pathfinding.astar.arcs.CercleArrivee;
 import pathfinding.astar.arcs.ClothoidesComputer;
 import pathfinding.chemin.CheminPathfinding;
 import serie.BufferOutgoingOrder;
@@ -69,7 +70,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		this.buffer = buffer;
 		this.out = out;
 		this.chemin = chemin;
-
+		
 		// c'est le LL qui fournira la position
 		cinematique = new Cinematique(0, 300, 0, true, 3);
 		print = config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS);
@@ -185,10 +186,66 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	 * DÉPLACEMENTS
 	 */
 	
+	/**
+	 * Se déplace en visant la direction d'un point
+	 * @param distance
+	 * @param speed
+	 * @param centre
+	 * @throws UnableToMoveException
+	 * @throws InterruptedException
+	 */
+	@Override
+	public void avanceVersCentre(double distance, Speed speed, Vec2RO centre) throws UnableToMoveException, InterruptedException
+	{
+		double orientationReelleDesiree = Math.atan2(centre.getY()-cinematique.position.getY(), centre.getX()-cinematique.position.getX());
+		double deltaO = (orientationReelleDesiree - cinematique.orientationReelle) % (2*Math.PI);
+		if(deltaO > Math.PI)
+			deltaO -= 2*Math.PI;
+		if(Math.abs(deltaO) > Math.PI/2)
+			orientationReelleDesiree += Math.PI;
+		LinkedList<CinematiqueObs> out = new LinkedList<CinematiqueObs>();
+		double cos = Math.cos(orientationReelleDesiree);
+		double sin = Math.sin(orientationReelleDesiree);
+		int nbPoint = (int) Math.round(Math.abs(distance) / ClothoidesComputer.PRECISION_TRACE_MM);
+		double xFinal = cinematique.position.getX()+distance*cos;
+		double yFinal = cinematique.position.getY()+distance*sin;
+		boolean marcheAvant = distance > 0;
+		double orientationGeometrique = marcheAvant ? orientationReelleDesiree : -orientationReelleDesiree;
+		if(nbPoint == 0)
+		{
+			// Le point est vraiment tout proche
+			pointsAvancer[0].update(xFinal, yFinal, orientationGeometrique, marcheAvant, 0);
+			out.add(pointsAvancer[0]);
+		}
+		else
+		{
+			double deltaX = ClothoidesComputer.PRECISION_TRACE_MM * cos;
+			double deltaY = ClothoidesComputer.PRECISION_TRACE_MM * sin;
+			if(distance < 0)
+			{
+				deltaX = -deltaX;
+				deltaY = -deltaY;
+			}
+			for(int i = 0; i < nbPoint; i++)
+				pointsAvancer[nbPoint-i-1].update(xFinal - i * deltaX, yFinal - i * deltaY, orientationGeometrique, marcheAvant, 0);
+			for(int i = 0; i < nbPoint; i++)
+				out.add(pointsAvancer[i]);
+		}
+
+		try {
+			Ticket[] t = chemin.add(out);
+			for(Ticket ticket : t)
+				ticket.attendStatus();
+		} catch (PathfindingException e) {
+			// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de 5m
+			e.printStackTrace();
+		}
+		followTrajectory(speed);
+	}
+	
 	@Override
 	public void avance(double distance, Speed speed) throws UnableToMoveException, InterruptedException
 	{
-		// TODO revoir
 		LinkedList<CinematiqueObs> out = new LinkedList<CinematiqueObs>();
 		double cos = Math.cos(cinematique.orientationReelle);
 		double sin = Math.sin(cinematique.orientationReelle);
