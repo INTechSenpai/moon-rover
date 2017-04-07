@@ -315,10 +315,15 @@ public:
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		finished = actuatorMgr.pullDownNet(false);
+		retStatus = actuatorMgr.pullDownNet(false);
+		finished = retStatus != 0xFF;
 	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		output.push_back(retStatus);
+	}
+private:
+	uint8_t retStatus;
 };
 
 
@@ -337,10 +342,15 @@ public:
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		finished = actuatorMgr.putNetHalfway(false);
+		retStatus = actuatorMgr.putNetHalfway(false);
+		finished = retStatus != 0xFF;
 	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		output.push_back(retStatus);
+	}
+private:
+	uint8_t retStatus;
 };
 
 
@@ -357,10 +367,15 @@ public:
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		finished = actuatorMgr.pullUpNet(false);
+		retStatus = actuatorMgr.pullUpNet(false);
+		finished = retStatus != 0xFF;
 	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		output.push_back(retStatus);
+	}
+private:
+	uint8_t retStatus;
 };
 
 
@@ -378,10 +393,15 @@ public:
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		finished = actuatorMgr.openNet(false);
+		retStatus = actuatorMgr.openNet(false);
+		finished = retStatus != 0xFF;
 	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		output.push_back(retStatus);
+	}
+private:
+	uint8_t retStatus;
 };
 
 
@@ -398,10 +418,15 @@ public:
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		finished = actuatorMgr.closeNet(false);
+		retStatus = actuatorMgr.closeNet(false);
+		finished = retStatus != 0xFF;
 	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		output.push_back(retStatus);
+	}
+private:
+	uint8_t retStatus;
 };
 
 

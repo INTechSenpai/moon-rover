@@ -5,6 +5,7 @@
 */
 
 
+#include "ActuatorStatus.h"
 #include "start_potitions.h"
 #include "LedMgr.h"
 #include "StartupMgr.h"

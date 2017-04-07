@@ -9,6 +9,7 @@
 
 #include "pin_mapping.h"
 #include "SynchronousPWM.h"
+#include "ActuatorStatus.h"
 
 
 // ms
@@ -48,7 +49,7 @@ public:
 		synchronousPWM.stop();
 	}
 
-	bool openNet(bool launch)
+	ActuatorStatus openNet(bool launch)
 	{
 		static uint32_t beginTime;
 		if (launch)
@@ -59,12 +60,12 @@ public:
 		else if (millis() - beginTime > DELAY_OPEN_NET)
 		{
 			synchronousPWM.stop();
-			return true;
+			return SUCCESS;
 		}
-		return false;
+		return RUNNING;
 	}
 
-	bool closeNet(bool launch)
+	ActuatorStatus closeNet(bool launch)
 	{
 		static uint32_t beginTime;
 		if (launch)
@@ -75,12 +76,12 @@ public:
 		else if (millis() - beginTime > DELAY_CLOSE_NET)
 		{
 			synchronousPWM.stop();
-			return true;
+			return SUCCESS;
 		}
-		return false;
+		return RUNNING;
 	}
 
-	uint8_t ejectLeftSide(bool launch)
+	ActuatorStatus ejectLeftSide(bool launch)
 	{
 		static uint32_t beginTime;
 		if (launch)
@@ -103,7 +104,7 @@ public:
 		return RUNNING;
 	}
 
-	uint8_t rearmLeftSide(bool launch)
+	ActuatorStatus rearmLeftSide(bool launch)
 	{
 		static uint32_t beginTime;
 		if (launch)
@@ -124,7 +125,7 @@ public:
 		return RUNNING;
 	}
 
-	uint8_t ejectRightSide(bool launch)
+	ActuatorStatus ejectRightSide(bool launch)
 	{
 		static uint32_t beginTime;
 		if (launch)
@@ -147,7 +148,7 @@ public:
 		return RUNNING;
 	}
 
-	uint8_t rearmRightSide(bool launch)
+	ActuatorStatus rearmRightSide(bool launch)
 	{
 		static uint32_t beginTime;
 		if (launch)
@@ -170,13 +171,6 @@ public:
 
 private:
 	SynchronousPWM & synchronousPWM;
-
-	enum Status
-	{
-		SUCCESS = 0x00,
-		FAILURE = 0x01,
-		RUNNING = 0xFF
-	};
 
 };
 

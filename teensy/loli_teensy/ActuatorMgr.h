@@ -11,14 +11,22 @@
 #include "utils.h"
 #include "ControlerNet.h"
 #include "DynamixelMotor.h"
+#include "Dynamixel.h"
 #include "InterfaceAX12.h"
 #include "ax12config.h"
 
 
+/* Positions de l'AX12, en degrés */
 #define	ANGLE_DOWN		65
 #define ANGLE_HALFWAY	80
 #define ANGLE_UP		155
 #define ANGLE_RELEASE	150
+
+/* Durée maximale des mouvements de l'AX12, en ms */
+#define AX12_NET_TIMEOUT	2000
+
+/* Vitesses des mouvements de l'AX12, valeur comprise entre 1 et 1023, 0 correspond à une vitesse non régulée égale au maximum possible */
+#define SLOW_SPEED	300		// Utilisée pour les mouvements vers le bas
 
 #define TOLERANCE_ANGLE	5
 
@@ -46,50 +54,65 @@ public:
 		ax12net.jointMode();
 	}
 
-	bool pullDownNet(bool launch)
+	ActuatorStatus pullDownNet(bool launch)
 	{
 		static uint32_t lastCommTime;
-		return moveTheAX12(launch, ANGLE_DOWN, TOLERANCE_ANGLE, lastCommTime);
+		static uint32_t startTime = 0;
+		if (timeoutCheck(launch, startTime))
+		{
+			return FAILURE;
+		}
+		return moveTheAX12(launch, ANGLE_DOWN, TOLERANCE_ANGLE, lastCommTime, SLOW_SPEED);
 	}
 
-	bool putNetHalfway(bool launch)
+	ActuatorStatus putNetHalfway(bool launch)
 	{
 		static uint32_t lastCommTime;
-		return moveTheAX12(launch, ANGLE_HALFWAY, TOLERANCE_ANGLE, lastCommTime);
+		static uint32_t startTime = 0;
+		if (timeoutCheck(launch, startTime))
+		{
+			return FAILURE;
+		}
+		return moveTheAX12(launch, ANGLE_HALFWAY, TOLERANCE_ANGLE, lastCommTime, SLOW_SPEED);
 	}
 
-	bool pullUpNet(bool launch)
+	ActuatorStatus pullUpNet(bool launch)
 	{
 		static uint32_t lastCommTime;
+		static uint32_t startTime = 0;
+		if (timeoutCheck(launch, startTime))
+		{
+			return FAILURE;
+		}
 		return moveTheAX12(launch, ANGLE_UP, TOLERANCE_ANGLE, lastCommTime);
 	}
 
-	bool openNet(bool launch)
+	ActuatorStatus openNet(bool launch)
 	{
 		return controlerNet.openNet(launch);
 	}
 
-	bool closeNet(bool launch)
+	ActuatorStatus closeNet(bool launch)
 	{
 		return controlerNet.closeNet(launch);
 	}
 
-	uint8_t ejectLeftSide(bool launch)
+	ActuatorStatus ejectLeftSide(bool launch)
 	{
 		return controlerNet.ejectLeftSide(launch);
 	}
 
-	uint8_t rearmLeftSide(bool launch)
+	ActuatorStatus rearmLeftSide(bool launch)
 	{
 		return controlerNet.rearmLeftSide(launch);
 	}
 
-	uint8_t ejectRightSide(bool launch)
+	ActuatorStatus ejectRightSide(bool launch)
 	{
 		return controlerNet.ejectRightSide(launch);
 	}
 
-	uint8_t rearmRightSide(bool launch)
+	ActuatorStatus rearmRightSide(bool launch)
 	{
 		return controlerNet.rearmRightSide(launch);
 	}
@@ -155,19 +178,50 @@ private:
 	InterfaceAX12 ax12interface;
 	DynamixelMotor ax12net;
 
-	bool moveTheAX12(bool launch, uint16_t goalPosition, uint16_t tolerance, uint32_t & lastCommunicationTime)
+	ActuatorStatus moveTheAX12(bool launch, uint16_t goalPosition, uint16_t tolerance, uint32_t & lastCommunicationTime, uint16_t speed = 0)
 	{
 		if (launch)
 		{
+			ax12net.speed(speed);
 			ax12net.goalPositionDegree(goalPosition);
 			lastCommunicationTime = millis();
-			return false;
+			return RUNNING;
 		}
 		else if (millis() - lastCommunicationTime > 100)
 		{
 			lastCommunicationTime = millis();
 			int32_t currentPosition = ax12net.currentPositionDegree();
-			return ABS(currentPosition - (int32_t)goalPosition) <= (int32_t)tolerance;
+			if (ABS(currentPosition - (int32_t)goalPosition) <= (int32_t)tolerance)
+			{
+				return SUCCESS;
+			}
+			else
+			{
+				return RUNNING;
+			}
+		}
+		else
+		{
+			return RUNNING;
+		}
+	}
+
+	bool timeoutCheck(bool launch, uint32_t & startTime)
+	{
+		if (launch)
+		{
+			startTime = millis();
+			return false;
+		}
+		else if (millis() - startTime > AX12_NET_TIMEOUT)
+		{
+			ax12net.enableTorque(); // En cas de mise en protection de l'AX12, on le réactive
+			uint16_t currentPosition = ax12net.currentPositionDegree();
+			if (currentPosition <= 300)
+			{
+				ax12net.goalPositionDegree(currentPosition);
+			}
+			return true;
 		}
 		else
 		{

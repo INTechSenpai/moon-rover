@@ -88,19 +88,17 @@ void DynamixelMotor::enableTorque(bool aTorque)
 	write(DYN_ADDRESS_ENABLE_TORQUE, uint8_t(aTorque?1:0));
 }
 
-void DynamixelMotor::speed(int16_t aSpeed)
+DynamixelStatus DynamixelMotor::speed(uint16_t aSpeed)
 {
-	if(aSpeed<0)
-		aSpeed=-aSpeed | 1024;
-	write(DYN_ADDRESS_GOAL_SPEED, aSpeed);
+	return write(DYN_ADDRESS_GOAL_SPEED, aSpeed);
 }
 
-uint8_t DynamixelMotor::goalPosition(uint16_t aPosition)
+DynamixelStatus DynamixelMotor::goalPosition(uint16_t aPosition)
 {
 	return write(DYN_ADDRESS_GOAL_POSITION, aPosition);
 }
 
-uint8_t DynamixelMotor::goalPositionDegree(uint16_t posDeg)
+DynamixelStatus DynamixelMotor::goalPositionDegree(uint16_t posDeg)
 {
 	return goalPosition(posDeg * 3.41);
 }

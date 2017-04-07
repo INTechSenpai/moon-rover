@@ -95,9 +95,9 @@ public:
 	void jointMode(uint16_t aCWLimit=0, uint16_t aCCWLimit=0x3FF);
 	
 	void enableTorque(bool aTorque=true);
-	void speed(int16_t aSpeed);
-	uint8_t goalPosition(uint16_t aPosition);
-	uint8_t goalPositionDegree(uint16_t posDeg);
+	DynamixelStatus speed(uint16_t aSpeed);
+	DynamixelStatus goalPosition(uint16_t aPosition);
+	DynamixelStatus goalPositionDegree(uint16_t posDeg);
 
 	void setId(uint8_t newId);
 	
