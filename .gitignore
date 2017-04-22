@@ -4,6 +4,12 @@
 *.user
 *.project
 build/
+tmp/
+stl/
+affiche/
+factures/
+regles/
+Mécanique.lnk
 pc/config.ini
 pc/logs/
 .classpath
