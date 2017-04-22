@@ -58,6 +58,7 @@ public:
 		longOrderList[0x45] = &EjectRightSide::Instance();
 		longOrderList[0x46] = &RearmRightSide::Instance();
 		longOrderList[0x47] = &FunnyAction::Instance();
+		longOrderList[0x48] = &LockNet::Instance();
 
 		// Ordres ASCII
 		immediateOrderList[0x80] = &Logon::Instance();

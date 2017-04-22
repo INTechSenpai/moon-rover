@@ -97,6 +97,11 @@ public:
 		return controlerNet.closeNet(launch);
 	}
 
+	ActuatorStatus lockNet(bool launch)
+	{
+		return controlerNet.lockNet(launch);
+	}
+
 	ActuatorStatus ejectLeftSide(bool launch)
 	{
 		return controlerNet.ejectLeftSide(launch);
@@ -180,12 +185,24 @@ private:
 
 	ActuatorStatus moveTheAX12(bool launch, uint16_t goalPosition, uint16_t tolerance, uint32_t & lastCommunicationTime, uint16_t speed = 0)
 	{
+		static bool orderFailed = false;
 		if (launch)
 		{
-			ax12net.speed(speed);
-			ax12net.goalPositionDegree(goalPosition);
+			orderFailed = false;
+			if (ax12net.speed(speed) != DYN_STATUS_OK)
+			{
+				orderFailed = true;
+			}
+			if (ax12net.goalPositionDegree(goalPosition) != DYN_STATUS_OK)
+			{
+				orderFailed = true;
+			}
 			lastCommunicationTime = millis();
 			return RUNNING;
+		}
+		else if (orderFailed)
+		{
+			return FAILURE;
 		}
 		else if (millis() - lastCommunicationTime > 100)
 		{
@@ -199,6 +216,7 @@ private:
 			{
 				return RUNNING;
 			}
+			
 		}
 		else
 		{

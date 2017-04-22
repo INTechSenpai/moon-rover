@@ -30,6 +30,8 @@ public:
 		pinMode(PIN_CLIGNOTANT_G, OUTPUT);
 		pinMode(PIN_FEUX_RECUL, OUTPUT);
 
+		digitalWrite(PIN_FEUX_NUIT, HIGH); // todo: à enlever
+
 		statusLed = OFF;
 		statusBeforeBatteryLow = OFF;
 	}

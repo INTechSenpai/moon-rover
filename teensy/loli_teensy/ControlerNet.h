@@ -15,13 +15,15 @@
 // ms
 #define DELAY_OPEN_NET			1400
 #define DELAY_CLOSE_NET			1400
+#define DELAY_LOCK_NET			200
 #define DELAY_EJECT_LEFT_SIDE	300
 #define DELAY_EJECT_RIGHT_SIDE	300
-#define DELAY_REARM_LEFT_SIDE	300
-#define DELAY_REARM_RIGHT_SIDE	300
+#define DELAY_REARM_LEFT_SIDE	1000
+#define DELAY_REARM_RIGHT_SIDE	1000
 
 #define PWM_OPEN_NET	255
 #define PWM_CLOSE_NET	255
+#define PWM_LOCK_NET	150
 #define PWM_EJECT_LEFT	255
 #define PWM_EJECT_RIGHT	255
 #define PWM_REARM_LEFT	255
@@ -81,6 +83,22 @@ public:
 		return RUNNING;
 	}
 
+	ActuatorStatus lockNet(bool launch)
+	{
+		static uint32_t beginTime;
+		if (launch)
+		{
+			synchronousPWM.net(PWM_LOCK_NET, false);
+			beginTime = millis();
+		}
+		else if (millis() - beginTime > DELAY_LOCK_NET)
+		{
+			synchronousPWM.stop();
+			return SUCCESS;
+		}
+		return RUNNING;
+	}
+
 	ActuatorStatus ejectLeftSide(bool launch)
 	{
 		static uint32_t beginTime;
@@ -92,7 +110,7 @@ public:
 		else if (millis() - beginTime > DELAY_EJECT_LEFT_SIDE)
 		{
 			synchronousPWM.stop();
-			if (analogRead(PIN_BUTEE_G) > 512)
+			if (isLeftLocked())
 			{
 				return FAILURE;
 			}
@@ -117,7 +135,7 @@ public:
 			synchronousPWM.stop();
 			return FAILURE;
 		}
-		else if (analogRead(PIN_BUTEE_G) > 512)
+		else if (isLeftLocked())
 		{
 			synchronousPWM.stop();
 			return SUCCESS;
@@ -136,7 +154,7 @@ public:
 		else if (millis() - beginTime > DELAY_EJECT_RIGHT_SIDE)
 		{
 			synchronousPWM.stop();
-			if (analogRead(PIN_BUTEE_D) > 512)
+			if (isRightLocked())
 			{
 				return FAILURE;
 			}
@@ -161,7 +179,7 @@ public:
 			synchronousPWM.stop();
 			return FAILURE;
 		}
-		else if (analogRead(PIN_BUTEE_D) < 512)
+		else if (isRightLocked())
 		{
 			synchronousPWM.stop();
 			return SUCCESS;
@@ -171,6 +189,16 @@ public:
 
 private:
 	SynchronousPWM & synchronousPWM;
+
+	bool isLeftLocked()
+	{
+		return analogRead(PIN_BUTEE_G) > 400;
+	}
+
+	bool isRightLocked()
+	{
+		return analogRead(PIN_BUTEE_D) > 400;
+	}
 
 };
 

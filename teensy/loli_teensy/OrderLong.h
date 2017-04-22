@@ -396,10 +396,7 @@ public:
 		retStatus = actuatorMgr.openNet(false);
 		finished = retStatus != 0xFF;
 	}
-	void terminate(std::vector<uint8_t> & output)
-	{
-		output.push_back(retStatus);
-	}
+	void terminate(std::vector<uint8_t> & output){}
 private:
 	uint8_t retStatus;
 };
@@ -421,10 +418,29 @@ public:
 		retStatus = actuatorMgr.closeNet(false);
 		finished = retStatus != 0xFF;
 	}
-	void terminate(std::vector<uint8_t> & output)
+	void terminate(std::vector<uint8_t> & output){}
+private:
+	uint8_t retStatus;
+};
+
+
+/*
+	Serre les mailles du filet.
+*/
+class LockNet : public OrderLong, public Singleton<LockNet>
+{
+public:
+	LockNet() {}
+	void _launch(const std::vector<uint8_t> & input)
 	{
-		output.push_back(retStatus);
+		actuatorMgr.lockNet(true);
 	}
+	void onExecute(std::vector<uint8_t> & output)
+	{
+		retStatus = actuatorMgr.lockNet(false);
+		finished = retStatus != 0xFF;
+	}
+	void terminate(std::vector<uint8_t> & output) {}
 private:
 	uint8_t retStatus;
 };

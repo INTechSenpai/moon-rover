@@ -196,6 +196,7 @@ private:
 		else if (strcmp(order, "ers") == 0) { id = 0x45; immediate = false; }
 		else if (strcmp(order, "rrs") == 0) { id = 0x46; immediate = false; }
 		else if (strcmp(order, "fa") == 0) { id = 0x47; immediate = false; }
+		else if (strcmp(order, "ln") == 0) { id = 0x48; immediate = false; }
 		else if (strcmp(order, "abort") == 0) { id = 0xBE; immediate = true; }
 		else if (strcmp(order, "help") == 0) { id = 0xBF; immediate = true; }
 		else if (strcmp(order, "addt") == 0) { id = 0xB1; immediate = true; }
