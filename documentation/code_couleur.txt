@@ -1,0 +1,53 @@
+ENCODEURS
+noir	GND
+blanc	+V
+rouge	A
+vert	B
+
+ToF (5 fils de RJ45)
+orange			Vin (+3V3)
+marron			GND
+bleu-blanc		SDA
+vert-blanc		SCL
+marron-blanc	Enable
+
+Filet
+Vert			Moteur Gauche (+)
+Vert-blanc		Moteur Gauche (-)
+Bleu			Moteur Droit (+)
+Bleu-blanc		Moteur Droit (-)
+Orange			Moteur Filet (+)
+Orange-blanc	Moteur Filet (-)
+Vert			Contacteur Gauche
+Bleu			Contacteur Droit	
+
+Feux Arrière (1 RJ45 + 1 kebab rouge)
+orange-blanc	clignotant
+rouge (kebab)	frein
+vert			nuit
+bleu			recul
+(+code couleur ToF)
+
+Raspberry Pi (kebab)
+rouge	+5V
+noir	GND
+jaune	RX (raspi)
+orange	TX (raspi)
+
+Bloc direction (1RJ45)
+orange-blanc	clignotant
+éclairage		vert
+(+code couleur ToF)
+
+Tableau de bord (1RJ45)
+bleu			getColor
+orange-blanc	DEL_status_1
+vert			DEL_status_2
+(+code couleur ToF)
+
+Capteurs ToF flans (5 fils)
+marron		+3V3
+rouge		GND
+orange		SDA
+jaune		SCL
+vert		Enable
