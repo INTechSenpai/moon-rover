@@ -330,6 +330,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	public void initActionneurs() throws InterruptedException
 	{
 		leveFilet();
+		verrouilleFilet();
 	}
 
 	/**

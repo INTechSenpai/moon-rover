@@ -224,6 +224,17 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		notify();
 		return t;
 	}
+
+	/**
+	 * Verrouille le filet
+	 */
+	public synchronized Ticket verrouilleFilet()
+	{
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(OutOrder.LOCK_NET, t));
+		notify();
+		return t;
+	}
 	
 	/**
 	 * Ferme le filet

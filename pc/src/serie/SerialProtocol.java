@@ -53,6 +53,7 @@ public class SerialProtocol {
 		EJECT_RIGHT_SIDE(0x45, Type.LONG),
 		REARM_RIGHT_SIDE(0x46, Type.LONG),
 		FUNNY_ACTION(0x47, Type.LONG),
+		LOCK_NET(0x48, Type.LONG),
 		
 		ASK_COLOR(0x59, Type.SHORT),
 		PING(0x5A, Type.SHORT),
