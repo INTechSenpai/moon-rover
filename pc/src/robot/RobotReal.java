@@ -55,7 +55,6 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	protected volatile boolean matchDemarre = false;
     protected volatile long dateDebutMatch;
     private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant;
-    private int nbRetente;
 	private boolean print, printTrace;
 	private PrintBufferInterface buffer;
 	private BufferOutgoingOrder out;
@@ -77,7 +76,6 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-		nbRetente = config.getInt(ConfigInfo.NB_TENTATIVES_ACTIONNEURS);
 		printTrace = config.getBoolean(ConfigInfo.GRAPHIC_TRACE_ROBOT);
 		if(print)
 			buffer.add(this);
@@ -308,18 +306,14 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 				paramClasses[i] = param[i].getClass();
 		}
 		long avant = System.currentTimeMillis();
-		int nbEssai = nbRetente;
-		do {
-			try {
-				t = (Ticket) BufferOutgoingOrder.class.getMethod(nom, paramClasses).invoke(out, param.length == 0 ? null : param);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				e.printStackTrace();
-			}
-			etat = t.attendStatus().etat;
-			nbEssai--;
-			if(etat == SerialProtocol.State.KO)
-				log.warning("Problème pour l'actionneur "+nom+" : on "+(nbEssai >= 0 ? "retente." : "abandonne."));
-		} while(nbEssai >= 0 && etat == SerialProtocol.State.KO);
+		try {
+			t = (Ticket) BufferOutgoingOrder.class.getMethod(nom, paramClasses).invoke(out, param.length == 0 ? null : param);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+		etat = t.attendStatus().etat;
+		if(etat == SerialProtocol.State.KO)
+			log.warning("Problème pour l'actionneur "+nom);
 		log.debug("Temps d'exécution de "+nom+" : "+(System.currentTimeMillis()-avant));
 	}
 
