@@ -96,6 +96,7 @@ public:
 	
 	void enableTorque(bool aTorque=true);
 	DynamixelStatus speed(uint16_t aSpeed);
+	DynamixelStatus torqueLimit(uint16_t aTorque);
 	DynamixelStatus goalPosition(uint16_t aPosition);
 	DynamixelStatus goalPositionDegree(uint16_t posDeg);
 

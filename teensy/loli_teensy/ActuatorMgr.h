@@ -183,13 +183,17 @@ private:
 	InterfaceAX12 ax12interface;
 	DynamixelMotor ax12net;
 
-	ActuatorStatus moveTheAX12(bool launch, uint16_t goalPosition, uint16_t tolerance, uint32_t & lastCommunicationTime, uint16_t speed = 0)
+	ActuatorStatus moveTheAX12(bool launch, uint16_t goalPosition, uint16_t tolerance, uint32_t & lastCommunicationTime, uint16_t speed = 0, uint16_t torque = 1023)
 	{
 		static bool orderFailed = false;
 		if (launch)
 		{
 			orderFailed = false;
 			if (ax12net.speed(speed) != DYN_STATUS_OK)
+			{
+				orderFailed = true;
+			}
+			if (ax12net.torqueLimit(torque) != DYN_STATUS_OK)
 			{
 				orderFailed = true;
 			}

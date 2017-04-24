@@ -93,6 +93,11 @@ DynamixelStatus DynamixelMotor::speed(uint16_t aSpeed)
 	return write(DYN_ADDRESS_GOAL_SPEED, aSpeed);
 }
 
+DynamixelStatus DynamixelMotor::torqueLimit(uint16_t aTorque)
+{
+	return write(DYN_ADDRESS_TORQUE_LIMIT, aTorque);
+}
+
 DynamixelStatus DynamixelMotor::goalPosition(uint16_t aPosition)
 {
 	return write(DYN_ADDRESS_GOAL_POSITION, aPosition);

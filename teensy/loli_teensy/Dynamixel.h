@@ -156,6 +156,7 @@ enum DynMotorAddress
 	DYN_ADDRESS_CCW_LIMIT		=0x08,
 	/** \brief Maximum torque, uint16_t , writable */
 	DYN_ADDRESS_MAX_TORQUE		=0x0E,
+	DYN_ADDRESS_TORQUE_LIMIT	=0x22,
 	
 	/** \brief Enable torque, uint8_t , writable */
 	DYN_ADDRESS_ENABLE_TORQUE		=0x18,
