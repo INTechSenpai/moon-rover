@@ -354,25 +354,48 @@ public class JUnit_Robot extends JUnit_Test {
     }
 	
 	@Test
-    public void recule_corrige() throws Exception
+    public void recule_corrige_pour_rien() throws Exception
     {
-		Cinematique depart = new Cinematique(0, 1600, Math.PI/2, true, 0);
+		PrintBuffer buffer = container.getService(PrintBuffer.class);
+		Cinematique depart = new Cinematique(0, 1000, Math.PI/2, true, 0);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Vec2RO arrivee = new Vec2RO(-.5, 1500);
+		int rayon = 200;
+		buffer.addSupprimable(new ObstacleCircular(arrivee, rayon));
 		Thread.sleep(500);
 		if(!simuleSerie)
-			robot.avanceVersCentre(-200, v, new Vec2RO(100, 1200));
+			robot.avanceVersCentre(v, arrivee, rayon);
+    }
+	
+	@Test
+    public void recule_corrige() throws Exception
+    {
+		PrintBuffer buffer = container.getService(PrintBuffer.class);
+		Cinematique depart = new Cinematique(0, 1000, -Math.PI/2, true, 0);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Vec2RO arrivee = new Vec2RO(-300, 1500);
+		int rayon = 200;
+		buffer.addSupprimable(new ObstacleCircular(arrivee, rayon));
+		Thread.sleep(500);
+		if(!simuleSerie)
+			robot.avanceVersCentre(v, arrivee, rayon);
     }
 	
 	@Test
     public void avance_corrige() throws Exception
     {
-		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
+		PrintBuffer buffer = container.getService(PrintBuffer.class);
+		Cinematique depart = new Cinematique(0, 1000, Math.PI/2, true, 0);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Vec2RO arrivee = new Vec2RO(-300, 1500);
+		int rayon = 200;
+		buffer.addSupprimable(new ObstacleCircular(arrivee, rayon));
 		Thread.sleep(500);
 		if(!simuleSerie)
-			robot.avanceVersCentre(200, v, new Vec2RO(-100, 2000));
+			robot.avanceVersCentre(v, arrivee, rayon);
     }
 	
 	/**

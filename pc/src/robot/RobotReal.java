@@ -22,7 +22,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 
 import obstacles.types.ObstacleRobot;
-import pathfinding.astar.arcs.CercleArrivee;
 import pathfinding.astar.arcs.ClothoidesComputer;
 import pathfinding.chemin.CheminPathfinding;
 import serie.BufferOutgoingOrder;
@@ -37,6 +36,7 @@ import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
 import utils.Log;
 import utils.Vec2RO;
+import utils.Vec2RW;
 import graphic.Fenetre;
 import graphic.PrintBufferInterface;
 import graphic.printable.Couleur;
@@ -59,6 +59,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	private PrintBufferInterface buffer;
 	private BufferOutgoingOrder out;
 	private CheminPathfinding chemin;
+	private double courbureMax;
     private boolean cinematiqueInitialised = false;
     private CinematiqueObs[] pointsAvancer = new CinematiqueObs[256];
 
@@ -77,6 +78,8 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
 		printTrace = config.getBoolean(ConfigInfo.GRAPHIC_TRACE_ROBOT);
+		courbureMax = config.getDouble(ConfigInfo.COURBURE_MAX);
+		
 		if(print)
 			buffer.add(this);
 		
@@ -184,6 +187,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	 * DÉPLACEMENTS
 	 */
 	
+	
 	/**
 	 * Se déplace en visant la direction d'un point
 	 * @param distance
@@ -193,7 +197,164 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	 * @throws InterruptedException
 	 */
 	@Override
-	public void avanceVersCentre(double distance, Speed speed, Vec2RO centre) throws UnableToMoveException, InterruptedException
+	public void avanceVersCentre(Speed speed, Vec2RO centre, double rayon) throws UnableToMoveException, InterruptedException
+	{
+		double orientationReelleDesiree = Math.atan2(centre.getY()-cinematique.position.getY(), centre.getX()-cinematique.position.getX());
+		double deltaO = (orientationReelleDesiree - cinematique.orientationReelle) % (2*Math.PI);
+		if(deltaO > Math.PI)
+			deltaO -= 2*Math.PI;
+
+//		log.debug("deltaO = "+deltaO);
+		boolean enAvant = Math.abs(deltaO) < Math.PI/2;
+//		log.debug("enAvant = "+enAvant);
+		
+		// on regarde maintenant modulo PI pour savoir si on est aligné
+		deltaO = deltaO % Math.PI;
+		if(deltaO > Math.PI/2)
+			deltaO -= Math.PI;
+		
+		if(Math.abs(deltaO) < 0.001) // on est presque aligné
+		{
+//			log.debug("Presque aligné : "+deltaO);
+			double distance = cinematique.position.distanceFast(centre) - rayon;
+			if(!enAvant)
+				distance = -distance;
+			avanceVersCentreLineaire(distance, speed, centre);
+			return;
+		}
+			
+		double cos = Math.cos(cinematique.orientationReelle);
+		double sin = Math.sin(cinematique.orientationReelle);
+		if(!enAvant)
+		{
+			cos = -cos;
+			sin = -sin;
+		}
+		
+		Vec2RO a = cinematique.position, bp = centre;		
+		// le symétrique du centre bp
+		Vec2RO ap = new Vec2RO(cinematique.position.getX()-rayon*cos, cinematique.position.getY()-rayon*sin);
+		Vec2RO d = bp.plusNewVector(ap).scalar(0.5); // le milieu entre ap et bp, sur l'axe de symétrie
+		Vec2RW u = bp.minusNewVector(ap);
+		double n = u.norm();
+		double ux = -u.getY() / n;
+		double uy = u.getX() / n;
+		double vx = -sin;
+		double vy = cos;
+		
+//		log.debug(ap+" "+a+" "+d+" "+bp);
+		
+		Vec2RO c = null;
+		
+		if(ux != 0)
+		{
+			double alpha = (uy / ux * (d.getX() - a.getX()) + a.getY() - d.getY()) / (vx * uy / ux - vy);
+			c = new Vec2RO(a.getX() + alpha * vx, a.getY() + alpha * vy);
+			if(alpha > 0)
+			{
+				ux = -ux;
+				uy = -uy;
+				vx = -vx;
+				vy = -vy;
+			}
+		}
+		else if(vx != 0)
+		{
+			double alpha = (vy / vx * (a.getX() - d.getX()) + d.getY() - a.getY()) / (ux * vy / vx - uy);
+			c = new Vec2RO(d.getX() + alpha * ux, d.getY() + alpha * uy);			
+			if(alpha > 0)
+			{
+				ux = -ux;
+				uy = -uy;
+				vx = -vx;
+				vy = -vy;
+			}
+		}
+		
+		if(c == null)
+		{
+			double distance = cinematique.position.distanceFast(centre) - rayon;
+			if(!enAvant)
+				distance = -distance;
+			avanceVersCentreLineaire(distance, speed, centre);
+			return;
+		}
+		else
+		{
+//			log.debug("C : "+c);
+			LinkedList<CinematiqueObs> out = new LinkedList<CinematiqueObs>();
+			double rayonTraj = c.distance(a);
+			double courbure = 1000. / rayonTraj; // la courbure est en m^-1
+			
+			if(courbure > courbureMax)
+			{
+				double distance = cinematique.position.distanceFast(centre) - rayon;
+				if(!enAvant)
+					distance = -distance;
+				avanceVersCentreLineaire(distance, speed, centre);
+				return;
+			}
+			
+			Vec2RW delta = a.minusNewVector(c);
+						
+			double angle = (2*(new Vec2RO(ux, uy).getFastArgument() - new Vec2RO(vx, vy).getFastArgument())) % (2*Math.PI);
+			if(angle > Math.PI)
+				angle -= 2*Math.PI;
+//			double angle = 2*Math.acos(ux * vx + uy * vy); // angle total
+			double longueur = angle * rayonTraj;
+//			log.debug("Angle : "+angle);
+
+			int nbPoints = (int) Math.round(Math.abs(longueur) / ClothoidesComputer.PRECISION_TRACE_MM);
+			
+			cos = Math.cos(angle);
+			sin = Math.sin(angle);
+						
+			delta.rotate(Math.cos(angle), Math.sin(angle)); // le tout dernier point, B
+			
+//			log.debug("B : "+delta.plusNewVector(c));
+			
+			double anglePas = -angle/nbPoints;
+
+			cos = Math.cos(anglePas);
+			sin = Math.sin(anglePas);
+			
+//			log.debug("nbPoints = "+nbPoints);
+			
+			for(int i = nbPoints - 1; i >= 0; i--)
+			{
+				double orientation = cinematique.orientationReelle;
+				if(!enAvant)
+					orientation += Math.PI; // l'orientation géométrique
+				orientation -= (i+1)*anglePas;
+				pointsAvancer[i].update(delta.getX() + c.getX(), delta.getY() + c.getY(), orientation, enAvant, courbure);
+				delta.rotate(cos, sin);
+			}
+			for(int i = 0; i < nbPoints; i++)
+				out.add(pointsAvancer[i]);
+
+			try {
+				Ticket[] t = chemin.add(out);
+				for(Ticket ticket : t)
+					ticket.attendStatus();
+			} catch (PathfindingException e) {
+				// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de 5m
+				e.printStackTrace();
+			}
+			followTrajectory(speed);
+		}
+		
+	}
+	
+	/**
+	 * Ancienne version de avanceVersCentre basée sur une simple droite. Mauvais résultats.
+	 * @param distance
+	 * @param speed
+	 * @param centre
+	 * @param rayon
+	 * @throws UnableToMoveException
+	 * @throws InterruptedException
+	 */
+	public void avanceVersCentreLineaire(double distance, Speed speed, Vec2RO centre) throws UnableToMoveException, InterruptedException
 	{
 		double orientationReelleDesiree = Math.atan2(centre.getY()-cinematique.position.getY(), centre.getX()-cinematique.position.getX());
 		double deltaO = (orientationReelleDesiree - cinematique.orientationReelle) % (2*Math.PI);
