@@ -88,8 +88,26 @@ public class ScriptPetitCratere extends Script
 				state.robot.baisseFilet();
 			} catch (ActionneurException e) {
 				log.warning(e);
-				state.robot.leveFilet();
-				state.robot.baisseFilet();
+				try {
+					state.robot.leveFilet();
+				} catch (ActionneurException e1) {
+					log.warning(e1);
+					state.robot.fermeFilet();
+					throw e1;
+				}
+				
+				try {
+					state.robot.baisseFilet();
+				} catch (ActionneurException e1) {
+					log.warning(e1);
+					try {
+						state.robot.leveFilet();
+					} catch (ActionneurException e2) {
+						log.warning(e2);
+					}
+					state.robot.fermeFilet();
+					throw e1;
+				}
 			}
 			
 			state.robot.fermeFilet();
@@ -101,14 +119,15 @@ public class ScriptPetitCratere extends Script
 			} catch (ActionneurException e) {
 				log.warning(e);
 			}
+			
+			// le minerai est considéré comme pris
+			state.table.setDone(element, EtatElement.PRIS_PAR_NOUS);
 	
 		} catch (ActionneurException e) {
 			log.warning(e);
 		}
 		finally
 		{
-			// dans tous les cas, on considère qu'on a le minerai
-			state.table.setDone(element, EtatElement.PRIS_PAR_NOUS);
 			state.robot.avance(50, Speed.STANDARD);
 		}
 	}
