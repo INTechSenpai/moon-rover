@@ -216,8 +216,6 @@ void loop()
 		//{
 		//	loli = millis();
 		//	Serial.println("Alive");
-		//	Serial.println(analogRead(PIN_BUTEE_D));
-		//	Serial.println(analogRead(PIN_BUTEE_G));
 		//}
 	}
 }
