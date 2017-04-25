@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package scripts;
 
+import exceptions.ActionneurException;
 import exceptions.UnableToMoveException;
 import pathfinding.GameState;
 import pathfinding.SensFinal;
@@ -50,15 +51,23 @@ public class ScriptDeposeMineraiSimple extends Script
 	@Override
 	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
 	{
-		state.robot.baisseFilet();
-		state.robot.ouvreFilet();
-	}
-
-	@Override
-	protected void termine(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
-	{
-		state.robot.leveFilet();		
-		state.robot.fermeFilet();
+		try {
+			try {
+				state.robot.baisseFilet();
+			} catch (ActionneurException e) {
+				e.printStackTrace();
+			}
+			state.robot.ouvreFilet();
+		}
+		finally
+		{
+			try {
+				state.robot.leveFilet();
+			} catch (ActionneurException e) {
+				e.printStackTrace();
+			}
+			state.robot.fermeFilet();
+		}
 	}
 	
 	@Override

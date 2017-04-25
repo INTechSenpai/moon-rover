@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package scripts;
 
+import exceptions.ActionneurException;
 import exceptions.UnableToMoveException;
 import pathfinding.GameState;
 import pathfinding.SensFinal;
@@ -50,12 +51,62 @@ public class ScriptDeposeMinerai extends Script
 	@Override
 	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
 	{
-		// TODO
-	}
-	
-	@Override
-	protected void termine(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
-	{
+		state.robot.ouvreFilet();
+		try {
+			state.robot.ejecteBalles();
+			try {
+				state.robot.ejecteBallesAutreCote();
+				try {
+					state.robot.rearmeAutreCote();
+				} catch (ActionneurException e) {
+					log.warning(e);
+					try {
+						state.robot.ejecteBallesAutreCote();
+					}
+					catch (ActionneurException e1) {
+						log.warning(e1);
+					}
+					try
+					{
+						state.robot.rearmeAutreCote();
+					}
+					catch (ActionneurException e1) {
+						log.warning(e1);
+					}	
+				}
+			}
+			catch (ActionneurException e) {
+				log.warning(e);
+			}
+			finally
+			{
+				try {
+					state.robot.rearme();
+				} catch (ActionneurException e) {
+					log.warning(e);
+					try {
+						state.robot.ejecteBalles();
+					}
+					catch (ActionneurException e1) {
+						log.warning(e1);
+					}
+					try
+					{
+						state.robot.rearme();
+					}
+					catch (ActionneurException e1) {
+						log.warning(e1);
+					}
+				}
+			}
+		}
+		catch (ActionneurException e) {
+			log.warning(e);
+		}
+		finally
+		{
+			state.robot.fermeFilet();
+		}
 	}
 	
 	@Override

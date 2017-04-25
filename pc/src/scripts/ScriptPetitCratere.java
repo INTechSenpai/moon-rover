@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package scripts;
 
+import exceptions.ActionneurException;
 import exceptions.UnableToMoveException;
 import pathfinding.GameState;
 import pathfinding.astar.arcs.CercleArrivee;
@@ -66,18 +67,50 @@ public class ScriptPetitCratere extends Script
 	@Override
 	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
 	{
-		state.robot.avanceVersCentre(Speed.STANDARD, element.obstacle.getPosition(), 180);
-		state.robot.ouvreFilet();
-		state.robot.baisseFilet();
-		state.table.setDone(element, EtatElement.PRIS_PAR_NOUS);
-	}
+		try {
+			state.robot.avanceVersCentre(Speed.STANDARD, element.obstacle.getPosition(), 180);
+			
+			try {
+				state.robot.rearme();
+			} catch (ActionneurException e) {
+				log.warning(e);
+			}
+
+			try {
+					state.robot.rearmeAutreCote();
+			} catch (ActionneurException e) {
+				log.warning(e);
+			}
 	
-	@Override
-	protected void termine(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
-	{
-		state.robot.fermeFilet();
-		state.robot.leveFilet();		
-		state.robot.avance(40, Speed.STANDARD);
+			state.robot.ouvreFilet();
+	
+			try {
+				state.robot.baisseFilet();
+			} catch (ActionneurException e) {
+				log.warning(e);
+				state.robot.leveFilet();
+				state.robot.baisseFilet();
+			}
+			
+			state.robot.fermeFilet();
+			state.robot.ouvreFilet();
+			state.robot.fermeFilet();
+			
+			try {
+				state.robot.leveFilet();
+			} catch (ActionneurException e) {
+				log.warning(e);
+			}
+	
+		} catch (ActionneurException e) {
+			log.warning(e);
+		}
+		finally
+		{
+			// dans tous les cas, on considère qu'on a le minerai
+			state.table.setDone(element, EtatElement.PRIS_PAR_NOUS);
+			state.robot.avance(50, Speed.STANDARD);
+		}
 	}
 
 	@Override

@@ -45,8 +45,9 @@ public class Homologation {
 	
 	public static void main(String[] args)
 	{
+		Container container = null;
 		try {
-			Container container = new Container();
+			container = new Container();
 			Log log = container.getService(Log.class);
 			BufferOutgoingOrder data = container.getService(BufferOutgoingOrder.class);
 			RobotReal robot = container.getService(RobotReal.class);
@@ -132,10 +133,22 @@ public class Homologation {
 			} catch (UnableToMoveException e) {
 				e.printStackTrace();
 			}
-			container.destructor(false);
 		} catch (ContainerException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+		}
+		finally
+		{
+			if(container != null)
+				try {
+					container.destructor(false);
+				} catch (ContainerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
 	}
 	

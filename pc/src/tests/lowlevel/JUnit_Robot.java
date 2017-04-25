@@ -156,6 +156,7 @@ public class JUnit_Robot extends JUnit_Test {
 		robot.rearme();
 		robot.ouvreFilet();
 		robot.fermeFilet();
+		robot.verrouilleFilet();
 		robot.traverseBascule();
 		robot.funnyAction();
 	}

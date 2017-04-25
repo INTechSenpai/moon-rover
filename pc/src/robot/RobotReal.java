@@ -32,6 +32,7 @@ import config.Config;
 import config.ConfigInfo;
 import container.Service;
 import container.dependances.CoreClass;
+import exceptions.ActionneurException;
 import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
 import utils.Log;
@@ -453,9 +454,10 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	 * Rend bloquant l'appel d'une méthode
 	 * @param m
 	 * @throws InterruptedException
+	 * @throws ActionneurException 
 	 */
 	@Override
-	protected void bloque(String nom, Object... param) throws InterruptedException
+	protected void bloque(String nom, Object... param) throws InterruptedException, ActionneurException
 	{
 		SerialProtocol.State etat;
 		Ticket t = null;
@@ -474,7 +476,8 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		}
 		etat = t.attendStatus().etat;
 		if(etat == SerialProtocol.State.KO)
-			log.warning("Problème pour l'actionneur "+nom);
+			throw new ActionneurException("Problème pour l'actionneur "+nom);
+
 		log.debug("Temps d'exécution de "+nom+" : "+(System.currentTimeMillis()-avant));
 	}
 
@@ -484,8 +487,14 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	 */
 	public void initActionneurs() throws InterruptedException
 	{
-		leveFilet();
-		verrouilleFilet();
+		try {
+			leveFilet();
+			verrouilleFilet();
+			rearme();
+			rearmeAutreCote();
+		} catch (ActionneurException e) {
+			log.critical(e);
+		}
 	}
 
 	/**

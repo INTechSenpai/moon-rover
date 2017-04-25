@@ -25,8 +25,6 @@ import pathfinding.GameState;
 import pathfinding.SensFinal;
 import pathfinding.astar.arcs.CercleArrivee;
 import robot.Robot;
-import robot.Speed;
-import table.EtatElement;
 import table.GameElementNames;
 import utils.Log;
 import utils.Vec2RO;
@@ -86,20 +84,6 @@ public class ScriptGrosCratere extends Script
 	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
 	{
 		// TODO
-		state.robot.avance(-20, Speed.STANDARD);
-		state.robot.bougeFiletMiChemin();
-		state.robot.ouvreFilet();
-		state.robot.baisseFilet();
-		state.table.setDone(elements.get(0), EtatElement.PRIS_PAR_NOUS);
-	}
-	
-	@Override
-	protected void termine(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
-	{
-		// TODO
-		state.robot.fermeFilet();
-		state.robot.leveFilet();		
-		state.robot.avance(20, Speed.STANDARD);
 	}
 
 	@Override
