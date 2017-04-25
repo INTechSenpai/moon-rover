@@ -118,7 +118,6 @@ void MotionControlSystem::control()
 			{
 				movingState = MOVING;
 				endOfMoveMgr.moveIsStarting();
-				derivativeCurvature.update(currentTrajPoint.getCurvature());
 			}
 			leftSpeedSetpoint = 0;
 			rightSpeedSetpoint = 0;
@@ -126,67 +125,35 @@ void MotionControlSystem::control()
 		else if (movingState == MOVING)
 		{
 			/* Asservissement sur trajectoire */
-			static float posError, prevPosError, deltaPosError;
-			static float orientationError, prevOrientationError, deltaOrientationError;
-			static Average<float, 5> averageDeltaPosError;
-			static Average<float, 5> averageDeltaOrientationError;
-			static Average<float, 5> averagePosError;
-			static Average<float, 5> averageOrientationError;
-			
-			uint8_t realIndex = trajectoryIndex + desiredIndexOffset;
-			while (!currentTrajectory[realIndex].isUpToDate())
-			{
-				realIndex--;
-			}
 
 			Position posConsigne = currentTrajectory[trajectoryIndex].getPosition();
-			float anticipatedCurvature = currentTrajectory[realIndex].getCurvature();
-			posError = -(position.x - posConsigne.x) * sinf(posConsigne.orientation) + (position.y - posConsigne.y) * cosf(posConsigne.orientation);
-			orientationError = fmodulo(position.orientation - posConsigne.orientation, TWO_PI);
-
-			deltaPosError = (posError - prevPosError) * FREQ_ASSERV;
-			//averageDeltaPosError.add(deltaPosError);
-			//deltaPosError = averageDeltaPosError.value();
+			float trajectoryCurvature = currentTrajectory[trajectoryIndex].getCurvature();
+			float posError = -(position.x - posConsigne.x) * sinf(posConsigne.orientation) + (position.y - posConsigne.y) * cosf(posConsigne.orientation);
+			float orientationError = fmodulo(position.orientation - posConsigne.orientation, TWO_PI);
 
 			if (orientationError > PI)
 			{
 				orientationError -= TWO_PI;
 			}
 
-			deltaOrientationError = (orientationError - prevOrientationError) * FREQ_ASSERV;
-			//averageDeltaOrientationError.add(deltaOrientationError);
-			//deltaOrientationError = averageDeltaOrientationError.value();
-
 			if (maxMovingSpeed > 0)
 			{
-				curvatureOrder = anticipatedCurvature - curvatureCorrectorK1 * posError - curvatureCorrectorK2 * orientationError;
-				curvatureOrder -= curvatureCorrectorKD1 * deltaPosError;
-				curvatureOrder -= curvatureCorrectorKD2 * deltaOrientationError;
+				curvatureOrder = trajectoryCurvature - curvatureCorrectorK1 * posError - curvatureCorrectorK2 * orientationError;
 			}
 			else
 			{
-				curvatureOrder = anticipatedCurvature - curvatureCorrectorK1 * posError + curvatureCorrectorK2 * orientationError;
-				curvatureOrder -= curvatureCorrectorKD1 * deltaPosError;
-				curvatureOrder += curvatureCorrectorKD2 * deltaOrientationError;
+				curvatureOrder = trajectoryCurvature - curvatureCorrectorK1 * posError + curvatureCorrectorK2 * orientationError;
 			}
 
-			curvatureOrder += derivativeCurvature.getDerivativeCurvature() * curvatureCorrectorKd;
-
 			direction.setAimCurvature(curvatureOrder);
-
-			prevPosError = posError;
-			prevOrientationError = orientationError;
 			
-			watchTrajErrors.traj_curv = anticipatedCurvature;
+			watchTrajErrors.traj_curv = trajectoryCurvature;
 			watchTrajErrors.current_curv = direction.getRealCurvature();
 			watchTrajErrors.aim_curv = curvatureOrder;
 			watchTrajErrors.angle_err = 100*orientationError;
 			watchTrajErrors.pos_err = posError;
-			watchTrajErrors.curv_deriv = 10*derivativeCurvature.getDerivativeCurvature();
-			watchTrajErrors.delta_angle_err = deltaOrientationError;
-			watchTrajErrors.delta_pos_err = deltaPosError/10;
 
-			watchTrajIndex.index = realIndex;
+			watchTrajIndex.index = trajectoryIndex;
 			watchTrajIndex.currentPos = position;
 			watchTrajIndex.aimPosition = posConsigne;
 
@@ -197,10 +164,6 @@ void MotionControlSystem::control()
 			{
 				movingSpeedSetpoint = previousMovingSpeedSetpoint + maxAcceleration;
 			}
-			//else if (movingSpeedSetpoint - previousMovingSpeedSetpoint < -maxAcceleration)
-			//{
-			//	movingSpeedSetpoint = previousMovingSpeedSetpoint - maxAcceleration;
-			//}
 
 			previousMovingSpeedSetpoint = movingSpeedSetpoint;
 
@@ -251,6 +214,7 @@ void MotionControlSystem::control()
 		motor.runRight(rightPWM);
 	}
 
+	//  Mesure du temps passé dans l'interruption
 	lastInterruptDuration = micros() - beginTimestamp;
 	if (lastInterruptDuration > maxInterruptDuration)
 	{
@@ -365,30 +329,7 @@ void MotionControlSystem::updateTrajectoryIndex()
 			trajectoryIndex = nextPoint;
 			updateTranslationSetpoint();
 			updateSideDistanceFactors();
-			derivativeCurvature.update(currentTrajectory[trajectoryIndex].getCurvature());
 		}
-
-
-		// Ancien algorithme de changement de point
-		/*
-		bool nextPointIncermented = false;
-		while 
-			(
-			currentTrajectory[nextPoint].isUpToDate() && 
-			position.isCloserToAThanB(currentTrajectory[nextPoint].getPosition(), currentTrajectory[trajectoryIndex].getPosition())
-			)
-		{
-			currentTrajectory[(uint8_t)(nextPoint - 1)].makeObsolete();
-			nextPoint++;
-			nextPointIncermented = true;
-		}
-		if (nextPointIncermented)
-		{
-			trajectoryIndex = (uint8_t)(nextPoint - 1);
-			updateTranslationSetpoint();
-			updateSideDistanceFactors();
-		}
-		*/
 	}
 	else if (movingState == STOPPED && currentTrajectory[trajectoryIndex].isStopPoint())
 	{
@@ -626,7 +567,6 @@ void MotionControlSystem::stop()
 	rightSpeedPID.resetDerivativeError();
 	leftMotorError = 0;
 	rightMotorError = 0;
-	derivativeCurvature.reset();
 	interrupts();
 }
 
@@ -644,10 +584,6 @@ bool MotionControlSystem::isStopped()
 
 void MotionControlSystem::setMaxMovingSpeed(int32_t maxMovingSpeed_mm_sec)
 {
-	//desiredIndexOffset = ABS(maxMovingSpeed_mm_sec) / DESIRED_OFFSET_TO_SPEED;
-	desiredIndexOffset = 0;
-	Serial.print("offset= ");
-	Serial.println(desiredIndexOffset);
 	int32_t speed_ticks_sec = (maxMovingSpeed_mm_sec / TICK_TO_MM ) / FRONT_TICK_TO_TICK;
 	noInterrupts();
 	maxMovingSpeed = speed_ticks_sec;
@@ -742,11 +678,9 @@ void MotionControlSystem::getRightSpeedTunings(float &kp, float &ki, float &kd) 
 	ki = rightSpeedPID.getKi();
 	kd = rightSpeedPID.getKd();
 }
-void MotionControlSystem::getTrajectoryTunings(float &k1, float &kd1, float &k2, float &kd2) const {
+void MotionControlSystem::getTrajectoryTunings(float &k1, float &k2) const {
 	k1 = curvatureCorrectorK1;
 	k2 = curvatureCorrectorK2;
-	kd1 = curvatureCorrectorKD1;
-	kd2 = curvatureCorrectorKD2;
 }
 void MotionControlSystem::setTranslationTunings(float kp, float ki, float kd) {
 	translationPID.setTunings(kp, ki, kd);
@@ -757,11 +691,9 @@ void MotionControlSystem::setLeftSpeedTunings(float kp, float ki, float kd) {
 void MotionControlSystem::setRightSpeedTunings(float kp, float ki, float kd) {
 	rightSpeedPID.setTunings(kp, ki, kd);
 }
-void MotionControlSystem::setTrajectoryTunings(float k1, float kd1, float k2, float kd2) {
+void MotionControlSystem::setTrajectoryTunings(float k1, float k2) {
 	curvatureCorrectorK1 = k1;
 	curvatureCorrectorK2 = k2;
-	curvatureCorrectorKD1 = kd1;
-	curvatureCorrectorKD2 = kd2;
 }
 void MotionControlSystem::setPIDtoSet(PIDtoSet newPIDtoSet)
 {
@@ -807,16 +739,6 @@ void MotionControlSystem::getPIDtoSet_str(char * str, size_t size) const
 			break;
 		}
 	}
-}
-
-void MotionControlSystem::setCurvatureCorrectorKd(float kd)
-{
-	curvatureCorrectorKd = kd;
-}
-
-float MotionControlSystem::getCurvatureCorrectorKd()
-{
-	return curvatureCorrectorKd;
 }
 
 
@@ -982,15 +904,6 @@ void MotionControlSystem::saveParameters()
 
 	EEPROM.put(a, pidToSet);
 	a += sizeof(pidToSet);
-
-	EEPROM.put(a, curvatureCorrectorKd);
-	a += sizeof(curvatureCorrectorKd);
-
-	EEPROM.put(a, curvatureCorrectorKD1);
-	a += sizeof(curvatureCorrectorKD1);
-
-	EEPROM.put(a, curvatureCorrectorKD2);
-	a += sizeof(curvatureCorrectorKD2);
 }
 
 void MotionControlSystem::loadParameters()
@@ -1063,15 +976,6 @@ void MotionControlSystem::loadParameters()
 	EEPROM.get(a, pidToSet);
 	a += sizeof(pidToSet);
 
-	EEPROM.get(a, curvatureCorrectorKd);
-	a += sizeof(curvatureCorrectorKd);
-
-	EEPROM.get(a, curvatureCorrectorKD1);
-	a += sizeof(curvatureCorrectorKD1);
-
-	EEPROM.get(a, curvatureCorrectorKD2);
-	a += sizeof(curvatureCorrectorKD2);
-
 	interrupts();
 }
 
@@ -1095,7 +999,6 @@ void MotionControlSystem::loadDefaultParameters()
 	rightSpeedPID.setTunings(0.6, 0.01, 20);
 	curvatureCorrectorK1 = 0.1;
 	curvatureCorrectorK2 = 12;
-	curvatureCorrectorKd = 0;
 
 	pidToSet = SPEED;
 
