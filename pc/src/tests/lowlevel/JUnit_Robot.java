@@ -45,7 +45,7 @@ import tests.JUnit_Test;
 import utils.Vec2RO;
 
 /**
- * Tests unitaires des actionneurs
+ * Tests unitaires des trajectoires et des actionneurs
  * @author pf
  *
  */
