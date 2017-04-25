@@ -256,6 +256,7 @@ public:
 		float vg_kp, vg_ki, vg_kd;
 		float vd_kp, vd_ki, vd_kd;
 		float tr_kp, tr_ki, tr_kd;
+		float tr_kp_r, tr_ki_r, tr_kd_r;
 		float k1, k2;
 		uint32_t smgre, smgrt;
 		float bmgrs;
@@ -267,7 +268,8 @@ public:
 
 		motionControlSystem.getLeftSpeedTunings(vg_kp, vg_ki, vg_kd);
 		motionControlSystem.getRightSpeedTunings(vd_kp, vd_ki, vd_kd);
-		motionControlSystem.getTranslationTunings(tr_kp, tr_ki, tr_kd);
+		motionControlSystem.getForwardTranslationTunings(tr_kp, tr_ki, tr_kd);
+		motionControlSystem.getBackwardTranslationTunings(tr_kp_r, tr_ki_r, tr_kd_r);
 		motionControlSystem.getTrajectoryTunings(k1, k2);
 		motionControlSystem.getEndOfMoveMgrTunings(smgre, smgrt);
 		motionControlSystem.getLeftMotorBmgrTunings(bmgrs, bmgrt);
@@ -281,6 +283,7 @@ public:
 		Serial.printf("V_g\t%g\t%g\t%g\n", vg_kp, vg_ki, vg_kd);
 		Serial.printf("V_d\t%g\t%g\t%g\n", vd_kp, vd_ki, vd_kd);
 		Serial.printf("Tr \t%g\t%g\t%g\n", tr_kp, tr_ki, tr_kd);
+		Serial.printf("Tr_r \t%g\t%g\t%g\n", tr_kp_r, tr_ki_r, tr_kd_r);
 		Serial.println();
 		Serial.printf("Curvature K1= %g\n", k1);
 		Serial.printf("Curvature K2= %g\n", k2);
@@ -489,8 +492,10 @@ public:
 			motionControlSystem.setPIDtoSet(MotionControlSystem::SPEED);
 		else if (strcmp(arg, "t") == 0)
 			motionControlSystem.setPIDtoSet(MotionControlSystem::TRANSLATION);
+		else if (strcmp(arg, "rt") == 0)
+			motionControlSystem.setPIDtoSet(MotionControlSystem::REVERSE_TRANSLATION);
 		else if (strcmp(arg, "") != 0)
-			Log::warning("[pid] Argument incorrect");
+			Log::warning("[pid] Argument incorrect (g, d, v, t, rt)");
 		char str[12];
 		motionControlSystem.getPIDtoSet_str(str, 12);
 		Serial.print("Current PID to set : ");
@@ -798,7 +803,7 @@ public:
 		Serial.println("axd (int)");
 		Serial.println("cod (void)");
 		Serial.println("setaxid (int)");
-		Serial.println("pid {'g';'d';'t'}");
+		Serial.println("pid {'g';'d';'t';'rt'}");
 		Serial.println("kp (float)");
 		Serial.println("ki (float)");
 		Serial.println("kd (float)");

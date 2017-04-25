@@ -88,7 +88,8 @@ private:
 
 	//	Asservissement en position : translation
 	//  (Ici toutes les grandeurs sont positives, le sens de déplacement sera donné par maxMovingSpeed)
-	PID translationPID;
+	PID forwardTranslationPID;
+	PID backwardTranslationPID;
 	volatile int32_t translationSetpoint;	// ticks
 	volatile int32_t currentTranslation;	// ticks
 	float currentTranslation_float;			// utilisé pour les calculs précis (tjrs mis à jour en même tps que currentTranslation)
@@ -189,7 +190,8 @@ public:
 		LEFT_SPEED,
 		RIGHT_SPEED,
 		SPEED,
-		TRANSLATION
+		TRANSLATION,
+		REVERSE_TRANSLATION
 	};
 	
 private:
@@ -274,11 +276,13 @@ public:
 	/* Setters et getters des constantes d'asservissement */
 	void setCurrentPIDTunings(float, float, float);
 	void getCurrentPIDTunings(float &, float &, float &) const;
-	void setTranslationTunings(float, float, float);
+	void setForwardTranslationTunings(float, float, float);
+	void setBackwardTranslationTunings(float, float, float);
 	void setLeftSpeedTunings(float, float, float);
 	void setRightSpeedTunings(float, float, float);
 	void setTrajectoryTunings(float, float);
-	void getTranslationTunings(float &, float &, float &) const;
+	void getForwardTranslationTunings(float &, float &, float &) const;
+	void getBackwardTranslationTunings(float &, float &, float &) const;
 	void getLeftSpeedTunings(float &, float &, float &) const;
 	void getRightSpeedTunings(float &, float &, float &) const;
 	void getTrajectoryTunings(float &, float &) const;

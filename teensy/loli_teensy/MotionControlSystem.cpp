@@ -11,7 +11,8 @@ rightSpeedPID(&currentRightSpeed, &rightPWM, &rightSpeedSetpoint),
 rightMotorBlockingMgr(rightSpeedSetpoint, currentRightSpeed),
 leftSpeedPID(&currentLeftSpeed, &leftPWM, &leftSpeedSetpoint),
 leftMotorBlockingMgr(leftSpeedSetpoint, currentLeftSpeed),
-translationPID(&currentTranslation, &movingSpeedSetpoint, &translationSetpoint),
+forwardTranslationPID(&currentTranslation, &movingSpeedSetpoint, &translationSetpoint),
+backwardTranslationPID(&currentTranslation, &movingSpeedSetpoint, &translationSetpoint),
 endOfMoveMgr(currentMovingSpeed)
 {
 	currentTranslation = 0;
@@ -157,7 +158,14 @@ void MotionControlSystem::control()
 			watchTrajIndex.currentPos = position;
 			watchTrajIndex.aimPosition = posConsigne;
 
-			translationPID.compute(); // MAJ movingSpeedSetpoint
+			if (maxMovingSpeed > 0)
+			{
+				forwardTranslationPID.compute(); // MAJ movingSpeedSetpoint
+			}
+			else
+			{
+				backwardTranslationPID.compute(); // MAJ movingSpeedSetpoint
+			}
 
 			// Limitation de l'accélération (et pas de la décélération)
 			if (movingSpeedSetpoint - previousMovingSpeedSetpoint > maxAcceleration)
@@ -559,8 +567,10 @@ void MotionControlSystem::stop()
 	previousMovingSpeedSetpoint = 0;
 	motor.runLeft(0);
 	motor.runRight(0);
-	translationPID.resetIntegralError();
-	translationPID.resetDerivativeError();
+	forwardTranslationPID.resetIntegralError();
+	forwardTranslationPID.resetDerivativeError();
+	backwardTranslationPID.resetIntegralError();
+	backwardTranslationPID.resetDerivativeError();
 	leftSpeedPID.resetIntegralError();
 	leftSpeedPID.resetDerivativeError();
 	rightSpeedPID.resetIntegralError();
@@ -628,7 +638,10 @@ void MotionControlSystem::setCurrentPIDTunings(float kp, float ki, float kd)
 		setRightSpeedTunings(kp, ki, kd);
 		break;
 	case MotionControlSystem::TRANSLATION:
-		setTranslationTunings(kp, ki, kd);
+		setForwardTranslationTunings(kp, ki, kd);
+		break;
+	case MotionControlSystem::REVERSE_TRANSLATION:
+		setBackwardTranslationTunings(kp, ki, kd);
 		break;
 	default:
 		break;
@@ -657,16 +670,24 @@ void MotionControlSystem::getCurrentPIDTunings(float &kp, float &ki, float &kd) 
 		kd = kdl;
 		break;
 	case MotionControlSystem::TRANSLATION:
-		getTranslationTunings(kp, ki, kd);
+		getForwardTranslationTunings(kp, ki, kd);
+		break;
+	case MotionControlSystem::REVERSE_TRANSLATION:
+		getBackwardTranslationTunings(kp, ki, kd);
 		break;
 	default:
 		break;
 	}
 }
-void MotionControlSystem::getTranslationTunings(float &kp, float &ki, float &kd) const {
-	kp = translationPID.getKp();
-	ki = translationPID.getKi();
-	kd = translationPID.getKd();
+void MotionControlSystem::getForwardTranslationTunings(float &kp, float &ki, float &kd) const {
+	kp = forwardTranslationPID.getKp();
+	ki = forwardTranslationPID.getKi();
+	kd = forwardTranslationPID.getKd();
+}
+void MotionControlSystem::getBackwardTranslationTunings(float &kp, float &ki, float &kd) const {
+	kp = backwardTranslationPID.getKp();
+	ki = backwardTranslationPID.getKi();
+	kd = backwardTranslationPID.getKd();
 }
 void MotionControlSystem::getLeftSpeedTunings(float &kp, float &ki, float &kd) const {
 	kp = leftSpeedPID.getKp();
@@ -682,8 +703,11 @@ void MotionControlSystem::getTrajectoryTunings(float &k1, float &k2) const {
 	k1 = curvatureCorrectorK1;
 	k2 = curvatureCorrectorK2;
 }
-void MotionControlSystem::setTranslationTunings(float kp, float ki, float kd) {
-	translationPID.setTunings(kp, ki, kd);
+void MotionControlSystem::setForwardTranslationTunings(float kp, float ki, float kd) {
+	forwardTranslationPID.setTunings(kp, ki, kd);
+}
+void MotionControlSystem::setBackwardTranslationTunings(float kp, float ki, float kd) {
+	backwardTranslationPID.setTunings(kp, ki, kd);
 }
 void MotionControlSystem::setLeftSpeedTunings(float kp, float ki, float kd) {
 	leftSpeedPID.setTunings(kp, ki, kd);
@@ -709,6 +733,7 @@ void MotionControlSystem::getPIDtoSet_str(char * str, size_t size) const
 	char rightSpeedStr[] = "RIGHT_SPEED";
 	char speedStr[] = "SPEED";
 	char translationStr[] = "TRANSLATION";
+	char reverseTranslationStr[] = "R_TRANS";
 
 	if (size == 0)
 	{
@@ -733,6 +758,9 @@ void MotionControlSystem::getPIDtoSet_str(char * str, size_t size) const
 			break;
 		case MotionControlSystem::TRANSLATION:
 			strcpy(str, translationStr);
+			break;
+		case MotionControlSystem::REVERSE_TRANSLATION:
+			strcpy(str, reverseTranslationStr);
 			break;
 		default:
 			str[0] = '\0';
@@ -867,13 +895,23 @@ void MotionControlSystem::saveParameters()
 	EEPROM.put(a, maxAcceleration);
 	a += sizeof(maxAcceleration);
 
-	kp = translationPID.getKp();
+	kp = forwardTranslationPID.getKp();
 	EEPROM.put(a, kp);
 	a += sizeof(kp);
-	ki = translationPID.getKi();
+	ki = forwardTranslationPID.getKi();
 	EEPROM.put(a, ki);
 	a += sizeof(ki);
-	kd = translationPID.getKd();
+	kd = forwardTranslationPID.getKd();
+	EEPROM.put(a, kd);
+	a += sizeof(kd);
+
+	kp = backwardTranslationPID.getKp();
+	EEPROM.put(a, kp);
+	a += sizeof(kp);
+	ki = backwardTranslationPID.getKi();
+	EEPROM.put(a, ki);
+	a += sizeof(ki);
+	kd = backwardTranslationPID.getKd();
 	EEPROM.put(a, kd);
 	a += sizeof(kd);
 
@@ -950,7 +988,15 @@ void MotionControlSystem::loadParameters()
 	a += sizeof(ki);
 	EEPROM.get(a, kd);
 	a += sizeof(kd);
-	translationPID.setTunings(kp, ki, kd);
+	forwardTranslationPID.setTunings(kp, ki, kd);
+
+	EEPROM.get(a, kp);
+	a += sizeof(kp);
+	EEPROM.get(a, ki);
+	a += sizeof(ki);
+	EEPROM.get(a, kd);
+	a += sizeof(kd);
+	backwardTranslationPID.setTunings(kp, ki, kd);
 
 	EEPROM.get(a, kp);
 	a += sizeof(kp);
@@ -994,7 +1040,8 @@ void MotionControlSystem::loadDefaultParameters()
 
 	maxAcceleration = 25;
 
-	translationPID.setTunings(2.75, 0, 1);
+	forwardTranslationPID.setTunings(2.75, 0, 1);
+	backwardTranslationPID.setTunings(2.75, 0, 1);
 	leftSpeedPID.setTunings(0.6, 0.01, 20);
 	rightSpeedPID.setTunings(0.6, 0.01, 20);
 	curvatureCorrectorK1 = 0.1;
@@ -1021,7 +1068,14 @@ void MotionControlSystem::logAllData()
 		Log::data(Log::POSITION, nonVolatilePos);
 		Log::data(Log::PID_V_G, leftSpeedPID);
 		Log::data(Log::PID_V_D, rightSpeedPID);
-		Log::data(Log::PID_TRANS, translationPID);
+		if (maxMovingSpeed >= 0)
+		{
+			Log::data(Log::PID_TRANS, forwardTranslationPID);
+		}
+		else
+		{
+			Log::data(Log::PID_TRANS, backwardTranslationPID);
+		}
 		Log::data(Log::BLOCKING_M_G, leftMotorBlockingMgr);
 		Log::data(Log::BLOCKING_M_D, rightMotorBlockingMgr);
 		Log::data(Log::STOPPING_MGR, endOfMoveMgr);
