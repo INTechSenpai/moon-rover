@@ -17,7 +17,7 @@ DATA_RECEIVE_PERIOD = 1  # ms
 
 root = tk.Tk()
 root.title("INTech Senpaï - Moon Rover LowLevel GUI")
-root.iconbitmap(bitmap='favicon.ico')
+#root.iconbitmap(bitmap='favicon.ico')
 
 
 class LowLevelGUI(tk.Frame):
@@ -239,24 +239,24 @@ class ToolBar(tk.Frame):
 
     def highlightB_console(self, undo=False):
         if undo:
-            self.b_console['bg'] = 'SystemButtonFace'
-            self.b_console['fg'] = 'SystemButtonText'
+            self.b_console['bg'] = 'white'
+            self.b_console['fg'] = 'black'
         else:
             self.b_console['bg'] = 'gray75'
             self.b_console['fg'] = 'black'
 
     def highlightB_warning(self, undo=False):
         if undo:
-            self.b_warning['bg'] = 'SystemButtonFace'
-            self.b_warning['fg'] = 'SystemButtonText'
+            self.b_warning['bg'] = 'white'
+            self.b_warning['fg'] = 'black'
         else:
             self.b_warning['bg'] = 'orange'
             self.b_warning['fg'] = 'black'
 
     def highlightB_error(self, undo=False):
         if undo:
-            self.b_error['bg'] = 'SystemButtonFace'
-            self.b_error['fg'] = 'SystemButtonText'
+            self.b_error['bg'] = 'white'
+            self.b_error['fg'] = 'black'
         else:
             self.b_error['bg'] = 'red'
             self.b_error['fg'] = 'black'
@@ -314,7 +314,7 @@ class ButtonGroup(tk.Frame):
         if self._state['show']:
             self.b_show_hide['bg'] = 'pale green'
         else:
-            self.b_show_hide['bg'] = 'SystemButtonFace'
+            self.b_show_hide['bg'] = 'white'
         if self._state['enable']:
             self.b_enable['bg'] = 'chartreuse'
         else:
@@ -353,7 +353,7 @@ class SerialSetup(tk.Frame):
             if closeWithRed:
                 self.b_connect['bg'] = 'red'
             else:
-                self.b_connect['bg'] = 'SystemButtonFace'
+                self.b_connect['bg'] = 'white'
         else:
             try:
                 self.asciiSerial.open(self.getSerialPort())
