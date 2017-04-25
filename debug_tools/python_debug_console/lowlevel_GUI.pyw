@@ -7,6 +7,7 @@ import copy
 import time
 import numpy as np
 import sys
+import os
 
 from AsciiSerial import AsciiSerial
 
@@ -17,7 +18,8 @@ DATA_RECEIVE_PERIOD = 1  # ms
 
 root = tk.Tk()
 root.title("INTech Senpaï - Moon Rover LowLevel GUI")
-root.iconbitmap(bitmap='favicon.ico')
+if os.name == "nt":
+    root.iconbitmap(bitmap='favicon.ico')
 
 
 class LowLevelGUI(tk.Frame):
