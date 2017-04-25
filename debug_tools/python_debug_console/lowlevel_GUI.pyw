@@ -17,7 +17,7 @@ DATA_RECEIVE_PERIOD = 1  # ms
 
 root = tk.Tk()
 root.title("INTech Senpaï - Moon Rover LowLevel GUI")
-#root.iconbitmap(bitmap='favicon.ico')
+root.iconbitmap(bitmap='favicon.ico')
 
 
 class LowLevelGUI(tk.Frame):
@@ -239,7 +239,7 @@ class ToolBar(tk.Frame):
 
     def highlightB_console(self, undo=False):
         if undo:
-            self.b_console['bg'] = 'white'
+            self.b_console['bg'] = 'gray95'
             self.b_console['fg'] = 'black'
         else:
             self.b_console['bg'] = 'gray75'
@@ -247,7 +247,7 @@ class ToolBar(tk.Frame):
 
     def highlightB_warning(self, undo=False):
         if undo:
-            self.b_warning['bg'] = 'white'
+            self.b_warning['bg'] = 'gray95'
             self.b_warning['fg'] = 'black'
         else:
             self.b_warning['bg'] = 'orange'
@@ -255,7 +255,7 @@ class ToolBar(tk.Frame):
 
     def highlightB_error(self, undo=False):
         if undo:
-            self.b_error['bg'] = 'white'
+            self.b_error['bg'] = 'gray95'
             self.b_error['fg'] = 'black'
         else:
             self.b_error['bg'] = 'red'
@@ -314,7 +314,7 @@ class ButtonGroup(tk.Frame):
         if self._state['show']:
             self.b_show_hide['bg'] = 'pale green'
         else:
-            self.b_show_hide['bg'] = 'white'
+            self.b_show_hide['bg'] = 'gray95'
         if self._state['enable']:
             self.b_enable['bg'] = 'chartreuse'
         else:
@@ -353,7 +353,7 @@ class SerialSetup(tk.Frame):
             if closeWithRed:
                 self.b_connect['bg'] = 'red'
             else:
-                self.b_connect['bg'] = 'white'
+                self.b_connect['bg'] = 'gray95'
         else:
             try:
                 self.asciiSerial.open(self.getSerialPort())
@@ -410,7 +410,7 @@ class DisplayArea(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
 
-        self.mainConsole = Console(self, readonly=False, bgColor='black', fgColor='white')
+        self.mainConsole = Console(self, readonly=False, bgColor='black', fgColor='gray95')
         self.warningConsole = Console(self, readonly=True, bgColor='black', fgColor='#ff7800')
         self.errorConsole = Console(self, readonly=True, bgColor='black', fgColor='red')
 
@@ -543,7 +543,7 @@ class Console(tk.Frame):
         Console d'affichage des informations de débug
         Peut être en lecture seule ou proposer une zone d'écriture pour envoyer des commandes
     """
-    def __init__(self, master=None, readonly=False, bgColor='white', fgColor='black', altFgColor='chartreuse'):
+    def __init__(self, master=None, readonly=False, bgColor='gray95', fgColor='black', altFgColor='chartreuse'):
         super().__init__(master)
 
         self.alt = altFgColor
