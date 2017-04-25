@@ -65,7 +65,8 @@ public class ThreadSerialOutput extends ThreadService implements SerialClass
 		// On envoie d'abord le ping long initial
 		try {
 			if(simuleSerie)
-				Thread.sleep(1000000);
+				while(true)
+					Thread.sleep(10000);
 
 			serie.init();
 			Thread.sleep(50); // on attend que la série soit bien prête
