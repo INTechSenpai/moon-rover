@@ -5,6 +5,7 @@
 #include "OrderLong.h"
 #include "Frame.h"
 #include "Log.h"
+#include "serial1.c"
 
 
 #define TIMEOUT					30		// ms
@@ -143,6 +144,10 @@ public:
 		int nbReadingPerformed = 0;
 		while (HLserial.available() && nbReadingPerformed < 32) // On s'autorise à lire 32 octets d'affilé (sans rendre la main à la boucle principale)
 		{
+			if (HLserial.available() == RX_BUFFER_SIZE - 1)
+			{
+				Log::warning("Buffer reception bas niveau plein : possible perte de donnees");
+			}
 			if (rBuffer.indice >= RECEPTION_BUFFER_SIZE)
 			{
 				rBuffer.indice = 0;
