@@ -24,7 +24,6 @@ import pathfinding.astar.arcs.CercleArrivee;
 import pathfinding.chemin.CheminPathfinding;
 import robot.Cinematique;
 import robot.RobotReal;
-import robot.Speed;
 import table.GameElementNames;
 import utils.Log;
 

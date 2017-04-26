@@ -23,6 +23,7 @@ import pathfinding.GameState;
 import pathfinding.SensFinal;
 import pathfinding.astar.arcs.CercleArrivee;
 import robot.Robot;
+import robot.Speed;
 import utils.Log;
 import utils.Vec2RO;
 
@@ -35,6 +36,8 @@ import utils.Vec2RO;
 public class ScriptDeposeMinerai extends Script
 {
 	private CercleArrivee cercle;
+	private Vec2RO centre = new Vec2RO(700, 1800);
+	private double rayon = 200;
 	
 	public ScriptDeposeMinerai(Log log, CercleArrivee cercle)
 	{
@@ -45,12 +48,15 @@ public class ScriptDeposeMinerai extends Script
 	@Override
 	public void setUpCercleArrivee()
 	{
-		cercle.set(new Vec2RO(700, 1800), Math.PI, 200, SensFinal.MARCHE_AVANT);
+		cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT);
 	}
 
 	@Override
-	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
+	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException, ActionneurException
 	{
+		state.robot.avance(-200, Speed.BASCULE);
+		state.robot.traverseBascule();
+		state.robot.avance(-200, Speed.BASCULE);
 		state.robot.ouvreFilet();
 		try {
 			state.robot.ejecteBalles();
