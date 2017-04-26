@@ -409,12 +409,31 @@ void MotionControlSystem::checkTrajectory()
 
 void MotionControlSystem::updateTranslationSetpoint()
 {
+	static bool undefinedStopPoint = true;
+
 	if (nextStopPoint == UINT16_MAX)
 	{
+		if (!undefinedStopPoint)
+		{
+			forwardTranslationPID.resetDerivativeError();
+			forwardTranslationPID.resetIntegralError();
+			backwardTranslationPID.resetDerivativeError();
+			backwardTranslationPID.resetIntegralError();
+			undefinedStopPoint = true;
+		}
 		translationSetpoint = currentTranslation + UINT8_MAX * TRAJECTORY_STEP;
 	}
 	else
 	{
+		if (undefinedStopPoint)
+		{
+			forwardTranslationPID.resetDerivativeError();
+			forwardTranslationPID.resetIntegralError();
+			backwardTranslationPID.resetDerivativeError();
+			backwardTranslationPID.resetIntegralError();
+			undefinedStopPoint = false;
+		}
+
 		uint8_t nbPointsToTravel = nextStopPoint - trajectoryIndex;
 		translationSetpoint = currentTranslation + nbPointsToTravel * TRAJECTORY_STEP;
 		if (nbPointsToTravel > 10)
