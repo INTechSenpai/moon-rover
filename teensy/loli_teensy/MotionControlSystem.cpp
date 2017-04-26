@@ -413,6 +413,7 @@ void MotionControlSystem::updateTranslationSetpoint()
 
 	if (nextStopPoint == UINT16_MAX)
 	{
+		translationSetpoint = currentTranslation + UINT8_MAX * TRAJECTORY_STEP;
 		if (!undefinedStopPoint)
 		{
 			forwardTranslationPID.resetDerivativeError();
@@ -421,19 +422,9 @@ void MotionControlSystem::updateTranslationSetpoint()
 			backwardTranslationPID.resetIntegralError();
 			undefinedStopPoint = true;
 		}
-		translationSetpoint = currentTranslation + UINT8_MAX * TRAJECTORY_STEP;
 	}
 	else
 	{
-		if (undefinedStopPoint)
-		{
-			forwardTranslationPID.resetDerivativeError();
-			forwardTranslationPID.resetIntegralError();
-			backwardTranslationPID.resetDerivativeError();
-			backwardTranslationPID.resetIntegralError();
-			undefinedStopPoint = false;
-		}
-
 		uint8_t nbPointsToTravel = nextStopPoint - trajectoryIndex;
 		translationSetpoint = currentTranslation + nbPointsToTravel * TRAJECTORY_STEP;
 		if (nbPointsToTravel > 10)
@@ -443,13 +434,31 @@ void MotionControlSystem::updateTranslationSetpoint()
 		else
 		{
 			Position posConsigne = currentTrajectory[trajectoryIndex].getPosition();
-			translationSetpoint += 
+			float offset = 
 				ABS(
 					(
 						(position.x - posConsigne.x) * cosf(posConsigne.orientation) + 
 						(position.y - posConsigne.y) * sinf(posConsigne.orientation)
 					) / TICK_TO_MM
 				);
+			if (offset < TRAJECTORY_STEP)
+			{
+				translationSetpoint += (int32_t)offset;
+			}
+			else
+			{
+				translationSetpoint += TRAJECTORY_STEP / 2;
+				Log::warning("Position courante tres loin du point de trajectoire courant");
+			}
+		}
+
+		if (undefinedStopPoint)
+		{
+			forwardTranslationPID.resetDerivativeError();
+			forwardTranslationPID.resetIntegralError();
+			backwardTranslationPID.resetDerivativeError();
+			backwardTranslationPID.resetIntegralError();
+			undefinedStopPoint = false;
 		}
 	}
 }
@@ -1059,8 +1068,8 @@ void MotionControlSystem::loadDefaultParameters()
 
 	maxAcceleration = 25;
 
-	forwardTranslationPID.setTunings(2.75, 0, 1);
-	backwardTranslationPID.setTunings(2.75, 0, 1);
+	forwardTranslationPID.setTunings(2.75, 0, 1.5);
+	backwardTranslationPID.setTunings(1.75, 0, 1);
 	leftSpeedPID.setTunings(0.6, 0.01, 20);
 	rightSpeedPID.setTunings(0.6, 0.01, 20);
 	curvatureCorrectorK1 = 0.1;

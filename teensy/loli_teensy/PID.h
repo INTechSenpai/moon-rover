@@ -69,7 +69,8 @@ public:
 	}
 
 	void resetDerivativeError() {
-		pre_error = 0;
+		// pre_error = error :
+		pre_error = (*setPoint) - (*input);
 	}
 	void resetIntegralError() {
 		integral = 0;
