@@ -280,69 +280,70 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 			avanceVersCentreLineaire(distance, speed, centre);
 			return;
 		}
-		else
+
+//		log.debug("C : "+c);
+		LinkedList<CinematiqueObs> out = new LinkedList<CinematiqueObs>();
+		double rayonTraj = c.distance(a);
+		double courbure = 1000. / rayonTraj; // la courbure est en m^-1
+		
+		if(courbure > courbureMax)
 		{
-//			log.debug("C : "+c);
-			LinkedList<CinematiqueObs> out = new LinkedList<CinematiqueObs>();
-			double rayonTraj = c.distance(a);
-			double courbure = 1000. / rayonTraj; // la courbure est en m^-1
-			
-			if(courbure > courbureMax)
-			{
-				double distance = cinematique.position.distanceFast(centre) - rayon;
-				if(!enAvant)
-					distance = -distance;
-				avanceVersCentreLineaire(distance, speed, centre);
-				return;
-			}
-			
-			Vec2RW delta = a.minusNewVector(c);
-						
-			double angle = (2*(new Vec2RO(ux, uy).getFastArgument() - new Vec2RO(vx, vy).getFastArgument())) % (2*Math.PI);
-			if(angle > Math.PI)
-				angle -= 2*Math.PI;
+			double distance = cinematique.position.distanceFast(centre) - rayon;
+			if(!enAvant)
+				distance = -distance;
+			avanceVersCentreLineaire(distance, speed, centre);
+			return;
+		}
+		
+		Vec2RW delta = a.minusNewVector(c);
+					
+		double angle = (2*(new Vec2RO(ux, uy).getFastArgument() - new Vec2RO(vx, vy).getFastArgument())) % (2*Math.PI);
+		if(angle > Math.PI)
+			angle -= 2*Math.PI;
 //			double angle = 2*Math.acos(ux * vx + uy * vy); // angle total
-			double longueur = angle * rayonTraj;
+		double longueur = angle * rayonTraj;
 //			log.debug("Angle : "+angle);
 
-			int nbPoints = (int) Math.round(Math.abs(longueur) / ClothoidesComputer.PRECISION_TRACE_MM);
-			
-			cos = Math.cos(angle);
-			sin = Math.sin(angle);
-						
-			delta.rotate(Math.cos(angle), Math.sin(angle)); // le tout dernier point, B
-			
+		int nbPoints = (int) Math.round(Math.abs(longueur) / ClothoidesComputer.PRECISION_TRACE_MM);
+		
+		cos = Math.cos(angle);
+		sin = Math.sin(angle);
+					
+		delta.rotate(Math.cos(angle), Math.sin(angle)); // le tout dernier point, B
+		
 //			log.debug("B : "+delta.plusNewVector(c));
-			
-			double anglePas = -angle/nbPoints;
+		
+		double anglePas = -angle/nbPoints;
 
-			cos = Math.cos(anglePas);
-			sin = Math.sin(anglePas);
-			
+		if(angle < 0)
+			courbure = -courbure;
+		
+		cos = Math.cos(anglePas);
+		sin = Math.sin(anglePas);
+		
 //			log.debug("nbPoints = "+nbPoints);
-			
-			for(int i = nbPoints - 1; i >= 0; i--)
-			{
-				double orientation = cinematique.orientationReelle;
-				if(!enAvant)
-					orientation += Math.PI; // l'orientation géométrique
-				orientation -= (i+1)*anglePas;
-				pointsAvancer[i].update(delta.getX() + c.getX(), delta.getY() + c.getY(), orientation, enAvant, courbure);
-				delta.rotate(cos, sin);
-			}
-			for(int i = 0; i < nbPoints; i++)
-				out.add(pointsAvancer[i]);
-
-			try {
-				Ticket[] t = chemin.add(out);
-				for(Ticket ticket : t)
-					ticket.attendStatus();
-			} catch (PathfindingException e) {
-				// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de 5m
-				e.printStackTrace();
-			}
-			followTrajectory(speed);
+		
+		for(int i = nbPoints - 1; i >= 0; i--)
+		{
+			double orientation = cinematique.orientationReelle;
+			if(!enAvant)
+				orientation += Math.PI; // l'orientation géométrique
+			orientation -= (i+1)*anglePas;
+			pointsAvancer[i].update(delta.getX() + c.getX(), delta.getY() + c.getY(), orientation, enAvant, courbure);
+			delta.rotate(cos, sin);
 		}
+		for(int i = 0; i < nbPoints; i++)
+			out.add(pointsAvancer[i]);
+
+		try {
+			Ticket[] t = chemin.add(out);
+			for(Ticket ticket : t)
+				ticket.attendStatus();
+		} catch (PathfindingException e) {
+			// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de 5m
+			e.printStackTrace();
+		}
+		followTrajectory(speed);
 		
 	}
 	

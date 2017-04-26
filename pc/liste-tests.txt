@@ -12,8 +12,10 @@
 ./run_junit.sh tests.lowlevel.JUnit_Robot#recule
 ./run_junit.sh tests.lowlevel.JUnit_Robot#avance
 ./run_junit.sh tests.lowlevel.JUnit_Robot#recule_corrige_pour_rien
-./run_junit.sh tests.lowlevel.JUnit_Robot#recule_corrige
-./run_junit.sh tests.lowlevel.JUnit_Robot#avance_corrige
+./run_junit.sh tests.lowlevel.JUnit_Robot#recule_corrige_gauche
+./run_junit.sh tests.lowlevel.JUnit_Robot#recule_corrige_droite
+./run_junit.sh tests.lowlevel.JUnit_Robot#avance_corrige_gauche
+./run_junit.sh tests.lowlevel.JUnit_Robot#avance_corrige_droite
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_clotho
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_cercle
 ./run_junit.sh tests.lowlevel.JUnit_Robot#relou
