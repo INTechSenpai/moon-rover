@@ -524,7 +524,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 			{
 				Ticket t = out.followTrajectory(vitesse, chemin.getNextMarcheAvant());
 				InOrder i = t.attendStatus();
-				if(i == InOrder.ROBOT_BLOCAGE_EXTERIEUR || i == InOrder.ROBOT_BLOCAGE_INTERIEUR)
+				if(i == InOrder.ROBOT_BLOCAGE_EXTERIEUR || i == InOrder.ROBOT_BLOCAGE_INTERIEUR || i == InOrder.PLUS_DE_POINTS)
 				{
 					log.critical("Erreur : "+i);
 					throw new UnableToMoveException();
