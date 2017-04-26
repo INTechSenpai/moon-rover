@@ -116,7 +116,7 @@ public class Homologation {
 			
 			KeyPathCache k = new KeyPathCache(state);
 			k.shoot = false;
-			k.s = sm.getScripts().get("MINERAI_CRATERE_HAUT_GAUCHE");
+			k.s = sm.getScripts().get("MINERAI_CRATERE_HAUT_DROITE");
 			try {
 				path.prepareNewPathToScript(k);
 				path.sendPreparedPath();

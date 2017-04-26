@@ -65,6 +65,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 	private Capteur[] capteurs;
 	private double imprecisionMaxPos;
 	private double imprecisionMaxAngle;
+	private boolean debugCapteurs;
 	
 	private long dateLastMesureCorrection = -1;
 	private long peremptionCorrection;
@@ -90,6 +91,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 		bufferCorrection = new Cinematique[config.getInt(ConfigInfo.TAILLE_BUFFER_RECALAGE)];
 		peremptionCorrection = config.getInt(ConfigInfo.PEREMPTION_CORRECTION);
 		enableCorrection = config.getBoolean(ConfigInfo.ENABLE_CORRECTION);
+		debugCapteurs = config.getBoolean(ConfigInfo.DEBUG_CAPTEURS);
 		
 		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
@@ -182,6 +184,9 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			
 			if(positionEnnemi.isHorsTable())
 				continue; // hors table
+			
+			if(debugCapteurs)
+				log.debug("Ajout d'un obstacle d'ennemi en "+positionEnnemi);
 			
 			ObstacleProximity o = gridspace.addObstacleAndRemoveNearbyObstacles(positionEnnemi);
 			

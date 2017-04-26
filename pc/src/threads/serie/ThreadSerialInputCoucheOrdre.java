@@ -54,7 +54,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 	private Container container;
 	
 	private boolean capteursOn = false;
-	private boolean debugSerie;
+	private boolean debugSerie, debugCapteurs;
 	private int nbCapteurs;
 	
 	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, CheminPathfinding chemin, Container container)
@@ -67,6 +67,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 		this.robot = robot;
 		this.chemin = chemin;
 		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
+		debugCapteurs = config.getBoolean(ConfigInfo.DEBUG_CAPTEURS);
 	}
 
 	@Override
@@ -153,7 +154,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 								for(int i = 0; i < nbCapteurs; i++)
 								{
 									mesures[i] = data[8+i];
-									if(debugSerie)
+									if(debugSerie || debugCapteurs)
 										log.debug("Capteur "+CapteursRobot.values[i].name()+" : "+mesures[i]);
 								}
 								if(capteursOn)
