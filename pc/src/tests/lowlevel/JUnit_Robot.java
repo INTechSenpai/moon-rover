@@ -230,7 +230,7 @@ public class JUnit_Robot extends JUnit_Test {
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		c = new Cinematique(300, 1200, Math.PI, false, 0);
+		c = new Cinematique(300, 1000, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		last = chemin.getLastOrientation();
@@ -301,7 +301,7 @@ public class JUnit_Robot extends JUnit_Test {
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		c = new Cinematique(-300, 1200, Math.PI, false, 0);
+		c = new Cinematique(-300, 1000, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
 		astar.process(chemin);
 		last = chemin.getLastOrientation();
