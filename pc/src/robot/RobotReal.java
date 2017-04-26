@@ -245,40 +245,14 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		
 //		log.debug(ap+" "+a+" "+d+" "+bp);
 		
-		Vec2RO c = null;
-		
-		if(ux != 0)
+		double alpha = (uy * (d.getX() - a.getX()) + ux * (a.getY() - d.getY())) / (vx * uy - vy * ux);
+		Vec2RO c = new Vec2RO(a.getX() + alpha * vx, a.getY() + alpha * vy);
+		if(alpha > 0)
 		{
-			double alpha = (uy / ux * (d.getX() - a.getX()) + a.getY() - d.getY()) / (vx * uy / ux - vy);
-			c = new Vec2RO(a.getX() + alpha * vx, a.getY() + alpha * vy);
-			if(alpha > 0)
-			{
-				ux = -ux;
-				uy = -uy;
-				vx = -vx;
-				vy = -vy;
-			}
-		}
-		else if(vx != 0)
-		{
-			double alpha = (vy / vx * (a.getX() - d.getX()) + d.getY() - a.getY()) / (ux * vy / vx - uy);
-			c = new Vec2RO(d.getX() + alpha * ux, d.getY() + alpha * uy);			
-			if(alpha > 0)
-			{
-				ux = -ux;
-				uy = -uy;
-				vx = -vx;
-				vy = -vy;
-			}
-		}
-		
-		if(c == null)
-		{
-			double distance = cinematique.position.distanceFast(centre) - rayon;
-			if(!enAvant)
-				distance = -distance;
-			avanceVersCentreLineaire(distance, speed, centre);
-			return;
+			ux = -ux;
+			uy = -uy;
+			vx = -vx;
+			vy = -vy;
 		}
 
 //		log.debug("C : "+c);
