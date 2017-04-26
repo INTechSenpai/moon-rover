@@ -123,7 +123,7 @@ public class Homologation {
 				robot.followTrajectory(Speed.TEST);
 				k.s.execute(state);
 				
-				k.s = sm.getScripts().get("DEPOSE_SIMPLE");
+				k.s = sm.getScripts().get("DEPOSE");
 				path.prepareNewPathToScript(k);
 				path.sendPreparedPath();
 				robot.followTrajectory(Speed.TEST);

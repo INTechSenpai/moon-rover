@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
+import config.ConfigInfo;
 import container.Container;
 import exceptions.ContainerException;
 import pathfinding.PathCache;
@@ -29,6 +30,8 @@ public class PrecomputePaths {
 
 	public static void main(String[] args) throws ContainerException, InterruptedException
 	{
+		// timeout très grand (on a le temps)
+		ConfigInfo.DUREE_MAX_RECHERCHE_PF.setDefaultValue(30000);
 		PathCache.precompute = true;
 		Container container = new Container();
 		container.destructor(false);
