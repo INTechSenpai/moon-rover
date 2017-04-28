@@ -144,7 +144,11 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			 * Les deux capteurs ToF courts arrière voient le filet lorsqu'il est baissé
 			 */
 			if(robot.isFiletBaisse() && (c == CapteursRobot.ToF_ARRIERE_DROITE || c == CapteursRobot.ToF_ARRIERE_GAUCHE))
+			{
+				if(debugCapteurs)
+					log.debug("Filet baissé : ToF courts arrière ignorés");
 				continue;
+			}
 				
 			/*
 			 * Le ToF arrière voit le filet et permet de servir de jauge de remplissage
@@ -153,6 +157,8 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			{
 				if(data.mesures[i] < 60) // filet plein
 				{
+					if(debugCapteurs)
+						log.debug("Filet plein : ToF long arrière pas écouté");
 					robot.filetVuPlein();
 					continue;
 				}
@@ -168,11 +174,19 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			 */			
 	    	for(ObstaclesFixes o: ObstaclesFixes.values())
 	    		if(o.isVisible(capteurs[i].sureleve) && o.getObstacle().squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
+	    		{
+	    			if(debugCapteurs)
+	    				log.debug("Obstacle de table : "+o);
 	                continue;
+	    		}
 
 	    	for(GameElementNames o: GameElementNames.values())
 	    		if(table.isDone(o) != EtatElement.PRIS_PAR_NOUS && o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
+	    		{
+	    			if(debugCapteurs)
+	    				log.debug("Élément de jeu : "+o);
 	                continue;
+	    		}
 
 			/**
 			 * Sinon, on ajoute
@@ -183,7 +197,11 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			positionEnnemi.plus(positionRobot);
 			
 			if(positionEnnemi.isHorsTable())
+			{
+				if(debugCapteurs)
+					log.debug("Hors table !");
 				continue; // hors table
+			}
 			
 			if(debugCapteurs)
 				log.debug("Ajout d'un obstacle d'ennemi en "+positionEnnemi);
