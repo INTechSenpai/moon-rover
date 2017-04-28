@@ -132,8 +132,8 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 	    for(GameElementNames g: GameElementNames.values())
 	        if(g.obstacle.isColliding(obstacleRobot))
 	        {
-	        	if(debugCapteurs)
-	        		log.debug("Élément shoot : "+g);
+//	        	if(debugCapteurs)
+//	        		log.debug("Élément shooté : "+g);
 	        	table.setDone(g, EtatElement.PRIS_PAR_NOUS); // on est sûr de l'avoir shooté
 	        }
 					
@@ -143,16 +143,14 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 		for(int i = 0; i < nbCapteurs; i++)
 		{
 			CapteursRobot c = CapteursRobot.values[i];
-			if(debugCapteurs)
-				log.debug("Traitement du capteur "+c);
 			
 			/*
 			 * Les deux capteurs ToF courts arrière voient le filet lorsqu'il est baissé
 			 */
 			if(robot.isFiletBaisse() && (c == CapteursRobot.ToF_ARRIERE_DROITE || c == CapteursRobot.ToF_ARRIERE_GAUCHE))
 			{
-				if(debugCapteurs)
-					log.debug("Filet baissé : ToF courts arrière ignorés");
+//				if(debugCapteurs)
+//					log.debug("Filet baissé : ToF courts arrière ignorés");
 				continue;
 			}
 				
@@ -163,8 +161,8 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			{
 				if(data.mesures[i] > 0 && data.mesures[i] < 60) // filet plein
 				{
-					if(debugCapteurs)
-						log.debug("Filet plein : ToF long arrière pas écouté");
+//					if(debugCapteurs)
+//						log.debug("Filet plein : ToF long arrière pas écouté");
 					robot.filetVuPlein();
 					continue;
 				}
@@ -182,7 +180,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 	    		if(o.isVisible(capteurs[i].sureleve) && o.getObstacle().squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 	    		{
 	    			if(debugCapteurs)
-	    				log.debug("Obstacle de table : "+o);
+	    				log.debug("Obstacle de table vu : "+o);
 	                continue;
 	    		}
 
@@ -190,7 +188,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 	    		if(table.isDone(o) != EtatElement.PRIS_PAR_NOUS && o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 	    		{
 	    			if(debugCapteurs)
-	    				log.debug("Élément de jeu : "+o);
+	    				log.debug("Élément de jeu vu : "+o);
 	                continue;
 	    		}
 
@@ -204,8 +202,8 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			
 			if(positionEnnemi.isHorsTable())
 			{
-				if(debugCapteurs)
-					log.debug("Hors table !");
+//				if(debugCapteurs)
+//					log.debug("Hors table !");
 				continue; // hors table
 			}
 			
