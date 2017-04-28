@@ -356,6 +356,28 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	}
 
 	/**
+	 * Envoi un seul arc sans stop. Permet d'avoir une erreur NO_MORE_POINTS avec le point d'après
+	 * @param point
+	 * @param indexTrajectory
+	 * @return
+	 */
+	public synchronized void makeNextObsolete(CinematiqueObs c, int indexTrajectory)
+	{
+		ByteBuffer data = ByteBuffer.allocate(8);
+		data.put((byte)indexTrajectory);
+		addXYO(data, c.getPosition(), c.orientationReelle);
+		short courbure = (short) ((Math.round(Math.abs(c.courbureReelle)*100)) & 0x7FFF);
+
+		// pas de stop
+		if(c.courbureReelle < 0) // bit de signe
+			courbure |= 0x4000;
+
+		data.putShort(courbure);
+		
+		bufferTrajectoireCourbe.add(new Order(data, OutOrder.SEND_ARC));
+	}
+	
+	/**
 	 * Envoi de tous les arcs élémentaires d'un arc courbe
 	 * @0 arc
 	 */
@@ -399,7 +421,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 				if((i<<5)+j+1 == points.size() || c.enMarcheAvant != points.get((i<<5)+j+1).enMarcheAvant || Math.abs(c.courbureReelle - prochaineCourbure) > 0.5)
 					courbure |= 0x8000; // en cas de rebroussement
 
-				if(c.courbureReelle < 0) // complément à 2 à la main
+				if(c.courbureReelle < 0) // bit de signe
 					courbure |= 0x4000;
 	
 				data.putShort(courbure);
