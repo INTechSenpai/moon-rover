@@ -53,7 +53,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 	private CheminPathfinding chemin;
 	private Container container;
 	
-	private boolean capteursOn = false;
+	public static boolean capteursOn = false;
 	private boolean debugSerie, debugCapteurs;
 	private int nbCapteurs;
 	

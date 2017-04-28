@@ -131,7 +131,11 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 		 */
 	    for(GameElementNames g: GameElementNames.values())
 	        if(g.obstacle.isColliding(obstacleRobot))
+	        {
+	        	if(debugCapteurs)
+	        		log.debug("Élément shoot : "+g);
 	        	table.setDone(g, EtatElement.PRIS_PAR_NOUS); // on est sûr de l'avoir shooté
+	        }
 					
 		/**
 		 * Suppression des mesures qui sont hors-table ou qui voient un obstacle de table
@@ -139,6 +143,8 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 		for(int i = 0; i < nbCapteurs; i++)
 		{
 			CapteursRobot c = CapteursRobot.values[i];
+			if(debugCapteurs)
+				log.debug("Traitement du capteur "+c);
 			
 			/*
 			 * Les deux capteurs ToF courts arrière voient le filet lorsqu'il est baissé
