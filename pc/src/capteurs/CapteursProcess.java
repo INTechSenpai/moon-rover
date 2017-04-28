@@ -161,7 +161,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			 */
 			if(c == CapteursRobot.ToF_LONG_ARRIERE && !robot.isFiletBaisse())
 			{
-				if(data.mesures[i] < 60) // filet plein
+				if(data.mesures[i] > 0 && data.mesures[i] < 60) // filet plein
 				{
 					if(debugCapteurs)
 						log.debug("Filet plein : ToF long arrière pas écouté");
