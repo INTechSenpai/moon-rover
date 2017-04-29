@@ -123,6 +123,10 @@ public:
 			endMoveStatus = NO_MORE_POINTS;
 			finished = true;
 			break;
+		case MotionControlSystem::HIGHLEVEL_STOP:
+			endMoveStatus = STOP_REQUIRED;
+			finished = true;
+			break;
 		default:
 			break;
 		}
@@ -138,7 +142,8 @@ private:
 		ARRIVED = 0x00,
 		EXT_BLOCKED = 0x01,
 		INT_BLOCKED = 0x02,
-		NO_MORE_POINTS = 0x03
+		NO_MORE_POINTS = 0x03,
+		STOP_REQUIRED = 0x04
 	};
 	uint8_t endMoveStatus;
 };

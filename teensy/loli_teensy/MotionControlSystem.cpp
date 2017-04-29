@@ -610,7 +610,7 @@ void MotionControlSystem::stop()
 
 void MotionControlSystem::highLevelStop()
 {
-	movingState = STOPPED;
+	movingState = HIGHLEVEL_STOP;
 	clearCurrentTrajectory();
 	stop();
 }
