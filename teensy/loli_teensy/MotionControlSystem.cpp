@@ -546,6 +546,7 @@ void MotionControlSystem::addTrajectoryPoint(const TrajectoryPoint & trajPoint, 
 		updateIsNeeded = true;
 	}
 	currentTrajectory[index] = trajPoint;
+	currentTrajectory[(uint8_t)(index + 1)].makeObsolete();
 	if (updateIsNeeded)
 	{
 		noInterrupts();
