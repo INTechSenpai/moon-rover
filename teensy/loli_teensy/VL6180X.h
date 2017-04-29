@@ -89,7 +89,7 @@ class VL6180X
 
     void setAddress(uint8_t new_addr);
 
-    void init(void);
+    bool init(void);
 
     void configureDefault(void);
 

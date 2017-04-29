@@ -30,7 +30,8 @@ void VL6180X::setAddress(uint8_t new_addr)
 
 // Initialize sensor with settings from ST application note AN4545, section 9 -
 // "Mandatory : private registers"
-void VL6180X::init()
+// Returns True if the init is successful
+bool VL6180X::init()
 {
   if (readReg(SYSTEM__FRESH_OUT_OF_RESET) == 1)
   {
@@ -74,7 +75,6 @@ void VL6180X::init()
   }
   else
   {
-	  Serial.println("ToF already initialized");
     // Sensor has already been initialized, so try to get scaling settings by
     // reading registers.
 
@@ -93,9 +93,7 @@ void VL6180X::init()
     // be resolved by resetting the sensor and Arduino again.
     ptp_offset *= scaling;
   }
-
-  Serial.print("ptp_offset ");
-  Serial.println(ptp_offset);
+  return ptp_offset != 255;
 }
 
 // Configure some settings for the sensor's default behavior from AN4545 -

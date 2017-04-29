@@ -274,7 +274,7 @@ bool VL53L0X::init(bool io_2v8)
 
   // VL53L0X_PerformRefCalibration() end
 
-  return true;
+  return last_status == 0;
 }
 
 // Write an 8-bit register

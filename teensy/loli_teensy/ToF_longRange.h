@@ -45,18 +45,28 @@ public:
 		isON = false;
 	}
 
-	void powerON()
+	void powerON(const char * name = "")
 	{
-		Serial.println("PowerOn ToF long");
+		Serial.print("PowerOn ToF ");
+		Serial.print(name);
+		Serial.print("...");
 		pinMode(pinStandby, INPUT);
 		delay(50);
-		vlSensor.init();
-		vlSensor.setAddress(i2cAddress);
+		if (vlSensor.init())
+		{
+			vlSensor.setAddress(i2cAddress);
 
-		vlSensor.stopContinuous();
-		delay(50);
-		vlSensor.startContinuous();
-		isON = true;
+			vlSensor.stopContinuous();
+			delay(50);
+			vlSensor.startContinuous();
+			isON = true;
+			Serial.println("OK");
+		}
+		else
+		{
+			Serial.println("FAILED");
+			Log::critical(54, "Capteur ToF long range deconnecte");
+		}
 	}
 
 private:

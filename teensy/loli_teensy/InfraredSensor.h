@@ -17,16 +17,34 @@ public:
 
 	void init()
 	{
-		Serial.println("IR Init");
+		Serial.print("IR Init...");
 		// Lecture du "SHIFT bit" du capteur
 		Wire.beginTransmission(address);
 		Wire.write(0x35);	// L'adresse du SHIFT bit est 0x35
 		Wire.endTransmission();
 
 		Wire.requestFrom(address, (uint8_t)1);
-		while (Wire.available() == 0) { ; }
+		uint32_t startTime = millis();
+		while (Wire.available() == 0) 
+		{
+			if (millis() - startTime > 500)
+			{
+				Serial.println("FAILED");
+				Log::critical(51, "Capteur IR deconnecte");
+				return;
+			}
+		}
 		shift = Wire.read();
-		initialized = true;
+		if (shift < 255 && shift >= 0)
+		{
+			initialized = true;
+			Serial.println("OK");
+		}
+		else
+		{
+			Serial.println("FAILED");
+			Log::critical(52, "Capteur IR deconnecte");
+		}
 	}
 
 	uint32_t getMesure()

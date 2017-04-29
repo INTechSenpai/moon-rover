@@ -41,16 +41,16 @@ public:
 	{
 		irGauche.init();
 		irDroit.init();
-		tofAVGauche.powerON();
-		tofFlanAVGauche.powerON();
-		tofFlanARGauche.powerON();
-		tofARGauche.powerON();
-		tofARDroit.powerON();
-		tofFlanARDroit.powerON();
-		tofFlanAVDroit.powerON();		
-		tofAVDroit.powerON();
-		tofLPAvant.powerON();
-		tofLPArriere.powerON();
+		tofAVGauche.powerON("avg");
+		tofFlanAVGauche.powerON("favg");
+		tofFlanARGauche.powerON("farg");
+		tofARGauche.powerON("arg");
+		tofARDroit.powerON("ard");
+		tofFlanARDroit.powerON("fard");
+		tofFlanAVDroit.powerON("favd");		
+		tofAVDroit.powerON("avd");
+		tofLPAvant.powerON("lpav");
+		tofLPArriere.powerON("lpar");
 	}
 
 	void powerOff()
