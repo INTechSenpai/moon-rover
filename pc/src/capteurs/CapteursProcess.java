@@ -208,7 +208,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			}
 			
 			if(debugCapteurs)
-				log.debug("Ajout d'un obstacle d'ennemi en "+positionEnnemi);
+				log.debug("Ajout d'un obstacle d'ennemi en "+positionEnnemi+" vu par "+c);
 			
 			ObstacleProximity o = gridspace.addObstacleAndRemoveNearbyObstacles(positionEnnemi);
 			
