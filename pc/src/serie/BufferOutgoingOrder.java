@@ -124,6 +124,8 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized Ticket followTrajectory(Speed vitesseInitiale, boolean marcheAvant)
 	{
+		if(debugpf)
+			log.debug("On commence à suivre la trajectoire");
 		short vitesseTr; // vitesse signée
 		if(marcheAvant)
 			vitesseTr = (short)(vitesseInitiale.translationalSpeed*1000);
@@ -144,7 +146,6 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized Ticket immobilise()
 	{
-//		if(debugSerie)
 		log.warning("Stop !");
 		stop = new Ticket();
 		notify();
