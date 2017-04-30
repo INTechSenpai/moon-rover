@@ -308,7 +308,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 			int longueur = serieInput.read();
 
 			if(longueur < 4 || longueur > 255)
-				throw new IllegalArgumentException("Mauvaise longueur : "+longueur);
+				throw new IllegalArgumentException("Mauvaise longueur : "+longueur+" (code = "+code+")");
 			else if(longueur > 4 && code == IncomingCode.EXECUTION_BEGIN.code)
 				throw new IllegalArgumentException("Trame EXECUTION_BEGIN de longueur incorrecte ("+longueur+")");
 			

@@ -53,6 +53,8 @@ public class ThreadSerialInputCoucheTrame extends ThreadService implements Seria
 				buffer.add(serie.readData());
 		} catch (InterruptedException e) {
 			log.debug("Arrêt de "+Thread.currentThread().getName());
+		} catch (Exception e) {
+			log.debug("Arrêt inattendu de "+Thread.currentThread().getName()+" : "+e);
 		}
 	}
 
