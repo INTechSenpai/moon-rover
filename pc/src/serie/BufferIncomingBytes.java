@@ -39,7 +39,7 @@ public class BufferIncomingBytes implements Service, SerialClass
 	
 	private InputStream input;
 
-	private int bufferReading[] = new int[256];
+	private int bufferReading[] = new int[2048];
 	
 	private volatile int indexBufferStart = 0;
 	private volatile int indexBufferStop = 0;
@@ -68,7 +68,7 @@ public class BufferIncomingBytes implements Service, SerialClass
 				synchronized(this)
 				{
 					bufferReading[indexBufferStop++] = input.read();
-					indexBufferStop &= 0xFF;
+					indexBufferStop &= 0x3FF;
 					notifyAll();
 				}
 			} while(input.available() > 0);
@@ -107,7 +107,7 @@ public class BufferIncomingBytes implements Service, SerialClass
 			throw new MissingCharacterException();
 
 		int out = bufferReading[indexBufferStart++];
-		indexBufferStart &= 0xFF;
+		indexBufferStart &= 0x3FF;
 
 		if(debugSerieTrame)
 		{
