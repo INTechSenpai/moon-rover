@@ -228,6 +228,8 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 							paquet.ticket.set(InOrder.ROBOT_BLOCAGE_EXTERIEUR);
 						else if(data[0] == InOrder.PLUS_DE_POINTS.codeInt)
 							paquet.ticket.set(InOrder.PLUS_DE_POINTS);
+						else if(data[0] == InOrder.STOP_REQUIRED.codeInt)
+							paquet.ticket.set(InOrder.STOP_REQUIRED);
 					}
 					
 					/*

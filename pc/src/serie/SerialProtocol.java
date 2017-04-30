@@ -83,6 +83,7 @@ public class SerialProtocol {
 		ROBOT_BLOCAGE_EXTERIEUR(0x01, State.KO),
 		ROBOT_BLOCAGE_INTERIEUR(0x02, State.KO),
 		PLUS_DE_POINTS(0x03, State.KO),
+		STOP_REQUIRED(0x04, State.KO),
 		
 		// Couleur
 		COULEUR_BLEU(0x00, State.OK),
