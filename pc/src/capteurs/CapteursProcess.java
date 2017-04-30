@@ -354,7 +354,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 		/**
 		 * Si le capteur voit trop proche ou trop loin, on ne peut pas lui faire confiance
 		 */
-		if(mesure < c.distanceMin || mesure > c.portee)
+		if(mesure <= c.distanceMin || mesure >= c.portee)
 		{
 //			log.debug("Mesure d'un capteur trop loin ou trop proche.");
 			return null;
