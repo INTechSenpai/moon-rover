@@ -62,8 +62,10 @@ public class ThreadCapteurs extends ThreadService implements LowPFClass, HighPFC
 				capteurs.updateObstaclesMobiles(e);
 				
 			}
-		} catch (InterruptedException e2) {
+		} catch (InterruptedException e) {
 			log.debug("Arrêt de "+Thread.currentThread().getName());
+		} catch (Exception e) {
+			log.debug("Arrêt inattendu de "+Thread.currentThread().getName()+" : "+e);
 		}
 	}
 
