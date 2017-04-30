@@ -368,7 +368,8 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		addXYO(data, c.getPosition(), c.orientationReelle);
 		short courbure = (short) ((Math.round(Math.abs(c.courbureReelle)*100)) & 0x7FFF);
 
-		// pas de stop
+		// stop
+		courbure |= 0x8000;
 		if(c.courbureReelle < 0) // bit de signe
 			courbure |= 0x4000;
 
