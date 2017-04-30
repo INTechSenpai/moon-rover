@@ -274,6 +274,7 @@ public class JUnit_Robot extends JUnit_Test {
 		last = chemin.getLastOrientation();
 		if(!simuleSerie)
 			robot.followTrajectory(v);
+		astar.stopContinuousSearch();
     }
 	
 	@Test

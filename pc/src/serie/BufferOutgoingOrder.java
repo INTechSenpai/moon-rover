@@ -103,6 +103,9 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized void setMaxSpeed(double vitesse)
 	{
+		if(debugSerie || debugpf)
+			log.debug("Envoi d'un ordre de vitesse max : "+vitesse);
+
 		short vitesseTr; // vitesse signée
 		vitesseTr = (short)(vitesse*1000);
 
@@ -141,8 +144,8 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized Ticket immobilise()
 	{
-		if(debugSerie)
-			log.warning("Stop !");
+//		if(debugSerie)
+		log.warning("Stop !");
 		stop = new Ticket();
 		notify();
 		return stop;
