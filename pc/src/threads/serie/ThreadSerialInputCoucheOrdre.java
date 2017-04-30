@@ -153,7 +153,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 								int[] mesures = new int[nbCapteurs];
 								for(int i = 0; i < nbCapteurs; i++)
 								{
-									mesures[i] = data[8+i];
+									mesures[i] = data[8+i] * CapteursRobot.values[i].type.conversion;
 									if(debugSerie || debugCapteurs)
 										log.debug("Capteur "+CapteursRobot.values[i].name()+" : "+mesures[i]);
 								}
