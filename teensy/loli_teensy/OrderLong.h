@@ -133,6 +133,7 @@ public:
 	}
 	void terminate(std::vector<uint8_t> & output)
 	{
+		Serial.printf("End move (%u)\n", endMoveStatus);
 		output.push_back(endMoveStatus);
 	}
 
@@ -160,6 +161,7 @@ public:
 	Stop() {}
 	void _launch(const std::vector<uint8_t> & input)
 	{
+		Serial.println("HighLevel Stop - start");
 		motionControlSystem.highLevelStop();
 	}
 	void onExecute(std::vector<uint8_t> & output)
@@ -167,7 +169,9 @@ public:
 		finished = motionControlSystem.isStopped();
 	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		Serial.println("HighLevel Stop - end");
+	}
 };
 
 

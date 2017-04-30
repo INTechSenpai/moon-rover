@@ -115,6 +115,7 @@ private:
 
 	//  Accélération maximale (variation maximale de movingSpeedSetpoint)
 	int32_t maxAcceleration;	// ticks*s^-2
+	int32_t maxDeceleration;	// ticks*s^-2
 
 	//	Pour faire de jolies courbes de réponse du système, la vitesse moyenne c'est mieux !
 	Average<int32_t, AVERAGE_SPEED_SIZE> averageLeftSpeed;
@@ -273,6 +274,8 @@ public:
 	int32_t getMaxMovingSpeed() const;
 	void setMaxAcceleration(int32_t);
 	int32_t getMaxAcceleration() const;
+	void setMaxDeceleration(int32_t);
+	int32_t getMaxDeceleration() const;
 
 	/* Setters et getters des constantes d'asservissement */
 	void setCurrentPIDTunings(float, float, float);

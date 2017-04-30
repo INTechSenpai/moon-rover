@@ -167,10 +167,14 @@ void MotionControlSystem::control()
 				backwardTranslationPID.compute(); // MAJ movingSpeedSetpoint
 			}
 
-			// Limitation de l'accélération (et pas de la décélération)
+			// Limitation de l'accélération et de la décélération
 			if (movingSpeedSetpoint - previousMovingSpeedSetpoint > maxAcceleration)
 			{
 				movingSpeedSetpoint = previousMovingSpeedSetpoint + maxAcceleration;
+			}
+			else if (previousMovingSpeedSetpoint - movingSpeedSetpoint > maxDeceleration)
+			{
+				movingSpeedSetpoint = previousMovingSpeedSetpoint - maxDeceleration;
 			}
 
 			previousMovingSpeedSetpoint = movingSpeedSetpoint;
@@ -179,6 +183,13 @@ void MotionControlSystem::control()
 			if (movingSpeedSetpoint > ABS(maxMovingSpeed))
 			{
 				movingSpeedSetpoint = ABS(maxMovingSpeed);
+			}
+
+			if (movingSpeedSetpoint < -ABS(maxMovingSpeed)) // hack de sécu
+			{
+				movingState = MovingState::INT_BLOCKED;
+				clearCurrentTrajectory();
+				stop();
 			}
 
 			// Calcul des vitesses gauche et droite en fonction de la vitesse globale
@@ -441,13 +452,19 @@ void MotionControlSystem::updateTranslationSetpoint()
 						(position.y - posConsigne.y) * sinf(posConsigne.orientation)
 					) / TICK_TO_MM
 				);
-			if (offset < TRAJECTORY_STEP)
+			if (offset < TRAJECTORY_STEP * 2)
 			{
 				translationSetpoint += (int32_t)offset;
 			}
 			else
 			{
 				translationSetpoint += TRAJECTORY_STEP / 2;
+				Serial.print("Warning pos: ");
+				Position p;
+				getPosition(p);
+				Serial.print(p);
+				Serial.print("  index: ");
+				Serial.println(getTrajectoryIndex());
 				Log::warning("Position courante tres loin du point de trajectoire courant");
 			}
 		}
@@ -644,6 +661,18 @@ void MotionControlSystem::setMaxAcceleration(int32_t newMaxAcceleration)
 int32_t MotionControlSystem::getMaxAcceleration() const
 {
 	return maxAcceleration;
+}
+
+void MotionControlSystem::setMaxDeceleration(int32_t newMaxDeceleration)
+{
+	noInterrupts();
+	maxDeceleration = newMaxDeceleration;
+	interrupts();
+}
+
+int32_t MotionControlSystem::getMaxDeceleration() const
+{
+	return maxDeceleration;
 }
 
 
@@ -924,6 +953,9 @@ void MotionControlSystem::saveParameters()
 	EEPROM.put(a, maxAcceleration);
 	a += sizeof(maxAcceleration);
 
+	EEPROM.put(a, maxDeceleration);
+	a += sizeof(maxDeceleration);
+
 	kp = forwardTranslationPID.getKp();
 	EEPROM.put(a, kp);
 	a += sizeof(kp);
@@ -1011,6 +1043,9 @@ void MotionControlSystem::loadParameters()
 	EEPROM.get(a, maxAcceleration);
 	a += sizeof(maxAcceleration);
 
+	EEPROM.get(a, maxDeceleration);
+	a += sizeof(maxDeceleration);
+
 	EEPROM.get(a, kp);
 	a += sizeof(kp);
 	EEPROM.get(a, ki);
@@ -1068,6 +1103,7 @@ void MotionControlSystem::loadDefaultParameters()
 	endOfMoveMgr.setTunings(100, 100);
 
 	maxAcceleration = 25;
+	maxDeceleration = 125;
 
 	forwardTranslationPID.setTunings(2.75, 0, 1.5);
 	backwardTranslationPID.setTunings(1.75, 0, 1);

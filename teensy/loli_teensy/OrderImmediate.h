@@ -106,6 +106,12 @@ public:
 		else
 		{
 			uint8_t index = io.at(0);
+			Position p;
+			motionControlSystem.getPosition(p);
+			Serial.print("Pos: ");
+			Serial.print(p);
+			Serial.print(" index: ");
+			Serial.println(motionControlSystem.getTrajectoryIndex());
 			Serial.printf("AddTP: %u\n", index);
 			for (size_t i = 1; i < io.size(); i += 7)
 			{
@@ -261,7 +267,7 @@ public:
 		uint32_t smgre, smgrt;
 		float bmgrs;
 		uint32_t bmgrt;
-		int32_t mms, macc;
+		int32_t mms, macc, mdec;
 		bool cp, cvg, cvd, cpwm;
 		char pidToSet_str[12];
 		motionControlSystem.getPIDtoSet_str(pidToSet_str, 12);
@@ -275,6 +281,7 @@ public:
 		motionControlSystem.getLeftMotorBmgrTunings(bmgrs, bmgrt);
 		mms = motionControlSystem.getMaxMovingSpeed();
 		macc = motionControlSystem.getMaxAcceleration();
+		mdec = motionControlSystem.getMaxDeceleration();
 		motionControlSystem.getEnableStates(cp, cvg, cvd, cpwm);
 
 		Serial.print("PID to set : ");
@@ -293,6 +300,7 @@ public:
 		Serial.println();
 		Serial.printf("MaxMovingSpeed= %d\n", mms);
 		Serial.printf("MaxAcceleration= %d\n", macc);
+		Serial.printf("MaxDeceleration= %d\n", mdec);
 		Serial.println();
 		Serial.printf("ControlPosition[%d]\n", cp);
 		Serial.printf("ControlLeftSpeed[%d]\n", cvg);
@@ -658,6 +666,19 @@ public:
 			motionControlSystem.setMaxAcceleration(Vutils<ARG_SIZE>::vtoi(io));
 		}
 		Serial.printf("MaxAcceleration= %d\n", motionControlSystem.getMaxAcceleration());
+	}
+};
+
+class Mdec : public OrderImmediate, public Singleton<Mdec>
+{
+public:
+	Mdec() {}
+	virtual void execute(std::vector<uint8_t> & io) {
+		if (io.size() > 0)
+		{
+			motionControlSystem.setMaxDeceleration(Vutils<ARG_SIZE>::vtoi(io));
+		}
+		Serial.printf("MaxDeceleration= %d\n", motionControlSystem.getMaxDeceleration());
 	}
 };
 
