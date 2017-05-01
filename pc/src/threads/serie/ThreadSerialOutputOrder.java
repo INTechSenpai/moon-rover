@@ -29,12 +29,12 @@ import threads.ThreadService;
 import utils.Log;
 
 /**
- * Thread qui vérifie s'il faut envoyer des choses sur la série
+ * Thread qui vérifie s'il faut envoyer des ordres
  * @author pf
  *
  */
 
-public class ThreadSerialOutput extends ThreadService implements SerialClass
+public class ThreadSerialOutputOrder extends ThreadService implements SerialClass
 {
 	protected Log log;
 	private SerieCoucheTrame serie;
@@ -44,7 +44,7 @@ public class ThreadSerialOutput extends ThreadService implements SerialClass
 	private boolean debugSerie;
 	private boolean simuleSerie;
 	
-	public ThreadSerialOutput(Log log, SerieCoucheTrame serie, BufferOutgoingOrder data, BufferIncomingBytes input, Config config)
+	public ThreadSerialOutputOrder(Log log, SerieCoucheTrame serie, BufferIncomingBytes input, BufferOutgoingOrder data, Config config)
 	{
 		this.log = log;
 		this.serie = serie;

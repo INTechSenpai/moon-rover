@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package serie;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -73,7 +74,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 	private EndOrderFrame endOrderFrame = new EndOrderFrame();
 	
 	private Log log;
-	private SerieCouchePhysique serieOutput;
+	private BufferOutgoingBytes serieOutput;
 	private BufferIncomingBytes serieInput;
 	private boolean debugSerie;
 	
@@ -82,7 +83,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 * @param log
 	 * @param serie
 	 */
-	public SerieCoucheTrame(Log log, SerieCouchePhysique serieOutput, BufferIncomingBytes serieInput, Config config)
+	public SerieCoucheTrame(Log log, BufferOutgoingBytes serieOutput, BufferIncomingBytes serieInput, Config config)
 	{
 		this.log = log;
 		this.serieInput = serieInput;
@@ -143,7 +144,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 		if(debugSerie)
 			log.debug("Envoi d'une nouvelle trame");
 
-		serieOutput.communiquer(f, f.getFirstTrame());
+		serieOutput.add(f.getFirstTrame().trame, f.getFirstTrame().tailleTrame);
 		f.updateResendDate();
 	}
 
@@ -246,7 +247,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 					pending.setDeathDate(); // tes jours sont comptés…
 					// on envoie un END_ORDER
 					endOrderFrame.updateId(f.id);
-					serieOutput.communiquer(pending, endOrderFrame);
+					serieOutput.add(endOrderFrame.trame, endOrderFrame.tailleTrame);
 					// et on retire la trame des trames en cours
 					it.remove();
 					closedFrames.add(id);
@@ -309,7 +310,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 			code = serieInput.read();
 			
 			IncomingFrame.check(code);
-			
+
 			longueur = serieInput.read();
 
 			if(longueur < 4 || longueur > 255)
@@ -329,6 +330,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 	/**
 	 * Fermeture de la série
 	 * @throws InterruptedException 
+	 * @throws IOException 
 	 */
 	public void close() throws InterruptedException
 	{
@@ -394,7 +396,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 			if(debugSerie)
 				log.debug("Une trame est renvoyée");
 
-			serieOutput.communiquer(trame, trame.getFirstTrame());
+			serieOutput.add(trame.getFirstTrame().trame, trame.getFirstTrame().tailleTrame);
 			trame.updateResendDate(); // on remet la date de renvoi à plus tard
 		}
 	}
