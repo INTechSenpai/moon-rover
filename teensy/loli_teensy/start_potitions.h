@@ -4,14 +4,14 @@
 /* Unités : mm et radians */
 
 /* Côté jaune */
-#define X_JAUNE	700
-#define Y_JAUNE	1800
-#define O_JAUNE	PI
+#define X_JAUNE	(550)		//700
+#define Y_JAUNE	(1905)		//1800
+#define O_JAUNE	(-M_PI_2)	//PI
 
 /* Côté bleu */
-#define X_BLEU	-700
-#define Y_BLEU	1800
-#define O_BLEU	0
+#define X_BLEU	(-550)		//-700
+#define Y_BLEU	(1905)		//1800
+#define O_BLEU	(-M_PI_2)	//0
 
 #endif
 
