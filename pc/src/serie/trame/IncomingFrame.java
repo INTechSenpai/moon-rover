@@ -35,7 +35,7 @@ public class IncomingFrame extends Frame
 	 * Constructeur d'une trame reçue
 	 * @return
 	 */
-	public IncomingFrame(int code, int id, int checksum, int longueur, int[] message) throws IncorrectChecksumException
+	public IncomingFrame(int code, int id, int checksum, int longueur, int[] message) throws IncorrectChecksumException, IllegalArgumentException
 	{
 		this.id = id;
 		this.message = message;
@@ -79,6 +79,12 @@ public class IncomingFrame extends Frame
 				m += s.substring(s.length()-2, s.length())+" ";
 		}
 		return m;
+	}
+
+	public static void check(int code) throws IllegalArgumentException
+	{
+		if(code != IncomingCode.EXECUTION_BEGIN.code && code != IncomingCode.EXECUTION_END.code && code != IncomingCode.STATUS_UPDATE.code && code != IncomingCode.VALUE_ANSWER.code)
+			throw new IllegalArgumentException("Type de trame inconnu : "+code);
 	}
 	
 }

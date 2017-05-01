@@ -307,6 +307,9 @@ public class SerieCoucheTrame implements Service, SerialClass
 				serieInput.wait();
 			
 			code = serieInput.read();
+			
+			IncomingFrame.check(code);
+			
 			longueur = serieInput.read();
 
 			if(longueur < 4 || longueur > 255)
