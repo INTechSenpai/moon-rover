@@ -142,7 +142,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 		f.update(o);
 
 		if(debugSerie)
-			log.debug("Envoi d'une nouvelle trame");
+			log.debug("Envoi d'une nouvelle trame : "+o.ordre);
 
 		serieOutput.add(f.getFirstTrame().trame, f.getFirstTrame().tailleTrame);
 		f.updateResendDate();

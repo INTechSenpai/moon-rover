@@ -62,7 +62,7 @@ public class SerieCouchePhysique implements Service, SerialClass
 	/** Milliseconds to block while waiting for port open */
 	private static final int TIME_OUT = 2000;
 
-	private boolean debugSerie;
+	private boolean debugSerie, debugSerieTrame;
 	
 	/**
 	 * Constructeur pour la série de test
@@ -78,6 +78,8 @@ public class SerieCouchePhysique implements Service, SerialClass
 		baudrate = config.getInt(ConfigInfo.BAUDRATE);
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
 		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
+		debugSerieTrame = config.getBoolean(ConfigInfo.DEBUG_SERIE_TRAME);
+		
 		if(simuleSerie)
 			log.critical("SÉRIE SIMULÉE !");
 	}
@@ -260,6 +262,32 @@ public class SerieCouchePhysique implements Service, SerialClass
 					listener.wait();
 
 				listener.setOutputNonEmpty();
+				
+				if(debugSerieTrame)
+				{
+					String aff = "";
+					for(int i = offset; i < offset + length; i++)
+					{
+						int out = bufferWriting[i];
+						String s = Integer.toHexString(out).toUpperCase();
+						if(s.length() == 1)
+						{
+							if(out >= 32 && out < 127)
+								aff += "0"+s+" ("+(char)(out)+") ";
+							else
+								aff += "0"+s+" ";
+						}
+						else
+						{
+							if(out >= 32 && out < 127)
+								aff += s.substring(s.length()-2, s.length())+" ("+(char)(out)+") ";	
+							else
+								aff += s.substring(s.length()-2, s.length())+" ";	
+						}
+					}
+					log.debug("Envoi de "+aff);
+				}
+				
 				output.write(bufferWriting, offset, length);
 				output.flush();
 			}

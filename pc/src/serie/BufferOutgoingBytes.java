@@ -17,12 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package serie;
 
-import java.io.IOException;
-
 import utils.Log;
 import container.Service;
 import container.dependances.SerialClass;
-import exceptions.serie.MissingCharacterException;
 
 /**
  * Buffer très bas niveau qui envoie les octets sur la série
@@ -82,13 +79,11 @@ public class BufferOutgoingBytes implements Service, SerialClass
 	 * Lit un octet
 	 * On sait qu'un octet doit s'y trouver ; soit parce que available() retourne "true", soit parce que le protocole l'impose.
 	 * @return
-	 * @throws IOException
-	 * @throws MissingCharacterException
 	 * @throws InterruptedException 
 	 */
-	public final synchronized void send() throws MissingCharacterException, InterruptedException, IOException
+	public final synchronized void send() throws InterruptedException
 	{
-		if(indexBufferStart != indexBufferStop)
+		if(!isEmpty())
 		{
 			if(indexBufferStop > indexBufferStart) // un seul envoi
 				serie.communiquer(bufferWriting, indexBufferStart, indexBufferStop-indexBufferStart);
