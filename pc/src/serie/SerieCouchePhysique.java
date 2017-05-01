@@ -22,8 +22,6 @@ import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
-import serie.trame.Conversation;
-import serie.trame.OutgoingFrame;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -56,7 +54,7 @@ public class SerieCouchePhysique implements Service, SerialClass
 	private String portName;
 	
 	/** The output stream to the port */
-	protected OutputStream output;
+	private OutputStream output;
 
 	// Permet d'ouvrir le port à la première utilisation de la série
 	protected volatile boolean portOuvert = false;
@@ -64,7 +62,7 @@ public class SerieCouchePhysique implements Service, SerialClass
 	/** Milliseconds to block while waiting for port open */
 	private static final int TIME_OUT = 2000;
 
-	private boolean debugSerieTrame, debugSerie;
+	private boolean debugSerie;
 	
 	/**
 	 * Constructeur pour la série de test
@@ -79,7 +77,6 @@ public class SerieCouchePhysique implements Service, SerialClass
 		portName = config.getString(ConfigInfo.SERIAL_PORT);
 		baudrate = config.getInt(ConfigInfo.BAUDRATE);
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
-		debugSerieTrame = config.getBoolean(ConfigInfo.DEBUG_SERIE_TRAME);
 		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 		if(simuleSerie)
 			log.critical("SÉRIE SIMULÉE !");
@@ -238,7 +235,7 @@ public class SerieCouchePhysique implements Service, SerialClass
 	 * @param message
 	 * @throws InterruptedException 
 	 */
-	public synchronized void communiquer(Conversation f, OutgoingFrame out) throws InterruptedException
+	public synchronized void communiquer(byte[] bufferWriting, int offset, int length) throws InterruptedException
 	{
 		if(simuleSerie)
 			return;
@@ -250,32 +247,21 @@ public class SerieCouchePhysique implements Service, SerialClass
 		 */
 		if(isClosed)
 		{
-			log.debug("La série est fermée et ne peut envoyer :"+out);
+			log.debug("La série est fermée et ne peut envoyer un message");
 			return;
 		}		
 		
 		try
 		{
-			if(debugSerieTrame)
-				log.debug(out);
-
 			// On vérifie bien que toutes les données précédentes ont été envoyées
 			synchronized(listener)
 			{
 				if(!listener.isOutputEmpty())
 					listener.wait();
-				// On n'envoie que les premiers "tailleTrame" octets
+
 				listener.setOutputNonEmpty();
-				if(f.libre)
-				{
-					if(debugSerie)
-						log.debug("Envoi annulé : réponse reçue entre temps");
-				}
-				else
-				{
-					output.write(out.trame, 0, out.tailleTrame);
-					output.flush();
-				}
+				output.write(bufferWriting, offset, length);
+				output.flush();
 			}
 			
 			if(debugSerie)
@@ -295,7 +281,7 @@ public class SerieCouchePhysique implements Service, SerialClass
 				Thread.sleep(100);
 			}
 			// On a retrouvé la série, on renvoie le message
-			communiquer(f, out);
+			communiquer(bufferWriting, offset, length);
 		}
 	}
 

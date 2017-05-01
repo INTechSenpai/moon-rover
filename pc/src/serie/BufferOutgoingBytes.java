@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 package serie;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import utils.Log;
 import container.Service;
@@ -35,8 +34,6 @@ public class BufferOutgoingBytes implements Service, SerialClass
 {
 	protected Log log;
 	private SerieCouchePhysique serie;
-	
-	private OutputStream output;
 
 	private byte bufferWriting[] = new byte[16384];
 	
@@ -94,37 +91,28 @@ public class BufferOutgoingBytes implements Service, SerialClass
 		if(indexBufferStart != indexBufferStop)
 		{
 			if(indexBufferStop > indexBufferStart) // un seul envoi
-				output.write(bufferWriting, indexBufferStart, indexBufferStop-indexBufferStart);
+				serie.communiquer(bufferWriting, indexBufferStart, indexBufferStop-indexBufferStart);
 			else // deux envois
 			{
-				output.write(bufferWriting, indexBufferStart, 16384-indexBufferStart);
+				serie.communiquer(bufferWriting, indexBufferStart, 16384-indexBufferStart);
 				if(indexBufferStop != 0)
-				output.write(bufferWriting, 0, indexBufferStop);
+					serie.communiquer(bufferWriting, 0, indexBufferStop);
 			}
 			indexBufferStart = indexBufferStop;
-			output.flush(); // on demande l'envoi
 		}
 	}
 
 	/**
-	 * Fermeture du flux d'arrivée
+	 * Fermeture de la série
 	 */
 	public void close()
 	{
-		if(output != null)
-		{
-			try {
-				output.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		serie.close();
 	}
 
 	public void init() throws InterruptedException
 	{
 		serie.init();
-		output = serie.output;
 	}
 
 	public synchronized boolean isEmpty()
