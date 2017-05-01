@@ -136,12 +136,18 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						double orientationRobot = ((data[3] << 8) + data[4]) / 1000.;
 						int indexTrajectory = data[5];
 //							log.debug("Index trajectory : "+indexTrajectory);
+						log.debug("A Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
+
 						Cinematique current = chemin.setCurrentIndex(indexTrajectory);
+						log.debug("B Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
+
 						current.getPositionEcriture().setX(xRobot);
 						current.getPositionEcriture().setY(yRobot);
 						current.orientationReelle = orientationRobot;
-						robot.setCinematique(current);
+						log.debug("C Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
 						
+						robot.setCinematique(current);
+						log.debug("D Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
 						if(debugSerie)
 							log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot);
 		
@@ -164,6 +170,8 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 								if(debugSerie || debugCapteurs)
 									log.debug("Capteur "+CapteursRobot.values[i].name()+" : "+mesures[i]);
 							}
+							log.debug("E Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
+
 							if(capteursOn)
 								buffer.add(new SensorsData(angleRoueGauche, angleRoueDroite, mesures, current));
 						}
@@ -276,9 +284,8 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 //					else
 //						paquet.ticket.set(InOrder.ORDER_ACK);
 
-				long diff = System.currentTimeMillis() - avant;
 				if(debugSerie)
-					log.debug("Durée de traitement de "+paquet.origine+" : "+diff);
+					log.debug("Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
 			}
 		} catch (InterruptedException e) {
 			log.debug("Arrêt de "+Thread.currentThread().getName());
