@@ -56,6 +56,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 {
 	protected volatile boolean matchDemarre = false;
     protected volatile long dateDebutMatch;
+    private boolean debugpf;
     private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant;
 	private boolean print, printTrace;
 	private PrintBufferInterface buffer;
@@ -81,6 +82,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
 		printTrace = config.getBoolean(ConfigInfo.GRAPHIC_TRACE_ROBOT);
 		courbureMax = config.getDouble(ConfigInfo.COURBURE_MAX);
+		debugpf = config.getBoolean(ConfigInfo.DEBUG_PF);
 		
 		if(print)
 			buffer.add(this);
@@ -504,6 +506,8 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 					log.critical("Erreur : "+i);
 					throw new UnableToMoveException();
 				}
+				if(debugpf)
+					log.debug("Le trajet s'est bien terminé ("+i+")");
 			}
 	}
 
