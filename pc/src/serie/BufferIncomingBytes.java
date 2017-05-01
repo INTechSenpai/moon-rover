@@ -39,7 +39,7 @@ public class BufferIncomingBytes implements Service, SerialClass
 	
 	private InputStream input;
 
-	private int bufferReading[] = new int[2048];
+	private int bufferReading[] = new int[16384];
 	
 	private volatile int indexBufferStart = 0;
 	private volatile int indexBufferStop = 0;
@@ -68,10 +68,10 @@ public class BufferIncomingBytes implements Service, SerialClass
 				synchronized(this)
 				{
 					bufferReading[indexBufferStop++] = input.read();
-					indexBufferStop &= 0x3FF;
+					indexBufferStop &= 0x3FFF;
 					
 					if(indexBufferStart == indexBufferStop)
-						log.critical("Overflow du buffer série !");
+						log.critical("Overflow du buffer de réception série !");
 
 					notifyAll();
 				}
@@ -111,7 +111,7 @@ public class BufferIncomingBytes implements Service, SerialClass
 			throw new MissingCharacterException("Un caractère attendu n'est pas arrivé");
 
 		int out = bufferReading[indexBufferStart++];
-		indexBufferStart &= 0x3FF;
+		indexBufferStart &= 0x3FFF;
 
 		if(debugSerieTrame)
 		{
