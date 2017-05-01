@@ -168,7 +168,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 				p = processFrame(f);
 				if(p == null) // c'est une trame de signalisation
 					restart = true;
-			} catch (ProtocolException | IncorrectChecksumException | MissingCharacterException e) {
+			} catch (ProtocolException | IncorrectChecksumException | MissingCharacterException | IllegalArgumentException e) {
 				log.warning(e);
 //				e.printStackTrace();
 				restart = true;
