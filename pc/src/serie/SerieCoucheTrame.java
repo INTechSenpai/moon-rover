@@ -298,28 +298,29 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 */
 	private IncomingFrame readFrame() throws MissingCharacterException, IncorrectChecksumException, IllegalArgumentException, InterruptedException
 	{
+		int code, id, longueur, checksum;
+		int[] message;
 		synchronized(serieInput)
 		{
 			// Attente des données…
 			if(!serieInput.available())
 				serieInput.wait();
 			
-			int code = serieInput.read();
-			int longueur = serieInput.read();
+			code = serieInput.read();
+			longueur = serieInput.read();
 
 			if(longueur < 4 || longueur > 255)
 				throw new IllegalArgumentException("Mauvaise longueur : "+longueur+" (code = "+code+")");
 			else if(longueur > 4 && code == IncomingCode.EXECUTION_BEGIN.code)
 				throw new IllegalArgumentException("Trame EXECUTION_BEGIN de longueur incorrecte ("+longueur+")");
 			
-			int id = serieInput.read();
-			int[] message = new int[longueur-4];
+			id = serieInput.read();
+			message = new int[longueur-4];
 			for(int i = 0; i < message.length; i++)
 				message[i] = serieInput.read();
-			int checksum = serieInput.read();
-
-			return new IncomingFrame(code, id, checksum, longueur, message);
+			checksum = serieInput.read();
 		}
+		return new IncomingFrame(code, id, checksum, longueur, message);
 	}
 	
 	/**
