@@ -2,10 +2,12 @@
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_actionneurs
 ./run_junit.sh tests.lowlevel.JUnit_Robot#creneau
 ./run_junit.sh tests.lowlevel.JUnit_Robot#courbe_loin
+./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune
 ./run_junit.sh tests.lowlevel.JUnit_Robot#arriere_loin
 ./run_junit.sh tests.lowlevel.JUnit_Robot#gauche
 ./run_junit.sh tests.lowlevel.JUnit_Robot#gauche2
 ./run_junit.sh tests.lowlevel.JUnit_Robot#courbe_longue
+./run_junit.sh tests.lowlevel.JUnit_Robot#courbe_longue_replanif
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_trajectoire_avec_arret
 ./run_junit.sh tests.lowlevel.JUnit_Robot#droite
 ./run_junit.sh tests.lowlevel.JUnit_Robot#droite2

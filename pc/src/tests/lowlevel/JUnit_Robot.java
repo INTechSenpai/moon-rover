@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import config.ConfigInfo;
+import exceptions.UnableToMoveException;
 import graphic.PrintBuffer;
 import obstacles.types.ObstacleCircular;
 import pathfinding.RealGameState;
@@ -200,6 +201,24 @@ public class JUnit_Robot extends JUnit_Test {
     }
 
 	/**
+	 * Trajectoire longue vers la gauche
+	 */
+	@Test
+    public void depart_jaune() throws Exception
+    {
+		Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+		c = new Cinematique(550, 1000, Math.PI, false, 0);
+		astar.initializeNewSearch(c, true, state);
+		astar.process(chemin);
+		last = chemin.getLastOrientation();
+		if(!simuleSerie)
+			robot.followTrajectory(v);
+    }
+	
+	/**
 	 * Cette trajectoire procède en deux temps : le rover recule puis avance
 	 * @throws Exception
 	 */
@@ -276,6 +295,39 @@ public class JUnit_Robot extends JUnit_Test {
 			robot.followTrajectory(v);
 		astar.stopContinuousSearch();
     }
+	
+	/**
+	 * Trajectoire longue (environ 2m) en marche avant
+	 * @throws Exception
+	 */
+	@Test
+    public void courbe_longue_replanif() throws Exception
+    {
+		boolean retente;
+		Cinematique depart = new Cinematique(-1000, 700, 0, true, 0);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+		c = new Cinematique(1000, 700, Math.PI, false, 0);
+		do {
+			retente = false;
+			astar.initializeNewSearch(c, true, state);
+			astar.process(chemin);
+			last = chemin.getLastOrientation();
+			if(!simuleSerie)
+			{
+				try {
+					robot.followTrajectory(v);
+				}
+				catch(UnableToMoveException e)
+				{
+					retente = true;
+				}
+			}
+			astar.stopContinuousSearch();
+		} while(retente);
+    }
+	
 	
 	@Test
     public void test_trajectoire_avec_arret() throws Exception
