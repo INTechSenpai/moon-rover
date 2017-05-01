@@ -89,6 +89,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					paquet = serie.poll();
 				}
 				
+				long avant = System.currentTimeMillis();
 				int[] data = paquet.message;
 				
 				/**
@@ -275,7 +276,9 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 //					else
 //						paquet.ticket.set(InOrder.ORDER_ACK);
 
-				
+				long diff = System.currentTimeMillis() - avant;
+				if(debugSerie)
+					log.debug("Durée de traitement de "+paquet.origine+" : "+diff);
 			}
 		} catch (InterruptedException e) {
 			log.debug("Arrêt de "+Thread.currentThread().getName());
