@@ -352,7 +352,7 @@ void MotionControlSystem::updateTrajectoryIndex()
 	}
 	else if (movingState == STOPPED && currentTrajectory[trajectoryIndex].isStopPoint())
 	{
-		if (currentTrajectory[(uint8_t)(trajectoryIndex + 1)].isUpToDate() && !trajectoryFullyCompleted)
+		if (!trajectoryFullyCompleted)
 		{
 			currentTrajectory[trajectoryIndex].makeObsolete();
 			trajectoryIndex++;
@@ -562,7 +562,10 @@ void MotionControlSystem::addTrajectoryPoint(const TrajectoryPoint & trajPoint, 
 	{
 		updateIsNeeded = true;
 	}
+
+	noInterrupts(); // au cas où index == trajectoryIndex
 	currentTrajectory[index] = trajPoint;
+	interrupts();
 	currentTrajectory[(uint8_t)(index + 1)].makeObsolete();
 	if (updateIsNeeded)
 	{
@@ -591,20 +594,9 @@ void MotionControlSystem::gotoNextStopPoint()
 		return;
 	}
 
-	if (!trajectoryFullyCompleted)
-	{
-		updateTrajectoryIndex();
-	}
+	movingState = MOVE_INIT;
+	trajectoryFullyCompleted = false;
 
-	if (trajectoryFullyCompleted)
-	{
-		movingState = MOVE_INIT;
-		trajectoryFullyCompleted = false;
-	}
-	else
-	{
-		movingState = EMPTY_TRAJ;
-	}
 	interrupts();
 }
 
