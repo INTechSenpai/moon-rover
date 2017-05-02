@@ -69,7 +69,10 @@ public class IncomingFrame extends Frame
 	@Override
 	public String toString()
 	{
-		String m = "Incoming : "+code+" // ";
+		if(message.length == 0)
+			return "Incoming : "+code+" "+id+" (pas de données)";
+		
+		String m = "Incoming : "+code+" "+id+" // ";
 		for(int i = 0; i < message.length; i++)
 		{
 			String s = Integer.toHexString(message[i]).toUpperCase();

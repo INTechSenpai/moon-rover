@@ -393,7 +393,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 		if(trame != null)
 		{
 			if(debugSerie)
-				log.debug("Une trame est renvoyée");
+				log.debug("Une trame est renvoyée : "+trame.getFirstTrame());
 
 			serieOutput.add(trame.getFirstTrame().trame, trame.getFirstTrame().tailleTrame);
 			trame.updateResendDate(); // on remet la date de renvoi à plus tard

@@ -48,7 +48,10 @@ public class OutgoingFrame extends Frame
 	@Override
 	public String toString()
 	{
-		String m = "Outgoing : "+code+" // ";
+		if(tailleTrame == 0)
+			return "Outgoing : "+code+" "+id+" (pas de données)";
+		
+		String m = "Outgoing : "+code+" "+id+" // ";
 		for(int i = 0; i < tailleTrame; i++)
 		{
 			String s = Integer.toHexString(trame[i]).toUpperCase();
