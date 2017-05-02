@@ -407,6 +407,24 @@ public class JUnit_Robot extends JUnit_Test {
 			robot.avance(200, v);
     }
 	
+	/**
+	 * Test pour debug le LL
+	 * @throws Exception
+	 */
+	@Test
+    public void test_debug() throws Exception
+    {
+		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(500);
+		if(!simuleSerie)
+		{
+			robot.avance(100, v);
+			robot.followTrajectory(200, Speed.STANDARD);
+		}
+    }
+	
 	@Test
     public void recule_corrige_pour_rien() throws Exception
     {
