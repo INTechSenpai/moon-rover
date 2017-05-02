@@ -121,61 +121,58 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 				 */
 				else if(paquet.origine == OutOrder.START_STREAM_ALL && paquet.code == IncomingCode.STATUS_UPDATE)
 				{
-					if(data.length != 0) // au cas où ce soit le EXECUTION_END
-					{
-						/**
-						 * Récupération de la position et de l'orientation
-						 */
-						int xRobot = data[0] << 4;
-						xRobot += data[1] >> 4;
-						xRobot -= 1500;
-						int yRobot = (data[1] & 0x0F) << 8;
-						yRobot = yRobot + data[2];
+					/**
+					 * Récupération de la position et de l'orientation
+					 */
+					int xRobot = data[0] << 4;
+					xRobot += data[1] >> 4;
+					xRobot -= 1500;
+					int yRobot = (data[1] & 0x0F) << 8;
+					yRobot = yRobot + data[2];
 
-						// On ne récupère pas toutes les infos mécaniques (la courbure manque, marche avant, …)
-						// Du coup, on récupère les infos théoriques (à partir du chemin) qu'on complète
-						double orientationRobot = ((data[3] << 8) + data[4]) / 1000.;
-						int indexTrajectory = data[5];
+					// On ne récupère pas toutes les infos mécaniques (la courbure manque, marche avant, …)
+					// Du coup, on récupère les infos théoriques (à partir du chemin) qu'on complète
+					double orientationRobot = ((data[3] << 8) + data[4]) / 1000.;
+					int indexTrajectory = data[5];
 //							log.debug("Index trajectory : "+indexTrajectory);
-						log.debug("A Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
+					log.debug("A Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
 
-						Cinematique current = chemin.setCurrentIndex(indexTrajectory);
-						log.debug("B Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
+					Cinematique current = chemin.setCurrentIndex(indexTrajectory);
+					log.debug("B Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
 
-						current.getPositionEcriture().setX(xRobot);
-						current.getPositionEcriture().setY(yRobot);
-						current.orientationReelle = orientationRobot;
-						log.debug("C Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
+					current.getPositionEcriture().setX(xRobot);
+					current.getPositionEcriture().setY(yRobot);
+					current.orientationReelle = orientationRobot;
+					log.debug("C Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
+					
+					robot.setCinematique(current);
+					log.debug("D Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
+					if(debugSerie)
+						log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot);
+	
+					if(data.length > 6) // la présence de ces infos n'est pas systématique
+					{
+						// changement de repère (cf la doc)
+						double angleRoueGauche = -(data[6] - 150.)*Math.PI/180.;
+						double angleRoueDroite = -(data[7] - 150.)*Math.PI/180.;
 						
-						robot.setCinematique(current);
-						log.debug("D Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
-						if(debugSerie)
-							log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot);
-		
-						if(data.length > 6) // la présence de ces infos n'est pas systématique
+						if(debugSerie || debugCapteurs)
+							log.debug("Angle roues : à gauche "+data[6]+", à droite "+data[7]);
+						
+						/**
+						 * Acquiert ce que voit les capteurs
+					 	 */
+						int[] mesures = new int[nbCapteurs];
+						for(int i = 0; i < nbCapteurs; i++)
 						{
-							// changement de repère (cf la doc)
-							double angleRoueGauche = -(data[6] - 150.)*Math.PI/180.;
-							double angleRoueDroite = -(data[7] - 150.)*Math.PI/180.;
-							
+							mesures[i] = data[8+i] * CapteursRobot.values[i].type.conversion;
 							if(debugSerie || debugCapteurs)
-								log.debug("Angle roues : à gauche "+data[6]+", à droite "+data[7]);
-							
-							/**
-							 * Acquiert ce que voit les capteurs
-						 	 */
-							int[] mesures = new int[nbCapteurs];
-							for(int i = 0; i < nbCapteurs; i++)
-							{
-								mesures[i] = data[8+i] * CapteursRobot.values[i].type.conversion;
-								if(debugSerie || debugCapteurs)
-									log.debug("Capteur "+CapteursRobot.values[i].name()+" : "+mesures[i]);
-							}
-							log.debug("E Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
-
-							if(capteursOn)
-								buffer.add(new SensorsData(angleRoueGauche, angleRoueDroite, mesures, current));
+								log.debug("Capteur "+CapteursRobot.values[i].name()+" : "+mesures[i]);
 						}
+						log.debug("E Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
+
+						if(capteursOn)
+							buffer.add(new SensorsData(angleRoueGauche, angleRoueDroite, mesures, current));
 					}
 				}
 	

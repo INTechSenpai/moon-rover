@@ -170,8 +170,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 				if(p == null) // c'est une trame de signalisation
 					restart = true;
 			} catch (ProtocolException | IncorrectChecksumException | MissingCharacterException | IllegalArgumentException e) {
-				log.warning(e);
-//				e.printStackTrace();
+				log.warning("Exception ignorée : "+e);
 				restart = true;
 			}
 		} while(restart);
