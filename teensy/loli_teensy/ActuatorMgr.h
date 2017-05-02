@@ -168,7 +168,8 @@ public:
 		}
 	}
 
-	uint8_t crossFlipFlop()
+	/* Ne pas spammer les appels à cette méthode */
+	ActuatorStatus crossFlipFlop(float posX)
 	{
 		// TODO
 	}

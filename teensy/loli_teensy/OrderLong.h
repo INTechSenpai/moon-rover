@@ -120,6 +120,7 @@ public:
 			finished = true;
 			break;
 		case MotionControlSystem::EMPTY_TRAJ:
+			motionControlSystem.printCurrentTrajectory();
 			endMoveStatus = NO_MORE_POINTS;
 			finished = true;
 			break;
@@ -467,15 +468,27 @@ class CrossFlipFlop : public OrderLong, public Singleton<CrossFlipFlop>
 public:
 	CrossFlipFlop() {}
 	void _launch(const std::vector<uint8_t> & input)
-	{}
+	{
+		lastCallTime = millis();
+	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		//todo
+		if (millis() - lastCallTime > 100)
+		{
+			lastCallTime = millis();
+			motionControlSystem.getPosition(p);
+			retStatus = actuatorMgr.crossFlipFlop(p.x);
+			finished = retStatus != 0xFF;
+		}
 	}
 	void terminate(std::vector<uint8_t> & output)
 	{
-		//todo
+		output.push_back(retStatus);
 	}
+private:
+	Position p;
+	uint8_t retStatus;
+	uint32_t lastCallTime;
 };
 
 

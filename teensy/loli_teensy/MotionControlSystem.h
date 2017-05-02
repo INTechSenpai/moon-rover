@@ -321,6 +321,8 @@ public:
 	(à une fréquence proche de celle de l'interruption d'asservissement) */
 	void logAllData();
 
+	void printCurrentTrajectory();
+
 	uint32_t getLastInterruptDuration();
 	uint32_t getMaxInterruptDuration();
 

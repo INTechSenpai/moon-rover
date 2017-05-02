@@ -588,14 +588,23 @@ void MotionControlSystem::gotoNextStopPoint()
 	if (movingState == MOVING || movingState == MOVE_INIT)
 	{
 		Log::warning("Nested call of MotionControlSystem::gotoNextStopPoint()");
+		return;
 	}
+
 	if (!trajectoryFullyCompleted)
 	{
 		updateTrajectoryIndex();
 	}
 
-	movingState = MOVE_INIT;
-	trajectoryFullyCompleted = false;
+	if (trajectoryFullyCompleted)
+	{
+		movingState = MOVE_INIT;
+		trajectoryFullyCompleted = false;
+	}
+	else
+	{
+		movingState = EMPTY_TRAJ;
+	}
 	interrupts();
 }
 
@@ -1147,6 +1156,18 @@ void MotionControlSystem::logAllData()
 		Log::data(Log::TRAJ_ERR, watchTrajErrors);
 		interrupts();
 	}
+}
+
+void MotionControlSystem::printCurrentTrajectory()
+{
+	Serial.println("Current trajectory");
+	for (int i = 0; i < UINT8_MAX + 1; i++)
+	{
+		Serial.print(i);
+		Serial.print("  ");
+		Serial.println(currentTrajectory[i]);
+	}
+	Serial.println("End of trajectory");
 }
 
 uint32_t MotionControlSystem::getLastInterruptDuration()
