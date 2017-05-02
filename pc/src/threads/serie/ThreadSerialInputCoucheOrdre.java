@@ -172,7 +172,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						for(int i = 0; i < nbCapteurs; i++)
 						{
 							mesures[i] = data[8+i] * CapteursRobot.values[i].type.conversion;
-							if(debugSerie || debugCapteurs)
+							if(debugCapteurs)
 								log.debug("Capteur "+CapteursRobot.values[i].name()+" : "+mesures[i]);
 						}
 						log.debug("E Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));

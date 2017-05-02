@@ -142,7 +142,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 		f.update(o);
 
 		if(debugSerie)
-			log.debug("Envoi d'une nouvelle trame : "+o.ordre);
+			log.debug("Envoi d'une nouvelle trame : "+f.getFirstTrame());
 
 		serieOutput.add(f.getFirstTrame().trame, f.getFirstTrame().tailleTrame);
 		f.updateResendDate();
@@ -198,7 +198,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 					if(waiting.origine.type == Order.Type.LONG)
 					{
 						if(debugSerie)
-							log.debug("EXECUTION_BEGIN reçu");
+							log.debug("EXECUTION_BEGIN reçu : "+f);
 						it.remove();
 						pendingLongFrames.add(id);
 						return null;
@@ -211,7 +211,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 					if(waiting.origine.type == Order.Type.SHORT)
 					{
 						if(debugSerie)
-							log.debug("VALUE_ANSWER reçu");
+							log.debug("VALUE_ANSWER reçu : "+f);
 
 						// L'ordre court a reçu un acquittement et ne passe pas par la case "pending"
 						it.remove();
@@ -241,7 +241,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 				if(f.code == IncomingCode.EXECUTION_END)
 				{
 					if(debugSerie)
-						log.debug("EXECUTION_END reçu. On répond par un END_ORDER.");
+						log.debug("EXECUTION_END reçu : "+f+". On répond par un END_ORDER.");
 
 					pending.setDeathDate(); // tes jours sont comptés…
 					// on envoie un END_ORDER
@@ -255,7 +255,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 				else if(f.code == IncomingCode.STATUS_UPDATE)
 				{
 					if(debugSerie)
-						log.debug("STATUS_UPDATE reçu");
+						log.debug("STATUS_UPDATE reçu : "+f);
 					
 					return new Paquet(f.message, pending.ticket, pending.origine, f.code);
 				}
