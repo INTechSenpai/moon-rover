@@ -62,7 +62,7 @@ public class SerieCouchePhysique implements Service, SerialClass
 	/** Milliseconds to block while waiting for port open */
 	private static final int TIME_OUT = 2000;
 
-	private boolean debugSerie, debugSerieTrame;
+	private boolean debugSerie;
 	
 	/**
 	 * Constructeur pour la série de test
@@ -78,7 +78,6 @@ public class SerieCouchePhysique implements Service, SerialClass
 		baudrate = config.getInt(ConfigInfo.BAUDRATE);
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
 		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
-		debugSerieTrame = config.getBoolean(ConfigInfo.DEBUG_SERIE_TRAME);
 		
 		if(simuleSerie)
 			log.critical("SÉRIE SIMULÉE !");
