@@ -280,7 +280,14 @@ public class SerieCoucheTrame implements Service, SerialClass
 						log.warning("EXECUTION_END déjà reçu : "+f);
 					return null;
 				}
-				// on ne peut pas recevoir de VALUE_ANSWER
+
+				if(f.code == IncomingCode.VALUE_ANSWER && closed.origine.type == Order.Type.SHORT)
+				{
+					if(debugSerie)
+						log.warning("VALUE_ANSWER déjà reçu : "+f);
+					return null;
+				}
+				
 				throw new ProtocolException(f.code+" reçu pour une trame "+closed.origine.type+" finie ! "+f);
 			}
 		}

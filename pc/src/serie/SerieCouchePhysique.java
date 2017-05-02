@@ -262,6 +262,9 @@ public class SerieCouchePhysique implements Service, SerialClass
 
 				listener.setOutputNonEmpty();
 				
+				output.write(bufferWriting, offset, length);
+				output.flush();
+				
 				if(debugSerie)
 				{
 					String aff = "";
@@ -274,15 +277,9 @@ public class SerieCouchePhysique implements Service, SerialClass
 						else
 							aff += s.substring(s.length()-2, s.length())+" ";	
 					}
-					log.debug("Envoi de "+aff);
+					log.debug("Envoi terminé de "+aff);
 				}
-				
-				output.write(bufferWriting, offset, length);
-				output.flush();
 			}
-			
-			if(debugSerie)
-				log.debug("Envoi terminé");			
 		}
 		catch (IOException e)
 		{

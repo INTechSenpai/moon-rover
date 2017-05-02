@@ -51,19 +51,9 @@ public class Paquet
 			int out = message[i];
 			String s = Integer.toHexString(out).toUpperCase();
 			if(s.length() == 1)
-			{
-				if(out >= 32 && out < 127)
-					aff += "0"+s+" ("+(char)(out)+") ";
-				else
-					aff += "0"+s+" ";
-			}
+				aff += "0"+s+" ";
 			else
-			{
-				if(out >= 32 && out < 127)
-					aff += s.substring(s.length()-2, s.length())+" ("+(char)(out)+") ";	
-				else
-					aff += s.substring(s.length()-2, s.length())+" ";	
-			}
+				aff += s.substring(s.length()-2, s.length())+" ";	
 		}
 		return origine+" "+code+" "+aff;
 	}
