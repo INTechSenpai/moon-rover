@@ -31,6 +31,7 @@ import robot.RobotReal;
 import serie.BufferIncomingOrder;
 import serie.SerialProtocol.InOrder;
 import serie.SerialProtocol.OutOrder;
+import serie.trame.Frame.IncomingCode;
 import serie.trame.Paquet;
 import threads.ThreadShutdown;
 import threads.ThreadService;
@@ -118,7 +119,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 				/**
 				 * Capteurs
 				 */
-				else if(paquet.origine == OutOrder.START_STREAM_ALL)
+				else if(paquet.origine == OutOrder.START_STREAM_ALL && paquet.code == IncomingCode.STATUS_UPDATE)
 				{
 					if(data.length != 0) // au cas où ce soit le EXECUTION_END
 					{
@@ -233,7 +234,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 				/**
 				 * Le robot est arrivé après un arrêt demandé par le haut niveau
 				 */
-				else if(paquet.origine == OutOrder.FOLLOW_TRAJECTORY)
+				else if(paquet.origine == OutOrder.FOLLOW_TRAJECTORY && paquet.code == IncomingCode.EXECUTION_END)
 				{
 					if(data[0] == InOrder.ROBOT_ARRIVE.codeInt)
 						paquet.ticket.set(InOrder.ROBOT_ARRIVE);
@@ -252,7 +253,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 				 */
 
 				/**
-				 * Actionneurs sans code de retour
+				 * Actionneurs sans code de retour (forcément EXECUTION_END)
 				 */
 				else if(paquet.origine == OutOrder.PULL_DOWN_NET
 						|| paquet.origine == OutOrder.PULL_UP_NET
@@ -262,7 +263,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					paquet.ticket.set(InOrder.LONG_ORDER_ACK);
 			
 				/**
-				 * Actionneurs avec code de retour
+				 * Actionneurs avec code de retour (forcément EXECUTION_END)
 				 */
 				else if(paquet.origine == OutOrder.CROSS_FLIP_FLOP
 						|| paquet.origine == OutOrder.EJECT_LEFT_SIDE

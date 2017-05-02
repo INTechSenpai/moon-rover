@@ -19,6 +19,7 @@ package serie.trame;
 
 import serie.Ticket;
 import serie.SerialProtocol.OutOrder;
+import serie.trame.Frame.IncomingCode;
 
 /**
  * Paquet série haut niveau reçu
@@ -29,14 +30,16 @@ import serie.SerialProtocol.OutOrder;
 public class Paquet
 {
 	public OutOrder origine;
+	public IncomingCode code;
 	public int[] message;
 	public Ticket ticket;
 	
-	public Paquet(int[] message, Ticket ticket, OutOrder origine)
+	public Paquet(int[] message, Ticket ticket, OutOrder origine, IncomingCode code)
 	{
 		this.origine = origine;
 		this.message = message;
 		this.ticket = ticket;
+		this.code = code;
 	}
 	
 }

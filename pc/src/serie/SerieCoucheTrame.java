@@ -218,7 +218,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 						it.remove();
 						waiting.setDeathDate(); // tes jours sont comptés…
 						closedFrames.add(id);
-						return new Paquet(f.message, waiting.ticket, waiting.origine);
+						return new Paquet(f.message, waiting.ticket, waiting.origine, f.code);
 					}
 
 					throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.origine.type);
@@ -251,14 +251,14 @@ public class SerieCoucheTrame implements Service, SerialClass
 					// et on retire la trame des trames en cours
 					it.remove();
 					closedFrames.add(id);
-					return new Paquet(f.message, pending.ticket, pending.origine);
+					return new Paquet(f.message, pending.ticket, pending.origine, f.code);
 				}
 				else if(f.code == IncomingCode.STATUS_UPDATE)
 				{
 					if(debugSerie)
 						log.debug("STATUS_UPDATE reçu");
 					
-					return new Paquet(f.message, pending.ticket, pending.origine);
+					return new Paquet(f.message, pending.ticket, pending.origine, f.code);
 				}
 				else
 					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_END ou STATUS_UPDATE !");
