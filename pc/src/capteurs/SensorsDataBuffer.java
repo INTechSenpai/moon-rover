@@ -60,9 +60,8 @@ public class SensorsDataBuffer implements Service, SerialClass
 		if(buffer.size() > 5)
 		{
 			buffer.poll(); // on évacue une ancienne valeur
-//			log.debug("Capteurs traités trop lentement");
+			log.critical("Capteurs traités trop lentement ! Taille buffer : "+buffer.size());
 		}
-//		log.debug("Taille buffer: "+buffer.size());
 		notify();
 	}
 	
