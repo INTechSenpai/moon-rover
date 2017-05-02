@@ -18,8 +18,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 package serie;
 
 import utils.Log;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import container.Service;
 import container.dependances.SerialClass;
+import serie.trame.Conversation;
 
 /**
  * Buffer très bas niveau qui envoie les octets sur la série
@@ -33,6 +38,7 @@ public class BufferOutgoingBytes implements Service, SerialClass
 	private SerieCouchePhysique serie;
 
 	private byte bufferWriting[] = new byte[16384];
+	private List<Conversation> waitingForSending = new ArrayList<Conversation>();
 	
 	private volatile int indexBufferStart = 0;
 	private volatile int indexBufferStop = 0;
@@ -43,8 +49,11 @@ public class BufferOutgoingBytes implements Service, SerialClass
 		this.serie = serie;
 	}
 	
-	public synchronized void add(byte[] b, int taille)
+	public synchronized void add(Conversation c, byte[] b, int taille)
 	{
+		if(c != null)
+			waitingForSending.add(c);
+		
 		int diffOld = (indexBufferStop - indexBufferStart + 16384) & 0x3FFF;
 		if(taille + indexBufferStop <= 16384)
 		{
@@ -94,6 +103,10 @@ public class BufferOutgoingBytes implements Service, SerialClass
 					serie.communiquer(bufferWriting, 0, indexBufferStop);
 			}
 			indexBufferStart = indexBufferStop;
+			
+			for(Conversation c : waitingForSending)
+				c.updateResendDate();
+			waitingForSending.clear();
 		}
 	}
 

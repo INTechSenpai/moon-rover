@@ -144,8 +144,8 @@ public class SerieCoucheTrame implements Service, SerialClass
 		if(debugSerie)
 			log.debug("Envoi d'une nouvelle trame : "+f.getFirstTrame());
 
-		serieOutput.add(f.getFirstTrame().trame, f.getFirstTrame().tailleTrame);
-		f.updateResendDate();
+		serieOutput.add(f, f.getFirstTrame().trame, f.getFirstTrame().tailleTrame);
+//		f.updateResendDate();
 	}
 
 	/**
@@ -246,7 +246,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 					pending.setDeathDate(); // tes jours sont comptés…
 					// on envoie un END_ORDER
 					endOrderFrame.updateId(f.id);
-					serieOutput.add(endOrderFrame.trame, endOrderFrame.tailleTrame);
+					serieOutput.add(null, endOrderFrame.trame, endOrderFrame.tailleTrame);
 					// et on retire la trame des trames en cours
 					it.remove();
 					closedFrames.add(id);
@@ -402,8 +402,8 @@ public class SerieCoucheTrame implements Service, SerialClass
 			if(debugSerie)
 				log.debug("Une trame est renvoyée : "+trame.getFirstTrame());
 
-			serieOutput.add(trame.getFirstTrame().trame, trame.getFirstTrame().tailleTrame);
-			trame.updateResendDate(); // on remet la date de renvoi à plus tard
+			serieOutput.add(trame, trame.getFirstTrame().trame, trame.getFirstTrame().tailleTrame);
+//			trame.updateResendDate(); // on remet la date de renvoi à plus tard
 		}
 	}
 
