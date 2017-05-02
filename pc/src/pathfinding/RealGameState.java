@@ -41,7 +41,7 @@ public class RealGameState extends GameState<RobotReal> implements Service, Core
     }
     
     @Override
-	public final void copyAStarCourbe(ChronoGameState modified)
+	public final synchronized void copyAStarCourbe(ChronoGameState modified)
     {
     	table.copy(modified.table);
         robot.copy(modified.robot);
