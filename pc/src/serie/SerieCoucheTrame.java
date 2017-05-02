@@ -204,7 +204,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 						return null;
 					}
 
-					throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.origine.type);
+					throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.origine.type+". "+f);
 				}
 				else if(f.code == IncomingCode.VALUE_ANSWER)
 				{
@@ -220,10 +220,10 @@ public class SerieCoucheTrame implements Service, SerialClass
 						return new Paquet(f.message, waiting.ticket, waiting.origine, f.code);
 					}
 
-					throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.origine.type);
+					throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.origine.type+". "+f);
 				}
 				else
-					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_BEGIN ou VALUE_ANSWER !");
+					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_BEGIN ou VALUE_ANSWER ! "+f);
 			}
 		}
 		
@@ -260,7 +260,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 					return new Paquet(f.message, pending.ticket, pending.origine, f.code);
 				}
 				else
-					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_END ou STATUS_UPDATE !");
+					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_END ou STATUS_UPDATE ! "+f);
 			}
 		}
 		
@@ -277,15 +277,15 @@ public class SerieCoucheTrame implements Service, SerialClass
 				if(f.code == IncomingCode.EXECUTION_END && closed.origine.type == Order.Type.LONG)
 				{
 					if(debugSerie)
-						log.warning("EXECUTION_END déjà reçu");
+						log.warning("EXECUTION_END déjà reçu : "+f);
 					return null;
 				}
 				// on ne peut pas recevoir de VALUE_ANSWER
-				throw new ProtocolException(f.code+" reçu pour une trame "+closed.origine.type+" finie !");
+				throw new ProtocolException(f.code+" reçu pour une trame "+closed.origine.type+" finie ! "+f);
 			}
 		}
 		
-		throw new ProtocolException("ID conversation inconnu : "+f.id);
+		throw new ProtocolException("ID conversation inconnu : "+f.id+". "+f);
 	}
 	
 	/**
