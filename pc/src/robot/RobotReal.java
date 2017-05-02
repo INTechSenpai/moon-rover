@@ -494,9 +494,9 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	 */
 	public void followTrajectory(int indexTraj, Speed vitesse) throws InterruptedException, UnableToMoveException
 	{
-//		if(chemin.isEmpty())
-//			log.debug("Trajectoire vide !");
-//		else
+		if(chemin.isEmpty())
+			log.debug("Trajectoire vide !");
+		else
 			while(chemin.getCurrentIndex() != indexTraj)
 			{
 				Ticket t = out.followTrajectory(vitesse, chemin.getNextMarcheAvant());
