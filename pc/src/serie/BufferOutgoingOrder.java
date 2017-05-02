@@ -222,7 +222,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 * Active la funny action
 	 * @return
 	 */
-	public Ticket funnyAction() {
+	public synchronized Ticket funnyAction() {
 		Ticket t = new Ticket();
 		bufferBassePriorite.add(new Order(OutOrder.FUNNY_ACTION, t));
 		notify();
@@ -367,6 +367,9 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized void makeNextObsolete(CinematiqueObs c, int indexTrajectory)
 	{
+		if(debugSerie)
+			log.debug("Envoi d'un arc d'obsolescence");
+			
 		ByteBuffer data = ByteBuffer.allocate(8);
 		data.put((byte)indexTrajectory);
 		addXYO(data, c.getPosition(), c.orientationReelle);
