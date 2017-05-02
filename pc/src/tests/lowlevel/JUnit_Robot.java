@@ -31,6 +31,7 @@ import config.ConfigInfo;
 import exceptions.UnableToMoveException;
 import graphic.PrintBuffer;
 import obstacles.types.ObstacleCircular;
+import pathfinding.PathCache;
 import pathfinding.RealGameState;
 import pathfinding.astar.AStarCourbe;
 import pathfinding.astar.arcs.ArcCourbeStatique;
@@ -57,6 +58,7 @@ public class JUnit_Robot extends JUnit_Test {
 	private AStarCourbe astar;
 	private CheminPathfinding chemin;
 	private RealGameState state;
+	private PathCache pathcache;
 	private BufferOutgoingOrder data;
 	private Cinematique c;
 	private boolean simuleSerie;
@@ -102,6 +104,7 @@ public class JUnit_Robot extends JUnit_Test {
 		robot = container.getService(RobotReal.class);
 		chemin = container.getService(CheminPathfinding.class);
 		astar = container.getService(AStarCourbe.class);
+		pathcache = container.getService(PathCache.class);
 		data = container.getService(BufferOutgoingOrder.class);
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
 		data.startStream();
@@ -201,7 +204,7 @@ public class JUnit_Robot extends JUnit_Test {
     }
 
 	/**
-	 * Trajectoire longue vers la gauche
+	 * Trajectoire tout droit
 	 */
 	@Test
     public void depart_jaune() throws Exception
@@ -216,6 +219,20 @@ public class JUnit_Robot extends JUnit_Test {
 		last = chemin.getLastOrientation();
 		if(!simuleSerie)
 			robot.followTrajectory(v);
+    }
+	
+	/**
+	 * Trajectoire tout droit
+	 */
+	@Test
+    public void depart_jaune_HL() throws Exception
+    {
+		Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+		c = new Cinematique(550, 1000, Math.PI, false, 0);
+		pathcache.computeAndFollow(c, true);
     }
 	
 	/**
@@ -405,24 +422,6 @@ public class JUnit_Robot extends JUnit_Test {
 		Thread.sleep(500);
 		if(!simuleSerie)
 			robot.avance(200, v);
-    }
-	
-	/**
-	 * Test pour debug le LL
-	 * @throws Exception
-	 */
-	@Test
-    public void test_debug() throws Exception
-    {
-		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
-		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
-		Thread.sleep(500);
-		if(!simuleSerie)
-		{
-			robot.avance(100, v);
-			robot.followTrajectory(200, Speed.STANDARD);
-		}
     }
 	
 	@Test

@@ -483,31 +483,21 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	@Override
 	public void followTrajectory(Speed vitesse) throws InterruptedException, UnableToMoveException
 	{
-		followTrajectory(chemin.getIndexLast(), vitesse);
-	}
-	
-	/**
-	 * Méthode bloquante qui suit une trajectoire précédemment envoyée.
-	 * S'arrête à l'index spécifié
-	 * @throws InterruptedException
-	 * @throws UnableToMoveException 
-	 */
-	public void followTrajectory(int indexTraj, Speed vitesse) throws InterruptedException, UnableToMoveException
-	{
 		if(chemin.isEmpty())
-			log.debug("Trajectoire vide !");
+			log.warning("Trajectoire vide !");
 		else
-			while(chemin.getCurrentIndex() != indexTraj)
+			while(!chemin.isEmpty())
 			{
 				Ticket t = out.followTrajectory(vitesse, chemin.getNextMarcheAvant());
 				InOrder i = t.attendStatus();
 				if(i.etat == State.KO)
 				{
 					log.critical("Erreur : "+i);
-					throw new UnableToMoveException();
+					throw new UnableToMoveException("Erreur : "+i);
 				}
 				if(debugpf)
 					log.debug("Le trajet s'est bien terminé ("+i+")");
+				Thread.sleep(50); // on attend un peu que l'indice du chemin soit mis à jour avant de vérifier s'il est vide
 			}
 	}
 
