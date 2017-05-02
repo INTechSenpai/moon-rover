@@ -263,7 +263,7 @@ public class SerieCouchePhysique implements Service, SerialClass
 
 				listener.setOutputNonEmpty();
 				
-				if(debugSerieTrame)
+				if(debugSerie)
 				{
 					String aff = "";
 					for(int i = offset; i < offset + length; i++)

@@ -42,4 +42,9 @@ public class Paquet
 		this.code = code;
 	}
 	
+	@Override
+	public String toString()
+	{
+		return origine+" "+code+" "+message;
+	}
 }

@@ -81,6 +81,8 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 		try {
 			while(true)
 			{
+				long avant = System.currentTimeMillis();
+
 				Paquet paquet;
 				synchronized(serie)
 				{
@@ -89,8 +91,12 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 
 					paquet = serie.poll();
 				}
+				log.debug("Durée avant obtention du paquet : "+(System.currentTimeMillis() - avant));
 				
-				long avant = System.currentTimeMillis();
+				if(debugSerie)
+					log.debug("Traitement de "+paquet);
+				
+				avant = System.currentTimeMillis();
 				int[] data = paquet.message;
 				
 				/**
