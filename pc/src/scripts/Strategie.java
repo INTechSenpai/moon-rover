@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 package scripts;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 
 import container.Service;
@@ -30,7 +29,6 @@ import pathfinding.PFInstruction;
 import pathfinding.PathCache;
 import pathfinding.RealGameState;
 import robot.Speed;
-import table.GameElementNames;
 import utils.Log;
 
 /**

@@ -23,10 +23,8 @@ import java.util.List;
 import exceptions.UnableToMoveException;
 import pathfinding.GameState;
 import pathfinding.SensFinal;
-import pathfinding.astar.arcs.CercleArrivee;
 import robot.Robot;
 import table.GameElementNames;
-import utils.Log;
 import utils.Vec2RO;
 import utils.Vec2RW;
 

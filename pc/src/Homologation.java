@@ -26,7 +26,6 @@ import pathfinding.PathCache;
 import pathfinding.RealGameState;
 import robot.Cinematique;
 import robot.RobotReal;
-import robot.Speed;
 import scripts.ScriptNames;
 import serie.BufferOutgoingOrder;
 import serie.SerialProtocol;

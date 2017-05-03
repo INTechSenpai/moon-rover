@@ -36,7 +36,6 @@ import pathfinding.PathCache;
 import pathfinding.RealGameState;
 import pathfinding.astar.AStarCourbe;
 import pathfinding.astar.arcs.ArcCourbeStatique;
-import pathfinding.astar.arcs.CercleArrivee;
 import pathfinding.astar.arcs.ClothoidesComputer;
 import pathfinding.astar.arcs.vitesses.VitesseClotho;
 import pathfinding.chemin.CheminPathfinding;
@@ -46,7 +45,6 @@ import robot.RobotReal;
 import robot.Speed;
 import scripts.ScriptNames;
 import serie.BufferOutgoingOrder;
-import table.GameElementNames;
 import tests.JUnit_Test;
 import utils.Vec2RO;
 
@@ -466,7 +464,7 @@ public class JUnit_Robot extends JUnit_Test {
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
 		if(!simuleSerie)
-			robot.avance(200, v);
+			robot.avance(1000, v);
     }
 	
 	/**
@@ -483,7 +481,7 @@ public class JUnit_Robot extends JUnit_Test {
 		if(!simuleSerie)
 		{
 			robot.traverseBascule();
-			robot.avance(-200, v);
+			robot.avance(-1000, v);
 		}
     }
 	

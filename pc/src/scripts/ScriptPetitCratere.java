@@ -20,12 +20,10 @@ package scripts;
 import exceptions.ActionneurException;
 import exceptions.UnableToMoveException;
 import pathfinding.GameState;
-import pathfinding.astar.arcs.CercleArrivee;
 import robot.Robot;
 import robot.Speed;
 import table.EtatElement;
 import table.GameElementNames;
-import utils.Log;
 
 /**
  * Le script qui récupère les balles d'un petit cratère

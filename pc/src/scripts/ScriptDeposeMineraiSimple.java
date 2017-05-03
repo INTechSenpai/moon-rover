@@ -21,9 +21,7 @@ import exceptions.ActionneurException;
 import exceptions.UnableToMoveException;
 import pathfinding.GameState;
 import pathfinding.SensFinal;
-import pathfinding.astar.arcs.CercleArrivee;
 import robot.Robot;
-import utils.Log;
 import utils.Vec2RO;
 
 /**
