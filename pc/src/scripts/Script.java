@@ -20,6 +20,7 @@ package scripts;
 import exceptions.ActionneurException;
 import exceptions.UnableToMoveException;
 import pathfinding.GameState;
+import pathfinding.astar.arcs.CercleArrivee;
 import robot.Robot;
 import utils.Log;
 
@@ -31,11 +32,13 @@ import utils.Log;
 
 public abstract class Script
 {
-	protected Log log;
+	protected static Log log;
+	protected static CercleArrivee cercle;
 	
-	public Script(Log log)
+	public static void setLogCercle(Log log, CercleArrivee cercle)
 	{
-		this.log = log;
+		Script.log = log;
+		Script.cercle = cercle;
 	}
 	
 	public abstract void setUpCercleArrivee();

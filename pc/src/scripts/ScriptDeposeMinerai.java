@@ -35,15 +35,8 @@ import utils.Vec2RO;
 
 public class ScriptDeposeMinerai extends Script
 {
-	private CercleArrivee cercle;
 	private Vec2RO centre = new Vec2RO(700, 1800);
 	private double rayon = 200;
-	
-	public ScriptDeposeMinerai(Log log, CercleArrivee cercle)
-	{
-		super(log);
-		this.cercle = cercle;
-	}
 
 	@Override
 	public void setUpCercleArrivee()

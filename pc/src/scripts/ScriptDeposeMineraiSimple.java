@@ -34,14 +34,6 @@ import utils.Vec2RO;
 
 public class ScriptDeposeMineraiSimple extends Script
 {
-	private CercleArrivee cercle;
-	
-	public ScriptDeposeMineraiSimple(Log log, CercleArrivee cercle)
-	{
-		super(log);
-		this.cercle = cercle;
-	}
-
 	@Override
 	public void setUpCercleArrivee()
 	{

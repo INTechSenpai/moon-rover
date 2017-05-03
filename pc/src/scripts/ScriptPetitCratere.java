@@ -36,13 +36,10 @@ import utils.Log;
 public class ScriptPetitCratere extends Script
 {
 	private GameElementNames element;
-	private CercleArrivee cercle;
 	
-	public ScriptPetitCratere(Log log, CercleArrivee cercle, GameElementNames element)
+	public ScriptPetitCratere(GameElementNames element)
 	{
-		super(log);
 		this.element = element;
-		this.cercle = cercle;
 	}
 
 	@Override

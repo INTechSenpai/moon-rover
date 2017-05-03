@@ -48,17 +48,17 @@ public class Strategie implements Service, CoreClass
 	private LinkedList<Script> strategie = new LinkedList<Script>();
 	private PFInstruction inst;
 	
-	public Strategie(Log log, PathCache pathcache, RealGameState state, ChronoGameState chrono, ScriptManager scriptsm, PFInstruction inst)
+	public Strategie(Log log, PathCache pathcache, RealGameState state, ChronoGameState chrono, PFInstruction inst)
 	{
 		this.log = log;
 		this.pathcache = pathcache;
 		this.state = state;
 		this.chrono = chrono;
 		this.inst = inst;
-		HashMap<String, Script> scripts = scriptsm.getScripts();
-		strategie.add(scripts.get(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE.toString()));
-		strategie.add(scripts.get(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE.toString()));
-		strategie.add(scripts.get("DEPOSE"));
+		strategie.add(ScriptNames.SCRIPT_CRATERE_HAUT_DROITE.s);
+		strategie.add(ScriptNames.SCRIPT_DEPOSE_MINERAI.s);
+		strategie.add(ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE.s);
+		strategie.add(ScriptNames.SCRIPT_DEPOSE_MINERAI.s);
 	}
 	
 	/**

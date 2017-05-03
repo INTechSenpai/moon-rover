@@ -39,14 +39,12 @@ import utils.Vec2RW;
 public class ScriptGrosCratere extends Script
 {
 	private List<GameElementNames> elements;
-	private CercleArrivee cercle;
 	private double angle;
 	private Vec2RO pos;
 	private String nom;
 	
-	public ScriptGrosCratere(Log log, CercleArrivee cercle, String nom)
+	public ScriptGrosCratere(String nom)
 	{
-		super(log);
 		this.nom = nom;
 		elements = new ArrayList<GameElementNames>();
 		Vec2RW pos = new Vec2RW();
@@ -59,7 +57,6 @@ public class ScriptGrosCratere extends Script
 		angle = elements.get(0).orientationArriveeDStarLite;
 		pos.scalar(1./elements.size());
 		this.pos = pos;
-		this.cercle = cercle;
 	}
 
 	@Override

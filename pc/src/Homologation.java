@@ -24,7 +24,7 @@ import pathfinding.PathCache;
 import pathfinding.RealGameState;
 import robot.RobotReal;
 import robot.Speed;
-import scripts.ScriptManager;
+import scripts.ScriptNames;
 import serie.BufferOutgoingOrder;
 import serie.SerialProtocol;
 import serie.Ticket;
@@ -53,7 +53,6 @@ public class Homologation {
 			RobotReal robot = container.getService(RobotReal.class);
 			PathCache path = container.getService(PathCache.class);
 			RealGameState state = container.getService(RealGameState.class);
-			ScriptManager sm = container.getService(ScriptManager.class);
 			
 			log.debug("Initialisation des actionneurs…");
 			
@@ -116,14 +115,14 @@ public class Homologation {
 			
 			KeyPathCache k = new KeyPathCache(state);
 			k.shoot = false;
-			k.s = sm.getScripts().get("MINERAI_CRATERE_HAUT_DROITE");
+			k.s = ScriptNames.SCRIPT_CRATERE_HAUT_DROITE.s;
 			try {
 				path.prepareNewPathToScript(k);
 				path.sendPreparedPath();
 				robot.followTrajectory(Speed.TEST);
 				k.s.execute(state);
 				
-				k.s = sm.getScripts().get("DEPOSE");
+				k.s = ScriptNames.SCRIPT_DEPOSE_MINERAI.s;
 				path.prepareNewPathToScript(k);
 				path.sendPreparedPath();
 				robot.followTrajectory(Speed.TEST);
