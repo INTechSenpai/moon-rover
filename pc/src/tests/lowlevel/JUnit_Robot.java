@@ -64,7 +64,6 @@ public class JUnit_Robot extends JUnit_Test {
 	private RealGameState state;
 	private PathCache pathcache;
 	private BufferOutgoingOrder data;
-	private CercleArrivee cercle;
 	private Cinematique c;
 	private boolean simuleSerie;
 	private Speed v;
@@ -112,7 +111,6 @@ public class JUnit_Robot extends JUnit_Test {
 		pathcache = container.getService(PathCache.class);
 		data = container.getService(BufferOutgoingOrder.class);
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
-		cercle = container.getService(CercleArrivee.class);
 		data.startStream();
 		v = Speed.TEST;
 		log.debug("Vitesse du robot : "+v.translationalSpeed*1000);
@@ -228,10 +226,10 @@ public class JUnit_Robot extends JUnit_Test {
     }
 	
 	/**
-	 * Va au cratère
+	 * Va au cratère droit
 	 */
 	@Test
-    public void depart_jaune_cratere_HL() throws Exception
+    public void depart_jaune_cratere_droit_HL() throws Exception
     {
 		Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
@@ -240,6 +238,18 @@ public class JUnit_Robot extends JUnit_Test {
 		pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE.s, false));
     }
 	
+	/**
+	 * Va au cratère gauche
+	 */
+	@Test
+    public void depart_jaune_cratere_gauche_HL() throws Exception
+    {
+		Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+		pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE.s, false));
+    }
 	
 	/**
 	 * Trajectoire tout droit

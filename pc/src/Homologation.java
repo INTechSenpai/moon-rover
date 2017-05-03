@@ -39,7 +39,7 @@ import utils.Log;
 public class Homologation {
 
 	/**
-	 * Position de départ : (700, 1800), Math.PI
+	 * Position de départ : (550, 1905), -Math.PI/2
 	 * @param args
 	 */
 	
@@ -117,15 +117,11 @@ public class Homologation {
 			k.shoot = false;
 			k.s = ScriptNames.SCRIPT_CRATERE_HAUT_DROITE.s;
 			try {
-				path.prepareNewPathToScript(k);
-				path.sendPreparedPath();
-				robot.followTrajectory(Speed.TEST);
+				path.computeAndFollowToScript(k);
 				k.s.execute(state);
 				
 				k.s = ScriptNames.SCRIPT_DEPOSE_MINERAI.s;
-				path.prepareNewPathToScript(k);
-				path.sendPreparedPath();
-				robot.followTrajectory(Speed.TEST);
+				path.computeAndFollowToScript(k);
 				k.s.execute(state);
 			} catch (PathfindingException e) {
 				e.printStackTrace();
@@ -142,10 +138,8 @@ public class Homologation {
 				try {
 					container.destructor(false);
 				} catch (ContainerException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		}

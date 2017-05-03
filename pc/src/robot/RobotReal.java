@@ -56,7 +56,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 {
 	protected volatile boolean matchDemarre = false;
     protected volatile long dateDebutMatch;
-    private boolean debugpf;
+    private boolean debugpf, simuleSerie, debugAct;
     private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant;
 	private boolean print, printTrace;
 	private PrintBufferInterface buffer;
@@ -83,6 +83,8 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		printTrace = config.getBoolean(ConfigInfo.GRAPHIC_TRACE_ROBOT);
 		courbureMax = config.getDouble(ConfigInfo.COURBURE_MAX);
 		debugpf = config.getBoolean(ConfigInfo.DEBUG_PF);
+		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
+		debugAct = config.getBoolean(ConfigInfo.DEBUG_ACTIONNEURS);
 		
 		if(print)
 			buffer.add(this);
@@ -437,6 +439,26 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	@Override
 	protected void bloque(String nom, Object... param) throws InterruptedException, ActionneurException
 	{
+		if(debugAct)
+		{
+			if(param == null || param.length == 0)
+				log.debug("Appel à "+nom);
+			else
+			{
+				String s = "";
+				for(Object o : param)
+				{
+					if(s != "")
+						s += ", ";
+					s += o;
+				}
+				log.debug("Appel à "+nom+" (param = "+s+")");
+			}
+		}
+		
+		if(simuleSerie)
+			return;
+		
 		SerialProtocol.State etat;
 		Ticket t = null;
 		Class<?>[] paramClasses = null;
@@ -456,7 +478,8 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		if(etat == SerialProtocol.State.KO)
 			throw new ActionneurException("Problème pour l'actionneur "+nom);
 
-		log.debug("Temps d'exécution de "+nom+" : "+(System.currentTimeMillis()-avant));
+		if(debugAct)
+			log.debug("Temps d'exécution de "+nom+" : "+(System.currentTimeMillis()-avant));
 	}
 
 	/**
