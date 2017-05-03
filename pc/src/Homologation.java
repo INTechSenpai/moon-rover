@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
+import config.Config;
+import config.ConfigInfo;
 import container.Container;
 import exceptions.ContainerException;
 import exceptions.PathfindingException;
@@ -22,6 +24,7 @@ import exceptions.UnableToMoveException;
 import pathfinding.KeyPathCache;
 import pathfinding.PathCache;
 import pathfinding.RealGameState;
+import robot.Cinematique;
 import robot.RobotReal;
 import robot.Speed;
 import scripts.ScriptNames;
@@ -49,10 +52,12 @@ public class Homologation {
 		try {
 			container = new Container();
 			Log log = container.getService(Log.class);
+			Config config = container.getService(Config.class);
 			BufferOutgoingOrder data = container.getService(BufferOutgoingOrder.class);
 			RobotReal robot = container.getService(RobotReal.class);
 			PathCache path = container.getService(PathCache.class);
 			RealGameState state = container.getService(RealGameState.class);
+			boolean simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
 			
 			log.debug("Initialisation des actionneurs…");
 			
@@ -68,12 +73,14 @@ public class Homologation {
 			/*
 			 * Demande de la couleur
 			 */
-			SerialProtocol.State etat;
-			do {
-				Ticket t = data.demandeCouleur();
-				etat = t.attendStatus().etat;
-			} while(etat != SerialProtocol.State.OK);
-			
+			if(!simuleSerie)
+			{
+				SerialProtocol.State etat;
+				do {
+					Ticket t = data.demandeCouleur();
+					etat = t.attendStatus().etat;
+				} while(etat != SerialProtocol.State.OK);
+			}			
 			log.debug("Couleur récupérée");
 			
 			/*
@@ -86,10 +93,15 @@ public class Homologation {
 			/*
 			 * On attend d'avoir l'info de position
 			 */
-			synchronized(robot)
+			if(simuleSerie)
+				robot.setCinematique(new Cinematique(550, 1905, -Math.PI/2, true, 0));
+			else
 			{
-				if(!robot.isCinematiqueInitialised())
-					robot.wait();
+				synchronized(robot)
+				{
+					if(!robot.isCinematiqueInitialised())
+						robot.wait();
+				}
 			}
 			
 			log.debug("Cinématique initialisée : "+robot.getCinematique());
@@ -99,11 +111,15 @@ public class Homologation {
 			/*
 			 * Attente du jumper
 			 */
-			do {
-				Ticket t = data.waitForJumper();
-				etat = t.attendStatus().etat;
-			} while(etat != SerialProtocol.State.OK);
-
+			if(!simuleSerie)
+			{
+				SerialProtocol.State etat;
+				do {
+					Ticket t = data.waitForJumper();
+					etat = t.attendStatus().etat;
+				} while(etat != SerialProtocol.State.OK);
+			}
+			
 			log.debug("LE MATCH COMMENCE !");
 			
 			/*
