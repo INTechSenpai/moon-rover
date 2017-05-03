@@ -315,7 +315,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 			out.add(pointsAvancer[i]);
 
 		try {
-			Ticket[] t = chemin.add(out);
+			Ticket[] t = chemin.addToEnd(out);
 			for(Ticket ticket : t)
 				ticket.attendStatus();
 		} catch (PathfindingException e) {
@@ -373,7 +373,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		}
 
 		try {
-			Ticket[] t = chemin.add(out);
+			Ticket[] t = chemin.addToEnd(out);
 			for(Ticket ticket : t)
 				ticket.attendStatus();
 		} catch (PathfindingException e) {
@@ -416,7 +416,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		}
 
 		try {
-			Ticket[] t = chemin.add(out);
+			Ticket[] t = chemin.addToEnd(out);
 			for(Ticket ticket : t)
 				ticket.attendStatus();
 		} catch (PathfindingException e) {
@@ -516,12 +516,14 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 				if(i.etat == State.KO)
 				{
 					log.critical("Erreur : "+i);
+					chemin.clear();
 					throw new UnableToMoveException("Erreur : "+i);
 				}
 				if(debugpf)
 					log.debug("Le trajet s'est bien terminé ("+i+")");
 				Thread.sleep(50); // on attend un peu que l'indice du chemin soit mis à jour avant de vérifier s'il est vide
 			}
+		chemin.clear(); // dans tous les cas, il faut nettoyer le chemin
 	}
 
 }

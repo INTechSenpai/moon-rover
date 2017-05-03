@@ -392,7 +392,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	public synchronized Ticket[] envoieArcCourbe(List<CinematiqueObs> points, int indexTrajectory)
 	{
 		if(debugSerie || debugpf)
-			log.debug("Envoi de "+points.size()+" points");
+			log.debug("Envoi de "+points.size()+" points à partir de l'index "+indexTrajectory);
 
 		int index = indexTrajectory;
 		int nbEnvoi = (points.size() >> 5) + 1;

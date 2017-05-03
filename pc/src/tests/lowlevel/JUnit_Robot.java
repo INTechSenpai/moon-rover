@@ -627,7 +627,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		chemin.add(path);
+		chemin.addToEnd(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
@@ -670,7 +670,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		chemin.add(path);
+		chemin.addToEnd(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
@@ -714,7 +714,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		chemin.add(path);
+		chemin.addToEnd(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
@@ -759,7 +759,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		chemin.add(path);
+		chemin.addToEnd(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
@@ -803,7 +803,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		chemin.add(path);
+		chemin.addToEnd(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
@@ -847,7 +847,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		chemin.add(path);
+		chemin.addToEnd(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
@@ -886,7 +886,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		chemin.add(path);
+		chemin.addToEnd(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
@@ -925,7 +925,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		chemin.add(path);
+		chemin.addToEnd(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
@@ -966,7 +966,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		chemin.add(path);
+		chemin.addToEnd(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
@@ -1007,7 +1007,7 @@ public class JUnit_Robot extends JUnit_Test {
 				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
 			}
 
-		chemin.add(path);
+		chemin.addToEnd(path);
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
