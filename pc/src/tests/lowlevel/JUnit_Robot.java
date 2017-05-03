@@ -31,6 +31,7 @@ import config.ConfigInfo;
 import exceptions.UnableToMoveException;
 import graphic.PrintBuffer;
 import obstacles.types.ObstacleCircular;
+import pathfinding.KeyPathCache;
 import pathfinding.PathCache;
 import pathfinding.RealGameState;
 import pathfinding.astar.AStarCourbe;
@@ -236,7 +237,7 @@ public class JUnit_Robot extends JUnit_Test {
 		cercle.set(GameElementNames.MINERAI_CRATERE_HAUT_DROITE, 250);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		pathcache.computeAndFollowToCircle(false);
+		pathcache.computeAndFollowToScript(new KeyPathCache(state)); // TODO
     }
 	
 	
@@ -251,7 +252,7 @@ public class JUnit_Robot extends JUnit_Test {
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 		c = new Cinematique(550, 1000, Math.PI, false, 0);
-		pathcache.computeAndFollow(c, true);
+		pathcache.computeAndFollow(c, true, null);
     }
 	
 	/**
