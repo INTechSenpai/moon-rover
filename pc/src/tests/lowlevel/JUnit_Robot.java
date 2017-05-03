@@ -457,9 +457,9 @@ public class JUnit_Robot extends JUnit_Test {
 	 * @throws Exception
 	 */
 	@Test
-    public void sortDepartBascule() throws Exception
+    public void sortDepartBasculeJ() throws Exception
     {
-		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
+		Cinematique depart = new Cinematique(1300, 1800, Math.PI, true, 0);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
@@ -472,9 +472,38 @@ public class JUnit_Robot extends JUnit_Test {
 	 * @throws Exception
 	 */
 	@Test
-    public void entreDepartBascule() throws Exception
+    public void entreDepartBasculeJ() throws Exception
     {
-		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
+		Cinematique depart = new Cinematique(700, 1800, Math.PI, true, 0);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(500);
+		if(!simuleSerie)
+		{
+			robot.traverseBascule();
+			robot.avance(-1000, v);
+		}
+    }
+	
+	@Test
+    public void sortDepartBasculeB() throws Exception
+    {
+		Cinematique depart = new Cinematique(-1300, 1800, 0, true, 0);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(500);
+		if(!simuleSerie)
+			robot.avance(1000, v);
+    }
+	
+	/**
+	 * Entre dans la zone de départ en passant par la bascule
+	 * @throws Exception
+	 */
+	@Test
+    public void entreDepartBasculeB() throws Exception
+    {
+		Cinematique depart = new Cinematique(-700, 1800, 0, true, 0);
 		robot.setCinematique(depart);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);

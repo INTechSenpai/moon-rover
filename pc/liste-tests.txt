@@ -16,8 +16,10 @@
 ./run_junit.sh tests.lowlevel.JUnit_Robot#droite2
 ./run_junit.sh tests.lowlevel.JUnit_Robot#recule
 ./run_junit.sh tests.lowlevel.JUnit_Robot#avance
-./run_junit.sh tests.lowlevel.JUnit_Robot#sortDepartBascule
-./run_junit.sh tests.lowlevel.JUnit_Robot#entreDepartBascule
+./run_junit.sh tests.lowlevel.JUnit_Robot#sortDepartBasculeJ
+./run_junit.sh tests.lowlevel.JUnit_Robot#entreDepartBasculeJ
+./run_junit.sh tests.lowlevel.JUnit_Robot#sortDepartBasculeB
+./run_junit.sh tests.lowlevel.JUnit_Robot#entreDepartBasculeB
 ./run_junit.sh tests.lowlevel.JUnit_Robot#recule_corrige_pour_rien
 ./run_junit.sh tests.lowlevel.JUnit_Robot#recule_corrige_gauche
 ./run_junit.sh tests.lowlevel.JUnit_Robot#recule_corrige_droite
