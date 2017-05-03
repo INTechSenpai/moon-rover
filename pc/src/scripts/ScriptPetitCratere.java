@@ -128,10 +128,4 @@ public class ScriptPetitCratere extends Script
 			state.robot.avance(50, Speed.STANDARD);
 		}
 	}
-
-	@Override
-	public String toString()
-	{
-		return element.name();
-	}
 }

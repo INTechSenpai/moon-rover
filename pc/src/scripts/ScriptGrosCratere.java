@@ -82,10 +82,4 @@ public class ScriptGrosCratere extends Script
 	{
 		// TODO
 	}
-
-	@Override
-	public String toString()
-	{
-		return nom;
-	}
 }

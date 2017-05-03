@@ -119,10 +119,4 @@ public class ScriptDeposeMinerai extends Script
 	{
 		return 0;
 	}
-
-	@Override
-	public String toString()
-	{
-		return "DEPOSE";
-	}
 }

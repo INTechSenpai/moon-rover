@@ -115,14 +115,14 @@ public class Homologation {
 			
 			KeyPathCache k = new KeyPathCache(state);
 			k.shoot = false;
-			k.s = ScriptNames.SCRIPT_CRATERE_HAUT_DROITE.s;
+			k.s = ScriptNames.SCRIPT_CRATERE_HAUT_DROITE;
 			try {
 				path.computeAndFollowToScript(k);
-				k.s.execute(state);
+				k.s.s.execute(state);
 				
-				k.s = ScriptNames.SCRIPT_DEPOSE_MINERAI.s;
+				k.s = ScriptNames.SCRIPT_DEPOSE_MINERAI;
 				path.computeAndFollowToScript(k);
-				k.s.execute(state);
+				k.s.s.execute(state);
 			} catch (PathfindingException e) {
 				e.printStackTrace();
 			} catch (UnableToMoveException e) {

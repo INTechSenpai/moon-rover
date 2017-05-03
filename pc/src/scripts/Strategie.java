@@ -45,7 +45,7 @@ public class Strategie implements Service, CoreClass
 	private PathCache pathcache;
 	private RealGameState state;
 	private ChronoGameState chrono;
-	private LinkedList<Script> strategie = new LinkedList<Script>();
+	private LinkedList<ScriptNames> strategie = new LinkedList<ScriptNames>();
 	private PFInstruction inst;
 	
 	public Strategie(Log log, PathCache pathcache, RealGameState state, ChronoGameState chrono, PFInstruction inst)
@@ -55,10 +55,10 @@ public class Strategie implements Service, CoreClass
 		this.state = state;
 		this.chrono = chrono;
 		this.inst = inst;
-		strategie.add(ScriptNames.SCRIPT_CRATERE_HAUT_DROITE.s);
-		strategie.add(ScriptNames.SCRIPT_DEPOSE_MINERAI.s);
-		strategie.add(ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE.s);
-		strategie.add(ScriptNames.SCRIPT_DEPOSE_MINERAI.s);
+		strategie.add(ScriptNames.SCRIPT_CRATERE_HAUT_DROITE);
+		strategie.add(ScriptNames.SCRIPT_DEPOSE_MINERAI);
+		strategie.add(ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE);
+		strategie.add(ScriptNames.SCRIPT_DEPOSE_MINERAI);
 	}
 	
 	/**
@@ -67,12 +67,12 @@ public class Strategie implements Service, CoreClass
 	 */
 	public void doWinMatch() throws InterruptedException
 	{
-		Script s = strategie.getFirst();
+		ScriptNames s = strategie.getFirst();
 		try {
 			state.copyAStarCourbe(chrono); // TODO vérifier si la copie est correcte
-			s.execute(chrono);
+			s.s.execute(chrono);
 			inst.set(new KeyPathCache(chrono, s, true));
-			s.execute(state);
+			s.s.execute(state);
 			pathcache.sendPreparedPath();
 			state.robot.followTrajectory(Speed.STANDARD); // TODO
 		} catch (PathfindingException e) {

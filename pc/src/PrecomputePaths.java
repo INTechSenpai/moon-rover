@@ -31,7 +31,7 @@ public class PrecomputePaths {
 	public static void main(String[] args) throws ContainerException, InterruptedException
 	{
 		// timeout très grand (on a le temps)
-		ConfigInfo.DUREE_MAX_RECHERCHE_PF.setDefaultValue(30000);
+		ConfigInfo.DUREE_MAX_RECHERCHE_PF.setDefaultValue(200000);
 		ConfigInfo.TAILLE_FAISCEAU_PF.setDefaultValue(20);
 		PathCache.precompute = true;
 		Container container = new Container();
