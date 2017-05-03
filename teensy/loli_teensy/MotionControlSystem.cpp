@@ -185,13 +185,6 @@ void MotionControlSystem::control()
 				movingSpeedSetpoint = ABS(maxMovingSpeed);
 			}
 
-			if (movingSpeedSetpoint < -ABS(maxMovingSpeed)) // hack de sécu
-			{
-				movingState = MovingState::INT_BLOCKED;
-				clearCurrentTrajectory();
-				stop();
-			}
-
 			// Calcul des vitesses gauche et droite en fonction de la vitesse globale
 			leftSpeedSetpoint = movingSpeedSetpoint * leftSideDistanceFactor;
 			rightSpeedSetpoint = movingSpeedSetpoint * rightSideDistanceFactor;
@@ -515,6 +508,7 @@ void MotionControlSystem::manageStop()
 		if (currentTrajectory[trajectoryIndex].isStopPoint())
 		{
 			movingState = STOPPED;
+			updateTrajectoryIndex();
 		}
 		else
 		{

@@ -33,6 +33,14 @@
 #define FAN_STARTUP_DURATION	2000 // ms
 #define FUNNY_ACTION_DURATION	5000 // ms
 
+#define CROSS_FLIP_FLOP_SEUIL_1 600
+#define CROSS_FLIP_FLOP_SEUIL_2 720
+#define CROSS_FLIP_FLOP_SEUIL_3 820
+
+#define CROSS_FLIP_FLOP_ANGLE_1 65
+#define CROSS_FLIP_FLOP_ANGLE_2 70
+
+
 
 /*
 	Chaque méthode est à exécuter en boucle, la permière fois avec l'argument 'launch' à true.
@@ -169,9 +177,59 @@ public:
 	}
 
 	/* Ne pas spammer les appels à cette méthode */
-	ActuatorStatus crossFlipFlop(float posX)
+	ActuatorStatus crossFlipFlop(bool launch, float posX = 0)
 	{
-		// TODO
+		static uint32_t lastCommTime;
+		static uint8_t stage = 0;
+		/*
+			0 : avant la bascule 
+			1 : filet abaissé au max (sur la bascule)
+			2 : filet un peu relevé
+			3 : remonte le filet completement
+		*/
+
+		if (launch)
+		{
+			stage = 0;
+			return RUNNING;
+		}
+		else
+		{
+			switch (stage)
+			{
+			case 0:
+				if (ABS(posX) > CROSS_FLIP_FLOP_SEUIL_1)
+				{
+					if (ax12net.speed(SLOW_SPEED) == DYN_STATUS_OK && ax12net.goalPositionDegree(CROSS_FLIP_FLOP_ANGLE_1) == DYN_STATUS_OK)
+					{
+						stage = 1;
+					}
+				}
+				break;
+			case 1:
+				if (ABS(posX) > CROSS_FLIP_FLOP_SEUIL_2)
+				{
+					if (ax12net.speed(0) == DYN_STATUS_OK && ax12net.goalPositionDegree(CROSS_FLIP_FLOP_ANGLE_2) == DYN_STATUS_OK)
+					{
+						stage = 2;
+					}
+				}
+				break;
+			case 2:
+				if (ABS(posX) > CROSS_FLIP_FLOP_SEUIL_3)
+				{
+					stage = 3;
+					return moveTheAX12(true, ANGLE_UP, TOLERANCE_ANGLE, lastCommTime);
+				}
+				break;
+			case 3:
+				return moveTheAX12(false, ANGLE_UP, TOLERANCE_ANGLE, lastCommTime);
+				break;
+			default:
+				break;
+			}
+			return RUNNING;
+		}
 	}
 
 	void setAngleNet(uint8_t angle)
@@ -184,17 +242,13 @@ private:
 	InterfaceAX12 ax12interface;
 	DynamixelMotor ax12net;
 
-	ActuatorStatus moveTheAX12(bool launch, uint16_t goalPosition, uint16_t tolerance, uint32_t & lastCommunicationTime, uint16_t speed = 0, uint16_t torque = 1023)
+	ActuatorStatus moveTheAX12(bool launch, uint16_t goalPosition, uint16_t tolerance, uint32_t & lastCommunicationTime, uint16_t speed = 0)
 	{
 		static bool orderFailed = false;
 		if (launch)
 		{
 			orderFailed = false;
 			if (ax12net.speed(speed) != DYN_STATUS_OK)
-			{
-				orderFailed = true;
-			}
-			if (ax12net.torqueLimit(torque) != DYN_STATUS_OK)
 			{
 				orderFailed = true;
 			}

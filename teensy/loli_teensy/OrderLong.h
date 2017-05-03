@@ -470,6 +470,7 @@ public:
 	void _launch(const std::vector<uint8_t> & input)
 	{
 		lastCallTime = millis();
+		actuatorMgr.crossFlipFlop(true);
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
@@ -477,7 +478,7 @@ public:
 		{
 			lastCallTime = millis();
 			motionControlSystem.getPosition(p);
-			retStatus = actuatorMgr.crossFlipFlop(p.x);
+			retStatus = actuatorMgr.crossFlipFlop(false, p.x);
 			finished = retStatus != 0xFF;
 		}
 	}
