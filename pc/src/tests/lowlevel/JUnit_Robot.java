@@ -44,6 +44,7 @@ import robot.Cinematique;
 import robot.CinematiqueObs;
 import robot.RobotReal;
 import robot.Speed;
+import scripts.ScriptNames;
 import serie.BufferOutgoingOrder;
 import table.GameElementNames;
 import tests.JUnit_Test;
@@ -237,7 +238,7 @@ public class JUnit_Robot extends JUnit_Test {
 		cercle.set(GameElementNames.MINERAI_CRATERE_HAUT_DROITE, 250);
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		pathcache.computeAndFollowToScript(new KeyPathCache(state)); // TODO
+		pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE.s, false));
     }
 	
 	
@@ -252,7 +253,7 @@ public class JUnit_Robot extends JUnit_Test {
 		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 		c = new Cinematique(550, 1000, Math.PI, false, 0);
-		pathcache.computeAndFollow(c, true, null);
+		pathcache.computeAndFollowToPoint(c, true);
     }
 	
 	/**
