@@ -3,6 +3,9 @@
 ./run_junit.sh tests.lowlevel.JUnit_Robot#creneau
 ./run_junit.sh tests.lowlevel.JUnit_Robot#courbe_loin
 ./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune
+./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_cratere_droit_HL
+./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_cratere_gauche_HL
+./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_HL
 ./run_junit.sh tests.lowlevel.JUnit_Robot#arriere_loin
 ./run_junit.sh tests.lowlevel.JUnit_Robot#gauche
 ./run_junit.sh tests.lowlevel.JUnit_Robot#gauche2
@@ -13,6 +16,8 @@
 ./run_junit.sh tests.lowlevel.JUnit_Robot#droite2
 ./run_junit.sh tests.lowlevel.JUnit_Robot#recule
 ./run_junit.sh tests.lowlevel.JUnit_Robot#avance
+./run_junit.sh tests.lowlevel.JUnit_Robot#sortDepartBascule
+./run_junit.sh tests.lowlevel.JUnit_Robot#entreDepartBascule
 ./run_junit.sh tests.lowlevel.JUnit_Robot#recule_corrige_pour_rien
 ./run_junit.sh tests.lowlevel.JUnit_Robot#recule_corrige_gauche
 ./run_junit.sh tests.lowlevel.JUnit_Robot#recule_corrige_droite
