@@ -35,6 +35,7 @@ import pathfinding.PathCache;
 import pathfinding.RealGameState;
 import pathfinding.astar.AStarCourbe;
 import pathfinding.astar.arcs.ArcCourbeStatique;
+import pathfinding.astar.arcs.CercleArrivee;
 import pathfinding.astar.arcs.ClothoidesComputer;
 import pathfinding.astar.arcs.vitesses.VitesseClotho;
 import pathfinding.chemin.CheminPathfinding;
@@ -43,6 +44,7 @@ import robot.CinematiqueObs;
 import robot.RobotReal;
 import robot.Speed;
 import serie.BufferOutgoingOrder;
+import table.GameElementNames;
 import tests.JUnit_Test;
 import utils.Vec2RO;
 
@@ -60,6 +62,7 @@ public class JUnit_Robot extends JUnit_Test {
 	private RealGameState state;
 	private PathCache pathcache;
 	private BufferOutgoingOrder data;
+	private CercleArrivee cercle;
 	private Cinematique c;
 	private boolean simuleSerie;
 	private Speed v;
@@ -107,6 +110,7 @@ public class JUnit_Robot extends JUnit_Test {
 		pathcache = container.getService(PathCache.class);
 		data = container.getService(BufferOutgoingOrder.class);
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
+		cercle = container.getService(CercleArrivee.class);
 		data.startStream();
 		v = Speed.TEST;
 		log.debug("Vitesse du robot : "+v.translationalSpeed*1000);
@@ -220,6 +224,21 @@ public class JUnit_Robot extends JUnit_Test {
 		if(!simuleSerie)
 			robot.followTrajectory(v);
     }
+	
+	/**
+	 * Va au cratère
+	 */
+	@Test
+    public void depart_jaune_cratere_HL() throws Exception
+    {
+		Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
+		robot.setCinematique(depart);
+		cercle.set(GameElementNames.MINERAI_CRATERE_HAUT_DROITE, 250);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+		pathcache.computeAndFollowToCircle(false);
+    }
+	
 	
 	/**
 	 * Trajectoire tout droit
