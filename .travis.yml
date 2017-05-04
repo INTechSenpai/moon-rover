@@ -1,5 +1,6 @@
 language : java
-install : cd pc && ant
+install : cd pc
+script : ant
 jdk :
     - oraclejdk8
 
