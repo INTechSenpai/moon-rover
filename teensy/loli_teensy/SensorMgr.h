@@ -37,6 +37,15 @@ public:
 		}
 	}
 
+	enum UpdatePattern
+	{
+		NONE,
+		FRONT_AND_BACK,
+		FRONT_AND_SIDE,
+		BACK_AND_SIDE,
+		ALL
+	};
+
 	void powerOn()
 	{
 		irGauche.init();
@@ -130,14 +139,6 @@ public:
 		}
 	}
 
-	void setUpdatePattern(uint32_t pattern[NB_SENSORS])
-	{
-		for (size_t i = 0; i < NB_SENSORS; i++)
-		{
-			updatePattern[i] = pattern[i];
-		}
-	}
-
 	std::vector<uint8_t> getValues()
 	{
 		std::vector<uint8_t> values_vect;
@@ -167,6 +168,36 @@ public:
 		return charCount;
 	}
 
+	void setUpdatePattern(UpdatePattern updatePattern)
+	{
+		uint32_t pattern_none[NB_SENSORS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		uint32_t pattern_fb[NB_SENSORS] = { 4375, 4375, 4375, 4375, 4375, 0, 0, 4375, 4375, 0, 0, 4375 };
+		uint32_t pattern_fs[NB_SENSORS] = { 4375, 4375, 0, 4375, 4375, 4375, 4375, 0, 0, 4375, 4375, 4375 };
+		uint32_t pattern_bs[NB_SENSORS] = { 0, 0, 4375, 0, 0, 4375, 4375, 4375, 4375, 4375, 4375, 0 };
+		uint32_t pattern_a[NB_SENSORS] = { 4375, 4375, 4375, 4375, 4375, 4375, 4375, 4375, 4375, 4375, 4375, 4375 };
+
+		switch (updatePattern)
+		{
+		case SensorMgr::NONE:
+			setUpdatePattern(pattern_none);
+			break;
+		case SensorMgr::FRONT_AND_BACK:
+			setUpdatePattern(pattern_fb);
+			break;
+		case SensorMgr::FRONT_AND_SIDE:
+			setUpdatePattern(pattern_fs);
+			break;
+		case SensorMgr::BACK_AND_SIDE:
+			setUpdatePattern(pattern_bs);
+			break;
+		case SensorMgr::ALL:
+			setUpdatePattern(pattern_a);
+			break;
+		default:
+			break;
+		}
+	}
+
 private:
 	/* 
 		Contient les mesures de distance de chaque capteur, dans l'ordre défini plus bas.
@@ -194,6 +225,14 @@ private:
 		Unité : µs
 	*/
 	uint32_t updatePattern[NB_SENSORS];
+
+	void setUpdatePattern(uint32_t pattern[NB_SENSORS])
+	{
+		for (size_t i = 0; i < NB_SENSORS; i++)
+		{
+			updatePattern[i] = pattern[i];
+		}
+	}
 };
 
 

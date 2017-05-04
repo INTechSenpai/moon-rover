@@ -41,6 +41,7 @@ public:
 		immediateOrderList[0x5C] = &SetMaxSpeed::Instance();
 		immediateOrderList[0x5D] = &EditPosition::Instance();
 		immediateOrderList[0x5E] = &StopStream::Instance();
+		immediateOrderList[0x5F] = &SetSensorMode::Instance();
 
 		// Ordres longs
 		longOrderList[0x38] = &FollowTrajectory::Instance();

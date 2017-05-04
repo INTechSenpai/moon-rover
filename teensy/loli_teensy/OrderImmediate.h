@@ -199,6 +199,49 @@ public:
 };
 
 
+/*
+	Change de mode de rafraîchissement des capteurs.
+*/
+class SetSensorMode : public OrderImmediate, public Singleton<SetSensorMode>
+{
+public:
+	SetSensorMode() {}
+	virtual void execute(std::vector<uint8_t> & io) 
+	{
+		if (io.size() != 1)
+		{// Nombre d'octets reçus incorrect
+			Log::critical(40, "SetSensorMode: argument incorrect");
+		}
+		else
+		{
+			uint8_t mode = io.at(0);
+			switch (mode)
+			{
+			case 0x00:
+				sensorMgr.setUpdatePattern(SensorMgr::NONE);
+				break;
+			case 0x01:
+				sensorMgr.setUpdatePattern(SensorMgr::FRONT_AND_BACK);
+				break;
+			case 0x02:
+				sensorMgr.setUpdatePattern(SensorMgr::FRONT_AND_SIDE);
+				break;
+			case 0x03:
+				sensorMgr.setUpdatePattern(SensorMgr::BACK_AND_SIDE);
+				break;
+			case 0x04:
+				sensorMgr.setUpdatePattern(SensorMgr::ALL);
+				break;
+			default:
+				Log::critical(40, "SetSensorMode: mode inconnu");
+				break;
+			}
+		}
+		io.clear();
+	}
+};
+
+
 
 /*
 	######################

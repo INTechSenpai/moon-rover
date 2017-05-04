@@ -85,8 +85,7 @@ void loop()
 	Wire.begin();
 	Wire.setClock(400000);
 	sensorMgr.powerOn();
-	uint32_t updatePattern[NB_SENSORS] = {4375, 4375, 4375, 4375, 4375, 0, 0, 4375, 4375, 0, 0, 4375 };
-	sensorMgr.setUpdatePattern(updatePattern);
+	sensorMgr.setUpdatePattern(SensorMgr::FRONT_AND_BACK);
 
 	DirectionController & directionController = DirectionController::Instance();
 	MotionControlSystem & motionControlSystem = MotionControlSystem::Instance();
