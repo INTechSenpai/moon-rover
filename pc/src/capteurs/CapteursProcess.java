@@ -210,15 +210,16 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			if(debugCapteurs)
 				log.debug("Ajout d'un obstacle d'ennemi en "+positionEnnemi+" vu par "+c);
 			
-			ObstacleProximity o = gridspace.addObstacleAndRemoveNearbyObstacles(positionEnnemi);
+			//ObstacleProximity o =
+			gridspace.addObstacleAndRemoveNearbyObstacles(positionEnnemi);
 			
 			/**
 			 * Mise à jour de l'état de la table : un ennemi est passé
 			 */
-		    for(GameElementNames g: GameElementNames.values())
+/*		    for(GameElementNames g: GameElementNames.values())
 		        if(table.isDone(g) == EtatElement.INDEMNE && g.obstacle.isProcheObstacle(o, o.radius))
 		        	table.setDone(g, EtatElement.PRIS_PAR_ENNEMI);
-
+*/ // TODO
 		}
 
 		dstarlite.updateObstaclesEnnemi();
