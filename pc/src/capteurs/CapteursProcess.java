@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 package capteurs;
 
 import graphic.PrintBufferInterface;
+import obstacles.types.ObstacleProximity;
+import obstacles.types.ObstacleRectangular;
 import obstacles.types.ObstacleRobot;
 import obstacles.types.ObstaclesFixes;
 import pathfinding.chemin.CheminPathfinding;
@@ -58,7 +60,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 	private BufferOutgoingOrder serie;
 	
 	private int nbCapteurs;
-	private int rayonEnnemi;
+	private int largeurEnnemi, longueurEnnemi;
 	private int distanceApproximation;
 	private ObstacleRobot obstacleRobot;
 	private Capteur[] capteurs;
@@ -82,7 +84,8 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 		this.robot = robot;
 		this.serie = serie;
 
-		rayonEnnemi = config.getInt(ConfigInfo.RAYON_ROBOT_ADVERSE);
+		largeurEnnemi = config.getInt(ConfigInfo.LARGEUR_OBSTACLE_ENNEMI);
+		longueurEnnemi = config.getInt(ConfigInfo.LONGUEUR_OBSTACLE_ENNEMI);
 		distanceApproximation = config.getInt(ConfigInfo.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);		
 		nbCapteurs = CapteursRobot.values().length;
 		imprecisionMaxPos = config.getDouble(ConfigInfo.IMPRECISION_MAX_POSITION);
@@ -194,7 +197,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			/**
 			 * Sinon, on ajoute
 			 */
-			Vec2RW positionEnnemi = new Vec2RW(data.mesures[i]+rayonEnnemi, capteurs[i].orientationRelativeRotate, true);
+			Vec2RW positionEnnemi = new Vec2RW(data.mesures[i]+longueurEnnemi/2, capteurs[i].orientationRelativeRotate, true);
 			positionEnnemi.plus(capteurs[i].positionRelativeRotate);
 			positionEnnemi.rotate(orientationRobot);
 			positionEnnemi.plus(positionRobot);
@@ -210,15 +213,15 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 				log.debug("Ajout d'un obstacle d'ennemi en "+positionEnnemi+" vu par "+c);
 			
 			//ObstacleProximity o =
-			gridspace.addObstacleAndRemoveNearbyObstacles(positionEnnemi);
+			gridspace.addObstacleAndRemoveNearbyObstacles(new ObstacleRectangular(positionEnnemi, longueurEnnemi, largeurEnnemi, orientationRobot+capteurs[i].orientationRelativeRotate));
 			
 			/**
 			 * Mise à jour de l'état de la table : un ennemi est passé
 			 */
 /*		    for(GameElementNames g: GameElementNames.values())
 		        if(table.isDone(g) == EtatElement.INDEMNE && g.obstacle.isProcheObstacle(o, o.radius))
-		        	table.setDone(g, EtatElement.PRIS_PAR_ENNEMI);
-*/ // TODO
+		        	table.setDone(g, EtatElement.PRIS_PAR_ENNEMI);*/
+ // TODO
 		}
 
 		dstarlite.updateObstaclesEnnemi();
