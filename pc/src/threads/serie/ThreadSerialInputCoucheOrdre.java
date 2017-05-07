@@ -145,7 +145,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					current.orientationReelle = orientationRobot;					
 					robot.setCinematique(current);
 					
-					log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot, Verbose.SERIE.masque);
+					log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot+", index : "+indexTrajectory, Verbose.SERIE.masque);
 	
 					if(data.length > 6) // la présence de ces infos n'est pas systématique
 					{
