@@ -84,11 +84,13 @@ public:
 		responseTime = 0;
 		stopped = false;
 		beginTime = 0;
+		breaking = false;
 	}
 
 	void compute()
 	{
-		if ((uint32_t)ABS(speed) < epsilon)
+		abs_speed = (uint32_t)ABS(speed);
+		if (abs_speed < epsilon)
 		{
 			if (!stopped)
 			{
@@ -100,6 +102,7 @@ public:
 		{
 			stopped = false;
 		}
+		last_abs_speed = abs_speed;
 	}
 
 	void moveIsStarting()
@@ -124,6 +127,12 @@ public:
 		return stopped && millis() - beginTime > responseTime;
 	}
 
+	/* Indique si on est en train de ralentir */
+	bool isBreaking() const
+	{
+
+	}
+
 	size_t printTo(Print& p) const
 	{
 		return p.printf("%d_%d", speed, isStopped());
@@ -137,6 +146,9 @@ private:
 
 	uint32_t beginTime;
 	bool stopped;
+	uint32_t abs_speed;
+	uint32_t last_abs_speed;
+	bool breaking;
 };
 
 #endif

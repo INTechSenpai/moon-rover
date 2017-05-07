@@ -88,18 +88,28 @@ public:
 		else if (micros() - lastUpdateTime >= updatePattern[index])
 		{
 			lastUpdateTime = micros();
-			//uint32_t t1 = micros();
 			switch (index)
 			{
 			case 0:
-				//Serial.println("____begin");
-				values[0] = tofLPAvant.getMesure();
+				uint32_t mesureLPAvant = tofLPAvant.getMesure();
+				mesureLPAvant /= 2;
+				if (mesureLPAvant > 255)
+				{
+					mesureLPAvant = 255;
+				}
+				values[0] = (uint8_t)mesureLPAvant;
 				break;
 			case 1:
 				values[1] = irGauche.getMesure();
 				break;
 			case 2:
-				values[2] = tofLPArriere.getMesure();
+				uint32_t mesureLPArriere = tofLPArriere.getMesure();
+				mesureLPArriere /= 2;
+				if (mesureLPArriere > 255)
+				{
+					mesureLPArriere = 255;
+				}
+				values[2] = (uint8_t)mesureLPArriere;
 				break;
 			case 3:
 				values[3] = irDroit.getMesure();
@@ -132,8 +142,6 @@ public:
 				break;
 			}
 			index = (index + 1) % NB_SENSORS;
-
-			//Serial.println(micros() - t1);
 
 			Log::data(Log::SENSORS, *this);
 		}
@@ -205,9 +213,9 @@ private:
 		L'unitée (cm ou mm) dépend du capteur.
 	*/
 	uint8_t values[NB_SENSORS];
-	ToF_longRange tofLPAvant;		// #1	[cm]
+	ToF_longRange tofLPAvant;		// #1	[mm]
 	InfraredSensor irGauche;		// #2	[cm]
-	ToF_longRange tofLPArriere;		// #3	[cm]
+	ToF_longRange tofLPArriere;		// #3	[mm]
 	InfraredSensor irDroit;			// #4	[cm]
 	ToF_shortRange tofAVGauche;		// #5	[mm]
 	ToF_shortRange tofFlanAVGauche;	// #6	[mm]

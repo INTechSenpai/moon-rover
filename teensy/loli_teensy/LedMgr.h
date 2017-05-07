@@ -9,6 +9,7 @@
 
 #include "Singleton.h"
 #include "pin_mapping.h"
+#include "MotionControlSystem.h"
 
 class LedMgr : public Singleton<LedMgr>
 {
@@ -20,7 +21,9 @@ public:
 		blink_cg(PIN_CLIGNOTANT_G, 500),
 		blink_ff(PIN_FEUX_FREIN, 100),
 		blink_fn(PIN_FEUX_NUIT, 100),
-		blink_fr(PIN_FEUX_RECUL, 100)
+		blink_fr(PIN_FEUX_RECUL, 100),
+		motionControlSystem(MotionControlSystem::Instance()),
+		directionControler(DirectionController::Instance())
 	{
 		pinMode(PIN_DEL_STATUS_1, OUTPUT);
 		pinMode(PIN_DEL_STATUS_2, OUTPUT);
@@ -30,7 +33,7 @@ public:
 		pinMode(PIN_CLIGNOTANT_G, OUTPUT);
 		pinMode(PIN_FEUX_RECUL, OUTPUT);
 
-		digitalWrite(PIN_FEUX_NUIT, HIGH); // todo: à enlever
+		digitalWrite(PIN_FEUX_NUIT, HIGH);
 
 		statusLed = OFF;
 		statusBeforeBatteryLow = OFF;
@@ -51,8 +54,10 @@ public:
 				blink_s2.off();
 				break;
 			case LedMgr::DOUBLE_BLINK:
-				blink_s1.blink();
-				blink_s2.blink();
+				if (blink_s1.blink())
+				{
+					blink_s2.toggle();
+				}
 				break;
 			case LedMgr::GREEN_BLINK:
 				blink_s1.off();
@@ -65,6 +70,10 @@ public:
 			default:
 				break;
 			}
+
+			/* DELs des phares */
+			//motionControlSystem.getMaxMovingSpeed();
+			//directionControler.getRealCurvature();
 
 		}
 	}
@@ -132,6 +141,8 @@ public:
 		}
 	}
 
+
+
 private:
 	enum StatusLed
 	{
@@ -155,13 +166,18 @@ private:
 			blinkMem = false;
 		}
 
-		void blink()
+		bool blink()
 		{
 			if (millis() - lastBlinkTime > period)
 			{
 				lastBlinkTime = millis();
 				blinkMem = !blinkMem;
 				digitalWrite(pin, blinkMem);
+				return true;
+			}
+			else
+			{
+				return false;
 			}
 		}
 
@@ -188,6 +204,13 @@ private:
 			}
 		}
 
+		void toggle()
+		{
+			blinkMem = !blinkMem;
+			digitalWrite(pin, blinkMem);
+			lastBlinkTime = millis();
+		}
+
 		bool getState() const
 		{
 			return blinkMem;
@@ -207,6 +230,9 @@ private:
 	Blink blink_cg; // clignotantDroit
 	Blink blink_ff; // feux frein
 	Blink blink_fr; // feux recul
+
+	MotionControlSystem & motionControlSystem;
+	DirectionController & directionControler;
 };
 
 

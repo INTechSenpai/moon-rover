@@ -35,7 +35,7 @@ public:
 			distance = 0;
 		}
 
-		return distance / 10; /* Conversion en cm */
+		return distance; /* en mm */
 	}
 
 	void standby()
