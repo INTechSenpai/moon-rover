@@ -39,6 +39,7 @@ import exceptions.UnableToMoveException;
 import utils.Log;
 import utils.Vec2RO;
 import utils.Vec2RW;
+import utils.Log.Verbose;
 import graphic.Fenetre;
 import graphic.PrintBufferInterface;
 import graphic.printable.Couleur;
@@ -56,7 +57,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 {
 	protected volatile boolean matchDemarre = false;
     protected volatile long dateDebutMatch;
-    private boolean debugpf, simuleSerie, debugAct;
+    private boolean simuleSerie;
     private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant;
 	private boolean print, printTrace;
 	private PrintBufferInterface buffer;
@@ -82,9 +83,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
 		printTrace = config.getBoolean(ConfigInfo.GRAPHIC_TRACE_ROBOT);
 		courbureMax = config.getDouble(ConfigInfo.COURBURE_MAX);
-		debugpf = config.getBoolean(ConfigInfo.DEBUG_PF);
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
-		debugAct = config.getBoolean(ConfigInfo.DEBUG_ACTIONNEURS);
 		
 		if(print)
 			buffer.add(this);
@@ -442,23 +441,20 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	@Override
 	protected void bloque(String nom, Object... param) throws InterruptedException, ActionneurException
 	{
-		if(debugAct)
+		if(param == null || param.length == 0)
+			log.debug("Appel à "+nom, Verbose.ACTIONNEURS.masque);
+		else
 		{
-			if(param == null || param.length == 0)
-				log.debug("Appel à "+nom);
-			else
+			String s = "";
+			for(Object o : param)
 			{
-				String s = "";
-				for(Object o : param)
-				{
-					if(s != "")
-						s += ", ";
-					s += o;
-				}
-				log.debug("Appel à "+nom+" (param = "+s+")");
+				if(s != "")
+					s += ", ";
+				s += o;
 			}
+			log.debug("Appel à "+nom+" (param = "+s+")", Verbose.ACTIONNEURS.masque);
 		}
-		
+	
 		if(simuleSerie)
 			return;
 		
@@ -482,8 +478,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		if(etat == SerialProtocol.State.KO)
 			throw new ActionneurException("Problème pour l'actionneur "+nom);
 
-		if(debugAct)
-			log.debug("Temps d'exécution de "+nom+" : "+(System.currentTimeMillis()-avant));
+		log.debug("Temps d'exécution de "+nom+" : "+(System.currentTimeMillis()-avant), Verbose.ACTIONNEURS.masque);
 	}
 
 	/**
@@ -523,8 +518,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 					chemin.clear();
 					throw new UnableToMoveException("Erreur : "+i);
 				}
-				if(debugpf)
-					log.debug("Le trajet s'est bien terminé ("+i+")");
+				log.debug("Le trajet s'est bien terminé ("+i+")", Verbose.PF.masque);
 				Thread.sleep(50); // on attend un peu que l'indice du chemin soit mis à jour avant de vérifier s'il est vide
 			}
 		chemin.clear(); // dans tous les cas, il faut nettoyer le chemin

@@ -21,8 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import utils.Log;
-import config.Config;
-import config.ConfigInfo;
+import utils.Log.Verbose;
 import container.Service;
 import container.dependances.SerialClass;
 import exceptions.serie.MissingCharacterException;
@@ -44,12 +43,10 @@ public class BufferIncomingBytes implements Service, SerialClass
 	private volatile int indexBufferStart = 0;
 	private volatile int indexBufferStop = 0;
 	
-	private boolean debugSerieTrame;
 	
-	public BufferIncomingBytes(Log log, Config config)
+	public BufferIncomingBytes(Log log)
 	{
 		this.log = log;
-		debugSerieTrame = config.getBoolean(ConfigInfo.DEBUG_SERIE_TRAME);
 	}
 	
 	public void setInput(InputStream input)
@@ -113,25 +110,22 @@ public class BufferIncomingBytes implements Service, SerialClass
 		int out = bufferReading[indexBufferStart++];
 		indexBufferStart &= 0x3FFF;
 
-		if(debugSerieTrame)
+		String s = Integer.toHexString(out).toUpperCase();
+		if(s.length() == 1)
 		{
-			String s = Integer.toHexString(out).toUpperCase();
-			if(s.length() == 1)
-			{
-				if(out >= 32 && out < 127)
-					log.debug("Reçu : "+"0"+s+" ("+(char)(out)+")");
-				else
-					log.debug("Reçu : "+"0"+s);
-			}
+			if(out >= 32 && out < 127)
+				log.debug("Reçu : "+"0"+s+" ("+(char)(out)+")", Verbose.TRAME.masque);
 			else
-			{
-				if(out >= 32 && out < 127)
-					log.debug("Reçu : "+s.substring(s.length()-2, s.length())+" ("+(char)(out)+")");	
-				else
-					log.debug("Reçu : "+s.substring(s.length()-2, s.length()));	
-			}
+				log.debug("Reçu : "+"0"+s, Verbose.TRAME.masque);
 		}
-
+		else
+		{
+			if(out >= 32 && out < 127)
+				log.debug("Reçu : "+s.substring(s.length()-2, s.length())+" ("+(char)(out)+")", Verbose.TRAME.masque);	
+			else
+				log.debug("Reçu : "+s.substring(s.length()-2, s.length()), Verbose.TRAME.masque);	
+		}
+		
 		return out;
 	}
 

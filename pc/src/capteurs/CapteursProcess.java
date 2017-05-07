@@ -38,6 +38,7 @@ import table.GameElementNames;
 import table.Table;
 import table.EtatElement;
 import utils.Log;
+import utils.Log.Verbose;
 import utils.Vec2RO;
 import utils.Vec2RW;
 
@@ -65,7 +66,6 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 	private Capteur[] capteurs;
 	private double imprecisionMaxPos;
 	private double imprecisionMaxAngle;
-	private boolean debugCapteurs;
 	
 	private long dateLastMesureCorrection = -1;
 	private long peremptionCorrection;
@@ -92,7 +92,6 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 		bufferCorrection = new Cinematique[config.getInt(ConfigInfo.TAILLE_BUFFER_RECALAGE)];
 		peremptionCorrection = config.getInt(ConfigInfo.PEREMPTION_CORRECTION);
 		enableCorrection = config.getBoolean(ConfigInfo.ENABLE_CORRECTION);
-		debugCapteurs = config.getBoolean(ConfigInfo.DEBUG_CAPTEURS);
 		
 		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
@@ -180,16 +179,14 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 	    	for(ObstaclesFixes o: ObstaclesFixes.values())
 	    		if(o.isVisible(capteurs[i].sureleve) && o.getObstacle().squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 	    		{
-	    			if(debugCapteurs)
-	    				log.debug("Obstacle de table vu : "+o);
+    				log.debug("Obstacle de table vu : "+o, Verbose.CAPTEURS.masque);
 	                continue;
 	    		}
 
 	    	for(GameElementNames o: GameElementNames.values())
 	    		if(table.isDone(o) != EtatElement.PRIS_PAR_NOUS && o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 	    		{
-	    			if(debugCapteurs)
-	    				log.debug("Élément de jeu vu : "+o);
+    				log.debug("Élément de jeu vu : "+o, Verbose.CAPTEURS.masque);
 	                continue;
 	    		}
 
@@ -210,8 +207,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 				continue; // hors table
 			}
 			
-			if(debugCapteurs)
-				log.debug("Ajout d'un obstacle d'ennemi en "+positionEnnemi+" vu par "+c);
+			log.debug("Ajout d'un obstacle d'ennemi en "+positionEnnemi+" vu par "+c, Verbose.CAPTEURS.masque);
 			
 			//ObstacleProximity o =
 			gridspace.addObstacleAndRemoveNearbyObstacles(obs);
@@ -335,7 +331,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 				}
 				posmoy.scalar(1./bufferCorrection.length);
 				orientationmoy /= bufferCorrection.length;
-				log.debug("Envoi d'une correction XYO : "+posmoy+" "+orientationmoy);
+				log.debug("Envoi d'une correction XYO : "+posmoy+" "+orientationmoy, Verbose.CAPTEURS.masque);
 				serie.correctPosition(posmoy, orientationmoy);
 				indexCorrection = 0;
 			}

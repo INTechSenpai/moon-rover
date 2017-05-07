@@ -30,6 +30,7 @@ import config.ConfigInfo;
 import container.Service;
 import container.dependances.SerialClass;
 import utils.Log;
+import utils.Log.Verbose;
 import utils.Vec2RO;
 import utils.Vec2RW;
 
@@ -49,21 +50,17 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	private byte prescaler;
 	private short sendPeriod;
 	private boolean streamStarted = false;
-	private boolean debugpf;
 	
 	public BufferOutgoingOrder(Log log, Config config)
 	{
 		this.log = log;
 		sendPeriod = config.getShort(ConfigInfo.SENSORS_SEND_PERIOD);
 		prescaler = config.getByte(ConfigInfo.SENSORS_PRESCALER);
-		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
-		debugpf = config.getBoolean(ConfigInfo.DEBUG_PF);
 	}
 		
 	private volatile LinkedList<Order> bufferBassePriorite = new LinkedList<Order>();
 	private volatile LinkedList<Order> bufferTrajectoireCourbe = new LinkedList<Order>();
 	private volatile Ticket stop = null;
-	private boolean debugSerie;
 	
 	/**
 	 * Le buffer est-il vide?
@@ -103,8 +100,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized void setMaxSpeed(double vitesse)
 	{
-		if(debugSerie || debugpf)
-			log.debug("Envoi d'un ordre de vitesse max : "+vitesse);
+		log.debug("Envoi d'un ordre de vitesse max : "+vitesse, Verbose.SERIE.masque | Verbose.PF.masque);
 
 		short vitesseTr; // vitesse signée
 		vitesseTr = (short)(vitesse*1000);
@@ -124,8 +120,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized Ticket followTrajectory(Speed vitesseInitiale, boolean marcheAvant)
 	{
-		if(debugpf)
-			log.debug("On commence à suivre la trajectoire");
+		log.debug("On commence à suivre la trajectoire", Verbose.PF.masque);
 		short vitesseTr; // vitesse signée
 		if(marcheAvant)
 			vitesseTr = (short)(vitesseInitiale.translationalSpeed*1000);
@@ -367,8 +362,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized void makeNextObsolete(CinematiqueObs c, int indexTrajectory)
 	{
-		if(debugSerie)
-			log.debug("Envoi d'un arc d'obsolescence");
+		log.debug("Envoi d'un arc d'obsolescence", Verbose.SERIE.masque);
 			
 		ByteBuffer data = ByteBuffer.allocate(8);
 		data.put((byte)indexTrajectory);
@@ -391,8 +385,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized Ticket[] envoieArcCourbe(List<CinematiqueObs> points, int indexTrajectory)
 	{
-		if(debugSerie || debugpf)
-			log.debug("Envoi de "+points.size()+" points à partir de l'index "+indexTrajectory);
+		log.debug("Envoi de "+points.size()+" points à partir de l'index "+indexTrajectory, Verbose.SERIE.masque | Verbose.PF.masque);
 
 		int index = indexTrajectory;
 		int nbEnvoi = (points.size() >> 5) + 1;
@@ -418,8 +411,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 				else
 					prochaineCourbure = c.courbureReelle; // c'est le dernier point, de toute façon ce sera un STOP_POINT
 				
-				if(debugpf)
-					log.debug("Point "+((i<<5)+j)+" : "+c);
+				log.debug("Point "+((i<<5)+j)+" : "+c, Verbose.PF.masque);
 				addXYO(data, c.getPosition(), c.orientationReelle);
 				short courbure = (short) ((Math.round(Math.abs(c.courbureReelle)*100)) & 0x7FFF);
 

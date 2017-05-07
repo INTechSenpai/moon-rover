@@ -27,6 +27,7 @@ import serie.SerialProtocol.OutOrder;
 import serie.trame.Order;
 import threads.ThreadService;
 import utils.Log;
+import utils.Log.Verbose;
 
 /**
  * Thread qui vérifie s'il faut envoyer des ordres
@@ -41,7 +42,6 @@ public class ThreadSerialOutputOrder extends ThreadService implements SerialClas
 	private BufferOutgoingOrder data;
 	private int sleep;
 	private BufferIncomingBytes input;
-	private boolean debugSerie;
 	private boolean simuleSerie;
 	
 	public ThreadSerialOutputOrder(Log log, SerieCoucheTrame serie, BufferIncomingBytes input, BufferOutgoingOrder data, Config config)
@@ -50,7 +50,6 @@ public class ThreadSerialOutputOrder extends ThreadService implements SerialClas
 		this.serie = serie;
 		this.data = data;
 		this.input = input;
-		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 		sleep = config.getInt(ConfigInfo.SLEEP_ENTRE_TRAMES);
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
 	}
@@ -93,8 +92,7 @@ public class ThreadSerialOutputOrder extends ThreadService implements SerialClas
 					if(data.isEmpty()) // si c'est le timeout qui nous a réveillé, on envoie un ping
 					{
 						message = new Order(OutOrder.PING);
-						if(debugSerie)
-							log.debug("Envoi d'un ping pour vérifier la connexion");
+						log.debug("Envoi d'un ping pour vérifier la connexion", Verbose.SERIE.masque);
 					}
 					else
 						message = data.poll();

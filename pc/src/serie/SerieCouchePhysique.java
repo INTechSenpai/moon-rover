@@ -33,6 +33,7 @@ import config.ConfigInfo;
 import container.Service;
 import container.dependances.SerialClass;
 import utils.Log;
+import utils.Log.Verbose;
 
 /**
  * La connexion série
@@ -62,7 +63,6 @@ public class SerieCouchePhysique implements Service, SerialClass
 	/** Milliseconds to block while waiting for port open */
 	private static final int TIME_OUT = 2000;
 
-	private boolean debugSerie;
 	
 	/**
 	 * Constructeur pour la série de test
@@ -77,7 +77,6 @@ public class SerieCouchePhysique implements Service, SerialClass
 		portName = config.getString(ConfigInfo.SERIAL_PORT);
 		baudrate = config.getInt(ConfigInfo.BAUDRATE);
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
-		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 		
 		if(simuleSerie)
 			log.critical("SÉRIE SIMULÉE !");
@@ -265,20 +264,17 @@ public class SerieCouchePhysique implements Service, SerialClass
 				output.write(bufferWriting, offset, length);
 				output.flush();
 				
-				if(debugSerie)
+				String aff = "";
+				for(int i = offset; i < offset + length; i++)
 				{
-					String aff = "";
-					for(int i = offset; i < offset + length; i++)
-					{
-						int out = bufferWriting[i];
-						String s = Integer.toHexString(out).toUpperCase();
-						if(s.length() == 1)
-							aff += "0"+s+" ";
-						else
-							aff += s.substring(s.length()-2, s.length())+" ";	
-					}
-					log.debug("Envoi terminé de "+aff);
+					int out = bufferWriting[i];
+					String s = Integer.toHexString(out).toUpperCase();
+					if(s.length() == 1)
+						aff += "0"+s+" ";
+					else
+						aff += s.substring(s.length()-2, s.length())+" ";	
 				}
+				log.debug("Envoi terminé de "+aff, Verbose.SERIE.masque);
 			}
 		}
 		catch (IOException e)

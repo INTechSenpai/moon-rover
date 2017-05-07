@@ -37,6 +37,7 @@ import serie.trame.IncomingFrame;
 import serie.trame.Order;
 import serie.trame.Paquet;
 import utils.Log;
+import utils.Log.Verbose;
 
 /**
  * Implémentation du protocole série couche trame
@@ -76,7 +77,6 @@ public class SerieCoucheTrame implements Service, SerialClass
 	private Log log;
 	private BufferOutgoingBytes serieOutput;
 	private BufferIncomingBytes serieInput;
-	private boolean debugSerie;
 	
 	/**
 	 * Constructeur classique
@@ -89,7 +89,6 @@ public class SerieCoucheTrame implements Service, SerialClass
 		this.serieInput = serieInput;
 		this.serieOutput = serieOutput;
 		timeout = config.getInt(ConfigInfo.SERIAL_TIMEOUT);
-		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
 		for(int i = 0; i < 256; i++)
 			conversations[i] = new Conversation(i, config);
 	}
@@ -141,8 +140,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 		Conversation f = getNextAvailableConversation();
 		f.update(o);
 
-		if(debugSerie)
-			log.debug("Envoi d'une nouvelle trame : "+f.getFirstTrame());
+		log.debug("Envoi d'une nouvelle trame : "+f.getFirstTrame(), Verbose.SERIE.masque);
 
 		serieOutput.add(f, f.getFirstTrame().trame, f.getFirstTrame().tailleTrame);
 //		f.updateResendDate();
@@ -197,8 +195,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 				{
 					if(waiting.origine.type == Order.Type.LONG)
 					{
-						if(debugSerie)
-							log.debug("EXECUTION_BEGIN reçu : "+f);
+						log.debug("EXECUTION_BEGIN reçu : "+f, Verbose.SERIE.masque);
 						it.remove();
 						pendingLongFrames.add(id);
 						return null;
@@ -210,8 +207,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 				{
 					if(waiting.origine.type == Order.Type.SHORT)
 					{
-						if(debugSerie)
-							log.debug("VALUE_ANSWER reçu : "+f);
+						log.debug("VALUE_ANSWER reçu : "+f, Verbose.SERIE.masque);
 
 						// L'ordre court a reçu un acquittement et ne passe pas par la case "pending"
 						it.remove();
@@ -240,8 +236,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 				// On a le EXECUTION_END d'une frame
 				if(f.code == IncomingCode.EXECUTION_END)
 				{
-					if(debugSerie)
-						log.debug("EXECUTION_END reçu : "+f+". On répond par un END_ORDER.");
+					log.debug("EXECUTION_END reçu : "+f+". On répond par un END_ORDER.", Verbose.SERIE.masque);
 
 					pending.setDeathDate(); // tes jours sont comptés…
 					// on envoie un END_ORDER
@@ -254,8 +249,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 				}
 				else if(f.code == IncomingCode.STATUS_UPDATE)
 				{
-					if(debugSerie)
-						log.debug("STATUS_UPDATE reçu : "+f);
+					log.debug("STATUS_UPDATE reçu : "+f, Verbose.SERIE.masque);
 					
 					return new Paquet(f.message, pending.ticket, pending.origine, f.code);
 				}
@@ -276,15 +270,13 @@ public class SerieCoucheTrame implements Service, SerialClass
 				// On avait déjà reçu l'EXECUTION_END. On ignore ce message
 				if(f.code == IncomingCode.EXECUTION_END && closed.origine.type == Order.Type.LONG)
 				{
-					if(debugSerie)
-						log.warning("EXECUTION_END déjà reçu : "+f);
+					log.warning("EXECUTION_END déjà reçu : "+f, Verbose.SERIE.masque);
 					return null;
 				}
 
 				if(f.code == IncomingCode.VALUE_ANSWER && closed.origine.type == Order.Type.SHORT)
 				{
-					if(debugSerie)
-						log.warning("VALUE_ANSWER déjà reçu : "+f);
+					log.warning("VALUE_ANSWER déjà reçu : "+f, Verbose.SERIE.masque);
 					return null;
 				}
 				
@@ -399,8 +391,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 
 		if(trame != null)
 		{
-			if(debugSerie)
-				log.debug("Une trame est renvoyée : "+trame.getFirstTrame());
+			log.debug("Une trame est renvoyée : "+trame.getFirstTrame(), Verbose.SERIE.masque);
 
 			serieOutput.add(trame, trame.getFirstTrame().trame, trame.getFirstTrame().tailleTrame);
 //			trame.updateResendDate(); // on remet la date de renvoi à plus tard

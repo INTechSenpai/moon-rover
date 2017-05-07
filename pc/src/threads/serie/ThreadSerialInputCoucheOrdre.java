@@ -36,6 +36,7 @@ import serie.trame.Paquet;
 import threads.ThreadShutdown;
 import threads.ThreadService;
 import utils.Log;
+import utils.Log.Verbose;
 import pathfinding.chemin.CheminPathfinding;
 
 /**
@@ -55,7 +56,6 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 	private Container container;
 	
 	public static boolean capteursOn = false;
-	private boolean debugSerie, debugCapteurs;
 	private int nbCapteurs;
 	
 	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, CheminPathfinding chemin, Container container)
@@ -67,8 +67,6 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 		this.buffer = buffer;
 		this.robot = robot;
 		this.chemin = chemin;
-		debugSerie = config.getBoolean(ConfigInfo.DEBUG_SERIE);
-		debugCapteurs = config.getBoolean(ConfigInfo.DEBUG_CAPTEURS);
 	}
 
 	@Override
@@ -92,8 +90,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					paquet = serie.poll();
 				}
 
-				if(debugSerie)
-					log.debug("Durée avant obtention du paquet : "+(System.currentTimeMillis() - avant)+". Traitement de "+paquet);
+				log.debug("Durée avant obtention du paquet : "+(System.currentTimeMillis() - avant)+". Traitement de "+paquet, Verbose.SERIE.masque);
 				
 				avant = System.currentTimeMillis();
 				int[] data = paquet.message;
@@ -148,8 +145,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					current.orientationReelle = orientationRobot;					
 					robot.setCinematique(current);
 					
-					if(debugSerie || debugCapteurs)
-						log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot);
+					log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot, Verbose.SERIE.masque);
 	
 					if(data.length > 6) // la présence de ces infos n'est pas systématique
 					{
@@ -157,8 +153,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						double angleRoueGauche = -(data[6] - 150.)*Math.PI/180.;
 						double angleRoueDroite = -(data[7] - 150.)*Math.PI/180.;
 						
-						if(debugCapteurs)
-							log.debug("Angle roues : à gauche "+data[6]+", à droite "+data[7]);
+						log.debug("Angle roues : à gauche "+data[6]+", à droite "+data[7], Verbose.SERIE.masque);
 						
 						/**
 						 * Acquiert ce que voit les capteurs
@@ -167,8 +162,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						for(int i = 0; i < nbCapteurs; i++)
 						{
 							mesures[i] = data[8+i] * CapteursRobot.values[i].type.conversion;
-							if(debugCapteurs)
-								log.debug("Capteur "+CapteursRobot.values[i].name()+" : "+mesures[i]);
+							log.debug("Capteur "+CapteursRobot.values[i].name()+" : "+mesures[i], Verbose.SERIE.masque);
 						}
 
 						if(capteursOn)
@@ -282,8 +276,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 //					else
 //						paquet.ticket.set(InOrder.ORDER_ACK);
 
-				if(debugSerie)
-					log.debug("Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant));
+				log.debug("Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant), Verbose.SERIE.masque);
 			}
 		} catch (InterruptedException e) {
 			log.debug("Arrêt de "+Thread.currentThread().getName());
