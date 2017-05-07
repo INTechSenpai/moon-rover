@@ -132,8 +132,6 @@ public class Homologation {
 			k.shoot = false;
 			k.s = ScriptNames.SCRIPT_CRATERE_HAUT_DROITE;
 			try {
-				if(true)
-				throw new PathfindingException();
 				path.computeAndFollowToScript(k);
 				k.s.s.execute(state);
 				
