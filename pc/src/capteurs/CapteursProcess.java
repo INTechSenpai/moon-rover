@@ -198,7 +198,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			positionEnnemi.rotate(orientationRobot);
 			positionEnnemi.plus(positionRobot);
 			
-			ObstacleRectangular obs = new ObstacleRectangular(positionEnnemi, longueurEnnemi, largeurEnnemi, orientationRobot+capteurs[i].orientationRelativeRotate);
+			ObstacleRectangular obs = new ObstacleRectangular(positionEnnemi, longueurEnnemi, largeurEnnemi, orientationRobot+capteurs[i].orientationRelativeRotate, c.type.couleurOrig);
 			
 			if(obs.isHorsTable())
 			{

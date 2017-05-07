@@ -41,10 +41,12 @@ public enum TypeCapteur
 	public final int distanceMin, portee;
 	public final int conversion; // le coeff pour passer en mm
 	public Color couleur, couleurTransparente;
+	public Couleur couleurOrig;
 	
 	private TypeCapteur(double angleCone, int distanceMin, int portee, Couleur c, int conversion)
 	{
 		this.conversion = conversion;
+		couleurOrig = c;
 		couleur = c.couleur;
 		couleurTransparente = new Color(couleur.getRed(), couleur.getGreen(), couleur.getBlue(), 100);
 		this.angleCone = angleCone;
