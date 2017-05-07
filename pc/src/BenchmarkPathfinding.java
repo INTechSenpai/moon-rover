@@ -59,7 +59,7 @@ public class BenchmarkPathfinding {
 				chemin.clear();
 			}
 			log.debug("Temps : "+(System.nanoTime() - avant) / (nbtest*1000000.));
-			container.destructor(false);
+			container.destructor();
 		} catch (PathfindingException | InterruptedException | ContainerException e) {
 			e.printStackTrace();
 		}
