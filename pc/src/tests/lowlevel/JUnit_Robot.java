@@ -602,11 +602,12 @@ public class JUnit_Robot extends JUnit_Test {
 		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-
+		int marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
+		
 		int nbArc = 4;
 		ArcCourbeStatique arc[] = new ArcCourbeStatique[nbArc];
 		for(int i = 0; i < nbArc; i++)
-			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1000, Math.PI/2, true, 0);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
@@ -646,11 +647,12 @@ public class JUnit_Robot extends JUnit_Test {
 		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-
+		int marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
+		
 		int nbArc = 50;
 		ArcCourbeStatique arc[] = new ArcCourbeStatique[nbArc];
 		for(int i = 0; i < nbArc; i++)
-			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1000, Math.PI/2, true, 5);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
@@ -684,11 +686,12 @@ public class JUnit_Robot extends JUnit_Test {
 		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-
+		int marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
+		
 		int nbArc = 9;
 		ArcCourbeStatique arc[] = new ArcCourbeStatique[nbArc];
 		for(int i = 0; i < nbArc; i++)
-			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 0);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
@@ -729,11 +732,12 @@ public class JUnit_Robot extends JUnit_Test {
 		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-
+		int marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
+		
 		int nbArc = 9;
 		ArcCourbeStatique arc[] = new ArcCourbeStatique[nbArc];
 		for(int i = 0; i < nbArc; i++)
-			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 0);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
@@ -773,11 +777,12 @@ public class JUnit_Robot extends JUnit_Test {
 		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-
+		int marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
+		
 		int nbArc = 9;
 		ArcCourbeStatique arc[] = new ArcCourbeStatique[nbArc];
 		for(int i = 0; i < nbArc; i++)
-			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, -2);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
@@ -817,11 +822,12 @@ public class JUnit_Robot extends JUnit_Test {
 		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-
+		int marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
+		
 		int nbArc = 9;
 		ArcCourbeStatique arc[] = new ArcCourbeStatique[nbArc];
 		for(int i = 0; i < nbArc; i++)
-			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 2);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
@@ -861,11 +867,12 @@ public class JUnit_Robot extends JUnit_Test {
 		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-
+		int marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
+		
 		int nbArc = 4;
 		ArcCourbeStatique arc[] = new ArcCourbeStatique[nbArc];
 		for(int i = 0; i < nbArc; i++)
-			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, -5);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
@@ -900,11 +907,12 @@ public class JUnit_Robot extends JUnit_Test {
 		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-
+		int marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
+		
 		int nbArc = 4;
 		ArcCourbeStatique arc[] = new ArcCourbeStatique[nbArc];
 		for(int i = 0; i < nbArc; i++)
-			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 5);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
@@ -939,11 +947,12 @@ public class JUnit_Robot extends JUnit_Test {
 		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-
+		int marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
+		
 		int nbArc = 6;
 		ArcCourbeStatique arc[] = new ArcCourbeStatique[nbArc];
 		for(int i = 0; i < nbArc; i++)
-			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, -2);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
@@ -980,11 +989,12 @@ public class JUnit_Robot extends JUnit_Test {
 		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-
+		int marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
+		
 		int nbArc = 6;
 		ArcCourbeStatique arc[] = new ArcCourbeStatique[nbArc];
 		for(int i = 0; i < nbArc; i++)
-			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 2);
 		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau

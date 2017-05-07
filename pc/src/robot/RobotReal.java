@@ -58,7 +58,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	protected volatile boolean matchDemarre = false;
     protected volatile long dateDebutMatch;
     private boolean simuleSerie;
-    private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant;
+    private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge;
 	private boolean print, printTrace;
 	private PrintBufferInterface buffer;
 	private BufferOutgoingOrder out;
@@ -81,6 +81,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+		marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
 		printTrace = config.getBoolean(ConfigInfo.GRAPHIC_TRACE_ROBOT);
 		courbureMax = config.getDouble(ConfigInfo.COURBURE_MAX);
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
@@ -89,7 +90,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 			buffer.add(this);
 		
 		for(int i = 0; i < pointsAvancer.length; i++)
-			pointsAvancer[i] = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+			pointsAvancer[i] = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 	}
 	
 	/*
@@ -157,7 +158,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	@Override
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
-		ObstacleRobot o = new ObstacleRobot(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+		ObstacleRobot o = new ObstacleRobot(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 		o.update(cinematique.getPosition(), cinematique.orientationReelle);
 		o.print(g, f, robot);
 	}
