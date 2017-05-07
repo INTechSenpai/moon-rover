@@ -201,7 +201,9 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			positionEnnemi.rotate(orientationRobot);
 			positionEnnemi.plus(positionRobot);
 			
-			if(positionEnnemi.isHorsTable())
+			ObstacleRectangular obs = new ObstacleRectangular(positionEnnemi, longueurEnnemi, largeurEnnemi, orientationRobot+capteurs[i].orientationRelativeRotate);
+			
+			if(obs.isHorsTable())
 			{
 //				if(debugCapteurs)
 //					log.debug("Hors table !");
@@ -212,7 +214,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 				log.debug("Ajout d'un obstacle d'ennemi en "+positionEnnemi+" vu par "+c);
 			
 			//ObstacleProximity o =
-			gridspace.addObstacleAndRemoveNearbyObstacles(new ObstacleRectangular(positionEnnemi, longueurEnnemi, largeurEnnemi, orientationRobot+capteurs[i].orientationRelativeRotate));
+			gridspace.addObstacleAndRemoveNearbyObstacles(obs);
 			
 			/**
 			 * Mise à jour de l'état de la table : un ennemi est passé
