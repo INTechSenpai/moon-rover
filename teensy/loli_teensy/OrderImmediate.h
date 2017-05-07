@@ -825,8 +825,8 @@ public:
 		uint8_t values[NB_SENSORS];
 		sensorMgr.getValues_noReset(values);
 		Serial.printf("ToF_LP_AV:%4u  ToF_LP_AR:%4u  IR_AVG:%4u  IR_AVD:%4u\n",
-			values[0]*10,
-			values[2]*10,
+			values[0],
+			values[2],
 			values[1]*10,
 			values[3]*10);
 		Serial.printf("AVg:%3u  flanAVg:%3u  flanARg:%3u  ARg:%3u  ARd:%3u  flanARd:%3u  flanAVd:%3u  AVd:%3u\n",

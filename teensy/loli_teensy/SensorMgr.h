@@ -88,11 +88,11 @@ public:
 		else if (micros() - lastUpdateTime >= updatePattern[index])
 		{
 			lastUpdateTime = micros();
+			uint32_t mesureLPAvant, mesureLPArriere;
 			switch (index)
 			{
 			case 0:
-				uint32_t mesureLPAvant = tofLPAvant.getMesure();
-				mesureLPAvant /= 2;
+				mesureLPAvant = (tofLPAvant.getMesure() - 30) / 2;
 				if (mesureLPAvant > 255)
 				{
 					mesureLPAvant = 255;
@@ -103,8 +103,7 @@ public:
 				values[1] = irGauche.getMesure();
 				break;
 			case 2:
-				uint32_t mesureLPArriere = tofLPArriere.getMesure();
-				mesureLPArriere /= 2;
+				mesureLPArriere = (tofLPArriere.getMesure() - 30) / 2;
 				if (mesureLPArriere > 255)
 				{
 					mesureLPArriere = 255;
