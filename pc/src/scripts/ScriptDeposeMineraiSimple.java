@@ -46,6 +46,7 @@ public class ScriptDeposeMineraiSimple extends Script
 				state.robot.baisseFilet();
 			} catch (ActionneurException e) {
 				e.printStackTrace();
+				e.printStackTrace(log.getPrintWriter());
 			}
 			state.robot.ouvreFilet();
 		}
@@ -55,6 +56,7 @@ public class ScriptDeposeMineraiSimple extends Script
 				state.robot.leveFilet();
 			} catch (ActionneurException e) {
 				e.printStackTrace();
+				e.printStackTrace(log.getPrintWriter());
 			}
 			state.robot.fermeFilet();
 		}

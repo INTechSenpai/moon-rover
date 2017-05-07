@@ -321,6 +321,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		} catch (PathfindingException e) {
 			// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de 5m
 			e.printStackTrace();
+			e.printStackTrace(log.getPrintWriter());
 		}
 		followTrajectory(speed);
 		
@@ -379,6 +380,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		} catch (PathfindingException e) {
 			// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de 5m
 			e.printStackTrace();
+			e.printStackTrace(log.getPrintWriter());
 		}
 		followTrajectory(speed);
 	}
@@ -422,6 +424,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		} catch (PathfindingException e) {
 			// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de 5m
 			e.printStackTrace();
+			e.printStackTrace(log.getPrintWriter());
 		}
 		followTrajectory(speed);
 	}
@@ -473,6 +476,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 			t = (Ticket) BufferOutgoingOrder.class.getMethod(nom, paramClasses).invoke(out, param.length == 0 ? null : param);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
+			e.printStackTrace(log.getPrintWriter());
 		}
 		etat = t.attendStatus().etat;
 		if(etat == SerialProtocol.State.KO)

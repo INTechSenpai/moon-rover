@@ -75,8 +75,10 @@ public class Strategie implements Service, CoreClass
 			state.robot.followTrajectory(Speed.STANDARD); // TODO
 		} catch (PathfindingException e) {
 			e.printStackTrace();
+			e.printStackTrace(log.getPrintWriter());
 		} catch (UnableToMoveException e) {
 			e.printStackTrace();
+			e.printStackTrace(log.getPrintWriter());
 		}
 		finally
 		{
