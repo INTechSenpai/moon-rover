@@ -34,8 +34,7 @@ public class PrecomputePaths {
 		ConfigInfo.DUREE_MAX_RECHERCHE_PF.setDefaultValue(200000);
 		ConfigInfo.TAILLE_FAISCEAU_PF.setDefaultValue(20);
 		PathCache.precompute = true;
-		Container container = new Container();
-		container.destructor(false);
+		new Container().destructor();
 	}
 	
 }

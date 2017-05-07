@@ -151,7 +151,7 @@ public class Homologation {
 		{
 			if(container != null)
 				try {
-					container.destructor(false);
+					container.destructor();
 				} catch (ContainerException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {

@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 package capteurs;
 
 import graphic.PrintBufferInterface;
-import obstacles.types.ObstacleProximity;
 import obstacles.types.ObstacleRobot;
 import obstacles.types.ObstaclesFixes;
 import pathfinding.chemin.CheminPathfinding;
