@@ -34,7 +34,7 @@ public enum TypeCapteur
 	// ToF longue portée : cône de 0.1°, horizon à 500mm
 
 	ToF_COURT(0.01, 1, 254, Couleur.ToF_COURT, 1),
-	ToF_LONG(0.01, 1, 500, Couleur.ToF_LONG, 10),
+	ToF_LONG(0.01, 1, 500, Couleur.ToF_LONG, 2),
 	IR(5. / 180 * Math.PI, 100, 630, Couleur.IR, 10);
 	
 	public final double angleCone; // ne sert qu'à l'affichage
