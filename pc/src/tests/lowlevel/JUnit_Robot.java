@@ -909,6 +909,10 @@ public class JUnit_Robot extends JUnit_Test {
 		
 		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
+		Cinematique c = new Cinematique(332.84,1605.22, -2.341, true, 0);
+		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(1000);
+		
 		CinematiqueObs out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 		out.update(332.84,1605.22, -2.341, true,  1.000);
 		path.add(out); 
