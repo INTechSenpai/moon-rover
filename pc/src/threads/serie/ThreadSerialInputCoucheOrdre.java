@@ -238,7 +238,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					else if(data[0] == InOrder.STOP_REQUIRED.codeInt)
 						paquet.ticket.set(InOrder.STOP_REQUIRED);
 				}
-				
+								
 				/*
 				 * ACTIONNEURS
 				 */
@@ -268,14 +268,15 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						paquet.ticket.set(InOrder.ACT_FAILURE);
 				}
 				
+				else if(paquet.code == IncomingCode.EXECUTION_END)
+					paquet.ticket.set(InOrder.LONG_ORDER_ACK);
+
 				/**
 				 * Les paquets dont l'état n'importe pas et sans donnée (par exemple PING ou STOP) n'ont pas besoin d'être traités
 				 */
 				else if(data.length != 0)
 					log.critical("On a ignoré un paquet d'origine "+paquet.origine+" (taille : "+data.length+")");
-//					else
-//						paquet.ticket.set(InOrder.ORDER_ACK);
-
+				
 				log.debug("Durée de traitement de "+paquet.origine+" : "+(System.currentTimeMillis() - avant), Verbose.SERIE.masque);
 			}
 		} catch (InterruptedException e) {
