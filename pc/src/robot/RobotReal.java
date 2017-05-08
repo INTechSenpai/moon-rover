@@ -515,14 +515,15 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 				InOrder i = t.attendStatus();
 				if(i.etat == State.KO)
 				{
-					log.critical("Erreur : "+i);
 					chemin.clear();
 					
 					// on attend la fin du stop
 					if(i == InOrder.STOP_REQUIRED)
 						out.waitStop();
+					else
+						log.critical("Erreur : "+i);
 
-					throw new UnableToMoveException("Erreur : "+i);
+					throw new UnableToMoveException(i.name());
 				}
 				log.debug("Le trajet s'est bien terminé ("+i+")", Verbose.PF.masque);
 				Thread.sleep(50); // on attend un peu que l'indice du chemin soit mis à jour avant de vérifier s'il est vide

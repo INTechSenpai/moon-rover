@@ -58,8 +58,10 @@ public class BufferIncomingOrder implements Service, SerialClass
 	public synchronized void add(Paquet elem)
 	{
 		buffer.add(elem);
-		if(buffer.size() > 5)
+		if(buffer.size() > 20)
 			log.critical("Ordres entrants traités trop lentement ! Taille buffer : "+buffer.size());
+		else if(buffer.size() > 5)
+			log.warning("Ordres entrants traités trop lentement ! Taille buffer : "+buffer.size());
 
 		notify();
 	}
