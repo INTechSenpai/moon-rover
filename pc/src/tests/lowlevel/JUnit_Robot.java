@@ -900,6 +900,165 @@ public class JUnit_Robot extends JUnit_Test {
 
 
 	@Test
+    public void debug_le_retour() throws Exception
+    {
+		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
+		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
+		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+		int marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
+		
+		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
+		
+		CinematiqueObs out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(332.84,1605.22, -2.341, true,  1.000);
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(332.84,1605.22, -2.341, true,  1.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(319.06,1590.73, -2.321, true,  1.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(305.57,1575.96, -2.301, true,  1.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(292.39,1560.92, -2.281, true,  1.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(279.50,1545.63, -2.261, true,  1.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(266.93,1530.07, -2.241, true,  1.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(254.66,1514.28, -2.221, true,  1.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(242.72,1498.23, -2.201, true,  1.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(231.10,1481.96, -2.181, true,  1.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(219.81,1465.45, -2.161, true,  1.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(208.85,1448.72, -2.141, true,  1.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(198.50,1431.61, -2.097, true,  1.180); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(188.98,1414.02, -2.046, true,  1.360); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(180.45,1395.93, -1.988, true,  1.540); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(173.07,1377.35, -1.923, true,  1.720); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(166.99,1358.30, -1.851, true,  1.900); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(162.40,1338.84, -1.771, true,  2.080); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(159.45,1319.07, -1.684, true,  2.260); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(158.32,1299.11, -1.590, true,  2.440); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(159.15,1279.13, -1.489, true,  2.620); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(162.08,1259.36, -1.381, true,  2.800); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(166.69,1239.91, -1.272, true,  2.620); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(173.33,1221.05, -1.171, true,  2.440); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(181.78,1202.93, -1.077, true,  2.260); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(191.86,1185.66, -0.990, true,  2.080); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(203.34,1169.29, -0.911, true,  1.900); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(215.90,1153.73, -0.873, true,  1.900); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(229.04,1138.66, -0.835, true,  1.900); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(242.75,1124.09, -0.797, true,  1.900); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(257.00,1110.06, -0.759, true,  1.900); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(271.77,1096.58, -0.721, true,  1.900); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(287.28,1083.96, -0.644, true,  1.920); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(303.72,1072.58, -0.567, true,  1.940); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(320.99,1062.50, -0.489, true,  1.960); 
+		path.add(out);
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(338.99,1053.80, -0.410, true,  1.980); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(357.63,1046.56, -0.331, true,  2.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(376.67,1040.44, -0.291, true,  2.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(395.94,1035.09, -0.251, true,  2.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(415.41,1030.52, -0.211, true,  2.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(435.04,1026.73, -0.171, true,  2.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(454.81,1023.72, -0.131, true,  2.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(474.55,1020.52, -0.191, true,  -3.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(494.07,1016.14, -0.251, true,  -3.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(513.28,1010.60, -0.311, true,  -3.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(532.13,1003.92, -0.371, true,  -3.000); 
+		path.add(out); 
+		out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		out.update(550.54,996.12, -0.431, true,  -3.000);
+		path.add(out); 
+		
+
+		chemin.addToEnd(path);
+		if(!simuleSerie)
+			robot.followTrajectory(v);
+    }
+	
+	
+	@Test
     public void debug() throws Exception
     {
 		ClothoidesComputer clotho = container.getService(ClothoidesComputer.class);
