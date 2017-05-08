@@ -936,6 +936,44 @@ public class JUnit_Robot extends JUnit_Test {
 			robot.followTrajectory(v);
     }
 	
+
+	@Test
+    public void debug_lent() throws Exception
+    {
+		ClothoidesComputer clotho = container.getService(ClothoidesComputer.class);
+		PrintBuffer buffer = container.getService(PrintBuffer.class);
+		
+		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
+		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
+		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+		int marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
+		
+		int nbArc = 1;
+		ArcCourbeStatique arc[] = new ArcCourbeStatique[nbArc];
+		for(int i = 0; i < nbArc; i++)
+			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+
+		Cinematique c = new Cinematique(0, 1500, Math.PI/2, true, 0);
+		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(1000);
+		log.debug("Initial : "+c);
+		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE_D1_REBROUSSE, arc[0]);
+		
+		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
+		
+		for(int i = 0; i < nbArc; i++)
+			for(int j = 0; j < arc[i].getNbPoints(); j++)
+			{
+				log.debug(arc[i].getPoint(j));
+				path.add(arc[i].getPoint(j));
+				buffer.addSupprimable(new ObstacleCircular(arc[i].getPoint(j).getPosition(), 4));
+			}
+
+		chemin.addToEnd(path);
+		if(!simuleSerie)
+			robot.followTrajectory(Speed.REPLANIF);
+    }
+	
 	@Test
     public void petit_cercle_gauche_sym() throws Exception
     {
