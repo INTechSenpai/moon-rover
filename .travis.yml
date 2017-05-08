@@ -7,3 +7,5 @@ notifications:
     slack: intech-sudparis:Z3xKQEmZT2a9BFBqouokQ6J7
     on_success: change
     on_failure: always
+branches:
+    only : master
