@@ -304,24 +304,25 @@ public class SerieCoucheTrame implements Service, SerialClass
 			// Attente des données…
 			if(!serieInput.available())
 				serieInput.wait();
-			
-			code = serieInput.read();
-			
-			IncomingFrame.check(code);
-
-			longueur = serieInput.read();
-
-			if(longueur < 4 || longueur > 255)
-				throw new IllegalArgumentException("Mauvaise longueur : "+longueur+" (code = "+code+")");
-			else if(longueur > 4 && code == IncomingCode.EXECUTION_BEGIN.code)
-				throw new IllegalArgumentException("Trame EXECUTION_BEGIN de longueur incorrecte ("+longueur+")");
-			
-			id = serieInput.read();
-			message = new int[longueur-4];
-			for(int i = 0; i < message.length; i++)
-				message[i] = serieInput.read();
-			checksum = serieInput.read();
 		}
+		
+		code = serieInput.read();
+		
+		IncomingFrame.check(code);
+
+		longueur = serieInput.read();
+
+		if(longueur < 4 || longueur > 255)
+			throw new IllegalArgumentException("Mauvaise longueur : "+longueur+" (code = "+code+")");
+		else if(longueur > 4 && code == IncomingCode.EXECUTION_BEGIN.code)
+			throw new IllegalArgumentException("Trame EXECUTION_BEGIN de longueur incorrecte ("+longueur+")");
+		
+		id = serieInput.read();
+		message = new int[longueur-4];
+		for(int i = 0; i < message.length; i++)
+			message[i] = serieInput.read();
+		checksum = serieInput.read();
+		
 		return new IncomingFrame(code, id, checksum, longueur, message);
 	}
 	

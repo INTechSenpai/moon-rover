@@ -57,23 +57,18 @@ public class BufferIncomingBytes implements Service, SerialClass
 	/**
 	 * Récupération des données de la série
 	 */
-	public void dataAvailable()
+	public synchronized void dataAvailable()
 	{
 		try {
 			do
 			{
-				synchronized(this)
-				{
-					bufferReading[indexBufferStop++] = input.read();
-					indexBufferStop &= 0x3FFF;
-					
-					if(indexBufferStart == indexBufferStop)
-						log.critical("Overflow du buffer de réception série !");
-
-					notifyAll();
-				}
+				bufferReading[indexBufferStop++] = input.read();
+				indexBufferStop &= 0x3FFF;
+				
+				if(indexBufferStart == indexBufferStop)
+					log.critical("Overflow du buffer de réception série !");
 			} while(input.available() > 0);
-
+			notify();
 		} catch (IOException e) {
 			log.critical(e);
 		}
