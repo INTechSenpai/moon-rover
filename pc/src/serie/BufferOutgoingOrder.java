@@ -60,6 +60,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		
 	private volatile LinkedList<Order> bufferBassePriorite = new LinkedList<Order>();
 	private volatile LinkedList<Order> bufferTrajectoireCourbe = new LinkedList<Order>();
+	private volatile boolean sendStop = false;
 	private volatile Ticket stop = null;
 	
 	/**
@@ -68,7 +69,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized boolean isEmpty()
 	{
-		return bufferBassePriorite.isEmpty() && bufferTrajectoireCourbe.isEmpty() && stop == null;
+		return bufferBassePriorite.isEmpty() && bufferTrajectoireCourbe.isEmpty() && !sendStop;
 	}
 
 	/**
@@ -80,11 +81,11 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		if(bufferTrajectoireCourbe.size() + bufferBassePriorite.size() > 10)
 			log.warning("On n'arrive pas à envoyer les ordres assez vites (ordres TC en attente : "+bufferTrajectoireCourbe.size()+", autres en attente : "+bufferBassePriorite.size()+")");
 		
-		if(stop != null)
+		if(sendStop)
 		{
 			bufferTrajectoireCourbe.clear(); // on annule tout mouvement
 			Order out = new Order(OutOrder.STOP, stop);
-			stop = null;
+			sendStop = false;
 			return out;
 		}
 		else if(!bufferTrajectoireCourbe.isEmpty())
@@ -139,12 +140,12 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	/**
 	 * Ajout d'une demande d'ordre de s'arrêter
 	 */
-	public synchronized Ticket immobilise()
+	public synchronized void immobilise()
 	{
 		log.warning("Stop !");
+		sendStop = true;
 		stop = new Ticket();
 		notify();
-		return stop;
 	}
 	
 	/**
@@ -431,6 +432,16 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		}
 		notify();			
 		return t;
+	}
+
+	public void waitStop() throws InterruptedException
+	{
+		log.debug("Attente de la réception de la réponse au stop", Verbose.REPLANIF.masque);
+		if(stop != null)
+		{
+			stop.attendStatus();
+			stop = null;
+		}
 	}
 
 }

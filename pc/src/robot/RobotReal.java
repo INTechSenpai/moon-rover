@@ -517,6 +517,11 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 				{
 					log.critical("Erreur : "+i);
 					chemin.clear();
+					
+					// on attend la fin du stop
+					if(i == InOrder.STOP_REQUIRED)
+						out.waitStop();
+
 					throw new UnableToMoveException("Erreur : "+i);
 				}
 				log.debug("Le trajet s'est bien terminé ("+i+")", Verbose.PF.masque);
