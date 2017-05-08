@@ -62,7 +62,7 @@ public class SerialListener implements Service, SerialPortEventListener, SerialC
 			notify();
 		}
 		else
-			log.warning("Évènement série non traité : "+oEvent.getEventType());
+			log.warning(oEvent.getEventType());
 	}
 
 }
