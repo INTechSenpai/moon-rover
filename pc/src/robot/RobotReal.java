@@ -506,6 +506,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	@Override
 	public void followTrajectory(Speed vitesse) throws InterruptedException, UnableToMoveException
 	{
+		boolean oneMoreTime = true;
 		if(chemin.isEmpty())
 			log.warning("Trajectoire vide !");
 		else
@@ -523,6 +524,13 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 					else
 						log.critical("Erreur : "+i);
 
+					if(i == InOrder.ROBOT_BLOCAGE_EXTERIEUR && oneMoreTime)
+					{
+						oneMoreTime = false;
+						log.debug("One more time !");
+						continue;
+					}
+					
 					throw new UnableToMoveException(i.name());
 				}
 				log.debug("Le trajet s'est bien terminé ("+i+")", Verbose.PF.masque);
