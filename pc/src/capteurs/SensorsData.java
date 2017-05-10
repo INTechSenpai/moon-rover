@@ -40,4 +40,12 @@ public class SensorsData
 		this.cinematique = cinematique;
 	}
 	
+	public SensorsData(Cinematique cinematique)
+	{
+		this.angleRoueDroite = 0;
+		this.angleRoueGauche = 0;
+		this.mesures = null;
+		this.cinematique = cinematique;
+	}
+	
 }

@@ -137,7 +137,11 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 //	        		log.debug("Élément shooté : "+g);
 	        	table.setDone(g, EtatElement.PRIS_PAR_NOUS); // on est sûr de l'avoir shooté
 	        }
-					
+			
+	    // parfois on n'a pas de mesure
+	    if(data.mesures == null)
+	    	return;
+	    
 		/**
 		 * Suppression des mesures qui sont hors-table ou qui voient un obstacle de table
 		 */

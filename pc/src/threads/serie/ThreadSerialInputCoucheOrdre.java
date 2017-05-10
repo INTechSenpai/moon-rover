@@ -147,6 +147,8 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					
 					log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot+", index : "+indexTrajectory, Verbose.SERIE.masque);
 	
+					boolean envoi = false;
+					
 					if(data.length > 6) // la présence de ces infos n'est pas systématique
 					{
 						// changement de repère (cf la doc)
@@ -166,8 +168,14 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						}
 
 						if(capteursOn)
+						{
 							buffer.add(new SensorsData(angleRoueGauche, angleRoueDroite, mesures, current));
+							envoi = true;
+						}
 					}
+					// il faut toujours envoyer la position
+					if(!envoi)
+						buffer.add(new SensorsData(current));
 				}
 	
 				/**
