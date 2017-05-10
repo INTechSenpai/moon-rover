@@ -131,7 +131,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 		 * On update la table avec notre position
 		 */
 	    for(GameElementNames g: GameElementNames.values())
-	        if(g.obstacle.isColliding(obstacleRobot))
+	        if(table.isDone(g).hash < EtatElement.PRIS_PAR_NOUS.hash && g.obstacle.isColliding(obstacleRobot))
 	        {
 //	        	if(debugCapteurs)
 //	        		log.debug("Élément shooté : "+g);
