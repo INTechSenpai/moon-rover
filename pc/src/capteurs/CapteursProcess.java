@@ -35,7 +35,7 @@ import container.dependances.HighPFClass;
 import container.dependances.LowPFClass;
 import exceptions.ContainerException;
 import table.GameElementNames;
-import table.Table;
+import table.RealTable;
 import table.EtatElement;
 import utils.Log;
 import utils.Log.Verbose;
@@ -53,7 +53,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 {
 	protected Log log;
 	private GridSpace gridspace;
-	private Table table;
+	private RealTable table;
 	private DStarLite dstarlite;
 	private CheminPathfinding chemin;
 	private RobotReal robot;
@@ -73,7 +73,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 	private int indexCorrection = 0;
 	private Cinematique[] bufferCorrection;
 	
-	public CapteursProcess(Container container, Log log, GridSpace gridspace, Table table, DStarLite dstarlite, CheminPathfinding chemin, PrintBufferInterface buffer, RobotReal robot, BufferOutgoingOrder serie, Config config)
+	public CapteursProcess(Container container, Log log, GridSpace gridspace, RealTable table, DStarLite dstarlite, CheminPathfinding chemin, PrintBufferInterface buffer, RobotReal robot, BufferOutgoingOrder serie, Config config)
 	{
 		this.table = table;
 		this.log = log;
