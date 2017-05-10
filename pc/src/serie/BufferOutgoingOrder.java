@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
+import capteurs.SensorMode;
 import robot.CinematiqueObs;
 import robot.Speed;
 import serie.SerialProtocol.OutOrder;
@@ -323,6 +324,18 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		bufferBassePriorite.add(new Order(OutOrder.START_MATCH_CHRONO));
 		notify();
 	}
+	
+	/**
+	 * Demande d'utiliser un certain SensorMode
+	 * @param mode
+	 */
+	public synchronized void setSensorMode(SensorMode mode)
+	{
+		ByteBuffer data = ByteBuffer.allocate(1);
+		data.put(mode.code);
+		bufferBassePriorite.add(new Order(data, OutOrder.SET_SENSOR_MODE));
+		notify();
+	}
 
 	/**
 	 * Démarre le stream
@@ -433,7 +446,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		notify();			
 		return t;
 	}
-
+	
 	public void waitStop() throws InterruptedException
 	{
 		log.debug("Attente de la réception de la réponse au stop", Verbose.REPLANIF.masque);
