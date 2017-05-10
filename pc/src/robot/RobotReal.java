@@ -21,6 +21,7 @@ import java.awt.Graphics;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 
+import capteurs.SensorMode;
 import obstacles.types.ObstacleRobot;
 import pathfinding.astar.arcs.ClothoidesComputer;
 import pathfinding.chemin.CheminPathfinding;
@@ -66,7 +67,8 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	private double courbureMax;
     private boolean cinematiqueInitialised = false;
     private CinematiqueObs[] pointsAvancer = new CinematiqueObs[256];
-
+    private SensorMode lastMode = null;
+    
 	// Constructeur
 	public RobotReal(Log log, BufferOutgoingOrder out, PrintBufferInterface buffer, CheminPathfinding chemin, Config config)
  	{
@@ -512,31 +514,49 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		else
 			while(!chemin.isEmpty())
 			{
-				Ticket t = out.followTrajectory(vitesse, chemin.getNextMarcheAvant());
-				InOrder i = t.attendStatus();
-				if(i.etat == State.KO)
-				{
-					chemin.clear();
-					
-					// on attend la fin du stop
-					if(i == InOrder.STOP_REQUIRED)
-						out.waitStop();
-					else
-						log.critical("Erreur : "+i);
-
-					if(i == InOrder.ROBOT_BLOCAGE_EXTERIEUR && oneMoreTime)
+				boolean marcheAvant = chemin.getNextMarcheAvant();
+				if(marcheAvant)
+					setSensorMode(SensorMode.FRONT_AND_SIDES);
+				else
+					setSensorMode(SensorMode.BACK_AND_SIDES);
+				try {
+					Ticket t = out.followTrajectory(vitesse, marcheAvant);
+					InOrder i = t.attendStatus();
+					if(i.etat == State.KO)
 					{
-						oneMoreTime = false;
-						log.debug("One more time !");
-						continue;
+						chemin.clear();
+						
+						// on attend la fin du stop
+						if(i == InOrder.STOP_REQUIRED)
+							out.waitStop();
+						else
+							log.critical("Erreur : "+i);
+	
+						if(i == InOrder.ROBOT_BLOCAGE_EXTERIEUR && oneMoreTime)
+						{
+							oneMoreTime = false;
+							log.debug("One more time !");
+							continue;
+						}
+						
+						throw new UnableToMoveException(i.name());
 					}
-					
-					throw new UnableToMoveException(i.name());
+					log.debug("Le trajet s'est bien terminé ("+i+")", Verbose.PF.masque);
+				} finally {
+					setSensorMode(SensorMode.ALL);
 				}
-				log.debug("Le trajet s'est bien terminé ("+i+")", Verbose.PF.masque);
 				Thread.sleep(50); // on attend un peu que l'indice du chemin soit mis à jour avant de vérifier s'il est vide
 			}
 		chemin.clear(); // dans tous les cas, il faut nettoyer le chemin
+	}
+
+	public void setSensorMode(SensorMode mode)
+	{
+		if(lastMode != mode)
+		{
+			out.setSensorMode(mode);
+			lastMode = mode;
+		}
 	}
 
 }

@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
+import capteurs.SensorMode;
 import config.Config;
 import config.ConfigInfo;
 import container.Container;
@@ -59,13 +60,15 @@ public class Homologation {
 			boolean simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
 			
 			log.debug("Initialisation des actionneurs…");
-			
+						
 			/*
 			 * Initialise les actionneurs
 			 */
 			robot.initActionneurs();
 			
 			log.debug("Actionneurs initialisés");
+			
+			robot.setSensorMode(SensorMode.ALL);
 			
 			log.debug("Attente de la couleur…");
 			
