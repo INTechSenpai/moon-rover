@@ -227,7 +227,8 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 
 		dstarlite.updateObstaclesEnnemi();
 		dstarlite.updateObstaclesTable();
-		chemin.checkColliding();
+		chemin.checkColliding(false);
+		
 		if(enableCorrection)
 			correctXYO(data);
 	}
