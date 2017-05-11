@@ -227,9 +227,8 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		}
 
 		try {
-			Ticket[] t = chemin.addToEnd(out);
-			for(Ticket ticket : t)
-				ticket.attendStatus();
+			chemin.addToEnd(out);
+			chemin.waitTrajectoryTickets();
 		} catch (PathfindingException e) {
 			// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de 5m
 			e.printStackTrace();
@@ -319,7 +318,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		if(chemin.isEmpty())
 			log.warning("Trajectoire vide !");
 		else
-			while(!chemin.isEmpty())
+			while(!chemin.isArrived())
 			{
 				boolean marcheAvant = chemin.getNextMarcheAvant();
 				if(marcheAvant)
@@ -327,6 +326,8 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 				else
 					setSensorMode(SensorMode.BACK_AND_SIDES);
 				try {
+					// on attend toujours que la trajectoire soit bien envoyée avant de lancer un FollowTrajectory
+					chemin.waitTrajectoryTickets();
 					Ticket t = out.followTrajectory(vitesse, marcheAvant);
 					InOrder i = t.attendStatus();
 					if(i.etat == State.KO)
@@ -352,7 +353,6 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 				} finally {
 					setSensorMode(SensorMode.ALL);
 				}
-				Thread.sleep(50); // on attend un peu que l'indice du chemin soit mis à jour avant de vérifier s'il est vide
 			}
 		chemin.clear(); // dans tous les cas, il faut nettoyer le chemin
 	}
