@@ -31,13 +31,13 @@ import table.RealTable;
 
 public class RealGameState extends GameState<RobotReal> implements Service, CoreClass
 {
-	private ObstaclesMemory mem;
+//	private ObstaclesMemory mem;
 	
-    public RealGameState(RobotReal robot, RealTable table, ObstaclesMemory mem)
+    public RealGameState(RobotReal robot, RealTable table)
     {
         this.robot = robot;
         this.table = table;
-        this.mem = mem;
+//        this.mem = mem;
     }
     
     @Override
@@ -45,7 +45,7 @@ public class RealGameState extends GameState<RobotReal> implements Service, Core
     {
     	table.copy(modified.table);
         robot.copy(modified.robot);
-        modified.iterator.init(robot.getTempsDepuisDebutMatch(), mem.getFirstNotDeadNow());
+//        modified.iterator.init(robot.getTempsDepuisDebutMatch(), mem.getFirstNotDeadNow());
     }
 
 }
