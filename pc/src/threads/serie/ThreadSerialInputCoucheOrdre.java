@@ -245,6 +245,8 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						paquet.ticket.set(InOrder.PLUS_DE_POINTS);
 					else if(data[0] == InOrder.STOP_REQUIRED.codeInt)
 						paquet.ticket.set(InOrder.STOP_REQUIRED);
+					
+					chemin.setCurrentIndex(data[1]); // on a l'index courant
 				}
 								
 				/*
