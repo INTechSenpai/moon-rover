@@ -146,7 +146,7 @@ public:
 		int nbReadingPerformed = 0;
 		while (HLserial.available() && nbReadingPerformed < 32) // On s'autorise à lire 32 octets d'affilé (sans rendre la main à la boucle principale)
 		{
-			if (HLserial.available() == RX_BUFFER_SIZE - 1)
+			if (HLserial.available() == SERIAL1_RX_BUFFER_SIZE - 1)
 			{
 				Log::warning("Buffer reception bas niveau plein : possible perte de donnees");
 			}

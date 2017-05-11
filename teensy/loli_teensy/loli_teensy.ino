@@ -5,6 +5,7 @@
 */
 
 
+#include "RAM_check.h"
 #include "ActuatorStatus.h"
 #include "start_potitions.h"
 #include "LedMgr.h"
@@ -211,10 +212,33 @@ void loop()
 		}
 
 		//static uint32_t loli = 0;
-		//if (millis() - loli > 1000)
+		//if (millis() - loli > 100)
 		//{
 		//	loli = millis();
-		//	Serial.println("Alive");
+		//	//Serial.println(FreeRam());
+		//	//uint8_t mState = (uint8_t)motionControlSystem.getMovingState();
+		//	Serial.printf("%u - i=%u\n", millis(), motionControlSystem.getTrajectoryIndex());
+		//}
+
+		//static uint32_t lol = 0;
+		//static uint8_t lastIndex = 255, index = 0;
+		//static uint8_t lastMovingState = 0, movingState = 0;
+		//static Position p;
+		//if (millis() - lol > 100)
+		//{
+		//	lol = millis();
+		//	index = motionControlSystem.getTrajectoryIndex();
+		//	movingState = (uint8_t)motionControlSystem.getMovingState();
+		//	if (index != lastIndex || movingState != lastMovingState)
+		//	{
+		//		motionControlSystem.getPosition(p);
+
+		//		Serial.printf("%u - i=%u s=%d p=", millis(), index, movingState);
+		//		Serial.println(p);
+
+		//		lastMovingState = movingState;
+		//		lastIndex = index;
+		//	}
 		//}
 	}
 }
@@ -289,6 +313,15 @@ namespace std {
 		while (true)
 		{
 			Log::critical(997, e);
+			delay(500);
+		}
+	}
+
+	void __throw_out_of_range_fmt(char const*e, ...)
+	{
+		while (true)
+		{
+			Log::critical(996, e);
 			delay(500);
 		}
 	}

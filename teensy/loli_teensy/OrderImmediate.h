@@ -106,19 +106,13 @@ public:
 		else
 		{
 			uint8_t index = io.at(0);
-			Position p;
-			motionControlSystem.getPosition(p);
-			Serial.print("Pos: ");
-			Serial.print(p);
-			Serial.print(" index: ");
-			Serial.println(motionControlSystem.getTrajectoryIndex());
-			Serial.printf("AddTP: %u\n", index);
+			Serial.printf("%u - AddTP: %u -> %u\n", millis(), index, (io.size() - 1) / 7 - 1 + index);
 			for (size_t i = 1; i < io.size(); i += 7)
 			{
 				std::vector<uint8_t> pos_vect(io.begin() + i, io.begin() + i + 5);
 				Position pos(pos_vect);
 				TrajectoryPoint newTrajPoint(pos, io.at(i + 5), io.at(i + 6));
-				Serial.println(newTrajPoint);
+				//Serial.println(newTrajPoint);
 				motionControlSystem.addTrajectoryPoint(newTrajPoint, index);
 				index++;
 			}

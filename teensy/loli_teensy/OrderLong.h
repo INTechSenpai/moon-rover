@@ -93,7 +93,7 @@ public:
 		else
 		{
 			int16_t maxSpeed = (input.at(0) << 8) + input.at(1);
-			Serial.printf("FollowTraj: %d\n", maxSpeed);
+			Serial.printf("%u - FollowTraj: %d\n", millis(), maxSpeed);
 			motionControlSystem.setMaxMovingSpeed(maxSpeed);
 			motionControlSystem.gotoNextStopPoint();
 		}
@@ -120,7 +120,7 @@ public:
 			finished = true;
 			break;
 		case MotionControlSystem::EMPTY_TRAJ:
-			motionControlSystem.printCurrentTrajectory();
+			//motionControlSystem.printCurrentTrajectory();
 			endMoveStatus = NO_MORE_POINTS;
 			finished = true;
 			break;
@@ -134,8 +134,9 @@ public:
 	}
 	void terminate(std::vector<uint8_t> & output)
 	{
-		Serial.printf("End move (%u)\n", endMoveStatus);
+		Serial.printf("%u - End move (%u)\n", millis(), endMoveStatus);
 		output.push_back(endMoveStatus);
+		output.push_back(motionControlSystem.getTrajectoryIndex());
 	}
 
 private:
@@ -162,7 +163,7 @@ public:
 	Stop() {}
 	void _launch(const std::vector<uint8_t> & input)
 	{
-		Serial.println("HighLevel Stop - start");
+		Serial.printf("%u - HighLevel Stop - start\n", millis());
 		motionControlSystem.highLevelStop();
 	}
 	void onExecute(std::vector<uint8_t> & output)
@@ -171,7 +172,7 @@ public:
 	}
 	void terminate(std::vector<uint8_t> & output)
 	{
-		Serial.println("HighLevel Stop - end");
+		Serial.printf("%u - HighLevel Stop - end\n", millis());
 	}
 };
 

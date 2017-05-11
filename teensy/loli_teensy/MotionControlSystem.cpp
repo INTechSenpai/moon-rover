@@ -414,7 +414,6 @@ void MotionControlSystem::checkTrajectory()
 void MotionControlSystem::updateTranslationSetpoint()
 {
 	static bool undefinedStopPoint = true;
-
 	if (nextStopPoint == UINT16_MAX)
 	{
 		translationSetpoint = currentTranslation + UINT8_MAX * TRAJECTORY_STEP;
@@ -587,7 +586,7 @@ void MotionControlSystem::gotoNextStopPoint()
 		Log::warning("Nested call of MotionControlSystem::gotoNextStopPoint()");
 		return;
 	}
-
+	updateNextStopPoint();
 	movingState = MOVE_INIT;
 	trajectoryFullyCompleted = false;
 
@@ -623,14 +622,19 @@ void MotionControlSystem::stop()
 
 void MotionControlSystem::highLevelStop()
 {
+	noInterrupts();
 	movingState = HIGHLEVEL_STOP;
 	clearCurrentTrajectory();
+	interrupts();
 	stop();
 }
 
 bool MotionControlSystem::isStopped()
 {
-	return endOfMoveMgr.isStopped();
+	noInterrupts();
+	bool stopped = endOfMoveMgr.isStopped();
+	interrupts();
+	return stopped;
 }
 
 void MotionControlSystem::setMaxMovingSpeed(int32_t maxMovingSpeed_mm_sec)

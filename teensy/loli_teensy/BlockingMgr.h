@@ -83,6 +83,7 @@ public:
 		epsilon = 0;
 		responseTime = 0;
 		stopped = false;
+		moveBegin = false;
 		beginTime = 0;
 		breaking = false;
 	}
@@ -101,6 +102,7 @@ public:
 		else
 		{
 			stopped = false;
+			moveBegin = false;
 		}
 		last_abs_speed = abs_speed;
 	}
@@ -108,6 +110,7 @@ public:
 	void moveIsStarting()
 	{
 		stopped = false;
+		moveBegin = true;
 	}
 
 	void setTunings(uint32_t epsilon, uint32_t responseTime)
@@ -124,7 +127,19 @@ public:
 
 	bool isStopped() const
 	{
-		return stopped && millis() - beginTime > responseTime;
+		if (moveBegin)
+		{
+			return stopped && millis() - beginTime > responseTime * 5;
+		}
+		else
+		{
+			return stopped && millis() - beginTime > responseTime;
+		}
+	}
+
+	bool isMoveBegin() const
+	{
+		return moveBegin;
 	}
 
 	/* Indique si on est en train de ralentir */
@@ -146,6 +161,7 @@ private:
 
 	uint32_t beginTime;
 	bool stopped;
+	bool moveBegin;
 	uint32_t abs_speed;
 	uint32_t last_abs_speed;
 	bool breaking;
