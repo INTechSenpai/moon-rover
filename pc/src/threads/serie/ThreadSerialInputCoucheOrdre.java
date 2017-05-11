@@ -235,6 +235,8 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 				 */
 				else if(paquet.origine == OutOrder.FOLLOW_TRAJECTORY && paquet.code == IncomingCode.EXECUTION_END)
 				{
+					chemin.setCurrentIndex(data[1]); // on a l'index courant
+
 					if(data[0] == InOrder.ROBOT_ARRIVE.codeInt)
 						paquet.ticket.set(InOrder.ROBOT_ARRIVE);
 					else if(data[0] == InOrder.ROBOT_BLOCAGE_INTERIEUR.codeInt)
@@ -245,8 +247,6 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						paquet.ticket.set(InOrder.PLUS_DE_POINTS);
 					else if(data[0] == InOrder.STOP_REQUIRED.codeInt)
 						paquet.ticket.set(InOrder.STOP_REQUIRED);
-					
-					chemin.setCurrentIndex(data[1]); // on a l'index courant
 				}
 								
 				/*
