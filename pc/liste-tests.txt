@@ -20,11 +20,6 @@
 ./run_junit.sh tests.lowlevel.JUnit_Robot#entreDepartBasculeJ
 ./run_junit.sh tests.lowlevel.JUnit_Robot#sortDepartBasculeB
 ./run_junit.sh tests.lowlevel.JUnit_Robot#entreDepartBasculeB
-./run_junit.sh tests.lowlevel.JUnit_Robot#recule_corrige_pour_rien
-./run_junit.sh tests.lowlevel.JUnit_Robot#recule_corrige_gauche
-./run_junit.sh tests.lowlevel.JUnit_Robot#recule_corrige_droite
-./run_junit.sh tests.lowlevel.JUnit_Robot#avance_corrige_gauche
-./run_junit.sh tests.lowlevel.JUnit_Robot#avance_corrige_droite
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_clotho
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_cercle
 ./run_junit.sh tests.lowlevel.JUnit_Robot#relou
@@ -32,6 +27,9 @@
 ./run_junit.sh tests.lowlevel.JUnit_Robot#grand_cercle_droite_sym
 ./run_junit.sh tests.lowlevel.JUnit_Robot#grand_cercle_gauche_sym
 ./run_junit.sh tests.lowlevel.JUnit_Robot#petit_cercle_droite_sym
+./run_junit.sh tests.lowlevel.JUnit_Robot#debug_le_retour
+./run_junit.sh tests.lowlevel.JUnit_Robot#debug_lent
 ./run_junit.sh tests.lowlevel.JUnit_Robot#petit_cercle_gauche_sym
 ./run_junit.sh tests.lowlevel.JUnit_Robot#droite_sym
 ./run_junit.sh tests.lowlevel.JUnit_Robot#gauche_sym
+./run_junit.sh tests.lowlevel.JUnit_Robot#debug

@@ -63,8 +63,6 @@ public class ScriptPetitCratere extends Script
 	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
 	{
 		try {
-			state.robot.avanceVersCentre(Speed.STANDARD, element.obstacle.getPosition(), 180);
-			
 			try {
 				state.robot.rearme();
 			} catch (ActionneurException e) {

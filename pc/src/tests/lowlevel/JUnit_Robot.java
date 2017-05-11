@@ -513,7 +513,7 @@ public class JUnit_Robot extends JUnit_Test {
 			robot.avance(-1000, v);
 		}
     }
-	
+	/*
 	@Test
     public void recule_corrige_pour_rien() throws Exception
     {
@@ -588,7 +588,7 @@ public class JUnit_Robot extends JUnit_Test {
 		if(!simuleSerie)
 			robot.avanceVersCentre(v, arrivee, rayon);
     }
-	
+	*/
 	/**
 	 * Un test qui sert plus à grand chose
 	 * @throws Exception
