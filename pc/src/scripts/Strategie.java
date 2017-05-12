@@ -80,13 +80,6 @@ public class Strategie implements Service, CoreClass
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 		}
-		finally
-		{
-			/*
-			 * Dans tous les cas, il faut signaler au pathfinding que la recherche est finie
-			 */
-			pathcache.stopSearch();
-		}
 	}
 	
 }
