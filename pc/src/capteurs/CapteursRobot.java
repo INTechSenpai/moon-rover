@@ -31,7 +31,7 @@ public enum CapteursRobot
 	// ToF Flan Arrière Gauche ; [8] ToF Arrière Gauche ; [9] ToF Arrière Droit ; [10] ToF Flan Arrière Droit ; [11] ToF Flan Avant Droit ; [12]
 	//		ToF Avant Droit
 	
-	ToF_LONG_AVANT(CapteurImmobile.class, new Vec2RO(224, 0), 0, TypeCapteur.ToF_LONG, true),
+	ToF_LONG_AVANT(CapteurImmobile.class, new Vec2RO(224, 0), 0, TypeCapteur.ToF_LONG, false),
 
 	IR_AVANT_GAUCHE(CapteurMobile.class, new Vec2RO(233, 86), 10./180.*Math.PI, TypeCapteur.IR, true),
 
