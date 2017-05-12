@@ -91,6 +91,7 @@ void DynamixelInterface::sendPacket(const DynamixelPacket &aPacket)
 	}
 	mStream.write(aPacket.mCheckSum);
 	mStream.flush();
+	mStream.clear();
 	readMode();
 }
 
@@ -105,13 +106,22 @@ void DynamixelInterface::receivePacket(DynamixelPacket &aPacket)
 		aPacket.mStatus = DYN_STATUS_COM_ERROR | DYN_STATUS_TIMEOUT;
 		return;
 	}
+	if (buffer[0] != 255 || buffer[1] != 255)
+	{
+		aPacket.mStatus = DYN_STATUS_COM_ERROR;
+		return;
+	}
 	if (mStream.readBytes(buffer, 3)<3)
 	{
 		aPacket.mStatus = DYN_STATUS_COM_ERROR | DYN_STATUS_TIMEOUT;
 		return;
 	}
 	aPacket.mID = buffer[0];
-	aPacket.mLength = buffer[1];
+	if (aPacket.mLength != buffer[1])
+	{
+		aPacket.mStatus = DYN_STATUS_COM_ERROR;
+		return;
+	}
 	aPacket.mStatus = buffer[2];
 	if (aPacket.mLength>2 && (int)mStream.readBytes(reinterpret_cast<char*>(aPacket.mData), aPacket.mLength - 2)<(aPacket.mLength - 2))
 	{

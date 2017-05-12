@@ -215,31 +215,31 @@ void loop()
 		//if (millis() - loli > 100)
 		//{
 		//	loli = millis();
-		//	//Serial.println(FreeRam());
-		//	//uint8_t mState = (uint8_t)motionControlSystem.getMovingState();
-		//	Serial.printf("%u - i=%u\n", millis(), motionControlSystem.getTrajectoryIndex());
+		//	Serial.println(FreeRam());
+		//	uint8_t mState = (uint8_t)motionControlSystem.getMovingState();
+		//	Serial.printf("%u - s=%u\n", millis(), mState);
 		//}
 
-		//static uint32_t lol = 0;
-		//static uint8_t lastIndex = 255, index = 0;
-		//static uint8_t lastMovingState = 0, movingState = 0;
-		//static Position p;
-		//if (millis() - lol > 100)
-		//{
-		//	lol = millis();
-		//	index = motionControlSystem.getTrajectoryIndex();
-		//	movingState = (uint8_t)motionControlSystem.getMovingState();
-		//	if (index != lastIndex || movingState != lastMovingState)
-		//	{
-		//		motionControlSystem.getPosition(p);
+		static uint32_t lol = 0;
+		static uint8_t lastIndex = 255, index = 0;
+		static uint8_t lastMovingState = 0, movingState = 0;
+		static Position p;
+		if (millis() - lol > 100)
+		{
+			lol = millis();
+			index = motionControlSystem.getTrajectoryIndex();
+			movingState = (uint8_t)motionControlSystem.getMovingState();
+			if (index != lastIndex || movingState != lastMovingState)
+			{
+				motionControlSystem.getPosition(p);
 
-		//		Serial.printf("%u - i=%u s=%d p=", millis(), index, movingState);
-		//		Serial.println(p);
+				Serial.printf("%u - i=%u s=%d p=", millis(), index, movingState);
+				Serial.println(p);
 
-		//		lastMovingState = movingState;
-		//		lastIndex = index;
-		//	}
-		//}
+				lastMovingState = movingState;
+				lastIndex = index;
+			}
+		}
 	}
 }
 

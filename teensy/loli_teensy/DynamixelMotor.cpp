@@ -134,6 +134,6 @@ uint16_t DynamixelMotor::currentPosition()
 
 uint16_t DynamixelMotor::currentPositionDegree()
 {
-	return currentPosition() / 3.41;
+	return (uint16_t)((float)currentPosition() / 3.41);
 }
 
