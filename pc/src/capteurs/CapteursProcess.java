@@ -194,7 +194,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 	    		continue;
 	    	
 	    	for(GameElementNames o: GameElementNames.values())
-	    		if(table.isDone(o) != EtatElement.PRIS_PAR_NOUS && o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
+	    		if(table.isDone(o) != EtatElement.PRIS_PAR_NOUS && o.isVisible(c, capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 	    		{
     				log.debug("Élément de jeu vu : "+o, Verbose.CAPTEURS.masque);
     				stop = true;
