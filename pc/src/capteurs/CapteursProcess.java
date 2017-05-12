@@ -177,6 +177,8 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			if(positionVue == null)
 				continue;
 			
+			boolean stop = false;
+			
 			/**
 			 * Si ce qu'on voit est un obstacle de table, on l'ignore
 			 */			
@@ -184,16 +186,24 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 	    		if(o.isVisible(capteurs[i].sureleve) && o.getObstacle().squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 	    		{
     				log.debug("Obstacle de table vu : "+o, Verbose.CAPTEURS.masque);
-	                continue;
+    				stop = true;
+	                break;
 	    		}
 
+	    	if(stop)
+	    		continue;
+	    	
 	    	for(GameElementNames o: GameElementNames.values())
 	    		if(table.isDone(o) != EtatElement.PRIS_PAR_NOUS && o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 	    		{
     				log.debug("Élément de jeu vu : "+o, Verbose.CAPTEURS.masque);
-	                continue;
+    				stop = true;
+	                break;
 	    		}
 
+	    	if(stop)
+	    		continue;
+	    	
 			/**
 			 * Sinon, on ajoute
 			 */
