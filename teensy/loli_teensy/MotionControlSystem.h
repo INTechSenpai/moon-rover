@@ -269,7 +269,8 @@ public:
 	void gotoNextStopPoint();
 	void stop(); // Met toutes les consignes de l'asservissement à une valeur permettant l'arrêt du robot
 	void highLevelStop(); // Termine la trajectoire courante et stoppe le robot
-	bool isStopped(); // Indique si le robot est physiquement à l'arrêt
+	bool isStopped() const; // Indique si le robot est physiquement à l'arrêt
+	bool isBreaking() const; // Indique si le robot est en train de ralentir
 	void setMaxMovingSpeed(int32_t); // Règle la vitess maximale de translation (argument passé en mm/s)
 	int32_t getMaxMovingSpeed() const;
 	void setMaxAcceleration(int32_t);

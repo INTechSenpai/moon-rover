@@ -629,12 +629,20 @@ void MotionControlSystem::highLevelStop()
 	stop();
 }
 
-bool MotionControlSystem::isStopped()
+bool MotionControlSystem::isStopped() const
 {
 	noInterrupts();
 	bool stopped = endOfMoveMgr.isStopped();
 	interrupts();
 	return stopped;
+}
+
+bool MotionControlSystem::isBreaking() const
+{
+	noInterrupts();
+	bool breaking = endOfMoveMgr.isBreaking();
+	interrupts();
+	return breaking;
 }
 
 void MotionControlSystem::setMaxMovingSpeed(int32_t maxMovingSpeed_mm_sec)

@@ -90,8 +90,8 @@ public:
 
 	void compute()
 	{
-		abs_speed = (uint32_t)ABS(speed);
-		if (abs_speed < epsilon)
+		abs_speed = ABS(speed);
+		if ((uint32_t)abs_speed < epsilon)
 		{
 			if (!stopped)
 			{
@@ -104,6 +104,7 @@ public:
 			stopped = false;
 			moveBegin = false;
 		}
+		averageAcceleration.add(abs_speed - last_abs_speed);
 		last_abs_speed = abs_speed;
 	}
 
@@ -145,7 +146,7 @@ public:
 	/* Indique si on est en train de ralentir */
 	bool isBreaking() const
 	{
-
+		return averageAcceleration.value() < 0;
 	}
 
 	size_t printTo(Print& p) const
@@ -162,9 +163,10 @@ private:
 	uint32_t beginTime;
 	bool stopped;
 	bool moveBegin;
-	uint32_t abs_speed;
-	uint32_t last_abs_speed;
+	int32_t abs_speed;
+	int32_t last_abs_speed;
 	bool breaking;
+	Average<int32_t, 25> averageAcceleration;
 };
 
 #endif

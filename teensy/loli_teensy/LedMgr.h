@@ -35,6 +35,10 @@ public:
 
 		digitalWrite(PIN_FEUX_NUIT, HIGH);
 
+		turningSide = NOT_TURNING;
+		breaking = false;
+		stopped = false;
+
 		statusLed = OFF;
 		statusBeforeBatteryLow = OFF;
 	}
@@ -56,7 +60,14 @@ public:
 			case LedMgr::DOUBLE_BLINK:
 				if (blink_s1.blink())
 				{
-					blink_s2.toggle();
+					if (blink_s1.getState())
+					{
+						blink_s2.off();
+					}
+					else
+					{
+						blink_s2.on();
+					}
 				}
 				break;
 			case LedMgr::GREEN_BLINK:
@@ -72,9 +83,77 @@ public:
 			}
 
 			/* DELs des phares */
-			//motionControlSystem.getMaxMovingSpeed();
-			//directionControler.getRealCurvature();
 
+			float curvature = directionControler.getRealCurvature();
+			if (curvature > 0.5 && turningSide != TURNING_LEFT)
+			{
+				turningSide = TURNING_LEFT;
+				blink_cg.on();
+				blink_cd.off();
+			}
+			else if (curvature < -0.5 && turningSide != TURNING_RIGHT)
+			{
+				turningSide = TURNING_RIGHT;
+				blink_cg.off();
+				blink_cd.on();
+			}
+			else if ((curvature >= -0.5 && curvature <= 0.5) &&  turningSide != NOT_TURNING)
+			{
+				turningSide = NOT_TURNING;
+				blink_cg.off();
+				blink_cd.off();
+			}
+
+			switch (turningSide)
+			{
+			case LedMgr::TURNING_LEFT:
+				blink_cg.blink();
+				break;
+			case LedMgr::TURNING_RIGHT:
+				blink_cd.blink();
+				break;
+			}
+
+			bool cStopped = motionControlSystem.isStopped();
+			if (cStopped && !stopped)
+			{
+				stopped = true;
+				blink_ff.off();
+				blink_fr.off();
+			}
+			else if (!cStopped && stopped)
+			{
+				stopped = false;
+				blink_ff.off();
+				blink_fr.off();
+			}
+			if (!stopped)
+			{
+				bool cBreaking = motionControlSystem.isBreaking();
+				static uint32_t timer;
+				if (cBreaking && !breaking)
+				{
+					breaking = true;
+					blink_ff.on();
+				}
+				else if (!cBreaking && breaking)
+				{
+					breaking = false;
+					timer = millis();
+				}
+				else if (!breaking && millis() - timer > 300)
+				{
+					blink_ff.off();
+				}
+				if (!stopped && motionControlSystem.getMaxMovingSpeed() < 0)
+				{
+					blink_fr.on();
+				}
+				else
+				{
+					blink_fr.off();
+				}
+			}
 		}
 	}
 
@@ -152,6 +231,13 @@ private:
 		RED_BLINK
 	};
 
+	enum TurningSide
+	{
+		NOT_TURNING,
+		TURNING_LEFT,
+		TURNING_RIGHT
+	};
+
 	StatusLed statusLed;
 	StatusLed statusBeforeBatteryLow;
 
@@ -192,6 +278,7 @@ private:
 			{
 				digitalWrite(pin, LOW);
 				blinkMem = false;
+				lastBlinkTime = millis();
 			}
 		}
 
@@ -201,6 +288,7 @@ private:
 			{
 				digitalWrite(pin, HIGH);
 				blinkMem = true;
+				lastBlinkTime = millis();
 			}
 		}
 
@@ -230,6 +318,10 @@ private:
 	Blink blink_cg; // clignotantDroit
 	Blink blink_ff; // feux frein
 	Blink blink_fr; // feux recul
+
+	TurningSide turningSide;
+	bool breaking;
+	bool stopped;
 
 	MotionControlSystem & motionControlSystem;
 	DirectionController & directionControler;

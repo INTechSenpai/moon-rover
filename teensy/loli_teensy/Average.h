@@ -45,7 +45,7 @@ public:
 		currentElement = (currentElement + 1) % BUFFER_SIZE;
 	}
 
-	T value()
+	T value() const
 	{
 		return currentSum / (T)BUFFER_SIZE;
 	}
