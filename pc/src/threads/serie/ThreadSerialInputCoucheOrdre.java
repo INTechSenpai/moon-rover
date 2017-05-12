@@ -155,6 +155,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						double angleRoueGauche = -(data[6] - 150.)*Math.PI/180.;
 						double angleRoueDroite = -(data[7] - 150.)*Math.PI/180.;
 						
+						robot.setAngleRoues(angleRoueGauche, angleRoueDroite);
 						log.debug("Angle roues : à gauche "+data[6]+", à droite "+data[7], Verbose.SERIE.masque);
 						
 						/**

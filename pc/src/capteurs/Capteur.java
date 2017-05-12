@@ -79,16 +79,16 @@ public abstract class Capteur implements Printable
 	{
 		if(robot.isCinematiqueInitialised())
 		{
-			double courbure = robot.getCinematique().courbureReelle;
-			double angleRoueGauche, angleRoueDroite;
-			if(Math.abs(courbure) < 0.01)
+//			double courbure = robot.getCinematique().courbureReelle;
+			double angleRoueGauche = robot.getAngleRoueGauche(), angleRoueDroite = robot.getAngleRoueDroite();
+/*			if(Math.abs(courbure) < 0.01)
 				angleRoueGauche = angleRoueDroite = 0;
 			else
 			{
 				double R = Math.abs(1000 / courbure); // le rayon de courbure
 				angleRoueDroite = Math.signum(courbure) * Math.atan2(L, Math.abs(d+R));
 				angleRoueGauche = Math.signum(courbure) * Math.atan2(L, Math.abs(R-d));
-			}
+			}*/
 			
 			double orientation = robot.getCinematique().orientationReelle;
 			computePosOrientationRelative(robot.getCinematique(), angleRoueGauche, angleRoueDroite);

@@ -66,6 +66,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
     private boolean cinematiqueInitialised = false;
     private CinematiqueObs[] pointsAvancer = new CinematiqueObs[256];
     private SensorMode lastMode = null;
+    private double angleRoueGauche, angleRoueDroite;
     
 	// Constructeur
 	public RobotReal(Log log, BufferOutgoingOrder out, PrintBufferInterface buffer, CheminPathfinding chemin, Config config)
@@ -90,6 +91,22 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		
 		for(int i = 0; i < pointsAvancer.length; i++)
 			pointsAvancer[i] = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+	}
+	
+	public double getAngleRoueGauche()
+	{
+		return angleRoueGauche;
+	}
+	
+	public double getAngleRoueDroite()
+	{
+		return angleRoueDroite;
+	}
+	
+	public void setAngleRoues(double angleRoueGauche, double angleRoueDroite)
+	{
+		this.angleRoueDroite = angleRoueDroite;
+		this.angleRoueGauche = angleRoueGauche;
 	}
 	
 	/*
