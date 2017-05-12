@@ -4,6 +4,7 @@
 ./run_junit.sh tests.lowlevel.JUnit_Robot#courbe_loin
 ./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune
 ./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_cratere_droit_HL
+./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_cratere_droit_HL_shoot
 ./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_cratere_gauche_HL
 ./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_HL
 ./run_junit.sh tests.lowlevel.JUnit_Robot#arriere_loin

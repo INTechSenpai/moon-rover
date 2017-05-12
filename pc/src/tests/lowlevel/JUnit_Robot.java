@@ -237,6 +237,19 @@ public class JUnit_Robot extends JUnit_Test {
     }
 	
 	/**
+	 * Va au cratère droit
+	 */
+	@Test
+    public void depart_jaune_cratere_droit_HL_shoot() throws Exception
+    {
+		Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+		pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, true));
+    }
+	
+	/**
 	 * Va au cratère gauche
 	 */
 	@Test
