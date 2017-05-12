@@ -23,7 +23,6 @@ import java.util.LinkedList;
 
 import capteurs.SensorMode;
 import obstacles.types.ObstacleRobot;
-import pathfinding.astar.arcs.BezierComputer;
 import pathfinding.astar.arcs.ClothoidesComputer;
 import pathfinding.chemin.CheminPathfinding;
 import serie.BufferOutgoingOrder;
@@ -40,7 +39,6 @@ import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
 import utils.Log;
 import utils.Vec2RO;
-import utils.Vec2RW;
 import utils.Log.Verbose;
 import graphic.Fenetre;
 import graphic.PrintBufferInterface;

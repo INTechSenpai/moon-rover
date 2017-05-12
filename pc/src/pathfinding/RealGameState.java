@@ -20,7 +20,6 @@ package pathfinding;
 import robot.RobotReal;
 import container.Service;
 import container.dependances.CoreClass;
-import obstacles.memory.ObstaclesMemory;
 import table.RealTable;
 
 /**
