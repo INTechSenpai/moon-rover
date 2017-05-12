@@ -166,11 +166,6 @@ public class JUnit_Robot extends JUnit_Test {
 		robot.funnyAction();
 	}
 	
-	/**
-	 * TODO
-	 * Trajectoire qui alterne marche avant / marche arrière (créneau)
-	 * @throws Exception
-	 */
 	@Test
     public void creneau() throws Exception
     {
@@ -184,6 +179,15 @@ public class JUnit_Robot extends JUnit_Test {
 		last = chemin.getLastOrientation();
 		if(!simuleSerie)
 			robot.followTrajectory(v);
+    }
+	
+	@Test
+    public void statique() throws Exception
+    {
+		Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
+		robot.setCinematique(depart);
+		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		Thread.sleep(180000);
     }
 
 	/**
