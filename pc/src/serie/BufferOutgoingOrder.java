@@ -297,6 +297,17 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	/**
 	 * Corrige la position du bas niveau
 	 */
+	public synchronized void setPosition(Vec2RO pos, double orientation)
+	{
+		ByteBuffer data = ByteBuffer.allocate(5);
+		addXYO(data, pos, orientation);
+		bufferBassePriorite.add(new Order(data, OutOrder.SET_POSITION));
+		notify();
+	}
+	
+	/**
+	 * Corrige la position du bas niveau
+	 */
 	public synchronized void correctPosition(Vec2RO deltaPos, double deltaOrientation)
 	{
 		ByteBuffer data = ByteBuffer.allocate(5);

@@ -61,7 +61,8 @@ public class SerialProtocol {
 		SET_MAX_SPEED(0x5C, Type.SHORT),
 		EDIT_POSITION(0x5D, Type.SHORT),
 		STOP_STREAM_ALL(0x5E, Type.SHORT),
-		SET_SENSOR_MODE(0x5F, Type.SHORT);
+		SET_SENSOR_MODE(0x5F, Type.SHORT),
+		SET_POSITION(0x60, Type.SHORT);
 		
 		public final byte code;
 		public final Type type;

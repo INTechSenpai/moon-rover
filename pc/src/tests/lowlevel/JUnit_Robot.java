@@ -171,7 +171,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(-900, 650, -Math.PI/6, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 		c = new Cinematique(-400, 1200, Math.PI, false, 0);
 		astar.initializeNewSearch(c, false, state);
@@ -186,7 +186,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(180000);
     }
 
@@ -198,7 +198,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 		c = new Cinematique(1000, 700, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
@@ -216,7 +216,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 		c = new Cinematique(550, 1000, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
@@ -235,7 +235,7 @@ public class JUnit_Robot extends JUnit_Test {
 		try {
 			Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
 			robot.setCinematique(depart);
-			data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+			data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 			Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 			pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, false));
 		} catch(Exception e)
@@ -255,7 +255,7 @@ public class JUnit_Robot extends JUnit_Test {
 		try {
 			Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
 			robot.setCinematique(depart);
-			data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+			data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 			Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 			pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, true));
 		} catch(Exception e)
@@ -275,7 +275,7 @@ public class JUnit_Robot extends JUnit_Test {
 		try {
 			Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
 			robot.setCinematique(depart);
-			data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+			data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 			Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 			pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE, false));
 		} catch(Exception e)
@@ -295,7 +295,7 @@ public class JUnit_Robot extends JUnit_Test {
 		try {
 			Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
 			robot.setCinematique(depart);
-			data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+			data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 			Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 			c = new Cinematique(550, 1000, Math.PI, false, 0);
 			pathcache.computeAndFollowToPoint(c, true);
@@ -316,7 +316,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(0, 1700, Math.PI/2, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 		c = new Cinematique(1000, 700, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
@@ -336,7 +336,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 		c = new Cinematique(300, 1000, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
@@ -355,7 +355,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 		c = new Cinematique(700, 1200, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
@@ -374,7 +374,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(-1000, 700, 0, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 		c = new Cinematique(1000, 700, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
@@ -395,7 +395,7 @@ public class JUnit_Robot extends JUnit_Test {
 		boolean retente;
 		Cinematique depart = new Cinematique(-1000, 700, 0, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 		c = new Cinematique(1000, 700, Math.PI, false, 0);
 		do {
@@ -423,7 +423,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(-800, 350, 3*Math.PI/4, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 		Cinematique c = new Cinematique(-600, 900, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
@@ -441,7 +441,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 		c = new Cinematique(-300, 1000, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
@@ -456,7 +456,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 		c = new Cinematique(-700, 1100, Math.PI, false, 0);
 		astar.initializeNewSearch(c, true, state);
@@ -475,7 +475,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(0, 1600, Math.PI/2, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
 		if(!simuleSerie)
 			robot.avance(-200, v);
@@ -490,7 +490,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(0, 1800, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
 		if(!simuleSerie)
 			robot.avance(200, v);
@@ -505,7 +505,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(1300, 1800, Math.PI, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
 		if(!simuleSerie)
 			robot.avance(1000, v);
@@ -520,7 +520,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(700, 1800, Math.PI, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
 		if(!simuleSerie)
 		{
@@ -534,7 +534,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(-1300, 1800, 0, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
 		if(!simuleSerie)
 			robot.avance(1000, v);
@@ -549,7 +549,7 @@ public class JUnit_Robot extends JUnit_Test {
     {
 		Cinematique depart = new Cinematique(-700, 1800, 0, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(500);
 		if(!simuleSerie)
 		{
@@ -564,7 +564,7 @@ public class JUnit_Robot extends JUnit_Test {
 		PrintBuffer buffer = container.getService(PrintBuffer.class);
 		Cinematique depart = new Cinematique(0, 1000, Math.PI/2, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Vec2RO arrivee = new Vec2RO(-.5, 1500);
 		int rayon = 200;
 		buffer.addSupprimable(new ObstacleCircular(arrivee, rayon));
@@ -579,7 +579,7 @@ public class JUnit_Robot extends JUnit_Test {
 		PrintBuffer buffer = container.getService(PrintBuffer.class);
 		Cinematique depart = new Cinematique(0, 1000, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Vec2RO arrivee = new Vec2RO(-300, 1500);
 		int rayon = 200;
 		buffer.addSupprimable(new ObstacleCircular(arrivee, rayon));
@@ -594,7 +594,7 @@ public class JUnit_Robot extends JUnit_Test {
 		PrintBuffer buffer = container.getService(PrintBuffer.class);
 		Cinematique depart = new Cinematique(0, 1000, -Math.PI/2, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Vec2RO arrivee = new Vec2RO(300, 1500);
 		int rayon = 200;
 		buffer.addSupprimable(new ObstacleCircular(arrivee, rayon));
@@ -609,7 +609,7 @@ public class JUnit_Robot extends JUnit_Test {
 		PrintBuffer buffer = container.getService(PrintBuffer.class);
 		Cinematique depart = new Cinematique(0, 1000, Math.PI/2, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Vec2RO arrivee = new Vec2RO(-300, 1500);
 		int rayon = 200;
 		buffer.addSupprimable(new ObstacleCircular(arrivee, rayon));
@@ -624,7 +624,7 @@ public class JUnit_Robot extends JUnit_Test {
 		PrintBuffer buffer = container.getService(PrintBuffer.class);
 		Cinematique depart = new Cinematique(0, 1000, Math.PI/2, true, 0);
 		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 		Vec2RO arrivee = new Vec2RO(300, 1500);
 		int rayon = 200;
 		buffer.addSupprimable(new ObstacleCircular(arrivee, rayon));
@@ -654,7 +654,7 @@ public class JUnit_Robot extends JUnit_Test {
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1000, Math.PI/2, true, 0);
-		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
 		clotho.getTrajectoire(c, VitesseClotho.GAUCHE_2, arc[0]);
@@ -699,7 +699,7 @@ public class JUnit_Robot extends JUnit_Test {
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1000, Math.PI/2, true, 5);
-		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
 		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, arc[0]);
@@ -738,7 +738,7 @@ public class JUnit_Robot extends JUnit_Test {
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 0);
-		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
 		clotho.getTrajectoire(c, VitesseClotho.GAUCHE_1, arc[0]);
@@ -784,7 +784,7 @@ public class JUnit_Robot extends JUnit_Test {
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 0);
-		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
 		clotho.getTrajectoire(c, VitesseClotho.GAUCHE_2, arc[0]);
@@ -829,7 +829,7 @@ public class JUnit_Robot extends JUnit_Test {
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, -2);
-		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
 		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, arc[0]);
@@ -874,7 +874,7 @@ public class JUnit_Robot extends JUnit_Test {
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 2);
-		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
 		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, arc[0]);
@@ -919,7 +919,7 @@ public class JUnit_Robot extends JUnit_Test {
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, -5);
-		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
 		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, arc[0]);
@@ -954,7 +954,7 @@ public class JUnit_Robot extends JUnit_Test {
 		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
 		
 		Cinematique c = new Cinematique(332.84,1605.22, -2.341, true, 0);
-		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		
 		CinematiqueObs out = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
@@ -1123,7 +1123,7 @@ public class JUnit_Robot extends JUnit_Test {
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, Math.PI/2, true, 0);
-		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
 		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE_D1_REBROUSSE, arc[0]);
@@ -1161,7 +1161,7 @@ public class JUnit_Robot extends JUnit_Test {
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, Math.PI/2, true, 0);
-		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
 		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE_D1_REBROUSSE, arc[0]);
@@ -1198,7 +1198,7 @@ public class JUnit_Robot extends JUnit_Test {
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 5);
-		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
 		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, arc[0]);
@@ -1238,7 +1238,7 @@ public class JUnit_Robot extends JUnit_Test {
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, -2);
-		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
 		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, arc[0]);
@@ -1280,7 +1280,7 @@ public class JUnit_Robot extends JUnit_Test {
 			arc[i] = new ArcCourbeStatique(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		Cinematique c = new Cinematique(0, 1500, -Math.PI/2, true, 2);
-		data.correctPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
+		data.setPosition(c.getPosition(), c.orientationReelle); // on envoie la position haut niveau
 		Thread.sleep(1000);
 		log.debug("Initial : "+c);
 		clotho.getTrajectoire(c, VitesseClotho.COURBURE_IDENTIQUE, arc[0]);
