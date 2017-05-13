@@ -236,6 +236,24 @@ public:
 };
 
 
+/*
+	Modifie la position du robot dans le
+	bas niveau, les coordonnées fournies
+	deviennent les coordonnées courantes
+	du bas niveau.
+*/
+class SetPosition : public OrderImmediate, public Singleton<SetPosition>
+{
+public:
+	SetPosition() {}
+	virtual void execute(std::vector<uint8_t> & io) 
+	{
+		Position newPosition(io);
+		motionControlSystem.setPosition(newPosition);
+		io.clear();
+	}
+};
+
 
 /*
 	######################
