@@ -21,14 +21,13 @@ import java.util.LinkedList;
 
 import container.Service;
 import container.dependances.CoreClass;
+import exceptions.MemoryManagerException;
 import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
 import pathfinding.ChronoGameState;
 import pathfinding.KeyPathCache;
-import pathfinding.PFInstruction;
 import pathfinding.PathCache;
 import pathfinding.RealGameState;
-import robot.Speed;
 import utils.Log;
 
 /**
@@ -44,15 +43,13 @@ public class Strategie implements Service, CoreClass
 	private RealGameState state;
 	private ChronoGameState chrono;
 	private LinkedList<ScriptNames> strategie = new LinkedList<ScriptNames>();
-	private PFInstruction inst;
 	
-	public Strategie(Log log, PathCache pathcache, RealGameState state, ChronoGameState chrono, PFInstruction inst)
+	public Strategie(Log log, PathCache pathcache, RealGameState state, ChronoGameState chrono)
 	{
 		this.log = log;
 		this.pathcache = pathcache;
 		this.state = state;
 		this.chrono = chrono;
-		this.inst = inst;
 		strategie.add(ScriptNames.SCRIPT_CRATERE_HAUT_DROITE);
 		strategie.add(ScriptNames.SCRIPT_DEPOSE_MINERAI);
 		strategie.add(ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE);
@@ -69,14 +66,10 @@ public class Strategie implements Service, CoreClass
 		try {
 			state.copyAStarCourbe(chrono); // TODO vérifier si la copie est correcte
 			s.s.execute(chrono);
-			inst.set(new KeyPathCache(chrono, s, true));
+			pathcache.prepareNewPath(new KeyPathCache(chrono, s, true));
 			s.s.execute(state);
-			pathcache.sendPreparedPath();
-			state.robot.followTrajectory(Speed.STANDARD); // TODO
-		} catch (PathfindingException e) {
-			e.printStackTrace();
-			e.printStackTrace(log.getPrintWriter());
-		} catch (UnableToMoveException e) {
+			pathcache.follow();
+		} catch (PathfindingException | UnableToMoveException | MemoryManagerException e) {
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 		}

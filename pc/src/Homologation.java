@@ -20,6 +20,7 @@ import config.Config;
 import config.ConfigInfo;
 import container.Container;
 import exceptions.ContainerException;
+import exceptions.MemoryManagerException;
 import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
 import pathfinding.KeyPathCache;
@@ -141,10 +142,7 @@ public class Homologation {
 				k.s = ScriptNames.SCRIPT_DEPOSE_MINERAI;
 				path.computeAndFollow(k);
 				k.s.s.execute(state);
-			} catch (PathfindingException e) {
-				e.printStackTrace();
-				e.printStackTrace(log.getPrintWriter());
-			} catch (UnableToMoveException e) {
+			} catch (PathfindingException | UnableToMoveException | MemoryManagerException e) {
 				e.printStackTrace();
 				e.printStackTrace(log.getPrintWriter());
 			}
