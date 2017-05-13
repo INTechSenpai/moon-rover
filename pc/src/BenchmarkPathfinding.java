@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 import container.Container;
 import exceptions.ContainerException;
+import exceptions.MemoryManagerException;
 import exceptions.PathfindingException;
 import pathfinding.RealGameState;
 import pathfinding.astar.AStarCourbe;
@@ -60,7 +61,7 @@ public class BenchmarkPathfinding {
 			}
 			log.debug("Temps : "+(System.nanoTime() - avant) / (nbtest*1000000.));
 			container.destructor();
-		} catch (PathfindingException | InterruptedException | ContainerException e) {
+		} catch (PathfindingException | InterruptedException | ContainerException | MemoryManagerException e) {
 			e.printStackTrace();
 		}
 	}

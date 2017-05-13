@@ -135,11 +135,11 @@ public class Homologation {
 			k.shoot = false;
 			k.s = ScriptNames.SCRIPT_CRATERE_HAUT_DROITE;
 			try {
-				path.computeAndFollowToScript(k);
+				path.computeAndFollow(k);
 				k.s.s.execute(state);
 				
 				k.s = ScriptNames.SCRIPT_DEPOSE_MINERAI;
-				path.computeAndFollowToScript(k);
+				path.computeAndFollow(k);
 				k.s.s.execute(state);
 			} catch (PathfindingException e) {
 				e.printStackTrace();

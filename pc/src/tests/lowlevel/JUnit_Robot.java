@@ -237,7 +237,7 @@ public class JUnit_Robot extends JUnit_Test {
 			robot.setCinematique(depart);
 			data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 			Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-			pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, false));
+			pathcache.computeAndFollow(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, false));
 		} catch(Exception e)
 		{
 			e.printStackTrace(log.getPrintWriter());
@@ -257,7 +257,7 @@ public class JUnit_Robot extends JUnit_Test {
 			robot.setCinematique(depart);
 			data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 			Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-			pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, true));
+			pathcache.computeAndFollow(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, true));
 		} catch(Exception e)
 		{
 			e.printStackTrace(log.getPrintWriter());
@@ -277,7 +277,7 @@ public class JUnit_Robot extends JUnit_Test {
 			robot.setCinematique(depart);
 			data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 			Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-			pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE, false));
+			pathcache.computeAndFollow(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE, false));
 		} catch(Exception e)
 		{
 			e.printStackTrace(log.getPrintWriter());
@@ -298,7 +298,7 @@ public class JUnit_Robot extends JUnit_Test {
 			data.setPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
 			Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
 			c = new Cinematique(550, 1000, Math.PI, false, 0);
-			pathcache.computeAndFollowToPoint(c, true);
+			pathcache.computeAndFollow(new KeyPathCache(state, c, true));
 		} catch(Exception e)
 		{
 			e.printStackTrace(log.getPrintWriter());
