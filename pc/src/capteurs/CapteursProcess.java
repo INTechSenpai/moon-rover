@@ -96,8 +96,9 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE)/2;
 		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-		int marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
-		obstacleRobot = new ObstacleRobot(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+		
+		// on ne veut pas prendre en compte la marge quand on vérifie qu'on collisionne un élément de jeu
+		obstacleRobot = new ObstacleRobot(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, 0);
 
 		capteurs = new Capteur[nbCapteurs];
 				
