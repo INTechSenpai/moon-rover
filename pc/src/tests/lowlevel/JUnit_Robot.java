@@ -232,11 +232,18 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void depart_jaune_cratere_droit_HL() throws Exception
     {
-		Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
-		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
-		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, false));
+		try {
+			Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
+			robot.setCinematique(depart);
+			data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+			Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+			pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, false));
+		} catch(Exception e)
+		{
+			e.printStackTrace(log.getPrintWriter());
+			e.printStackTrace();
+			throw e;
+		}
     }
 	
 	/**
@@ -245,11 +252,18 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void depart_jaune_cratere_droit_HL_shoot() throws Exception
     {
-		Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
-		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
-		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, true));
+		try {
+			Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
+			robot.setCinematique(depart);
+			data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+			Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+			pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, true));
+		} catch(Exception e)
+		{
+			e.printStackTrace(log.getPrintWriter());
+			e.printStackTrace();
+			throw e;
+		}
     }
 	
 	/**
@@ -258,11 +272,18 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void depart_jaune_cratere_gauche_HL() throws Exception
     {
-		Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
-		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
-		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE, false));
+		try {
+			Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
+			robot.setCinematique(depart);
+			data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+			Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+			pathcache.computeAndFollowToScript(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE, false));
+		} catch(Exception e)
+		{
+			e.printStackTrace(log.getPrintWriter());
+			e.printStackTrace();
+			throw e;
+		}
     }
 	
 	/**
@@ -271,12 +292,19 @@ public class JUnit_Robot extends JUnit_Test {
 	@Test
     public void depart_jaune_HL() throws Exception
     {
-		Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
-		robot.setCinematique(depart);
-		data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
-		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
-		c = new Cinematique(550, 1000, Math.PI, false, 0);
-		pathcache.computeAndFollowToPoint(c, true);
+		try {
+			Cinematique depart = new Cinematique(550, 1905, -Math.PI/2, true, 0);
+			robot.setCinematique(depart);
+			data.correctPosition(depart.getPosition(), depart.orientationReelle); // on envoie la position haut niveau
+			Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+			c = new Cinematique(550, 1000, Math.PI, false, 0);
+			pathcache.computeAndFollowToPoint(c, true);
+		} catch(Exception e)
+		{
+			e.printStackTrace(log.getPrintWriter());
+			e.printStackTrace();
+			throw e;
+		}
     }
 	
 	/**
