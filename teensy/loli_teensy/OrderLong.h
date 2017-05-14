@@ -128,6 +128,10 @@ public:
 			endMoveStatus = STOP_REQUIRED;
 			finished = true;
 			break;
+		case MotionControlSystem::FAR_AWAY:
+			endMoveStatus = FAR_AWAY;
+			finished = true;
+			break;
 		default:
 			break;
 		}
@@ -146,7 +150,8 @@ private:
 		EXT_BLOCKED = 0x01,
 		INT_BLOCKED = 0x02,
 		NO_MORE_POINTS = 0x03,
-		STOP_REQUIRED = 0x04
+		STOP_REQUIRED = 0x04,
+		FAR_AWAY = 0x05
 	};
 	uint8_t endMoveStatus;
 };
@@ -618,6 +623,44 @@ public:
 	{
 		Serial.println("End funny action");
 	}
+};
+
+
+/*
+	Règle la courbure. (Fonctionne uniquement à l'arrêt) 
+*/
+class SetDirection : public OrderLong, public Singleton<SetDirection>
+{
+public:
+	SetDirection() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{
+		int16_t curv = (input.at(0) << 8) + input.at(1);
+		aimCurv = ((float)curv) / 100;
+		directionControler.setAimCurvature(aimCurv);
+		startTime = millis();
+	}
+	void onExecute(std::vector<uint8_t> & output)
+	{
+		if (millis() - startTime > TIMEOUT_MOVE_INIT)
+		{
+			finished = true;
+			retStatus = 0x01;
+		}
+		else if (ABS(aimCurv - directionControler.getRealCurvature()) < CURVATURE_TOLERANCE)
+		{
+			finished = true;
+			retStatus = 0x00;
+		}
+	}
+	void terminate(std::vector<uint8_t> & output)
+	{
+		output.push_back(retStatus);
+	}
+private:
+	uint32_t startTime;
+	uint8_t retStatus;
+	float aimCurv;
 };
 
 

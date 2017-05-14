@@ -33,6 +33,7 @@
 #define CURVATURE_TOLERANCE		0.3			// Ecart maximal entre la consigne en courbure et la courbure réelle admissible au démarrage. Unité : m^-1
 #define MOTOR_SLIP_TOLERANCE	200			// Erreur maximale de rotation enregistrable pour les moteurs de propulsion avant de détecter un dérapage. Unité : ticks
 #define TIMEOUT_MOVE_INIT		1000		// Durée maximale le la phase "MOVE_INIT" d'une trajectoire. Unité : ms
+#define DISTANCE_MAX_TO_TRAJ	40			// Distance (entre notre position et la trajectoire) au delà de laquelle on abandonne la trajectoire. Unité : mm
 
 
 
@@ -183,7 +184,8 @@ public:
 		MOVING,			// Robot en mouvent vers la position voulue.
 		EXT_BLOCKED,	// Robot bloqué par un obstacle extérieur (les roues patinent).
 		INT_BLOCKED,	// Roues du robot bloquées.
-		EMPTY_TRAJ		// La trajectoire courante est terminée, le dernier point n'étant pas un point d'arrêt.
+		EMPTY_TRAJ,		// La trajectoire courante est terminée, le dernier point n'étant pas un point d'arrêt.
+		FAR_AWAY		// Le robot se trouve trop loin de la position indiquée par le point de trajectoire courant.
 	};
 
 	// Type désignant le PID en cours de réglage
@@ -238,6 +240,11 @@ private:
 		Autre : aucune vérification
 	*/
 	void checkTrajectory();
+
+	/* Vérifie que l'on ne se trouve pas trop loin du point courant de la trajectoire, lors d'un mouvement (movingState == MOVING)
+		Interromp la trajectoire courante si besoin.
+	*/
+	void checkPosition();
 
 	/* Mise à jour de translationSetpoint
 		il est supposé que le robot se situe entre deux points de trajectoire 

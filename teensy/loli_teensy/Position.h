@@ -90,6 +90,11 @@ public:
 		return squaredDistanceToA <= squaredDistanceToB;
 	}
 
+	float distanceTo(Position const & pos) const volatile
+	{
+		return sqrtf(square(pos.x - x) + square(pos.y - y));
+	}
+
 	size_t printTo(Print& p) const
 	{
 		return p.printf("%g_%g_%g", x, y, orientation);

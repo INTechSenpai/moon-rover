@@ -83,6 +83,7 @@ void MotionControlSystem::control()
 	manageBlocking();
 	checkTrajectory();
 	updateTrajectoryIndex();
+	checkPosition();
 
 	if (positionControlled)
 	{
@@ -407,6 +408,21 @@ void MotionControlSystem::checkTrajectory()
 			clearCurrentTrajectory();
 			stop();
 			Log::critical(32, "Empty trajectory");
+		}
+	}
+}
+
+void MotionControlSystem::checkPosition()
+{
+	if (movingState == MOVING)
+	{
+		Position trajPosition = currentTrajectory[trajectoryIndex].getPosition();
+		if (position.distanceTo(trajPosition) > DISTANCE_MAX_TO_TRAJ)
+		{
+			movingState = FAR_AWAY;
+			clearCurrentTrajectory();
+			stop();
+			Log::critical(35, "Far away from trajectory");
 		}
 	}
 }
