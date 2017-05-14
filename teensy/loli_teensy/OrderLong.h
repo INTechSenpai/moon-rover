@@ -612,7 +612,7 @@ public:
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		finished = actuatorMgr.funnyAction(false);
+		finished = actuatorMgr.funnyAction(false) != RUNNING;
 	}
 	void terminate(std::vector<uint8_t> & output)
 	{

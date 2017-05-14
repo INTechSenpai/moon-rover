@@ -20,7 +20,7 @@
 #define	ANGLE_DOWN		65
 #define ANGLE_HALFWAY	80
 #define ANGLE_UP		155
-#define ANGLE_RELEASE	150
+#define ANGLE_RELEASE	140
 
 /* Durée maximale des mouvements de l'AX12, en ms */
 #define AX12_NET_TIMEOUT	2000
@@ -130,7 +130,7 @@ public:
 		return controlerNet.rearmRightSide(launch);
 	}
 
-	bool funnyAction(bool launch)
+	ActuatorStatus funnyAction(bool launch)
 	{
 		static uint32_t startTime;
 		static uint32_t fanStartTime;
@@ -142,13 +142,13 @@ public:
 			stage = 0;
 			moveTheAX12(true, ANGLE_UP, TOLERANCE_ANGLE, lastCommTime);
 			startTime = millis();
-			return false;
+			return RUNNING;
 		}
 		else
 		{
 			if (stage == 0)
 			{
-				if (moveTheAX12(false, ANGLE_UP, TOLERANCE_ANGLE, lastCommTime))
+				if (moveTheAX12(false, ANGLE_UP, TOLERANCE_ANGLE, lastCommTime) != RUNNING)
 				{ // AX12 en place pour bloquer la fusée
 					digitalWrite(PIN_VENTILATEUR, HIGH);
 					fanStartTime = millis();
@@ -167,11 +167,11 @@ public:
 			if (millis() - startTime > FUNNY_ACTION_DURATION)
 			{
 				digitalWrite(PIN_VENTILATEUR, LOW);
-				return true;
+				return SUCCESS;
 			}
 			else
 			{
-				return false;
+				return RUNNING;
 			}
 		}
 	}
