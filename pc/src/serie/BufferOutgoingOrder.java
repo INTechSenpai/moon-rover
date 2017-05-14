@@ -100,12 +100,15 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 * @param vitesse signée
 	 * @return
 	 */
-	public synchronized void setMaxSpeed(double vitesse)
+	public synchronized void setMaxSpeed(Speed vitesseInitiale, boolean marcheAvant)
 	{
-		log.debug("Envoi d'un ordre de vitesse max : "+vitesse, Verbose.SERIE.masque | Verbose.PF.masque);
+		log.debug("Envoi d'un ordre de vitesse max : "+vitesseInitiale, Verbose.SERIE.masque | Verbose.PF.masque);
 
 		short vitesseTr; // vitesse signée
-		vitesseTr = (short)(vitesse*1000);
+		if(marcheAvant)
+			vitesseTr = (short)(vitesseInitiale.translationalSpeed*1000);
+		else
+			vitesseTr = (short)(- vitesseInitiale.translationalSpeed*1000);
 
 		ByteBuffer data = ByteBuffer.allocate(2);
 		data.putShort(vitesseTr);
