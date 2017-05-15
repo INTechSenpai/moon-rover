@@ -132,13 +132,41 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 
 	public synchronized void endScan()
 	{
-		scan = false; // TODO
+		// on ne s'occupe que tes tof avant
+		int[] tofAvant = new int[] {CapteursRobot.ToF_AVANT_DROITE.ordinal(), CapteursRobot.ToF_AVANT_GAUCHE.ordinal()};
+		for(SensorsData data : mesuresScan)
+		{			
+			double orientationRobot = data.cinematique.orientationReelle;
+			Vec2RO positionRobot = data.cinematique.getPosition();
+			for(int j = 0; j < 2; j++)
+			{
+				int i = tofAvant[j];
+				CapteursRobot c = CapteursRobot.values[i];
+				getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
+
+				Vec2RW positionEnnemi = new Vec2RW(data.mesures[i] + longueurEnnemi / 2, capteurs[i].orientationRelativeRotate, true);
+				positionEnnemi.plus(capteurs[i].positionRelativeRotate);
+				positionEnnemi.rotate(orientationRobot);
+				positionEnnemi.plus(positionRobot);
+				ObstacleRectangular obs = new ObstacleRectangular(positionEnnemi, longueurEnnemi, (int)(data.mesures[i] * 0.16), orientationRobot + capteurs[i].orientationRelativeRotate, c.type.couleurOrig);
+
+				if(obs.isHorsTable())
+					continue; // hors table
+
+				gridspace.addObstacleAndRemoveNearbyObstacles(obs);
+			}
+
+		}
+		
+		scan = false;
+		dstarlite.updateObstaclesEnnemi();
+		dstarlite.updateObstaclesTable();
 	}
 
 	/**
 	 * Met à jour les obstacles mobiles
 	 */
-	public void updateObstaclesMobiles(SensorsData data)
+	public synchronized void updateObstaclesMobiles(SensorsData data)
 	{
 		double orientationRobot = data.cinematique.orientationReelle;
 		Vec2RO positionRobot = data.cinematique.getPosition();
