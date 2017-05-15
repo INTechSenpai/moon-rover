@@ -1,19 +1,16 @@
 /*
-Copyright (C) 2013-2017 Pierre-François Gimenez
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>
-*/
+ * Copyright (C) 2013-2017 Pierre-François Gimenez
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ */
 
 package serie;
 
@@ -22,12 +19,10 @@ import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
-
 import config.Config;
 import config.ConfigInfo;
 import container.Service;
@@ -37,6 +32,7 @@ import utils.Log.Verbose;
 
 /**
  * La connexion série
+ * 
  * @author pf
  *
  */
@@ -47,25 +43,25 @@ public class SerieCouchePhysique implements Service, SerialClass
 	protected Log log;
 	private BufferIncomingBytes buffer;
 	private SerialListener listener;
-	
+
 	protected volatile boolean isClosed;
 	private int baudrate;
 	private boolean simuleSerie;
-	
+
 	private String portName;
-	
+
 	/** The output stream to the port */
 	private OutputStream output;
 
 	// Permet d'ouvrir le port à la première utilisation de la série
 	protected volatile boolean portOuvert = false;
-	
+
 	/** Milliseconds to block while waiting for port open */
 	private static final int TIME_OUT = 2000;
 
-	
 	/**
 	 * Constructeur pour la série de test
+	 * 
 	 * @param log
 	 */
 	public SerieCouchePhysique(Log log, BufferIncomingBytes buffer, Config config, SerialListener listener)
@@ -77,14 +73,15 @@ public class SerieCouchePhysique implements Service, SerialClass
 		portName = config.getString(ConfigInfo.SERIAL_PORT);
 		baudrate = config.getInt(ConfigInfo.BAUDRATE);
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
-		
+
 		if(simuleSerie)
 			log.critical("SÉRIE SIMULÉE !");
 	}
 
 	/**
 	 * Ouverture du port
-	 * @throws InterruptedException 
+	 * 
+	 * @throws InterruptedException
 	 */
 	protected synchronized void openPort() throws InterruptedException
 	{
@@ -97,10 +94,13 @@ public class SerieCouchePhysique implements Service, SerialClass
 			if(!OS.toLowerCase().contains("win"))
 			{
 				// sur unix, on peut tester ça
-				try {
+				try
+				{
 					log.critical("Port série non trouvé, suppression des verrous");
 					Runtime.getRuntime().exec("sudo rm -f /var/lock/LCK..tty*");
-				} catch (IOException e) {
+				}
+				catch(IOException e)
+				{
 					log.warning(e);
 				}
 			}
@@ -111,25 +111,27 @@ public class SerieCouchePhysique implements Service, SerialClass
 			}
 		}
 	}
-	
+
 	/**
 	 * Recherche du port
+	 * 
 	 * @return
 	 */
 	protected synchronized boolean searchPort()
 	{
 		if(simuleSerie)
 			return true;
-		
+
 		portOuvert = false;
 		CommPortIdentifier port;
-		try {
+		try
+		{
 			port = CommPortIdentifier.getPortIdentifier(portName);
-			log.debug("Port "+port.getName()+" trouvé !");
+			log.debug("Port " + port.getName() + " trouvé !");
 
 			if(port.isCurrentlyOwned())
 			{
-				log.warning("Port déjà utilisé par "+port.getCurrentOwner());
+				log.warning("Port déjà utilisé par " + port.getCurrentOwner());
 				return false;
 			}
 
@@ -139,12 +141,14 @@ public class SerieCouchePhysique implements Service, SerialClass
 			portOuvert = true;
 			return true;
 
-		} catch (NoSuchPortException e) {
-			log.warning("Port "+portName+" introuvable : "+e);
+		}
+		catch(NoSuchPortException e)
+		{
+			log.warning("Port " + portName + " introuvable : " + e);
 			String out = "Les ports disponibles sont : ";
-			
+
 			Enumeration<?> ports = CommPortIdentifier.getPortIdentifiers();
-			
+
 			while(ports.hasMoreElements())
 			{
 				out += ((CommPortIdentifier) ports.nextElement()).getName();
@@ -156,31 +160,29 @@ public class SerieCouchePhysique implements Service, SerialClass
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Il donne à la série tout ce qu'il faut pour fonctionner
+	 * 
 	 * @param port_name
-	 * 					Le port où est connecté la carte
+	 * Le port où est connecté la carte
 	 * @param baudrate
-	 * 					Le baudrate que la carte utilise
+	 * Le baudrate que la carte utilise
 	 */
 	private boolean initialize(CommPortIdentifier portId, int baudrate)
 	{
 		if(simuleSerie)
 			return true;
-		
+
 		try
 		{
 			serialPort = (SerialPort) portId.open("MoonRover", TIME_OUT);
 			// set port parameters
-			serialPort.setSerialPortParams(baudrate,
-					SerialPort.DATABITS_8,
-					SerialPort.STOPBITS_1,
-					SerialPort.PARITY_NONE);
-//			serialPort.setInputBufferSize(100);
-//			serialPort.setOutputBufferSize(100);
-//			serialPort.enableReceiveTimeout(100);
-//			serialPort.enableReceiveThreshold(1);
+			serialPort.setSerialPortParams(baudrate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+			// serialPort.setInputBufferSize(100);
+			// serialPort.setOutputBufferSize(100);
+			// serialPort.enableReceiveTimeout(100);
+			// serialPort.enableReceiveThreshold(1);
 
 			// open the streams
 			buffer.setInput(serialPort.getInputStream());
@@ -189,19 +191,23 @@ public class SerieCouchePhysique implements Service, SerialClass
 			// Configuration du Listener
 			serialPort.addEventListener(listener);
 
-			serialPort.notifyOnDataAvailable(true); // activation du listener pour vérifier qu'on a des données disponible
-			serialPort.notifyOnOutputEmpty(true); // activation du listener pour vérifier que l'envoi est fini
-			
+			serialPort.notifyOnDataAvailable(true); // activation du listener
+													// pour vérifier qu'on a des
+													// données disponible
+			serialPort.notifyOnOutputEmpty(true); // activation du listener pour
+													// vérifier que l'envoi est
+													// fini
+
 			isClosed = false;
 			return true;
 		}
-		catch (TooManyListenersException | PortInUseException | UnsupportedCommOperationException | IOException e2)
+		catch(TooManyListenersException | PortInUseException | UnsupportedCommOperationException | IOException e2)
 		{
 			log.critical(e2);
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Doit être appelé quand on arrête de se servir de la série
 	 */
@@ -209,16 +215,19 @@ public class SerieCouchePhysique implements Service, SerialClass
 	{
 		if(simuleSerie)
 			return;
-		
-		if (!isClosed && portOuvert)
+
+		if(!isClosed && portOuvert)
 		{
-			try {
+			try
+			{
 				log.debug("Fermeture de la carte");
 				serialPort.removeEventListener();
 				serialPort.close();
 				buffer.close();
 				output.close();
-			} catch(IOException e) {
+			}
+			catch(IOException e)
+			{
 				log.warning(e);
 			}
 			isClosed = true;
@@ -228,18 +237,20 @@ public class SerieCouchePhysique implements Service, SerialClass
 		else
 			log.warning("Carte jamais ouverte");
 	}
-	
+
 	/**
 	 * Envoie une frame sur la série
-	 * Cette méthode est synchronized car deux threads peuvent l'utiliser : ThreadSerialOutput et ThreadSerialOutputTimeout
+	 * Cette méthode est synchronized car deux threads peuvent l'utiliser :
+	 * ThreadSerialOutput et ThreadSerialOutputTimeout
+	 * 
 	 * @param message
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	public synchronized void communiquer(byte[] bufferWriting, int offset, int length) throws InterruptedException
 	{
 		if(simuleSerie)
 			return;
-		
+
 		openPort();
 
 		/**
@@ -249,38 +260,40 @@ public class SerieCouchePhysique implements Service, SerialClass
 		{
 			log.debug("La série est fermée et ne peut envoyer un message");
 			return;
-		}		
-		
+		}
+
 		try
 		{
-			// On vérifie bien que toutes les données précédentes ont été envoyées
+			// On vérifie bien que toutes les données précédentes ont été
+			// envoyées
 			synchronized(listener)
 			{
 				if(!listener.isOutputEmpty())
 					listener.wait();
 
 				listener.setOutputNonEmpty();
-				
+
 				output.write(bufferWriting, offset, length);
 				output.flush();
-				
+
 				String aff = "";
 				for(int i = offset; i < offset + length; i++)
 				{
 					int out = bufferWriting[i];
 					String s = Integer.toHexString(out).toUpperCase();
 					if(s.length() == 1)
-						aff += "0"+s+" ";
+						aff += "0" + s + " ";
 					else
-						aff += s.substring(s.length()-2, s.length())+" ";	
+						aff += s.substring(s.length() - 2, s.length()) + " ";
 				}
-				log.debug("Envoi terminé de "+aff, Verbose.SERIE.masque);
+				log.debug("Envoi terminé de " + aff, Verbose.SERIE.masque);
 			}
 		}
-		catch (IOException e)
+		catch(IOException e)
 		{
 			/**
-			 * Si la carte ne répond vraiment pas, on recommence de manière infinie.
+			 * Si la carte ne répond vraiment pas, on recommence de manière
+			 * infinie.
 			 * De toute façon, on n'a pas d'autre choix...
 			 */
 			log.critical("Ne peut pas parler à la carte. Tentative de reconnexion.");

@@ -1,19 +1,16 @@
 /*
-Copyright (C) 2013-2017 Pierre-François Gimenez
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>
-*/
+ * Copyright (C) 2013-2017 Pierre-François Gimenez
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ */
 
 package serie;
 
@@ -22,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
 import config.Config;
 import config.ConfigInfo;
 import container.Service;
@@ -41,45 +37,49 @@ import utils.Log.Verbose;
 
 /**
  * Implémentation du protocole série couche trame
+ * 
  * @author pf
  *
  */
 
 public class SerieCoucheTrame implements Service, SerialClass
-{	
+{
 	/**
 	 * Toutes les conversations
 	 */
 	private Conversation[] conversations = new Conversation[256];
-	
+
 	/**
 	 * Liste des trames dont on attend un acquittement
-	 * Les trames de cette liste sont toujours triées par date de mort (de la plus proche à la plus éloignée)
+	 * Les trames de cette liste sont toujours triées par date de mort (de la
+	 * plus proche à la plus éloignée)
 	 */
 	private LinkedList<Integer> waitingFrames = new LinkedList<Integer>();
-	
+
 	/**
 	 * Liste des trames d'ordre long acquittées dont on attend la fin
 	 */
 	private List<Integer> pendingLongFrames = new ArrayList<Integer>();
 
 	/**
-	 * Liste des trames d'ordre dont on a reçu la fin (EXECUTION_END ou REQUEST_ANSWER)
+	 * Liste des trames d'ordre dont on a reçu la fin (EXECUTION_END ou
+	 * REQUEST_ANSWER)
 	 */
 	private LinkedList<Integer> closedFrames = new LinkedList<Integer>();
 
 	private int timeout;
 	private int dernierIDutilise = 0xFF; // dernier ID utilisé
-	
+
 	// Afin d'éviter de la créer à chaque fois
 	private EndOrderFrame endOrderFrame = new EndOrderFrame();
-	
+
 	private Log log;
 	private BufferOutgoingBytes serieOutput;
 	private BufferIncomingBytes serieInput;
-	
+
 	/**
 	 * Constructeur classique
+	 * 
 	 * @param log
 	 * @param serie
 	 */
@@ -92,17 +92,19 @@ public class SerieCoucheTrame implements Service, SerialClass
 		for(int i = 0; i < 256; i++)
 			conversations[i] = new Conversation(i, config);
 	}
-	
+
 	/**
 	 * GESTION DE LA CRÉATION ET DE L'ENVOI DE TRAMES
 	 */
-	
+
 	/**
 	 * Renvoie la prochaine conversation disponible, basée sur l'ID.
-	 * Cette méthode vérifie les ID actuellement utilisés et donne le prochain qui est libre.
+	 * Cette méthode vérifie les ID actuellement utilisés et donne le prochain
+	 * qui est libre.
 	 * Si tous les ID sont occupés, attend 1ms et re-cherche.
+	 * 
 	 * @return
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	private synchronized Conversation getNextAvailableConversation() throws InterruptedException
 	{
@@ -116,7 +118,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 				log.critical("Aucun ID disponible : attente");
 				Thread.sleep(1);
 			}
-			
+
 			if(!conversations[dernierIDutilise].libre)
 			{
 				dernierIDutilise++;
@@ -132,27 +134,29 @@ public class SerieCoucheTrame implements Service, SerialClass
 
 	/**
 	 * Demande l'envoi d'un ordre
+	 * 
 	 * @param o
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	public void sendOrder(Order o) throws InterruptedException
 	{
 		Conversation f = getNextAvailableConversation();
 		f.update(o);
 
-		log.debug("Envoi d'une nouvelle trame : "+f.getFirstTrame(), Verbose.SERIE.masque);
+		log.debug("Envoi d'une nouvelle trame : " + f.getFirstTrame(), Verbose.SERIE.masque);
 
 		serieOutput.add(f, f.getFirstTrame().trame, f.getFirstTrame().tailleTrame);
-//		f.updateResendDate();
+		// f.updateResendDate();
 	}
 
 	/**
 	 * GESTION DE LA RÉCEPTION DES TRAMES
 	 */
-	
+
 	/**
 	 * Renvoi les données de la couche ordre (haut niveau)
 	 * C'est cette méthode qui s'occupe de commander la signalisation.
+	 * 
 	 * @return
 	 */
 	public Paquet readData() throws InterruptedException
@@ -160,26 +164,31 @@ public class SerieCoucheTrame implements Service, SerialClass
 		IncomingFrame f = null;
 		Paquet p = null;
 		boolean restart;
-		do {
+		do
+		{
 			restart = false;
-			try {
+			try
+			{
 				f = readFrame();
 				p = processFrame(f);
 				if(p == null) // c'est une trame de signalisation
 					restart = true;
-			} catch (ProtocolException | IncorrectChecksumException | MissingCharacterException | IllegalArgumentException e) {
-				log.warning("Exception ignorée : "+e);
+			}
+			catch(ProtocolException | IncorrectChecksumException | MissingCharacterException | IllegalArgumentException e)
+			{
+				log.warning("Exception ignorée : " + e);
 				restart = true;
 			}
 		} while(restart);
 		return p;
 	}
-	
+
 	/**
 	 * S'occupe du protocole : répond si besoin est, vérifie la cohérence, etc.
 	 * Renvoie le ticket associé à la conversation
+	 * 
 	 * @param f
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	public synchronized Paquet processFrame(IncomingFrame f) throws ProtocolException, InterruptedException
 	{
@@ -195,37 +204,38 @@ public class SerieCoucheTrame implements Service, SerialClass
 				{
 					if(waiting.origine.type == Order.Type.LONG)
 					{
-						log.debug("EXECUTION_BEGIN reçu : "+f, Verbose.SERIE.masque);
+						log.debug("EXECUTION_BEGIN reçu : " + f, Verbose.SERIE.masque);
 						it.remove();
 						pendingLongFrames.add(id);
 						return null;
 					}
 
-					throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.origine.type+". "+f);
+					throw new ProtocolException(f.code + " reçu pour un ordre " + waiting.origine.type + ". " + f);
 				}
 				else if(f.code == IncomingCode.VALUE_ANSWER)
 				{
 					if(waiting.origine.type == Order.Type.SHORT)
 					{
-						log.debug("VALUE_ANSWER reçu : "+f, Verbose.SERIE.masque);
+						log.debug("VALUE_ANSWER reçu : " + f, Verbose.SERIE.masque);
 
-						// L'ordre court a reçu un acquittement et ne passe pas par la case "pending"
+						// L'ordre court a reçu un acquittement et ne passe pas
+						// par la case "pending"
 						it.remove();
 						waiting.setDeathDate(); // tes jours sont comptés…
 						closedFrames.add(id);
 						return new Paquet(f.message, waiting.ticket, waiting.origine, f.code);
 					}
 
-					throw new ProtocolException(f.code+" reçu pour un ordre "+waiting.origine.type+". "+f);
+					throw new ProtocolException(f.code + " reçu pour un ordre " + waiting.origine.type + ". " + f);
 				}
 				else
-					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_BEGIN ou VALUE_ANSWER ! "+f);
+					throw new ProtocolException(f.code + " reçu à la place de EXECUTION_BEGIN ou VALUE_ANSWER ! " + f);
 			}
 		}
-		
+
 		// Cette valeur n'a pas été trouvée dans les trames en attente
 		// On va donc chercher dans les trames en cours
-		
+
 		it = pendingLongFrames.iterator();
 		while(it.hasNext())
 		{
@@ -236,7 +246,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 				// On a le EXECUTION_END d'une frame
 				if(f.code == IncomingCode.EXECUTION_END)
 				{
-					log.debug("EXECUTION_END reçu : "+f+". On répond par un END_ORDER.", Verbose.SERIE.masque);
+					log.debug("EXECUTION_END reçu : " + f + ". On répond par un END_ORDER.", Verbose.SERIE.masque);
 
 					pending.setDeathDate(); // tes jours sont comptés…
 					// on envoie un END_ORDER
@@ -249,17 +259,17 @@ public class SerieCoucheTrame implements Service, SerialClass
 				}
 				else if(f.code == IncomingCode.STATUS_UPDATE)
 				{
-					log.debug("STATUS_UPDATE reçu : "+f, Verbose.SERIE.masque);
-					
+					log.debug("STATUS_UPDATE reçu : " + f, Verbose.SERIE.masque);
+
 					return new Paquet(f.message, pending.ticket, pending.origine, f.code);
 				}
 				else
-					throw new ProtocolException(f.code+" reçu à la place de EXECUTION_END ou STATUS_UPDATE ! "+f);
+					throw new ProtocolException(f.code + " reçu à la place de EXECUTION_END ou STATUS_UPDATE ! " + f);
 			}
 		}
-		
+
 		// On cherche parmi les trames récemment fermées
-		
+
 		it = closedFrames.iterator();
 		while(it.hasNext())
 		{
@@ -270,30 +280,31 @@ public class SerieCoucheTrame implements Service, SerialClass
 				// On avait déjà reçu l'EXECUTION_END. On ignore ce message
 				if(f.code == IncomingCode.EXECUTION_END && closed.origine.type == Order.Type.LONG)
 				{
-					log.warning("EXECUTION_END déjà reçu : "+f, Verbose.SERIE.masque);
+					log.warning("EXECUTION_END déjà reçu : " + f, Verbose.SERIE.masque);
 					return null;
 				}
 
 				if(f.code == IncomingCode.VALUE_ANSWER && closed.origine.type == Order.Type.SHORT)
 				{
-					log.warning("VALUE_ANSWER déjà reçu : "+f, Verbose.SERIE.masque);
+					log.warning("VALUE_ANSWER déjà reçu : " + f, Verbose.SERIE.masque);
 					return null;
 				}
-				
-				throw new ProtocolException(f.code+" reçu pour une trame "+closed.origine.type+" finie ! "+f);
+
+				throw new ProtocolException(f.code + " reçu pour une trame " + closed.origine.type + " finie ! " + f);
 			}
 		}
-		
-		throw new ProtocolException("ID conversation inconnu : "+f.id+". "+f);
+
+		throw new ProtocolException("ID conversation inconnu : " + f.id + ". " + f);
 	}
-	
+
 	/**
 	 * Lit une frame depuis la série
 	 * Cette méthode est bloquante
+	 * 
 	 * @return
 	 * @throws MissingCharacterException
 	 * @throws IncorrectChecksumException
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	private IncomingFrame readFrame() throws MissingCharacterException, IncorrectChecksumException, IllegalArgumentException, InterruptedException
 	{
@@ -304,31 +315,32 @@ public class SerieCoucheTrame implements Service, SerialClass
 			// Attente des données…
 			if(!serieInput.available())
 				serieInput.wait();
-			
+
 			code = serieInput.read();
-			
+
 			IncomingFrame.check(code);
 
 			longueur = serieInput.read();
 
 			if(longueur < 4 || longueur > 255)
-				throw new IllegalArgumentException("Mauvaise longueur : "+longueur+" (code = "+code+")");
+				throw new IllegalArgumentException("Mauvaise longueur : " + longueur + " (code = " + code + ")");
 			else if(longueur > 4 && code == IncomingCode.EXECUTION_BEGIN.code)
-				throw new IllegalArgumentException("Trame EXECUTION_BEGIN de longueur incorrecte ("+longueur+")");
-			
+				throw new IllegalArgumentException("Trame EXECUTION_BEGIN de longueur incorrecte (" + longueur + ")");
+
 			id = serieInput.read();
-			message = new int[longueur-4];
+			message = new int[longueur - 4];
 			for(int i = 0; i < message.length; i++)
 				message[i] = serieInput.read();
 			checksum = serieInput.read();
 		}
 		return new IncomingFrame(code, id, checksum, longueur, message);
 	}
-	
+
 	/**
 	 * Fermeture de la série
-	 * @throws InterruptedException 
-	 * @throws IOException 
+	 * 
+	 * @throws InterruptedException
+	 * @throws IOException
 	 */
 	public void close() throws InterruptedException
 	{
@@ -337,13 +349,14 @@ public class SerieCoucheTrame implements Service, SerialClass
 			Thread.sleep(300);
 		serieOutput.close();
 	}
-	
+
 	/**
 	 * GESTION DES RENVOIS ET DES DESTRUCTIONS DE TRAMES
 	 */
 
 	/**
 	 * Renvoie le temps avant qu'une trame doive être renvoyée (timeout sinon)
+	 * 
 	 * @return
 	 */
 	public synchronized int timeBeforeResend()
@@ -353,11 +366,12 @@ public class SerieCoucheTrame implements Service, SerialClass
 			out = conversations[waitingFrames.getFirst()].timeBeforeResend();
 		else
 			out = timeout;
-		return Math.max(out,0); // il faut envoyer un temps positif
+		return Math.max(out, 0); // il faut envoyer un temps positif
 	}
-	
+
 	/**
 	 * Renvoie le temps avant qu'une trame fermée soit vraiment détruite
+	 * 
 	 * @return
 	 */
 	public synchronized int timeBeforeDeath()
@@ -366,13 +380,14 @@ public class SerieCoucheTrame implements Service, SerialClass
 		if(!closedFrames.isEmpty())
 			out = conversations[closedFrames.getFirst()].timeBeforeDeath();
 		else
-			out = 2*timeout;
-		return Math.max(out,0); // il faut envoyer un temps positif
+			out = 2 * timeout;
+		return Math.max(out, 0); // il faut envoyer un temps positif
 	}
 
 	/**
 	 * Renvoie la trame la plus vieille qui en a besoin (possiblement aucune)
-	 * @throws InterruptedException 
+	 * 
+	 * @throws InterruptedException
 	 */
 	public void resend() throws InterruptedException
 	{
@@ -391,10 +406,11 @@ public class SerieCoucheTrame implements Service, SerialClass
 
 		if(trame != null)
 		{
-			log.debug("Une trame est renvoyée : "+trame.getFirstTrame(), Verbose.SERIE.masque);
+			log.debug("Une trame est renvoyée : " + trame.getFirstTrame(), Verbose.SERIE.masque);
 
 			serieOutput.add(trame, trame.getFirstTrame().trame, trame.getFirstTrame().tailleTrame);
-//			trame.updateResendDate(); // on remet la date de renvoi à plus tard
+			// trame.updateResendDate(); // on remet la date de renvoi à plus
+			// tard
 		}
 	}
 
@@ -406,7 +422,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 		while(!closedFrames.isEmpty() && conversations[closedFrames.getFirst()].needDeath())
 		{
 			int id = closedFrames.getFirst();
-			conversations[id].libre = true;  // cet ID est maintenant libre
+			conversations[id].libre = true; // cet ID est maintenant libre
 			closedFrames.removeFirst();
 		}
 	}

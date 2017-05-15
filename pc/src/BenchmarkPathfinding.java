@@ -1,19 +1,16 @@
 /*
-Copyright (C) 2013-2017 Pierre-François Gimenez
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>
-*/
+ * Copyright (C) 2013-2017 Pierre-François Gimenez
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ */
 
 import container.Container;
 import exceptions.ContainerException;
@@ -30,15 +27,18 @@ import utils.Log;
 
 /**
  * Un benchmark du pathfinding courbe
+ * 
  * @author pf
  *
  */
 
-public class BenchmarkPathfinding {
+public class BenchmarkPathfinding
+{
 
 	public static void main(String[] args)
 	{
-		try {
+		try
+		{
 			Container container = new Container();
 			Log log = container.getService(Log.class);
 			RobotReal robot = container.getService(RobotReal.class);
@@ -48,7 +48,7 @@ public class BenchmarkPathfinding {
 			CercleArrivee cercle = container.getService(CercleArrivee.class);
 
 			long avant = System.nanoTime();
-			Cinematique depart = new Cinematique(-800, 350, Math.PI/2, true, 0);
+			Cinematique depart = new Cinematique(-800, 350, Math.PI / 2, true, 0);
 			robot.setCinematique(depart);
 			cercle.set(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE, 230);
 			int nbtest = 1000;
@@ -59,11 +59,13 @@ public class BenchmarkPathfinding {
 				astar.process(chemin);
 				chemin.clear();
 			}
-			log.debug("Temps : "+(System.nanoTime() - avant) / (nbtest*1000000.));
+			log.debug("Temps : " + (System.nanoTime() - avant) / (nbtest * 1000000.));
 			container.destructor();
-		} catch (PathfindingException | InterruptedException | ContainerException | MemoryManagerException e) {
+		}
+		catch(PathfindingException | InterruptedException | ContainerException | MemoryManagerException e)
+		{
 			e.printStackTrace();
 		}
 	}
-	
+
 }

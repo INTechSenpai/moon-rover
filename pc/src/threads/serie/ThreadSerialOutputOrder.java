@@ -1,19 +1,16 @@
 /*
-Copyright (C) 2013-2017 Pierre-François Gimenez
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>
-*/
+ * Copyright (C) 2013-2017 Pierre-François Gimenez
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ */
 
 package threads.serie;
 
@@ -31,6 +28,7 @@ import utils.Log.Verbose;
 
 /**
  * Thread qui vérifie s'il faut envoyer des ordres
+ * 
  * @author pf
  *
  */
@@ -43,7 +41,7 @@ public class ThreadSerialOutputOrder extends ThreadService implements SerialClas
 	private int sleep;
 	private BufferIncomingBytes input;
 	private boolean simuleSerie;
-	
+
 	public ThreadSerialOutputOrder(Log log, SerieCoucheTrame serie, BufferIncomingBytes input, BufferOutgoingOrder data, Config config)
 	{
 		this.log = log;
@@ -58,11 +56,12 @@ public class ThreadSerialOutputOrder extends ThreadService implements SerialClas
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.debug("Démarrage de "+Thread.currentThread().getName());
+		log.debug("Démarrage de " + Thread.currentThread().getName());
 		Order message;
-		
+
 		// On envoie d'abord le ping long initial
-		try {
+		try
+		{
 			if(simuleSerie)
 				while(true)
 					Thread.sleep(10000);
@@ -73,23 +72,26 @@ public class ThreadSerialOutputOrder extends ThreadService implements SerialClas
 			{
 				serie.sendOrder(new Order(OutOrder.PING));
 				log.debug("Ping envoyé : attente de réception");
-				input.wait(); // on est notifié dès qu'on reçoit quelque chose sur la série
+				input.wait(); // on est notifié dès qu'on reçoit quelque chose
+								// sur la série
 				log.debug("Pong reçu : la connexion série est OK");
 			}
-		
+
 			while(true)
 			{
 				synchronized(data)
 				{
 					/**
-					 * Pour désactiver le ping automatique, remplacer "data.wait(500)" par "data.wait()"
+					 * Pour désactiver le ping automatique, remplacer
+					 * "data.wait(500)" par "data.wait()"
 					 */
-						
+
 					if(data.isEmpty()) // pas de message ? On attend
-//						data.wait(500);
+						// data.wait(500);
 						data.wait();
 
-					if(data.isEmpty()) // si c'est le timeout qui nous a réveillé, on envoie un ping
+					if(data.isEmpty()) // si c'est le timeout qui nous a
+										// réveillé, on envoie un ping
 					{
 						message = new Order(OutOrder.PING);
 						log.debug("Envoi d'un ping pour vérifier la connexion", Verbose.SERIE.masque);
@@ -98,12 +100,17 @@ public class ThreadSerialOutputOrder extends ThreadService implements SerialClas
 						message = data.poll();
 				}
 				serie.sendOrder(message);
-				Thread.sleep(sleep); // laisse un peu de temps entre deux trames si besoin est
+				Thread.sleep(sleep); // laisse un peu de temps entre deux trames
+										// si besoin est
 			}
-		} catch (InterruptedException e) {
-			log.debug("Arrêt de "+Thread.currentThread().getName());
-		} catch (Exception e) {
-			log.debug("Arrêt inattendu de "+Thread.currentThread().getName()+" : "+e);
+		}
+		catch(InterruptedException e)
+		{
+			log.debug("Arrêt de " + Thread.currentThread().getName());
+		}
+		catch(Exception e)
+		{
+			log.debug("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 		}

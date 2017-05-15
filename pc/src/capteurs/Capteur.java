@@ -1,24 +1,20 @@
 /*
-Copyright (C) 2013-2017 Pierre-François Gimenez
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>
-*/
+ * Copyright (C) 2013-2017 Pierre-François Gimenez
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ */
 
 package capteurs;
 
 import java.awt.Graphics;
-
 import config.Config;
 import config.ConfigInfo;
 import graphic.Fenetre;
@@ -31,6 +27,7 @@ import utils.Vec2RW;
 
 /**
  * Un capteur de proximité du robot
+ * 
  * @author pf
  *
  */
@@ -48,7 +45,7 @@ public abstract class Capteur implements Printable
 	protected double orientationRelativeRotate;
 	protected Vec2RW positionRelativeRotate;
 	private TypeCapteur type;
-	
+
 	public Capteur(Config config, Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
 		this.type = type;
@@ -68,28 +65,33 @@ public abstract class Capteur implements Printable
 
 	/**
 	 * Orientation donnée par le bas niveau
+	 * 
 	 * @param c
 	 * @param angleRoueGauche
 	 * @param angleRoueDroite
 	 */
 	public abstract void computePosOrientationRelative(Cinematique c, double angleRoueGauche, double angleRoueDroite);
-	
+
 	@Override
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
 		if(robot.isCinematiqueInitialised())
 		{
-//			double courbure = robot.getCinematique().courbureReelle;
+			// double courbure = robot.getCinematique().courbureReelle;
 			double angleRoueGauche = robot.getAngleRoueGauche(), angleRoueDroite = robot.getAngleRoueDroite();
-/*			if(Math.abs(courbure) < 0.01)
-				angleRoueGauche = angleRoueDroite = 0;
-			else
-			{
-				double R = Math.abs(1000 / courbure); // le rayon de courbure
-				angleRoueDroite = Math.signum(courbure) * Math.atan2(L, Math.abs(d+R));
-				angleRoueGauche = Math.signum(courbure) * Math.atan2(L, Math.abs(R-d));
-			}*/
-			
+			/*
+			 * if(Math.abs(courbure) < 0.01)
+			 * angleRoueGauche = angleRoueDroite = 0;
+			 * else
+			 * {
+			 * double R = Math.abs(1000 / courbure); // le rayon de courbure
+			 * angleRoueDroite = Math.signum(courbure) * Math.atan2(L,
+			 * Math.abs(d+R));
+			 * angleRoueGauche = Math.signum(courbure) * Math.atan2(L,
+			 * Math.abs(R-d));
+			 * }
+			 */
+
 			double orientation = robot.getCinematique().orientationReelle;
 			computePosOrientationRelative(robot.getCinematique(), angleRoueGauche, angleRoueDroite);
 			Vec2RW p1 = positionRelativeRotate.clone();
@@ -100,7 +102,7 @@ public abstract class Capteur implements Printable
 			p2.rotate(orientation);
 			p2.plus(robot.getCinematique().getPosition());
 			Vec2RW p3 = positionRelativeRotate.clone();
-			p3.plus(new Vec2RO(portee, - angleCone + orientationRelativeRotate, false));
+			p3.plus(new Vec2RO(portee, -angleCone + orientationRelativeRotate, false));
 			p3.rotate(orientation);
 			p3.plus(robot.getCinematique().getPosition());
 			int[] x = new int[3];
@@ -119,7 +121,8 @@ public abstract class Capteur implements Printable
 	}
 
 	@Override
-	public Layer getLayer() {
+	public Layer getLayer()
+	{
 		return Layer.FOREGROUND;
 	}
 

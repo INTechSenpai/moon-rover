@@ -1,24 +1,20 @@
 /*
-Copyright (C) 2013-2017 Pierre-François Gimenez
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>
-*/
+ * Copyright (C) 2013-2017 Pierre-François Gimenez
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ */
 
 package scripts;
 
 import java.util.LinkedList;
-
 import container.Service;
 import container.dependances.CoreClass;
 import exceptions.MemoryManagerException;
@@ -32,6 +28,7 @@ import utils.Log;
 
 /**
  * La stratégie : enchaîne les scripts et utilise le pathfinding
+ * 
  * @author pf
  *
  */
@@ -43,7 +40,7 @@ public class Strategie implements Service, CoreClass
 	private RealGameState state;
 	private ChronoGameState chrono;
 	private LinkedList<ScriptNames> strategie = new LinkedList<ScriptNames>();
-	
+
 	public Strategie(Log log, PathCache pathcache, RealGameState state, ChronoGameState chrono)
 	{
 		this.log = log;
@@ -55,24 +52,29 @@ public class Strategie implements Service, CoreClass
 		strategie.add(ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE);
 		strategie.add(ScriptNames.SCRIPT_DEPOSE_MINERAI);
 	}
-	
+
 	/**
 	 * La méthode qui gagne un match
-	 * @throws InterruptedException 
+	 * 
+	 * @throws InterruptedException
 	 */
 	public void doWinMatch() throws InterruptedException
 	{
 		ScriptNames s = strategie.getFirst();
-		try {
-			state.copyAStarCourbe(chrono); // TODO vérifier si la copie est correcte
+		try
+		{
+			state.copyAStarCourbe(chrono); // TODO vérifier si la copie est
+											// correcte
 			s.s.execute(chrono);
 			pathcache.prepareNewPath(new KeyPathCache(chrono, s, true));
 			s.s.execute(state);
 			pathcache.follow();
-		} catch (PathfindingException | UnableToMoveException | MemoryManagerException e) {
+		}
+		catch(PathfindingException | UnableToMoveException | MemoryManagerException e)
+		{
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 		}
 	}
-	
+
 }
