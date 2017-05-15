@@ -66,9 +66,10 @@ public class Strategie implements Service, CoreClass
 			state.copyAStarCourbe(chrono); // TODO vérifier si la copie est
 											// correcte
 			s.s.execute(chrono);
-			pathcache.prepareNewPath(new KeyPathCache(chrono, s, true));
+			KeyPathCache k = new KeyPathCache(chrono, s, true);
+			pathcache.prepareNewPath(k);
 			s.s.execute(state);
-			pathcache.follow();
+			pathcache.follow(k);
 		}
 		catch(PathfindingException | UnableToMoveException | MemoryManagerException e)
 		{
