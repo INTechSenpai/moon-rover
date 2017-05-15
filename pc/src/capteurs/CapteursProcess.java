@@ -27,6 +27,10 @@ import pathfinding.dstarlite.gridspace.GridSpace;
 import robot.Cinematique;
 import robot.RobotReal;
 import serie.BufferOutgoingOrder;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import config.Config;
 import config.ConfigInfo;
 import container.Container;
@@ -71,7 +75,10 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 	private long peremptionCorrection;
 	private boolean enableCorrection;
 	private int indexCorrection = 0;
+	private boolean scan = false;
 	private Cinematique[] bufferCorrection;
+	
+	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 	
 	public CapteursProcess(Container container, Log log, GridSpace gridspace, RealTable table, DStarLite dstarlite, CheminPathfinding chemin, PrintBufferInterface buffer, RobotReal robot, BufferOutgoingOrder serie, Config config)
 	{
@@ -118,6 +125,18 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 				buffer.add(c);
 	}
 
+	public synchronized void startScan()
+	{
+		mesuresScan.clear();
+		scan = true;
+	}
+	
+	public synchronized void endScan()
+	{
+		scan = false; // TODO
+	}
+	
+	
 	/**
 	 * Met à jour les obstacles mobiles
 	 */
@@ -142,6 +161,12 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 	    // parfois on n'a pas de mesure
 	    if(data.mesures == null)
 	    	return;
+	    
+	    if(scan)
+	    {
+	    	mesuresScan.add(data);
+	    	return;
+	    }
 	    
 		/**
 		 * Suppression des mesures qui sont hors-table ou qui voient un obstacle de table
