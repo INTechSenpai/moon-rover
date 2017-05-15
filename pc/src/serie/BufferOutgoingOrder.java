@@ -96,6 +96,20 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	}
 	
 	/**
+	 * Tourne les roues
+	 */
+	public synchronized Ticket setDirectionRoues(double courbure)
+	{
+		short courbureShort = (short) (courbure * 100);
+		ByteBuffer data = ByteBuffer.allocate(2);
+		data.putShort(courbureShort);
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(data, OutOrder.SET_DIRECTION, t));
+		notify();
+		return t;
+	}
+	
+	/**
 	 * Signale la vitesse max au bas niveau
 	 * @param vitesse signée
 	 * @return
