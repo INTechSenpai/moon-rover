@@ -15,6 +15,7 @@
 package capteurs;
 
 import graphic.PrintBufferInterface;
+import graphic.printable.Couleur;
 import obstacles.types.ObstacleRectangular;
 import obstacles.types.ObstacleRobot;
 import obstacles.types.ObstaclesFixes;
@@ -141,7 +142,6 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			for(int j = 0; j < 2; j++)
 			{
 				int i = tofAvant[j];
-				CapteursRobot c = CapteursRobot.values[i];
 				Vec2RO positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
 				if(positionVue == null)
 					continue;
@@ -150,7 +150,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 				positionEnnemi.plus(capteurs[i].positionRelativeRotate);
 				positionEnnemi.rotate(orientationRobot);
 				positionEnnemi.plus(positionRobot);
-				ObstacleRectangular obs = new ObstacleRectangular(positionEnnemi, longueurEnnemi, (int)(data.mesures[i] * 0.16), orientationRobot + capteurs[i].orientationRelativeRotate, c.type.couleurOrig);
+				ObstacleRectangular obs = new ObstacleRectangular(positionEnnemi, longueurEnnemi, (int)(data.mesures[i] * 0.2), orientationRobot + capteurs[i].orientationRelativeRotate, Couleur.SCAN);
 
 				if(obs.isHorsTable())
 					continue; // hors table
