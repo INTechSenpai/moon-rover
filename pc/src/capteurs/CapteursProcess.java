@@ -142,8 +142,10 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			{
 				int i = tofAvant[j];
 				CapteursRobot c = CapteursRobot.values[i];
-				getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
-
+				Vec2RO positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
+				if(positionVue == null)
+					continue;
+				
 				Vec2RW positionEnnemi = new Vec2RW(data.mesures[i] + longueurEnnemi / 2, capteurs[i].orientationRelativeRotate, true);
 				positionEnnemi.plus(capteurs[i].positionRelativeRotate);
 				positionEnnemi.rotate(orientationRobot);
