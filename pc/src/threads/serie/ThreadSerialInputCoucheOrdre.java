@@ -54,6 +54,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 	private RobotReal robot;
 	private CheminPathfinding chemin;
 	private Container container;
+	private Cinematique current = new Cinematique();
 	
 	public static boolean capteursOn = false;
 	private int nbCapteurs;
@@ -138,11 +139,16 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					int indexTrajectory = data[5];
 //							log.debug("Index trajectory : "+indexTrajectory);
 
-					Cinematique current = chemin.setCurrentIndex(indexTrajectory);
+					Cinematique theorique = chemin.setCurrentIndex(indexTrajectory);
+					
+					if(theorique == null)
+						current = new Cinematique(xRobot, yRobot, orientationRobot, true, 0);
+					else
+					{
+						theorique.copy(current);
+						current.updateReel(xRobot, yRobot, orientationRobot, current.enMarcheAvant, current.courbureReelle);
+					}
 
-					current.getPositionEcriture().setX(xRobot);
-					current.getPositionEcriture().setY(yRobot);
-					current.orientationReelle = orientationRobot;					
 					robot.setCinematique(current);
 					
 					log.debug("Le robot est en "+current.getPosition()+", orientation : "+orientationRobot+", index : "+indexTrajectory, Verbose.SERIE.masque);
