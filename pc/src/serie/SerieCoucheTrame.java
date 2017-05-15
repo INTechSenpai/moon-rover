@@ -277,10 +277,12 @@ public class SerieCoucheTrame implements Service, SerialClass
 			Conversation closed = conversations[id];
 			if(id == f.id)
 			{
-				// On avait déjà reçu l'EXECUTION_END. On ignore ce message
+				// On avait déjà reçu l'EXECUTION_END. On renvoie un END_ORDER
 				if(f.code == IncomingCode.EXECUTION_END && closed.origine.type == Order.Type.LONG)
 				{
 					log.warning("EXECUTION_END déjà reçu : " + f, Verbose.SERIE.masque);
+					endOrderFrame.updateId(f.id);
+					serieOutput.add(null, endOrderFrame.trame, endOrderFrame.tailleTrame);
 					return null;
 				}
 
