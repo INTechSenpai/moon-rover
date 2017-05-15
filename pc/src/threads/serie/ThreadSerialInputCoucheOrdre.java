@@ -248,6 +248,8 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						paquet.ticket.set(InOrder.PLUS_DE_POINTS);
 					else if(data[0] == InOrder.STOP_REQUIRED.codeInt)
 						paquet.ticket.set(InOrder.STOP_REQUIRED);
+					else if(data[0] == InOrder.TROP_LOIN.codeInt)
+						paquet.ticket.set(InOrder.TROP_LOIN);	
 				}
 								
 				/*
