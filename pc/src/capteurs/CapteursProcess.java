@@ -142,7 +142,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			for(int j = 0; j < 2; j++)
 			{
 				int i = tofAvant[j];
-				Vec2RO positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
+ 				Vec2RO positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
 				if(positionVue == null)
 					continue;
 				
@@ -343,7 +343,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			// ces capteurs ne voient pas un mur proche, ou pas le même
 			if(mur1 == null || mur2 == null || mur1 != mur2)
 				continue;
-
+			
 			Vec2RO delta = pointVu1.minusNewVector(pointVu2);
 			double deltaOrientation = mur1.orientation - delta.getArgument(); // on
 																				// veut
@@ -369,8 +369,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			 */
 			if(Math.abs(deltaOrientation) > imprecisionMaxAngle)
 			{
-				// log.debug("Imprécision en angle trop grande !
-				// "+Math.abs(deltaOrientation));
+				log.debug("Imprécision en angle trop grande !" + Math.abs(deltaOrientation), Verbose.CAPTEURS.masque);
 				continue;
 			}
 
@@ -394,7 +393,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			 */
 			if(Math.abs(deltaX) > imprecisionMaxPos || Math.abs(deltaY) > imprecisionMaxPos)
 			{
-				// log.debug("Imprécision en position trop grande !");
+				log.debug("Imprécision en position trop grande ! ("+deltaX+","+deltaY+")", Verbose.CAPTEURS.masque);
 				continue;
 			}
 
@@ -409,10 +408,14 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 																								// le
 																								// dernier
 																								// calcul
+			{
+				log.debug("Correction timeout", Verbose.CAPTEURS.masque);
 				indexCorrection = 0;
+			}
 
 			bufferCorrection[indexCorrection] = correction;
 			indexCorrection++;
+			log.debug("Intégration d'une donnée de correction", Verbose.CAPTEURS.masque);
 			if(indexCorrection == bufferCorrection.length)
 			{
 				Vec2RW posmoy = new Vec2RW();
