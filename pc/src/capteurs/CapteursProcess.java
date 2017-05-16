@@ -418,17 +418,17 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			log.debug("Intégration d'une donnée de correction", Verbose.CAPTEURS.masque);
 			if(indexCorrection == bufferCorrection.length)
 			{
-				Vec2RW posmoy = new Vec2RW();
+//				Vec2RW posmoy = new Vec2RW();
 				double orientationmoy = 0;
 				for(int i = 0; i < bufferCorrection.length; i++)
 				{
-					posmoy.plus(bufferCorrection[i].getPosition());
+//					posmoy.plus(bufferCorrection[i].getPosition());
 					orientationmoy += bufferCorrection[i].orientationReelle;
 				}
-				posmoy.scalar(1. / bufferCorrection.length);
+//				posmoy.scalar(1. / bufferCorrection.length);
 				orientationmoy /= bufferCorrection.length;
-				log.debug("Envoi d'une correction XYO : " + posmoy + " " + orientationmoy, Verbose.CAPTEURS.masque);
-				serie.correctPosition(posmoy, orientationmoy);
+				log.debug("Envoi d'une correction XYO : " + bufferCorrection[bufferCorrection.length - 1].getPosition() + " " + orientationmoy, Verbose.CAPTEURS.masque);
+				serie.correctPosition(bufferCorrection[bufferCorrection.length - 1].getPosition(), orientationmoy);
 				indexCorrection = 0;
 			}
 		}
@@ -511,6 +511,6 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			return Mur.MUR_DROIT;
 		else if(murGauche)
 			return Mur.MUR_GAUCHE;
-		return Mur.MUR_BAS;
+		return Mur.MUR_HAUT;
 	}
 }
