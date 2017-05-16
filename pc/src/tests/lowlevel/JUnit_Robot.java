@@ -42,6 +42,7 @@ import robot.Speed;
 import scripts.ScriptNames;
 import serie.BufferOutgoingOrder;
 import tests.JUnit_Test;
+import utils.Vec2RO;
 
 /**
  * Tests unitaires des trajectoires et des actionneurs
@@ -210,6 +211,18 @@ public class JUnit_Robot extends JUnit_Test
 		Thread.sleep(180000);
 	}
 
+	@Test
+	public void test_correction() throws Exception
+	{
+		Cinematique depart = new Cinematique(-300, 1750, 0, true, 0);
+		robot.setCinematique(depart);
+		data.setPosition(depart.getPosition(), depart.orientationReelle);
+		Thread.sleep(100); // on attend un peu que la position soit affectée bas niveau
+		if(!simuleSerie)
+			robot.avance(400, Speed.STANDARD);
+		log.debug("Odométrie finale : "+robot.getCinematique());
+	}
+	
 	/**
 	 * Trajectoire longue vers la gauche
 	 */
