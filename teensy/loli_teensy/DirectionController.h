@@ -15,6 +15,7 @@
 #include "ax12config.h"
 #include "Log.h"
 
+
 /* Periode d'actualisation d'une requête AX12 (4 requêtes au total) */
 #define CONTROL_PERIOD	3125 // µs
 
@@ -148,8 +149,8 @@ public:
 				scannLastIterationTime = millis();
 				if (scannPhaseLeft)
 				{
-					aimCurvature += SCANN_DELTA;
-					if (aimCurvature > SCANN_UPPER_BOUND)
+					aimCurvature = SCANN_UPPER_BOUND;
+					if (ABS(aimCurvature - realCurvature) < 0.3)
 					{
 						scannPhaseLeft = false;
 					}
