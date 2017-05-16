@@ -268,15 +268,9 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 				 */
 
 				/**
-				 * Actionneurs sans code de retour (forcément EXECUTION_END)
-				 */
-				else if(paquet.origine == OutOrder.PULL_DOWN_NET || paquet.origine == OutOrder.PULL_UP_NET || paquet.origine == OutOrder.PUT_NET_HALFWAY || paquet.origine == OutOrder.OPEN_NET || paquet.origine == OutOrder.CLOSE_NET)
-					paquet.ticket.set(InOrder.LONG_ORDER_ACK);
-
-				/**
 				 * Actionneurs avec code de retour (forcément EXECUTION_END)
 				 */
-				else if(paquet.origine == OutOrder.CROSS_FLIP_FLOP || paquet.origine == OutOrder.EJECT_LEFT_SIDE || paquet.origine == OutOrder.EJECT_RIGHT_SIDE || paquet.origine == OutOrder.REARM_LEFT_SIDE || paquet.origine == OutOrder.REARM_RIGHT_SIDE)
+				else if(paquet.origine == OutOrder.PULL_DOWN_NET || paquet.origine == OutOrder.PULL_UP_NET || paquet.origine == OutOrder.PUT_NET_HALFWAY || paquet.origine == OutOrder.CROSS_FLIP_FLOP || paquet.origine == OutOrder.EJECT_LEFT_SIDE || paquet.origine == OutOrder.EJECT_RIGHT_SIDE || paquet.origine == OutOrder.REARM_LEFT_SIDE || paquet.origine == OutOrder.REARM_RIGHT_SIDE)
 				{
 					if(data[0] == InOrder.ACT_SUCCESS.codeInt)
 						paquet.ticket.set(InOrder.ACT_SUCCESS);
