@@ -18,14 +18,21 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import config.ConfigInfo;
+import graphic.PrintBuffer;
+import obstacles.types.ObstacleCircular;
 import pathfinding.KeyPathCache;
 import pathfinding.PathCache;
 import pathfinding.RealGameState;
+import pathfinding.astar.arcs.ArcCourbeDynamique;
+import pathfinding.astar.arcs.BezierComputer;
+import pathfinding.chemin.CheminPathfinding;
 import robot.Cinematique;
+import robot.CinematiqueObs;
 import robot.RobotColor;
 import robot.RobotReal;
 import robot.Speed;
@@ -321,11 +328,35 @@ public class JUnit_Robot extends JUnit_Test
 		}
 	}
 
-	/**
-	 * Le robot recule de 20cm
-	 * 
-	 * @throws Exception
-	 */
+	@Test
+	public void test_arc_cercle() throws Exception
+	{
+		BezierComputer bezier = container.getService(BezierComputer.class);
+		PrintBuffer buffer = container.getService(PrintBuffer.class);
+	
+		Cinematique c = new Cinematique(441.63,1589.78, 9.405, true, 0);
+		data.setPosition(c.getPosition(), c.orientationReelle); // on envoie la
+																// position haut
+																// niveau
+		Thread.sleep(1000);
+		ScriptNames.SCRIPT_CRATERE_HAUT_DROITE.s.setUpCercleArrivee();
+		log.debug("Initial : " + c);
+		ArcCourbeDynamique a = bezier.trajectoireCirculaireVersCentre(c);
+
+		LinkedList<CinematiqueObs> path = new LinkedList<CinematiqueObs>();
+		CheminPathfinding chemin = container.getService(CheminPathfinding.class);
+		for(CinematiqueObs co : a.arcs)
+		{
+			path.add(co);
+			buffer.addSupprimable(new ObstacleCircular(co.getPosition(), 4));
+		}
+
+		chemin.addToEnd(path);
+		if(!simuleSerie)
+			robot.followTrajectory(v);
+	}
+
+
 	@Test
 	public void recule() throws Exception
 	{
@@ -341,7 +372,7 @@ public class JUnit_Robot extends JUnit_Test
 		if(!simuleSerie)
 			robot.avance(-200, v);
 	}
-
+	
 	/**
 	 * Le robot avance de 20cm
 	 * 
