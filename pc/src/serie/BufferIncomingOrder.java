@@ -14,11 +14,9 @@
 
 package serie;
 
-import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import capteurs.SensorsData;
 import utils.Log;
 import container.Service;
 import container.dependances.SerialClass;

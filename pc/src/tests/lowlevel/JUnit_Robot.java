@@ -42,7 +42,6 @@ import robot.Speed;
 import scripts.ScriptNames;
 import serie.BufferOutgoingOrder;
 import tests.JUnit_Test;
-import utils.Vec2RO;
 
 /**
  * Tests unitaires des trajectoires et des actionneurs

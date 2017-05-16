@@ -15,8 +15,6 @@
 package serie;
 
 import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -26,7 +24,6 @@ import robot.CinematiqueObs;
 import robot.Speed;
 import serie.SerialProtocol.OutOrder;
 import serie.trame.Order;
-import serie.trame.Paquet;
 import config.Config;
 import config.ConfigInfo;
 import container.Service;

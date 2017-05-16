@@ -14,8 +14,6 @@
 
 package capteurs;
 
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
