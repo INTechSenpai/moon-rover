@@ -324,7 +324,7 @@ public class JUnit_Robot extends JUnit_Test
 		try
 		{
 			config.set(ConfigInfo.COULEUR, RobotColor.BLEU);
-			Cinematique depart = new Cinematique(550, 1905, -Math.PI / 2, true, 0);
+			Cinematique depart = new Cinematique(-550, 1905, -Math.PI / 2, true, 0);
 			robot.setCinematique(depart);
 			data.setPosition(depart.getPosition(), depart.orientationReelle); // on
 																				// envoie
