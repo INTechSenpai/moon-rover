@@ -627,40 +627,23 @@ public:
 
 
 /*
-	Règle la courbure. (Fonctionne uniquement à l'arrêt) 
+	Fait tourner les roues doucement, vers la
+	gauche puis vers la droite. Pour balayer 
+	l’environnement avec les capteurs.
 */
-class SetDirection : public OrderLong, public Singleton<SetDirection>
+class Scann : public OrderLong, public Singleton<Scann>
 {
 public:
-	SetDirection() {}
+	Scann() {}
 	void _launch(const std::vector<uint8_t> & input)
 	{
-		int16_t curv = (input.at(0) << 8) + input.at(1);
-		aimCurv = ((float)curv) / 100;
-		directionControler.setAimCurvature(aimCurv);
-		startTime = millis();
+		directionControler.scann(true);
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		if (millis() - startTime > TIMEOUT_MOVE_INIT)
-		{
-			finished = true;
-			retStatus = 0x01;
-		}
-		else if (ABS(aimCurv - directionControler.getRealCurvature()) < CURVATURE_TOLERANCE)
-		{
-			finished = true;
-			retStatus = 0x00;
-		}
+		finished = directionControler.scann(false);
 	}
-	void terminate(std::vector<uint8_t> & output)
-	{
-		output.push_back(retStatus);
-	}
-private:
-	uint32_t startTime;
-	uint8_t retStatus;
-	float aimCurv;
+	void terminate(std::vector<uint8_t> & output) {}
 };
 
 

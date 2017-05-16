@@ -29,6 +29,12 @@
 #define ANGLE_MAX_LEFT	193
 #define ANGLE_MAX_RIGHT	216
 
+#define SCANN_PERIOD		100		// ms
+#define SCANN_DELTA			0.8		// m^-1
+#define SCANN_UPPER_BOUND	(6)		// m^-1
+#define SCANN_LOWER_BOUND	(-6)	// m^-1
+
+
 class DirectionController : public Singleton<DirectionController>, public Printable
 {
 public:
@@ -48,6 +54,7 @@ public:
 		rightMotor.enableTorque();
 		leftMotor.jointMode();
 		rightMotor.jointMode();
+		scanning = false;
 	}
 
 	void control()
@@ -95,6 +102,7 @@ public:
 	
 	void setAimCurvature(float curvature)
 	{
+		scanning = false;
 		aimCurvature = curvature * MAGIC_CORRECTOR;
 	}
 	float getRealCurvature() const
@@ -122,6 +130,53 @@ public:
 	{
 		return p.printf("%g_%g_%u_%u_%u_%u", aimCurvature, realCurvature, realLeftAngle, realRightAngle, aimLeftAngle, aimRightAngle);
 	}
+
+	/* Fait tourner les roues doucement vers la gauche, puis vers la droite. Renvoie vrai si la procédure est terminée, faux sinon */
+	bool scann(bool launch)
+	{
+		if (launch)
+		{
+			scanning = true;
+			scannLastIterationTime = 0;
+			scannPhaseLeft = true;
+			return false;
+		}
+		else if (scanning)
+		{
+			if (millis() - scannLastIterationTime > SCANN_PERIOD)
+			{
+				scannLastIterationTime = millis();
+				if (scannPhaseLeft)
+				{
+					aimCurvature += SCANN_DELTA;
+					if (aimCurvature > SCANN_UPPER_BOUND)
+					{
+						scannPhaseLeft = false;
+					}
+					return false;
+				}
+				else
+				{
+					aimCurvature -= SCANN_DELTA;
+					if (aimCurvature < SCANN_LOWER_BOUND)
+					{
+						scanning = false;
+						return true;
+					}
+					return false;
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return true;
+		}
+	}
+
 
 private:
 	void updateRealCurvature()
@@ -213,6 +268,11 @@ private:
 	InterfaceAX12 & serialAX;
 	DynamixelMotor leftMotor;
 	DynamixelMotor rightMotor;
+
+	/* Indique que le robot est en train de faire un scann */
+	volatile bool scanning;
+	uint32_t scannLastIterationTime;
+	bool scannPhaseLeft;
 };
 
 
