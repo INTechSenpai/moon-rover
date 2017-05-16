@@ -1,6 +1,13 @@
 language : java
-install : cd pc
-script : ant
+install :
+    - cd pc
+    - echo "SIMULE_SERIE = true" > config.ini
+    - echo "GRAPHIC_DIFFERENTIAL = false" >> config.ini
+    - echo "GRAPHIC_EXTERNAL = false" >> config.ini
+    - cat config.ini
+script :
+    - ant
+    - ant tests
 jdk :
     - oraclejdk8
 notifications:

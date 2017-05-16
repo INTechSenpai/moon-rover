@@ -12,6 +12,7 @@ regles/
 Mécanique.lnk
 pc/config.ini
 pc/logs/
+pc/junit/
 pc/videos/
 .classpath
 .cproject
