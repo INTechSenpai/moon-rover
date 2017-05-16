@@ -1,9 +1,13 @@
+./run_junit.sh tests.lowlevel.JUnit_Robot#debug
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_ax12
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_actionneurs
 ./run_junit.sh tests.lowlevel.JUnit_Robot#creneau
+./run_junit.sh tests.lowlevel.JUnit_Robot#statique
 ./run_junit.sh tests.lowlevel.JUnit_Robot#courbe_loin
 ./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune
 ./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_cratere_droit_HL
+./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_cratere_droit_HL_prehension
+./run_junit.sh tests.lowlevel.JUnit_Robot#depart_bleu_cratere_gauche_HL_prehension
 ./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_cratere_droit_HL_shoot
 ./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_cratere_gauche_HL
 ./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_HL
@@ -33,4 +37,3 @@
 ./run_junit.sh tests.lowlevel.JUnit_Robot#petit_cercle_gauche_sym
 ./run_junit.sh tests.lowlevel.JUnit_Robot#droite_sym
 ./run_junit.sh tests.lowlevel.JUnit_Robot#gauche_sym
-./run_junit.sh tests.lowlevel.JUnit_Robot#debug

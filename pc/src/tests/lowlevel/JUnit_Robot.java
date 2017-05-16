@@ -36,6 +36,7 @@ import pathfinding.astar.arcs.vitesses.VitesseClotho;
 import pathfinding.chemin.CheminPathfinding;
 import robot.Cinematique;
 import robot.CinematiqueObs;
+import robot.RobotColor;
 import robot.RobotReal;
 import robot.Speed;
 import scripts.ScriptNames;
@@ -276,6 +277,65 @@ public class JUnit_Robot extends JUnit_Test
 			Thread.sleep(100); // on attend un peu que la position soit affectée
 								// bas niveau
 			pathcache.computeAndFollow(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, false));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace(log.getPrintWriter());
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	/**
+	 * Va au cratère droit
+	 */
+	@Test
+	public void depart_jaune_cratere_droit_HL_prehension() throws Exception
+	{
+		try
+		{
+			Cinematique depart = new Cinematique(550, 1905, -Math.PI / 2, true, 0);
+			robot.setCinematique(depart);
+			data.setPosition(depart.getPosition(), depart.orientationReelle); // on
+																				// envoie
+																				// la
+																				// position
+																				// haut
+																				// niveau
+			Thread.sleep(100); // on attend un peu que la position soit affectée
+								// bas niveau
+			pathcache.computeAndFollow(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, false));
+			ScriptNames.SCRIPT_CRATERE_HAUT_DROITE.s.execute(state);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace(log.getPrintWriter());
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	/**
+	 * Va au cratère gauche
+	 */
+	@Test
+	public void depart_bleu_cratere_gauche_HL_prehension() throws Exception
+	{
+		try
+		{
+			config.set(ConfigInfo.COULEUR, RobotColor.BLEU);
+			Cinematique depart = new Cinematique(550, 1905, -Math.PI / 2, true, 0);
+			robot.setCinematique(depart);
+			data.setPosition(depart.getPosition(), depart.orientationReelle); // on
+																				// envoie
+																				// la
+																				// position
+																				// haut
+																				// niveau
+			Thread.sleep(100); // on attend un peu que la position soit affectée
+								// bas niveau
+			pathcache.computeAndFollow(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, false));
+			ScriptNames.SCRIPT_CRATERE_HAUT_DROITE.s.execute(state);
 		}
 		catch(Exception e)
 		{
