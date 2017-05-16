@@ -31,9 +31,10 @@
 #define ANGLE_MAX_RIGHT	216
 
 #define SCANN_PERIOD		100		// ms
-#define SCANN_DELTA			0.8		// m^-1
-#define SCANN_UPPER_BOUND	(6)		// m^-1
-#define SCANN_LOWER_BOUND	(-6)	// m^-1
+#define SCANN_DELTA			1		// m^-1
+#define SCANN_UPPER_BOUND	(5.5)	// m^-1
+#define SCANN_LOWER_BOUND	(-5.5)	// m^-1
+#define SCANN_TIMEOUT		3000	// ms
 
 
 class DirectionController : public Singleton<DirectionController>, public Printable
@@ -139,11 +140,18 @@ public:
 		{
 			scanning = true;
 			scannLastIterationTime = 0;
+			scannBeginTime = millis();
 			scannPhaseLeft = true;
 			return false;
 		}
 		else if (scanning)
 		{
+			if (millis() - scannBeginTime > SCANN_TIMEOUT)
+			{
+				scanning = false;
+				return true;
+			}
+
 			if (millis() - scannLastIterationTime > SCANN_PERIOD)
 			{
 				scannLastIterationTime = millis();
@@ -273,6 +281,7 @@ private:
 	/* Indique que le robot est en train de faire un scann */
 	volatile bool scanning;
 	uint32_t scannLastIterationTime;
+	uint32_t scannBeginTime;
 	bool scannPhaseLeft;
 };
 
