@@ -15,13 +15,18 @@
 package serie;
 
 import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import capteurs.SensorMode;
 import robot.CinematiqueObs;
 import robot.Speed;
 import serie.SerialProtocol.OutOrder;
 import serie.trame.Order;
+import serie.trame.Paquet;
 import config.Config;
 import config.ConfigInfo;
 import container.Service;
@@ -56,8 +61,8 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		prescaler = config.getByte(ConfigInfo.SENSORS_PRESCALER);
 	}
 
-	private volatile LinkedList<Order> bufferBassePriorite = new LinkedList<Order>();
-	private volatile LinkedList<Order> bufferTrajectoireCourbe = new LinkedList<Order>();
+	private Queue<Order> bufferBassePriorite = new ConcurrentLinkedQueue<Order>();
+	private Queue<Order> bufferTrajectoireCourbe = new ConcurrentLinkedQueue<Order>();
 	private volatile boolean sendStop = false;
 	private volatile Ticket stop = null;
 

@@ -14,8 +14,11 @@
 
 package capteurs;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import utils.Log;
 import container.Service;
 import container.dependances.SerialClass;
@@ -46,7 +49,7 @@ public class SensorsDataBuffer implements Service, SerialClass
 		return buffer.isEmpty();
 	}
 
-	private volatile Queue<SensorsData> buffer = new LinkedList<SensorsData>();
+	private Queue<SensorsData> buffer = new ConcurrentLinkedQueue<SensorsData>();
 
 	/**
 	 * Ajout d'un élément dans le buffer et provoque un "notifyAll"

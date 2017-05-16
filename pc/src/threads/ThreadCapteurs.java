@@ -51,7 +51,7 @@ public class ThreadCapteurs extends ThreadService implements LowPFClass, HighPFC
 		{
 			while(true)
 			{
-				SensorsData e = null;
+				SensorsData e;
 				synchronized(buffer)
 				{
 					if(buffer.isEmpty())
