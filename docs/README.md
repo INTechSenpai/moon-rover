@@ -2,7 +2,7 @@
 
 # INTech Senpaï vous présente son nouveau robot : le moon rover !
 
-![Poster de l'équipe](https://raw.githubusercontent.com/INTechSenpai/moon-rover/master/docs/poster.png)
+![Poster de l'équipe](https://raw.githubusercontent.com/INTechSenpai/moon-rover/master/docs/poster.jpg)
 
 ## Coupe de France de robotique 2017
 
