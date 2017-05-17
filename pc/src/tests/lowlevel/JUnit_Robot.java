@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import capteurs.SensorMode;
 import config.ConfigInfo;
 import graphic.PrintBuffer;
 import obstacles.types.ObstacleCircular;
@@ -154,7 +155,14 @@ public class JUnit_Robot extends JUnit_Test
 		robot.leveFilet();
 		robot.bougeFiletMiChemin();
 	}
-
+	
+	@Test
+	public void test_capteurs() throws Exception
+	{
+		robot.setSensorMode(SensorMode.BACK_AND_SIDES);
+		Thread.sleep(10000);
+	}
+	
 	/**
 	 * Test de l'attrape-rêve
 	 * 

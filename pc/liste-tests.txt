@@ -1,4 +1,5 @@
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_ax12
+./run_junit.sh tests.lowlevel.JUnit_Robot#test_capteurs
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_actionneurs
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_correction
 ./run_junit.sh tests.lowlevel.JUnit_Robot#avance
