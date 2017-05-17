@@ -61,10 +61,10 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	private PrintBufferInterface buffer;
 	private BufferOutgoingOrder out;
 	private CheminPathfinding chemin;
-	private boolean cinematiqueInitialised = false;
+	private volatile boolean cinematiqueInitialised = false;
 	private CinematiqueObs[] pointsAvancer = new CinematiqueObs[256];
 	private SensorMode lastMode = null;
-	private double angleRoueGauche, angleRoueDroite;
+	private volatile double angleRoueGauche, angleRoueDroite;
 
 	// Constructeur
 	public RobotReal(Log log, BufferOutgoingOrder out, PrintBufferInterface buffer, CheminPathfinding chemin, Config config)
