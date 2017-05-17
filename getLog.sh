@@ -1,3 +1,5 @@
+python=python3.5
+
 echo Searching log file...
 logName=$(ssh pi@moonrover ls -t moon-rover/pc/logs | head -1)
 echo Last log file is: $logName
@@ -22,7 +24,7 @@ fi
 
 echo Retrieving files...
 scp -q pi@moonrover:~/moon-rover/pc/logs/$logName tmp/log.txt
-version=$(python debug_tools/readCommitNumber.py tmp/log.txt)
+version=$($python debug_tools/readCommitNumber.py tmp/log.txt)
 echo $version
 
 if [ "$matching" = true ]; then

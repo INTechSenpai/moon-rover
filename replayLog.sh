@@ -1,1 +1,2 @@
-./pc/run.sh VideoReader -v tmp/vid.dat -l tmp/log.txt
+cd pc/
+./run.sh VideoReader -v ../tmp/vid.dat -l ../tmp/log.txt
