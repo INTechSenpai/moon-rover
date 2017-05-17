@@ -25,3 +25,6 @@ Le moon rover a deux processeurs :
 
 De plus, afin de voir son environnement, le moon rover a 10 capteurs qui lui permettent de voir dans toutes les directions.
 
+Ce qu'on ne voit pas de l'extérieur :
+
+![Électronique du rover](https://raw.githubusercontent.com/INTechSenpai/moon-rover/master/docs/elec.jpg)
