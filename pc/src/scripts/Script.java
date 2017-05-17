@@ -45,9 +45,11 @@ public abstract class Script
 
 	public void execute(GameState<? extends Robot> state) throws InterruptedException
 	{
+		log.debug("Début de l'exécution de " + getClass().getSimpleName());
 		try
 		{
 			run(state);
+			log.debug("Fin de l'exécution de " + getClass().getSimpleName());
 		}
 		catch(UnableToMoveException | ActionneurException e)
 		{
