@@ -16,6 +16,8 @@ Le moon rover se comporte comme une voiture : il a quatre roues, les deux roues 
 
 ![Animation de la recherche tentaculaire](https://raw.githubusercontent.com/INTechSenpai/moon-rover/master/docs/cerisier.gif)
 
+Si vous souhaitez utiliser ce pathfinding pour l'un de vos projets, vous pouvez aller sur la [page de la librairie associée](https://github.com/PFGimenez/PF-library).
+
 ## Hardware
 
 Le moon rover a deux processeurs :
