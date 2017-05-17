@@ -1,7 +1,7 @@
 #ifndef _INFRAREDSENSOR_h
 #define _INFRAREDSENSOR_h
 
-#include "Wire\Wire.h"
+#include <Wire.h>
 
 class InfraredSensor
 {

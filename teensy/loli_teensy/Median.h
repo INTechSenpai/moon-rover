@@ -1,6 +1,8 @@
 #ifndef _MEDIAN_h
 #define _MEDIAN_h
 
+#include "Arduino.h"
+
 template<typename T, unsigned int const BUFFER_SIZE>
 class Median
 {

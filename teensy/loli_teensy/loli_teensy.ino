@@ -55,7 +55,7 @@
 #include "Vutils.h"
 
 #include <Arduino.h>
-#include <Wire\Wire.h>
+#include <Wire.h>
 #include <EEPROM.h>
 #include <vector>
 

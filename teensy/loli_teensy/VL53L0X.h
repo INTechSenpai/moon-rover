@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include "utils.h"
-#include <Wire\Wire.h>
+#include <Wire.h>
 
 class VL53L0X
 {

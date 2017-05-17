@@ -2,9 +2,9 @@
 #define _COMMUNICATION_SETUP_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
+	#include "Arduino.h"
 #else
-#include "WProgram.h"
+	#include "WProgram.h"
 #endif
 
 /* Liaison série avec la Raspberry pi */

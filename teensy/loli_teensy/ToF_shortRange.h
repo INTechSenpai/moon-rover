@@ -2,9 +2,9 @@
 #define _TOF_SHORT_RANGE_H
 
 #if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
+	#include "Arduino.h"
 #else
-#include "WProgram.h"
+	#include "WProgram.h"
 #endif
 
 #include "VL6180X.h"
