@@ -9,7 +9,7 @@
 
 #include "Dynamixel.h"
 
-#define COM_TIMEOUT 2 // unit: ms [WARNING: standard timeout is 50]
+#define COM_TIMEOUT 50 // unit: ms [WARNING: standard timeout is 50]
 
 /**
  * \class  DynamixelInterface
@@ -49,13 +49,13 @@ public:
 	* The function wait for a new packet on the bus. Timeout depends of timeout of the underlying stream.
 	* Return error code in case of communication error (timeout, checksum error, ...)
 	*/
-	void receivePacket(DynamixelPacket &aPacket);
+	void receivePacket(DynamixelPacket &aPacket, uint8_t answerSize = 0);
 	
 	/**
 	* \brief Send the current packet, wait for the answer and update the mStatus acordingly
 	* \param[in] aExpectStatus : should be "aStatusReturnLevel>0 && aID!=BROADCAST_ID"
 	*/
-	void transaction(bool aExpectStatus);
+	void transaction(bool aExpectStatus, uint8_t memorySize = 0);
 	
 	//sizeof(T) must be lower than DYN_INTERNAL_BUFFER_SIZE, and in any case lower than 256
 	template<class T>

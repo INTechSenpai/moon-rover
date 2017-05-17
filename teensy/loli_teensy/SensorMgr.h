@@ -9,6 +9,7 @@
 #include "pin_mapping.h"
 #include <Printable.h>
 #include "Log.h"
+#include "Median.h"
 
 #define NB_SENSORS 12
 
@@ -100,7 +101,8 @@ public:
 				values[0] = (uint8_t)mesureLPAvant;
 				break;
 			case 1:
-				values[1] = irGauche.getMesure();
+				irGaucheMedian.add(irGauche.getMesure());
+				values[1] = irGaucheMedian.value();
 				break;
 			case 2:
 				mesureLPArriere = (tofLPArriere.getMesure() - 30) / 2;
@@ -111,7 +113,8 @@ public:
 				values[2] = (uint8_t)mesureLPArriere;
 				break;
 			case 3:
-				values[3] = irDroit.getMesure();
+				irDroitMedian.add(irDroit.getMesure());
+				values[3] = irDroitMedian.value();
 				break;
 			case 4:
 				values[4] = tofAVGauche.getMesure();
@@ -224,6 +227,9 @@ private:
 	ToF_shortRange tofFlanARDroit;	// #10	[mm]
 	ToF_shortRange tofFlanAVDroit;	// #11	[mm]
 	ToF_shortRange tofAVDroit;		// #12	[mm]
+
+	Median<uint8_t, 3> irGaucheMedian;
+	Median<uint8_t, 3> irDroitMedian;
 
 	/*
 		Contient pour chaque capteur (dans l'odre défini ci-dessus), le delai à attendre

@@ -95,7 +95,7 @@ void DynamixelInterface::sendPacket(const DynamixelPacket &aPacket)
 	readMode();
 }
 
-void DynamixelInterface::receivePacket(DynamixelPacket &aPacket)
+void DynamixelInterface::receivePacket(DynamixelPacket &aPacket, uint8_t answerSize)
 {
 	static uint8_t buffer[3];
 	aPacket.mIDListSize = 0;
@@ -116,8 +116,13 @@ void DynamixelInterface::receivePacket(DynamixelPacket &aPacket)
 		aPacket.mStatus = DYN_STATUS_COM_ERROR | DYN_STATUS_TIMEOUT;
 		return;
 	}
-	aPacket.mID = buffer[0];
-	if (aPacket.mLength != buffer[1])
+	if (aPacket.mID != buffer[0])
+	{
+		aPacket.mStatus = DYN_STATUS_COM_ERROR;
+		return;
+	}
+	aPacket.mLength = buffer[1];
+	if (aPacket.mLength > 2 && aPacket.mLength - 2 != answerSize)
 	{
 		aPacket.mStatus = DYN_STATUS_COM_ERROR;
 		return;
@@ -139,12 +144,12 @@ void DynamixelInterface::receivePacket(DynamixelPacket &aPacket)
 	}
 }
 
-void DynamixelInterface::transaction(bool aExpectStatus)
+void DynamixelInterface::transaction(bool aExpectStatus, uint8_t answerSize)
 {
 	sendPacket(mPacket);
 	if(aExpectStatus)
 	{
-		receivePacket(mPacket);
+		receivePacket(mPacket, answerSize);
 	}
 	else
 	{
@@ -155,7 +160,7 @@ void DynamixelInterface::transaction(bool aExpectStatus)
 DynamixelStatus DynamixelInterface::read(uint8_t aID, uint8_t aAddress, uint8_t aSize, uint8_t *aPtr, uint8_t aStatusReturnLevel)
 {
 	mPacket=DynamixelPacket(aID, DYN_READ, 4, aPtr, aAddress, aSize);
-	transaction(aStatusReturnLevel>0 && aID!=BROADCAST_ID);
+	transaction(aStatusReturnLevel>0 && aID!=BROADCAST_ID, aSize);
 	return mPacket.mStatus;
 }
 
