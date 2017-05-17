@@ -36,6 +36,7 @@ project.properties
 /**/__vm/
 *.vcxproj
 *.vcxproj.filters
+*.vscode
 
 # Documentation
 *.doc
