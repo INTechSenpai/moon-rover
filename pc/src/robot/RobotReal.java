@@ -15,7 +15,6 @@
 package robot;
 
 import java.awt.Graphics;
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import capteurs.SensorMode;
@@ -54,12 +53,6 @@ import graphic.printable.Segment;
 
 public class RobotReal extends Robot implements Service, Printable, CoreClass
 {
-	public class AnglesRoues implements Serializable
-	{
-		private static final long serialVersionUID = 3691445199447393768L;
-		public volatile double angleRoueGauche, angleRoueDroite;
-	}
-	
 	protected volatile boolean matchDemarre = false;
 	protected volatile long dateDebutMatch;
 	private boolean simuleSerie;
