@@ -55,6 +55,7 @@ public class SerialProtocol
 		FUNNY_ACTION(0x47, Type.LONG),
 		LOCK_NET(0x48, Type.LONG),
 		SCAN(0x49, Type.LONG),
+		CLOSE_NET_FORCE(0x4A, Type.LONG),
 
 		ASK_COLOR(0x59, Type.SHORT),
 		PING(0x5A, Type.SHORT),

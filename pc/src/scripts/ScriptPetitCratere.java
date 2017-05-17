@@ -122,7 +122,7 @@ public class ScriptPetitCratere extends Script
 
 			state.robot.fermeFilet();
 			state.robot.ouvreFilet();
-			state.robot.fermeFilet();
+			state.robot.fermeFiletForce();
 
 			try
 			{

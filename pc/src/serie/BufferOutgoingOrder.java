@@ -266,6 +266,17 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		notify();
 		return t;
 	}
+	
+	/**
+	 * Ferme le filet en forçant
+	 */
+	public synchronized Ticket fermeFiletForce()
+	{
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(OutOrder.CLOSE_NET_FORCE, t));
+		notify();
+		return t;
+	}
 
 	/**
 	 * Ejecte les balles
