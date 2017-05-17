@@ -112,10 +112,11 @@ public:
 				std::vector<uint8_t> pos_vect(io.begin() + i, io.begin() + i + 5);
 				Position pos(pos_vect);
 				TrajectoryPoint newTrajPoint(pos, io.at(i + 5), io.at(i + 6));
-				//Serial.println(newTrajPoint);
+				Serial.println(newTrajPoint);
 				motionControlSystem.addTrajectoryPoint(newTrajPoint, index);
 				index++;
 			}
+			Serial.println();
 		}
 		io.clear();
 	}

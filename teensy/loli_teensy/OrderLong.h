@@ -441,6 +441,28 @@ private:
 
 
 /*
+	Ferme les mailles du filet en forçant un peu
+*/
+class CloseNetForce : public OrderLong, public Singleton<CloseNetForce>
+{
+public:
+	CloseNetForce() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{
+		actuatorMgr.closeNetForce(true);
+	}
+	void onExecute(std::vector<uint8_t> & output)
+	{
+		retStatus = actuatorMgr.closeNetForce(false);
+		finished = retStatus != 0xFF;
+	}
+	void terminate(std::vector<uint8_t> & output) {}
+private:
+	uint8_t retStatus;
+};
+
+
+/*
 	Serre les mailles du filet.
 */
 class LockNet : public OrderLong, public Singleton<LockNet>

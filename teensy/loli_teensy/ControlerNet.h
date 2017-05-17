@@ -15,6 +15,7 @@
 // ms
 #define DELAY_OPEN_NET			1400
 #define DELAY_CLOSE_NET			1400
+#define DELAY_CLOSE_NET_FORCE	2000
 #define DELAY_LOCK_NET			200
 #define DELAY_EJECT_LEFT_SIDE	300
 #define DELAY_EJECT_RIGHT_SIDE	300
@@ -76,6 +77,22 @@ public:
 			beginTime = millis();
 		}
 		else if (millis() - beginTime > DELAY_CLOSE_NET)
+		{
+			synchronousPWM.stop();
+			return SUCCESS;
+		}
+		return RUNNING;
+	}
+
+	ActuatorStatus closeNetForce(bool launch)
+	{
+		static uint32_t beginTime;
+		if (launch)
+		{
+			synchronousPWM.net(PWM_CLOSE_NET, false);
+			beginTime = millis();
+		}
+		else if (millis() - beginTime > DELAY_CLOSE_NET_FORCE)
 		{
 			synchronousPWM.stop();
 			return SUCCESS;

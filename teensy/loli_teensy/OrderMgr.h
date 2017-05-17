@@ -63,6 +63,7 @@ public:
 		longOrderList[0x47] = &FunnyAction::Instance();
 		longOrderList[0x48] = &LockNet::Instance();
 		longOrderList[0x49] = &Scann::Instance();
+		longOrderList[0x4A] = &CloseNetForce::Instance();
 
 		// Ordres ASCII
 		immediateOrderList[0x80] = &Logon::Instance();

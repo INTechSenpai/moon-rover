@@ -17,13 +17,13 @@
 
 
 /* Positions de l'AX12, en degrés */
-#define	ANGLE_DOWN		65
+#define	ANGLE_DOWN		60
 #define ANGLE_HALFWAY	80
-#define ANGLE_UP		155
+#define ANGLE_UP		153
 #define ANGLE_RELEASE	140
 
 /* Durée maximale des mouvements de l'AX12, en ms */
-#define AX12_NET_TIMEOUT	2000
+#define AX12_NET_TIMEOUT	2500
 
 /* Vitesses des mouvements de l'AX12, valeur comprise entre 1 et 1023, 0 correspond à une vitesse non régulée égale au maximum possible */
 #define SLOW_SPEED	300		// Utilisée pour les mouvements vers le bas
@@ -70,7 +70,7 @@ public:
 		{
 			return FAILURE;
 		}
-		return moveTheAX12(launch, ANGLE_DOWN, TOLERANCE_ANGLE, lastCommTime, SLOW_SPEED);
+		return moveTheAX12(launch, ANGLE_DOWN, TOLERANCE_ANGLE, lastCommTime, SLOW_SPEED, 500);
 	}
 
 	ActuatorStatus putNetHalfway(bool launch)
@@ -103,6 +103,11 @@ public:
 	ActuatorStatus closeNet(bool launch)
 	{
 		return controlerNet.closeNet(launch);
+	}
+
+	ActuatorStatus closeNetForce(bool launch)
+	{
+		return controlerNet.closeNetForce(launch);
 	}
 
 	ActuatorStatus lockNet(bool launch)
@@ -242,12 +247,15 @@ private:
 	InterfaceAX12 ax12interface;
 	DynamixelMotor ax12net;
 
-	ActuatorStatus moveTheAX12(bool launch, uint16_t goalPosition, uint16_t tolerance, uint32_t & lastCommunicationTime, uint16_t speed = 0)
+	ActuatorStatus moveTheAX12(bool launch, uint16_t goalPosition, uint16_t tolerance, uint32_t & lastCommunicationTime, uint16_t speed = 0, uint32_t postMoveDelay = 0)
 	{
 		static bool orderFailed = false;
+		static bool moveCompleted = false;
+		static uint32_t endMoveTime;
 		if (launch)
 		{
 			orderFailed = false;
+			moveCompleted = false;
 			if (ax12net.speed(speed) != DYN_STATUS_OK)
 			{
 				orderFailed = true;
@@ -263,11 +271,9 @@ private:
 		{
 			return FAILURE;
 		}
-		else if (millis() - lastCommunicationTime > 100)
+		else if (moveCompleted)
 		{
-			lastCommunicationTime = millis();
-			int32_t currentPosition = ax12net.currentPositionDegree();
-			if (ABS(currentPosition - (int32_t)goalPosition) <= (int32_t)tolerance)
+			if (millis() - endMoveTime > postMoveDelay)
 			{
 				return SUCCESS;
 			}
@@ -275,7 +281,17 @@ private:
 			{
 				return RUNNING;
 			}
-			
+		}
+		else if (millis() - lastCommunicationTime > 100)
+		{
+			lastCommunicationTime = millis();
+			int32_t currentPosition = ax12net.currentPositionDegree();
+			if (ABS(currentPosition - (int32_t)goalPosition) <= (int32_t)tolerance)
+			{
+				moveCompleted = true;
+				endMoveTime = millis();
+			}
+			return RUNNING;	
 		}
 		else
 		{
