@@ -15,6 +15,7 @@
 package robot;
 
 import java.awt.Graphics;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import capteurs.SensorMode;
@@ -53,6 +54,12 @@ import graphic.printable.Segment;
 
 public class RobotReal extends Robot implements Service, Printable, CoreClass
 {
+	public class AnglesRoues implements Serializable
+	{
+		private static final long serialVersionUID = 3691445199447393768L;
+		public volatile double angleRoueGauche, angleRoueDroite;
+	}
+	
 	protected volatile boolean matchDemarre = false;
 	protected volatile long dateDebutMatch;
 	private boolean simuleSerie;
@@ -64,7 +71,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	private volatile boolean cinematiqueInitialised = false;
 	private CinematiqueObs[] pointsAvancer = new CinematiqueObs[256];
 	private SensorMode lastMode = null;
-	private volatile double angleRoueGauche, angleRoueDroite;
+	private AnglesRoues angles;
 
 	// Constructeur
 	public RobotReal(Log log, BufferOutgoingOrder out, PrintBufferInterface buffer, CheminPathfinding chemin, Config config)
@@ -93,18 +100,18 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 
 	public double getAngleRoueGauche()
 	{
-		return angleRoueGauche;
+		return angles.angleRoueGauche;
 	}
 
 	public double getAngleRoueDroite()
 	{
-		return angleRoueDroite;
+		return angles.angleRoueDroite;
 	}
 
 	public void setAngleRoues(double angleRoueGauche, double angleRoueDroite)
 	{
-		this.angleRoueDroite = angleRoueDroite;
-		this.angleRoueGauche = angleRoueGauche;
+		angles.angleRoueDroite = angleRoueDroite;
+		angles.angleRoueGauche = angleRoueGauche;
 	}
 
 	/*
@@ -395,6 +402,11 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 			out.setSensorMode(mode);
 			lastMode = mode;
 		}
+	}
+
+	public AnglesRoues getAngles()
+	{
+		return angles;
 	}
 
 }
