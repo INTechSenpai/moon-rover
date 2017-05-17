@@ -212,8 +212,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			 */
 			if(robot.isFiletBaisse() && (c == CapteursRobot.ToF_ARRIERE_DROITE || c == CapteursRobot.ToF_ARRIERE_GAUCHE || c == CapteursRobot.ToF_LONG_ARRIERE))
 			{
-				// if(debugCapteurs)
-				// log.debug("Filet baissé : ToF courts arrière ignorés");
+				log.debug("Filet baissé : ToF arrière ignorés", Verbose.CAPTEURS.masque);
 				continue;
 			}
 
@@ -221,15 +220,11 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			 * Le ToF arrière voit le filet et permet de servir de jauge de
 			 * remplissage
 			 */
-			if(c == CapteursRobot.ToF_LONG_ARRIERE && !robot.isFiletBaisse())
+			if(c == CapteursRobot.ToF_LONG_ARRIERE && robot.isFiletPeutEtrePlein() && data.mesures[i] > 0 && data.mesures[i] < 100)
 			{
-				if(data.mesures[i] > 0 && data.mesures[i] < 100)
-				{
-					// if(debugCapteurs)
-					// log.debug("Filet plein : ToF long arrière pas écouté");
-					robot.filetVuPlein();
-					continue;
-				}
+				log.debug("Le ToF long arrière voit le filet plein", Verbose.CAPTEURS.masque);
+				robot.filetVuPlein();
+				continue;
 			}
 
 			Vec2RO positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);

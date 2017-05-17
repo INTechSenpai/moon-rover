@@ -139,6 +139,7 @@ public class ScriptPetitCratere extends Script
 		}
 		catch(ActionneurException e)
 		{
+			state.robot.setFiletVideSur();
 			log.warning(e);
 		}
 		finally
