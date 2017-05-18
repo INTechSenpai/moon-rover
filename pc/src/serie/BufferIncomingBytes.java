@@ -34,7 +34,8 @@ public class BufferIncomingBytes implements Service, SerialClass
 	private Log log;
 
 	private InputStream input;
-
+	private volatile boolean ping = false; // y a-t-il eu le ping initial avec le LL ?
+	
 	private int bufferReading[] = new int[16384];
 
 	private volatile int indexBufferStart = 0;
@@ -44,7 +45,17 @@ public class BufferIncomingBytes implements Service, SerialClass
 	{
 		this.log = log;
 	}
+	
+	public void setPingDone()
+	{
+		ping = true;
+	}
 
+	public boolean hasPing()
+	{
+		return ping;
+	}
+	
 	public void setInput(InputStream input)
 	{
 		this.input = input;

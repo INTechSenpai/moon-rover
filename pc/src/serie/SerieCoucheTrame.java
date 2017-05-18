@@ -23,6 +23,7 @@ import config.Config;
 import config.ConfigInfo;
 import container.Service;
 import container.dependances.SerialClass;
+import exceptions.ShutdownRequestException;
 import exceptions.serie.IncorrectChecksumException;
 import exceptions.serie.MissingCharacterException;
 import exceptions.serie.ProtocolException;
@@ -158,8 +159,9 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 * C'est cette méthode qui s'occupe de commander la signalisation.
 	 * 
 	 * @return
+	 * @throws ShutdownRequestException 
 	 */
-	public Paquet readData() throws InterruptedException
+	public Paquet readData() throws InterruptedException, ShutdownRequestException
 	{
 		IncomingFrame f = null;
 		Paquet p = null;
@@ -307,8 +309,9 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 * @throws MissingCharacterException
 	 * @throws IncorrectChecksumException
 	 * @throws InterruptedException
+	 * @throws ShutdownRequestException 
 	 */
-	private IncomingFrame readFrame() throws MissingCharacterException, IncorrectChecksumException, IllegalArgumentException, InterruptedException
+	private IncomingFrame readFrame() throws MissingCharacterException, IncorrectChecksumException, IllegalArgumentException, InterruptedException, ShutdownRequestException
 	{
 		int code, id, longueur, checksum;
 		int[] message;
@@ -316,8 +319,16 @@ public class SerieCoucheTrame implements Service, SerialClass
 		{
 			// Attente des données…
 			if(!serieInput.available())
-				serieInput.wait();
+			{
+				if(serieInput.hasPing())
+					serieInput.wait(3000);
+				else
+					serieInput.wait(); // si on n'a pas encore la communication, on ne met pas de timeout
+			}
 
+			if(!serieInput.available())
+				throw new ShutdownRequestException("On n'a pas reçu de données depuis 3s : on redémarre la raspi !");
+			
 			code = serieInput.read();
 
 			IncomingFrame.check(code);

@@ -14,10 +14,14 @@
 
 package threads.serie;
 
+import container.Container;
 import container.dependances.SerialClass;
+import exceptions.ContainerException;
+import exceptions.ShutdownRequestException;
 import serie.BufferIncomingOrder;
 import serie.SerieCoucheTrame;
 import threads.ThreadService;
+import threads.ThreadShutdown;
 import utils.Log;
 
 /**
@@ -33,9 +37,11 @@ public class ThreadSerialInputCoucheTrame extends ThreadService implements Seria
 	protected Log log;
 	private SerieCoucheTrame serie;
 	private BufferIncomingOrder buffer;
+	private Container container;
 
-	public ThreadSerialInputCoucheTrame(Log log, SerieCoucheTrame serie, BufferIncomingOrder buffer)
+	public ThreadSerialInputCoucheTrame(Log log, SerieCoucheTrame serie, BufferIncomingOrder buffer, Container container)
 	{
+		this.container = container;
 		this.log = log;
 		this.serie = serie;
 		this.buffer = buffer;
@@ -54,6 +60,21 @@ public class ThreadSerialInputCoucheTrame extends ThreadService implements Seria
 		catch(InterruptedException e)
 		{
 			log.debug("Arrêt de " + Thread.currentThread().getName());
+		}
+		catch(ShutdownRequestException e)
+		{
+			ThreadShutdown t;
+			log.critical(e);
+			try
+			{
+				t = container.getService(ThreadShutdown.class);
+				Runtime.getRuntime().removeShutdownHook(t);
+				t.start();
+			}
+			catch(ContainerException e1)
+			{
+				log.critical(e1);
+			}
 		}
 		catch(Exception e)
 		{
