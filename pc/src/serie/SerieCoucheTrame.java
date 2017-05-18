@@ -321,13 +321,13 @@ public class SerieCoucheTrame implements Service, SerialClass
 			if(!serieInput.available())
 			{
 				if(serieInput.hasPing())
-					serieInput.wait(3000);
+					serieInput.wait(2000);
 				else
 					serieInput.wait(); // si on n'a pas encore la communication, on ne met pas de timeout
 			}
 
 			if(!serieInput.available())
-				throw new ShutdownRequestException("On n'a pas reçu de données depuis 3s : on redémarre la raspi !");
+				throw new ShutdownRequestException("On n'a pas reçu de données depuis 2s : on redémarre la raspi !");
 			
 			code = serieInput.read();
 
