@@ -12,43 +12,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package threads;
-
-import utils.Log;
-import container.Container;
-import container.Service;
-import exceptions.ContainerException;
-
 /**
- * Thread qui sera exécuté à la fin du programme
+ * Code de match
  * 
  * @author pf
  *
  */
 
-public class ThreadShutdown extends Thread implements Service
+public class Match
 {
-	protected Container container;
-	protected Log log;
 
-	public ThreadShutdown(Container container, Log log)
+	public static void main(String[] args)
 	{
-		this.container = container;
-		this.log = log;
+		// TODO
+		System.exit(0);
 	}
 
-	@Override
-	public void run()
-	{
-		Thread.currentThread().setName(getClass().getSimpleName());
-		log.debug("Appel à " + Thread.currentThread().getName());
-		try
-		{
-			container.destructor(false, 1);
-		}
-		catch(ContainerException | InterruptedException e)
-		{
-			System.out.println(e);
-		}
-	}
 }
