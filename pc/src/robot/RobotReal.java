@@ -15,6 +15,7 @@
 package robot;
 
 import java.awt.Graphics;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import capteurs.SensorMode;
@@ -35,6 +36,7 @@ import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
 import utils.Log;
 import utils.Vec2RO;
+import utils.Vec2RW;
 import utils.Log.Verbose;
 import graphic.Fenetre;
 import graphic.PrintBufferInterface;
@@ -42,6 +44,7 @@ import graphic.printable.Couleur;
 import graphic.printable.Layer;
 import graphic.printable.Printable;
 import graphic.printable.Segment;
+import graphic.printable.Vector;
 
 /**
  * Effectue le lien entre le code et la réalité (permet de parler à la carte bas
@@ -65,6 +68,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	private CinematiqueObs[] pointsAvancer = new CinematiqueObs[256];
 	private SensorMode lastMode = null;
 	private AnglesRoues angles = new AnglesRoues();
+	private Vector vecteur = new Vector(new Vec2RW(), 0, Couleur.ROUGE);
 
 	// Constructeur
 	public RobotReal(Log log, BufferOutgoingOrder out, PrintBufferInterface buffer, CheminPathfinding chemin, Config config)
@@ -176,6 +180,8 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		ObstacleRobot o = new ObstacleRobot(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 		o.update(cinematique.getPosition(), cinematique.orientationReelle);
 		o.print(g, f, robot);
+		vecteur.update(cinematique.getPosition(), cinematique.orientationReelle);
+		vecteur.print(g, f, robot);
 	}
 
 	@Override
@@ -401,5 +407,16 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	{
 		return angles;
 	}
+	
+	public Vector getVector()
+	{
+		return vecteur.clone();
+	}
+
+	public void setVector(Vector vecteur)
+	{
+		this.vecteur = vecteur;
+	}
+	
 
 }
