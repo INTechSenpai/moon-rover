@@ -58,12 +58,14 @@ public class ThreadSerialOutputBytes extends ThreadService implements SerialClas
 		catch(InterruptedException e)
 		{
 			log.debug("Arrêt de " + Thread.currentThread().getName());
+			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
 			log.debug("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
+			Thread.currentThread().interrupt();
 		}
 	}
 

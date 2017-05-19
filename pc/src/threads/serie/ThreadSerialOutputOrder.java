@@ -108,6 +108,7 @@ public class ThreadSerialOutputOrder extends ThreadService implements SerialClas
 		catch(InterruptedException e)
 		{
 			log.debug("Arrêt de " + Thread.currentThread().getName());
+			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
