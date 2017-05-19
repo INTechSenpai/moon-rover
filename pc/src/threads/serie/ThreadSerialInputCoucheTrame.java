@@ -60,6 +60,7 @@ public class ThreadSerialInputCoucheTrame extends ThreadService implements Seria
 		catch(InterruptedException e)
 		{
 			log.debug("Arrêt de " + Thread.currentThread().getName());
+			Thread.currentThread().interrupt();
 		}
 		catch(ShutdownRequestException e)
 		{
@@ -75,12 +76,14 @@ public class ThreadSerialInputCoucheTrame extends ThreadService implements Seria
 			{
 				log.critical(e1);
 			}
+			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
 			log.debug("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
+			Thread.currentThread().interrupt();
 		}
 	}
 

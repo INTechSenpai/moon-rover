@@ -114,6 +114,7 @@ public class ThreadSerialOutputOrder extends ThreadService implements SerialClas
 			log.debug("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
+			Thread.currentThread().interrupt();
 		}
 	}
 
