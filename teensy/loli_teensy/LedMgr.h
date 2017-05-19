@@ -75,9 +75,12 @@ public:
 				blink_s2.blink();
 				break;
 			case LedMgr::RED_BLINK:
-				blink_s1.blink();
+				blink_s1.blink(100, 100);
 				blink_s2.off();
 				break;
+			case LedMgr::GREEN_IDLE:
+				blink_s1.off();
+				blink_s2.blink(100, 900);
 			default:
 				break;
 			}
@@ -189,6 +192,18 @@ public:
 		}
 	}
 
+	void statusLed_greenIdle()
+	{
+		if (statusLed != RED_BLINK)
+		{
+			statusLed = GREEN_IDLE;
+		}
+		else
+		{
+			statusBeforeBatteryLow = GREEN_IDLE;
+		}
+	}
+
 	void statusLed_lowBattery()
 	{
 		if (statusLed != RED_BLINK)
@@ -228,7 +243,8 @@ private:
 		OFF,
 		DOUBLE_BLINK,
 		GREEN_BLINK,
-		RED_BLINK
+		RED_BLINK,
+		GREEN_IDLE
 	};
 
 	enum TurningSide
@@ -244,32 +260,71 @@ private:
 	class Blink
 	{
 	public:
-		Blink(uint8_t pin, uint32_t period)
+		Blink(uint8_t pin, uint32_t periodOn, uint32_t periodOff = 0)
 		{
 			this->pin = pin;
-			this->period = period;
+			this->periodOn = periodOn;
+			if (periodOff == 0)
+			{
+				this->periodOff = periodOn;
+			}
+			else
+			{
+				this->periodOff = periodOff;
+			}
 			lastBlinkTime = 0;
 			blinkMem = false;
 		}
 
-		bool blink()
+		bool blink(uint32_t periodOn = 0, uint32_t periodOff = 0)
 		{
-			if (millis() - lastBlinkTime > period)
+			uint32_t _periodOn, _periodOff;
+			if (periodOn != 0)
 			{
-				lastBlinkTime = millis();
-				blinkMem = !blinkMem;
-				digitalWrite(pin, blinkMem);
-				return true;
+				_periodOn = periodOn;
 			}
 			else
 			{
-				return false;
+				_periodOn = this->periodOn;
 			}
+			if (periodOff != 0)
+			{
+				_periodOff = periodOff;
+			}
+			else
+			{
+				_periodOff = this->periodOff;
+			}
+			if (blinkMem)
+			{
+				if (millis() - lastBlinkTime > _periodOn)
+				{
+					off();
+					return true;
+				}
+			}
+			else
+			{
+				if (millis() - lastBlinkTime > _periodOff)
+				{
+					on();
+					return true;
+				}
+			}
+			return false;
 		}
 
-		void setPeriod(uint32_t period)
+		void setPeriod(uint32_t periodOn, uint32_t periodOff = 0)
 		{
-			this->period = period;
+			this->periodOn = periodOn;
+			if (periodOff == 0)
+			{
+				this->periodOff = periodOn;
+			}
+			else
+			{
+				this->periodOff = periodOff;
+			}
 		}
 
 		void off()
@@ -307,7 +362,8 @@ private:
 	private:
 		uint8_t pin;
 		bool blinkMem;
-		uint32_t period;
+		uint32_t periodOn;
+		uint32_t periodOff;
 		uint32_t lastBlinkTime;
 	};
 

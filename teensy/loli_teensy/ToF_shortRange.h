@@ -26,7 +26,6 @@ public:
 		if (isON)
 		{
 			distance = vlSensor.readRangeContinuous();
-			//distance = vlSensor.readRangeSingleMillimeters();
 			if (vlSensor.timeoutOccurred())
 			{
 				distance = 0;
@@ -36,7 +35,10 @@ public:
 		{
 			distance = 0;
 		}
-
+		if (distance > 255)
+		{
+			distance = 255;
+		}
 		return distance;
 	}
 

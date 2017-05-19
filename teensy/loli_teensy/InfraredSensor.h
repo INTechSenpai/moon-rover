@@ -68,6 +68,15 @@ public:
 			distance += low;
 			distance = distance >> (4 + shift);
 
+			if (distance > 255)
+			{
+				distance = 255;
+			}
+			else if (distance < 0)
+			{
+				distance = 0;
+			}
+
 			return distance;
 		}
 		else

@@ -57,7 +57,7 @@ public:
 
 
 /*
-	Ne fait rien
+	Ne fait rien, mais indique que le HL est vivant !
 */
 class Ping : public OrderImmediate, public Singleton<Ping>
 {
@@ -66,7 +66,7 @@ public:
 
 	virtual void execute(std::vector<uint8_t> & io)
 	{
-		//Serial.println("Ping !");
+		startupMgr.hlIsAlive();
 		io.clear();
 	}
 };

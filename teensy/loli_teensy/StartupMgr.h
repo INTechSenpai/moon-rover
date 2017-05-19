@@ -20,8 +20,9 @@ public:
 		ledMgr(LedMgr::Instance()),
 		motionControlSystem(MotionControlSystem::Instance())
 	{
-		state = WAIT_FOR_COLOR_SETUP;
+		state = WAIT_FOR_HL;
 		side = UNKNOWN;
+		hlAlive = false;
 	}
 
 	enum Side
@@ -37,9 +38,15 @@ public:
 		if (millis() - lastUpdateTime > 20)
 		{
 			lastUpdateTime = millis();
-
-			//Serial.println(analogRead(PIN_GET_JUMPER));
-			if (state == WAIT_FOR_COLOR_SETUP)
+			if (state == WAIT_FOR_HL)
+			{
+				ledMgr.statusLed_greenIdle();
+				if (hlAlive)
+				{
+					state = WAIT_FOR_COLOR_SETUP;
+				}
+			}
+			else if (state == WAIT_FOR_COLOR_SETUP)
 			{
 				ledMgr.statusLed_doubleBlink();
 				if (analogRead(PIN_GET_JUMPER) > 750)
@@ -87,9 +94,15 @@ public:
 		return state == READY;
 	}
 
+	void hlIsAlive()
+	{
+		hlAlive = true;
+	}
+
 private:
 	enum State
 	{
+		WAIT_FOR_HL,
 		WAIT_FOR_COLOR_SETUP,
 		SIGNAL_SETUP_END,
 		READY
@@ -97,6 +110,8 @@ private:
 
 	Side side;
 	State state;
+
+	bool hlAlive;
 
 	uint32_t setupEnd_startTime; //ms
 

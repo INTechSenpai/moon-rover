@@ -93,10 +93,18 @@ public:
 			switch (index)
 			{
 			case 0:
-				mesureLPAvant = (tofLPAvant.getMesure() - 30) / 2;
-				if (mesureLPAvant > 255)
+				mesureLPAvant = tofLPAvant.getMesure();
+				if (mesureLPAvant > 30)
 				{
-					mesureLPAvant = 255;
+					mesureLPAvant = (mesureLPAvant - 30) / 2;
+					if (mesureLPAvant > 255)
+					{
+						mesureLPAvant = 255;
+					}
+				}
+				else
+				{
+					mesureLPAvant = 1;
 				}
 				values[0] = (uint8_t)mesureLPAvant;
 				break;
@@ -105,12 +113,26 @@ public:
 				values[1] = irGaucheMedian.value();
 				break;
 			case 2:
-				mesureLPArriere = (tofLPArriere.getMesure() - 30) / 2;
-				if (mesureLPArriere > 255)
+				mesureLPArriere = tofLPArriere.getMesure();
+				if (mesureLPArriere > 30)
+				{
+					mesureLPArriere = (mesureLPArriere - 30) / 2;
+					if (mesureLPArriere > 255)
+					{
+						mesureLPArriere = 255;
+					}
+				}
+				else
+				{
+					mesureLPArriere = 1;
+				}
+
+				if (mesureLPArriere < 100)
 				{
 					mesureLPArriere = 255;
 				}
-				values[2] = (uint8_t)mesureLPArriere;
+				medianTofLPArriere.add(mesureLPArriere);
+				values[2] = medianTofLPArriere.value();
 				break;
 			case 3:
 				irDroitMedian.add(irDroit.getMesure());
@@ -230,6 +252,7 @@ private:
 
 	Median<uint8_t, 3> irGaucheMedian;
 	Median<uint8_t, 3> irDroitMedian;
+	Median<uint8_t, 9> medianTofLPArriere;
 
 	/*
 		Contient pour chaque capteur (dans l'odre défini ci-dessus), le delai à attendre
