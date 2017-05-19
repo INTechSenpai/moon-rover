@@ -1,3 +1,7 @@
+import container.Container;
+import container.Container.ErrorCode;
+import exceptions.ContainerException;
+
 /*
  * Copyright (C) 2013-2017 Pierre-François Gimenez
  * This program is free software: you can redistribute it and/or modify
@@ -24,8 +28,26 @@ public class Match
 
 	public static void main(String[] args)
 	{
-		// TODO
-		System.exit(0);
+		Container container = null;
+		try {
+			container = new Container();
+			Thread.sleep(5000);
+			container.interruptWithCodeError(ErrorCode.DOUBLE_DESTRUCTOR);
+			Thread.sleep(500);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally
+		{
+			try {
+				System.out.println("WOLOLOLO");
+				System.exit(container.destructor().code);
+			} catch (ContainerException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 }
