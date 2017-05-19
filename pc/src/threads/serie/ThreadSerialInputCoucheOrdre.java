@@ -20,6 +20,7 @@ import capteurs.SensorsDataBuffer;
 import config.Config;
 import config.ConfigInfo;
 import container.Container;
+import container.Container.ErrorCode;
 import container.dependances.SerialClass;
 import exceptions.ContainerException;
 import robot.Cinematique;
@@ -217,24 +218,15 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					{
 						log.critical("Arrêt d'urgence provenant du bas niveau !");
 						paquet.ticket.set(InOrder.ARRET_URGENCE);
+						// On arrête le thread principal
+						container.interruptWithCodeError(ErrorCode.EMERGENCY_STOP);
 					}
 					else
 					{
 						paquet.ticket.set(InOrder.MATCH_FINI);
 						robot.funnyAction();
-					}
-
-					// On lance manuellement le thread d'arrêt
-					ThreadShutdown t;
-					try
-					{
-						t = container.getService(ThreadShutdown.class);
-						Runtime.getRuntime().removeShutdownHook(t);
-						t.start();
-					}
-					catch(ContainerException e)
-					{
-						log.critical(e);
+						// On arrête le thread principal
+						container.interruptWithCodeError(ErrorCode.END_OF_MATCH);
 					}
 
 					// On attend d'être arrêté
