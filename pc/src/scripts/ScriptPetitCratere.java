@@ -135,11 +135,12 @@ public class ScriptPetitCratere extends Script
 
 			// le minerai est considéré comme pris
 			state.table.setDone(element, EtatElement.PRIS_PAR_NOUS);
+			state.robot.setFiletPlein(true);
 
 		}
 		catch(ActionneurException e)
 		{
-			state.robot.setFiletVideSur();
+			state.robot.setFiletPlein(false);
 			log.warning(e);
 		}
 		finally

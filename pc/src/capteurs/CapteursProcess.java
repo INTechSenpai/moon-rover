@@ -216,17 +216,6 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 				continue;
 			}
 
-			/*
-			 * Le ToF arrière voit le filet et permet de servir de jauge de
-			 * remplissage
-			 */
-			if(c == CapteursRobot.ToF_LONG_ARRIERE && robot.isFiletPeutEtrePlein() && data.mesures[i] > 0 && data.mesures[i] < 100)
-			{
-				log.debug("Le ToF long arrière voit le filet plein", Verbose.CAPTEURS.masque);
-				robot.filetVuPlein();
-				continue;
-			}
-
 			Vec2RO positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
 			if(positionVue == null)
 				continue;
