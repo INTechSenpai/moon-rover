@@ -15,7 +15,6 @@
 package robot;
 
 import java.awt.Graphics;
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import capteurs.SensorMode;

@@ -17,12 +17,10 @@ package threads.serie;
 import container.Container;
 import container.Container.ErrorCode;
 import container.dependances.SerialClass;
-import exceptions.ContainerException;
 import exceptions.ShutdownRequestException;
 import serie.BufferIncomingOrder;
 import serie.SerieCoucheTrame;
 import threads.ThreadService;
-import threads.ThreadShutdown;
 import utils.Log;
 
 /**

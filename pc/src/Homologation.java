@@ -16,7 +16,6 @@ import capteurs.SensorMode;
 import config.Config;
 import config.ConfigInfo;
 import container.Container;
-import exceptions.ContainerException;
 import exceptions.MemoryManagerException;
 import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
@@ -29,7 +28,6 @@ import scripts.ScriptNames;
 import serie.BufferOutgoingOrder;
 import serie.SerialProtocol;
 import serie.Ticket;
-import threads.ThreadShutdown;
 import utils.Log;
 
 /**
