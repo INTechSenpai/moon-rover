@@ -142,11 +142,14 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					Cinematique theorique = chemin.setCurrentIndex(indexTrajectory);
 
 					if(theorique == null)
+					{
+						log.debug("Cinématique théorique inconnue !", Verbose.SERIE.masque);
 						current = new Cinematique(xRobot, yRobot, orientationRobot, true, 0);
+					}
 					else
 					{
+						theorique.updateReel(xRobot, yRobot, orientationRobot, current.enMarcheAvant, current.courbureReelle);
 						theorique.copy(current);
-						current.updateReel(xRobot, yRobot, orientationRobot, current.enMarcheAvant, current.courbureReelle);
 					}
 
 					robot.setCinematique(current);
