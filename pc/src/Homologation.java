@@ -16,7 +16,6 @@ import capteurs.SensorMode;
 import config.Config;
 import config.ConfigInfo;
 import container.Container;
-import exceptions.ContainerException;
 import exceptions.MemoryManagerException;
 import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
@@ -153,27 +152,18 @@ public class Homologation
 				e.printStackTrace(log.getPrintWriter());
 			}
 		}
-		catch(ContainerException e)
-		{
-			e.printStackTrace();
-		}
-		catch(InterruptedException e)
+		catch(Exception e)
 		{}
 		finally
 		{
-			if(container != null)
-				try
-				{
-					container.destructor();
-				}
-				catch(ContainerException e)
-				{
-					e.printStackTrace();
-				}
-				catch(InterruptedException e)
-				{
-					e.printStackTrace();
-				}
+			try
+			{
+				System.exit(container.destructor().code);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 

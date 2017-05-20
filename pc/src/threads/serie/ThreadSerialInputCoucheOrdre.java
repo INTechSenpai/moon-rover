@@ -20,8 +20,8 @@ import capteurs.SensorsDataBuffer;
 import config.Config;
 import config.ConfigInfo;
 import container.Container;
+import container.Container.ErrorCode;
 import container.dependances.SerialClass;
-import exceptions.ContainerException;
 import robot.Cinematique;
 import robot.RobotColor;
 import robot.RobotReal;
@@ -30,7 +30,6 @@ import serie.SerialProtocol.InOrder;
 import serie.SerialProtocol.OutOrder;
 import serie.trame.Frame.IncomingCode;
 import serie.trame.Paquet;
-import threads.ThreadShutdown;
 import threads.ThreadService;
 import utils.Log;
 import utils.Log.Verbose;
@@ -143,11 +142,14 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					Cinematique theorique = chemin.setCurrentIndex(indexTrajectory);
 
 					if(theorique == null)
+					{
+						log.debug("Cinématique théorique inconnue !", Verbose.SERIE.masque);
 						current = new Cinematique(xRobot, yRobot, orientationRobot, true, 0);
+					}
 					else
 					{
+						theorique.updateReel(xRobot, yRobot, orientationRobot, current.enMarcheAvant, current.courbureReelle);
 						theorique.copy(current);
-						current.updateReel(xRobot, yRobot, orientationRobot, current.enMarcheAvant, current.courbureReelle);
 					}
 
 					robot.setCinematique(current);
@@ -217,24 +219,15 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					{
 						log.critical("Arrêt d'urgence provenant du bas niveau !");
 						paquet.ticket.set(InOrder.ARRET_URGENCE);
+						// On arrête le thread principal
+						container.interruptWithCodeError(ErrorCode.EMERGENCY_STOP);
 					}
 					else
 					{
 						paquet.ticket.set(InOrder.MATCH_FINI);
 						robot.funnyAction();
-					}
-
-					// On lance manuellement le thread d'arrêt
-					ThreadShutdown t;
-					try
-					{
-						t = container.getService(ThreadShutdown.class);
-						Runtime.getRuntime().removeShutdownHook(t);
-						t.start();
-					}
-					catch(ContainerException e)
-					{
-						log.critical(e);
+						// On arrête le thread principal
+						container.interruptWithCodeError(ErrorCode.END_OF_MATCH);
 					}
 
 					// On attend d'être arrêté

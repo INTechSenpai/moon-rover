@@ -14,7 +14,13 @@ INTech Senpaï avait participé à la Coupe de France de robotique 2016 avec le 
 
 Le moon rover se comporte comme une voiture : il a quatre roues, les deux roues avant étant à la fois motrices et directrices. Trouver un itinéraire pour le rover n'est pas une tâche facile : nous avons développé pour cela un pathfinding tentaculaire, qui essaye plein de trajectoires différentes. Au final, le rover suit des trajectoires particulièrement élégantes !
 
+Voici les tentacules déployés par le robot lorsqu'il cherche un chemin :
+
 ![Animation de la recherche tentaculaire](https://raw.githubusercontent.com/INTechSenpai/moon-rover/master/docs/cerisier.gif)
+
+Le rover, quand il détecte un ennemi (les rectangles colorés), recherche un itinéraire alternatif tout en continuant de rouler :
+
+![Animation de la replanification](https://raw.githubusercontent.com/INTechSenpai/moon-rover/master/docs/replanif.gif)
 
 Si vous souhaitez utiliser ce pathfinding pour l'un de vos projets, vous pouvez aller sur la [page de la librairie associée](https://github.com/PFGimenez/PF-library).
 

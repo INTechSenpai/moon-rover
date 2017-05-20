@@ -15,7 +15,6 @@
 package robot;
 
 import java.awt.Graphics;
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import capteurs.SensorMode;
@@ -86,9 +85,10 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
 		marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
 		printTrace = config.getBoolean(ConfigInfo.GRAPHIC_TRACE_ROBOT);
+		
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
 
-		if(print)
+		if(print || printTrace)
 			buffer.add(this);
 
 		for(int i = 0; i < pointsAvancer.length; i++)
@@ -177,11 +177,17 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	@Override
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
-		ObstacleRobot o = new ObstacleRobot(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
-		o.update(cinematique.getPosition(), cinematique.orientationReelle);
-		o.print(g, f, robot);
-		vecteur.update(cinematique.getPosition(), cinematique.orientationReelle);
-		vecteur.print(g, f, robot);
+		if(print)
+		{
+			ObstacleRobot o = new ObstacleRobot(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+			o.update(cinematique.getPosition(), cinematique.orientationReelle);
+			o.print(g, f, robot);
+		}
+		if(printTrace)
+		{
+			vecteur.update(cinematique.getPosition(), cinematique.orientationReelle);
+			vecteur.print(g, f, robot);
+		}
 	}
 
 	@Override
