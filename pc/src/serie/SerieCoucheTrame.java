@@ -360,8 +360,22 @@ public class SerieCoucheTrame implements Service, SerialClass
 	{
 		closed = true;
 		// On attend de clore les conversations
-		if(!waitingFrames.isEmpty() || !pendingLongFrames.isEmpty())
-			Thread.sleep(300);
+		int nb = 0;
+		while((!waitingFrames.isEmpty() || !pendingLongFrames.isEmpty()) && nb < 50)
+		{
+			Thread.sleep(100);
+			nb++;
+		}
+		for(Integer id : waitingFrames)
+		{
+			Conversation c = conversations[id];
+			log.warning("Waiting short frame : "+c.origine);
+		}
+		for(Integer id : pendingLongFrames)
+		{
+			Conversation c = conversations[id];
+			log.warning("Pending long frame : "+c.origine);
+		}
 		serieOutput.close();
 	}
 
