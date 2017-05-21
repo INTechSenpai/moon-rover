@@ -125,12 +125,12 @@ public class JUnit_Robot extends JUnit_Test
 	public void tearDown() throws Exception
 	{
 		data.stopStream();
+		log.debug("Position robot : " + robot.getCinematique().getPosition());
+		log.debug("Orientation robot : " + robot.getCinematique().orientationReelle);
 		if(!simuleSerie && c != null)
 		{
-			log.debug("Position robot : " + robot.getCinematique().getPosition());
 			log.debug("Position voulue : " + c.getPosition());
 			log.debug("Erreur position : " + robot.getCinematique().getPosition().distance(c.getPosition()));
-			log.debug("Orientation robot : " + robot.getCinematique().orientationReelle);
 			log.debug("Orientation voulue : " + last);
 			double deltaO = robot.getCinematique().orientationReelle - last;
 			if(deltaO > Math.PI)
