@@ -59,5 +59,11 @@ public class Ticket
 
 		return getAndClear();
 	}
+	
+	public synchronized void attendStatus(long timeout) throws InterruptedException
+	{
+		if(isEmpty())
+			wait(timeout);
+	}
 
 }

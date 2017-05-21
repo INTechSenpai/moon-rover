@@ -506,7 +506,9 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		log.debug("Attente de la réception de la réponse au stop", Verbose.REPLANIF.masque);
 		if(stop != null)
 		{
-			stop.attendStatus();
+			stop.attendStatus(1500);
+			if(stop.isEmpty())
+				log.warning("Timeout d'attente du stop dépassé !");
 			stop = null;
 		}
 	}
