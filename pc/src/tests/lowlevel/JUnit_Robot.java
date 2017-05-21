@@ -57,7 +57,7 @@ public class JUnit_Robot extends JUnit_Test
 	private RealGameState state;
 	private PathCache pathcache;
 	private BufferOutgoingOrder data;
-	private Cinematique c;
+	private Cinematique c = null;
 	private boolean simuleSerie;
 	private Speed v;
 	private double last;
@@ -125,7 +125,7 @@ public class JUnit_Robot extends JUnit_Test
 	public void tearDown() throws Exception
 	{
 		data.stopStream();
-		if(!simuleSerie)
+		if(!simuleSerie && c != null)
 		{
 			log.debug("Position robot : " + robot.getCinematique().getPosition());
 			log.debug("Position voulue : " + c.getPosition());
