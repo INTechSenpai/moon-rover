@@ -359,7 +359,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		else
 			while(!chemin.isArrived())
 			{
-				boolean marcheAvant = chemin.getNextMarcheAvant();
+				boolean marcheAvant = chemin.getCurrentMarcheAvant();
 				if(marcheAvant)
 					setSensorMode(SensorMode.FRONT_AND_SIDES);
 				else
