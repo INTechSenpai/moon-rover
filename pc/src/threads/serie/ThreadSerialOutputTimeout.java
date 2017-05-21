@@ -48,7 +48,7 @@ public class ThreadSerialOutputTimeout extends ThreadService implements SerialCl
 		log.debug("Démarrage de " + Thread.currentThread().getName());
 		try
 		{
-			while(true)
+			while(!serie.isClosed())
 			{
 				int timeResend = serie.timeBeforeResend();
 				int timeDeath = serie.timeBeforeDeath();

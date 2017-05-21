@@ -358,7 +358,6 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 */
 	public void close() throws InterruptedException
 	{
-		closed = true;
 		// On attend de clore les conversations
 		int nb = 0;
 		while((!waitingFrames.isEmpty() || !pendingLongFrames.isEmpty()) && nb < 50)
@@ -376,6 +375,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 			Conversation c = conversations[id];
 			log.warning("Pending long frame : "+c.origine);
 		}
+		closed = true;
 		serieOutput.close();
 	}
 
@@ -459,5 +459,10 @@ public class SerieCoucheTrame implements Service, SerialClass
 	public void init() throws InterruptedException
 	{
 		serieOutput.init();
+	}
+
+	public boolean isClosed()
+	{
+		return closed;
 	}
 }
