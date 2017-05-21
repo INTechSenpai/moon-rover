@@ -402,4 +402,21 @@ public class JUnit_Robot extends JUnit_Test
 			robot.avance(200, v);
 	}
 
+	
+	@Test
+	public void avance_un_peu() throws Exception
+	{
+		Cinematique depart = new Cinematique(0, 1800, -Math.PI / 2, true, 0);
+		robot.setCinematique(depart);
+		data.setPosition(depart.getPosition(), depart.orientationReelle); // on
+																			// envoie
+																			// la
+																			// position
+																			// haut
+																			// niveau
+		Thread.sleep(500);
+		if(!simuleSerie)
+			robot.avance(20, v);
+	}
+	
 }
