@@ -56,7 +56,7 @@ public class BenchmarkPathfinding
 			for(int i = 0; i < nbtest; i++)
 			{
 				astar.initializeNewSearchToCircle(true, state);
-				astar.process(chemin);
+				astar.process(chemin, false);
 				chemin.clear();
 			}
 			log.debug("Temps : " + (System.nanoTime() - avant) / (nbtest * 1000000.));
