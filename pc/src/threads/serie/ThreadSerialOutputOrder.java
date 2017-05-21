@@ -20,6 +20,7 @@ import container.dependances.SerialClass;
 import serie.BufferIncomingBytes;
 import serie.BufferOutgoingOrder;
 import serie.SerieCoucheTrame;
+import serie.Ticket;
 import serie.SerialProtocol.OutOrder;
 import serie.trame.Order;
 import threads.ThreadService;
@@ -78,7 +79,8 @@ public class ThreadSerialOutputOrder extends ThreadService implements SerialClas
 			}
 			
 			input.setPingDone();
-
+			Ticket t = new Ticket();
+			
 			while(!serie.isClosed())
 			{
 				synchronized(data)
@@ -88,21 +90,32 @@ public class ThreadSerialOutputOrder extends ThreadService implements SerialClas
 					 * "data.wait(500)" par "data.wait()"
 					 */
 
+					message = null;
 					if(data.isEmpty()) // pas de message ? On attend
 						data.wait(500);
 
 					if(data.isEmpty()) // si c'est le timeout qui nous a
 										// réveillé, on envoie un ping
 					{
-						message = new Order(OutOrder.PING);
-						log.debug("Envoi d'un ping pour vérifier la connexion", Verbose.SERIE.masque);
+						synchronized(t)
+						{
+							if(!t.isEmpty())
+							{
+								t.attendStatus(); // pas besoin d'attendre
+								message = new Order(OutOrder.PING, t);
+								log.debug("Envoi d'un ping pour vérifier la connexion", Verbose.SERIE.masque);
+							}
+						}
 					}
 					else
 						message = data.poll();
 				}
-				serie.sendOrder(message);
-				Thread.sleep(sleep); // laisse un peu de temps entre deux trames
-										// si besoin est
+				if(message != null)
+				{
+					serie.sendOrder(message);
+					Thread.sleep(sleep); // laisse un peu de temps entre deux trames
+											// si besoin est
+				}
 			}
 		}
 		catch(InterruptedException e)
