@@ -142,7 +142,7 @@ public class Homologation
 				path.computeAndFollow(k);
 				k.s.s.execute(state);
 
-				k.s = ScriptNames.SCRIPT_DEPOSE_MINERAI;
+				k.s = ScriptNames.SCRIPT_DEPOSE_MINERAI_DROITE;
 				path.computeAndFollow(k);
 				k.s.s.execute(state);
 			}

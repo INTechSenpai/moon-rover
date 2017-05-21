@@ -20,7 +20,7 @@ import pathfinding.GameState;
 import pathfinding.SensFinal;
 import robot.Robot;
 import robot.Speed;
-import utils.Vec2RO;
+import utils.Vec2RW;
 
 /**
  * Le script qui dépose le minerai dans le panier
@@ -31,9 +31,16 @@ import utils.Vec2RO;
 
 public class ScriptDeposeMinerai extends Script
 {
-	private Vec2RO centre = new Vec2RO(700, 1800);
+	private Vec2RW centre = new Vec2RW(700, 1800);
 	private double rayon = 200;
+	private boolean gauche;
 
+	public ScriptDeposeMinerai(boolean gauche)
+	{
+		this.gauche = gauche;
+		centre.setX(-centre.getX());
+	}
+	
 	@Override
 	public void setUpCercleArrivee()
 	{
@@ -123,14 +130,12 @@ public class ScriptDeposeMinerai extends Script
 	@Override
 	public boolean equals(Object other)
 	{
-		return other instanceof ScriptDeposeMinerai; // de toute façon, il n'y a
-														// qu'un seul script de
-														// ce type
+		return other instanceof ScriptDeposeMinerai && ((ScriptDeposeMinerai) other).gauche == gauche;
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return 0;
+		return 64+(gauche ? 1 : 0);
 	}
 }

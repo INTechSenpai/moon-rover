@@ -15,6 +15,9 @@
 package scripts;
 
 import java.util.LinkedList;
+
+import config.Config;
+import config.DynamicConfigurable;
 import container.Service;
 import container.dependances.CoreClass;
 import exceptions.MemoryManagerException;
@@ -33,24 +36,25 @@ import utils.Log;
  *
  */
 
-public class Strategie implements Service, CoreClass
+public class Strategie implements Service, CoreClass, DynamicConfigurable
 {
 	protected Log log;
 	private PathCache pathcache;
 	private RealGameState state;
 	private ChronoGameState chrono;
-	private LinkedList<ScriptNames> strategie = new LinkedList<ScriptNames>();
-
+	private LinkedList<ScriptsSymetrises> strategie = new LinkedList<ScriptsSymetrises>();
+	private boolean symetrie;
+	
 	public Strategie(Log log, PathCache pathcache, RealGameState state, ChronoGameState chrono)
 	{
 		this.log = log;
 		this.pathcache = pathcache;
 		this.state = state;
 		this.chrono = chrono;
-		strategie.add(ScriptNames.SCRIPT_CRATERE_HAUT_DROITE);
-		strategie.add(ScriptNames.SCRIPT_DEPOSE_MINERAI);
-		strategie.add(ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE);
-		strategie.add(ScriptNames.SCRIPT_DEPOSE_MINERAI);
+		strategie.add(ScriptsSymetrises.SCRIPT_CRATERE_HAUT_A_NOUS);
+		strategie.add(ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI);
+		strategie.add(ScriptsSymetrises.SCRIPT_CRATERE_HAUT_ENNEMI);
+		strategie.add(ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI);
 	}
 
 	/**
@@ -60,7 +64,7 @@ public class Strategie implements Service, CoreClass
 	 */
 	public void doWinMatch() throws InterruptedException
 	{
-		ScriptNames s = strategie.getFirst();
+		ScriptNames s = strategie.getFirst().getScript(symetrie);
 		try
 		{
 			state.copyAStarCourbe(chrono); // TODO vérifier si la copie est
@@ -76,6 +80,12 @@ public class Strategie implements Service, CoreClass
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 		}
+	}
+
+	@Override
+	public synchronized void updateConfig(Config config)
+	{
+		symetrie = config.getSymmetry();
 	}
 
 }
