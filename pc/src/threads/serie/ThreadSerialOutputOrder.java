@@ -79,7 +79,7 @@ public class ThreadSerialOutputOrder extends ThreadService implements SerialClas
 			
 			input.setPingDone();
 
-			while(true)
+			while(!serie.isClosed())
 			{
 				synchronized(data)
 				{

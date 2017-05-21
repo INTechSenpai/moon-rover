@@ -45,7 +45,7 @@ public class ThreadSerialOutputBytes extends ThreadService implements SerialClas
 
 		try
 		{
-			while(true)
+			while(!serie.isClosed())
 			{
 				synchronized(serie)
 				{

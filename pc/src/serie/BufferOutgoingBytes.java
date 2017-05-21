@@ -126,4 +126,9 @@ public class BufferOutgoingBytes implements Service, SerialClass
 	{
 		return indexBufferStart == indexBufferStop;
 	}
+
+	public boolean isClosed()
+	{
+		return serie.isClosed;
+	}
 }
