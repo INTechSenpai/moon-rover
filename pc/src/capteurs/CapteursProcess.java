@@ -353,7 +353,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			 */
 			if(Math.abs(deltaOrientation) > imprecisionMaxAngle)
 			{
-				log.debug("Imprécision en angle trop grande !" + Math.abs(deltaOrientation), Verbose.CAPTEURS.masque);
+				log.debug("Imprécision en angle trop grande !" + Math.abs(deltaOrientation), Verbose.CORRECTION.masque);
 				continue;
 			}
 
@@ -377,7 +377,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			 */
 			if(Math.abs(deltaX) > imprecisionMaxPos || Math.abs(deltaY) > imprecisionMaxPos)
 			{
-				log.debug("Imprécision en position trop grande ! ("+deltaX+","+deltaY+")", Verbose.CAPTEURS.masque);
+				log.debug("Imprécision en position trop grande ! ("+deltaX+","+deltaY+")", Verbose.CORRECTION.masque);
 				continue;
 			}
 
@@ -393,13 +393,13 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 																								// dernier
 																								// calcul
 			{
-				log.debug("Correction timeout", Verbose.CAPTEURS.masque);
+				log.debug("Correction timeout", Verbose.CORRECTION.masque);
 				indexCorrection = 0;
 			}
 
 			bufferCorrection[indexCorrection] = correction;
 			indexCorrection++;
-			log.debug("Intégration d'une donnée de correction", Verbose.CAPTEURS.masque);
+			log.debug("Intégration d'une donnée de correction", Verbose.CORRECTION.masque);
 			if(indexCorrection == bufferCorrection.length)
 			{
 //				Vec2RW posmoy = new Vec2RW();
@@ -411,7 +411,7 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 				}
 //				posmoy.scalar(1. / bufferCorrection.length);
 				orientationmoy /= bufferCorrection.length;
-				log.debug("Envoi d'une correction XYO : " + bufferCorrection[bufferCorrection.length - 1].getPosition() + " " + orientationmoy, Verbose.CAPTEURS.masque);
+				log.debug("Envoi d'une correction XYO : " + bufferCorrection[bufferCorrection.length - 1].getPosition() + " " + orientationmoy, Verbose.CORRECTION.masque | Verbose.DEBUG.masque);
 				serie.correctPosition(bufferCorrection[bufferCorrection.length - 1].getPosition(), orientationmoy);
 				indexCorrection = 0;
 			}

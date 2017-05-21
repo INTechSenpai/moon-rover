@@ -143,7 +143,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 
 					if(theorique == null)
 					{
-						log.debug("Cinématique théorique inconnue !", Verbose.SERIE.masque);
+						log.debug("Cinématique théorique inconnue !", Verbose.PF.masque);
 						current = new Cinematique(xRobot, yRobot, orientationRobot, true, 0);
 					}
 					else
@@ -154,7 +154,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 
 					robot.setCinematique(current);
 
-					log.debug("Le robot est en " + current.getPosition() + ", orientation : " + orientationRobot + ", index : " + indexTrajectory, Verbose.SERIE.masque);
+					log.debug("Le robot est en " + current.getPosition() + ", orientation : " + orientationRobot + ", index : " + indexTrajectory, Verbose.ASSER.masque);
 
 					boolean envoi = false;
 
@@ -166,7 +166,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						double angleRoueDroite = -(data[7] - 150.) * Math.PI / 180.;
 
 						robot.setAngleRoues(angleRoueGauche, angleRoueDroite);
-						log.debug("Angle roues : à gauche " + data[6] + ", à droite " + data[7], Verbose.SERIE.masque);
+//						log.debug("Angle roues : à gauche " + data[6] + ", à droite " + data[7], Verbose.ASSER.masque);
 
 						/**
 						 * Acquiert ce que voit les capteurs
@@ -175,7 +175,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 						for(int i = 0; i < nbCapteurs; i++)
 						{
 							mesures[i] = data[8 + i] * CapteursRobot.values[i].type.conversion;
-							log.debug("Capteur " + CapteursRobot.values[i].name() + " : " + mesures[i], Verbose.SERIE.masque);
+							log.debug("Capteur " + CapteursRobot.values[i].name() + " : " + mesures[i], Verbose.CAPTEURS.masque);
 						}
 
 						if(capteursOn)

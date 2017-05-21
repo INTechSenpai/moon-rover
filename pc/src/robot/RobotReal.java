@@ -282,7 +282,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	protected void bloque(String nom, Object... param) throws InterruptedException, ActionneurException
 	{
 		if(param == null || param.length == 0)
-			log.debug("Appel à " + nom, Verbose.ACTIONNEURS.masque);
+			log.debug("Appel à " + nom, Verbose.SCRIPTS.masque);
 		else
 		{
 			String s = "";
@@ -292,7 +292,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 					s += ", ";
 				s += o;
 			}
-			log.debug("Appel à " + nom + " (param = " + s + ")", Verbose.ACTIONNEURS.masque);
+			log.debug("Appel à " + nom + " (param = " + s + ")", Verbose.SCRIPTS.masque);
 		}
 
 		if(simuleSerie)
@@ -321,7 +321,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		if(etat == SerialProtocol.State.KO)
 			throw new ActionneurException("Problème pour l'actionneur " + nom);
 
-		log.debug("Temps d'exécution de " + nom + " : " + (System.currentTimeMillis() - avant), Verbose.ACTIONNEURS.masque);
+		log.debug("Temps d'exécution de " + nom + " : " + (System.currentTimeMillis() - avant), Verbose.SCRIPTS.masque);
 	}
 
 	/**
@@ -390,7 +390,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 
 						throw new UnableToMoveException(i.name());
 					}
-					log.debug("Le trajet s'est bien terminé (" + i + ")", Verbose.PF.masque);
+					log.debug("Le trajet s'est bien terminé (" + i + ")");
 				}
 				finally
 				{

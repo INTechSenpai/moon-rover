@@ -115,7 +115,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized void setMaxSpeed(Speed vitesseInitiale, boolean marcheAvant)
 	{
-		log.debug("Envoi d'un ordre de vitesse max : " + vitesseInitiale, Verbose.SERIE.masque | Verbose.PF.masque);
+		log.debug("Envoi d'un ordre de vitesse max : " + vitesseInitiale, Verbose.SERIE.masque);
 
 		short vitesseTr; // vitesse signée
 		if(marcheAvant)
@@ -139,7 +139,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized Ticket followTrajectory(Speed vitesseInitiale, boolean marcheAvant)
 	{
-		log.debug("On commence à suivre la trajectoire", Verbose.PF.masque);
+		log.debug("On commence à suivre la trajectoire", Verbose.SERIE.masque);
 		short vitesseTr; // vitesse signée
 		if(marcheAvant)
 			vitesseTr = (short) (vitesseInitiale.translationalSpeed * 1000);
