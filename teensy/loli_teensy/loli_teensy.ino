@@ -203,7 +203,7 @@ void loop()
 		ledMgr.update();
 
 		/* Alerte visuelle en cas de niveau bas de batterie */
-		if (batterySensor.getLevel() < 60)
+		if (batterySensor.getLevel() < 20)
 		{
 			ledMgr.statusLed_lowBattery();
 		}

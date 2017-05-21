@@ -226,6 +226,7 @@ public:
 	StartMatchChrono() {}
 	void _launch(const std::vector<uint8_t> & input)
 	{
+		Serial.println("Start match chrono");
 		beginTime = millis();
 	}
 	void onExecute(std::vector<uint8_t> & output)
