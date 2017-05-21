@@ -115,7 +115,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized void setMaxSpeed(Speed vitesseInitiale, boolean marcheAvant)
 	{
-		log.debug("Envoi d'un ordre de vitesse max : " + vitesseInitiale, Verbose.SERIE.masque);
+		log.debug("Envoi d'un ordre de vitesse max : " + vitesseInitiale+". Marche avant : "+marcheAvant, Verbose.SERIE.masque);
 
 		short vitesseTr; // vitesse signée
 		if(marcheAvant)
