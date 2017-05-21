@@ -68,6 +68,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 */
 	private LinkedList<Integer> closedFrames = new LinkedList<Integer>();
 
+	private volatile boolean closed = false;
 	private int timeout;
 	private int dernierIDutilise = 0xFF; // dernier ID utilisé
 
@@ -320,13 +321,13 @@ public class SerieCoucheTrame implements Service, SerialClass
 			// Attente des données…
 			if(!serieInput.available())
 			{
-				if(serieInput.hasPing())
+				if(serieInput.hasPing() && !closed)
 					serieInput.wait(1000);
 				else
 					serieInput.wait(); // si on n'a pas encore la communication, on ne met pas de timeout
 			}
 
-			if(!serieInput.available())
+			if(!serieInput.available() && !closed)
 				throw new ShutdownRequestException("On n'a pas reçu de données depuis 1s : on redémarre la raspi !");
 			
 			code = serieInput.read();
@@ -357,6 +358,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 */
 	public void close() throws InterruptedException
 	{
+		closed = true;
 		// On attend de clore les conversations
 		if(!waitingFrames.isEmpty() || !pendingLongFrames.isEmpty())
 			Thread.sleep(300);
