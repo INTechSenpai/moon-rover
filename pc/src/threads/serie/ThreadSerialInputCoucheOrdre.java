@@ -148,8 +148,8 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					}
 					else
 					{
-						theorique.updateReel(xRobot, yRobot, orientationRobot, current.enMarcheAvant, current.courbureReelle);
 						theorique.copy(current);
+						current.updateReel(xRobot, yRobot, orientationRobot, current.enMarcheAvant, current.courbureReelle);
 					}
 
 					robot.setCinematique(current);
