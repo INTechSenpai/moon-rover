@@ -67,7 +67,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	private CinematiqueObs[] pointsAvancer = new CinematiqueObs[256];
 	private SensorMode lastMode = null;
 	private AnglesRoues angles = new AnglesRoues();
-	private Vector vecteur = new Vector(new Vec2RW(), 0, Couleur.ROUGE);
+	private Vector vecteur = new Vector(new Vec2RW(), 0, Couleur.ToF_COURT);
 
 	// Constructeur
 	public RobotReal(Log log, BufferOutgoingOrder out, PrintBufferInterface buffer, CheminPathfinding chemin, Config config)
