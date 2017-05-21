@@ -466,19 +466,20 @@ public class BufferOutgoingOrder implements Service, SerialClass
 			t[i] = new Ticket();
 			for(int j = 0; j < nbArc; j++)
 			{
+				int k = (i << 5) + j;
 				double prochaineCourbure; // pour gérer les arrêts qui font
 											// arrêter le robot
-				CinematiqueObs c = points.get((i << 5) + j);
+				CinematiqueObs c = points.get(k);
 
-				if((i << 5) + j + 1 < points.size())
-					prochaineCourbure = points.get((i << 5) + j + 1).courbureReelle;
+				if(k + 1 < points.size())
+					prochaineCourbure = points.get(k + 1).courbureReelle;
 				else
 					prochaineCourbure = c.courbureReelle; // c'est le dernier
 															// point, de toute
 															// façon ce sera un
 															// STOP_POINT
 
-				log.debug("Point " + ((i << 5) + j) + " : " + c, Verbose.PF.masque);
+				log.debug("Point " + k + " : " + c, Verbose.PF.masque);
 				addXYO(data, c.getPosition(), c.orientationReelle);
 				short courbure = (short) ((Math.round(Math.abs(c.courbureReelle) * 100)) & 0x7FFF);
 
@@ -486,7 +487,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 				// le dernier point est forcément un point d'arrêt
 				// de plus, si le changement de courbure est trop grand, on
 				// impose un arrêt
-				if((i << 5) + j + 1 == points.size() || c.enMarcheAvant != points.get((i << 5) + j + 1).enMarcheAvant || Math.abs(c.courbureReelle - prochaineCourbure) > 0.5)
+				if(k + 1 == points.size() || c.enMarcheAvant != points.get(k + 1).enMarcheAvant || Math.abs(c.courbureReelle - prochaineCourbure) > 0.5)
 					courbure |= 0x8000; // en cas de rebroussement
 
 				if(c.courbureReelle < 0) // bit de signe
