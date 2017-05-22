@@ -456,10 +456,4 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		return arcmanager.isArrivedAsser(cinematique);
 	}
 
-	@Override
-	public boolean isAlmostArrived()
-	{
-		return arcmanager.isAlmostArrived(cinematique);
-	}
-
 }

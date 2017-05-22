@@ -64,16 +64,16 @@ public class ScriptDeposeMinerai extends Script
 	public void setUpCercleArrivee()
 	{
 		if(gauche)
-			cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI / 6, Math.PI / 6});
+			cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI / 6, Math.PI / 6}, 30, -30, 10, -10);
 		else
-			cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI, -5 * Math.PI / 6, 5 * Math.PI / 6, Math.PI});			
+			cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI, -5 * Math.PI / 6, 5 * Math.PI / 6, Math.PI}, 30, -30, 10, -10);
 	}
 
 	@Override
 	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException, ActionneurException, MemoryManagerException
 	{
 		Ticket t = state.robot.traverseBascule();
-		cercle.set(centreBout, 0, rayonBout, SensFinal.MARCHE_ARRIERE, null);
+		cercle.set(centreBout, 0, rayonBout, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
 		Thread.sleep(500);
 		try {
 			state.robot.avanceToCircle(Speed.BASCULE);

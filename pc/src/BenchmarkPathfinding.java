@@ -50,7 +50,7 @@ public class BenchmarkPathfinding
 			long avant = System.nanoTime();
 			Cinematique depart = new Cinematique(-800, 350, Math.PI / 2, true, 0);
 			robot.setCinematique(depart);
-			cercle.set(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE, 230);
+			cercle.set(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE, 230, 30, -30, 10, -10);
 			int nbtest = 1000;
 			log.debug("Début du test…");
 			for(int i = 0; i < nbtest; i++)

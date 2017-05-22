@@ -55,14 +55,14 @@ public class ScriptPetitCratere extends Script
 	@Override
 	public void setUpCercleArrivee()
 	{
-		cercle.set(element, 250);
+		cercle.set(element, 250, 60, -60, 10, -10);
 	}
 
 	@Override
 	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException, MemoryManagerException
 	{
 		int nbEssai = 3;
-		cercle.set(element, 200); // nouveau rayon : 200
+		cercle.set(element, 200, 5, -5, 3, -3); // nouveau rayon : 200
 		state.robot.avanceToCircle(Speed.STANDARD);
 		while(!state.robot.isArrivedAsser())
 		{
