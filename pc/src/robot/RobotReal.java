@@ -252,11 +252,10 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		double xFinal = cinematique.position.getX() + distance * cos;
 		double yFinal = cinematique.position.getY() + distance * sin;
 		boolean marcheAvant = distance > 0;
-		double orientationGeometrique = marcheAvant ? cinematique.orientationReelle : -cinematique.orientationReelle;
 		if(nbPoint == 0)
 		{
 			// Le point est vraiment tout proche
-			pointsAvancer[0].update(xFinal, yFinal, orientationGeometrique, marcheAvant, 0);
+			pointsAvancer[0].updateReel(xFinal, yFinal, cinematique.orientationReelle, marcheAvant, 0);
 			out.add(pointsAvancer[0]);
 		}
 		else
@@ -269,7 +268,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 				deltaY = -deltaY;
 			}
 			for(int i = 0; i < nbPoint; i++)
-				pointsAvancer[nbPoint - i - 1].update(xFinal - i * deltaX, yFinal - i * deltaY, orientationGeometrique, marcheAvant, 0);
+				pointsAvancer[nbPoint - i - 1].updateReel(xFinal - i * deltaX, yFinal - i * deltaY, cinematique.orientationReelle, marcheAvant, 0);
 			for(int i = 0; i < nbPoint; i++)
 				out.add(pointsAvancer[i]);
 		}
