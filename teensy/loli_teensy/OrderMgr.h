@@ -322,6 +322,19 @@ public:
 		}
 	}
 
+	uint32_t getNbOrdersRunning()
+	{
+		uint32_t nbOrdersRunning = 0;
+		for (size_t i = 0; i < STACK_SIZE; i++)
+		{
+			if (orderStack[i].isUsed())
+			{
+				nbOrdersRunning++;
+			}
+		}
+		return nbOrdersRunning;
+	}
+
 private:
 
 	enum RunningState

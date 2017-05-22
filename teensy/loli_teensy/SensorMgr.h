@@ -132,7 +132,7 @@ public:
 					mesureLPArriere = 255;
 				}
 				medianTofLPArriere.add(mesureLPArriere);
-				values[2] = medianTofLPArriere.value();
+				values[2] = 0;//medianTofLPArriere.value();
 				break;
 			case 3:
 				irDroitMedian.add(irDroit.getMesure());

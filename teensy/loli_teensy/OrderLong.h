@@ -193,6 +193,7 @@ public:
 	void _launch(const std::vector<uint8_t> & input)
 	{
 		jumperInPlace = false;
+		Serial.println("Wait for jumper");
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
@@ -209,7 +210,9 @@ public:
 		}
 	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		Serial.println("Jumper pulled");
+	}
 private:
 	bool jumperInPlace;
 };
@@ -240,6 +243,7 @@ public:
 	void terminate(std::vector<uint8_t> & output)
 	{
 		output.push_back(returnStatement);
+		Serial.println("End of match chrono");
 	}
 private:
 	uint32_t beginTime;
@@ -274,6 +278,7 @@ public:
 		lastUpdateTime = millis();
 		prescalerCounter = 1;
 		streamMgr.running = true;
+		Serial.println("Start StreamAll");
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
@@ -308,7 +313,9 @@ public:
 		}
 	}
 	void terminate(std::vector<uint8_t> & output)
-	{}
+	{
+		Serial.println("End StreamAll");
+	}
 private:
 	Position currentPosition;
 	uint32_t lastUpdateTime;

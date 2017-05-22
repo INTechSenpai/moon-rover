@@ -251,6 +251,10 @@ public:
 	{
 		Position newPosition(io);
 		motionControlSystem.setPosition(newPosition);
+		Position p;
+		motionControlSystem.getPosition(p);
+		Serial.print("SetPosition: ");
+		Serial.println(p);
 		io.clear();
 	}
 };
