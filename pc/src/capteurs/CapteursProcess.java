@@ -204,7 +204,6 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 		 */
 		for(int i = 0; i < nbCapteurs; i++)
 		{
-			Thread.yield();
 			CapteursRobot c = CapteursRobot.values[i];
 
 			/*
