@@ -151,6 +151,79 @@ public class ScriptPetitCratere extends Script
 			state.table.setDone(element, EtatElement.PRIS_PAR_NOUS);
 			state.robot.setFiletPlein(true);
 
+			state.robot.ouvreFilet();
+			try
+			{
+				state.robot.ejecteBalles();
+				try
+				{
+					state.robot.ejecteBallesAutreCote();
+					try
+					{
+						state.robot.rearmeAutreCote();
+					}
+					catch(ActionneurException e)
+					{
+						log.warning(e);
+						try
+						{
+							state.robot.ejecteBallesAutreCote();
+						}
+						catch(ActionneurException e1)
+						{
+							log.warning(e1);
+						}
+						try
+						{
+							state.robot.rearmeAutreCote();
+						}
+						catch(ActionneurException e1)
+						{
+							log.warning(e1);
+						}
+					}
+				}
+				catch(ActionneurException e)
+				{
+					log.warning(e);
+				}
+				finally
+				{
+					try
+					{
+						state.robot.rearme();
+					}
+					catch(ActionneurException e)
+					{
+						log.warning(e);
+						try
+						{
+							state.robot.ejecteBalles();
+						}
+						catch(ActionneurException e1)
+						{
+							log.warning(e1);
+						}
+						try
+						{
+							state.robot.rearme();
+						}
+						catch(ActionneurException e1)
+						{
+							log.warning(e1);
+						}
+					}
+				}
+			}
+			catch(ActionneurException e)
+			{
+				log.warning(e);
+			}
+			finally
+			{
+				state.robot.fermeFilet();
+			}
+
 		}
 		catch(ActionneurException e)
 		{
