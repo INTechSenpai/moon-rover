@@ -54,7 +54,7 @@ public class ScriptPetitCratere extends Script
 	public void setUpCercleArrivee()
 	{
 		// il faut se mettre à 180mm du bord pour récupérer les balles
-		cercle.set(element, 210);
+		cercle.set(element, 250);
 	}
 
 	@Override
