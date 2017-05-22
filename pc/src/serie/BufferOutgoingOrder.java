@@ -139,12 +139,12 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized Ticket followTrajectory(Speed vitesseInitiale, boolean marcheAvant)
 	{
-		log.debug("On commence à suivre la trajectoire", Verbose.SERIE.masque);
 		short vitesseTr; // vitesse signée
 		if(marcheAvant)
 			vitesseTr = (short) (vitesseInitiale.translationalSpeed * 1000);
 		else
 			vitesseTr = (short) (-vitesseInitiale.translationalSpeed * 1000);
+		log.debug("On commence à suivre la trajectoire. Vitesse : "+vitesseTr, Verbose.SERIE.masque);
 
 		ByteBuffer data = ByteBuffer.allocate(2);
 		data.putShort(vitesseTr);
