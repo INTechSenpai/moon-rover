@@ -240,8 +240,8 @@ public class JUnit_Robot extends JUnit_Test
 																				// niveau
 			Thread.sleep(100); // on attend un peu que la position soit affectée
 								// bas niveau
-			pathcache.computeAndFollow(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, false));
-			ScriptNames.SCRIPT_CRATERE_HAUT_DROITE.s.execute(state);
+			pathcache.computeAndFollow(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE, false));
+			ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE.s.execute(state);
 		}
 		catch(Exception e)
 		{
