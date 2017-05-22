@@ -69,7 +69,7 @@ public class ScriptGrosCratere extends Script
 	@Override
 	public void setUpCercleArrivee()
 	{
-		cercle.set(pos, angle, 350, SensFinal.MARCHE_ARRIERE);
+		cercle.set(pos, angle, 350, SensFinal.MARCHE_ARRIERE, null);
 	}
 
 	@Override

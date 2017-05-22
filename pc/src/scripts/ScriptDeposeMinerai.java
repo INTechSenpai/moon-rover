@@ -44,7 +44,7 @@ public class ScriptDeposeMinerai extends Script
 	@Override
 	public void setUpCercleArrivee()
 	{
-		cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT);
+		cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT, null);
 	}
 
 	@Override
