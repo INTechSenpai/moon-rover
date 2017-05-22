@@ -23,7 +23,6 @@ import config.Config;
 import config.ConfigInfo;
 import container.Service;
 import container.dependances.SerialClass;
-import exceptions.ShutdownRequestException;
 import exceptions.serie.ClosedSerialException;
 import exceptions.serie.IncorrectChecksumException;
 import exceptions.serie.MissingCharacterException;
@@ -69,7 +68,6 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 */
 	private LinkedList<Integer> closedFrames = new LinkedList<Integer>();
 
-	private volatile boolean closed = false;
 	private int timeout;
 	private int dernierIDutilise = 0xFF; // dernier ID utilisé
 
@@ -165,7 +163,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 * @throws ShutdownRequestException 
 	 * @throws ClosedSerialException 
 	 */
-	public Paquet readData() throws InterruptedException, ShutdownRequestException, ClosedSerialException
+	public Paquet readData() throws InterruptedException, ClosedSerialException
 	{
 		IncomingFrame f = null;
 		Paquet p = null;
@@ -317,7 +315,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 * @throws ShutdownRequestException 
 	 * @throws ClosedSerialException 
 	 */
-	private IncomingFrame readFrame() throws MissingCharacterException, IncorrectChecksumException, IllegalArgumentException, InterruptedException, ShutdownRequestException, ClosedSerialException
+	private IncomingFrame readFrame() throws MissingCharacterException, IncorrectChecksumException, IllegalArgumentException, InterruptedException, ClosedSerialException
 	{
 		int code, id, longueur, checksum;
 		int[] message;
@@ -325,16 +323,8 @@ public class SerieCoucheTrame implements Service, SerialClass
 		{
 			// Attente des données…
 			if(!serieInput.available())
-			{
-				if(serieInput.hasPing() && !closed)
-					serieInput.wait(1000);
-				else
-					serieInput.wait(); // si on n'a pas encore la communication, on ne met pas de timeout
-			}
+				serieInput.wait(); // si on n'a pas encore la communication, on ne met pas de timeout
 
-			if(!serieInput.available() && !closed)
-				throw new ShutdownRequestException("On n'a pas reçu de données depuis 1s : on redémarre la raspi !");
-			
 			code = serieInput.read();
 
 			IncomingFrame.check(code);
@@ -382,7 +372,6 @@ public class SerieCoucheTrame implements Service, SerialClass
 			Conversation c = conversations[id];
 			log.warning("Pending long frame : "+c.origine);
 		}
-		closed = true;
 		serieOutput.close();
 	}
 
