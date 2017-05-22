@@ -251,6 +251,7 @@ public class JUnit_Robot extends JUnit_Test
 		}
 	}
 	
+	@Test
 	public void depart_bleu_depose() throws Exception
 	{
 		try
