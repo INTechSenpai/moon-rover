@@ -17,6 +17,7 @@ package threads.serie;
 import config.Config;
 import config.ConfigInfo;
 import container.dependances.SerialClass;
+import exceptions.serie.ClosedSerialException;
 import serie.BufferIncomingBytes;
 import serie.BufferOutgoingOrder;
 import serie.SerieCoucheTrame;
@@ -81,7 +82,7 @@ public class ThreadSerialOutputOrder extends ThreadService implements SerialClas
 			input.setPingDone();
 			Ticket t = new Ticket();
 			
-			while(!serie.isClosed())
+			while(true)
 			{
 				synchronized(data)
 				{
@@ -118,9 +119,9 @@ public class ThreadSerialOutputOrder extends ThreadService implements SerialClas
 				}
 			}
 		}
-		catch(InterruptedException e)
+		catch(InterruptedException | ClosedSerialException e)
 		{
-			log.debug("Arrêt de " + Thread.currentThread().getName());
+			log.debug("Arrêt de " + Thread.currentThread().getName()+" : "+e);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)

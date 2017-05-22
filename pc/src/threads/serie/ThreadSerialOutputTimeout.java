@@ -17,6 +17,7 @@ package threads.serie;
 import config.Config;
 import config.ConfigInfo;
 import container.dependances.SerialClass;
+import exceptions.serie.ClosedSerialException;
 import serie.SerieCoucheTrame;
 import threads.ThreadService;
 import utils.Log;
@@ -48,7 +49,7 @@ public class ThreadSerialOutputTimeout extends ThreadService implements SerialCl
 		log.debug("Démarrage de " + Thread.currentThread().getName());
 		try
 		{
-			while(!serie.isClosed())
+			while(true)
 			{
 				int timeResend = serie.timeBeforeResend();
 				int timeDeath = serie.timeBeforeDeath();
@@ -65,9 +66,9 @@ public class ThreadSerialOutputTimeout extends ThreadService implements SerialCl
 				}
 			}
 		}
-		catch(InterruptedException e)
+		catch(InterruptedException | ClosedSerialException e)
 		{
-			log.debug("Arrêt de " + Thread.currentThread().getName());
+			log.debug("Arrêt de " + Thread.currentThread().getName()+" : "+e);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)

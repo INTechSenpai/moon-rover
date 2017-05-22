@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import container.Service;
 import container.dependances.SerialClass;
+import exceptions.serie.ClosedSerialException;
 import serie.trame.Conversation;
 
 /**
@@ -45,8 +46,11 @@ public class BufferOutgoingBytes implements Service, SerialClass
 		this.serie = serie;
 	}
 
-	public synchronized void add(Conversation c, byte[] b, int taille)
+	public synchronized void add(Conversation c, byte[] b, int taille) throws ClosedSerialException
 	{
+		if(serie.isClosed())
+			throw new ClosedSerialException("Série fermée !");
+			
 		if(c != null)
 			waitingForSending.add(c);
 
@@ -72,14 +76,17 @@ public class BufferOutgoingBytes implements Service, SerialClass
 		notify();
 	}
 
-	public synchronized void add(byte b)
+/*	public synchronized void add(byte b) throws ClosedSerialException
 	{
+		if(serie.isClosed())
+			throw new ClosedSerialException("Série fermée !");
+
 		bufferWriting[indexBufferStop++] = b;
 		indexBufferStop &= 0x3FFF;
 		if(isEmpty())
 			log.critical("Overflow du buffer d'envoi série !");
 		notify();
-	}
+	}*/
 
 	/**
 	 * Lit un octet
@@ -88,8 +95,9 @@ public class BufferOutgoingBytes implements Service, SerialClass
 	 * 
 	 * @return
 	 * @throws InterruptedException
+	 * @throws ClosedSerialException 
 	 */
-	public final synchronized void send() throws InterruptedException
+	public final synchronized void send() throws InterruptedException, ClosedSerialException
 	{
 		if(!isEmpty())
 		{
@@ -127,8 +135,4 @@ public class BufferOutgoingBytes implements Service, SerialClass
 		return indexBufferStart == indexBufferStop;
 	}
 
-	public boolean isClosed()
-	{
-		return serie.isClosed;
-	}
 }

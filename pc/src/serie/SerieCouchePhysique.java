@@ -27,6 +27,7 @@ import config.Config;
 import config.ConfigInfo;
 import container.Service;
 import container.dependances.SerialClass;
+import exceptions.serie.ClosedSerialException;
 import utils.Log;
 import utils.Log.Verbose;
 
@@ -246,7 +247,7 @@ public class SerieCouchePhysique implements Service, SerialClass
 	 * @param message
 	 * @throws InterruptedException
 	 */
-	public synchronized void communiquer(byte[] bufferWriting, int offset, int length) throws InterruptedException
+	public synchronized void communiquer(byte[] bufferWriting, int offset, int length) throws InterruptedException, ClosedSerialException
 	{
 		if(simuleSerie)
 			return;
@@ -257,10 +258,7 @@ public class SerieCouchePhysique implements Service, SerialClass
 		 * Un appel à une série fermée ne devrait jamais être effectué.
 		 */
 		if(isClosed)
-		{
-			log.debug("La série est fermée et ne peut envoyer un message");
-			return;
-		}
+			throw new ClosedSerialException("La série est fermée et ne peut envoyer un message");
 
 		try
 		{
@@ -308,6 +306,11 @@ public class SerieCouchePhysique implements Service, SerialClass
 		}
 	}
 
+	public boolean isClosed()
+	{
+		return isClosed;
+	}
+	
 	public void init() throws InterruptedException
 	{
 		openPort();

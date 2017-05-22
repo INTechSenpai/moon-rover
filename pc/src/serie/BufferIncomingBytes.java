@@ -20,6 +20,7 @@ import utils.Log;
 import utils.Log.Verbose;
 import container.Service;
 import container.dependances.SerialClass;
+import exceptions.serie.ClosedSerialException;
 import exceptions.serie.MissingCharacterException;
 
 /**
@@ -35,6 +36,7 @@ public class BufferIncomingBytes implements Service, SerialClass
 
 	private InputStream input;
 	private volatile boolean ping = false; // y a-t-il eu le ping initial avec le LL ?
+	private volatile boolean closed = false;
 	
 	private int bufferReading[] = new int[16384];
 
@@ -106,8 +108,9 @@ public class BufferIncomingBytes implements Service, SerialClass
 	 * @throws IOException
 	 * @throws MissingCharacterException
 	 * @throws InterruptedException
+	 * @throws ClosedSerialException 
 	 */
-	public final synchronized int read() throws MissingCharacterException, InterruptedException
+	public final synchronized int read() throws MissingCharacterException, InterruptedException, ClosedSerialException
 	{
 		int essai = 0;
 		while(indexBufferStart == indexBufferStop && essai < 100)
@@ -116,6 +119,9 @@ public class BufferIncomingBytes implements Service, SerialClass
 			essai++;
 		}
 
+		if(closed)
+			throw new ClosedSerialException();
+		
 		if(indexBufferStart == indexBufferStop)
 			throw new MissingCharacterException("Un caractère attendu n'est pas arrivé");
 
@@ -148,6 +154,7 @@ public class BufferIncomingBytes implements Service, SerialClass
 	 */
 	public void close() throws IOException
 	{
+		closed = true;
 		input.close();
 	}
 }

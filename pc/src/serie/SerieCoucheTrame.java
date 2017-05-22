@@ -24,6 +24,7 @@ import config.ConfigInfo;
 import container.Service;
 import container.dependances.SerialClass;
 import exceptions.ShutdownRequestException;
+import exceptions.serie.ClosedSerialException;
 import exceptions.serie.IncorrectChecksumException;
 import exceptions.serie.MissingCharacterException;
 import exceptions.serie.ProtocolException;
@@ -139,8 +140,9 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 * 
 	 * @param o
 	 * @throws InterruptedException
+	 * @throws ClosedSerialException 
 	 */
-	public void sendOrder(Order o) throws InterruptedException
+	public void sendOrder(Order o) throws InterruptedException, ClosedSerialException
 	{
 		Conversation f = getNextAvailableConversation();
 		f.update(o);
@@ -161,8 +163,9 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 * 
 	 * @return
 	 * @throws ShutdownRequestException 
+	 * @throws ClosedSerialException 
 	 */
-	public Paquet readData() throws InterruptedException, ShutdownRequestException
+	public Paquet readData() throws InterruptedException, ShutdownRequestException, ClosedSerialException
 	{
 		IncomingFrame f = null;
 		Paquet p = null;
@@ -192,8 +195,9 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 * 
 	 * @param f
 	 * @throws InterruptedException
+	 * @throws ClosedSerialException 
 	 */
-	public synchronized Paquet processFrame(IncomingFrame f) throws ProtocolException, InterruptedException
+	public synchronized Paquet processFrame(IncomingFrame f) throws ProtocolException, InterruptedException, ClosedSerialException
 	{
 		Iterator<Integer> it = waitingFrames.iterator();
 		while(it.hasNext())
@@ -311,8 +315,9 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 * @throws IncorrectChecksumException
 	 * @throws InterruptedException
 	 * @throws ShutdownRequestException 
+	 * @throws ClosedSerialException 
 	 */
-	private IncomingFrame readFrame() throws MissingCharacterException, IncorrectChecksumException, IllegalArgumentException, InterruptedException, ShutdownRequestException
+	private IncomingFrame readFrame() throws MissingCharacterException, IncorrectChecksumException, IllegalArgumentException, InterruptedException, ShutdownRequestException, ClosedSerialException
 	{
 		int code, id, longueur, checksum;
 		int[] message;
@@ -362,6 +367,8 @@ public class SerieCoucheTrame implements Service, SerialClass
 		int nb = 0;
 		while((!waitingFrames.isEmpty() || !pendingLongFrames.isEmpty()) && nb < 50)
 		{
+			if(nb == 0)
+				log.debug("On attend la fin des conversations série…");
 			Thread.sleep(100);
 			nb++;
 		}
@@ -417,8 +424,9 @@ public class SerieCoucheTrame implements Service, SerialClass
 	 * Renvoie la trame la plus vieille qui en a besoin (possiblement aucune)
 	 * 
 	 * @throws InterruptedException
+	 * @throws ClosedSerialException 
 	 */
-	public void resend() throws InterruptedException
+	public void resend() throws InterruptedException, ClosedSerialException
 	{
 		Conversation trame = null;
 
@@ -459,10 +467,5 @@ public class SerieCoucheTrame implements Service, SerialClass
 	public void init() throws InterruptedException
 	{
 		serieOutput.init();
-	}
-
-	public boolean isClosed()
-	{
-		return closed;
 	}
 }

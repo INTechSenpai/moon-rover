@@ -15,6 +15,7 @@
 package threads.serie;
 
 import container.dependances.SerialClass;
+import exceptions.serie.ClosedSerialException;
 import serie.BufferOutgoingBytes;
 import threads.ThreadService;
 import utils.Log;
@@ -45,7 +46,7 @@ public class ThreadSerialOutputBytes extends ThreadService implements SerialClas
 
 		try
 		{
-			while(!serie.isClosed())
+			while(true)
 			{
 				synchronized(serie)
 				{
@@ -55,9 +56,9 @@ public class ThreadSerialOutputBytes extends ThreadService implements SerialClas
 				}
 			}
 		}
-		catch(InterruptedException e)
+		catch(InterruptedException | ClosedSerialException e)
 		{
-			log.debug("Arrêt de " + Thread.currentThread().getName());
+			log.debug("Arrêt de " + Thread.currentThread().getName()+" : "+e);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)

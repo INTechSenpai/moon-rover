@@ -18,6 +18,7 @@ import container.Container;
 import container.Container.ErrorCode;
 import container.dependances.SerialClass;
 import exceptions.ShutdownRequestException;
+import exceptions.serie.ClosedSerialException;
 import serie.BufferIncomingOrder;
 import serie.SerieCoucheTrame;
 import threads.ThreadService;
@@ -56,9 +57,9 @@ public class ThreadSerialInputCoucheTrame extends ThreadService implements Seria
 			while(true)
 				buffer.add(serie.readData());
 		}
-		catch(InterruptedException e)
+		catch(InterruptedException | ClosedSerialException e)
 		{
-			log.debug("Arrêt de " + Thread.currentThread().getName());
+			log.debug("Arrêt de " + Thread.currentThread().getName()+" : "+e);
 			Thread.currentThread().interrupt();
 		}
 		catch(ShutdownRequestException e)
