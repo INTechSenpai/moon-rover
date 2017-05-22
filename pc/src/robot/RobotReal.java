@@ -19,6 +19,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import capteurs.SensorMode;
 import obstacles.types.ObstacleRobot;
+import pathfinding.astar.arcs.ArcCourbeDynamique;
+import pathfinding.astar.arcs.ArcManager;
+import pathfinding.astar.arcs.BezierComputer;
 import pathfinding.astar.arcs.ClothoidesComputer;
 import pathfinding.chemin.CheminPathfinding;
 import serie.BufferOutgoingOrder;
@@ -31,6 +34,7 @@ import config.ConfigInfo;
 import container.Service;
 import container.dependances.CoreClass;
 import exceptions.ActionneurException;
+import exceptions.MemoryManagerException;
 import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
 import utils.Log;
@@ -62,21 +66,25 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	private boolean print, printTrace;
 	private PrintBufferInterface buffer;
 	private BufferOutgoingOrder out;
+	private ArcManager arcmanager;
 	private CheminPathfinding chemin;
 	private volatile boolean cinematiqueInitialised = false;
 	private CinematiqueObs[] pointsAvancer = new CinematiqueObs[256];
 	private SensorMode lastMode = null;
+	private BezierComputer bezier;
 	private AnglesRoues angles = new AnglesRoues();
 	private Vector vecteur = new Vector(new Vec2RW(), 0, Couleur.ToF_COURT);
 
 	// Constructeur
-	public RobotReal(Log log, BufferOutgoingOrder out, PrintBufferInterface buffer, CheminPathfinding chemin, Config config)
+	public RobotReal(Log log, BezierComputer bezier, ArcManager arcmanager, BufferOutgoingOrder out, PrintBufferInterface buffer, CheminPathfinding chemin, Config config)
 	{
 		super(log);
+		this.arcmanager = arcmanager;
 		this.buffer = buffer;
 		this.out = out;
 		this.chemin = chemin;
-
+		this.bezier = bezier;
+		
 		// c'est le LL qui fournira la position
 		cinematique = new Cinematique(0, 300, 0, true, 3);
 		print = config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS);
@@ -220,6 +228,30 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	 * DÉPLACEMENTS
 	 */
 
+	@Override
+	public void avanceToCircle(Speed speed, double rayon) throws InterruptedException, UnableToMoveException, MemoryManagerException
+	{
+		ArcCourbeDynamique arc = bezier.trajectoireCirculaireVersCentre(cinematique, rayon);
+		if(arc == null)
+			throw new UnableToMoveException("Le robot est arrivé au mauvais endroit et aucune correction n'est possible !");
+		LinkedList<CinematiqueObs> out = new LinkedList<CinematiqueObs>();
+		for(CinematiqueObs o : arc.arcs)
+			out.add(o);
+		try
+		{
+			chemin.addToEnd(out);
+			chemin.waitTrajectoryTickets();
+		}
+		catch(PathfindingException e)
+		{
+			// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de
+			// 5m
+			e.printStackTrace();
+			e.printStackTrace(log.getPrintWriter());
+		}
+		followTrajectory(speed);
+	}
+	
 	@Override
 	public void avance(double distance, Speed speed) throws UnableToMoveException, InterruptedException
 	{
@@ -424,5 +456,16 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		this.vecteur = vecteur;
 	}
 	
+	@Override
+	public boolean isArrivedAsser()
+	{
+		return arcmanager.isArrivedAsser(cinematique);
+	}
+
+	@Override
+	public boolean isAlmostArrived()
+	{
+		return arcmanager.isAlmostArrived(cinematique);
+	}
 
 }

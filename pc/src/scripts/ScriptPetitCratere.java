@@ -15,6 +15,7 @@
 package scripts;
 
 import exceptions.ActionneurException;
+import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
 import pathfinding.GameState;
 import robot.Robot;
@@ -58,10 +59,22 @@ public class ScriptPetitCratere extends Script
 	}
 
 	@Override
-	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
+	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException, MemoryManagerException
 	{
 		try
 		{
+			if(!state.robot.isArrivedAsser())
+			{
+				if(state.robot.isAlmostArrived())
+				{
+					state.robot.avanceToCircle(Speed.STANDARD, 200);
+					if(!state.robot.isArrivedAsser())
+						throw new UnableToMoveException("Le robot est encore arrivé au mauvais endroit !");
+				}
+				else
+					throw new UnableToMoveException("Le robot est arrivé au mauvais endroit ! (et de loin)");
+			}
+
 			try
 			{
 				state.robot.rearme();
