@@ -15,6 +15,7 @@
 package scripts;
 
 import exceptions.ActionneurException;
+import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
 import pathfinding.GameState;
 import pathfinding.SensFinal;
@@ -37,7 +38,9 @@ public class ScriptDeposeMinerai extends Script
 {
 	private Vec2RW centre = new Vec2RW(610, 2000-180);
 	private Cinematique pos = new Cinematique(500, 1850, 0, true, 0);
+	private Vec2RW centreBout = new Vec2RW(1600, 2000-180);
 	private double rayon = 180;
+	private double rayonBout = 180;
 	private boolean gauche;
 
 	public ScriptDeposeMinerai(boolean gauche)
@@ -53,7 +56,8 @@ public class ScriptDeposeMinerai extends Script
 	@Override
 	public Cinematique getPointEntree()
 	{
-		return pos.clone();
+		return null;
+//		return pos.clone();
 	}
 	
 	@Override
@@ -66,12 +70,13 @@ public class ScriptDeposeMinerai extends Script
 	}
 
 	@Override
-	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException, ActionneurException
+	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException, ActionneurException, MemoryManagerException
 	{
 		Ticket t = state.robot.traverseBascule();
+		cercle.set(centreBout, 0, rayonBout, SensFinal.MARCHE_ARRIERE, null);
 		Thread.sleep(500);
 		try {
-			state.robot.avance(-900, Speed.BASCULE);
+			state.robot.avanceToCircle(Speed.BASCULE);
 		}
 		catch(UnableToMoveException e)
 		{

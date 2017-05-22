@@ -212,6 +212,8 @@ public class JUnit_Robot extends JUnit_Test
 								// bas niveau
 			pathcache.computeAndFollow(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_DROITE, false));
 			ScriptNames.SCRIPT_CRATERE_HAUT_DROITE.s.execute(state);
+			pathcache.computeAndFollow(new KeyPathCache(state, ScriptNames.SCRIPT_DEPOSE_MINERAI_DROITE, false));
+			ScriptNames.SCRIPT_DEPOSE_MINERAI_DROITE.s.execute(state);
 		}
 		catch(Exception e)
 		{
@@ -257,7 +259,7 @@ public class JUnit_Robot extends JUnit_Test
 		try
 		{
 			config.set(ConfigInfo.COULEUR, RobotColor.BLEU);
-			Cinematique depart = new Cinematique(-430, 2000-185, 0, true, 0);
+			Cinematique depart = new Cinematique(-430, 2000-185, Math.PI/6, true, 0);
 			robot.setCinematique(depart);
 			data.setPosition(depart.getPosition(), depart.orientationReelle); // on
 																				// envoie
@@ -267,7 +269,7 @@ public class JUnit_Robot extends JUnit_Test
 																				// niveau
 			Thread.sleep(100); // on attend un peu que la position soit affectée
 								// bas niveau
-			pathcache.computeAndFollow(new KeyPathCache(state, ScriptNames.SCRIPT_DEPOSE_MINERAI_GAUCHE, false));
+//			pathcache.computeAndFollow(new KeyPathCache(state, ScriptNames.SCRIPT_DEPOSE_MINERAI_GAUCHE, false));
 			ScriptNames.SCRIPT_DEPOSE_MINERAI_GAUCHE.s.execute(state);
 		}
 		catch(Exception e)
