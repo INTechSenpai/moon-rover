@@ -19,6 +19,7 @@ import java.util.List;
 import exceptions.UnableToMoveException;
 import pathfinding.GameState;
 import pathfinding.SensFinal;
+import robot.Cinematique;
 import robot.Robot;
 import table.GameElementNames;
 import utils.Vec2RO;
@@ -70,6 +71,12 @@ public class ScriptGrosCratere extends Script
 	public void setUpCercleArrivee()
 	{
 		cercle.set(pos, angle, 350, SensFinal.MARCHE_ARRIERE, null);
+	}
+
+	@Override
+	public Cinematique getPointEntree()
+	{
+		return null;
 	}
 
 	@Override

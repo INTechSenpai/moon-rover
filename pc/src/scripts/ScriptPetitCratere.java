@@ -18,6 +18,7 @@ import exceptions.ActionneurException;
 import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
 import pathfinding.GameState;
+import robot.Cinematique;
 import robot.Robot;
 import robot.Speed;
 import table.EtatElement;
@@ -162,4 +163,11 @@ public class ScriptPetitCratere extends Script
 			state.robot.avance(50, Speed.STANDARD);
 		}
 	}
+	
+	@Override
+	public Cinematique getPointEntree()
+	{
+		return null;
+	}
+
 }

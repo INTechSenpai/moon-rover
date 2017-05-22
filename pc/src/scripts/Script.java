@@ -19,6 +19,7 @@ import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
 import pathfinding.GameState;
 import pathfinding.astar.arcs.CercleArrivee;
+import robot.Cinematique;
 import robot.Robot;
 import utils.Log;
 
@@ -39,6 +40,8 @@ public abstract class Script
 		Script.log = log;
 		Script.cercle = cercle;
 	}
+
+	public abstract Cinematique getPointEntree();
 
 	public abstract void setUpCercleArrivee();
 

@@ -18,6 +18,7 @@ import exceptions.ActionneurException;
 import exceptions.UnableToMoveException;
 import pathfinding.GameState;
 import pathfinding.SensFinal;
+import robot.Cinematique;
 import robot.Robot;
 import robot.Speed;
 import serie.SerialProtocol.InOrder;
@@ -34,20 +35,34 @@ import utils.Vec2RW;
 
 public class ScriptDeposeMinerai extends Script
 {
-	private Vec2RW centre = new Vec2RW(700, 1800);
-	private double rayon = 200;
+	private Vec2RW centre = new Vec2RW(610, 2000-180);
+	private Cinematique pos = new Cinematique(500, 1850, 0, true, 0);
+	private double rayon = 180;
 	private boolean gauche;
 
 	public ScriptDeposeMinerai(boolean gauche)
 	{
 		this.gauche = gauche;
-		centre.setX(-centre.getX());
+		if(gauche)
+		{
+			centre.setX(-centre.getX());
+			pos.getPositionEcriture().setX(pos.getPosition().getX());
+		}
+	}
+	
+	@Override
+	public Cinematique getPointEntree()
+	{
+		return pos.clone();
 	}
 	
 	@Override
 	public void setUpCercleArrivee()
 	{
-		cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT, null);
+		if(gauche)
+			cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI / 6, Math.PI / 6});
+		else
+			cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI, -5 * Math.PI / 6, 5 * Math.PI / 6, Math.PI});			
 	}
 
 	@Override
