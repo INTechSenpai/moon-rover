@@ -229,9 +229,9 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	 */
 
 	@Override
-	public void avanceToCircle(Speed speed, double rayon) throws InterruptedException, UnableToMoveException, MemoryManagerException
+	public void avanceToCircle(Speed speed) throws InterruptedException, UnableToMoveException, MemoryManagerException
 	{
-		ArcCourbeDynamique arc = bezier.trajectoireCirculaireVersCentre(cinematique, rayon);
+		ArcCourbeDynamique arc = bezier.trajectoireCirculaireVersCentre(cinematique);
 		if(arc == null)
 			throw new UnableToMoveException("Le robot est arrivé au mauvais endroit et aucune correction n'est possible !");
 		LinkedList<CinematiqueObs> out = new LinkedList<CinematiqueObs>();

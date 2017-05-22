@@ -54,27 +54,27 @@ public class ScriptPetitCratere extends Script
 	@Override
 	public void setUpCercleArrivee()
 	{
-		// il faut se mettre à 180mm du bord pour récupérer les balles
 		cercle.set(element, 250);
 	}
 
 	@Override
 	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException, MemoryManagerException
 	{
+		int nbEssai = 3;
+		cercle.set(element, 200); // nouveau rayon : 200
+		state.robot.avanceToCircle(Speed.STANDARD);
+		while(!state.robot.isArrivedAsser())
+		{
+			if(nbEssai == 0)
+				throw new UnableToMoveException("Le robot est encore arrivé au mauvais endroit !");
+			log.warning("Le robot n'est pas bien arrivé sur le cratère : on retente.");
+			state.robot.avance(40, Speed.STANDARD);
+			state.robot.avanceToCircle(Speed.STANDARD);
+			nbEssai--;
+		}
+		
 		try
 		{
-			if(!state.robot.isArrivedAsser())
-			{
-				if(state.robot.isAlmostArrived())
-				{
-					state.robot.avanceToCircle(Speed.STANDARD, 200);
-					if(!state.robot.isArrivedAsser())
-						throw new UnableToMoveException("Le robot est encore arrivé au mauvais endroit !");
-				}
-				else
-					throw new UnableToMoveException("Le robot est arrivé au mauvais endroit ! (et de loin)");
-			}
-
 			try
 			{
 				state.robot.rearme();
@@ -158,6 +158,7 @@ public class ScriptPetitCratere extends Script
 		}
 		finally
 		{
+			// on se dégage dans tous les cas
 			state.robot.avance(50, Speed.STANDARD);
 		}
 	}
