@@ -250,6 +250,31 @@ public class JUnit_Robot extends JUnit_Test
 			throw e;
 		}
 	}
+	
+	public void depart_bleu_depose() throws Exception
+	{
+		try
+		{
+			config.set(ConfigInfo.COULEUR, RobotColor.BLEU);
+			Cinematique depart = new Cinematique(-430, 2000-185, 0, true, 0);
+			robot.setCinematique(depart);
+			data.setPosition(depart.getPosition(), depart.orientationReelle); // on
+																				// envoie
+																				// la
+																				// position
+																				// haut
+																				// niveau
+			Thread.sleep(100); // on attend un peu que la position soit affectée
+								// bas niveau
+			ScriptNames.SCRIPT_DEPOSE_MINERAI_GAUCHE.s.execute(state);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace(log.getPrintWriter());
+			e.printStackTrace();
+			throw e;
+		}
+	}
 
 	/**
 	 * Va au cratère droit

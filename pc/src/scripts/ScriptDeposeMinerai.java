@@ -20,6 +20,9 @@ import pathfinding.GameState;
 import pathfinding.SensFinal;
 import robot.Robot;
 import robot.Speed;
+import serie.SerialProtocol.InOrder;
+import serie.SerialProtocol.State;
+import serie.Ticket;
 import utils.Vec2RW;
 
 /**
@@ -50,9 +53,35 @@ public class ScriptDeposeMinerai extends Script
 	@Override
 	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException, ActionneurException
 	{
-		state.robot.avance(-200, Speed.BASCULE);
-		state.robot.traverseBascule();
-		state.robot.avance(-200, Speed.BASCULE);
+		Ticket t = state.robot.traverseBascule();
+		try {
+			state.robot.avance(-900, Speed.BASCULE);
+		}
+		catch(UnableToMoveException e)
+		{
+			log.warning(e);
+			double xRobot = state.robot.getCinematique().getPosition().getX();
+			double yRobot = state.robot.getCinematique().getPosition().getY();
+			if(yRobot < 1650 || (gauche && (xRobot < -1350 || xRobot > -1140)) || (!gauche && (xRobot < 1140 || xRobot > 1350)))
+			{
+				log.warning("On est trop loin ! Position : "+state.robot.getCinematique().getPosition());
+				throw e;
+			}
+			log.debug("On a eu un problème en reculant, mais on est bien positionné, alors on continue !");
+		}
+
+		InOrder o = t.attendStatus();
+		if(o.etat == State.KO)
+		{
+			try {
+				state.robot.leveFilet();
+			}
+			catch(ActionneurException e)
+			{
+				log.warning(e);
+			}
+		}
+
 		state.robot.ouvreFilet();
 		try
 		{

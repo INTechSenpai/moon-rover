@@ -172,16 +172,6 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		}
 	}
 
-	/**
-	 * N'est utilisé que pour l'affichage
-	 * 
-	 * @return
-	 */
-	public Cinematique getCinematique()
-	{
-		return cinematique;
-	}
-
 	@Override
 	public void print(Graphics g, Fenetre f, RobotReal robot)
 	{
@@ -374,6 +364,11 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		{
 			log.critical(e);
 		}
+	}
+	
+	public Ticket traverseBascule() throws InterruptedException, ActionneurException
+	{
+		return out.traverseBascule();
 	}
 
 	/**
