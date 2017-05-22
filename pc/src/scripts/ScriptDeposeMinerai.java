@@ -54,6 +54,7 @@ public class ScriptDeposeMinerai extends Script
 	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException, ActionneurException
 	{
 		Ticket t = state.robot.traverseBascule();
+		Thread.sleep(500);
 		try {
 			state.robot.avance(-900, Speed.BASCULE);
 		}
