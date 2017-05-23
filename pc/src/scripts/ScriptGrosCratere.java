@@ -17,10 +17,9 @@ package scripts;
 import java.util.ArrayList;
 import java.util.List;
 import exceptions.UnableToMoveException;
-import pathfinding.GameState;
+import pathfinding.RealGameState;
 import pathfinding.SensFinal;
 import robot.Cinematique;
-import robot.Robot;
 import table.GameElementNames;
 import utils.Vec2RO;
 import utils.Vec2RW;
@@ -80,7 +79,7 @@ public class ScriptGrosCratere extends Script
 	}
 
 	@Override
-	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException
+	protected void run(RealGameState state) throws InterruptedException, UnableToMoveException
 	{
 		// TODO
 	}

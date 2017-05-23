@@ -17,10 +17,9 @@ package scripts;
 import exceptions.ActionneurException;
 import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
-import pathfinding.GameState;
+import pathfinding.RealGameState;
 import pathfinding.SensFinal;
 import robot.Cinematique;
-import robot.Robot;
 import robot.Speed;
 import serie.SerialProtocol.InOrder;
 import serie.SerialProtocol.State;
@@ -69,7 +68,7 @@ public class ScriptDeposeMinerai extends Script
 	}
 
 	@Override
-	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException, ActionneurException, MemoryManagerException
+	protected void run(RealGameState state) throws InterruptedException, UnableToMoveException, ActionneurException, MemoryManagerException
 	{
 		Ticket t = state.robot.traverseBascule();
 		cercle.set(centreBout, 0, rayonBout, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);

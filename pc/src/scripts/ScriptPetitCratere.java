@@ -17,9 +17,8 @@ package scripts;
 import exceptions.ActionneurException;
 import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
-import pathfinding.GameState;
+import pathfinding.RealGameState;
 import robot.Cinematique;
-import robot.Robot;
 import robot.Speed;
 import table.EtatElement;
 import table.GameElementNames;
@@ -59,7 +58,7 @@ public class ScriptPetitCratere extends Script
 	}
 
 	@Override
-	protected void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException, MemoryManagerException
+	protected void run(RealGameState state) throws InterruptedException, UnableToMoveException, MemoryManagerException
 	{
 		int nbEssai = 3;
 		cercle.set(element, 195, 5, -5, 3, 0); // nouveau rayon : 200

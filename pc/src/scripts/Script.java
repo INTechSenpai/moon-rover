@@ -17,10 +17,9 @@ package scripts;
 import exceptions.ActionneurException;
 import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
-import pathfinding.GameState;
+import pathfinding.RealGameState;
 import pathfinding.astar.arcs.CercleArrivee;
 import robot.Cinematique;
-import robot.Robot;
 import utils.Log;
 
 /**
@@ -45,9 +44,9 @@ public abstract class Script
 
 	public abstract void setUpCercleArrivee();
 
-	protected abstract void run(GameState<? extends Robot> state) throws InterruptedException, UnableToMoveException, ActionneurException, MemoryManagerException;
+	protected abstract void run(RealGameState state) throws InterruptedException, UnableToMoveException, ActionneurException, MemoryManagerException;
 
-	public void execute(GameState<? extends Robot> state) throws InterruptedException, MemoryManagerException
+	public void execute(RealGameState state) throws InterruptedException, MemoryManagerException
 	{
 		log.debug("Début de l'exécution de " + getClass().getSimpleName());
 		try
