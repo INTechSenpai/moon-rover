@@ -63,7 +63,7 @@ public class Ticket
 	public synchronized void attendStatus(long timeout) throws InterruptedException
 	{
 		if(isEmpty())
-			wait(timeout);
+			wait(Math.max(0, timeout));
 	}
 
 }

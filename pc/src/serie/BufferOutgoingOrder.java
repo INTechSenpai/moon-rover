@@ -365,10 +365,12 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	/**
 	 * Demande à être notifié de la fin du match
 	 */
-	public synchronized void startMatchChrono()
+	public synchronized Ticket startMatchChrono()
 	{
-		bufferBassePriorite.add(new Order(OutOrder.START_MATCH_CHRONO));
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(OutOrder.START_MATCH_CHRONO, t));
 		notify();
+		return t;
 	}
 
 	/**

@@ -49,6 +49,8 @@ public class Homologation
 	public static void main(String[] args)
 	{
 		Container container = null;
+		Ticket ticketFinMatch = null;
+		long dateDebutMatch = System.currentTimeMillis();
 		try
 		{
 			container = new Container();
@@ -137,8 +139,8 @@ public class Homologation
 			/*
 			 * Le match a commencé !
 			 */
-			data.startMatchChrono();
-
+			ticketFinMatch = data.startMatchChrono();
+			dateDebutMatch = System.currentTimeMillis();
 			log.debug("Chrono démarré");
 
 			
@@ -162,6 +164,8 @@ public class Homologation
 		{
 			try
 			{
+				if(ticketFinMatch != null)
+					ticketFinMatch.attendStatus(95000 - (System.currentTimeMillis() - dateDebutMatch));
 				System.exit(container.destructor().code);
 			}
 			catch(Exception e)
