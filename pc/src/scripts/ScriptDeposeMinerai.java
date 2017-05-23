@@ -64,9 +64,9 @@ public class ScriptDeposeMinerai extends Script
 	public void setUpCercleArrivee()
 	{
 		if(gauche)
-			cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI / 6, Math.PI / 6}, 70, -70, 10, -10);
+			cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI / 5, Math.PI / 5}, 70, -70, 10, -10);
 		else
-			cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI, -5 * Math.PI / 6, 5 * Math.PI / 6, Math.PI}, 70, -70, 10, -10);
+			cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI, -4 * Math.PI / 5, 4 * Math.PI / 5, Math.PI}, 70, -70, 10, -10);
 	}
 
 	@Override
