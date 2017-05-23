@@ -122,8 +122,12 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	public synchronized void updateConfig(Config config)
 	{
 		super.updateConfig(config);
-		dateDebutMatch = config.getLong(ConfigInfo.DATE_DEBUT_MATCH);
-		matchDemarre = config.getBoolean(ConfigInfo.MATCH_DEMARRE);
+		Long date = config.getLong(ConfigInfo.DATE_DEBUT_MATCH);
+		if(date != null)
+			dateDebutMatch = date;
+		Boolean m = config.getBoolean(ConfigInfo.MATCH_DEMARRE);
+		if(m != null)
+			matchDemarre = m;
 	}
 
 	public void setEnMarcheAvance(boolean enMarcheAvant)
