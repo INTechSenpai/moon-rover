@@ -90,12 +90,8 @@ public class Match
 			}
 			log.debug("Couleur récupérée");
 			
-			Boolean sym = null;
-			while(sym == null)
-			{
-				Thread.sleep(100);
-				sym = config.getSymmetry();
-			}
+			Thread.sleep(500);
+			boolean sym = config.getSymmetry();
 			
 			/*
 			 * La couleur est connue : on commence le stream de position
