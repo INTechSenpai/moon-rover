@@ -39,6 +39,7 @@ public class ScriptDeposeMinerai extends Script
 	private Vec2RW centreBout = new Vec2RW(1600, 2000-180);
 	private double rayon = 180;
 	private double rayonBout = 300;
+	private double rayonMilieu = 600;
 	private boolean gauche;
 
 	public ScriptDeposeMinerai(boolean gauche)
@@ -71,9 +72,11 @@ public class ScriptDeposeMinerai extends Script
 	protected void run(RealGameState state) throws InterruptedException, UnableToMoveException, ActionneurException, MemoryManagerException
 	{
 		Ticket t = state.robot.traverseBascule();
-		cercle.set(centreBout, 0, rayonBout, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
 		Thread.sleep(500);
 		try {
+			cercle.set(centreBout, 0, rayonMilieu, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
+			state.robot.avanceToCircle(Speed.BASCULE);
+			cercle.set(centreBout, 0, rayonBout, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
 			state.robot.avanceToCircle(Speed.BASCULE);
 		}
 		catch(UnableToMoveException e)
