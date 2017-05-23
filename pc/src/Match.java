@@ -61,7 +61,7 @@ public class Match
 			PathCache path = container.getService(PathCache.class);
 			RealGameState state = container.getService(RealGameState.class);
 			boolean simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
-
+			
 			log.debug("Initialisation des actionneurs…");
 
 			/*
@@ -119,6 +119,11 @@ public class Match
 
 			log.debug("Cinématique initialisée : " + robot.getCinematique());
 
+			KeyPathCache k = new KeyPathCache(state);
+			k.shoot = false;
+			k.s = ScriptsSymetrises.SCRIPT_CRATERE_HAUT_A_NOUS.getScript(sym);
+			path.prepareNewPath(k);
+			
 			log.debug("Attente du jumper…");
 
 			/*
@@ -144,9 +149,6 @@ public class Match
 			log.debug("Chrono démarré");
 
 			
-			KeyPathCache k = new KeyPathCache(state);
-			k.shoot = false;
-			k.s = ScriptsSymetrises.SCRIPT_CRATERE_HAUT_A_NOUS.getScript(sym);
 			try
 			{
 				path.computeAndFollow(k);

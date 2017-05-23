@@ -34,7 +34,7 @@ public abstract class Script
 {
 	protected static Log log;
 	protected static CercleArrivee cercle;
-
+	
 	public static void setLogCercle(Log log, CercleArrivee cercle)
 	{
 		Script.log = log;

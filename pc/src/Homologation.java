@@ -119,6 +119,11 @@ public class Homologation
 
 			log.debug("Cinématique initialisée : " + robot.getCinematique());
 
+			KeyPathCache k = new KeyPathCache(state);
+			k.shoot = false;
+			k.s = ScriptsSymetrises.SCRIPT_HOMOLO_A_NOUS.getScript(sym);
+			path.prepareNewPath(k);
+			
 			log.debug("Attente du jumper…");
 
 			/*
@@ -143,10 +148,6 @@ public class Homologation
 			dateDebutMatch = System.currentTimeMillis();
 			log.debug("Chrono démarré");
 
-			
-			KeyPathCache k = new KeyPathCache(state);
-			k.shoot = false;
-			k.s = ScriptsSymetrises.SCRIPT_HOMOLO_A_NOUS.getScript(sym);
 			try
 			{
 				path.computeAndFollow(k);

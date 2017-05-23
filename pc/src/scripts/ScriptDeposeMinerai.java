@@ -37,7 +37,6 @@ import utils.Vec2RW;
 public class ScriptDeposeMinerai extends Script
 {
 	private Vec2RW centre = new Vec2RW(610, 2000-180);
-	private Cinematique pos = new Cinematique(600, 1790, 0, true, 0);
 	private Vec2RW centreBout = new Vec2RW(1600, 2000-180);
 	private double rayon = 180;
 	private double rayonBout = 300;
@@ -50,7 +49,6 @@ public class ScriptDeposeMinerai extends Script
 		{
 			centre.setX(-centre.getX());
 			centreBout.setX(-centreBout.getX());
-			pos.getPositionEcriture().setX(pos.getPosition().getX());
 		}
 	}
 	
