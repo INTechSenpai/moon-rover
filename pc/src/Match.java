@@ -16,6 +16,7 @@ import capteurs.SensorMode;
 import config.Config;
 import config.ConfigInfo;
 import container.Container;
+import exceptions.ContainerException;
 import exceptions.MemoryManagerException;
 import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
@@ -168,14 +169,10 @@ public class Match
 		{
 			try
 			{
-				try {
-					if(ticketFinMatch != null)
-					{
-						log.debug("On attend la fin du match");
-						ticketFinMatch.attendStatus(95000 - (System.currentTimeMillis() - dateDebutMatch));
-					}
-				} finally {
-					System.exit(container.destructor().code);
+				if(ticketFinMatch != null)
+				{
+					log.debug("On attend la fin du match");
+					ticketFinMatch.attendStatus(95000 - (System.currentTimeMillis() - dateDebutMatch));
 				}
 			}
 			catch(Exception e)
@@ -183,6 +180,12 @@ public class Match
 				e.printStackTrace();
 				if(log != null)
 					e.printStackTrace(log.getPrintWriter());
+			} finally {
+				try {
+					System.exit(container.destructor().code);
+				} catch (ContainerException | InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
