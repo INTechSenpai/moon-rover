@@ -36,9 +36,9 @@ import utils.Vec2RW;
 public class ScriptDeposeMinerai extends Script
 {
 	private Vec2RW centre = new Vec2RW(610, 2000-180);
-	private Vec2RW centreBout = new Vec2RW(1600, 2000-180);
+	private Vec2RW centreBout = new Vec2RW(1600, 2000-160);
 	private double rayon = 180;
-	private double rayonBout = 300;
+	private double rayonBout = 400;
 	private double rayonMilieu = 600;
 	private boolean gauche;
 
