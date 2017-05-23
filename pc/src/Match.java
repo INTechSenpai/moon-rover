@@ -167,7 +167,7 @@ public class Match
 		}
 		finally
 		{
-			try
+/*			try
 			{
 				if(ticketFinMatch != null)
 				{
@@ -180,13 +180,13 @@ public class Match
 				e.printStackTrace();
 				if(log != null)
 					e.printStackTrace(log.getPrintWriter());
-			} finally {
+			} finally {*/
 				try {
 					System.exit(container.destructor().code);
 				} catch (ContainerException | InterruptedException e) {
 					e.printStackTrace();
 				}
-			}
+//			}
 		}
 	}
 
