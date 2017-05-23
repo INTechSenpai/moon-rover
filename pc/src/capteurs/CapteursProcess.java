@@ -327,6 +327,9 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			// ces capteurs ne voient pas un mur proche, ou pas le même
 			if(mur1 == null || mur2 == null || mur1 != mur2)
 				continue;
+
+			if(mur1 != Mur.MUR_HAUT || mur2 != Mur.MUR_HAUT)
+				continue;
 			
 			Vec2RO delta = pointVu1.minusNewVector(pointVu2);
 			double deltaOrientation = mur1.orientation - delta.getArgument(); // on
