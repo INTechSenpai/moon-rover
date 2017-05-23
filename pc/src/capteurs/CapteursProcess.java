@@ -272,10 +272,10 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			/**
 			 * Mise à jour de l'état de la table : un ennemi est passé
 			 */
-			for(GameElementNames g : GameElementNames.values())
+/*			for(GameElementNames g : GameElementNames.values())
 				if(table.isDone(g) == EtatElement.INDEMNE && g.obstacle.isColliding(obs))
 					table.setDone(g, EtatElement.PRIS_PAR_ENNEMI);
-
+*/
 		}
 
 		dstarlite.updateObstaclesEnnemi();
