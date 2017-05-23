@@ -89,10 +89,7 @@ public class Homologation
 				} while(etat != SerialProtocol.State.OK);
 			}
 			log.debug("Couleur récupérée");
-			
-			Thread.sleep(500);
-			boolean sym = config.getSymmetry();
-			
+						
 			/*
 			 * La couleur est connue : on commence le stream de position
 			 */
@@ -115,6 +112,9 @@ public class Homologation
 			}
 
 			log.debug("Cinématique initialisée : " + robot.getCinematique());
+
+			Thread.sleep(100);
+			boolean sym = config.getSymmetry();
 
 			KeyPathCache k = new KeyPathCache(state);
 			k.shoot = false;
