@@ -88,6 +88,7 @@ public class Match
 				{
 					Ticket t = data.demandeCouleur();
 					etat = t.attendStatus().etat;
+					Thread.sleep(100);
 				} while(etat != SerialProtocol.State.OK);
 			}
 			log.debug("Couleur récupérée");
