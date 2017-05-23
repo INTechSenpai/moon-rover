@@ -49,6 +49,7 @@ public class ScriptDeposeMinerai extends Script
 		if(gauche)
 		{
 			centre.setX(-centre.getX());
+			centreBout.setX(-centreBout.getX());
 			pos.getPositionEcriture().setX(pos.getPosition().getX());
 		}
 	}
