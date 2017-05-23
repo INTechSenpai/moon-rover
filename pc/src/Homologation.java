@@ -24,6 +24,7 @@ import pathfinding.PathCache;
 import pathfinding.RealGameState;
 import robot.Cinematique;
 import robot.RobotReal;
+import robot.Speed;
 import scripts.ScriptsSymetrises;
 import serie.BufferOutgoingOrder;
 import serie.SerialProtocol;
@@ -142,7 +143,7 @@ public class Homologation
 
 			try
 			{
-				path.computeAndFollow(k);
+				path.computeAndFollow(k, Speed.TEST);
 				k.s.s.execute(state);
 			}
 			catch(PathfindingException | UnableToMoveException | MemoryManagerException e)

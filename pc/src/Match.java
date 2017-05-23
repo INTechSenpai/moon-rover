@@ -25,6 +25,7 @@ import pathfinding.PathCache;
 import pathfinding.RealGameState;
 import robot.Cinematique;
 import robot.RobotReal;
+import robot.Speed;
 import scripts.ScriptsSymetrises;
 import serie.BufferOutgoingOrder;
 import serie.SerialProtocol;
@@ -144,12 +145,12 @@ public class Match
 			
 			try
 			{
-				path.computeAndFollow(k);
+				path.computeAndFollow(k, Speed.TEST);
 				k.s.s.execute(state);
 				k = new KeyPathCache(state);
 				k.shoot = false;
 				k.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
-				path.computeAndFollow(k);
+				path.computeAndFollow(k, Speed.STANDARD);
 				k.s.s.execute(state);
 			}
 			catch(PathfindingException | UnableToMoveException | MemoryManagerException e)

@@ -62,14 +62,14 @@ public class ScriptPetitCratere extends Script
 	{
 		int nbEssai = 3;
 		cercle.set(element, 195, 5, -5, 3, -1); // nouveau rayon : 200
-		state.robot.avanceToCircle(Speed.STANDARD);
+		state.robot.avanceToCircle(Speed.TEST);
 		while(!state.robot.isArrivedAsser())
 		{
 			if(nbEssai == 0)
 				throw new UnableToMoveException("Le robot est encore arrivé au mauvais endroit !");
 			log.warning("Le robot n'est pas bien arrivé sur le cratère : on retente.");
-			state.robot.avance(40, Speed.STANDARD);
-			state.robot.avanceToCircle(Speed.STANDARD);
+			state.robot.avance(40, Speed.TEST);
+			state.robot.avanceToCircle(Speed.TEST);
 			nbEssai--;
 		}
 		
