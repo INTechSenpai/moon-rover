@@ -24,7 +24,7 @@ import pathfinding.PathCache;
 import pathfinding.RealGameState;
 import robot.Cinematique;
 import robot.RobotReal;
-import scripts.ScriptNames;
+import scripts.ScriptsSymetrises;
 import serie.BufferOutgoingOrder;
 import serie.SerialProtocol;
 import serie.Ticket;
@@ -86,7 +86,14 @@ public class Homologation
 				} while(etat != SerialProtocol.State.OK);
 			}
 			log.debug("Couleur récupérée");
-
+			
+			Boolean sym = null;
+			while(sym == null)
+			{
+				Thread.sleep(100);
+				sym = config.getSymmetry();
+			}
+			
 			/*
 			 * La couleur est connue : on commence le stream de position
 			 */
@@ -134,15 +141,12 @@ public class Homologation
 
 			log.debug("Chrono démarré");
 
+			
 			KeyPathCache k = new KeyPathCache(state);
 			k.shoot = false;
-			k.s = ScriptNames.SCRIPT_CRATERE_HAUT_DROITE;
+			k.s = ScriptsSymetrises.SCRIPT_HOMOLO_A_NOUS.getScript(sym);
 			try
 			{
-				path.computeAndFollow(k);
-				k.s.s.execute(state);
-
-				k.s = ScriptNames.SCRIPT_DEPOSE_MINERAI_DROITE;
 				path.computeAndFollow(k);
 				k.s.s.execute(state);
 			}
