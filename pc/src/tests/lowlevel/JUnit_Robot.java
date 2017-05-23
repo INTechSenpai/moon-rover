@@ -244,6 +244,8 @@ public class JUnit_Robot extends JUnit_Test
 								// bas niveau
 			pathcache.computeAndFollow(new KeyPathCache(state, ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE, false));
 			ScriptNames.SCRIPT_CRATERE_HAUT_GAUCHE.s.execute(state);
+			pathcache.computeAndFollow(new KeyPathCache(state, ScriptNames.SCRIPT_DEPOSE_MINERAI_GAUCHE, false));
+			ScriptNames.SCRIPT_DEPOSE_MINERAI_GAUCHE.s.execute(state);
 		}
 		catch(Exception e)
 		{
