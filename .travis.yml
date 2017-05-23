@@ -7,7 +7,7 @@ install :
     - cat config.ini
 script :
     - ant
-    - ant tests
+    - timeout 180 ant tests
 jdk :
     - oraclejdk8
 notifications:
