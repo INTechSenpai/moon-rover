@@ -168,9 +168,15 @@ public class Match
 		{
 			try
 			{
-				if(ticketFinMatch != null)
-					ticketFinMatch.attendStatus(95000 - (System.currentTimeMillis() - dateDebutMatch));
-				System.exit(container.destructor().code);
+				try {
+					if(ticketFinMatch != null)
+					{
+						log.debug("On attend la fin du match");
+						ticketFinMatch.attendStatus(95000 - (System.currentTimeMillis() - dateDebutMatch));
+					}
+				} finally {
+					System.exit(container.destructor().code);
+				}
 			}
 			catch(Exception e)
 			{
