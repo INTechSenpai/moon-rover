@@ -61,7 +61,7 @@ public class ScriptPetitCratere extends Script
 	protected void run(RealGameState state) throws InterruptedException, UnableToMoveException, MemoryManagerException
 	{
 		int nbEssai = 3;
-		cercle.set(element, 195, 5, -5, 3, 0); // nouveau rayon : 200
+		cercle.set(element, 195, 5, -5, 3, -1); // nouveau rayon : 200
 		state.robot.avanceToCircle(Speed.STANDARD);
 		while(!state.robot.isArrivedAsser())
 		{
