@@ -90,6 +90,8 @@ public class Match
 			}
 			log.debug("Couleur récupérée");
 						
+			Ticket t = data.waitForJumper();
+			
 			/*
 			 * La couleur est connue : on commence le stream de position
 			 */
@@ -127,14 +129,7 @@ public class Match
 			 * Attente du jumper
 			 */
 			if(!simuleSerie)
-			{
-				SerialProtocol.State etat;
-				do
-				{
-					Ticket t = data.waitForJumper();
-					etat = t.attendStatus().etat;
-				} while(etat != SerialProtocol.State.OK);
-			}
+				t.attendStatus();
 
 			log.debug("LE MATCH COMMENCE !");
 
