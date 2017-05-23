@@ -314,15 +314,20 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 * @param pos
 	 * @param angle
 	 */
-	private void addXYO(ByteBuffer data, Vec2RO pos, double angle)
+	private void addXYO(ByteBuffer data, Vec2RO pos, double angle, boolean checkInTable)
 	{
 		double x = pos.getX();
 		double y = pos.getY();
-		x = (x < -1500 ? -1500 : x > 1500 ? 1500 : x);
-		y = (y < 0 ? 0 : y > 2000 ? 2000 : y);
+		
+		if(checkInTable)
+		{
+			x = (x < -1500 ? -1500 : x > 1500 ? 1500 : x);
+			y = (y < 0 ? 0 : y > 2000 ? 2000 : y);
+		}
+		
 		data.put((byte) (((int) (x) + 1500) >> 4));
-		data.put((byte) ((((int) (x) + 1500) << 4) + ((int) (y) >> 8)));
-		data.put((byte) ((int) (y)));
+		data.put((byte) ((((int) (x) + 1500) << 4) + (((int) (y) + 1000) >> 8)));
+		data.put((byte) ((int) (y) + 1000));
 		short theta = (short) Math.round((angle % (2 * Math.PI)) * 1000);
 		if(theta < 0)
 			theta += (short) Math.round(2000 * Math.PI);
@@ -335,7 +340,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	public synchronized void setPosition(Vec2RO pos, double orientation)
 	{
 		ByteBuffer data = ByteBuffer.allocate(5);
-		addXYO(data, pos, orientation);
+		addXYO(data, pos, orientation, true);
 		bufferBassePriorite.add(new Order(data, OutOrder.SET_POSITION));
 		notify();
 	}
@@ -346,7 +351,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	public synchronized void correctPosition(Vec2RO deltaPos, double deltaOrientation)
 	{
 		ByteBuffer data = ByteBuffer.allocate(5);
-		addXYO(data, deltaPos, deltaOrientation);
+		addXYO(data, deltaPos, deltaOrientation, false);
 		bufferBassePriorite.add(new Order(data, OutOrder.EDIT_POSITION));
 		notify();
 	}
@@ -431,7 +436,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 
 		ByteBuffer data = ByteBuffer.allocate(8);
 		data.put((byte) indexTrajectory);
-		addXYO(data, c.getPosition(), c.orientationReelle);
+		addXYO(data, c.getPosition(), c.orientationReelle, true);
 		short courbure = (short) ((Math.round(Math.abs(c.courbureReelle) * 100)) & 0x7FFF);
 
 		// stop
@@ -482,7 +487,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 															// STOP_POINT
 
 				log.debug("Point " + k + " : " + c, Verbose.PF.masque);
-				addXYO(data, c.getPosition(), c.orientationReelle);
+				addXYO(data, c.getPosition(), c.orientationReelle, true);
 				short courbure = (short) ((Math.round(Math.abs(c.courbureReelle) * 100)) & 0x7FFF);
 
 				// on vérifie si on va dans le même sens que le prochain point
