@@ -40,7 +40,7 @@ public class ScriptDeposeMinerai extends Script
 	private Cinematique pos = new Cinematique(600, 1790, 0, true, 0);
 	private Vec2RW centreBout = new Vec2RW(1600, 2000-180);
 	private double rayon = 180;
-	private double rayonBout = 180;
+	private double rayonBout = 300;
 	private boolean gauche;
 
 	public ScriptDeposeMinerai(boolean gauche)
