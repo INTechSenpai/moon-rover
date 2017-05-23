@@ -343,9 +343,8 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		}
 	}
 	
-	public void followArc(VitesseCourbure v, Speed s, double distance) throws UnableToMoveException, MemoryManagerException, InterruptedException
+	public void followArc(VitesseCourbure v, Speed s, int nbPointsMax) throws UnableToMoveException, MemoryManagerException, InterruptedException
 	{
-		int nbPointsMax = (int) (distance / ClothoidesComputer.PRECISION_TRACE_MM);
 		LinkedList<CinematiqueObs> out = new LinkedList<CinematiqueObs>();
 		if(v instanceof VitesseClotho)
 		{
@@ -353,7 +352,10 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 			if(!b)
 				throw new UnableToMoveException("Echec création de l'arc "+v);
 			for(int i = 0; i < Math.min(nbPointsMax, outar.length); i++)
+			{
+				log.debug("Ajout d'un point : "+outar[i]);
 				out.add(outar[i]);
+			}
 		}
 		else
 		{
@@ -361,7 +363,10 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 			if(arc == null)
 				throw new UnableToMoveException("Echec création de l'arc "+v);
 			for(int i = 0; i < Math.min(nbPointsMax, arc.getNbPoints()); i++)
+			{
+				log.debug("Ajout d'un point : "+arc.getPoint(i));
 				out.add(arc.getPoint(i));
+			}
 		}
 				
 		try
