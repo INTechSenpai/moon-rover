@@ -5,8 +5,10 @@
 ./run_junit.sh tests.lowlevel.JUnit_Robot#avance
 ./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_cratere_droit_HL_prehension
 ./run_junit.sh tests.lowlevel.JUnit_Robot#depart_bleu_cratere_gauche_HL_prehension
+./run_junit.sh tests.lowlevel.JUnit_Robot#depart_bleu_depose
 ./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_cratere_droit_HL_shoot
 ./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_cratere_gauche_HL
 ./run_junit.sh tests.lowlevel.JUnit_Robot#depart_jaune_HL
 ./run_junit.sh tests.lowlevel.JUnit_Robot#test_arc_cercle
 ./run_junit.sh tests.lowlevel.JUnit_Robot#recule
+./run_junit.sh tests.lowlevel.JUnit_Robot#avance_un_peu
