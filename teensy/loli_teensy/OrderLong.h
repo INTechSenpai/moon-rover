@@ -265,7 +265,7 @@ public:
 	{
 		if (input.size() != 3)
 		{// Nombre d'octets reçus incorrect
-			Log::critical(40, "StreamAll: argument incorrect (launched anyway)");
+			Log::critical(40, "StreamAll: argument incorrect (launched with default parameters)");
 			// On utilise des valeurs par défaut
 			sendPeriod = 1000;
 			sensorsPrescaler = 0;
@@ -286,6 +286,13 @@ public:
 		{
 			if (millis() - lastUpdateTime >= sendPeriod)
 			{
+				if (millis() - lastUpdateTime >= 2 * sendPeriod)
+				{
+					Serial.print("StreamAll trop lent ! : ");
+					Serial.println(millis() - lastUpdateTime);
+					Log::warning("StreamAll trop lent");
+				}
+
 				motionControlSystem.getPosition(currentPosition);
 				output = currentPosition.getVector();
 				output.push_back(motionControlSystem.getTrajectoryIndex());

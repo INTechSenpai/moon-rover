@@ -335,6 +335,22 @@ public:
 		return nbOrdersRunning;
 	}
 
+	void printOrdersRunning()
+	{
+		if (getNbOrdersRunning() > 0)
+		{
+			Serial.print("HL orders running : ");
+			for (size_t i = 0; i < STACK_SIZE; i++)
+			{
+				if (orderStack[i].isUsed())
+				{
+					Serial.printf("%u ", orderStack[i].orderID);
+				}
+			}
+			Serial.println();
+		}
+	}
+
 private:
 
 	enum RunningState

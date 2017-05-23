@@ -240,6 +240,26 @@ void loop()
 				lastMovingState = movingState;
 				lastIndex = index;
 			}
+
+			static bool ordersRunning = false;
+			uint32_t nbOrdersRunning = orderMgr.getNbOrdersRunning();
+			if (nbOrdersRunning > 0 && !ordersRunning)
+			{
+				ordersRunning = true;
+				Serial.println("HL orders started");
+			}
+			else if (nbOrdersRunning == 0 && ordersRunning)
+			{
+				ordersRunning = false;
+				Serial.println("All HL orders terminated");
+			}
+		}
+
+		static uint32_t chibre = 0;
+		if (millis() - chibre > 1000)
+		{
+			chibre = millis();
+			orderMgr.printOrdersRunning();
 		}
 	}
 }

@@ -209,12 +209,12 @@ private:
 
 	bool isLeftLocked()
 	{
-		return analogRead(PIN_BUTEE_G) > 400;
+		return analogRead(PIN_BUTEE_G) > 500;
 	}
 
 	bool isRightLocked()
 	{
-		return analogRead(PIN_BUTEE_D) > 400;
+		return analogRead(PIN_BUTEE_D) > 500;
 	}
 
 };
