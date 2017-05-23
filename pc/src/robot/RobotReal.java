@@ -75,6 +75,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	private BezierComputer bezier;
 	private AnglesRoues angles = new AnglesRoues();
 	private Vector vecteur = new Vector(new Vec2RW(), 0, Couleur.ToF_COURT);
+	private CinematiqueObs[] outar = new CinematiqueObs[ClothoidesComputer.NB_POINTS];
 
 	// Constructeur
 	public RobotReal(Log log, BezierComputer bezier, ArcManager arcmanager, BufferOutgoingOrder out, PrintBufferInterface buffer, CheminPathfinding chemin, Config config)
@@ -95,6 +96,9 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
 		printTrace = config.getBoolean(ConfigInfo.GRAPHIC_TRACE_ROBOT);
 		
+		for(int i = 0; i < outar.length; i++)
+			outar[i] = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
+
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
 
 		if(print || printTrace)
@@ -345,7 +349,6 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		LinkedList<CinematiqueObs> out = new LinkedList<CinematiqueObs>();
 		if(v instanceof VitesseClotho)
 		{
-			CinematiqueObs[] outar = new CinematiqueObs[ClothoidesComputer.NB_POINTS];
 			boolean b = arcmanager.getArcClotho(cinematique, (VitesseClotho) v, outar);
 			if(!b)
 				throw new UnableToMoveException("Echec création de l'arc "+v);
