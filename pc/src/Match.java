@@ -1,7 +1,3 @@
-import container.Container;
-import container.Container.ErrorCode;
-import exceptions.ContainerException;
-
 /*
  * Copyright (C) 2013-2017 Pierre-François Gimenez
  * This program is free software: you can redistribute it and/or modify
@@ -16,8 +12,26 @@ import exceptions.ContainerException;
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
+import capteurs.SensorMode;
+import config.Config;
+import config.ConfigInfo;
+import container.Container;
+import exceptions.MemoryManagerException;
+import exceptions.PathfindingException;
+import exceptions.UnableToMoveException;
+import pathfinding.KeyPathCache;
+import pathfinding.PathCache;
+import pathfinding.RealGameState;
+import robot.Cinematique;
+import robot.RobotReal;
+import scripts.ScriptsSymetrises;
+import serie.BufferOutgoingOrder;
+import serie.SerialProtocol;
+import serie.Ticket;
+import utils.Log;
+
 /**
- * Code de match
+ * Match
  * 
  * @author pf
  *
@@ -26,25 +40,141 @@ import exceptions.ContainerException;
 public class Match
 {
 
+	/**
+	 * Position de départ : (550, 1905), -Math.PI/2
+	 * 
+	 * @param args
+	 */
+
 	public static void main(String[] args)
 	{
 		Container container = null;
-		try {
+		Ticket ticketFinMatch = null;
+		long dateDebutMatch = System.currentTimeMillis();
+		try
+		{
 			container = new Container();
-			Thread.sleep(5000);
-			container.interruptWithCodeError(ErrorCode.DOUBLE_DESTRUCTOR);
-			Thread.sleep(500);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log log = container.getService(Log.class);
+			Config config = container.getService(Config.class);
+			BufferOutgoingOrder data = container.getService(BufferOutgoingOrder.class);
+			RobotReal robot = container.getService(RobotReal.class);
+			PathCache path = container.getService(PathCache.class);
+			RealGameState state = container.getService(RealGameState.class);
+			boolean simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
+
+			log.debug("Initialisation des actionneurs…");
+
+			/*
+			 * Initialise les actionneurs
+			 */
+			robot.initActionneurs();
+
+			log.debug("Actionneurs initialisés");
+
+			robot.setSensorMode(SensorMode.ALL);
+
+			log.debug("Attente de la couleur…");
+
+			/*
+			 * Demande de la couleur
+			 */
+			if(!simuleSerie)
+			{
+				SerialProtocol.State etat;
+				do
+				{
+					Ticket t = data.demandeCouleur();
+					etat = t.attendStatus().etat;
+				} while(etat != SerialProtocol.State.OK);
+			}
+			log.debug("Couleur récupérée");
+			
+			Boolean sym = null;
+			while(sym == null)
+			{
+				Thread.sleep(100);
+				sym = config.getSymmetry();
+			}
+			
+			/*
+			 * La couleur est connue : on commence le stream de position
+			 */
+			data.startStream();
+
+			log.debug("Stream des positions et des capteurs lancé");
+
+			/*
+			 * On attend d'avoir l'info de position
+			 */
+			if(simuleSerie)
+				robot.setCinematique(new Cinematique(550, 1905, -Math.PI / 2, true, 0));
+			else
+			{
+				synchronized(robot)
+				{
+					if(!robot.isCinematiqueInitialised())
+						robot.wait();
+				}
+			}
+
+			log.debug("Cinématique initialisée : " + robot.getCinematique());
+
+			log.debug("Attente du jumper…");
+
+			/*
+			 * Attente du jumper
+			 */
+			if(!simuleSerie)
+			{
+				SerialProtocol.State etat;
+				do
+				{
+					Ticket t = data.waitForJumper();
+					etat = t.attendStatus().etat;
+				} while(etat != SerialProtocol.State.OK);
+			}
+
+			log.debug("LE MATCH COMMENCE !");
+
+			/*
+			 * Le match a commencé !
+			 */
+			ticketFinMatch = data.startMatchChrono();
+			dateDebutMatch = System.currentTimeMillis();
+			log.debug("Chrono démarré");
+
+			
+			KeyPathCache k = new KeyPathCache(state);
+			k.shoot = false;
+			k.s = ScriptsSymetrises.SCRIPT_CRATERE_HAUT_A_NOUS.getScript(sym);
+			try
+			{
+				path.computeAndFollow(k);
+				k.s.s.execute(state);
+				k = new KeyPathCache(state);
+				k.shoot = false;
+				k.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
+				path.computeAndFollow(k);
+				k.s.s.execute(state);
+			}
+			catch(PathfindingException | UnableToMoveException | MemoryManagerException e)
+			{
+				e.printStackTrace();
+				e.printStackTrace(log.getPrintWriter());
+			}
 		}
+		catch(Exception e)
+		{}
 		finally
 		{
-			try {
-				System.out.println("WOLOLOLO");
+			try
+			{
+				if(ticketFinMatch != null)
+					ticketFinMatch.attendStatus(95000 - (System.currentTimeMillis() - dateDebutMatch));
 				System.exit(container.destructor().code);
-			} catch (ContainerException | InterruptedException e) {
-				// TODO Auto-generated catch block
+			}
+			catch(Exception e)
+			{
 				e.printStackTrace();
 			}
 		}
