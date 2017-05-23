@@ -50,11 +50,12 @@ public class Homologation
 	{
 		Container container = null;
 		Ticket ticketFinMatch = null;
+		Log log = null;
 		long dateDebutMatch = System.currentTimeMillis();
 		try
 		{
 			container = new Container();
-			Log log = container.getService(Log.class);
+			log = container.getService(Log.class);
 			Config config = container.getService(Config.class);
 			BufferOutgoingOrder data = container.getService(BufferOutgoingOrder.class);
 			RobotReal robot = container.getService(RobotReal.class);
@@ -160,7 +161,12 @@ public class Homologation
 			}
 		}
 		catch(Exception e)
-		{}
+		{
+			ticketFinMatch = null; // pour arrêter proprement
+			e.printStackTrace();
+			if(log != null)
+				e.printStackTrace(log.getPrintWriter());
+		}
 		finally
 		{
 			try
@@ -172,6 +178,8 @@ public class Homologation
 			catch(Exception e)
 			{
 				e.printStackTrace();
+				if(log != null)
+					e.printStackTrace(log.getPrintWriter());
 			}
 		}
 	}

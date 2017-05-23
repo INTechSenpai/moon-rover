@@ -49,12 +49,13 @@ public class Match
 	public static void main(String[] args)
 	{
 		Container container = null;
+		Log log = null;
 		Ticket ticketFinMatch = null;
 		long dateDebutMatch = System.currentTimeMillis();
 		try
 		{
 			container = new Container();
-			Log log = container.getService(Log.class);
+			log = container.getService(Log.class);
 			Config config = container.getService(Config.class);
 			BufferOutgoingOrder data = container.getService(BufferOutgoingOrder.class);
 			RobotReal robot = container.getService(RobotReal.class);
@@ -166,7 +167,12 @@ public class Match
 			}
 		}
 		catch(Exception e)
-		{}
+		{
+			e.printStackTrace();
+			if(log != null)
+				e.printStackTrace(log.getPrintWriter());
+			ticketFinMatch = null; // pour arrêter proprement
+		}
 		finally
 		{
 			try
@@ -178,6 +184,8 @@ public class Match
 			catch(Exception e)
 			{
 				e.printStackTrace();
+				if(log != null)
+					e.printStackTrace(log.getPrintWriter());
 			}
 		}
 	}
