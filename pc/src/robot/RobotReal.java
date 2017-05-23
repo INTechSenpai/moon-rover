@@ -22,7 +22,6 @@ import obstacles.types.ObstacleRobot;
 import pathfinding.astar.arcs.ArcCourbeDynamique;
 import pathfinding.astar.arcs.ArcManager;
 import pathfinding.astar.arcs.BezierComputer;
-import pathfinding.astar.arcs.ClothoidesComputer;
 import pathfinding.chemin.CheminPathfinding;
 import serie.BufferOutgoingOrder;
 import serie.SerialProtocol;
@@ -69,7 +68,6 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	private ArcManager arcmanager;
 	private CheminPathfinding chemin;
 	private volatile boolean cinematiqueInitialised = false;
-	private CinematiqueObs[] pointsAvancer = new CinematiqueObs[256];
 	private SensorMode lastMode = null;
 	private BezierComputer bezier;
 	private AnglesRoues angles = new AnglesRoues();
@@ -98,9 +96,6 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 
 		if(print || printTrace)
 			buffer.add(this);
-
-		for(int i = 0; i < pointsAvancer.length; i++)
-			pointsAvancer[i] = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 	}
 
 	public double getAngleRoueGauche()
@@ -243,39 +238,11 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	}
 	
 	@Override
-	public void avance(double distance, Speed speed) throws UnableToMoveException, InterruptedException
+	public void avance(double distance, Speed speed) throws UnableToMoveException, InterruptedException, MemoryManagerException
 	{
-		LinkedList<CinematiqueObs> out = new LinkedList<CinematiqueObs>();
-		double cos = Math.cos(cinematique.orientationReelle);
-		double sin = Math.sin(cinematique.orientationReelle);
-		int nbPoint = (int) Math.round(Math.abs(distance) / ClothoidesComputer.PRECISION_TRACE_MM);
-		double xFinal = cinematique.position.getX() + distance * cos;
-		double yFinal = cinematique.position.getY() + distance * sin;
-		boolean marcheAvant = distance > 0;
-		if(nbPoint == 0)
-		{
-			// Le point est vraiment tout proche
-			pointsAvancer[0].updateReel(xFinal, yFinal, cinematique.orientationReelle, marcheAvant, 0);
-			out.add(pointsAvancer[0]);
-		}
-		else
-		{
-			double deltaX = ClothoidesComputer.PRECISION_TRACE_MM * cos;
-			double deltaY = ClothoidesComputer.PRECISION_TRACE_MM * sin;
-			if(distance < 0)
-			{
-				deltaX = -deltaX;
-				deltaY = -deltaY;
-			}
-			for(int i = 0; i < nbPoint; i++)
-				pointsAvancer[nbPoint - i - 1].updateReel(xFinal - i * deltaX, yFinal - i * deltaY, cinematique.orientationReelle, marcheAvant, 0);
-			for(int i = 0; i < nbPoint; i++)
-				out.add(pointsAvancer[i]);
-		}
-
 		try
 		{
-			chemin.addToEnd(out);
+			chemin.addToEnd(bezier.avance(distance, cinematique));
 			chemin.waitTrajectoryTickets();
 		}
 		catch(PathfindingException e)
