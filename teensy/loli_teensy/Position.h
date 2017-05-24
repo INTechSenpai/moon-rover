@@ -37,7 +37,7 @@ public:
 			_o += data.at(4);
 
 			x = (float)_x - 1500;
-			y = (float)_y;
+			y = (float)_y - 1000;
 			setOrientation(((float)_o) / 1000);
 		}
 		else
@@ -62,7 +62,7 @@ public:
 
 		float rO = orientation * 1000;
 		uint16_t _x = (uint16_t)(x + 1500);
-		uint16_t _y = (uint16_t)y;
+		uint16_t _y = (uint16_t)(y + 1000);
 		uint16_t _o = (uint16_t)rO;
 		
 		uint16_t hw_x, lw_x_hw_y, lw_y;

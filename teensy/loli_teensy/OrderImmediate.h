@@ -161,13 +161,19 @@ public:
 	{
 		Position correctifPosition(io);
 		Position currentPosition;
+		Serial.print("EditPosition: ");
 		motionControlSystem.getPosition(currentPosition);
+		Serial.print(currentPosition);
+		Serial.print(" -> ");
 		currentPosition.x += correctifPosition.x;
 		currentPosition.y += correctifPosition.y;
 		currentPosition.setOrientation(currentPosition.orientation + correctifPosition.orientation);
 		motionControlSystem.setPosition(currentPosition);
-		Serial.print("EditPosition: ");
-		Serial.println(currentPosition);
+		motionControlSystem.getPosition(currentPosition);
+		Serial.print(currentPosition);
+		Serial.print(" [");
+		Serial.print(correctifPosition);
+		Serial.println("]");
 		io.clear();
 	}
 };
