@@ -39,15 +39,18 @@ public class ScriptDeposeMinerai extends Script
 	private Vec2RW centreBout = new Vec2RW(1600, 2000-160);
 	private Vec2RW centreMilieu = new Vec2RW(1600, 2000-180);
 	private Vec2RW centreFin = new Vec2RW(400, 2000-400);
+	private Vec2RW centreFin2 = new Vec2RW(200, 2000-600);
 	private double orientationDStar = Math.PI;
 	private double rayonDebut = 180;
 	private double rayonBout = 400;
 	private double rayonMilieu = 600;
 	private double rayonFin = 180;
-	private boolean gauche;
+	private double rayonFin2 = 180;
+	private boolean gauche, end;
 
-	public ScriptDeposeMinerai(boolean gauche)
+	public ScriptDeposeMinerai(boolean gauche, boolean end)
 	{
+		this.end = end;
 		this.gauche = gauche;
 		if(gauche)
 		{
@@ -76,7 +79,7 @@ public class ScriptDeposeMinerai extends Script
 	}
 
 	@Override
-	protected void run(RealGameState state) throws InterruptedException, MemoryManagerException
+	protected void run(RealGameState state) throws InterruptedException, MemoryManagerException, UnableToMoveException
 	{
 		try
 		{
@@ -186,17 +189,33 @@ public class ScriptDeposeMinerai extends Script
 		finally
 		{
 			state.robot.fermeFilet();
-			cercle.set(centreFin, Math.PI/2, rayonFin, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
-			try {
-				state.robot.avanceToCircle(Speed.BASCULE);
-			} catch (UnableToMoveException e) {
-				// On retente !
+			if(!end)
+			{
+				cercle.set(centreFin, Math.PI/2, rayonFin, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
 				try {
 					state.robot.avanceToCircle(Speed.BASCULE);
-				} catch (UnableToMoveException e1) {
-					e1.printStackTrace();
+				} catch (UnableToMoveException e) {
+					// On retente !
+					try {
+						state.robot.avanceToCircle(Speed.BASCULE);
+					} catch (UnableToMoveException e1) {
+						throw e1;
+					}
+					e.printStackTrace();
 				}
-				e.printStackTrace();
+				
+				cercle.set(centreFin2, Math.PI/2, rayonFin2, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
+				try {
+					state.robot.avanceToCircle(Speed.BASCULE);
+				} catch (UnableToMoveException e) {
+					// On retente !
+					try {
+						state.robot.avanceToCircle(Speed.BASCULE);
+					} catch (UnableToMoveException e1) {
+						throw e1;
+					}
+					e.printStackTrace();
+				}
 			}
 		}
 	}

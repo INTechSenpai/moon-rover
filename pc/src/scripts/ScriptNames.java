@@ -25,8 +25,11 @@ import table.GameElementNames;
 
 public enum ScriptNames
 {
-	SCRIPT_DEPOSE_MINERAI_GAUCHE(new ScriptDeposeMinerai(true)),
-	SCRIPT_DEPOSE_MINERAI_DROITE(new ScriptDeposeMinerai(false)),
+	SCRIPT_DEPOSE_MINERAI_GAUCHE(new ScriptDeposeMinerai(true, false)),
+	SCRIPT_DEPOSE_MINERAI_DROITE(new ScriptDeposeMinerai(false, false)),
+
+	SCRIPT_DEPOSE_MINERAI_GAUCHE_FIN(new ScriptDeposeMinerai(true, true)),
+	SCRIPT_DEPOSE_MINERAI_DROITE_FIN(new ScriptDeposeMinerai(false, true)),
 
 	SCRIPT_HOMOLO_GAUCHE(new ScriptHomolo(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE)),
 	SCRIPT_HOMOLO_DROITE(new ScriptHomolo(GameElementNames.MINERAI_CRATERE_HAUT_DROITE)),

@@ -43,7 +43,7 @@ public class MatchCourt
 				simuleSerie = match.getSimuleSerie();
 				log = match.getLog();
 				match.doTheFirstBarrelRoll(Speed.TEST);				
-				match.doABarrelRoll(ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI, Speed.STANDARD);
+				match.doABarrelRoll(ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI_FIN, Speed.STANDARD);
 			}
 			catch(PathfindingException | UnableToMoveException | MemoryManagerException e)
 			{
