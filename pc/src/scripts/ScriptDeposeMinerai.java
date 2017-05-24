@@ -37,6 +37,7 @@ public class ScriptDeposeMinerai extends Script
 {
 	private Vec2RW centre = new Vec2RW(610, 2000-180);
 	private Vec2RW centreBout = new Vec2RW(1600, 2000-160);
+	private Vec2RW centreMilieu = new Vec2RW(1600, 2000-180);
 	private double rayon = 180;
 	private double rayonBout = 400;
 	private double rayonMilieu = 600;
@@ -48,6 +49,7 @@ public class ScriptDeposeMinerai extends Script
 		if(gauche)
 		{
 			centre.setX(-centre.getX());
+			centreMilieu.setX(-centreBout.getX());
 			centreBout.setX(-centreBout.getX());
 		}
 	}
@@ -74,7 +76,7 @@ public class ScriptDeposeMinerai extends Script
 		Ticket t = state.robot.traverseBascule();
 		Thread.sleep(500);
 		try {
-			cercle.set(centreBout, 0, rayonMilieu, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
+			cercle.set(centreMilieu, 0, rayonMilieu, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
 			state.robot.avanceToCircle(Speed.BASCULE);
 			cercle.set(centreBout, 0, rayonBout, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
 			state.robot.avanceToCircle(Speed.BASCULE);
