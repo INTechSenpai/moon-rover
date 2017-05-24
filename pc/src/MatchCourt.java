@@ -162,26 +162,6 @@ public class MatchCourt
 				e.printStackTrace();
 				e.printStackTrace(log.getPrintWriter());
 			}
-			finally
-			{/*
-				k = new KeyPathCache(state);
-				k.shoot = false;
-				k.s = ScriptsSymetrises.SCRIPT_CRATERE_BAS_A_NOUS.getScript(sym);
-				path.computeAndFollow(k, Speed.TEST);
-
-				state.copyAStarCourbe(chrono);
-				k = new KeyPathCache(chrono);
-				k.shoot = false;
-				k.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
-				path.prepareNewPath(k);
-
-				k.s.s.execute(state);
-				k = new KeyPathCache(state);
-				k.shoot = false;
-				k.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
-				path.follow(k, Speed.STANDARD);
-				k.s.s.execute(state);*/
-			}
 		}
 		catch(Exception e)
 		{
