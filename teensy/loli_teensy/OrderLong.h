@@ -231,13 +231,22 @@ public:
 	{
 		Serial.println("Start match chrono");
 		beginTime = millis();
+		matchFinished = false;
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		if (millis() - beginTime > 90000)
+		if (millis() - beginTime > 90000 && !matchFinished)
 		{
-			returnStatement = 0x00; // MATCH_FINISHED
-			finished = true;
+			matchFinished = true;
+			actuatorMgr.funnyAction(true);
+		}
+		else if (matchFinished)
+		{
+			if (actuatorMgr.funnyAction(false) != RUNNING)
+			{
+				finished = true;
+				returnStatement = 0x00; // MATCH + FUNNY_ACTION FINISHED
+			}
 		}
 	}
 	void terminate(std::vector<uint8_t> & output)
@@ -248,6 +257,7 @@ public:
 private:
 	uint32_t beginTime;
 	uint8_t returnStatement;
+	bool matchFinished;
 };
 
 
