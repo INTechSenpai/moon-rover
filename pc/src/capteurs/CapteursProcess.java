@@ -307,7 +307,11 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 				index1 = CapteursRobot.ToF_LATERAL_DROITE_AVANT.ordinal();
 				index2 = CapteursRobot.ToF_LATERAL_DROITE_ARRIERE.ordinal();
 			}
-
+			
+			// on serait pas assez précis
+			if(data.mesures[index1] <= 4 || data.mesures[index2] <= 4)
+				continue;
+			
 			Vec2RW pointVu1 = getPositionVue(capteurs[index1], data.mesures[index1], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
 			if(pointVu1 == null)
 				continue;
@@ -405,17 +409,18 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			log.debug("Intégration d'une donnée de correction", Verbose.CORRECTION.masque);
 			if(indexCorrection == bufferCorrection.length)
 			{
-//				Vec2RW posmoy = new Vec2RW();
+				Vec2RW posmoy = new Vec2RW();
 				double orientationmoy = 0;
 				for(int i = 0; i < bufferCorrection.length; i++)
 				{
-//					posmoy.plus(bufferCorrection[i].getPosition());
+					if(i >= bufferCorrection.length / 2)
+						posmoy.plus(bufferCorrection[i].getPosition());
 					orientationmoy += bufferCorrection[i].orientationReelle;
 				}
-//				posmoy.scalar(1. / bufferCorrection.length);
+				posmoy.scalar(2. / bufferCorrection.length);
 				orientationmoy /= bufferCorrection.length;
-				log.debug("Envoi d'une correction XYO : " + bufferCorrection[bufferCorrection.length - 1].getPosition() + " " + orientationmoy, Verbose.CORRECTION.masque | Verbose.DEBUG.masque);
-				serie.correctPosition(bufferCorrection[bufferCorrection.length - 1].getPosition(), orientationmoy);
+				log.debug("Envoi d'une correction XYO : " + posmoy + " " + orientationmoy, Verbose.CORRECTION.masque | Verbose.DEBUG.masque);
+				serie.correctPosition(posmoy, orientationmoy);
 				indexCorrection = 0;
 			}
 		}
