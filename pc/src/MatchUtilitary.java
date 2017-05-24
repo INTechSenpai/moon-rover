@@ -16,6 +16,7 @@ import robot.Speed;
 import scripts.ScriptsSymetrises;
 import serie.BufferOutgoingOrder;
 import serie.SerialProtocol;
+import serie.SerialProtocol.State;
 import serie.Ticket;
 import utils.Log;
 
@@ -39,7 +40,9 @@ public class MatchUtilitary {
 		path = container.getService(PathCache.class);
 		state = container.getService(RealGameState.class);
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
-		
+
+		Ticket t = data.waitForJumper();
+
 		log.debug("Initialisation des actionneurs…");
 
 		/*
@@ -58,20 +61,18 @@ public class MatchUtilitary {
 		 */
 		if(!simuleSerie)
 		{
-			SerialProtocol.State etat;
+			State etat;
 			do
 			{
-				Ticket t = data.demandeCouleur();
-				etat = t.attendStatus().etat;
+				Ticket tc = data.demandeCouleur();
+				etat = tc.attendStatus().etat;
 				Thread.sleep(100);
 			} while(etat != SerialProtocol.State.OK);
 		}
 		else
 			config.set(ConfigInfo.COULEUR, couleurSimule);
 		log.debug("Couleur récupérée");
-					
-		Ticket t = data.waitForJumper();
-		
+							
 		/*
 		 * La couleur est connue : on commence le stream de position
 		 */
