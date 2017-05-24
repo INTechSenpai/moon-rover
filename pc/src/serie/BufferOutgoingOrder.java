@@ -233,19 +233,6 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	}
 
 	/**
-	 * Active la funny action
-	 * 
-	 * @return
-	 */
-	public synchronized Ticket funnyAction()
-	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(OutOrder.FUNNY_ACTION, t));
-		notify();
-		return t;
-	}
-
-	/**
 	 * Verrouille le filet
 	 */
 	public synchronized Ticket verrouilleFilet()

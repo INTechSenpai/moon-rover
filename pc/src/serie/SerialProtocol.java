@@ -52,7 +52,6 @@ public class SerialProtocol
 		REARM_LEFT_SIDE(0x44, Type.LONG),
 		EJECT_RIGHT_SIDE(0x45, Type.LONG),
 		REARM_RIGHT_SIDE(0x46, Type.LONG),
-		FUNNY_ACTION(0x47, Type.LONG),
 		LOCK_NET(0x48, Type.LONG),
 		SCAN(0x49, Type.LONG),
 		CLOSE_NET_FORCE(0x4A, Type.LONG),

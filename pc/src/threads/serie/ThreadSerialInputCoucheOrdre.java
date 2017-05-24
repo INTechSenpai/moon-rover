@@ -225,7 +225,6 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					else
 					{
 						paquet.ticket.set(InOrder.MATCH_FINI);
-						robot.funnyAction();
 						// On arrête le thread principal
 						container.interruptWithCodeError(ErrorCode.END_OF_MATCH);
 					}
