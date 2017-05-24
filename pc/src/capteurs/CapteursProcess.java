@@ -332,9 +332,6 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 			if(mur1 == null || mur2 == null || mur1 != mur2)
 				continue;
 
-			if(mur1 != Mur.MUR_HAUT || mur2 != Mur.MUR_HAUT)
-				continue;
-			
 			Vec2RO delta = pointVu1.minusNewVector(pointVu2);
 			double deltaOrientation = (mur1.orientation - delta.getArgument()) % Math.PI; // on
 																				// veut
@@ -497,12 +494,16 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 														// de 0 ou de 2 murs
 			return null;
 
+		// la correction sur les murs gauche et droit sont désactivés
+		
 		if(murBas)
 			return Mur.MUR_BAS;
 		else if(murDroit)
-			return Mur.MUR_DROIT;
+			return null;
+//			return Mur.MUR_DROIT;
 		else if(murGauche)
-			return Mur.MUR_GAUCHE;
+			return null;
+//			return Mur.MUR_GAUCHE;
 		return Mur.MUR_HAUT;
 	}
 }
