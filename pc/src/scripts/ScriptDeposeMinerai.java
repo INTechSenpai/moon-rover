@@ -38,9 +38,12 @@ public class ScriptDeposeMinerai extends Script
 	private Vec2RW centreDebut = new Vec2RW(610, 2000-180);
 	private Vec2RW centreBout = new Vec2RW(1600, 2000-160);
 	private Vec2RW centreMilieu = new Vec2RW(1600, 2000-180);
+	private Vec2RW centreFin = new Vec2RW(400, 2000-400);
+	private double orientationDStar = Math.PI;
 	private double rayonDebut = 180;
 	private double rayonBout = 400;
 	private double rayonMilieu = 600;
+	private double rayonFin = 180;
 	private boolean gauche;
 
 	public ScriptDeposeMinerai(boolean gauche)
@@ -51,6 +54,8 @@ public class ScriptDeposeMinerai extends Script
 			centreDebut.setX(-centreDebut.getX());
 			centreMilieu.setX(-centreBout.getX());
 			centreBout.setX(-centreBout.getX());
+			centreFin.setX(-centreFin.getX());
+			orientationDStar = Math.PI - orientationDStar;
 		}
 	}
 	
@@ -78,9 +83,9 @@ public class ScriptDeposeMinerai extends Script
 			Ticket t = state.robot.traverseBascule();
 			Thread.sleep(500);
 			try {
-				cercle.set(centreMilieu, 0, rayonMilieu, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
+				cercle.set(centreMilieu, orientationDStar, rayonMilieu, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
 				state.robot.avanceToCircle(Speed.BASCULE);
-				cercle.set(centreBout, 0, rayonBout, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
+				cercle.set(centreBout, orientationDStar, rayonBout, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
 				state.robot.avanceToCircle(Speed.BASCULE);
 			}
 			catch(UnableToMoveException e)
@@ -181,7 +186,7 @@ public class ScriptDeposeMinerai extends Script
 		finally
 		{
 			state.robot.fermeFilet();
-			cercle.set(centreDebut, 0, rayonDebut, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
+			cercle.set(centreFin, Math.PI/2, rayonFin, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
 			try {
 				state.robot.avanceToCircle(Speed.BASCULE);
 			} catch (UnableToMoveException e) {
