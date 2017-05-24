@@ -34,9 +34,11 @@ import utils.Log.Verbose;
 public class ScriptPetitCratere extends Script
 {
 	private GameElementNames element;
-
-	public ScriptPetitCratere(GameElementNames element)
+	private boolean remue;
+	
+	public ScriptPetitCratere(GameElementNames element, boolean remue)
 	{
+		this.remue = remue;
 		this.element = element;
 	}
 
@@ -97,19 +99,21 @@ public class ScriptPetitCratere extends Script
 
 			state.robot.ouvreFilet();
 
-			try
+			if(remue)
 			{
-				state.robot.baisseFilet();
+				try
+				{
+					state.robot.baisseFilet();
+				}
+				catch(ActionneurException e)
+				{
+					log.warning(e);
+				}
+	
+				state.robot.avance(-60, Speed.STANDARD);
+	
+				state.robot.avance(60, Speed.STANDARD);
 			}
-			catch(ActionneurException e)
-			{
-				log.warning(e);
-			}
-
-			state.robot.avance(-60, Speed.STANDARD);
-
-			state.robot.avance(60, Speed.STANDARD);
-
 
 			
 			try

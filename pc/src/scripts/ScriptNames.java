@@ -34,10 +34,10 @@ public enum ScriptNames
 	SCRIPT_HOMOLO_GAUCHE(new ScriptHomolo(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE)),
 	SCRIPT_HOMOLO_DROITE(new ScriptHomolo(GameElementNames.MINERAI_CRATERE_HAUT_DROITE)),
 
-	SCRIPT_CRATERE_HAUT_GAUCHE(new ScriptPetitCratere(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE)),
-	SCRIPT_CRATERE_HAUT_DROITE(new ScriptPetitCratere(GameElementNames.MINERAI_CRATERE_HAUT_DROITE)),
-	SCRIPT_CRATERE_BAS_GAUCHE(new ScriptPetitCratere(GameElementNames.MINERAI_CRATERE_BAS_GAUCHE)),
-	SCRIPT_CRATERE_BAS_DROITE(new ScriptPetitCratere(GameElementNames.MINERAI_CRATERE_BAS_DROITE));
+	SCRIPT_CRATERE_HAUT_GAUCHE(new ScriptPetitCratere(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE, false)),
+	SCRIPT_CRATERE_HAUT_DROITE(new ScriptPetitCratere(GameElementNames.MINERAI_CRATERE_HAUT_DROITE, false)),
+	SCRIPT_CRATERE_BAS_GAUCHE(new ScriptPetitCratere(GameElementNames.MINERAI_CRATERE_BAS_GAUCHE, true)),
+	SCRIPT_CRATERE_BAS_DROITE(new ScriptPetitCratere(GameElementNames.MINERAI_CRATERE_BAS_DROITE, true));
 
 	public final Script s;
 
