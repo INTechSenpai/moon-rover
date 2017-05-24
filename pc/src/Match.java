@@ -20,6 +20,7 @@ import exceptions.ContainerException;
 import exceptions.MemoryManagerException;
 import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
+import pathfinding.ChronoGameState;
 import pathfinding.KeyPathCache;
 import pathfinding.PathCache;
 import pathfinding.RealGameState;
@@ -62,7 +63,8 @@ public class Match
 			PathCache path = container.getService(PathCache.class);
 			RealGameState state = container.getService(RealGameState.class);
 			boolean simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
-			
+			ChronoGameState chrono = container.make(ChronoGameState.class);
+						
 			log.debug("Initialisation des actionneurs…");
 
 			/*
@@ -126,7 +128,6 @@ public class Match
 			KeyPathCache k = new KeyPathCache(state);
 			k.shoot = false;
 			k.s = ScriptsSymetrises.SCRIPT_CRATERE_HAUT_A_NOUS.getScript(sym);
-//			k.s = ScriptsSymetrises.SCRIPT_CRATERE_BAS_A_NOUS.getScript(sym);
 			path.prepareNewPath(k);
 			
 			log.debug("Attente du jumper…");
@@ -147,13 +148,17 @@ public class Match
 
 			try
 			{
-				path.computeAndFollow(k, Speed.TEST);
+				path.follow(k, Speed.TEST);
+
+				state.copyAStarCourbe(chrono);
+				KeyPathCache kdep = new KeyPathCache(chrono);
+				kdep.shoot = false;
+				kdep.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
+				path.prepareNewPath(kdep);
+
 				k.s.s.execute(state);
-				k = new KeyPathCache(state);
-				k.shoot = false;
-				k.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
-				path.computeAndFollow(k, Speed.STANDARD);
-				k.s.s.execute(state);
+				path.follow(kdep, Speed.STANDARD);
+				kdep.s.s.execute(state);
 			}
 			catch(PathfindingException | UnableToMoveException | MemoryManagerException e)
 			{
@@ -161,17 +166,24 @@ public class Match
 				e.printStackTrace(log.getPrintWriter());
 			}
 			finally
-			{
+			{/*
 				k = new KeyPathCache(state);
 				k.shoot = false;
 				k.s = ScriptsSymetrises.SCRIPT_CRATERE_BAS_A_NOUS.getScript(sym);
 				path.computeAndFollow(k, Speed.TEST);
+
+				state.copyAStarCourbe(chrono);
+				k = new KeyPathCache(chrono);
+				k.shoot = false;
+				k.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
+				path.prepareNewPath(k);
+
 				k.s.s.execute(state);
 				k = new KeyPathCache(state);
 				k.shoot = false;
 				k.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
-				path.computeAndFollow(k, Speed.STANDARD);
-				k.s.s.execute(state);
+				path.follow(k, Speed.STANDARD);
+				k.s.s.execute(state);*/
 			}
 		}
 		catch(Exception e)
@@ -182,26 +194,11 @@ public class Match
 		}
 		finally
 		{
-/*			try
-			{
-				if(ticketFinMatch != null)
-				{
-					log.debug("On attend la fin du match");
-					ticketFinMatch.attendStatus(95000 - (System.currentTimeMillis() - dateDebutMatch));
-				}
-			}
-			catch(Exception e)
-			{
+			try {
+				System.exit(container.destructor().code);
+			} catch (ContainerException | InterruptedException e) {
 				e.printStackTrace();
-				if(log != null)
-					e.printStackTrace(log.getPrintWriter());
-			} finally {*/
-				try {
-					System.exit(container.destructor().code);
-				} catch (ContainerException | InterruptedException e) {
-					e.printStackTrace();
-				}
-//			}
+			}
 		}
 	}
 

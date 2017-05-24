@@ -72,7 +72,7 @@ public class ScriptPetitCratere extends Script
 			nbEssai--;
 		}
 
-		if(nbEssai == 0)
+		if(!state.robot.isArrivedAsser())
 			log.warning("On lance le script même en étant mal positionné !", Verbose.SCRIPTS.masque);
 
 		try
@@ -161,7 +161,7 @@ public class ScriptPetitCratere extends Script
 		finally
 		{
 			// on se dégage dans tous les cas
-			state.robot.avance(50, Speed.STANDARD);
+			state.robot.avance(40, Speed.STANDARD);
 		}
 	}
 	
