@@ -58,6 +58,7 @@ public class ScriptDeposeMinerai extends Script
 			centreMilieu.setX(-centreBout.getX());
 			centreBout.setX(-centreBout.getX());
 			centreFin.setX(-centreFin.getX());
+			centreFin2.setX(-centreFin2.getX());
 			orientationDStar = Math.PI - orientationDStar;
 		}
 	}
