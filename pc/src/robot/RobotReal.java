@@ -22,9 +22,6 @@ import obstacles.types.ObstacleRobot;
 import pathfinding.astar.arcs.ArcCourbeDynamique;
 import pathfinding.astar.arcs.ArcManager;
 import pathfinding.astar.arcs.BezierComputer;
-import pathfinding.astar.arcs.ClothoidesComputer;
-import pathfinding.astar.arcs.vitesses.VitesseClotho;
-import pathfinding.astar.arcs.vitesses.VitesseCourbure;
 import pathfinding.chemin.CheminPathfinding;
 import serie.BufferOutgoingOrder;
 import serie.SerialProtocol;
@@ -75,7 +72,6 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	private BezierComputer bezier;
 	private AnglesRoues angles = new AnglesRoues();
 	private Vector vecteur = new Vector(new Vec2RW(), 0, Couleur.ToF_COURT);
-	private CinematiqueObs[] outar = new CinematiqueObs[ClothoidesComputer.NB_POINTS];
 
 	// Constructeur
 	public RobotReal(Log log, BezierComputer bezier, ArcManager arcmanager, BufferOutgoingOrder out, PrintBufferInterface buffer, CheminPathfinding chemin, Config config)
@@ -95,9 +91,6 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
 		marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
 		printTrace = config.getBoolean(ConfigInfo.GRAPHIC_TRACE_ROBOT);
-		
-		for(int i = 0; i < outar.length; i++)
-			outar[i] = new CinematiqueObs(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 
 		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
 
@@ -342,48 +335,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 			log.critical(e);
 		}
 	}
-	
-	public void followArc(VitesseCourbure v, Speed s, int nbPointsMax) throws UnableToMoveException, MemoryManagerException, InterruptedException
-	{
-		LinkedList<CinematiqueObs> out = new LinkedList<CinematiqueObs>();
-		if(v instanceof VitesseClotho)
-		{
-			boolean b = arcmanager.getArcClotho(cinematique, (VitesseClotho) v, outar);
-			if(!b)
-				throw new UnableToMoveException("Echec création de l'arc "+v);
-			for(int i = 0; i < Math.min(nbPointsMax, outar.length); i++)
-			{
-				log.debug("Ajout d'un point : "+outar[i]);
-				out.add(outar[i]);
-			}
-		}
-		else
-		{
-			ArcCourbeDynamique arc = arcmanager.getArc(cinematique, v);
-			if(arc == null)
-				throw new UnableToMoveException("Echec création de l'arc "+v);
-			for(int i = 0; i < Math.min(nbPointsMax, arc.getNbPoints()); i++)
-			{
-				log.debug("Ajout d'un point : "+arc.getPoint(i));
-				out.add(arc.getPoint(i));
-			}
-		}
-				
-		try
-		{
-			chemin.addToEnd(out);
-			chemin.waitTrajectoryTickets();
-		}
-		catch(PathfindingException e)
-		{
-			// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de
-			// 5m
-			e.printStackTrace();
-			e.printStackTrace(log.getPrintWriter());
-		}
-		followTrajectory(s);
-	}
-	
+
 	public Ticket traverseBascule() throws InterruptedException, ActionneurException
 	{
 		return out.traverseBascule();
