@@ -332,20 +332,20 @@ public class CapteursProcess implements Service, LowPFClass, HighPFClass
 				continue;
 			
 			Vec2RO delta = pointVu1.minusNewVector(pointVu2);
-			double deltaOrientation = mur1.orientation - delta.getArgument(); // on
+			double deltaOrientation = (mur1.orientation - delta.getArgument()) % Math.PI; // on
 																				// veut
 																				// une
 																				// mesure
 																				// précise,
 																				// donc
 																				// on
-																				// vite
+																				// évite
 																				// getFastArgument
 
 			// le delta d'orientation qu'on cherche est entre -PI/2 et PI/2
-			if(Math.abs(deltaOrientation) > Math.PI / 2)
+			if(deltaOrientation > Math.PI / 2)
 				deltaOrientation -= Math.PI;
-			else if(Math.abs(deltaOrientation) < -Math.PI / 2)
+			else if(deltaOrientation < -Math.PI / 2)
 				deltaOrientation += Math.PI;
 
 			// log.debug("Delta orientation : "+deltaOrientation);
