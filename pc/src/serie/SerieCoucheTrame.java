@@ -355,7 +355,7 @@ public class SerieCoucheTrame implements Service, SerialClass
 	{
 		// On attend de clore les conversations
 		int nb = 0;
-		while((!waitingFrames.isEmpty() || !pendingLongFrames.isEmpty()) && nb < 50)
+		while((!waitingFrames.isEmpty() || !pendingLongFrames.isEmpty()) && nb < 5)
 		{
 			if(nb == 0)
 				log.debug("On attend la fin des conversations série…");
