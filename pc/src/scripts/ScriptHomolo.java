@@ -22,6 +22,7 @@ import robot.Cinematique;
 import robot.Speed;
 import table.EtatElement;
 import table.GameElementNames;
+import utils.Log.Verbose;
 
 /**
  * Le script qui récupère les balles d'un petit cratère
@@ -61,17 +62,18 @@ public class ScriptHomolo extends Script
 	protected void run(RealGameState state) throws InterruptedException, UnableToMoveException, MemoryManagerException
 	{
 		int nbEssai = 3;
-		cercle.set(element, 200, 5, -5, 3, -3); // nouveau rayon : 200
-		state.robot.avanceToCircle(Speed.STANDARD);
-		while(!state.robot.isArrivedAsser())
+		cercle.set(element, 203, 5, -5, 3, -1); // nouveau rayon : 200
+		state.robot.avanceToCircle(Speed.TEST);
+		while(!state.robot.isArrivedAsser() && nbEssai > 0)
 		{
-			if(nbEssai == 0)
-				throw new UnableToMoveException("Le robot est encore arrivé au mauvais endroit !");
-			log.warning("Le robot n'est pas bien arrivé sur le cratère : on retente.");
-			state.robot.avance(40, Speed.STANDARD);
-			state.robot.avanceToCircle(Speed.STANDARD);
+			log.warning("Le robot n'est pas bien arrivé sur le cratère : on retente.", Verbose.SCRIPTS.masque);
+			state.robot.avance(40, Speed.TEST);
+			state.robot.avanceToCircle(Speed.TEST);
 			nbEssai--;
 		}
+
+		if(!state.robot.isArrivedAsser())
+			log.warning("On lance le script même en étant mal positionné !", Verbose.SCRIPTS.masque);
 		
 		try
 		{
