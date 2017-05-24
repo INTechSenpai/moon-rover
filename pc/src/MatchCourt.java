@@ -12,6 +12,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
+import java.util.Random;
+
 import capteurs.SensorMode;
 import config.Config;
 import config.ConfigInfo;
@@ -24,6 +26,7 @@ import pathfinding.KeyPathCache;
 import pathfinding.PathCache;
 import pathfinding.RealGameState;
 import robot.Cinematique;
+import robot.RobotColor;
 import robot.RobotReal;
 import robot.Speed;
 import scripts.ScriptsSymetrises;
@@ -50,6 +53,9 @@ public class MatchCourt
 
 	public static void main(String[] args)
 	{
+		boolean bruite = true;
+		RobotColor couleurSimule = RobotColor.JAUNE;
+		Random r = new Random();
 		Container container = null;
 		Log log = null;
 		try
@@ -62,7 +68,8 @@ public class MatchCourt
 			PathCache path = container.getService(PathCache.class);
 			RealGameState state = container.getService(RealGameState.class);
 			boolean simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
-						
+			bruite &= simuleSerie;
+			
 			log.debug("Initialisation des actionneurs…");
 
 			/*
@@ -89,6 +96,8 @@ public class MatchCourt
 					Thread.sleep(100);
 				} while(etat != SerialProtocol.State.OK);
 			}
+			else
+				config.set(ConfigInfo.COULEUR, couleurSimule);
 			log.debug("Couleur récupérée");
 						
 			Ticket t = data.waitForJumper();
@@ -104,7 +113,7 @@ public class MatchCourt
 			 * On attend d'avoir l'info de position
 			 */
 			if(simuleSerie)
-				robot.setCinematique(new Cinematique(550, 1905, -Math.PI / 2, true, 0));
+				robot.setCinematique(new Cinematique(couleurSimule.symmetry ? -550 : 550, 1905, -Math.PI / 2, true, 0));
 			else
 			{
 				synchronized(robot)
@@ -117,11 +126,7 @@ public class MatchCourt
 			log.debug("Cinématique initialisée : " + robot.getCinematique());
 
 			Thread.sleep(100);
-			boolean sym;
-			if(simuleSerie)
-				sym = false;
-			else
-				sym = config.getSymmetry();
+			boolean sym = config.getSymmetry();
 			
 			KeyPathCache k = new KeyPathCache(state);
 			k.shoot = false;
@@ -147,15 +152,24 @@ public class MatchCourt
 			try
 			{
 				path.follow(k, Speed.TEST);
-
-				KeyPathCache kdep = new KeyPathCache(state);
-				kdep.shoot = false;
-				kdep.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
-				path.prepareNewPath(kdep);
-
 				k.s.s.execute(state);
-				path.follow(kdep, Speed.STANDARD);
-				kdep.s.s.execute(state);
+				
+				if(bruite)
+				{
+					double x = state.robot.getCinematique().getPosition().getX() + 10*r.nextGaussian();
+					double y = state.robot.getCinematique().getPosition().getY() + 10*r.nextGaussian();
+					double o = state.robot.getCinematique().orientationReelle + r.nextGaussian() / 10.;
+					state.robot.getCinematique().updateReel(x, y, o, true, 0);
+				}
+				
+				k = new KeyPathCache(state);
+				k.shoot = false;
+				k.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
+				path.computeAndFollow(k, Speed.STANDARD);
+				k.s.s.execute(state);
+				
+				if(simuleSerie)
+					Thread.sleep(10000);
 			}
 			catch(PathfindingException | UnableToMoveException | MemoryManagerException e)
 			{
