@@ -52,8 +52,6 @@ public class Match
 	{
 		Container container = null;
 		Log log = null;
-		Ticket ticketFinMatch = null;
-		long dateDebutMatch = System.currentTimeMillis();
 		try
 		{
 			container = new Container();
@@ -119,11 +117,16 @@ public class Match
 			log.debug("Cinématique initialisée : " + robot.getCinematique());
 
 			Thread.sleep(100);
-			boolean sym = config.getSymmetry();
+			boolean sym;
+			if(simuleSerie)
+				sym = false;
+			else
+				sym = config.getSymmetry();
 			
 			KeyPathCache k = new KeyPathCache(state);
 			k.shoot = false;
 			k.s = ScriptsSymetrises.SCRIPT_CRATERE_HAUT_A_NOUS.getScript(sym);
+//			k.s = ScriptsSymetrises.SCRIPT_CRATERE_BAS_A_NOUS.getScript(sym);
 			path.prepareNewPath(k);
 			
 			log.debug("Attente du jumper…");
@@ -139,11 +142,9 @@ public class Match
 			/*
 			 * Le match a commencé !
 			 */
-			ticketFinMatch = data.startMatchChrono();
-			dateDebutMatch = System.currentTimeMillis();
+			data.startMatchChrono();
 			log.debug("Chrono démarré");
 
-			
 			try
 			{
 				path.computeAndFollow(k, Speed.TEST);
@@ -159,13 +160,25 @@ public class Match
 				e.printStackTrace();
 				e.printStackTrace(log.getPrintWriter());
 			}
+			finally
+			{
+				k = new KeyPathCache(state);
+				k.shoot = false;
+				k.s = ScriptsSymetrises.SCRIPT_CRATERE_BAS_A_NOUS.getScript(sym);
+				path.computeAndFollow(k, Speed.TEST);
+				k.s.s.execute(state);
+				k = new KeyPathCache(state);
+				k.shoot = false;
+				k.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
+				path.computeAndFollow(k, Speed.STANDARD);
+				k.s.s.execute(state);
+			}
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 			if(log != null)
 				e.printStackTrace(log.getPrintWriter());
-			ticketFinMatch = null; // pour arrêter proprement
 		}
 		finally
 		{

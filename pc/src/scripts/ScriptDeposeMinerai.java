@@ -35,10 +35,10 @@ import utils.Vec2RW;
 
 public class ScriptDeposeMinerai extends Script
 {
-	private Vec2RW centre = new Vec2RW(610, 2000-180);
+	private Vec2RW centreDebut = new Vec2RW(610, 2000-180);
 	private Vec2RW centreBout = new Vec2RW(1600, 2000-160);
 	private Vec2RW centreMilieu = new Vec2RW(1600, 2000-180);
-	private double rayon = 180;
+	private double rayonDebut = 180;
 	private double rayonBout = 400;
 	private double rayonMilieu = 600;
 	private boolean gauche;
@@ -48,7 +48,7 @@ public class ScriptDeposeMinerai extends Script
 		this.gauche = gauche;
 		if(gauche)
 		{
-			centre.setX(-centre.getX());
+			centreDebut.setX(-centreDebut.getX());
 			centreMilieu.setX(-centreBout.getX());
 			centreBout.setX(-centreBout.getX());
 		}
@@ -65,50 +65,50 @@ public class ScriptDeposeMinerai extends Script
 	public void setUpCercleArrivee()
 	{
 		if(gauche)
-			cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI / 5, Math.PI / 5}, 70, -70, 10, -10);
+			cercle.set(centreDebut, Math.PI, rayonDebut, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI / 5, Math.PI / 5}, 70, -70, 10, -10);
 		else
-			cercle.set(centre, Math.PI, rayon, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI, -4 * Math.PI / 5, 4 * Math.PI / 5, Math.PI}, 70, -70, 10, -10);
+			cercle.set(centreDebut, Math.PI, rayonDebut, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI, -4 * Math.PI / 5, 4 * Math.PI / 5, Math.PI}, 70, -70, 10, -10);
 	}
 
 	@Override
-	protected void run(RealGameState state) throws InterruptedException, UnableToMoveException, ActionneurException, MemoryManagerException
+	protected void run(RealGameState state) throws InterruptedException, MemoryManagerException
 	{
-		Ticket t = state.robot.traverseBascule();
-		Thread.sleep(500);
-		try {
-			cercle.set(centreMilieu, 0, rayonMilieu, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
-			state.robot.avanceToCircle(Speed.BASCULE);
-			cercle.set(centreBout, 0, rayonBout, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
-			state.robot.avanceToCircle(Speed.BASCULE);
-		}
-		catch(UnableToMoveException e)
-		{
-			log.warning(e);
-			double xRobot = state.robot.getCinematique().getPosition().getX();
-			double yRobot = state.robot.getCinematique().getPosition().getY();
-			if(yRobot < 1650 || (gauche && (xRobot < -1350 || xRobot > -1140)) || (!gauche && (xRobot < 1140 || xRobot > 1350)))
-			{
-				log.warning("On est trop loin ! Position : "+state.robot.getCinematique().getPosition());
-				throw e;
-			}
-			log.debug("On a eu un problème en reculant, mais on est bien positionné, alors on continue !");
-		}
-
-		InOrder o = t.attendStatus();
-		if(o.etat == State.KO)
-		{
-			try {
-				state.robot.leveFilet();
-			}
-			catch(ActionneurException e)
-			{
-				log.warning(e);
-			}
-		}
-
-		state.robot.ouvreFilet();
 		try
 		{
+			Ticket t = state.robot.traverseBascule();
+			Thread.sleep(500);
+			try {
+				cercle.set(centreMilieu, 0, rayonMilieu, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
+				state.robot.avanceToCircle(Speed.BASCULE);
+				cercle.set(centreBout, 0, rayonBout, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
+				state.robot.avanceToCircle(Speed.BASCULE);
+			}
+			catch(UnableToMoveException e)
+			{
+				log.warning(e);
+				double xRobot = state.robot.getCinematique().getPosition().getX();
+				double yRobot = state.robot.getCinematique().getPosition().getY();
+				if(yRobot < 1650 || (gauche && (xRobot < -1350 || xRobot > -1140)) || (!gauche && (xRobot < 1140 || xRobot > 1350)))
+				{
+					log.warning("On est trop loin ! Position : "+state.robot.getCinematique().getPosition());
+					throw e;
+				}
+				log.debug("On a eu un problème en reculant, mais on est bien positionné, alors on continue !");
+			}
+	
+			InOrder o = t.attendStatus();
+			if(o.etat == State.KO)
+			{
+				try {
+					state.robot.leveFilet();
+				}
+				catch(ActionneurException e)
+				{
+					log.warning(e);
+				}
+			}
+
+			state.robot.ouvreFilet();
 			state.robot.ejecteBalles();
 			Thread.sleep(500);
 			try
@@ -171,13 +171,25 @@ public class ScriptDeposeMinerai extends Script
 				}
 			}
 		}
-		catch(ActionneurException e)
+		catch(ActionneurException | UnableToMoveException e)
 		{
 			log.warning(e);
 		}
 		finally
 		{
 			state.robot.fermeFilet();
+			cercle.set(centreDebut, 0, rayonDebut, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
+			try {
+				state.robot.avanceToCircle(Speed.BASCULE);
+			} catch (UnableToMoveException e) {
+				// On retente !
+				try {
+					state.robot.avanceToCircle(Speed.BASCULE);
+				} catch (UnableToMoveException e1) {
+					e1.printStackTrace();
+				}
+				e.printStackTrace();
+			}
 		}
 	}
 
