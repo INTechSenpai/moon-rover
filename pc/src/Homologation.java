@@ -16,6 +16,7 @@ import capteurs.SensorMode;
 import config.Config;
 import config.ConfigInfo;
 import container.Container;
+import exceptions.ContainerException;
 import exceptions.MemoryManagerException;
 import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
@@ -32,7 +33,7 @@ import serie.Ticket;
 import utils.Log;
 
 /**
- * WOLOLOOOOOGATION
+ * Match
  * 
  * @author pf
  *
@@ -50,9 +51,7 @@ public class Homologation
 	public static void main(String[] args)
 	{
 		Container container = null;
-		Ticket ticketFinMatch = null;
 		Log log = null;
-		long dateDebutMatch = System.currentTimeMillis();
 		try
 		{
 			container = new Container();
@@ -63,7 +62,7 @@ public class Homologation
 			PathCache path = container.getService(PathCache.class);
 			RealGameState state = container.getService(RealGameState.class);
 			boolean simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
-
+						
 			log.debug("Initialisation des actionneurs…");
 
 			/*
@@ -118,8 +117,12 @@ public class Homologation
 			log.debug("Cinématique initialisée : " + robot.getCinematique());
 
 			Thread.sleep(100);
-			boolean sym = config.getSymmetry();
-
+			boolean sym;
+			if(simuleSerie)
+				sym = false;
+			else
+				sym = config.getSymmetry();
+			
 			KeyPathCache k = new KeyPathCache(state);
 			k.shoot = false;
 			k.s = ScriptsSymetrises.SCRIPT_HOMOLO_A_NOUS.getScript(sym);
@@ -138,13 +141,12 @@ public class Homologation
 			/*
 			 * Le match a commencé !
 			 */
-			ticketFinMatch = data.startMatchChrono();
-			dateDebutMatch = System.currentTimeMillis();
+			data.startMatchChrono();
 			log.debug("Chrono démarré");
 
 			try
 			{
-				path.computeAndFollow(k, Speed.TEST);
+				path.follow(k, Speed.TEST);
 				k.s.s.execute(state);
 			}
 			catch(PathfindingException | UnableToMoveException | MemoryManagerException e)
@@ -155,24 +157,16 @@ public class Homologation
 		}
 		catch(Exception e)
 		{
-			ticketFinMatch = null; // pour arrêter proprement
 			e.printStackTrace();
 			if(log != null)
 				e.printStackTrace(log.getPrintWriter());
 		}
 		finally
 		{
-			try
-			{
-				if(ticketFinMatch != null)
-					ticketFinMatch.attendStatus(95000 - (System.currentTimeMillis() - dateDebutMatch));
+			try {
 				System.exit(container.destructor().code);
-			}
-			catch(Exception e)
-			{
+			} catch (ContainerException | InterruptedException e) {
 				e.printStackTrace();
-				if(log != null)
-					e.printStackTrace(log.getPrintWriter());
 			}
 		}
 	}
