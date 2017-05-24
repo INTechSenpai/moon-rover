@@ -24,6 +24,7 @@ import pathfinding.KeyPathCache;
 import pathfinding.PathCache;
 import pathfinding.RealGameState;
 import robot.Cinematique;
+import robot.RobotColor;
 import robot.RobotReal;
 import robot.Speed;
 import scripts.ScriptsSymetrises;
@@ -50,6 +51,7 @@ public class Match
 
 	public static void main(String[] args)
 	{
+		RobotColor couleurSimule = RobotColor.JAUNE;
 		Container container = null;
 		Log log = null;
 		try
@@ -62,7 +64,7 @@ public class Match
 			PathCache path = container.getService(PathCache.class);
 			RealGameState state = container.getService(RealGameState.class);
 			boolean simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
-						
+			
 			log.debug("Initialisation des actionneurs…");
 
 			/*
@@ -89,6 +91,8 @@ public class Match
 					Thread.sleep(100);
 				} while(etat != SerialProtocol.State.OK);
 			}
+			else
+				config.set(ConfigInfo.COULEUR, couleurSimule);
 			log.debug("Couleur récupérée");
 						
 			Ticket t = data.waitForJumper();
@@ -104,7 +108,7 @@ public class Match
 			 * On attend d'avoir l'info de position
 			 */
 			if(simuleSerie)
-				robot.setCinematique(new Cinematique(550, 1905, -Math.PI / 2, true, 0));
+				robot.setCinematique(new Cinematique(couleurSimule.symmetry ? -550 : 550, 1905, -Math.PI / 2, true, 0));
 			else
 			{
 				synchronized(robot)
@@ -117,11 +121,7 @@ public class Match
 			log.debug("Cinématique initialisée : " + robot.getCinematique());
 
 			Thread.sleep(100);
-			boolean sym;
-			if(simuleSerie)
-				sym = false;
-			else
-				sym = config.getSymmetry();
+			boolean sym = config.getSymmetry();
 			
 			KeyPathCache k = new KeyPathCache(state);
 			k.shoot = false;
@@ -147,15 +147,9 @@ public class Match
 			try
 			{
 				path.follow(k, Speed.TEST);
-
-				KeyPathCache kdep = new KeyPathCache(state);
-				kdep.shoot = false;
-				kdep.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
-				path.prepareNewPath(kdep);
-
 				k.s.s.execute(state);
-				path.follow(kdep, Speed.STANDARD);
-				kdep.s.s.execute(state);
+				
+				doABarrelRoll(ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI, state, sym, path);				
 			}
 			catch(PathfindingException | UnableToMoveException | MemoryManagerException e)
 			{
@@ -163,25 +157,15 @@ public class Match
 				e.printStackTrace(log.getPrintWriter());
 			}
 			finally
-			{/*
-				k = new KeyPathCache(state);
-				k.shoot = false;
-				k.s = ScriptsSymetrises.SCRIPT_CRATERE_BAS_A_NOUS.getScript(sym);
-				path.computeAndFollow(k, Speed.TEST);
+			{
+				doABarrelRoll(ScriptsSymetrises.SCRIPT_CRATERE_BAS_A_NOUS, state, sym, path);
+				doABarrelRoll(ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI, state, sym, path);
 
-				state.copyAStarCourbe(chrono);
-				k = new KeyPathCache(chrono);
-				k.shoot = false;
-				k.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
-				path.prepareNewPath(k);
+				if(simuleSerie)
+					Thread.sleep(10000);
 
-				k.s.s.execute(state);
-				k = new KeyPathCache(state);
-				k.shoot = false;
-				k.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
-				path.follow(k, Speed.STANDARD);
-				k.s.s.execute(state);*/
 			}
+
 		}
 		catch(Exception e)
 		{
@@ -199,4 +183,13 @@ public class Match
 		}
 	}
 
+	public static void doABarrelRoll(ScriptsSymetrises s, RealGameState state, boolean sym, PathCache path) throws PathfindingException, InterruptedException, UnableToMoveException, MemoryManagerException
+	{
+		KeyPathCache k = new KeyPathCache(state);
+		k.shoot = false;
+		k.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
+		path.computeAndFollow(k, Speed.STANDARD);
+		k.s.s.execute(state);
+	}
+	
 }
