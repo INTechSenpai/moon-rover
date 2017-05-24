@@ -16,7 +16,7 @@ class LedMgr : public Singleton<LedMgr>
 public:
 	LedMgr():
 		blink_s1(PIN_DEL_STATUS_1, 300),
-		blink_s2(PIN_DEL_STATUS_2, 300),
+		blink_s2(PIN_DEL_STATUS_2, 900, 100),
 		blink_cd(PIN_CLIGNOTANT_D, 500),
 		blink_cg(PIN_CLIGNOTANT_G, 500),
 		blink_ff(PIN_FEUX_FREIN, 100),

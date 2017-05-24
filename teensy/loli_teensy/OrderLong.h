@@ -193,20 +193,33 @@ public:
 	void _launch(const std::vector<uint8_t> & input)
 	{
 		jumperInPlace = false;
+		pulledStarted = false;
 		Serial.println("Wait for jumper");
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		if (analogRead(PIN_GET_JUMPER) > 750 && startupMgr.isReady())
-		{// Jumper en place
+		bool jumperInserted = analogRead(PIN_GET_JUMPER) > 500;
+		if (jumperInserted && !jumperInPlace)
+		{
+			Serial.println("Jumper in place");
 			jumperInPlace = true;
+			startupMgr.jumperPluggedIn();
 		}
-		else
-		{// Jumper sorti
-			if (jumperInPlace)
+		else if(!jumperInserted && jumperInPlace)
+		{
+			if (!pulledStarted)
+			{
+				pulledStarted = true;
+				pulledTime = millis();
+			}
+			else if (millis() - pulledTime > 300)
 			{
 				finished = true;
 			}
+		}
+		else if (jumperInserted)
+		{
+			pulledStarted = false;
 		}
 	}
 	void terminate(std::vector<uint8_t> & output)
@@ -215,6 +228,8 @@ public:
 	}
 private:
 	bool jumperInPlace;
+	uint32_t pulledTime;
+	bool pulledStarted;
 };
 
 

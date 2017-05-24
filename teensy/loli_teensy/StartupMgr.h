@@ -23,6 +23,7 @@ public:
 		state = WAIT_FOR_HL;
 		side = UNKNOWN;
 		hlAlive = false;
+		jumperInside = false;
 	}
 
 	enum Side
@@ -49,29 +50,18 @@ public:
 			else if (state == WAIT_FOR_COLOR_SETUP)
 			{
 				ledMgr.statusLed_doubleBlink();
-				if (analogRead(PIN_GET_JUMPER) > 750)
+				if (jumperInside)
 				{// Jumper inséré
-					state = SIGNAL_SETUP_END;
-					setupEnd_startTime = millis();
-				}
-			}
-			else if (state == SIGNAL_SETUP_END)
-			{
-				ledMgr.statusLed_greenBlink();
-				if (analogRead(PIN_GET_JUMPER) < 750)
-				{// Jumper retiré
-					state = WAIT_FOR_COLOR_SETUP;
-				}
-				else if (millis() - setupEnd_startTime > 2000)
-				{
 					state = READY;
-					if (analogRead(PIN_GET_COLOR) > 750)
+					if (analogRead(PIN_GET_COLOR) > 500)
 					{
+						Serial.println("Color: BLUE");
 						side = BLUE;
 						motionControlSystem.setPosition(Position(X_BLEU, Y_BLEU, O_BLEU));
 					}
 					else
 					{
+						Serial.println("Color: YELLOW");
 						side = YELLOW;
 						motionControlSystem.setPosition(Position(X_JAUNE, Y_JAUNE, O_JAUNE));
 					}
@@ -79,7 +69,7 @@ public:
 			}
 			else
 			{
-				ledMgr.statusLed_off();
+				ledMgr.statusLed_greenBlink();
 			}
 		}
 	}
@@ -89,9 +79,9 @@ public:
 		return side;
 	}
 
-	bool isReady()
+	void jumperPluggedIn()
 	{
-		return state == READY;
+		jumperInside = true;
 	}
 
 	void hlIsAlive()
@@ -104,7 +94,6 @@ private:
 	{
 		WAIT_FOR_HL,
 		WAIT_FOR_COLOR_SETUP,
-		SIGNAL_SETUP_END,
 		READY
 	};
 
@@ -112,6 +101,7 @@ private:
 	State state;
 
 	bool hlAlive;
+	bool jumperInside;
 
 	uint32_t setupEnd_startTime; //ms
 
