@@ -156,6 +156,7 @@ public class ScriptHomolo extends Script
 			try
 			{
 				state.robot.ejecteBalles();
+				Thread.sleep(500);
 				try
 				{
 					state.robot.ejecteBallesAutreCote();
