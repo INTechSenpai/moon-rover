@@ -228,8 +228,9 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 			out.add(o);
 		try
 		{
-			chemin.addToEnd(out);
-			chemin.waitTrajectoryTickets();
+			chemin.addToEnd(out);			
+			if(!simuleSerie)
+				chemin.waitTrajectoryTickets();
 		}
 		catch(PathfindingException e)
 		{
@@ -247,7 +248,8 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		try
 		{
 			chemin.addToEnd(bezier.avance(distance, cinematique));
-			chemin.waitTrajectoryTickets();
+			if(!simuleSerie)
+				chemin.waitTrajectoryTickets();
 		}
 		catch(PathfindingException e)
 		{
@@ -350,6 +352,12 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	@Override
 	public void followTrajectory(Speed vitesse) throws InterruptedException, UnableToMoveException
 	{
+		if(simuleSerie)
+		{
+			setCinematique(chemin.getLastCinematique());
+			return;
+		}
+		
 		boolean oneMoreTime = true;
 		if(chemin.isEmpty())
 			log.warning("Trajectoire vide !");
