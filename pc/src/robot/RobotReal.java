@@ -261,6 +261,11 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		followTrajectory(speed);
 	}
 
+	public boolean isSerieSimule()
+	{
+		return simuleSerie;
+	}
+	
 	/*
 	 * ACTIONNEURS
 	 */

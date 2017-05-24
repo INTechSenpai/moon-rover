@@ -65,7 +65,7 @@ public class ScriptDeposeMinerai extends Script
 	public void setUpCercleArrivee()
 	{
 		if(gauche)
-			cercle.set(centreDebut, Math.PI, rayonDebut, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI / 5, Math.PI / 5}, 70, -70, 10, -10);
+			cercle.set(centreDebut, 0, rayonDebut, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI / 5, Math.PI / 5}, 70, -70, 10, -10);
 		else
 			cercle.set(centreDebut, Math.PI, rayonDebut, SensFinal.MARCHE_AVANT, new Double[] {-Math.PI, -4 * Math.PI / 5, 4 * Math.PI / 5, Math.PI}, 70, -70, 10, -10);
 	}
@@ -96,15 +96,18 @@ public class ScriptDeposeMinerai extends Script
 				log.debug("On a eu un problème en reculant, mais on est bien positionné, alors on continue !");
 			}
 	
-			InOrder o = t.attendStatus();
-			if(o.etat == State.KO)
+			if(!state.robot.isSerieSimule())
 			{
-				try {
-					state.robot.leveFilet();
-				}
-				catch(ActionneurException e)
+				InOrder o = t.attendStatus();
+				if(o.etat == State.KO)
 				{
-					log.warning(e);
+					try {
+						state.robot.leveFilet();
+					}
+					catch(ActionneurException e)
+					{
+						log.warning(e);
+					}
 				}
 			}
 
