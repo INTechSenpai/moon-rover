@@ -20,7 +20,6 @@ import exceptions.ContainerException;
 import exceptions.MemoryManagerException;
 import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
-import pathfinding.ChronoGameState;
 import pathfinding.KeyPathCache;
 import pathfinding.PathCache;
 import pathfinding.RealGameState;
@@ -63,7 +62,6 @@ public class Match
 			PathCache path = container.getService(PathCache.class);
 			RealGameState state = container.getService(RealGameState.class);
 			boolean simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
-			ChronoGameState chrono = container.make(ChronoGameState.class);
 						
 			log.debug("Initialisation des actionneurs…");
 
@@ -150,7 +148,6 @@ public class Match
 			{
 				path.follow(k, Speed.TEST);
 
-				state.copyAStarCourbe(chrono);
 				KeyPathCache kdep = new KeyPathCache(state);
 				kdep.shoot = false;
 				kdep.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
