@@ -110,6 +110,7 @@ public class ScriptDeposeMinerai extends Script
 		try
 		{
 			state.robot.ejecteBalles();
+			Thread.sleep(500);
 			try
 			{
 				state.robot.ejecteBallesAutreCote();
