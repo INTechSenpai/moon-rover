@@ -151,7 +151,7 @@ public class Match
 				path.follow(k, Speed.TEST);
 
 				state.copyAStarCourbe(chrono);
-				KeyPathCache kdep = new KeyPathCache(chrono);
+				KeyPathCache kdep = new KeyPathCache(state);
 				kdep.shoot = false;
 				kdep.s = ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI.getScript(sym);
 				path.prepareNewPath(kdep);
