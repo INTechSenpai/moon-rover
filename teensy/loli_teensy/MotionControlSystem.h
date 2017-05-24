@@ -201,6 +201,7 @@ public:
 private:
 	volatile MovingState movingState;
 	volatile bool trajectoryFullyCompleted; // Indique que tous les points de la dernière trajectoire ont étés rendus obsolètes
+	bool matchTerminated;
 
 	// Variables d'activation des différents PID
 	bool positionControlled;	//  Asservissement en position
@@ -276,6 +277,7 @@ public:
 	void gotoNextStopPoint();
 	void stop(); // Met toutes les consignes de l'asservissement à une valeur permettant l'arrêt du robot
 	void highLevelStop(); // Termine la trajectoire courante et stoppe le robot
+	void endMatchStop(); // Termine la trajectoire courante et empêche d'en effectuer une nouvelle
 	bool isStopped() const; // Indique si le robot est physiquement à l'arrêt
 	bool isBreaking() const; // Indique si le robot est en train de ralentir
 	void setMaxMovingSpeed(int32_t); // Règle la vitess maximale de translation (argument passé en mm/s)

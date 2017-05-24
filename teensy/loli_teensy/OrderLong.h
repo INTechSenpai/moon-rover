@@ -238,6 +238,7 @@ public:
 		if (millis() - beginTime > 90000 && !matchFinished)
 		{
 			matchFinished = true;
+			motionControlSystem.endMatchStop();
 			actuatorMgr.funnyAction(true);
 		}
 		else if (matchFinished)

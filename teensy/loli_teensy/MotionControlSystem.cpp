@@ -23,6 +23,7 @@ endOfMoveMgr(currentMovingSpeed)
 
 	movingState = STOPPED;
 	trajectoryFullyCompleted = true;
+	matchTerminated = false;
 	trajectoryIndex = 0;
 	updateNextStopPoint();
 	updateSideDistanceFactors();
@@ -596,17 +597,24 @@ MotionControlSystem::MovingState MotionControlSystem::getMovingState() const
 
 void MotionControlSystem::gotoNextStopPoint()
 {
-	noInterrupts();
-	if (movingState == MOVING || movingState == MOVE_INIT)
+	if (matchTerminated)
 	{
-		Log::warning("Nested call of MotionControlSystem::gotoNextStopPoint()");
-		return;
+		Log::warning("Move request after match end");
 	}
-	updateNextStopPoint();
-	movingState = MOVE_INIT;
-	trajectoryFullyCompleted = false;
+	else
+	{
+		noInterrupts();
+		if (movingState == MOVING || movingState == MOVE_INIT)
+		{
+			Log::warning("Nested call of MotionControlSystem::gotoNextStopPoint()");
+			return;
+		}
+		updateNextStopPoint();
+		movingState = MOVE_INIT;
+		trajectoryFullyCompleted = false;
 
-	interrupts();
+		interrupts();
+	}
 }
 
 void MotionControlSystem::stop() 
@@ -643,6 +651,16 @@ void MotionControlSystem::highLevelStop()
 	clearCurrentTrajectory();
 	interrupts();
 	stop();
+}
+
+void MotionControlSystem::endMatchStop()
+{
+	noInterrupts();
+	movingState = STOPPED;
+	clearCurrentTrajectory();
+	interrupts();
+	stop();
+	matchTerminated = true;
 }
 
 bool MotionControlSystem::isStopped() const
