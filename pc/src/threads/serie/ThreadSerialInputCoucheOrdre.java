@@ -129,7 +129,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService implements Seria
 					xRobot += data[1] >> 4;
 					xRobot -= 1500;
 					int yRobot = (data[1] & 0x0F) << 8;
-					yRobot = yRobot + data[2];
+					yRobot = yRobot + data[2] - 1000;
 
 					// On ne récupère pas toutes les infos mécaniques (la
 					// courbure manque, marche avant, …)
