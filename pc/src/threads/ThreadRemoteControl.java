@@ -165,7 +165,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 		double courbure = 0;
 		Ticket run = null;
 		double angleRoues = 0;
-		double courbureMax = 3;
+		double courbureMax = 5;
 		ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 		int autostopseuil = 100;
 		int autostopcompteur = 0;
