@@ -38,7 +38,7 @@ public class Match
 			match = new MatchUtilitary();
 			try
 			{
-				match.setUp(RobotColor.JAUNE, ScriptsSymetrises.SCRIPT_CRATERE_HAUT_A_NOUS);
+				match.setUp(RobotColor.BLEU, ScriptsSymetrises.SCRIPT_CRATERE_HAUT_A_NOUS);
 				simuleSerie = match.getSimuleSerie();
 				log = match.getLog();
 				match.doTheFirstBarrelRoll(Speed.TEST);				
