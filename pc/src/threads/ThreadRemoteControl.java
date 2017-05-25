@@ -64,7 +64,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 					Thread.sleep(10000);
 			}
 
-			ssocket = new ServerSocket(13370);
+			ssocket = new ServerSocket(13371);
 			control(ssocket.accept());
 		}
 		catch(InterruptedException | IOException | ClassNotFoundException e)
@@ -114,6 +114,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 		short vitesseMax = 1000;
 		short pasVitesse = 10;
 		double courbure = 0;
+		boolean run = false;
 		double angleRoues = 0;
 		double courbureMax = 3;
 		ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
@@ -137,11 +138,21 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 				}
 			}
 			else if(tab == Commandes.RUN)
-				data.run();
+			{
+				if(!run)
+				{
+					data.run();
+					run = true;
+				}
+			}
 			else if(tab == Commandes.STOP)
 			{
-				data.immobilise();
-				data.waitStop();
+				if(run)
+				{
+					run = false;
+					data.immobilise();
+					data.waitStop();
+				}
 			}
 			else if(tab == Commandes.RESET_WHEELS)
 			{
