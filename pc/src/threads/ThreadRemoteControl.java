@@ -43,6 +43,54 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 	private ServerSocket ssocket = null;
 	private boolean remote;
 
+	private class ThreadListen extends Thread
+	{
+		protected Log log;
+		private ObjectInputStream in;
+		private Commandes lu = null;
+		
+		public ThreadListen(Log log, ObjectInputStream in)
+		{
+			this.log = log;
+			this.in = in;
+		}
+		
+		private boolean isEmpty()
+		{
+			return lu == null;
+		}
+		
+		private Commandes get()
+		{
+			Commandes out = lu;
+			lu = null;
+			return out;
+		}
+
+		@Override
+		public void run()
+		{
+			Thread.currentThread().setName(getClass().getSimpleName());
+			log.debug("Démarrage de " + Thread.currentThread().getName());
+			try
+			{
+				while(true)
+				{
+					lu = (Commandes) in.readObject();
+					while(lu != null)
+						Thread.sleep(1);
+				}
+			}
+			catch(IOException | ClassNotFoundException | InterruptedException e)
+			{
+				log.debug("Arrêt de " + Thread.currentThread().getName());
+				Thread.currentThread().interrupt();
+			}
+		}
+
+	}
+
+	
 	public ThreadRemoteControl(Log log, BufferOutgoingOrder data, Container container, Config config)
 	{
 		this.log = log;
@@ -119,11 +167,36 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 		double angleRoues = 0;
 		double courbureMax = 3;
 		ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+		int autostopseuil = 100;
+		int autostopcompteur = 0;
+		
+		ThreadListen t = new ThreadListen(log, in);
+		t.start();
+
 		while(true)
 		{
-			Commandes c = (Commandes) in.readObject();
-			log.debug("On exécute : "+c);
-			if(c == Commandes.SPEED_UP || c == Commandes.SPEED_DOWN)
+			Commandes c = null;
+			
+			if(!t.isEmpty())
+			{
+				c = t.get();
+				autostopcompteur = 0;
+			}
+			else
+			{
+				autostopcompteur++;
+				if(autostopcompteur == autostopseuil)
+					c = Commandes.STOP;
+				Thread.sleep(5);
+			}
+			
+			if(c != null)
+				log.debug("On exécute : "+c);
+
+			if(c == null)
+				continue;
+			else if(c == Commandes.PING);
+			else if(c == Commandes.SPEED_UP || c == Commandes.SPEED_DOWN)
 			{
 				short nextVitesse;
 				if(c == Commandes.SPEED_UP)
