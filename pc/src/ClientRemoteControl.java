@@ -109,6 +109,7 @@ public class ClientRemoteControl
 			} while(ko);
 
 			log.debug("Connexion réussie !");
+			Thread.sleep(1000);
 			ObjectOutputStream out;
 			try
 			{
@@ -125,14 +126,19 @@ public class ClientRemoteControl
 				while(true)
 				{
 					out.writeObject(Commandes.SPEED_UP);
+					out.flush();
 					Thread.sleep(100);
 					out.writeObject(Commandes.SPEED_UP);
+					out.flush();
 					Thread.sleep(100);
 					out.writeObject(Commandes.SPEED_UP);
-					Thread.sleep(1000);
+					out.flush();
+					Thread.sleep(10000);
 					out.writeObject(Commandes.STOP);
+					out.flush();
 					Thread.sleep(1000);
 					out.writeObject(Commandes.SHUTDOWN);
+					out.flush();
 				}
 			}
 			catch(IOException e)
