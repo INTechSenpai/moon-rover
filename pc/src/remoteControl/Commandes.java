@@ -24,5 +24,18 @@ import java.io.Serializable;
 
 public enum Commandes implements Serializable
 {
-	SPEED_UP, SPEED_DOWN, TURN_RIGHT, TURN_LEFT, STOP, RESET_WHEELS, SHUTDOWN, PING;
+	SPEED_UP(38), SPEED_DOWN(40), TURN_RIGHT(39), TURN_LEFT(37), STOP(32), RESET_WHEELS(10), SHUTDOWN(-1), PING(-1);
+	
+	private Commandes(int code)
+	{
+		this.code = code;
+	}
+	
+	public int code;
+	
+	public void setCode(int code)
+	{
+		this.code = code;
+	}
+	
 }

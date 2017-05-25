@@ -11,6 +11,8 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -24,10 +26,9 @@ public class Client extends JPanel implements KeyListener
 	private JFrame frame;
 	private Log log;
 	private ObjectOutputStream out;
-	private Thread mainThread;
 	private int sleep = 100;
-	private volatile Commandes current = null;
-	private volatile boolean uniqueSent = false;
+	private volatile List<Commandes> current = new ArrayList<Commandes>();
+	private volatile List<Commandes> keepSending = new ArrayList<Commandes>();
 	
 	private class WindowExit extends WindowAdapter
 	{
@@ -41,7 +42,6 @@ public class Client extends JPanel implements KeyListener
 	
 	public Client(String[] args) throws InterruptedException
 	{
-		mainThread = Thread.currentThread();
 		log = new Log();
 		Config config = new Config();
 		log.useConfig(config);
@@ -144,28 +144,25 @@ public class Client extends JPanel implements KeyListener
 				{
 					Thread.sleep(sleep);
 					
-					Commandes currentTmp = current;
-					if(uniqueSent)
-						currentTmp = null;
-					
-					if(currentTmp == null && noSending == 3)
+					if(keepSending.isEmpty() && noSending == 3)
 					{
 						out.writeObject(Commandes.PING);
 						out.flush();
 						noSending = 0;
 					}
 					
-					if(currentTmp != null)
+					if(!keepSending.isEmpty())
 					{
-						out.writeObject(currentTmp);
+						for(Commandes c : keepSending)
+							out.writeObject(c);
 						out.flush();
 					}
 					else
 						noSending++;
 					
 					// pas de spam !
-					if(current == Commandes.RESET_WHEELS || current == Commandes.STOP)
-						uniqueSent = true;
+					keepSending.remove(Commandes.RESET_WHEELS);
+					keepSending.remove(Commandes.STOP);
 				}
 			}
 			catch(IOException e)
@@ -201,37 +198,40 @@ public class Client extends JPanel implements KeyListener
 	@Override
 	public synchronized void keyPressed(KeyEvent arg0)
 	{
-		if(current != null)
-			return;
+		Commandes tmp = null;
 		int code = arg0.getKeyCode();
-		log.debug("Pressed : "+arg0.getKeyCode());
+
 		if(out == null)
 			return;
-		uniqueSent = false;
-		try {
-			if(code == 38)
-				current = Commandes.SPEED_UP;
-			else if(code == 40)
-				current = Commandes.SPEED_DOWN;
-			else if(code == 37)
-				current = Commandes.TURN_LEFT;
-			else if(code == 39)
-				current = Commandes.TURN_RIGHT;
-			else if(code == 10)
-				current = Commandes.RESET_WHEELS;
-			else if(code == 32)
-				current = Commandes.STOP;
-		} catch(Exception e)
+		
+		for(Commandes c : Commandes.values())
+			if(code == c.code)
+			{
+				tmp = c;
+				break;
+			}
+		
+		// STOP sur toutes les touches
+		if(tmp == null)
+			tmp = Commandes.STOP;
+
+		if(!current.contains(tmp))
 		{
-			mainThread.interrupt();
-			e.printStackTrace();
+			current.add(tmp);
+			keepSending.add(tmp);
 		}
 	}
 
 	@Override
 	public synchronized void keyReleased(KeyEvent arg0)
 	{
-		current = null;
+		int code = arg0.getKeyCode();
+		for(Commandes c : Commandes.values())
+			if(code == c.code)
+			{
+				current.remove(c);
+				break;
+			}
 	}
 
 	@Override
