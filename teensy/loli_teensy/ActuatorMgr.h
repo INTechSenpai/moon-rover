@@ -143,7 +143,6 @@ public:
 		static uint8_t stage;
 		if (launch)
 		{
-			controlerNet.stop();
 			stage = 0;
 			moveTheAX12(true, ANGLE_UP, TOLERANCE_ANGLE, lastCommTime);
 			startTime = millis();

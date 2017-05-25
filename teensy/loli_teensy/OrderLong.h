@@ -247,9 +247,60 @@ public:
 		Serial.println("Start match chrono");
 		beginTime = millis();
 		matchFinished = false;
+		openningNetOfTheLuck = false;
+		ejectOfTheLuck = false;
+		closeNet_sinon_c_relou = false;
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
+		if (millis() - beginTime > 88000 && !openningNetOfTheLuck)
+		{
+			openningNetOfTheLuck = true;
+			actuatorMgr.openNet(true);
+		}
+		else if (openningNetOfTheLuck)
+		{
+			if (!ejectOfTheLuck)
+			{
+				if (actuatorMgr.openNet(false) != RUNNING)
+				{
+					ejectOfTheLuck = true;
+					if (startupMgr.getSide() == StartupMgr::BLUE)
+					{
+						actuatorMgr.ejectLeftSide(true);
+					}
+					else
+					{
+						actuatorMgr.ejectRightSide(true);
+					}
+				}
+			}
+			else
+			{
+				if (!closeNet_sinon_c_relou)
+				{
+					if (startupMgr.getSide() == StartupMgr::BLUE)
+					{
+						actuatorStatus = actuatorMgr.ejectLeftSide(false);
+					}
+					else
+					{
+						actuatorStatus = actuatorMgr.ejectRightSide(false);
+					}
+
+					if (actuatorStatus != RUNNING)
+					{
+						closeNet_sinon_c_relou = true;
+						actuatorMgr.closeNet(true);
+					}
+				}
+				else
+				{
+					actuatorMgr.closeNet(false);
+				}
+			}
+		}
+
 		if (millis() - beginTime > 90000 && !matchFinished)
 		{
 			matchFinished = true;
@@ -274,6 +325,10 @@ private:
 	uint32_t beginTime;
 	uint8_t returnStatement;
 	bool matchFinished;
+	bool openningNetOfTheLuck;
+	bool ejectOfTheLuck;
+	bool closeNet_sinon_c_relou;
+	ActuatorStatus actuatorStatus;
 };
 
 
