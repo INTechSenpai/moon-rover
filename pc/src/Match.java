@@ -51,7 +51,7 @@ public class Match
 			}
 			finally
 			{
-				match.doABarrelRoll(ScriptsSymetrises.SCRIPT_CRATERE_BAS_A_NOUS, Speed.TEST);
+				match.doABarrelRoll(ScriptsSymetrises.SCRIPT_CRATERE_BAS_A_NOUS, Speed.STANDARD);
 				if(simuleSerie)
 					Thread.sleep(2000);
 

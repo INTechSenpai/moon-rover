@@ -207,11 +207,11 @@ public class ScriptDeposeMinerai extends Script
 				
 				cercle.set(centreFin2, Math.PI/2, rayonFin2, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
 				try {
-					state.robot.avanceToCircle(Speed.BASCULE);
+					state.robot.avanceToCircle(Speed.STANDARD);
 				} catch (UnableToMoveException e) {
 					// On retente !
 					try {
-						state.robot.avanceToCircle(Speed.BASCULE);
+						state.robot.avanceToCircle(Speed.STANDARD);
 					} catch (UnableToMoveException e1) {
 						throw e1;
 					}

@@ -113,6 +113,8 @@ public class ScriptPetitCratere extends Script
 				state.robot.avance(-60, Speed.STANDARD);
 	
 				state.robot.avance(60, Speed.STANDARD);
+
+				state.robot.avance(60, Speed.STANDARD);
 			}
 
 			
