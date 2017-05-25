@@ -99,6 +99,12 @@ public enum ConfigInfo
 	SAVE_FOUND_PATH(true), // sauvegarde tous les trajets calculés en match
 
 	/**
+	 * Télécommande
+	 */
+	DELTA_VITESSE(50), // le pas de modification de vitesse
+	DELTA_ANGLE_ROUES(0.1), // le pas de modification de l'angle des roues
+	
+	/**
 	 * Paramètres de la série
 	 */
 	SERIAL_TIMEOUT(30), // quel TIMEOUT pour le protocole série des trames ? (en

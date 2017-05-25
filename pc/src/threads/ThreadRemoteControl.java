@@ -38,6 +38,7 @@ import utils.Log;
 public class ThreadRemoteControl extends ThreadService implements GUIClass
 {
 	private Log log;
+	private Config config;
 	private BufferOutgoingOrder data;
 	private Container container;
 	private ServerSocket ssocket = null;
@@ -91,9 +92,10 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 	}
 
 	
-	public ThreadRemoteControl(Log log, BufferOutgoingOrder data, Container container, Config config)
+	public ThreadRemoteControl(Log log, Config config, BufferOutgoingOrder data, Container container)
 	{
 		this.log = log;
+		this.config = config;
 		this.data = data;
 		this.container = container;
 		remote = config.getBoolean(ConfigInfo.REMOTE_CONTROL);
@@ -114,7 +116,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 			}
 
 			ssocket = new ServerSocket(13371);
-			control(ssocket.accept());
+			control(ssocket.accept(), config);
 		}
 		catch(InterruptedException | IOException | ClassNotFoundException e)
 		{			
@@ -156,12 +158,13 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 		super.interrupt();
 	}
 
-	private void control(Socket socket) throws IOException, ClassNotFoundException, InterruptedException
+	private void control(Socket socket, Config config) throws IOException, ClassNotFoundException, InterruptedException
 	{
 		log.debug("Connexion d'un client !");
 		short vitesse = 0;
 		short vitesseMax = 1000;
-		short pasVitesse = 50;
+		short pasVitesse = config.getShort(ConfigInfo.DELTA_VITESSE);
+		double pasAngle = config.getDouble(ConfigInfo.DELTA_ANGLE_ROUES);
 		double courbure = 0;
 		Ticket run = null;
 		double angleRoues = 0;
@@ -238,9 +241,9 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 			{
 				double prochainAngleRoues;
 				if(c == Commandes.TURN_LEFT)		
-					prochainAngleRoues = angleRoues + 0.1;
+					prochainAngleRoues = angleRoues + pasAngle;
 				else
-					prochainAngleRoues = angleRoues - 0.1;
+					prochainAngleRoues = angleRoues - pasAngle;
 				
 				double nextCourbure = 1. / 0.2 * Math.tan(prochainAngleRoues);
 			
