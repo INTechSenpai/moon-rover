@@ -52,6 +52,9 @@ public class Match
 			finally
 			{
 				match.doABarrelRoll(ScriptsSymetrises.SCRIPT_CRATERE_BAS_A_NOUS, Speed.TEST);
+				if(simuleSerie)
+					Thread.sleep(2000);
+
 				match.doABarrelRoll(ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI_FIN, Speed.STANDARD);
 
 				if(simuleSerie)
