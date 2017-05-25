@@ -25,6 +25,7 @@ import container.Container.ErrorCode;
 import container.dependances.GUIClass;
 import remoteControl.Commandes;
 import serie.BufferOutgoingOrder;
+import serie.Ticket;
 import utils.Log;
 
 /**
@@ -114,56 +115,51 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 		short vitesseMax = 1000;
 		short pasVitesse = 10;
 		double courbure = 0;
-		boolean run = false;
+		Ticket run = null;
 		double angleRoues = 0;
 		double courbureMax = 3;
 		ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 		while(true)
 		{
-			Commandes tab = (Commandes) in.readObject();
-			log.debug("On exécute : "+tab);
-			if(tab == Commandes.SPEED_UP)
+			Commandes c = (Commandes) in.readObject();
+			log.debug("On exécute : "+c);
+			if(c == Commandes.SPEED_UP || c == Commandes.SPEED_DOWN)
 			{
-				if(vitesse + pasVitesse <= vitesseMax)
+				short nextVitesse;
+				if(c == Commandes.SPEED_UP)
+					nextVitesse = (short) (vitesse + pasVitesse);
+				else
+					nextVitesse = (short) (vitesse - pasVitesse);
+					
+				if(nextVitesse <= vitesseMax && nextVitesse >= -vitesseMax)
 				{
-					vitesse += pasVitesse;
+					vitesse = nextVitesse;
 					data.setMaxSpeed(vitesse);
 				}
+				
+				if(run != null && !run.isEmpty())
+					run = null;
+				if(vitesse != 0 && run == null)
+					run = data.run();
 			}
-			else if(tab == Commandes.SPEED_DOWN)
+			else if(c == Commandes.STOP)
 			{
-				if(vitesse - pasVitesse >= -vitesseMax)
+				if(run != null)
 				{
-					vitesse -= pasVitesse;
-					data.setMaxSpeed(vitesse);
-				}
-			}
-			else if(tab == Commandes.RUN)
-			{
-				if(!run)
-				{
-					data.run();
-					run = true;
-				}
-			}
-			else if(tab == Commandes.STOP)
-			{
-				if(run)
-				{
-					run = false;
+					run = null;
 					data.immobilise();
 					data.waitStop();
 				}
 			}
-			else if(tab == Commandes.RESET_WHEELS)
+			else if(c == Commandes.RESET_WHEELS)
 			{
 				courbure = 0;
 				data.setCurvature(courbure);
 			}
-			else if(tab == Commandes.TURN_LEFT || tab == Commandes.TURN_RIGHT)
+			else if(c == Commandes.TURN_LEFT || c == Commandes.TURN_RIGHT)
 			{
 				double prochainAngleRoues;
-				if(tab == Commandes.TURN_LEFT)		
+				if(c == Commandes.TURN_LEFT)		
 					prochainAngleRoues = angleRoues + 0.1;
 				else
 					prochainAngleRoues = angleRoues - 0.1;
@@ -176,7 +172,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 					data.setCurvature(courbure);
 				}
 			}
-			else if(tab == Commandes.SHUTDOWN)
+			else if(c == Commandes.SHUTDOWN)
 				container.interruptWithCodeError(ErrorCode.EMERGENCY_STOP);
 		}
 	}

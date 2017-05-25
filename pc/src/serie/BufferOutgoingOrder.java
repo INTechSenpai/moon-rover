@@ -125,10 +125,12 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		setMaxSpeed(vitesseTr);
 	}
 	
-	public synchronized void run()
+	public synchronized Ticket run()
 	{
-		bufferBassePriorite.add(new Order(OutOrder.RUN));
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(OutOrder.RUN, t));
 		notify();
+		return t;
 	}
 
 	public synchronized void setCurvature(double courbure)
