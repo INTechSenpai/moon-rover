@@ -189,7 +189,7 @@ public class ScriptDeposeMinerai extends Script
 		}
 		finally
 		{
-			state.robot.fermeFilet();
+			state.robot.fermeFiletNonBloquant();
 			if(!end)
 			{
 				cercle.set(centreFin, Math.PI/2, rayonFin, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);

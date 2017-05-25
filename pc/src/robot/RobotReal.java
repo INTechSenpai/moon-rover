@@ -440,4 +440,9 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		return arcmanager.isArrivedAsser(cinematique);
 	}
 
+	public void fermeFiletNonBloquant()
+	{
+		out.fermeFilet();
+	}
+
 }
