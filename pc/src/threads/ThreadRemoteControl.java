@@ -238,11 +238,14 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 			{
 				double prochainAngleRoues;
 				if(c == Commandes.TURN_LEFT)		
-					prochainAngleRoues = angleRoues + 0.1;
+					prochainAngleRoues = angleRoues + 0.01;
 				else
-					prochainAngleRoues = angleRoues - 0.1;
-					
-				double nextCourbure = 200 * Math.tan(prochainAngleRoues);
+					prochainAngleRoues = angleRoues - 0.01;
+				
+				double nextCourbure = 1. / 0.2 * Math.tan(prochainAngleRoues);
+				
+				log.debug(nextCourbure);
+			
 				if(nextCourbure <= courbureMax)
 				{
 					angleRoues = prochainAngleRoues;
