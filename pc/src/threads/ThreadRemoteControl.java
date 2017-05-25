@@ -137,13 +137,10 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 					data.setMaxSpeed(vitesse);
 				}
 				
-				synchronized(run)
-				{
-					if(run != null && !run.isEmpty())
-						run = null;
-					if(vitesse != 0 && run == null)
-						run = data.run();
-				}
+				if(run != null && !run.isEmpty())
+					run = null;
+				if(vitesse != 0 && run == null)
+					run = data.run();
 			}
 			else if(c == Commandes.STOP)
 			{
