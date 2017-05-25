@@ -161,7 +161,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 		log.debug("Connexion d'un client !");
 		short vitesse = 0;
 		short vitesseMax = 1000;
-		short pasVitesse = 100;
+		short pasVitesse = 50;
 		double courbure = 0;
 		Ticket run = null;
 		double angleRoues = 0;
@@ -224,6 +224,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 				if(run != null)
 				{
 					run = null;
+					vitesse = 0;
 					data.immobilise();
 					data.waitStop();
 				}
