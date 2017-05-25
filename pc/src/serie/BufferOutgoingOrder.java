@@ -139,7 +139,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 		short courbureShort = (short) (Math.round(courbure * 100));
 		data.putShort(courbureShort);
 
-		bufferBassePriorite.add(new Order(OutOrder.SET_CURVATURE));
+		bufferBassePriorite.add(new Order(data, OutOrder.SET_CURVATURE));
 		notify();
 	}
 
