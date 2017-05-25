@@ -91,6 +91,7 @@ public class DemoHeptacle {
 			log.warning(e);
 			throw e;
 		}
+		System.exit(container.destructor().code);
 	}
 	
 }
