@@ -33,6 +33,7 @@ public enum ThreadName
 	CONFIG(ThreadConfig.class),
 	FENETRE(ThreadFenetre.class),
 	PRINT_SERVER(ThreadPrintServer.class),
+	REMOTE_CONTROL(ThreadRemoteControl.class),
 	UPDATE_PATHFINDING(ThreadUpdatePathfinding.class),
 	PREPARE_PATHFINDING(ThreadPreparePathfinding.class),
 	PEREMPTION(ThreadPeremption.class),

@@ -122,7 +122,27 @@ public class BufferOutgoingOrder implements Service, SerialClass
 			vitesseTr = (short) (vitesseInitiale.translationalSpeed * 1000);
 		else
 			vitesseTr = (short) (-vitesseInitiale.translationalSpeed * 1000);
+		setMaxSpeed(vitesseTr);
+	}
+	
+	public synchronized void run()
+	{
+		bufferBassePriorite.add(new Order(OutOrder.RUN));
+		notify();
+	}
 
+	public synchronized void setCurvature(double courbure)
+	{
+		ByteBuffer data = ByteBuffer.allocate(2);
+		short courbureShort = (short) (Math.round(courbure * 100));
+		data.putShort(courbureShort);
+
+		bufferBassePriorite.add(new Order(OutOrder.SET_CURVATURE));
+		notify();
+	}
+
+	public synchronized void setMaxSpeed(short vitesseTr)
+	{
 		ByteBuffer data = ByteBuffer.allocate(2);
 		data.putShort(vitesseTr);
 

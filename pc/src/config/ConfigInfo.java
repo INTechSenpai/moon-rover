@@ -109,6 +109,8 @@ public enum ConfigInfo
 							// trames
 	SIMULE_SERIE(false), // la série doit-elle être simulée (utile pour debug)
 
+	REMOTE_CONTROL(false), // contrôle à distance ?
+	
 	/**
 	 * Paramètres bas niveau des capteurs
 	 */

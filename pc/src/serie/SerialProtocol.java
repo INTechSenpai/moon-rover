@@ -55,6 +55,7 @@ public class SerialProtocol
 		LOCK_NET(0x48, Type.LONG),
 		SCAN(0x49, Type.LONG),
 		CLOSE_NET_FORCE(0x4A, Type.LONG),
+		RUN(0x4B, Type.LONG),
 
 		ASK_COLOR(0x59, Type.SHORT),
 		PING(0x5A, Type.SHORT),
@@ -63,7 +64,8 @@ public class SerialProtocol
 		EDIT_POSITION(0x5D, Type.SHORT),
 		STOP_STREAM_ALL(0x5E, Type.SHORT),
 		SET_SENSOR_MODE(0x5F, Type.SHORT),
-		SET_POSITION(0x60, Type.SHORT);
+		SET_POSITION(0x60, Type.SHORT),
+		SET_CURVATURE(0x61, Type.SHORT);
 
 		public final byte code;
 		public final Type type;
