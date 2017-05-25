@@ -15,6 +15,7 @@
 import config.ConfigInfo;
 import container.Container;
 import exceptions.ContainerException;
+import utils.Log;
 
 /**
  * Utilisation par contrôle à distance
@@ -37,10 +38,11 @@ public class RemoteControl
 		ConfigInfo.REMOTE_CONTROL.setDefaultValue(true);		
 		ConfigInfo.GRAPHIC_ENABLE.setDefaultValue(false);		
 		Container container = null;
-		
 		try
 		{
 			container = new Container();
+			Log log = container.getService(Log.class);
+			log.warning("Serveur de contrôle à distance prêt !");
 			while(true)
 				Thread.sleep(5000);
 		} catch (ContainerException | InterruptedException e) {
