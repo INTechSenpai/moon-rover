@@ -267,6 +267,30 @@ public:
 
 
 /*
+	Règle la courbure courante des roues.
+*/
+class SetDirection : public OrderImmediate, public Singleton<SetDirection>
+{
+public:
+	SetDirection() {}
+	virtual void execute(std::vector<uint8_t> & io) 
+	{
+		if (io.size() != 2)
+		{
+			Log::warning("SetDirection: argument incorrect");
+		}
+		else
+		{
+			int16_t aimCurvature = (io.at(0) << 8) + io.at(1);
+			directionController.setAimCurvature(aimCurvature);
+		}
+		io.clear();
+	}
+};
+
+
+
+/*
 	######################
 	##   Ordres ASCII   ##
 	######################

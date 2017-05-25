@@ -43,6 +43,7 @@ public:
 		immediateOrderList[0x5E] = &StopStream::Instance();
 		immediateOrderList[0x5F] = &SetSensorMode::Instance();
 		immediateOrderList[0x60] = &SetPosition::Instance();
+		immediateOrderList[0x61] = &SetDirection::Instance();
 
 		// Ordres longs
 		longOrderList[0x38] = &FollowTrajectory::Instance();
@@ -64,6 +65,7 @@ public:
 		longOrderList[0x48] = &LockNet::Instance();
 		longOrderList[0x49] = &Scann::Instance();
 		longOrderList[0x4A] = &CloseNetForce::Instance();
+		longOrderList[0x4B] = &MoveUranus::Instance();
 
 		// Ordres ASCII
 		immediateOrderList[0x80] = &Logon::Instance();
