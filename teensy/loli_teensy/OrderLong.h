@@ -776,12 +776,14 @@ public:
 	MoveUranus() {}
 	void _launch(const std::vector<uint8_t> & input)
 	{
+		Serial.println("MoveUranus");
 		motionControlSystem.enablePositionControl(false);
+		motionControlSystem.moveIsStarting();
 		motionControlSystem.moveUranus(true);
 	}
 	void onExecute(std::vector<uint8_t> & output)
 	{
-		if (motionControlSystem.getMovingState() != MotionControlSystem::MOVING)
+		if (motionControlSystem.getMovingState() != MotionControlSystem::MANUAL_MOVE)
 		{
 			finished = true;
 			motionControlSystem.setSpeed(0);
@@ -794,6 +796,7 @@ public:
 	void terminate(std::vector<uint8_t> & output)
 	{
 		motionControlSystem.enablePositionControl(true);
+		Serial.println("EndMoveUranus");
 	}
 };
 

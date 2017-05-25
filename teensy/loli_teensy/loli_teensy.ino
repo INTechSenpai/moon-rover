@@ -246,12 +246,12 @@ void loop()
 			if (nbOrdersRunning > 0 && !ordersRunning)
 			{
 				ordersRunning = true;
-				Serial.println("HL orders started");
+				//Serial.println("HL orders started");
 			}
 			else if (nbOrdersRunning == 0 && ordersRunning)
 			{
 				ordersRunning = false;
-				Serial.println("All HL orders terminated");
+				//Serial.println("All HL orders terminated");
 			}
 		}
 
@@ -259,7 +259,7 @@ void loop()
 		if (millis() - chibre > 1000)
 		{
 			chibre = millis();
-			orderMgr.printOrdersRunning();
+			//orderMgr.printOrdersRunning();
 		}
 	}
 }
