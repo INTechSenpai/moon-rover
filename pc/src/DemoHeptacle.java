@@ -9,89 +9,94 @@ public class DemoHeptacle {
 	public static void main(String[] args) throws InterruptedException, ContainerException, ActionneurException
 	{
 		Container container = new Container();
-		Log log = container.getService(Log.class);
-		RealGameState state = container.getService(RealGameState.class);
-
-		try
-		{
+		try {
+			Log log = container.getService(Log.class);
+			RealGameState state = container.getService(RealGameState.class);
+	
 			try
 			{
-				state.robot.rearme();
-			}
-			catch(ActionneurException e)
-			{
-				log.warning(e);
-			}
-
-			try
-			{
-				state.robot.rearmeAutreCote();
-			}
-			catch(ActionneurException e)
-			{
-				log.warning(e);
-			}
-
-			state.robot.ouvreFilet();
-			
-			try
-			{
-				state.robot.baisseFilet();
-			}
-			catch(ActionneurException e)
-			{
-				log.warning(e);
 				try
 				{
-					state.robot.leveFilet();
+					state.robot.rearme();
 				}
-				catch(ActionneurException e1)
+				catch(ActionneurException e)
 				{
-					log.warning(e1);
-					state.robot.fermeFilet();
-					throw e1;
+					log.warning(e);
 				}
-
+	
+				try
+				{
+					state.robot.rearmeAutreCote();
+				}
+				catch(ActionneurException e)
+				{
+					log.warning(e);
+				}
+	
+				state.robot.ouvreFilet();
+				
 				try
 				{
 					state.robot.baisseFilet();
 				}
-				catch(ActionneurException e1)
+				catch(ActionneurException e)
 				{
-					log.warning(e1);
+					log.warning(e);
 					try
 					{
 						state.robot.leveFilet();
 					}
-					catch(ActionneurException e2)
+					catch(ActionneurException e1)
 					{
-						log.warning(e2);
+						log.warning(e1);
+						state.robot.fermeFilet();
+						throw e1;
 					}
-					state.robot.fermeFilet();
-					throw e1;
+	
+					try
+					{
+						state.robot.baisseFilet();
+					}
+					catch(ActionneurException e1)
+					{
+						log.warning(e1);
+						try
+						{
+							state.robot.leveFilet();
+						}
+						catch(ActionneurException e2)
+						{
+							log.warning(e2);
+						}
+						state.robot.fermeFilet();
+						throw e1;
+					}
 				}
-			}
-
-			state.robot.fermeFilet();
-			state.robot.ouvreFilet();
-			state.robot.fermeFiletForce();
-
-			try
-			{
-				state.robot.leveFilet();
+	
+				state.robot.fermeFilet();
+				state.robot.ouvreFilet();
+				state.robot.fermeFiletForce();
+	
+				try
+				{
+					state.robot.leveFilet();
+				}
+				catch(ActionneurException e)
+				{
+					log.warning(e);
+				}
 			}
 			catch(ActionneurException e)
 			{
+				state.robot.setFiletPlein(false);
 				log.warning(e);
+				throw e;
 			}
 		}
-		catch(ActionneurException e)
+		finally
 		{
-			state.robot.setFiletPlein(false);
-			log.warning(e);
-			throw e;
+			System.exit(container.destructor().code);			
 		}
-		System.exit(container.destructor().code);
 	}
 	
 }
