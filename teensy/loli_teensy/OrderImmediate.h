@@ -282,7 +282,7 @@ public:
 		else
 		{
 			int16_t aimCurvature = (io.at(0) << 8) + io.at(1);
-			directionController.setAimCurvature(aimCurvature);
+			directionController.setAimCurvature((float)aimCurvature / 100);
 		}
 		io.clear();
 	}
