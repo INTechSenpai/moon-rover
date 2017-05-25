@@ -765,6 +765,39 @@ public:
 };
 
 
+/*
+	Règle la consigne en vitesse à maxMovingSpeed 
+	(en désactivant l'asservissement en position 
+	et sur trajectoire).
+*/
+class MoveUranus : public OrderLong, public Singleton<MoveUranus>
+{
+public:
+	MoveUranus() {}
+	void _launch(const std::vector<uint8_t> & input)
+	{
+		motionControlSystem.enablePositionControl(false);
+		motionControlSystem.moveUranus(true);
+	}
+	void onExecute(std::vector<uint8_t> & output)
+	{
+		if (motionControlSystem.getMovingState() != MotionControlSystem::MOVING)
+		{
+			finished = true;
+			motionControlSystem.setSpeed(0);
+		}
+		else
+		{
+			motionControlSystem.moveUranus(false);
+		}
+	}
+	void terminate(std::vector<uint8_t> & output)
+	{
+		motionControlSystem.enablePositionControl(true);
+	}
+};
+
+
 
 /*
 	######################

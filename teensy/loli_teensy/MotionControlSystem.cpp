@@ -521,16 +521,23 @@ void MotionControlSystem::manageStop()
 	endOfMoveMgr.compute();
 	if (endOfMoveMgr.isStopped() && movingState == MOVING)
 	{
-		if (currentTrajectory[trajectoryIndex].isStopPoint())
+		if (currentTrajectory[trajectoryIndex].isUpToDate())
 		{
-			movingState = STOPPED;
-			updateTrajectoryIndex();
+			if (currentTrajectory[trajectoryIndex].isStopPoint())
+			{
+				movingState = STOPPED;
+				updateTrajectoryIndex();
+			}
+			else
+			{
+				movingState = EXT_BLOCKED;
+				clearCurrentTrajectory();
+				Log::critical(33, "Erreur d'asservissement en translation");
+			}
 		}
 		else
 		{
-			movingState = EXT_BLOCKED;
-			clearCurrentTrajectory();
-			Log::critical(33, "Erreur d'asservissement en translation");
+			movingState = STOPPED;
 		}
 		stop();
 	}
@@ -615,6 +622,16 @@ void MotionControlSystem::gotoNextStopPoint()
 
 		interrupts();
 	}
+}
+
+void MotionControlSystem::moveUranus(bool launch)
+{
+	if (launch)
+	{
+		movingState = MOVING;
+	}
+	leftSpeedSetpoint = maxMovingSpeed;
+	rightSpeedSetpoint = maxMovingSpeed;
 }
 
 void MotionControlSystem::stop() 

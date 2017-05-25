@@ -275,6 +275,7 @@ public:
 	void addTrajectoryPoint(const TrajectoryPoint &, uint8_t);
 	MovingState getMovingState() const;
 	void gotoNextStopPoint();
+	void moveUranus(bool);
 	void stop(); // Met toutes les consignes de l'asservissement à une valeur permettant l'arrêt du robot
 	void highLevelStop(); // Termine la trajectoire courante et stoppe le robot
 	void endMatchStop(); // Termine la trajectoire courante et empêche d'en effectuer une nouvelle
