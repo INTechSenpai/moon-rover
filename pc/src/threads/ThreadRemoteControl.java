@@ -198,6 +198,12 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 			else if(c == Commandes.PING);
 			else if(c == Commandes.SPEED_UP || c == Commandes.SPEED_DOWN)
 			{
+				if(run != null && !run.isEmpty()) // le robot s'est arrêté
+				{
+					vitesse = 0;
+					run = null;
+				}
+
 				short nextVitesse;
 				if(c == Commandes.SPEED_UP)
 					nextVitesse = (short) (vitesse + pasVitesse);
@@ -210,8 +216,6 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 					data.setMaxSpeed(vitesse);
 				}
 				
-				if(run != null && !run.isEmpty())
-					run = null;
 				if(vitesse != 0 && run == null)
 					run = data.run();
 			}
