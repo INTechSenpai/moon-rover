@@ -182,6 +182,7 @@ public:
 		HIGHLEVEL_STOP, // Robot arrêté en cours de trajectoire sur ordre du haut niveau.
 		MOVE_INIT,		// L'ordre de mouvement a été reçu, mais le robot n'envoie pas encore un PWM aux moteurs de propulsion (il attend d'avoir les roues de direction en position)
 		MOVING,			// Robot en mouvent vers la position voulue.
+		MANUAL_MOVE,	// Robot en mouvement, sans utiliser les points de trajectoire.
 		EXT_BLOCKED,	// Robot bloqué par un obstacle extérieur (les roues patinent).
 		INT_BLOCKED,	// Roues du robot bloquées.
 		EMPTY_TRAJ,		// La trajectoire courante est terminée, le dernier point n'étant pas un point d'arrêt.
@@ -341,6 +342,8 @@ public:
 	void setPWM(int32_t);
 	void setSpeed(int32_t);
 	void setTranslation(int32_t);
+
+	void moveIsStarting();
 };
 
 

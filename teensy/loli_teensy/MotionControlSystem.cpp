@@ -519,7 +519,7 @@ void MotionControlSystem::updateSideDistanceFactors()
 void MotionControlSystem::manageStop()
 {
 	endOfMoveMgr.compute();
-	if (endOfMoveMgr.isStopped() && movingState == MOVING)
+	if (endOfMoveMgr.isStopped() && (movingState == MOVING || movingState == MANUAL_MOVE))
 	{
 		if (currentTrajectory[trajectoryIndex].isUpToDate())
 		{
@@ -628,7 +628,7 @@ void MotionControlSystem::moveUranus(bool launch)
 {
 	if (launch)
 	{
-		movingState = MOVING;
+		movingState = MANUAL_MOVE;
 	}
 	leftSpeedSetpoint = maxMovingSpeed;
 	rightSpeedSetpoint = maxMovingSpeed;
@@ -1250,5 +1250,10 @@ void MotionControlSystem::setSpeed(int32_t speed)
 void MotionControlSystem::setTranslation(int32_t distance)
 {
 	translationSetpoint += distance;
+}
+
+void MotionControlSystem::moveIsStarting()
+{
+	endOfMoveMgr.moveIsStarting();
 }
 
