@@ -121,6 +121,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 		while(true)
 		{
 			Commandes tab = (Commandes) in.readObject();
+			log.debug("On exécute : "+tab);
 			if(tab == Commandes.SPEED_UP)
 			{
 				if(vitesse + pasVitesse <= vitesseMax)
