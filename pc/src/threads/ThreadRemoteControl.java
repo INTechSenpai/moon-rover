@@ -176,7 +176,10 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 				}
 			}
 			else if(c == Commandes.SHUTDOWN)
+			{
+				Thread.sleep(1000);
 				container.interruptWithCodeError(ErrorCode.EMERGENCY_STOP);
+			}
 		}
 	}
 
