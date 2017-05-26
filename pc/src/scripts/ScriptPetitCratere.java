@@ -106,25 +106,6 @@ public class ScriptPetitCratere extends Script
 
 			state.robot.ouvreFilet();
 
-			if(remue)
-			{
-				try
-				{
-					state.robot.baisseFilet();
-				}
-				catch(ActionneurException e)
-				{
-					log.warning(e);
-				}
-	
-				state.robot.avance(-60, Speed.STANDARD);
-	
-				state.robot.avance(60, Speed.STANDARD);
-
-				state.robot.avance(60, Speed.STANDARD);
-			}
-
-			
 			try
 			{
 				state.robot.baisseFilet();
@@ -150,19 +131,27 @@ public class ScriptPetitCratere extends Script
 				catch(ActionneurException e1)
 				{
 					log.warning(e1);
-					try
-					{
-						state.robot.leveFilet();
-					}
-					catch(ActionneurException e2)
-					{
-						log.warning(e2);
-					}
-					state.robot.fermeFilet();
-					throw e1;
 				}
 			}
 
+			if(remue)
+			{
+				state.robot.avance(-60, Speed.STANDARD);
+				
+				state.robot.avance(60, Speed.STANDARD);
+	
+				state.robot.avance(60, Speed.STANDARD);
+				
+				try
+				{
+					state.robot.baisseFilet();
+				}
+				catch(ActionneurException e1)
+				{
+					log.warning(e1);
+				}
+			}
+			
 			state.robot.fermeFilet();
 			state.robot.ouvreFilet();
 			state.robot.fermeFiletForce();
