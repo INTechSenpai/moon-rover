@@ -113,24 +113,27 @@ public class ScriptPetitCratere extends Script
 			catch(ActionneurException e)
 			{
 				log.warning(e);
-				try
+				if(!remue)
 				{
-					state.robot.leveFilet();
-				}
-				catch(ActionneurException e1)
-				{
-					log.warning(e1);
-					state.robot.fermeFilet();
-					throw e1;
-				}
+					try
+					{
+						state.robot.leveFilet();
+					}
+					catch(ActionneurException e1)
+					{
+						log.warning(e1);
+						state.robot.fermeFilet();
+						throw e1;
+					}
 
-				try
-				{
-					state.robot.baisseFilet();
-				}
-				catch(ActionneurException e1)
-				{
-					log.warning(e1);
+					try
+					{
+						state.robot.baisseFilet();
+					}
+					catch(ActionneurException e1)
+					{
+						log.warning(e1);
+					}
 				}
 			}
 
