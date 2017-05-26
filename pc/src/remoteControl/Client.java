@@ -2,18 +2,21 @@ package remoteControl;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -27,9 +30,11 @@ public class Client extends JPanel implements KeyListener
 	private Log log;
 	private ObjectOutputStream out;
 	private int sleep = 100;
-	private volatile List<Commandes> current = new ArrayList<Commandes>();
-	private volatile List<Commandes> keepSending = new ArrayList<Commandes>();
-	
+	private volatile HashSet<Commandes> current = new HashSet<Commandes>();
+	private volatile HashSet<Commandes> keepSending = new HashSet<Commandes>();
+	private Image image = null;
+	private int sizeX, sizeY;
+
 	private class WindowExit extends WindowAdapter
 	{
 		@Override
@@ -128,14 +133,25 @@ public class Client extends JPanel implements KeyListener
 				continue; // on relance la recherche
 			}
 
+			sizeX = sizeY = 100;
+			
+			try {
+				image = ImageIO.read(new File("lolisenpai.jpg"));
+				sizeX = image.getWidth(this);
+				sizeY = image.getHeight(this);
+			} catch (IOException e1) {
+				log.critical(e1);
+			}
+
 			setBackground(Color.WHITE);
-			setPreferredSize(new Dimension(100, 100));
+			setPreferredSize(new Dimension(sizeX, sizeY));
 			frame = new JFrame();
 			frame.addKeyListener(this);
 			frame.addWindowListener(new WindowExit());
 			frame.getContentPane().add(this);
 			frame.pack();
 			frame.setVisible(true);
+			repaint();
 			
 			int noSending = 0;
 			try
@@ -144,25 +160,28 @@ public class Client extends JPanel implements KeyListener
 				{
 					Thread.sleep(sleep);
 					
-					if(keepSending.isEmpty() && noSending == 3)
+					synchronized(keepSending)
 					{
-						out.writeObject(Commandes.PING);
-						out.flush();
-						noSending = 0;
+						if(keepSending.isEmpty() && noSending == 3)
+						{
+							out.writeObject(Commandes.PING);
+							out.flush();
+							noSending = 0;
+						}
+						
+						if(!keepSending.isEmpty())
+						{
+							for(Commandes c : keepSending)
+								out.writeObject(c);
+							out.flush();
+						}
+						else
+							noSending++;
+						
+						// pas de spam !
+						keepSending.remove(Commandes.RESET_WHEELS);
+						keepSending.remove(Commandes.STOP);
 					}
-					
-					if(!keepSending.isEmpty())
-					{
-						for(Commandes c : keepSending)
-							out.writeObject(c);
-						out.flush();
-					}
-					else
-						noSending++;
-					
-					// pas de spam !
-					keepSending.remove(Commandes.RESET_WHEELS);
-					keepSending.remove(Commandes.STOP);
 				}
 			}
 			catch(IOException e)
@@ -215,10 +234,17 @@ public class Client extends JPanel implements KeyListener
 		if(tmp == null)
 			tmp = Commandes.STOP;
 
+		
 		if(!current.contains(tmp))
 		{
-			current.add(tmp);
-			keepSending.add(tmp);
+			synchronized(current)
+			{
+				current.add(tmp);
+			}
+			synchronized(keepSending)
+			{
+				keepSending.add(tmp);
+			}
 		}
 	}
 
@@ -229,7 +255,11 @@ public class Client extends JPanel implements KeyListener
 		for(Commandes c : Commandes.values())
 			if(code == c.code)
 			{
-				current.remove(c);
+				synchronized(current)
+				{
+					current.remove(c);
+					keepSending.remove(c);
+				}
 				break;
 			}
 	}
@@ -237,4 +267,12 @@ public class Client extends JPanel implements KeyListener
 	@Override
 	public synchronized void keyTyped(KeyEvent arg0)
 	{}
+	
+	@Override
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		if(image != null)
+			g.drawImage(image, 0, 0, this);
+	}
 }
