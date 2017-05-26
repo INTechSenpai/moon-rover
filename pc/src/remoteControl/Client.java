@@ -168,6 +168,9 @@ public class Client extends JPanel implements KeyListener
 			frame.setVisible(true);
 			repaint();
 			
+			for(Commandes c : Commandes.values())
+				log.debug(c+" "+c.code);
+			
 			int noSending = 0;
 			try
 			{
