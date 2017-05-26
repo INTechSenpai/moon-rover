@@ -101,8 +101,8 @@ public enum ConfigInfo
 	/**
 	 * Télécommande
 	 */
-	DELTA_VITESSE(50), // le pas de modification de vitesse
-	DELTA_ANGLE_ROUES(0.1), // le pas de modification de l'angle des roues
+	DELTA_VITESSE(25), // le pas de modification de vitesse
+	DELTA_ANGLE_ROUES(0.05), // le pas de modification de l'angle des roues
 	
 	/**
 	 * Paramètres de la série
