@@ -30,7 +30,7 @@ public class Client extends JPanel implements KeyListener
 	private JFrame frame;
 	private Log log;
 	private ObjectOutputStream out;
-	private int sleep = 100;
+	private int sleep = 50;
 	private volatile HashSet<Commandes> current = new HashSet<Commandes>();
 	private volatile HashSet<Commandes> keepSending = new HashSet<Commandes>();
 	private Image image = null;
@@ -169,7 +169,7 @@ public class Client extends JPanel implements KeyListener
 					
 					synchronized(keepSending)
 					{
-						if(keepSending.isEmpty() && noSending == 3)
+						if(keepSending.isEmpty() && noSending == 6)
 						{
 							out.writeObject(Commandes.PING);
 							out.flush();
