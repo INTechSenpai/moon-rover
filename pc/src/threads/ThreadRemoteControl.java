@@ -209,9 +209,17 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 
 				short nextVitesse;
 				if(c == Commandes.SPEED_UP)
+				{
 					nextVitesse = (short) (vitesse + pasVitesse);
+					if(vitesse < 0)
+						nextVitesse = (short) (vitesse + pasVitesse);
+				}
 				else
+				{
 					nextVitesse = (short) (vitesse - pasVitesse);
+					if(vitesse > 0)
+						nextVitesse = (short) (vitesse - pasVitesse);
+				}
 					
 				if(nextVitesse <= vitesseMax && nextVitesse >= -vitesseMax)
 				{
