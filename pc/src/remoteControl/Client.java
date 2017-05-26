@@ -143,14 +143,14 @@ public class Client extends JPanel implements KeyListener
 			sizeX = sizeY = 100;
 			
 			try {
-				image = ImageIO.read(new File("lolisenpai.jpg"));
+				image = ImageIO.read(new File("img/background_remote_control_mini.jpg"));
 				sizeX = image.getWidth(this);
 				sizeY = image.getHeight(this);
 			} catch (IOException e1) {
 				log.critical(e1);
 			}
 
-			setBackground(Color.WHITE);
+			setBackground(Color.GRAY);
 			setPreferredSize(new Dimension(sizeX, sizeY));
 			frame = new JFrame();
 			frame.addKeyListener(this);
