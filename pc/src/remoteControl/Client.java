@@ -52,6 +52,7 @@ public class Client extends JPanel implements KeyListener
 		Config config = new Config();
 		log.useConfig(config);
 		
+		Commandes.STOP.setCode(32);
 		Commandes.RESET_WHEELS.setCode(config.getInt(ConfigInfo.RESET_WHEELS_KEY));
 		Commandes.SPEED_DOWN.setCode(config.getInt(ConfigInfo.SPEED_DOWN_KEY));
 		Commandes.SPEED_UP.setCode(config.getInt(ConfigInfo.SPEED_UP_KEY));
@@ -240,6 +241,7 @@ public class Client extends JPanel implements KeyListener
 
 		if(out == null)
 			return;
+		
 		
 		for(Commandes c : Commandes.values())
 			if(code == c.code)
