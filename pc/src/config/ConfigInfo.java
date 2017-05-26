@@ -116,6 +116,11 @@ public enum ConfigInfo
 	SIMULE_SERIE(false), // la série doit-elle être simulée (utile pour debug)
 
 	REMOTE_CONTROL(false), // contrôle à distance ?
+	SPEED_UP_KEY(38),
+	SPEED_DOWN_KEY(40),
+	TURN_LEFT_KEY(37),
+	TURN_RIGHT_KEY(39),
+	RESET_WHEELS_KEY(10),
 	
 	/**
 	 * Paramètres bas niveau des capteurs

@@ -21,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import config.Config;
+import config.ConfigInfo;
 import utils.Log;
 
 public class Client extends JPanel implements KeyListener
@@ -50,6 +51,12 @@ public class Client extends JPanel implements KeyListener
 		log = new Log();
 		Config config = new Config();
 		log.useConfig(config);
+		
+		Commandes.RESET_WHEELS.setCode(config.getInt(ConfigInfo.RESET_WHEELS_KEY));
+		Commandes.SPEED_DOWN.setCode(config.getInt(ConfigInfo.SPEED_DOWN_KEY));
+		Commandes.SPEED_UP.setCode(config.getInt(ConfigInfo.SPEED_UP_KEY));
+		Commandes.TURN_LEFT.setCode(config.getInt(ConfigInfo.TURN_LEFT_KEY));
+		Commandes.TURN_RIGHT.setCode(config.getInt(ConfigInfo.TURN_RIGHT_KEY));
 		
 		InetAddress rpiAdresse = null;
 		boolean loop = false;
