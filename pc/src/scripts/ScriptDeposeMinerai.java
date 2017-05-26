@@ -48,10 +48,13 @@ public class ScriptDeposeMinerai extends Script
 	private double rayonFin2 = 180;
 	private boolean gauche, end;
 
-	public ScriptDeposeMinerai(boolean gauche, boolean end)
+	public ScriptDeposeMinerai(boolean gauche, boolean end, boolean fromBas)
 	{
 		this.end = end;
 		this.gauche = gauche;
+		if(fromBas)
+			centreDebut = new Vec2RW(450, 2000-180);
+
 		if(gauche)
 		{
 			centreDebut.setX(-centreDebut.getX());

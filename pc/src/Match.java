@@ -38,7 +38,7 @@ public class Match
 			match = new MatchUtilitary();
 			try
 			{
-				match.setUp(RobotColor.BLEU, ScriptsSymetrises.SCRIPT_CRATERE_HAUT_A_NOUS);
+				match.setUp(RobotColor.JAUNE, ScriptsSymetrises.SCRIPT_CRATERE_HAUT_A_NOUS);
 				simuleSerie = match.getSimuleSerie();
 				log = match.getLog();
 				match.doTheFirstBarrelRoll(Speed.TEST);				
@@ -55,7 +55,7 @@ public class Match
 				if(simuleSerie)
 					Thread.sleep(2000);
 
-				match.doABarrelRoll(ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI_FIN, Speed.STANDARD);
+				match.doABarrelRoll(ScriptsSymetrises.SCRIPT_DEPOSE_MINERAI_FIN_APRES_BAS, Speed.STANDARD);
 
 				if(simuleSerie)
 					Thread.sleep(10000);

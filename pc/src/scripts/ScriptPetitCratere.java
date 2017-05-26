@@ -18,10 +18,12 @@ import exceptions.ActionneurException;
 import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
 import pathfinding.RealGameState;
+import pathfinding.SensFinal;
 import robot.Cinematique;
 import robot.Speed;
 import table.EtatElement;
 import table.GameElementNames;
+import utils.Vec2RW;
 import utils.Log.Verbose;
 
 /**
@@ -35,11 +37,16 @@ public class ScriptPetitCratere extends Script
 {
 	private GameElementNames element;
 	private boolean remue;
+	private Vec2RW sortieGrosCratere = new Vec2RW(600, 1000);
+	private double orientationDStar = -Math.PI/2;
+	private double rayonSortieGrosCratere = 180;
 	
 	public ScriptPetitCratere(GameElementNames element, boolean remue)
 	{
 		this.remue = remue;
 		this.element = element;
+		if(element.name().contains("GAUCHE"))
+			sortieGrosCratere.setX(-sortieGrosCratere.getX());
 	}
 
 	@Override
@@ -183,6 +190,11 @@ public class ScriptPetitCratere extends Script
 		{
 			// on se dégage dans tous les cas
 			state.robot.avance(40, Speed.STANDARD);
+			if(remue)
+			{
+				cercle.set(sortieGrosCratere, orientationDStar, rayonSortieGrosCratere, SensFinal.MARCHE_ARRIERE, null, 10, -10, 3, -3);
+				state.robot.avanceToCircle(Speed.STANDARD);
+			}
 		}
 	}
 	
