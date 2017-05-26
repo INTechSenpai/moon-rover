@@ -57,7 +57,15 @@ public class Client extends JPanel implements KeyListener
 		Commandes.SPEED_UP.setCode(config.getInt(ConfigInfo.SPEED_UP_KEY));
 		Commandes.TURN_LEFT.setCode(config.getInt(ConfigInfo.TURN_LEFT_KEY));
 		Commandes.TURN_RIGHT.setCode(config.getInt(ConfigInfo.TURN_RIGHT_KEY));
-		
+		Commandes.BAISSE_FILET.setCode(config.getInt(ConfigInfo.BAISSE_FILET_KEY));
+		Commandes.LEVE_FILET.setCode(config.getInt(ConfigInfo.LEVE_FILET_KEY));
+		Commandes.EJECTE_DROITE.setCode(config.getInt(ConfigInfo.EJECTE_DROITE_KEY));
+		Commandes.EJECTE_GAUCHE.setCode(config.getInt(ConfigInfo.EJECTE_GAUCHE_KEY));
+		Commandes.REARME_GAUCHE.setCode(config.getInt(ConfigInfo.REARME_GAUCHE_KEY));
+		Commandes.REARME_DROITE.setCode(config.getInt(ConfigInfo.REARME_DROITE_KEY));
+		Commandes.FERME_FILET.setCode(config.getInt(ConfigInfo.FERME_FILET_KEY));
+		Commandes.OUVRE_FILET.setCode(config.getInt(ConfigInfo.OUVRE_FILET_KEY));
+
 		InetAddress rpiAdresse = null;
 		boolean loop = false;
 		log.debug("Démarrage du client de contrôle à distance");

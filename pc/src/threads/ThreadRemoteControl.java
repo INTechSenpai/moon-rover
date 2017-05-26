@@ -264,6 +264,24 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 					data.setCurvature(courbure);
 				}
 			}
+			else if(c == Commandes.BAISSE_FILET)
+				data.baisseFilet();
+			else if(c == Commandes.LEVE_FILET)
+				data.leveFilet();
+			else if(c == Commandes.OUVRE_FILET)
+				data.ouvreFilet();
+			else if(c == Commandes.FERME_FILET)
+				data.fermeFilet();
+			else if(c == Commandes.EJECTE_DROITE)
+				data.ejecteBalles(true);
+			else if(c == Commandes.EJECTE_GAUCHE)
+				data.ejecteBalles(false);
+			else if(c == Commandes.REARME_GAUCHE)
+				data.rearme(false);
+			else if(c == Commandes.REARME_DROITE)
+				data.rearme(true);
+
+			
 			else if(c == Commandes.SHUTDOWN)
 			{
 				Thread.sleep(1000);
