@@ -68,6 +68,7 @@ public:
 		static uint32_t startTime = 0;
 		if (timeoutCheck(launch, startTime))
 		{
+			Serial.println("AX12 Timeout");
 			return FAILURE;
 		}
 		return moveTheAX12(launch, ANGLE_DOWN, TOLERANCE_ANGLE, lastCommTime, SLOW_SPEED, 500);
@@ -88,6 +89,12 @@ public:
 	{
 		static uint32_t lastCommTime;
 		static uint32_t startTime = 0;
+		if (launch)
+		{
+			ax12net.alarmShutdown(0);
+			ax12net.enableTorque();
+			ax12net.alarmShutdown();
+		}
 		if (timeoutCheck(launch, startTime))
 		{
 			return FAILURE;

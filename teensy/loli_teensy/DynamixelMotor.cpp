@@ -88,6 +88,12 @@ void DynamixelMotor::enableTorque(bool aTorque)
 	write(DYN_ADDRESS_ENABLE_TORQUE, uint8_t(aTorque?1:0));
 }
 
+DynamixelStatus DynamixelMotor::alarmShutdown(uint8_t aMode)
+{
+	aMode &= B01111111;
+	return write(DYN_ADDRESS_ALARM_SHUTDOWN, aMode);
+}
+
 DynamixelStatus DynamixelMotor::speed(uint16_t aSpeed)
 {
 	return write(DYN_ADDRESS_GOAL_SPEED, aSpeed);

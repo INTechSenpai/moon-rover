@@ -95,6 +95,7 @@ public:
 	void jointMode(uint16_t aCWLimit=0, uint16_t aCCWLimit=0x3FF);
 	
 	void enableTorque(bool aTorque=true);
+	DynamixelStatus alarmShutdown(uint8_t aMode = 0x04);
 	DynamixelStatus speed(uint16_t aSpeed);
 	DynamixelStatus torqueLimit(uint16_t aTorque);
 	DynamixelStatus goalPosition(uint16_t aPosition);
