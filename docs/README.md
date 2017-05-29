@@ -12,7 +12,7 @@ INTech Senpaï avait déjà participé à la Coupe de France de robotique 2016 a
 
 Lors de la Coupe 2017, le rover est arrivé 29e avec 248 points, sur les 142 équipes participantes. Il a de plus gagné le prix de l'innovation pour sa manière unique de récupérer les balles et pour ses déplacements similaires à ceux d'une voiture autonome.
 
-Retrouvez [ici](https://youtu.be/hQ8i_TsweHg?t=2052) la vidéo d'un de nos matchs.
+Retrouvez [la vidéo d'un de nos matchs](https://youtu.be/RRG_A8Ckaps?t=6781) ainsi qu'un [match amical en version télécommandée](https://www.youtube.com/watch?v=7kDDqBFoagk).
 
 ## Une approche _roleplay_
 
