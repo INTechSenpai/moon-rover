@@ -14,6 +14,8 @@ Lors de la Coupe 2017, le rover est arrivé 29e avec 248 points, sur les 142 éq
 
 Retrouvez [la vidéo d'un de nos matchs](https://youtu.be/RRG_A8Ckaps?t=6781) ainsi qu'un [match amical en version télécommandée](https://www.youtube.com/watch?v=7kDDqBFoagk).
 
+![Rover + prix](https://raw.githubusercontent.com/INTechSenpai/moon-rover/master/docs/prix.jpg)
+
 ## Une approche _roleplay_
 
 Le projet fut dirigé par son objectif _roleplay_ : le moon rover est une reproduction aussi fidèle que possible du rover lunaire qui a accompagné les missions Apollo. Mais notre amour du détail ne s'est pas arrêté là, et notre rover a un tableau de bord et une multitude de phares : feux de croisement, de stop, de recul et bien sûr des clignotants.
