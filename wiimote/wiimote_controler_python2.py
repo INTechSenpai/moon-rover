@@ -16,7 +16,7 @@ except RuntimeError:
     quit()
 
 print 'Wii Remote connected...'
-print 'Press PLUS and MINUS together to discFalseonnect and quit.'
+print 'Press PLUS and MINUS together to disconnect and quit.'
 
 
 # List of mode : 'wiimote_std' 'wiimote_horizontal' 'nunchuk'
@@ -56,7 +56,7 @@ b_B_p = False
 
 last_update_time = 0
 
-wii.rpt_mode = cwiid.RPT_BTN
+wii.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
 while True:
     buttons = wii.state['buttons']
 
@@ -156,11 +156,15 @@ while True:
 
             speed = 0
             if buttons & cwiid.BTN_2:
+                if not b_two_p:
+                    b_two_p = True
+                    robot_run()
                 if buttons & cwiid.BTN_B and not b_B_p:
                     b_B_p = True
                     absolute_speed += 1
                 increase_speed()
             else:
+                b_two_p = False
                 if buttons & cwiid.BTN_B and absolute_speed != 0:
                     b_B_p = True
                     absolute_speed = 0
@@ -173,8 +177,19 @@ while True:
             else:
                 set_speed(speed)
 
-
-            # Todo direction
+            acc = wii.state['acc']
+            direction = acc[1] - 126
+            if abs(direction) < 4:
+                direction = 0
+            elif direction > 23:
+                direction = 23
+            elif direction < -23:
+                direction = -23
+            if direction > 0:
+                direction -= 3
+            elif direction < 0:
+                direction += 3
+            set_direction(direction)
 
     else:
         if buttons & cwiid.BTN_RIGHT:
@@ -235,11 +250,15 @@ while True:
 
             speed = 0
             if buttons & cwiid.BTN_A:
+                if not b_A_p:
+                    robot_run()
+                    b_A_p = True
                 if buttons & cwiid.BTN_B and not b_B_p:
                     b_B_p = True
                     absolute_speed += 1
                 increase_speed()
             else:
+                b_A_p = False
                 if buttons & cwiid.BTN_B and absolute_speed != 0:
                     b_B_p = True
                     absolute_speed = 0
@@ -252,9 +271,32 @@ while True:
             else:
                 set_speed(speed)
 
-            #direction = 0
             if control_mode == 'nunchuk':
-                pass
+                stick = wii.state['nunchuk']['stick']
+                direction = 131 - stick[0]
+                direction /= 4
+                if abs(direction) < 4:
+                    direction = 0
+                elif direction > 23:
+                    direction = 23
+                elif direction < -23:
+                    direction = -23
+                if direction > 0:
+                    direction -= 3
+                elif direction < 0:
+                    direction += 3
+                set_direction(direction)
             else:
-                pass
-            #set_direction(direction)
+                acc = wii.state['acc']
+                direction = 128 - acc[0]
+                if abs(direction) < 4:
+                    direction = 0
+                elif direction > 23:
+                    direction = 23
+                elif direction < -23:
+                    direction = -23
+                if direction > 0:
+                    direction -= 3
+                elif direction < 0:
+                    direction += 3
+                set_direction(direction)

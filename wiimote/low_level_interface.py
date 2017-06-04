@@ -1,10 +1,20 @@
-def set_speed(speed):
-    print "Speed set to: " + str(speed)
-    # @PF: au travail !
+_last_speed = 0
+_last_direction = 0
 
+def set_speed(speed):
+    global _last_speed
+    if speed != _last_speed:
+        print "Speed set to: " + str(speed)
+        _last_speed = speed
+        # @PF: au travail !
+
+# direction entre -20 et 20
 def set_direction(direction):
-    print "Direction set to: " + str(direction)
-    # @PF: au travail !
+    global _last_direction
+    if direction != _last_direction:
+        print "Direction set to: " + str(direction)
+        _last_direction = direction
+        # @PF: au travail !
 
 def robot_stop():
     print "Stop"
@@ -12,6 +22,7 @@ def robot_stop():
 
 def robot_run():
     print "Running"
+    #todo verifier que l'ordre est fini avant d'en envoyer un nouveau
     # @PF: au travail !
 
 def pull_up_net():
