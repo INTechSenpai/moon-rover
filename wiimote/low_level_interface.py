@@ -5,6 +5,8 @@ import socket
 _last_speed = 0
 _last_direction = 0
 
+_first_direction = True
+
 def init():
     global _socket
     _socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -71,17 +73,20 @@ def reset_wheels():
 
 # direction entre -20 et 20
 def set_direction(direction):
-    direction *= 3
-    global _last_direction, _socket
-    if direction != _last_direction or True:
-        print "Direction set to: " + str(direction)
-        _last_direction = direction
-        if direction < 0:
-            direction = direction + 256
-        message = bytearray()
-        message.append(5)
-        message.append(direction)
-        _socket.send(message)
+    global _last_direction, _socket, _first_direction
+    if _first_direction:
+        _first_direction = False
+    else:
+        direction *= 3
+        if direction != _last_direction or True:
+            print "Direction set to: " + str(direction)
+            _last_direction = direction
+            if direction < 0:
+                direction = direction + 256
+            message = bytearray()
+            message.append(5)
+            message.append(direction)
+            _socket.send(message)
 
 def ping():
     global _socket
