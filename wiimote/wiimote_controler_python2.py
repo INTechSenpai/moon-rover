@@ -84,6 +84,7 @@ while True:
 
     # List of mode : 'wiimote_std' 'wiimote_horizontal' 'nunchuk'
     control_mode = 'wiimote_std'
+    wii.led = cwiid.LED1_ON
     absolute_speed = 0
     speed_list = [300, 500, 750, 1000]
 
@@ -120,7 +121,6 @@ while True:
     # thread.start_new_thread(check_connectivity, ())
 
     try:
-        wii.led = 1
         while True:
             buttons = wii.state['buttons']
 
@@ -141,12 +141,14 @@ while True:
                 if control_mode != 'nunchuk':
                     wii.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_NUNCHUK
                     control_mode = 'nunchuk'
+                    wii.led = cwiid.LED3_ON
                     robot_stop()
                     print "Control mode : nunchuk"
             else:
                 if control_mode == 'nunchuk':
                     wii.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
                     control_mode = 'wiimote_std'
+                    wii.led = cwiid.LED1_ON
                     robot_stop()
                     print "Control mode : wiimote_std"
 
@@ -155,9 +157,11 @@ while True:
                     b_home_p = True
                     if control_mode == 'wiimote_std':
                         control_mode = 'wiimote_horizontal'
+                        wii.led = cwiid.LED2_ON
                         print "Control mode : wiimote_horizontal"
                     elif control_mode == 'wiimote_horizontal':
                         control_mode = 'wiimote_std'
+                        wii.led = cwiid.LED1_ON
                         print "Control mode : wiimote_std"
                     else:
                         print "Control mode : nunchuk"
