@@ -77,6 +77,7 @@ except:
 print "Connected."
 try:
     while True:
+        print wii.state
         buttons = wii.state['buttons']
 
         # If Plus and Minus buttons pressed
