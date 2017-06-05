@@ -92,21 +92,20 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 			{
 				while(true)
 				{
-					int val = in.read();
-					if(val != -1)
-					{
-						Commandes com = Commandes.values()[val];
-						int param = in.read();
-						if(param == -1)
-							buffer.add(new CommandesParam(Commandes.SHUTDOWN, 0));
-						else
-							buffer.add(new CommandesParam(com, param));
-					}
-					else // fin du stream : on arrête tout
-						buffer.add(new CommandesParam(Commandes.SHUTDOWN, 0));
+					int val;
+					while((val = in.read()) == -1)
+						Thread.sleep(0, 1000);
+					
+					Commandes com = Commandes.values()[val];
+
+					int param;
+					while((param = in.read()) == -1)
+						Thread.sleep(0, 1000);
+					
+					buffer.add(new CommandesParam(com, param));
 				}
 			}
-			catch(IOException e)
+			catch(IOException | InterruptedException e)
 			{
 				log.debug("Arrêt de " + Thread.currentThread().getName());
 				Thread.currentThread().interrupt();
