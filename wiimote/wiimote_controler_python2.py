@@ -362,3 +362,5 @@ except:
     print "Connection closed by server"
     traceback.print_tb(sys.exc_info()[2])
     close()
+javaServer.terminate()
+javaServer.wait()
