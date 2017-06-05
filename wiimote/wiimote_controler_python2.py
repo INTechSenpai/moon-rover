@@ -98,7 +98,9 @@ print "Connected."
 try:
     while True:
         try:
+            t = time.time()
             wii.request_status()
+            print "___LOOOOOOOOL___", time.time() - t
         except ValueError:
             pass
         except RuntimeError:
