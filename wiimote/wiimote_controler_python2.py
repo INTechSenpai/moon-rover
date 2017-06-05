@@ -72,7 +72,7 @@ def decrease_speed():
 
 connectivity_OK = True
 
-def check_connectivity(arg):
+def check_connectivity():
     global connectivity_OK
     try:
         wii.request_status()
@@ -109,7 +109,7 @@ except:
     exit(1)
 print "Connected."
 
-thread.start_new_thread(check_connectivity, None)
+thread.start_new_thread(check_connectivity, ())
 
 try:
     while True:
