@@ -338,11 +338,16 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 				data.rearme(false);
 			else if(c == Commandes.REARME_DROITE)
 				data.rearme(true);
-
 			
 			else if(c == Commandes.SHUTDOWN)
 			{
-				Thread.sleep(1000);
+				if(run != null)
+				{
+					run = null;
+					vitesse = 0;
+					data.immobilise();
+					data.waitStop();
+				}
 				container.interruptWithCodeError(ErrorCode.EMERGENCY_STOP);
 			}
 		}
