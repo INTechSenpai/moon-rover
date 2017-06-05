@@ -6,6 +6,7 @@ import sys
 import traceback
 import subprocess
 import re
+import thread
 from low_level_interface import *
 
 UPDATE_PERIOD = 0.05 # seconds
@@ -69,6 +70,18 @@ def decrease_speed():
         if absolute_speed < 0:
             absolute_speed = 0
 
+connectivity_OK = True
+
+def check_connectivity(arg):
+    global connectivity_OK
+    try:
+        wii.request_status()
+    except ValueError:
+        pass
+    except RuntimeError:
+        print "Wiimote disconnected"
+        connectivity_OK = False
+
 net_open = False
 left_ejector_armed = True
 right_ejector_armed = True
@@ -95,20 +108,15 @@ except:
     traceback.print_tb(sys.exc_info()[2])
     exit(1)
 print "Connected."
+
+thread.start_new_thread(check_connectivity, None)
+
 try:
     while True:
-        # try:
-        #     t = time.time()
-        #     wii.request_status()
-        #     print "___LOOOOOOOOL___", time.time() - t
-        # except ValueError:
-        #     pass
-        # except RuntimeError:
-        #     robot_stop()
-        #     print "Wiimote disconnected"
-        #     break
-
         buttons = wii.state['buttons']
+
+        if not connectivity_OK:
+            break
 
         # If Plus and Minus buttons pressed
         # together then rumble and quit.
