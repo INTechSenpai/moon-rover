@@ -2,9 +2,10 @@
 
 import socket
 
-_last_speed = 0
 _last_direction = 0
-
+_direction_buffer = []
+_direction_buffer_size = 6
+_direction_max_delta = 2.1
 _first_direction = True
 
 def init():
@@ -23,18 +24,15 @@ def close():
     _socket.close()
 
 def set_speed(speed):
+    global _socket
     speed /= 10
-    global _last_speed, _socket
-    if speed != _last_speed or True:
-
-        print "Speed set to: " + str(speed)
-        _last_speed = speed
-        if speed < 0:
-            speed = speed + 256
-        message = bytearray()
-        message.append(2)
-        message.append(speed)
-        _socket.send(message)
+    print "Speed set to: " + str(speed)
+    if speed < 0:
+        speed = speed + 256
+    message = bytearray()
+    message.append(2)
+    message.append(speed)
+    _socket.send(message)
 
 def speed_up():
     global _socket
@@ -73,20 +71,30 @@ def reset_wheels():
 
 # direction entre -20 et 20
 def set_direction(direction):
-    global _last_direction, _socket, _first_direction
+    global _socket, _last_direction, _first_direction, _direction_buffer, _direction_buffer_size, _direction_max_delta
     if _first_direction:
         _first_direction = False
     else:
         direction *= 3
-        if direction != _last_direction or True:
-            print "Direction set to: " + str(direction)
-            _last_direction = direction
-            if direction < 0:
-                direction = direction + 256
-            message = bytearray()
-            message.append(5)
-            message.append(direction)
-            _socket.send(message)
+
+        _direction_buffer.append(direction)
+        if len(_direction_buffer) > _direction_buffer_size:
+            _direction_buffer = _direction_buffer[1:]
+        direction = sum(_direction_buffer) / len(_direction_buffer)
+
+        if direction - _last_direction > _direction_max_delta:
+            direction = _last_direction + _direction_max_delta
+        elif direction - _last_direction < -_direction_max_delta:
+            direction = _last_direction - _direction_max_delta
+
+        print "Direction set to: " + str(direction)
+        _last_direction = direction
+        if direction < 0:
+            direction = direction + 256
+        message = bytearray()
+        message.append(5)
+        message.append(direction)
+        _socket.send(message)
 
 def ping():
     global _socket

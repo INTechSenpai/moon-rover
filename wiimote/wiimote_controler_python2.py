@@ -6,7 +6,7 @@ import sys
 import traceback
 from low_level_interface import *
 
-UPDATE_PERIOD = 0.1 # seconds
+UPDATE_PERIOD = 0.05 # seconds
 
 print 'Press 1 + 2 on your Wii Remote now ...'
 time.sleep(1)
