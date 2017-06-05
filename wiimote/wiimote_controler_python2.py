@@ -304,6 +304,7 @@ try:
                         direction += 3
                     set_direction(direction)
     close()
+    print "Connection closed by user"
 except Exception:
+    print "Connection closed by server"
     close()
-print "Connection closed"

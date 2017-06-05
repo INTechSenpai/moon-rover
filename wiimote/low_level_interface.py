@@ -22,7 +22,7 @@ def close():
 
 def set_speed(speed):
     global _last_speed, _socket
-    if speed != _last_speed:
+    if speed != _last_speed or True:
         print "Speed set to: " + str(speed)
         _last_speed = speed
         message = bytearray()
