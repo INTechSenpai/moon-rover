@@ -58,7 +58,7 @@ b_home_p = False
 b_A_p = False
 b_B_p = False
 
-last_update_time = 0
+last_update_time = 0.0
 
 wii.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
 
