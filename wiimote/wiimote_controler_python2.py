@@ -120,6 +120,7 @@ while True:
     # thread.start_new_thread(check_connectivity, ())
 
     try:
+        wii.led = 1
         while True:
             buttons = wii.state['buttons']
 
