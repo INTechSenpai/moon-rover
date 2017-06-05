@@ -229,6 +229,11 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 				c = cp.com;
 			}
 			
+			if(run != null && !run.isEmpty()) // le robot s'est arrêté
+			{
+				vitesse = 0;
+				run = null;
+			}
 
 			if(c == null)
 				continue;
@@ -247,12 +252,6 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 			}
 			else if(c == Commandes.SPEED_UP || c == Commandes.SPEED_DOWN)
 			{
-				if(run != null && !run.isEmpty()) // le robot s'est arrêté
-				{
-					vitesse = 0;
-					run = null;
-				}
-
 				short nextVitesse;
 				if(c == Commandes.SPEED_UP)
 				{
@@ -278,7 +277,6 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 			}
 			else if(c == Commandes.STOP)
 			{
-
 				if(run != null)
 				{
 					run = null;
