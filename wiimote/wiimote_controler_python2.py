@@ -364,7 +364,7 @@ while True:
         print "Connection closed by server"
         traceback.print_tb(sys.exc_info()[2])
         close()
-    javaServer.terminate()
+    javaServer.kill()
     javaServer.wait()
 
     print "Terminated. Restarting in 3s"
