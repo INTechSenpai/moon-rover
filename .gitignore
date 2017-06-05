@@ -30,13 +30,16 @@ project.properties
 # Pour les IDE fancy
 /**/.idea/
 /**/.vs/
-/**/__pycache__/
 /teensy/**/Debug/
 *.sln
 /**/__vm/
 *.vcxproj
 *.vcxproj.filters
 *.vscode
+
+# Pour le python
+/**/__pycache__/
+*.pyc
 
 # Documentation
 *.doc
