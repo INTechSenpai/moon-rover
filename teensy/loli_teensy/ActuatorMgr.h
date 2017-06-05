@@ -89,12 +89,6 @@ public:
 	{
 		static uint32_t lastCommTime;
 		static uint32_t startTime = 0;
-		if (launch)
-		{
-			ax12net.alarmShutdown(0);
-			ax12net.enableTorque();
-			ax12net.alarmShutdown();
-		}
 		if (timeoutCheck(launch, startTime))
 		{
 			return FAILURE;
