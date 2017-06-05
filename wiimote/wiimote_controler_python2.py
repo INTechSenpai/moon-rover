@@ -115,7 +115,7 @@ except:
     exit(1)
 print "Connected."
 
-thread.start_new_thread(check_connectivity, ())
+# thread.start_new_thread(check_connectivity, ())
 
 try:
     while True:
