@@ -5,7 +5,7 @@ import socket
 _last_direction = 0
 _direction_buffer = []
 _direction_buffer_size = 6
-_direction_max_delta = 2.1
+_direction_max_delta = 4.2
 _first_direction = True
 
 def init():
