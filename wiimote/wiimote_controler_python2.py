@@ -2,6 +2,8 @@
 
 import cwiid
 import time
+import sys
+import traceback
 from low_level_interface import *
 
 UPDATE_PERIOD = 0.1 # seconds
@@ -63,8 +65,9 @@ wii.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
 print "Connecting to the java server.."
 try:
     init()
-except Exception:
+except:
     print "Connection failed"
+    traceback.print_tb(sys.exc_info()[2])
     exit(1)
 print "Connected."
 try:
@@ -305,6 +308,7 @@ try:
                     set_direction(direction)
     close()
     print "Connection closed by user"
-except Exception:
+except:
     print "Connection closed by server"
+    traceback.print_tb(sys.exc_info()[2])
     close()
