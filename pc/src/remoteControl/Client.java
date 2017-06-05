@@ -68,7 +68,7 @@ public class Client extends JPanel implements KeyListener
 		Commandes.OUVRE_FILET.setCode(config.getInt(ConfigInfo.OUVRE_FILET_KEY));
 
 		InetAddress rpiAdresse = null;
-		boolean loop = false;
+		boolean loop = true;
 		log.debug("Démarrage du client de contrôle à distance");
 		try
 		{			
@@ -76,9 +76,7 @@ public class Client extends JPanel implements KeyListener
 			{
 				for(int i = 0; i < args.length; i++)
 				{
-					if(args[i].equals("-d"))
-						loop = true;
-					else if(!args[i].startsWith("-"))
+					if(!args[i].startsWith("-"))
 					{
 						String[] s = args[i].split("\\."); // on découpe
 															// avec les
@@ -159,18 +157,24 @@ public class Client extends JPanel implements KeyListener
 				log.critical(e1);
 			}
 
-			setBackground(Color.GRAY);
-			setPreferredSize(new Dimension(sizeX, sizeY));
-			frame = new JFrame();
-			frame.addKeyListener(this);
-			frame.addWindowListener(new WindowExit());
-			frame.getContentPane().add(this);
-			frame.pack();
-			frame.setVisible(true);
-			repaint();
+			/*
+			 * À ne faire qu'une fois !
+			 */
+			if(frame == null)
+			{
+				setBackground(Color.GRAY);
+				setPreferredSize(new Dimension(sizeX, sizeY));
+				frame = new JFrame();
+				frame.addKeyListener(this);
+				frame.addWindowListener(new WindowExit());
+				frame.getContentPane().add(this);
+				frame.pack();
+				frame.setVisible(true);
+				repaint();
+			}
 			
-			for(Commandes c : Commandes.values())
-				log.debug(c+" "+c.code);
+//			for(Commandes c : Commandes.values())
+//				log.debug(c+" "+c.code);
 			
 			int noSending = 0;
 			try
@@ -221,7 +225,7 @@ public class Client extends JPanel implements KeyListener
 				}
 				catch(IOException e)
 				{
-					e.printStackTrace();
+					log.warning(e);
 				}
 			}
 
@@ -233,7 +237,7 @@ public class Client extends JPanel implements KeyListener
 		}
 		catch(IOException e)
 		{
-			e.printStackTrace();
+			log.critical(e);
 		}
 		log.debug("Arrêt du client de contrôle à distance");
 	}
