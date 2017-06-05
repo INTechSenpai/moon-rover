@@ -4,9 +4,13 @@ import cwiid
 import time
 import sys
 import traceback
+import subprocess
 from low_level_interface import *
 
 UPDATE_PERIOD = 0.05 # seconds
+
+
+javaServer = subprocess.Popen("./run_easy.sh RemoteControl")
 
 print 'Press 1 + 2 on your Wii Remote now ...'
 time.sleep(1)
