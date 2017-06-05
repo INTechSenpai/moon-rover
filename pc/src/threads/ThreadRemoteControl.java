@@ -45,15 +45,18 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 	private Container container;
 	private ServerSocket ssocket = null;
 	private boolean remote;
+	private double l;
 
 	private class CommandesParam
 	{
 		public Commandes com;
-		public short param;
+		public int param;
 		
-		public CommandesParam(Commandes com, short param)
+		public CommandesParam(Commandes com, int param)
 		{
 			this.com = com;
+			if(param > 127)
+				param -= 256;
 			this.param = param;
 		}		
 	}
@@ -89,9 +92,18 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 			{
 				while(true)
 				{
-					Commandes com = Commandes.values()[in.read()];
-					short param = (short) in.read();
-					buffer.add(new CommandesParam(com, param));
+					int val = in.read();
+					if(val != -1)
+					{
+						Commandes com = Commandes.values()[val];
+						int param = in.read();
+						if(param == -1)
+							buffer.add(new CommandesParam(Commandes.SHUTDOWN, 0));
+						else
+							buffer.add(new CommandesParam(com, param));
+					}
+					else // fin du stream : on arrête tout
+						buffer.add(new CommandesParam(Commandes.SHUTDOWN, 0));
 				}
 			}
 			catch(IOException e)
@@ -111,6 +123,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 		this.data = data;
 		this.container = container;
 		remote = config.getBoolean(ConfigInfo.REMOTE_CONTROL);
+		l = config.getDouble(ConfigInfo.CENTRE_ROTATION_ROUE_X) / 1000.;
 	}
 
 	@Override
@@ -191,33 +204,42 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 		while(true)
 		{
 			CommandesParam cp = null;
-			Commandes c = null;
 			
 			if(!t.isEmpty())
 			{
 				cp = t.poll();
-				c = cp.com;
 				autostopcompteur = 0;
 			}
 			else
 			{
 				autostopcompteur++;
 				if(autostopcompteur == autostopseuil)
-					c = Commandes.STOP;
+				{
+					cp = new CommandesParam(Commandes.STOP, 0);
+					log.critical("Timeout télécommande !");
+				}
 				Thread.sleep(5);
 			}
 			
-			if(c != null)
-				log.debug("On exécute : "+c);
+
+			Commandes c = null;
+			
+			if(cp != null)
+			{
+				log.debug("On exécute : "+cp.com+", param = "+cp.param);
+				c = cp.com;
+			}
+			
 
 			if(c == null)
 				continue;
 			else if(c == Commandes.PING);
 			else if(c == Commandes.SET_SPEED)
 			{
-				if(vitesse != cp.param)
+				short nextVitesse = (short) (cp.param * 10);
+				if(vitesse != nextVitesse)
 				{
-					vitesse = cp.param;
+					vitesse = nextVitesse;
 					data.setMaxSpeed(vitesse);					
 				}
 				
@@ -257,6 +279,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 			}
 			else if(c == Commandes.STOP)
 			{
+
 				if(run != null)
 				{
 					run = null;
@@ -280,7 +303,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 				else
 					prochainAngleRoues = angleRoues - pasAngleTmp;
 				
-				double nextCourbure = 1. / 0.2 * Math.tan(prochainAngleRoues);
+				double nextCourbure = Math.tan(prochainAngleRoues) / l;
 			
 				if(nextCourbure <= courbureMax && nextCourbure >= -courbureMax)
 				{
@@ -291,10 +314,11 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 			}
 			else if(c == Commandes.SET_DIRECTION)
 			{
-				if(angleRoues != cp.param)
+				double nextAnglesRoues = cp.param * Math.PI / 180.;
+				if(angleRoues != nextAnglesRoues)
 				{
-					angleRoues = cp.param;
-					courbure = 1. / 0.2 * Math.tan(angleRoues);
+					angleRoues = nextAnglesRoues;
+					courbure = Math.tan(angleRoues) / l;
 					data.setCurvature(courbure);
 				}
 			}
