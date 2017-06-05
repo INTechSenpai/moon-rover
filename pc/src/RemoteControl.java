@@ -26,13 +26,6 @@ import utils.Log;
 
 public class RemoteControl
 {
-
-	/**
-	 * Position de départ : (550, 1905), -Math.PI/2
-	 * 
-	 * @param args
-	 */
-
 	public static void main(String[] args)
 	{
 		ConfigInfo.REMOTE_CONTROL.setDefaultValue(true);		

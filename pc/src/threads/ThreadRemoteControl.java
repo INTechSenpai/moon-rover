@@ -15,9 +15,11 @@
 package threads;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import config.Config;
 import config.ConfigInfo;
 import container.Container;
@@ -44,13 +46,25 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 	private ServerSocket ssocket = null;
 	private boolean remote;
 
+	private class CommandesParam
+	{
+		public Commandes com;
+		public short param;
+		
+		public CommandesParam(Commandes com, short param)
+		{
+			this.com = com;
+			this.param = param;
+		}		
+	}
+	
 	private class ThreadListen extends Thread
 	{
 		protected Log log;
-		private ObjectInputStream in;
-		private Commandes lu = null;
+		private InputStream in;
+		private Queue<CommandesParam> buffer = new ConcurrentLinkedQueue<CommandesParam>();
 		
-		public ThreadListen(Log log, ObjectInputStream in)
+		public ThreadListen(Log log, InputStream in)
 		{
 			this.log = log;
 			this.in = in;
@@ -58,14 +72,12 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 		
 		private boolean isEmpty()
 		{
-			return lu == null;
+			return buffer.isEmpty();
 		}
 		
-		private Commandes get()
+		private CommandesParam poll()
 		{
-			Commandes out = lu;
-			lu = null;
-			return out;
+			return buffer.poll();
 		}
 
 		@Override
@@ -77,12 +89,12 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 			{
 				while(true)
 				{
-					lu = (Commandes) in.readObject();
-					while(lu != null)
-						Thread.sleep(1);
+					Commandes com = Commandes.values()[in.read()];
+					short param = (short) in.read();
+					buffer.add(new CommandesParam(com, param));
 				}
 			}
-			catch(IOException | ClassNotFoundException | InterruptedException e)
+			catch(IOException e)
 			{
 				log.debug("Arrêt de " + Thread.currentThread().getName());
 				Thread.currentThread().interrupt();
@@ -169,7 +181,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 		Ticket run = null;
 		double angleRoues = 0;
 		double courbureMax = 5;
-		ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+		InputStream in = socket.getInputStream();
 		int autostopseuil = 100;
 		int autostopcompteur = 0;
 		
@@ -178,11 +190,13 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 
 		while(true)
 		{
+			CommandesParam cp = null;
 			Commandes c = null;
 			
 			if(!t.isEmpty())
 			{
-				c = t.get();
+				cp = t.poll();
+				c = cp.com;
 				autostopcompteur = 0;
 			}
 			else
@@ -199,6 +213,17 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 			if(c == null)
 				continue;
 			else if(c == Commandes.PING);
+			else if(c == Commandes.SET_SPEED)
+			{
+				if(vitesse != cp.param)
+				{
+					vitesse = cp.param;
+					data.setMaxSpeed(vitesse);					
+				}
+				
+				if(vitesse != 0 && run == null)
+					run = data.run();
+			}
 			else if(c == Commandes.SPEED_UP || c == Commandes.SPEED_DOWN)
 			{
 				if(run != null && !run.isEmpty()) // le robot s'est arrêté
@@ -261,6 +286,15 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 				{
 					angleRoues = prochainAngleRoues;
 					courbure = nextCourbure;
+					data.setCurvature(courbure);
+				}
+			}
+			else if(c == Commandes.SET_DIRECTION)
+			{
+				if(angleRoues != cp.param)
+				{
+					angleRoues = cp.param;
+					courbure = 1. / 0.2 * Math.tan(angleRoues);
 					data.setCurvature(courbure);
 				}
 			}

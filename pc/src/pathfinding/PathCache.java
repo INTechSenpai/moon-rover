@@ -103,7 +103,7 @@ public class PathCache implements Service, HighPFClass
 		if(!new File("paths/").exists())
 			new File("paths/").mkdir();
 		if(config.getBoolean(ConfigInfo.ALLOW_PRECOMPUTED_PATH))
-			loadAll(chrono, start);
+			loadAll();
 	}
 
 	private void savePath(KeyPathCache k, List<CinematiqueObs> path)
@@ -187,7 +187,7 @@ public class PathCache implements Service, HighPFClass
 		}
 	}
 
-	private void loadAll(ChronoGameState chrono, Cinematique start) throws MemoryManagerException, InterruptedException
+	private void loadAll() throws MemoryManagerException, InterruptedException
 	{
 		log.debug("Début du chargement des trajectoires…");
 		File f = new File("./paths/");

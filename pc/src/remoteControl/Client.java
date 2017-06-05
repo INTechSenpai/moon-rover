@@ -10,7 +10,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -29,7 +29,7 @@ public class Client extends JPanel implements KeyListener
 	private static final long serialVersionUID = 9171422634457882975L;
 	private JFrame frame;
 	private Log log;
-	private ObjectOutputStream out;
+	private OutputStream out;
 	private int sleep = 50;
 	private volatile HashSet<Commandes> current = new HashSet<Commandes>();
 	private volatile HashSet<Commandes> keepSending = new HashSet<Commandes>();
@@ -141,7 +141,7 @@ public class Client extends JPanel implements KeyListener
 			Thread.sleep(1000);
 			try
 			{
-				out = new ObjectOutputStream(socket.getOutputStream());
+				out = socket.getOutputStream();
 			}
 			catch(IOException e)
 			{
@@ -183,7 +183,8 @@ public class Client extends JPanel implements KeyListener
 					{
 						if(keepSending.isEmpty() && noSending == 6)
 						{
-							out.writeObject(Commandes.PING);
+							out.write(Commandes.PING.ordinal());
+							out.write(0); // pas de param
 							out.flush();
 							noSending = 0;
 						}
@@ -191,7 +192,10 @@ public class Client extends JPanel implements KeyListener
 						if(!keepSending.isEmpty())
 						{
 							for(Commandes c : keepSending)
-								out.writeObject(c);
+							{
+								out.write(c.ordinal());
+								out.write(0); // pas de param
+							}
 							out.flush();
 						}
 						else
@@ -211,7 +215,8 @@ public class Client extends JPanel implements KeyListener
 			{
 				try
 				{
-					out.writeObject(Commandes.SHUTDOWN);
+					out.write(Commandes.SHUTDOWN.ordinal());
+					out.write(0);
 					out.close();
 				}
 				catch(IOException e)
