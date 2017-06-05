@@ -76,6 +76,7 @@ def check_connectivity():
     global connectivity_OK
     try:
         wii.request_status()
+        print "connectivity OK"
     except ValueError:
         pass
     except RuntimeError:
