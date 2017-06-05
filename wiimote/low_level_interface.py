@@ -21,8 +21,10 @@ def close():
     _socket.close()
 
 def set_speed(speed):
+    speed /= 10
     global _last_speed, _socket
     if speed != _last_speed or True:
+
         print "Speed set to: " + str(speed)
         _last_speed = speed
         if speed < 0:
@@ -69,6 +71,7 @@ def reset_wheels():
 
 # direction entre -20 et 20
 def set_direction(direction):
+    direction *= 3
     global _last_direction, _socket
     if direction != _last_direction or True:
         print "Direction set to: " + str(direction)
