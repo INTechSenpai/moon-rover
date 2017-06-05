@@ -2,7 +2,7 @@
 
 import cwiid
 import time
-import sys
+import sys, os
 import traceback
 import subprocess
 import re
@@ -12,7 +12,8 @@ from low_level_interface import *
 UPDATE_PERIOD = 0.05 # seconds
 
 print "Launching Java server"
-javaServer = subprocess.Popen(["./../pc/run_easy.sh", "RemoteControl"], cwd="../pc/")
+DEVNULL = open(os.devnull, 'wb')
+javaServer = subprocess.Popen(["./../pc/run_easy.sh", "RemoteControl"], cwd="../pc/", stdout=DEVNULL)
 print "Java server launched"
 
 # set bluetooth timeout in ms
