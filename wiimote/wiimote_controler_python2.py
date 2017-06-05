@@ -5,6 +5,7 @@ import time
 import sys
 import traceback
 import subprocess
+import re
 from low_level_interface import *
 
 UPDATE_PERIOD = 0.05 # seconds
@@ -13,12 +14,31 @@ print "Launching Java server"
 javaServer = subprocess.Popen(["./../pc/run_easy.sh", "RemoteControl"], cwd="../pc/")
 print "Java server launched"
 
+# set bluetooth timeout in ms
+BLUETOOTH_TIMEOUT = 500
+
+def connect():
+    wm = cwiid.Wiimote()
+    # get all connected bluetooth devices
+    connected_devices = subprocess.check_output(("hcitool","con"))
+    # extract bluetooth MAC addresses
+    addresses = re.findall(r"(([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2}))",connected_devices)
+    for i in addresses:
+        name = subprocess.check_output(("hcitool","name",i[0]))
+        # identify Wiimotes. You may need to change this if looking for balance boards
+        # we are also assuming that you only have one Wiimote attached at one time,
+        # or that we want to set them all to have the same timeout
+        if name.strip()=="Nintendo RVL-CNT-01":
+            subprocess.call(("hcitool","lst",i[0],str(BLUETOOTH_TIMEOUT*16/10)))
+    return wm
+
+
 print 'Press 1 + 2 on your Wii Remote now ...'
 time.sleep(1)
 
 # Connect to the Wii Remote. If it times out then quit.
 try:
-    wii = cwiid.Wiimote()
+    wii = connect()
 except RuntimeError:
     wii = None
     print "Error opening wiimote connection"
