@@ -97,7 +97,15 @@ except:
 print "Connected."
 try:
     while True:
-        print wii.state
+        try:
+            wii.request_status()
+        except ValueError:
+            pass
+        except RuntimeError:
+            robot_stop()
+            print "Wiimote disconnected"
+            break
+
         buttons = wii.state['buttons']
 
         # If Plus and Minus buttons pressed
