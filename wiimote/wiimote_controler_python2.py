@@ -75,16 +75,18 @@ connectivity_OK = True
 
 def check_connectivity():
     global connectivity_OK
+    last_check_time = 0
     while True:
-        try:
-            wii.request_status()
-            print "connectivity OK"
-        except ValueError:
-            pass
-        except RuntimeError:
-            print "Wiimote disconnected"
-            connectivity_OK = False
-            break
+        if time.time() - last_check_time > 0.3:
+            try:
+                wii.request_status()
+            except ValueError:
+                pass
+            except RuntimeError:
+                print "Wiimote disconnected"
+                connectivity_OK = False
+                break
+            last_check_time = time.time()
 
 net_open = False
 left_ejector_armed = True
