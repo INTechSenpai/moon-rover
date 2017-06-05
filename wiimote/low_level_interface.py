@@ -30,6 +30,41 @@ def set_speed(speed):
         message.append(speed)
         _socket.send(message)
 
+def speed_up():
+    global _socket
+    message = bytearray()
+    message.append(0)
+    message.append(0)
+    _socket.send(message)
+
+def speed_down():
+    global _socket
+    message = bytearray()
+    message.append(1)
+    message.append(0)
+    _socket.send(message)
+
+def turn_right():
+    global _socket
+    message = bytearray()
+    message.append(3)
+    message.append(0)
+    _socket.send(message)
+
+def turn_left():
+    global _socket
+    message = bytearray()
+    message.append(4)
+    message.append(0)
+    _socket.send(message)
+
+def reset_wheels():
+    global _socket
+    message = bytearray()
+    message.append(7)
+    message.append(0)
+    _socket.send(message)
+
 # direction entre -20 et 20
 def set_direction(direction):
     global _last_direction, _socket
@@ -40,6 +75,13 @@ def set_direction(direction):
         message.append(5)
         message.append(direction)
         _socket.send(message)
+
+def ping():
+    global _socket
+    message = bytearray()
+    message.append(9)
+    message.append(0)
+    _socket.send(message)
 
 def robot_stop():
     global _socket
