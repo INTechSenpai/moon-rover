@@ -10,7 +10,7 @@ from low_level_interface import *
 UPDATE_PERIOD = 0.05 # seconds
 
 print "Launching Java server"
-javaServer = subprocess.Popen(["./../pc/run_easy.sh", "RemoteControl"])
+javaServer = subprocess.Popen(["./../pc/run_easy.sh", "RemoteControl"], cwd="../pc/")
 print "Java server launched"
 
 print 'Press 1 + 2 on your Wii Remote now ...'
