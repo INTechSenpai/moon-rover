@@ -87,6 +87,8 @@ def set_direction(direction):
         elif direction - _last_direction < -_direction_max_delta:
             direction = _last_direction - _direction_max_delta
 
+        direction = int(round(direction))
+
         print "Direction set to: " + str(direction)
         _last_direction = direction
         if direction < 0:
