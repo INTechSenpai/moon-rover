@@ -1,9 +1,9 @@
+# -*- coding: utf-8 -*-
+
 import socket
 
 _last_speed = 0
 _last_direction = 0
-
-_socket
 
 def init():
     global _socket
@@ -12,6 +12,7 @@ def init():
     
 
 def close():
+    global _socket
     # envoi d'un shutdown
     message = bytearray()
     message.append(8)
@@ -20,7 +21,7 @@ def close():
     _socket.close()
 
 def set_speed(speed):
-    global _last_speed
+    global _last_speed, _socket
     if speed != _last_speed:
         print "Speed set to: " + str(speed)
         _last_speed = speed
@@ -31,7 +32,7 @@ def set_speed(speed):
 
 # direction entre -20 et 20
 def set_direction(direction):
-    global _last_direction
+    global _last_direction, _socket
     if direction != _last_direction:
         print "Direction set to: " + str(direction)
         _last_direction = direction
@@ -41,6 +42,7 @@ def set_direction(direction):
         _socket.send(message)
 
 def robot_stop():
+    global _socket
     print "Stop"
     message = bytearray()
     message.append(6)
@@ -48,11 +50,13 @@ def robot_stop():
     _socket.send(message)
 
 def robot_run():
+    global _socket
     print "Running"
     # TODO : à gérer plus haut niveau
     #todo verifier que l'ordre est fini avant d'en envoyer un nouveau
 
 def pull_up_net():
+    global _socket
     print "pull_up_net"
     message = bytearray()
     message.append(10)
@@ -60,6 +64,7 @@ def pull_up_net():
     _socket.send(message)
 
 def pull_down_net():
+    global _socket
     print "pull_down_net"
     message = bytearray()
     message.append(11)
@@ -67,6 +72,7 @@ def pull_down_net():
     _socket.send(message)
 
 def open_net():
+    global _socket
     print "open_net"
     message = bytearray()
     message.append(13)
@@ -74,6 +80,7 @@ def open_net():
     _socket.send(message)
 
 def close_net():
+    global _socket
     print "close_net"
     message = bytearray()
     message.append(12)
@@ -81,6 +88,7 @@ def close_net():
     _socket.send(message)
 
 def eject_left_side():
+    global _socket
     print "eject_left_side"
     message = bytearray()
     message.append(14)
@@ -88,6 +96,7 @@ def eject_left_side():
     _socket.send(message)
 
 def rearm_left_side():
+    global _socket
     print "rearm_left_side"
     message = bytearray()
     message.append(16)
@@ -95,6 +104,7 @@ def rearm_left_side():
     _socket.send(message)
 
 def eject_right_side():
+    global _socket
     print "eject_right_side"
     message = bytearray()
     message.append(15)
@@ -102,6 +112,7 @@ def eject_right_side():
     _socket.send(message)
 
 def rearm_right_side():
+    global _socket
     print "rearm_right_side"
     message = bytearray()
     message.append(17)

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import cwiid
 import time
 from low_level_interface import *
