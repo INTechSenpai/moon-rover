@@ -77,7 +77,6 @@ while True:
             wii = connect()
         except RuntimeError:
             print "Error opening wiimote connection"
-            quit()
 
     print 'Wii Remote connected...'
     print 'Press PLUS and MINUS together to disconnect and quit.'
@@ -106,14 +105,17 @@ while True:
 
     wii.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
 
-    print "Connecting to the java server.."
-    try:
-        init()
-    except:
-        print "Connection failed"
-        traceback.print_tb(sys.exc_info()[2])
-        exit(1)
-    print "Connected."
+    connected = False
+    while not connected:
+        print "Connecting to the java server.."
+        try:
+            init()
+            connected = True
+            print "Connected."
+        except:
+            print "Connection failed. Retrying in 3s."
+            traceback.print_tb(sys.exc_info()[2])
+            time.sleep(3)
 
     # thread.start_new_thread(check_connectivity, ())
 
