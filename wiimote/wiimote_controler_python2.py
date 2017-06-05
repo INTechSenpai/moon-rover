@@ -53,7 +53,7 @@ print 'Press PLUS and MINUS together to disconnect and quit.'
 # List of mode : 'wiimote_std' 'wiimote_horizontal' 'nunchuk'
 control_mode = 'wiimote_std'
 absolute_speed = 0
-speed_list = [300, 600, 1000]
+speed_list = [300, 500, 750, 1000]
 
 def increase_speed():
     global absolute_speed
