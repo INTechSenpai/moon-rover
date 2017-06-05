@@ -25,6 +25,8 @@ def set_speed(speed):
     if speed != _last_speed or True:
         print "Speed set to: " + str(speed)
         _last_speed = speed
+        if speed < 0:
+            speed = speed + 256
         message = bytearray()
         message.append(2)
         message.append(speed)
@@ -71,6 +73,8 @@ def set_direction(direction):
     if direction != _last_direction or True:
         print "Direction set to: " + str(direction)
         _last_direction = direction
+        if direction < 0:
+            direction = direction + 256
         message = bytearray()
         message.append(5)
         message.append(direction)
