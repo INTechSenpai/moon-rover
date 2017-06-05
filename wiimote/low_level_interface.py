@@ -33,7 +33,7 @@ def set_speed(speed):
 # direction entre -20 et 20
 def set_direction(direction):
     global _last_direction, _socket
-    if direction != _last_direction:
+    if direction != _last_direction or True:
         print "Direction set to: " + str(direction)
         _last_direction = direction
         message = bytearray()
@@ -48,12 +48,6 @@ def robot_stop():
     message.append(6)
     message.append(0)
     _socket.send(message)
-
-def robot_run():
-    global _socket
-    print "Running"
-    # TODO : à gérer plus haut niveau
-    #todo verifier que l'ordre est fini avant d'en envoyer un nouveau
 
 def pull_up_net():
     global _socket

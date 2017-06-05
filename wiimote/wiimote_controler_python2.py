@@ -59,238 +59,133 @@ b_B_p = False
 last_update_time = 0
 
 wii.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
-while True:
-    buttons = wii.state['buttons']
 
-    # If Plus and Minus buttons pressed
-    # together then rumble and quit.
-    if buttons - cwiid.BTN_PLUS - cwiid.BTN_MINUS == 0:
-        robot_stop()
-        print '\nClosing connection ...'
-        wii.rumble = 1
-        time.sleep(1)
-        wii.rumble = 0
-        exit(wii)
+print "Connecting to the java server.."
+try:
+    init()
+except Exception:
+    print "Connection failed"
+    exit(1)
+print "Connected."
+try:
+    while True:
+        buttons = wii.state['buttons']
 
-    if wii.state['ext_type'] == cwiid.EXT_NUNCHUK:
-        if control_mode != 'nunchuk':
-            wii.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_NUNCHUK
-            control_mode = 'nunchuk'
+        # If Plus and Minus buttons pressed
+        # together then rumble and quit.
+        if buttons - cwiid.BTN_PLUS - cwiid.BTN_MINUS == 0:
             robot_stop()
-            print "Control mode : nunchuk"
-    else:
-        if control_mode == 'nunchuk':
-            wii.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
-            control_mode = 'wiimote_std'
-            robot_stop()
-            print "Control mode : wiimote_std"
+            print '\nClosing connection ...'
+            wii.rumble = 1
+            time.sleep(1)
+            wii.rumble = 0
+            break
 
-    if buttons & cwiid.BTN_HOME:
-        if not b_home_p:
-            b_home_p = True
-            if control_mode == 'wiimote_std':
-                control_mode = 'wiimote_horizontal'
-                print "Control mode : wiimote_horizontal"
-            elif control_mode == 'wiimote_horizontal':
-                control_mode = 'wiimote_std'
-                print "Control mode : wiimote_std"
-            else:
+        if wii.state['ext_type'] == cwiid.EXT_NUNCHUK:
+            if control_mode != 'nunchuk':
+                wii.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_NUNCHUK
+                control_mode = 'nunchuk'
+                robot_stop()
                 print "Control mode : nunchuk"
-    else:
-        b_home_p = False
-
-    if control_mode == 'wiimote_horizontal':
-        if buttons & cwiid.BTN_RIGHT:
-            if not b_right_p:
-                b_right_p = True
-                pull_up_net()
         else:
-            b_right_p = False
+            if control_mode == 'nunchuk':
+                wii.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
+                control_mode = 'wiimote_std'
+                robot_stop()
+                print "Control mode : wiimote_std"
 
-        if buttons & cwiid.BTN_LEFT:
-            if not b_left_p:
-                b_left_p = True
-                pull_down_net()
-        else:
-            b_left_p = False
-
-        if buttons & cwiid.BTN_UP:
-            if not b_up_p:
-                b_up_p = True
-                if left_ejector_armed:
-                    eject_left_side()
-                    left_ejector_armed = False
+        if buttons & cwiid.BTN_HOME:
+            if not b_home_p:
+                b_home_p = True
+                if control_mode == 'wiimote_std':
+                    control_mode = 'wiimote_horizontal'
+                    print "Control mode : wiimote_horizontal"
+                elif control_mode == 'wiimote_horizontal':
+                    control_mode = 'wiimote_std'
+                    print "Control mode : wiimote_std"
                 else:
-                    rearm_left_side()
-                    left_ejector_armed = True
+                    print "Control mode : nunchuk"
         else:
-            b_up_p = False
+            b_home_p = False
 
-        if buttons & cwiid.BTN_DOWN:
-            if not b_down_p:
-                b_down_p = True
-                if right_ejector_armed:
-                    eject_right_side()
-                    right_ejector_armed = False
-                else:
-                    rearm_right_side()
-                    right_ejector_armed = True
-        else:
-            b_down_p = False
-
-        if buttons & cwiid.BTN_A:
-            if not b_A_p:
-                b_A_p = True
-                if net_open:
-                    close_net()
-                    net_open = False
-                else:
-                    open_net()
-                    net_open = True
-        else:
-            b_A_p = False
-
-        if not buttons & cwiid.BTN_B:
-            b_B_p = False
-
-        if time.time() - last_update_time > UPDATE_PERIOD:
-            last_update_time = time.time()
-
-            speed = 0
-            if buttons & cwiid.BTN_2:
-                if not b_two_p:
-                    b_two_p = True
-                    robot_run()
-                if buttons & cwiid.BTN_B and not b_B_p:
-                    b_B_p = True
-                    absolute_speed += 1
-                increase_speed()
+        if control_mode == 'wiimote_horizontal':
+            if buttons & cwiid.BTN_RIGHT:
+                if not b_right_p:
+                    b_right_p = True
+                    pull_up_net()
             else:
-                b_two_p = False
-                if buttons & cwiid.BTN_B and absolute_speed != 0:
-                    b_B_p = True
-                    absolute_speed = 0
-                elif not buttons & cwiid.BTN_B:
-                    decrease_speed()
-                elif buttons & cwiid.BTN_B and not b_B_p:
-                    speed = -300
-            if speed == 0:
-                set_speed(absolute_speed)
+                b_right_p = False
+
+            if buttons & cwiid.BTN_LEFT:
+                if not b_left_p:
+                    b_left_p = True
+                    pull_down_net()
             else:
-                set_speed(speed)
+                b_left_p = False
 
-            acc = wii.state['acc']
-            direction = acc[1] - 126
-            if abs(direction) < 4:
-                direction = 0
-            elif direction > 23:
-                direction = 23
-            elif direction < -23:
-                direction = -23
-            if direction > 0:
-                direction -= 3
-            elif direction < 0:
-                direction += 3
-            set_direction(direction)
+            if buttons & cwiid.BTN_UP:
+                if not b_up_p:
+                    b_up_p = True
+                    if left_ejector_armed:
+                        eject_left_side()
+                        left_ejector_armed = False
+                    else:
+                        rearm_left_side()
+                        left_ejector_armed = True
+            else:
+                b_up_p = False
 
-    else:
-        if buttons & cwiid.BTN_RIGHT:
-            if not b_right_p:
-                b_right_p = True
-                if right_ejector_armed:
-                    eject_right_side()
-                    right_ejector_armed = False
-                else:
-                    rearm_right_side()
-                    right_ejector_armed = True
-        else:
-            b_right_p = False
+            if buttons & cwiid.BTN_DOWN:
+                if not b_down_p:
+                    b_down_p = True
+                    if right_ejector_armed:
+                        eject_right_side()
+                        right_ejector_armed = False
+                    else:
+                        rearm_right_side()
+                        right_ejector_armed = True
+            else:
+                b_down_p = False
 
-        if buttons & cwiid.BTN_LEFT:
-            if not b_left_p:
-                b_left_p = True
-                if left_ejector_armed:
-                    eject_left_side()
-                    left_ejector_armed = False
-                else:
-                    rearm_left_side()
-                    left_ejector_armed = True
-        else:
-            b_left_p = False
-
-        if buttons & cwiid.BTN_UP:
-            if not b_up_p:
-                b_up_p = True
-                pull_up_net()
-        else:
-            b_up_p = False
-
-        if buttons & cwiid.BTN_DOWN:
-            if not b_down_p:
-                b_down_p = True
-                pull_down_net()
-        else:
-            b_down_p = False
-
-        if buttons & cwiid.BTN_1:
-            if not b_one_p:
-                b_one_p = True
-                if net_open:
-                    close_net()
-                    net_open = False
-                else:
-                    open_net()
-                    net_open = True
-        else:
-            b_one_p = False
-
-        if not buttons & cwiid.BTN_B:
-            b_B_p = False
-
-        if time.time() - last_update_time > UPDATE_PERIOD:
-            last_update_time = time.time()
-
-            speed = 0
             if buttons & cwiid.BTN_A:
                 if not b_A_p:
-                    robot_run()
                     b_A_p = True
-                if buttons & cwiid.BTN_B and not b_B_p:
-                    b_B_p = True
-                    absolute_speed += 1
-                increase_speed()
+                    if net_open:
+                        close_net()
+                        net_open = False
+                    else:
+                        open_net()
+                        net_open = True
             else:
                 b_A_p = False
-                if buttons & cwiid.BTN_B and absolute_speed != 0:
-                    b_B_p = True
-                    absolute_speed = 0
-                elif not buttons & cwiid.BTN_B:
-                    decrease_speed()
-                elif buttons & cwiid.BTN_B and not b_B_p:
-                    speed = -300
-            if speed == 0:
-                set_speed(absolute_speed)
-            else:
-                set_speed(speed)
 
-            if control_mode == 'nunchuk':
-                stick = wii.state['nunchuk']['stick']
-                direction = 131 - stick[0]
-                direction /= 4
-                if abs(direction) < 4:
-                    direction = 0
-                elif direction > 23:
-                    direction = 23
-                elif direction < -23:
-                    direction = -23
-                if direction > 0:
-                    direction -= 3
-                elif direction < 0:
-                    direction += 3
-                set_direction(direction)
-            else:
+            if not buttons & cwiid.BTN_B:
+                b_B_p = False
+
+            if time.time() - last_update_time > UPDATE_PERIOD:
+                last_update_time = time.time()
+
+                speed = 0
+                if buttons & cwiid.BTN_2:
+                    if buttons & cwiid.BTN_B and not b_B_p:
+                        b_B_p = True
+                        absolute_speed += 1
+                    increase_speed()
+                else:
+                    if buttons & cwiid.BTN_B and absolute_speed != 0:
+                        b_B_p = True
+                        absolute_speed = 0
+                    elif not buttons & cwiid.BTN_B:
+                        decrease_speed()
+                    elif buttons & cwiid.BTN_B and not b_B_p:
+                        speed = -300
+                if speed == 0:
+                    set_speed(absolute_speed)
+                else:
+                    set_speed(speed)
+
                 acc = wii.state['acc']
-                direction = 128 - acc[0]
+                direction = acc[1] - 126
                 if abs(direction) < 4:
                     direction = 0
                 elif direction > 23:
@@ -302,3 +197,113 @@ while True:
                 elif direction < 0:
                     direction += 3
                 set_direction(direction)
+
+        else:
+            if buttons & cwiid.BTN_RIGHT:
+                if not b_right_p:
+                    b_right_p = True
+                    if right_ejector_armed:
+                        eject_right_side()
+                        right_ejector_armed = False
+                    else:
+                        rearm_right_side()
+                        right_ejector_armed = True
+            else:
+                b_right_p = False
+
+            if buttons & cwiid.BTN_LEFT:
+                if not b_left_p:
+                    b_left_p = True
+                    if left_ejector_armed:
+                        eject_left_side()
+                        left_ejector_armed = False
+                    else:
+                        rearm_left_side()
+                        left_ejector_armed = True
+            else:
+                b_left_p = False
+
+            if buttons & cwiid.BTN_UP:
+                if not b_up_p:
+                    b_up_p = True
+                    pull_up_net()
+            else:
+                b_up_p = False
+
+            if buttons & cwiid.BTN_DOWN:
+                if not b_down_p:
+                    b_down_p = True
+                    pull_down_net()
+            else:
+                b_down_p = False
+
+            if buttons & cwiid.BTN_1:
+                if not b_one_p:
+                    b_one_p = True
+                    if net_open:
+                        close_net()
+                        net_open = False
+                    else:
+                        open_net()
+                        net_open = True
+            else:
+                b_one_p = False
+
+            if not buttons & cwiid.BTN_B:
+                b_B_p = False
+
+            if time.time() - last_update_time > UPDATE_PERIOD:
+                last_update_time = time.time()
+
+                speed = 0
+                if buttons & cwiid.BTN_A:
+                    if buttons & cwiid.BTN_B and not b_B_p:
+                        b_B_p = True
+                        absolute_speed += 1
+                    increase_speed()
+                else:
+                    if buttons & cwiid.BTN_B and absolute_speed != 0:
+                        b_B_p = True
+                        absolute_speed = 0
+                    elif not buttons & cwiid.BTN_B:
+                        decrease_speed()
+                    elif buttons & cwiid.BTN_B and not b_B_p:
+                        speed = -300
+                if speed == 0:
+                    set_speed(absolute_speed)
+                else:
+                    set_speed(speed)
+
+                if control_mode == 'nunchuk':
+                    stick = wii.state['nunchuk']['stick']
+                    direction = 131 - stick[0]
+                    direction /= 4
+                    if abs(direction) < 4:
+                        direction = 0
+                    elif direction > 23:
+                        direction = 23
+                    elif direction < -23:
+                        direction = -23
+                    if direction > 0:
+                        direction -= 3
+                    elif direction < 0:
+                        direction += 3
+                    set_direction(direction)
+                else:
+                    acc = wii.state['acc']
+                    direction = 128 - acc[0]
+                    if abs(direction) < 4:
+                        direction = 0
+                    elif direction > 23:
+                        direction = 23
+                    elif direction < -23:
+                        direction = -23
+                    if direction > 0:
+                        direction -= 3
+                    elif direction < 0:
+                        direction += 3
+                    set_direction(direction)
+    close()
+except Exception:
+    close()
+print "Connection closed"
