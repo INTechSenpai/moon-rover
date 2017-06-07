@@ -212,6 +212,84 @@ void loop()
 			ledMgr.statusLed_batteryOk();
 		}
 
+		/* Evitement bas niveau en mode contrôle manuel */
+		static uint32_t manualMoveSafetyCheckTime = 0;
+		if (millis() - manualMoveSafetyCheckTime > 50)
+		{
+			manualMoveSafetyCheckTime = millis();
+			if (motionControlSystem.getMovingState() == MotionControlSystem::MANUAL_MOVE)
+			{
+				uint8_t sensorsValues[NB_SENSORS];
+				sensorMgr.getValues_noReset(sensorsValues);
+				int32_t mmSpeed = motionControlSystem.getMaxMovingSpeed();
+				bool stopRequired = false;
+				if (mmSpeed > 800)
+				{
+					if (
+						(sensorsValues[4] != 0 && sensorsValues[4] < 200) ||
+						(sensorsValues[11] != 0 && sensorsValues[11] < 200) ||
+						(sensorsValues[0] != 0 && sensorsValues[0] < 200)
+						)
+					{
+						stopRequired = true;
+					}
+				}
+				else if (mmSpeed > 550)
+				{
+					if (
+						(sensorsValues[4] != 0 && sensorsValues[4] < 200) || 
+						(sensorsValues[11] != 0 && sensorsValues[11] < 200) || 
+						(sensorsValues[0] != 0 && sensorsValues[0] < 100)
+						)
+					{
+						stopRequired = true;
+					}
+				}
+				else if (mmSpeed > 350)
+				{
+					if (
+						(sensorsValues[4] != 0 && sensorsValues[4] < 150) ||
+						(sensorsValues[11] != 0 && sensorsValues[11] < 150) ||
+						(sensorsValues[0] != 0 && sensorsValues[0] < 75)
+						)
+					{
+						stopRequired = true;
+					}
+				}
+				else if (mmSpeed > 0)
+				{
+					if (
+						(sensorsValues[4] != 0 && sensorsValues[4] < 60) || 
+						(sensorsValues[11] != 0 && sensorsValues[11] < 60) ||
+						(sensorsValues[0] != 0 && sensorsValues[0] < 30)
+						)
+					{
+						stopRequired = true;
+					}
+				}
+				else if (mmSpeed < 0)
+				{
+					if (
+						(sensorsValues[7] != 0 && sensorsValues[7] < 60) ||
+						(sensorsValues[8] != 0 && sensorsValues[8] < 60)
+						)
+					{
+						stopRequired = true;
+					}
+				}
+
+				if (stopRequired)
+				{
+					motionControlSystem.highLevelStop();
+				}
+			}
+		}
+		/*
+			*****************
+			 DEBUG & VERBOSE
+			*****************
+		*/
+
 		//static uint32_t loli = 0;
 		//if (millis() - loli > 100)
 		//{

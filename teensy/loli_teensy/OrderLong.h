@@ -785,8 +785,8 @@ public:
 	{
 		if (motionControlSystem.getMovingState() != MotionControlSystem::MANUAL_MOVE)
 		{
-			finished = true;
 			motionControlSystem.setSpeed(0);
+			finished = motionControlSystem.isStopped();
 		}
 		else
 		{
