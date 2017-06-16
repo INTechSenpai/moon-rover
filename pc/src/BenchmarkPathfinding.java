@@ -51,15 +51,17 @@ public class BenchmarkPathfinding
 			Cinematique depart = new Cinematique(-800, 350, Math.PI / 2, true, 0);
 			robot.setCinematique(depart);
 			cercle.set(GameElementNames.MINERAI_CRATERE_HAUT_GAUCHE, 230, 30, -30, 10, -10);
-			int nbtest = 1000;
+			int nbtest = 100;
 			log.debug("Début du test…");
 			for(int i = 0; i < nbtest; i++)
 			{
+				System.out.println(i);
 				astar.initializeNewSearchToCircle(true, state);
 				astar.process(chemin, false);
 				chemin.clear();
 			}
-			log.debug("Temps : " + (System.nanoTime() - avant) / (nbtest * 1000000.));
+			
+			System.out.println("Temps : " + (System.nanoTime() - avant) / (nbtest * 1000000.));
 			container.destructor();
 		}
 		catch(PathfindingException | InterruptedException | ContainerException | MemoryManagerException e)

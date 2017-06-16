@@ -32,6 +32,7 @@ public class EnhancedPriorityQueue
 {
 	private DStarLiteNode[] tab = new DStarLiteNode[PointGridSpace.NB_POINTS];
 	private int firstAvailable = 1;
+	private DStarLiteNode lastInserted = null;
 
 	/**
 	 * Renvoie la racine et la supprime
@@ -40,11 +41,20 @@ public class EnhancedPriorityQueue
 	 */
 	public DStarLiteNode poll()
 	{
-		DStarLiteNode out = tab[1];
-		tab[1] = tab[--firstAvailable];
-		tab[1].indexPriorityQueue = 1;
-		percolateDown(tab[1]);
-		return out;
+		if(tab[1] == null || (lastInserted != null && tab[1].cle.greaterThan(lastInserted.cle)))
+		{
+			DStarLiteNode tmp = lastInserted;
+			lastInserted = null;
+			return tmp;
+		}
+		else
+		{
+			DStarLiteNode out = tab[1];
+			tab[1] = tab[--firstAvailable];
+			tab[1].indexPriorityQueue = 1;
+			percolateDown(tab[1]);
+			return out;
+		}
 	}
 
 	/**
@@ -54,6 +64,8 @@ public class EnhancedPriorityQueue
 	 */
 	public DStarLiteNode peek()
 	{
+		if(tab[1] == null || (lastInserted != null && tab[1].cle.greaterThan(lastInserted.cle)))
+			return lastInserted;
 		return tab[1];
 	}
 
@@ -63,6 +75,7 @@ public class EnhancedPriorityQueue
 	public void clear()
 	{
 		firstAvailable = 1;
+		lastInserted = null;
 	}
 
 	/**
@@ -112,7 +125,7 @@ public class EnhancedPriorityQueue
 	{
 		return index >> 1;
 	}
-
+	
 	/**
 	 * Ajoute un nœuds au tas
 	 * 
@@ -120,10 +133,15 @@ public class EnhancedPriorityQueue
 	 */
 	public void add(DStarLiteNode node)
 	{
-		tab[firstAvailable] = node;
-		node.indexPriorityQueue = firstAvailable;
-		firstAvailable++;
-		percolateUp(node);
+		DStarLiteNode tmp = lastInserted;
+		lastInserted = node;
+		if(tmp != null)
+		{
+			tab[firstAvailable] = tmp;
+			tmp.indexPriorityQueue = firstAvailable;
+			firstAvailable++;
+			percolateUp(tmp);			
+		}
 	}
 
 	/**
@@ -133,18 +151,23 @@ public class EnhancedPriorityQueue
 	 */
 	public void percolateDown(DStarLiteNode node)
 	{
-		DStarLiteNode n = node;
-		int fg, diff;
-		// diff < 0 si aucun enfant, diff = 0 si un enfant (le gauche), diff > 0
-		// si deux enfants
-		while((diff = (firstAvailable - 1 - (fg = 2 * n.indexPriorityQueue))) >= 0)
+		if(lastInserted == node)
+			add(null); // pour ajouter lastInserted dans le tas (fait automatique le percolateUp)
+		else
 		{
-			if(diff > 0 && tab[fg].cle.greaterThan(tab[fg + 1].cle))
-				fg++;
-			if(n.cle.greaterThan(tab[fg].cle))
-				swap(fg, n.indexPriorityQueue);
-			else
-				return;
+			DStarLiteNode n = node;
+			int fg, diff;
+			// diff < 0 si aucun enfant, diff = 0 si un enfant (le gauche), diff > 0
+			// si deux enfants
+			while((diff = (firstAvailable - 1 - (fg = 2 * n.indexPriorityQueue))) >= 0)
+			{
+				if(diff > 0 && tab[fg].cle.greaterThan(tab[fg + 1].cle))
+					fg++;
+				if(n.cle.greaterThan(tab[fg].cle))
+					swap(fg, n.indexPriorityQueue);
+				else
+					return;
+			}
 		}
 	}
 
@@ -155,15 +178,20 @@ public class EnhancedPriorityQueue
 	 */
 	public void remove(DStarLiteNode node)
 	{
-		DStarLiteNode last = tab[--firstAvailable];
-		tab[node.indexPriorityQueue] = last;
-		last.indexPriorityQueue = node.indexPriorityQueue;
-
-		if(node.cle.lesserThan(last.cle)) // ce qui a remplacé node est plus
-											// grand : on descend
-			percolateDown(last);
+		if(lastInserted == node)
+			lastInserted = null;
 		else
-			percolateUp(last);
+		{
+			DStarLiteNode last = tab[--firstAvailable];
+			tab[node.indexPriorityQueue] = last;
+			last.indexPriorityQueue = node.indexPriorityQueue;
+	
+			if(node.cle.lesserThan(last.cle)) // ce qui a remplacé node est plus
+												// grand : on descend
+				percolateDown(last);
+			else
+				percolateUp(last);
+		}
 	}
 
 	/**
@@ -173,11 +201,16 @@ public class EnhancedPriorityQueue
 	 */
 	public void percolateUp(DStarLiteNode node)
 	{
-		int p;
-		// si ce nœud n'est pas la racine et que son père est plus grand : on
-		// inverse
-		while(node.indexPriorityQueue > 1 && tab[p = pere(node.indexPriorityQueue)].cle.greaterThan(tab[node.indexPriorityQueue].cle))
-			swap(node.indexPriorityQueue, p);
+		if(lastInserted == node)
+			add(null); // pour ajouter lastInserted dans le tas (fait automatique le percolateUp)
+		else
+		{
+			int p;
+			// si ce nœud n'est pas la racine et que son père est plus grand : on
+			// inverse
+			while(node.indexPriorityQueue > 1 && tab[p = pere(node.indexPriorityQueue)].cle.greaterThan(tab[node.indexPriorityQueue].cle))
+				swap(node.indexPriorityQueue, p);
+		}
 	}
 
 	/**
@@ -187,7 +220,7 @@ public class EnhancedPriorityQueue
 	 */
 	public boolean isEmpty()
 	{
-		return firstAvailable == 1;
+		return firstAvailable == 1 && lastInserted == null;
 	}
 
 	/**

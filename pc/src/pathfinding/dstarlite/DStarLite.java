@@ -28,6 +28,7 @@ import robot.Cinematique;
 import table.RealTable;
 import utils.Log;
 import utils.Vec2RO;
+import utils.Vec2RW;
 import config.Config;
 import config.ConfigInfo;
 import container.Service;
@@ -145,10 +146,9 @@ public class DStarLite implements Service, LowPFClass
 			return null;
 
 		DStarLiteNode out = memory[gridpoint.hashcode];
-
-		if(out.nbPF != nbPF)
-			return null;
-
+		out.update(nbPF);
+		
+		updateStart(gridpoint);
 		return out;
 	}
 
@@ -346,18 +346,26 @@ public class DStarLite implements Service, LowPFClass
 		updateStart(pointManager.get(positionRobot));
 	}
 
+	private synchronized void updateStart(PointGridSpace p)
+	{
+		updateStart(getFromMemory(p));
+	}
+	
 	/**
 	 * Met à jour la position actuelle du robot
 	 * 
 	 * @param positionRobot
 	 */
-	private synchronized void updateStart(PointGridSpace p)
+	private synchronized final void updateStart(DStarLiteNode p)
 	{
-		depart = getFromMemory(p);
-		km += distanceHeuristique(lastDepart);
-		lastDepart = depart.gridpoint;
-
-		computeShortestPath();
+		// p est consistent ssi il n'est pas l'openset
+		if(p.inOpenSet)
+		{
+			depart = p;
+			km += distanceHeuristique(lastDepart);
+			lastDepart = depart.gridpoint;
+			computeShortestPath();
+		}
 	}
 
 	/**
@@ -577,6 +585,8 @@ public class DStarLite implements Service, LowPFClass
 		return 1.3 * erreurDistance + 5 * erreurOrientation;
 	}
 
+	private Vec2RW tmpVec2 = new Vec2RW();
+	
 	/**
 	 * Fournit une heuristique de l'orientation à prendre en ce point
 	 * 
@@ -617,9 +627,9 @@ public class DStarLite implements Service, LowPFClass
 												// simple (trajet à vol
 												// d'oiseau)
 		{
-			directionX = arrivee.gridpoint.x - p.x;
-			directionY = arrivee.gridpoint.y - p.y;
-			n.heuristiqueOrientation = Math.atan2(directionY, directionX);
+			tmpVec2.setX(arrivee.gridpoint.x - p.x);
+			tmpVec2.setY(arrivee.gridpoint.y - p.y);
+			n.heuristiqueOrientation = tmpVec2.getFastArgument();
 		}
 
 		if(graphicHeuristique)
