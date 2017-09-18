@@ -34,7 +34,7 @@ Le rover, quand il détecte un ennemi (les rectangles colorés), recherche un it
 
 ![Animation de la replanification](https://raw.githubusercontent.com/INTechSenpai/moon-rover/master/docs/replanif.gif)
 
-Si vous souhaitez utiliser ce pathfinding pour l'un de vos projets, rendez-vous sur la [page de la librairie associée](https://github.com/PFGimenez/PF-library).
+Si vous souhaitez utiliser ce pathfinding pour l'un de vos projets, rendez-vous sur la [page de la librairie associée](https://github.com/PFGimenez/The-Kraken-Pathfinding).
 
 ## Hardware
 
