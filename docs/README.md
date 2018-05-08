@@ -4,6 +4,8 @@
 
 ![Poster de l'équipe](https://raw.githubusercontent.com/INTechSenpai/moon-rover/master/docs/poster.jpg)
 
+Ce projet est le précédesseur du [camion grue](https://intechsenpai.github.io/camion-grue/).
+
 ## Coupe de France de robotique 2017
 
 Le moon rover a participé à la [Coupe de France de robotique 2017](http://www.coupederobotique.fr/). Cette année-là, la compétition s'est passé sur la Lune, et notre brave rover a dû ramasser du minerai grâce au filet qu'il porte.
